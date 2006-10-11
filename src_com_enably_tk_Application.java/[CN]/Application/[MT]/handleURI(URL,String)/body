@@ -1,0 +1,29 @@
+{
+  if (relativeUri == null)   return null;
+  String prefix=relativeUri;
+  int index=relativeUri.indexOf('/');
+  if (index >= 0)   prefix=relativeUri.substring(0,index);
+  if (prefix.equals("APP")) {
+    int next=relativeUri.indexOf('/',index + 1);
+    if (next < 0)     return null;
+    String key=relativeUri.substring(index + 1,next);
+    ApplicationResource resource=(ApplicationResource)keyResourceMap.get(key);
+    if (resource != null)     return resource.getStream();
+    return null;
+  }
+  Window window=getWindow(prefix);
+  if (window != null) {
+    URL windowContext;
+    try {
+      windowContext=new URL(context,prefix + "/");
+      String windowUri=relativeUri.length() > prefix.length() + 1 ? relativeUri.substring(prefix.length() + 1) : "";
+      return window.handleURI(windowContext,windowUri);
+    }
+ catch (    MalformedURLException e) {
+      return null;
+    }
+  }
+  window=getMainWindow();
+  if (window != null)   return window.handleURI(context,relativeUri);
+  return null;
+}

@@ -1,0 +1,19 @@
+{
+  OrderedLayout l=new OrderedLayout();
+  demoWindow=new FrameWindow("Feature Test Window");
+  demoWindow.getFrameset().newFrame(createFrame(demoWindow.getFrameset()));
+  Panel show=new Panel("Test Window Control");
+  ((OrderedLayout)show.getLayout()).setOrientation(OrderedLayout.ORIENTATION_HORIZONTAL);
+  show.addComponent(addButton);
+  show.addComponent(removeButton);
+  updateWinStatus();
+  l.addComponent(show);
+  PropertyPanel p=new PropertyPanel(demoWindow);
+  p.dependsOn(addButton);
+  p.dependsOn(removeButton);
+  Form ap=p.createBeanPropertySet(new String[]{"width","height","name","border","theme"});
+  ap.replaceWithSelect("border",new Object[]{new Integer(Window.BORDER_DEFAULT),new Integer(Window.BORDER_NONE),new Integer(Window.BORDER_MINIMAL)},new Object[]{"Default","None","Minimal"});
+  p.addProperties("FrameWindow Properties",ap);
+  l.addComponent(p);
+  return l;
+}

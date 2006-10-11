@@ -1,0 +1,37 @@
+{
+  Window window=null;
+  String path=request.getPathInfo();
+  if (path == null || path.length() == 0 || path.equals("/"))   window=application.getMainWindow();
+ else {
+    String windowName=null;
+    if (path.charAt(0) == '/')     path=path.substring(1);
+    int index=path.indexOf('/');
+    if (index < 0) {
+      windowName=path;
+      path="";
+    }
+ else {
+      windowName=path.substring(0,index);
+      path=path.substring(index + 1);
+    }
+    window=application.getWindow(windowName);
+    if (window == null) {
+      if (allWindows.contains(windowName))       return null;
+      window=application.getMainWindow();
+    }
+ else     if (!window.isVisible()) {
+      window.requestRepaintRequests();
+      return null;
+    }
+  }
+  if (this.debugMode && application.getWindow(DebugWindow.WINDOW_NAME) == null)   try {
+    DebugWindow debugWindow=new DebugWindow(application,request.getSession(false),this);
+    debugWindow.setWidth(370);
+    debugWindow.setHeight(480);
+    application.addWindow(debugWindow);
+  }
+ catch (  Exception e) {
+    throw new ServletException("Failed to create debug window for application",e);
+  }
+  return window;
+}

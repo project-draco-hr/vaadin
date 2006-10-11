@@ -1,0 +1,17 @@
+{
+  for (int i=0; i < sortPropertyId.length; i++) {
+    Property pp1=getContainerProperty(o1,this.sortPropertyId[i]);
+    Property pp2=getContainerProperty(o2,this.sortPropertyId[i]);
+    Object p1=pp1 == null ? null : pp1.getValue();
+    Object p2=pp2 == null ? null : pp2.getValue();
+    int r=0;
+    if (p1 != null && p2 != null) {
+      if ((p1 instanceof Boolean) && (p2 instanceof Boolean))       r=p1.equals(p2) ? 0 : ((this.sortDirection[i] ? 1 : -1) * (((Boolean)p1).booleanValue() ? 1 : -1));
+ else       r=this.sortDirection[i] ? ((Comparable)p1).compareTo(p2) : -((Comparable)p1).compareTo(p2);
+    }
+ else     if (p1 == p2)     r=0;
+ else     r=(this.sortDirection[i] ? 1 : -1) * (p1 == null ? -1 : 1);
+    if (r != 0)     return r;
+  }
+  return 0;
+}

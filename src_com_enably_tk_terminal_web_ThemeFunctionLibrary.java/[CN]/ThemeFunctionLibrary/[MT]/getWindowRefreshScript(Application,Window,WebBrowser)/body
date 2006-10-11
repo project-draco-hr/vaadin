@@ -1,0 +1,32 @@
+{
+  if (application == null)   return "";
+  if (window == null)   return "";
+  if (window == null)   return "";
+  if (window.getApplication() == null || !window.isVisible())   return "win = window.open(\"\",\"" + getWindowTargetName(application,window) + "\");\n  "+ "if (win != null) { win.close(); }\n";
+  String url=window.getURL().toString();
+  String features="dependent=yes,";
+  int width=window.getWidth();
+  int height=window.getHeight();
+  if (width >= 0)   features+="width=" + width;
+  if (height >= 0)   features+=((features.length() > 0) ? "," : "") + "height=" + height;
+switch (window.getBorder()) {
+case Window.BORDER_NONE:
+    features+=((features.length() > 0) ? "," : "") + "toolbar=0,location=0,menubar=0,status=0,resizable=1,scrollbars=" + (window.isScrollable() ? "1" : "0");
+  break;
+case Window.BORDER_MINIMAL:
+features+=((features.length() > 0) ? "," : "") + "toolbar=1,location=0,menubar=0,status=1,resizable=1,scrollbars=" + (window.isScrollable() ? "1" : "0");
+break;
+case Window.BORDER_DEFAULT:
+features+=((features.length() > 0) ? "," : "") + "toolbar=1,location=1,menubar=1,status=1,resizable=1,scrollbars=" + (window.isScrollable() ? "1" : "0");
+break;
+}
+String script="win = window.open(\"\",\"" + getWindowTargetName(application,window) + "\",\""+ features+ "\");\n"+ "if (win != null) {"+ "var form = null;";
+if (browser != null && (browser.getJavaScriptVersion().supports(WebBrowser.JAVASCRIPT_1_5) || browser.getJavaScriptVersion().supports(WebBrowser.JSCRIPT_1_0))) {
+script+="try { form = win.document.forms[\"millstone\"];" + "} catch (e) { form = null;}";
+}
+ else {
+script+="form = win.document.forms[\"millstone\"];";
+}
+script+="if (form != null) {" + "form.submit();" + "} else {win.location.href = \"" + url + "\";}}";
+return script;
+}

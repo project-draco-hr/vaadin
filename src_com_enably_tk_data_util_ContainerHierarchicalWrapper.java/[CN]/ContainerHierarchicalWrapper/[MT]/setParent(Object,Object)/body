@@ -1,0 +1,36 @@
+{
+  if (hierarchical)   return ((Container.Hierarchical)container).setParent(itemId,newParentId);
+  if (!containsId(itemId))   return false;
+  Object oldParentId=parent.get(itemId);
+  if ((newParentId == null && oldParentId == null) || newParentId.equals(oldParentId))   return true;
+  if (newParentId == null) {
+    LinkedList l=(LinkedList)children.get(itemId);
+    if (l != null) {
+      l.remove(itemId);
+      if (l.isEmpty())       children.remove(itemId);
+    }
+    roots.add(itemId);
+    parent.remove(itemId);
+    return true;
+  }
+  if (!containsId(newParentId) || noChildrenAllowed.contains(newParentId))   return false;
+  Object o=newParentId;
+  while (o != null && !o.equals(itemId))   o=parent.get(o);
+  if (o != null)   return false;
+  parent.put(itemId,newParentId);
+  LinkedList pcl=(LinkedList)children.get(newParentId);
+  if (pcl == null) {
+    pcl=new LinkedList();
+    children.put(newParentId,pcl);
+  }
+  pcl.add(itemId);
+  if (oldParentId == null)   roots.remove(itemId);
+ else {
+    LinkedList l=(LinkedList)children.get(oldParentId);
+    if (l != null) {
+      l.remove(itemId);
+      if (l.isEmpty())       children.remove(oldParentId);
+    }
+  }
+  return true;
+}

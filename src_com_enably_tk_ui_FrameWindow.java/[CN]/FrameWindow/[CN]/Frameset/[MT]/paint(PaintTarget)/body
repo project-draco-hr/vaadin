@@ -1,0 +1,20 @@
+{
+  target.startTag("frameset");
+  if (!frames.isEmpty()) {
+    StringBuffer widths=null;
+    for (Iterator i=frames.iterator(); i.hasNext(); ) {
+      Frame f=(Frame)i.next();
+      if (widths == null)       widths=new StringBuffer();
+ else       widths.append(',');
+      widths.append(f.width);
+    }
+    if (vertical)     target.addAttribute("rows",widths.toString());
+ else     target.addAttribute("cols",widths.toString());
+    for (Iterator i=frames.iterator(); i.hasNext(); ) {
+      Frame f=(Frame)i.next();
+      if (Frameset.class.isAssignableFrom(f.getClass()))       ((Frameset)f).paint(target);
+ else       f.paint(target);
+    }
+  }
+  target.endTag("frameset");
+}

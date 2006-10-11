@@ -1,0 +1,22 @@
+{
+  OrderedLayout l=new OrderedLayout();
+  Panel show=new Panel("DateField component");
+  DateField df=new DateField("Caption");
+  df.setValue(new java.util.Date());
+  show.addComponent(df);
+  l.addComponent(show);
+  Select selector=new Select("Application Locale",localeContainer);
+  selector.setItemCaptionPropertyId("name");
+  selector.setImmediate(true);
+  selector.setPropertyDataSource(new MethodProperty(this.getApplication(),"locale"));
+  l.addComponent(selector);
+  PropertyPanel p=new PropertyPanel(df);
+  Form ap=p.createBeanPropertySet(new String[]{"resolution"});
+  ap.replaceWithSelect("resolution",new Object[]{new Integer(DateField.RESOLUTION_YEAR),new Integer(DateField.RESOLUTION_MONTH),new Integer(DateField.RESOLUTION_DAY),new Integer(DateField.RESOLUTION_HOUR),new Integer(DateField.RESOLUTION_MIN),new Integer(DateField.RESOLUTION_SEC),new Integer(DateField.RESOLUTION_MSEC)},new Object[]{"Year","Month","Day","Hour","Minute","Second","Millisecond"});
+  Select themes=(Select)p.getField("style");
+  themes.addItem("text").getItemProperty(themes.getItemCaptionPropertyId()).setValue("text");
+  themes.addItem("calendar").getItemProperty(themes.getItemCaptionPropertyId()).setValue("calendar");
+  p.addProperties("DateField Properties",ap);
+  l.addComponent(p);
+  return l;
+}

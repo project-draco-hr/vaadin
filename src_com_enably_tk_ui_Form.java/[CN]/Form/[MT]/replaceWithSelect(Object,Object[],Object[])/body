@@ -1,0 +1,49 @@
+{
+  if (propertyId == null || values == null || descriptions == null)   throw new NullPointerException("All parameters must be non-null");
+  if (values.length != descriptions.length)   throw new IllegalArgumentException("Value and description list are of different size");
+  Field oldField=(Field)fields.get(propertyId);
+  if (oldField == null)   throw new IllegalArgumentException("Field with given propertyid '" + propertyId.toString() + "' can not be found.");
+  Object value=oldField.getValue();
+  boolean found=false;
+  boolean isMultiselect=false;
+  for (int i=0; i < values.length && !found; i++)   if (values[i] == value || (value != null && value.equals(values[i])))   found=true;
+  if (value != null && !found) {
+    if (value instanceof Collection) {
+      for (Iterator it=((Collection)value).iterator(); it.hasNext(); ) {
+        Object val=it.next();
+        found=false;
+        for (int i=0; i < values.length && !found; i++)         if (values[i] == val || (val != null && val.equals(values[i])))         found=true;
+        if (!found)         throw new IllegalArgumentException("Currently selected value '" + val + "' of property '"+ propertyId.toString()+ "' was not found");
+      }
+      isMultiselect=true;
+    }
+ else     throw new IllegalArgumentException("Current value '" + value + "' of property '"+ propertyId.toString()+ "' was not found");
+  }
+  Select newField=new Select();
+  if (isMultiselect)   newField.setMultiSelect(true);
+  newField.setCaption(oldField.getCaption());
+  newField.setReadOnly(oldField.isReadOnly());
+  newField.setReadThrough(oldField.isReadThrough());
+  newField.setWriteThrough(oldField.isWriteThrough());
+  newField.addContainerProperty("desc",String.class,"");
+  newField.setItemCaptionPropertyId("desc");
+  for (int i=0; i < values.length; i++) {
+    Object id=values[i];
+    if (id == null) {
+      id=new Object();
+      newField.setNullSelectionItemId(id);
+    }
+    Item item=newField.addItem(id);
+    if (item != null)     item.getItemProperty("desc").setValue(descriptions[i].toString());
+  }
+  Property property=oldField.getPropertyDataSource();
+  oldField.setPropertyDataSource(null);
+  newField.setPropertyDataSource(property);
+  layout.replaceComponent(oldField,newField);
+  fields.put(propertyId,newField);
+  this.removeDirectDependency(oldField);
+  oldField.removeDirectDependency(this);
+  this.dependsOn(newField);
+  newField.dependsOn(this);
+  return newField;
+}

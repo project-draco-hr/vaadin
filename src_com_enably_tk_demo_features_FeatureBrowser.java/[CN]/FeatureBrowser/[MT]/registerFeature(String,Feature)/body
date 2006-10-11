@@ -1,0 +1,20 @@
+{
+  StringTokenizer st=new StringTokenizer(path,"/");
+  String id="";
+  String parentId=null;
+  while (st.hasMoreTokens()) {
+    String token=st.nextToken();
+    id+="/" + token;
+    if (!features.containsId(id)) {
+      features.addItem(id);
+      features.setChildrenAllowed(id,false);
+    }
+    features.getContainerProperty(id,"name").setValue(token);
+    if (parentId != null) {
+      features.setChildrenAllowed(parentId,true);
+      features.setParent(id,parentId);
+    }
+    if (!st.hasMoreTokens())     features.getContainerProperty(id,"feature").setValue(feature);
+    parentId=id;
+  }
+}

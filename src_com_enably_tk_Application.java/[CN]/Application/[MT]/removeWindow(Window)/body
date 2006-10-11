@@ -1,0 +1,14 @@
+{
+  if (window != null && windows.contains(window)) {
+    windows.remove(window.getName());
+    if (getMainWindow() == window)     setMainWindow(null);
+    if (window.getApplication() == this)     window.setApplication(null);
+    if (windowDetachListeners != null) {
+      Object[] listeners=windowDetachListeners.toArray();
+      WindowDetachEvent event=new WindowDetachEvent(window);
+      for (int i=0; i < listeners.length; i++) {
+        ((WindowDetachListener)listeners[i]).windowDetached(event);
+      }
+    }
+  }
+}

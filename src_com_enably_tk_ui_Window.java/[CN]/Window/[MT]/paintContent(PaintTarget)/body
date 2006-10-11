@@ -1,0 +1,13 @@
+{
+  target.addAttribute("name",getName());
+  if (getApplication() != null && this == getApplication().getMainWindow())   target.addAttribute("main",true);
+synchronized (openList) {
+    if (!openList.isEmpty()) {
+      for (Iterator i=openList.iterator(); i.hasNext(); )       ((OpenResource)i.next()).paintContent(target);
+      openList.clear();
+    }
+  }
+  super.paintContent(target);
+  if (this.focusedComponent != null)   target.addVariable(this,"focused","" + this.focusedComponent.getFocusableId());
+ else   target.addVariable(this,"focused","");
+}

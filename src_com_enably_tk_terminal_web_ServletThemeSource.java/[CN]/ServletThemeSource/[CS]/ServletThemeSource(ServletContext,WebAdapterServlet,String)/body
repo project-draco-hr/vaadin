@@ -1,0 +1,34 @@
+{
+  this.theme=null;
+  this.webAdapterServlet=webAdapterServlet;
+  this.context=context;
+  this.path=path;
+  if ((this.path.length() > 0) && !this.path.endsWith("/")) {
+    this.path=this.path + "/";
+  }
+  if ((this.path.length() > 0) && !this.path.startsWith("/")) {
+    this.path="/" + this.path;
+  }
+  this.descFile=context.getResource(this.path + Theme.DESCRIPTIONFILE);
+  InputStream entry=context.getResourceAsStream(this.path + Theme.DESCRIPTIONFILE);
+  try {
+    if (entry != null) {
+      try {
+        this.theme=new Theme(entry);
+      }
+ catch (      Exception e) {
+        throw new ThemeException("ServletThemeSource: Failed to load '" + path + "': "+ e);
+      }
+      entry.close();
+      if (webAdapterServlet.isDebugMode()) {
+        Log.debug("Added ServletThemeSource: " + this.path);
+      }
+    }
+ else {
+      throw new IllegalArgumentException("ServletThemeSource: Invalid theme resource: " + path);
+    }
+  }
+  finally {
+    if (entry != null)     entry.close();
+  }
+}

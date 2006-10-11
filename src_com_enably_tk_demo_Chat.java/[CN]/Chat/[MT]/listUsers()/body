@@ -1,0 +1,20 @@
+{
+  StringBuffer userlist=new StringBuffer();
+  userlist.append("<div style=\"background-color: #ffffd0;\"><b>Chatters (" + (new Date()) + ")</b><ul>");
+synchronized (chatters) {
+    for (Iterator i=chatters.iterator(); i.hasNext(); ) {
+      try {
+        Chat c=(Chat)((WeakReference)i.next()).get();
+        String name=(String)c.getUser();
+        if (name != null && name.length() > 0) {
+          userlist.append("<li>" + name);
+          userlist.append(" (idle " + ((new Date()).getTime() - c.idleSince) / 1000 + "s)");
+        }
+      }
+ catch (      NullPointerException ignored) {
+      }
+    }
+  }
+  userlist.append("</ul></div><script>self.scroll(0,71234);</script>\n");
+  printToStream(userlist.toString());
+}

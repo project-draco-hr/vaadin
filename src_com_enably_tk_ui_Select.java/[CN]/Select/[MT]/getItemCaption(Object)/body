@@ -1,0 +1,32 @@
+{
+  if (itemId == null)   return null;
+  String caption=null;
+switch (getItemCaptionMode()) {
+case ITEM_CAPTION_MODE_ID:
+    caption=itemId.toString();
+  break;
+case ITEM_CAPTION_MODE_INDEX:
+try {
+  caption=String.valueOf(((Container.Indexed)items).indexOfId(itemId));
+}
+ catch (ClassCastException ignored) {
+}
+break;
+case ITEM_CAPTION_MODE_ITEM:
+Item i=getItem(itemId);
+if (i != null) caption=i.toString();
+break;
+case ITEM_CAPTION_MODE_EXPLICIT:
+caption=(String)itemCaptions.get(itemId);
+break;
+case ITEM_CAPTION_MODE_EXPLICIT_DEFAULTS_ID:
+caption=(String)itemCaptions.get(itemId);
+if (caption == null) caption=itemId.toString();
+break;
+case ITEM_CAPTION_MODE_PROPERTY:
+Property p=getContainerProperty(itemId,getItemCaptionPropertyId());
+if (p != null) caption=p.toString();
+break;
+}
+return caption != null ? caption : "";
+}

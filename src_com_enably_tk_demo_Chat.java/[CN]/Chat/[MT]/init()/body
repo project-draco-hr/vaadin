@@ -1,0 +1,31 @@
+{
+  say.dependsOn(sayText);
+  say.addListener((Button.ClickListener)this);
+  listUsers.addListener((Button.ClickListener)this);
+  StreamResource chatStream=new StreamResource(this,"discussion.html",this);
+  chatStream.setBufferSize(1);
+  chatStream.setCacheTime(0);
+  frames.getFrameset().newFrame(chatStream,"chatDiscussion");
+  Window controls=new Window("",new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL));
+  controls.setName("chatControls");
+  controls.addComponent(sayText);
+  sayText.setColumns(40);
+  controls.addComponent(say);
+  controls.addComponent(loginName);
+  loginName.focus();
+  controls.addComponent(loginButton);
+  loginButton.dependsOn(loginName);
+  loginButton.addListener(this);
+  controls.addComponent(listUsers);
+  Button leaveButton=new Button("Leave",this,"leave");
+  controls.addComponent(leaveButton);
+  say.setVisible(false);
+  sayText.setVisible(false);
+  frames.getFrameset().newFrame(controls).setAbsoluteSize(60);
+  frames.getFrameset().setVertical(true);
+  frames.setName("chatMain");
+  setMainWindow(frames);
+synchronized (chatters) {
+    chatters.add(listEntry=new WeakReference(this));
+  }
+}

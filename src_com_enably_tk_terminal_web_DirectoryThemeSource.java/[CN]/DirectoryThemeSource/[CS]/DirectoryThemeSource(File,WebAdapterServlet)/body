@@ -1,0 +1,34 @@
+{
+  this.path=path;
+  this.theme=null;
+  this.webAdapterServlet=webAdapterServlet;
+  if (!this.path.isDirectory())   throw new java.io.FileNotFoundException("Theme path must be a directory ('" + this.path + "')");
+  File description=new File(path,Theme.DESCRIPTIONFILE);
+  if (description.exists()) {
+    try {
+      this.theme=new Theme(description);
+    }
+ catch (    Exception e) {
+      throw new ThemeException("ServletThemeSource: Failed to load '" + path + "': "+ e);
+    }
+    if (webAdapterServlet.isDebugMode()) {
+      Log.info("Added DirectoryThemeSource: " + this.path);
+    }
+  }
+ else {
+    File[] files=this.path.listFiles();
+    for (int i=0; i < files.length; i++) {
+      if (files[i].isDirectory()) {
+        this.subdirs.add(new DirectoryThemeSource(files[i],webAdapterServlet));
+      }
+ else       if (files[i].getName().toLowerCase().endsWith(".jar")) {
+        this.subdirs.add(new JarThemeSource(files[i],webAdapterServlet,""));
+      }
+    }
+    if (this.subdirs.isEmpty()) {
+      if (webAdapterServlet.isDebugMode()) {
+        Log.debug("DirectoryThemeSource: Ignoring empty directory: " + path);
+      }
+    }
+  }
+}

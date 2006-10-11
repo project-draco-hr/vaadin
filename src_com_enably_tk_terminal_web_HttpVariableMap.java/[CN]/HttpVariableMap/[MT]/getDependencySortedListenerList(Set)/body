@@ -1,0 +1,63 @@
+{
+  LinkedList resultNormal=new LinkedList();
+  LinkedList resultImmediate=new LinkedList();
+  HashMap deepdeps=new HashMap();
+  LinkedList unresolved=new LinkedList();
+  for (Iterator li=listeners.iterator(); li.hasNext(); ) {
+    VariableOwner listener=(VariableOwner)li.next();
+    if (listener != null) {
+      Set dependencies=listener.getDirectDependencies();
+      if (dependencies == null || dependencies.isEmpty()) {
+        if (listener.isImmediate())         resultImmediate.addFirst(listener);
+ else         resultNormal.addFirst(listener);
+      }
+ else       if (deepdeps.get(listener) == null) {
+        unresolved.clear();
+        unresolved.add(listener);
+        HashSet tmpdeepdeps=new HashSet();
+        while (!unresolved.isEmpty()) {
+          VariableOwner l=(VariableOwner)unresolved.removeFirst();
+          if (!tmpdeepdeps.contains(l)) {
+            tmpdeepdeps.add(l);
+            if (deepdeps.containsKey(l)) {
+              tmpdeepdeps.addAll((Set)deepdeps.get(l));
+            }
+ else {
+              Set deps=l.getDirectDependencies();
+              if (deps != null && !deps.isEmpty())               for (Iterator di=deps.iterator(); di.hasNext(); ) {
+                Object d=di.next();
+                if (d != null && !tmpdeepdeps.contains(d))                 unresolved.addLast(d);
+              }
+            }
+          }
+        }
+        tmpdeepdeps.remove(listener);
+        deepdeps.put(listener,tmpdeepdeps);
+      }
+    }
+  }
+  for (Iterator li=deepdeps.keySet().iterator(); li.hasNext(); ) {
+    VariableOwner l=(VariableOwner)li.next();
+    boolean immediate=l.isImmediate();
+    int index=-1;
+    for (Iterator di=((Set)deepdeps.get(l)).iterator(); di.hasNext(); ) {
+      int k;
+      Object depended=di.next();
+      if (immediate) {
+        k=resultImmediate.lastIndexOf(depended);
+      }
+ else {
+        k=resultNormal.lastIndexOf(depended);
+      }
+      if (k > index)       index=k;
+    }
+    if (immediate) {
+      resultImmediate.add(index + 1,l);
+    }
+ else {
+      resultNormal.add(index + 1,l);
+    }
+  }
+  resultNormal.addAll(resultImmediate);
+  return resultNormal;
+}

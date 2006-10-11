@@ -1,0 +1,17 @@
+{
+  target.startTag("error");
+  target.addAttribute("level","system");
+  String message=getLocalizedMessage();
+  if (message != null) {
+    target.addSection("b",message);
+  }
+  if (cause != null) {
+    if (message != null)     target.addUIDL("<br/><br/>");
+    target.addSection("b","Exception");
+    target.addUIDL("<br/><br/>");
+    StringWriter buffer=new StringWriter();
+    cause.printStackTrace(new PrintWriter(buffer));
+    target.addSection("pre",buffer.toString());
+  }
+  target.endTag("error");
+}

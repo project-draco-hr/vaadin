@@ -1,0 +1,27 @@
+{
+  if (component == null)   throw new NullPointerException("Component must not be null");
+  if (components.contains(component))   throw new IllegalArgumentException("Component is already in the container");
+  Area area=new Area(component,x1,y1,x2,y2);
+  if (x2 < x1 || y2 < y2)   throw new IllegalArgumentException("Illegal coordinates for the component");
+  if (x1 < 0 || y1 < 0 || x2 >= width || y2 >= height)   throw new OutOfBoundsException(area);
+  checkExistingOverlaps(area);
+  component.setParent(this);
+  Iterator i=areas.iterator();
+  int index=0;
+  boolean done=false;
+  while (!done && i.hasNext()) {
+    Area existingArea=(Area)i.next();
+    if ((existingArea.y1 >= y1 && existingArea.x1 > x1) || existingArea.y1 > y1) {
+      areas.add(index,area);
+      components.add(index,component);
+      done=true;
+    }
+    index++;
+  }
+  if (!done) {
+    areas.addLast(area);
+    components.addLast(component);
+  }
+  super.addComponent(component);
+  requestRepaint();
+}

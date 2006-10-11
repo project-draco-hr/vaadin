@@ -1,0 +1,21 @@
+{
+  if (type == TYPE_IMAGE) {
+    target.addAttribute("type","image");
+  }
+  if (source != null)   target.addAttribute("src",source);
+  if (width > 0)   target.addAttribute("width","" + width + Sizeable.UNIT_SYMBOLS[this.widthUnits]);
+  if (height > 0)   target.addAttribute("height","" + height + Sizeable.UNIT_SYMBOLS[this.heightUnits]);
+  if (mimeType != null && !"".equals(mimeType))   target.addAttribute("mimetype",mimeType);
+  if (classId != null && !"".equals(classId))   target.addAttribute("classid",classId);
+  if (codebase != null && !"".equals(codebase))   target.addAttribute("codebase",codebase);
+  if (codetype != null && !"".equals(codetype))   target.addAttribute("codetype",codetype);
+  if (standby != null && !"".equals(standby))   target.addAttribute("standby",standby);
+  if (archive != null && !"".equals(archive))   target.addAttribute("archive",archive);
+  for (Iterator i=this.getParameterNames(); i.hasNext(); ) {
+    target.startTag("embeddedparam");
+    String key=(String)i.next();
+    target.addAttribute("name",key);
+    target.addAttribute("value",(String)getParameter(key));
+    target.endTag("embeddedparam");
+  }
+}

@@ -1,0 +1,21 @@
+{
+  if (initialized)   return;
+  initialized=true;
+  String desc=getDescriptionXHTML();
+  String title=getTitle();
+  if (desc != null && title != null) {
+    GridLayout gl=new GridLayout(2,1);
+    if (getImage() != null)     gl.addComponent(new Embedded("",new ClassResource(getImage(),this.getApplication())));
+    gl.addComponent(new Label("<h2>" + title + "</h2>"+ desc,Label.CONTENT_XHTML));
+    ts.addTab(gl,"Description",null);
+  }
+  Component demo=getDemoComponent();
+  if (demo != null)   ts.addTab(demo,"Demo",null);
+  String example=getExampleSrc();
+  if (example != null) {
+    OrderedLayout l=new OrderedLayout();
+    l.addComponent(new Label("<h2>" + getTitle() + " example</h2>",Label.CONTENT_XHTML));
+    l.addComponent(new Label(example,Label.CONTENT_PREFORMATTED));
+    ts.addTab(l,"Code Sample",null);
+  }
+}

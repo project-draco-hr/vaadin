@@ -1,0 +1,24 @@
+{
+  Collection tmpReqs=new LinkedList();
+  Requirement req=null;
+  for (int i=0; i < atts.getLength(); i++) {
+    req=null;
+    if (ATTR_JAVASCRIPT.equals(atts.getQName(i))) {
+      req=new JavaScriptRequirement(WebBrowser.parseJavaScriptVersion(atts.getValue(i)));
+    }
+ else     if (ATTR_AGENT.equals(atts.getQName(i))) {
+      req=new AgentRequirement(atts.getValue(i));
+    }
+ else     if (ATTR_MARKUP.equals(atts.getQName(i))) {
+      req=new MarkupLanguageRequirement(WebBrowser.parseHTMLVersion(atts.getValue(i)));
+    }
+    if (req != null)     tmpReqs.add(req);
+  }
+  if (tmpReqs.size() > 1) {
+    req=new AndRequirement(tmpReqs);
+  }
+  if (applyNot) {
+    req=new NotRequirement(req);
+  }
+  requirements.addRequirement(req);
+}

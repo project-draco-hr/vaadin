@@ -1,0 +1,80 @@
+{
+  if (this.getFocusableId() > 0) {
+    target.addAttribute("focusid",this.getFocusableId());
+  }
+  if (this.getTabIndex() > 0)   target.addAttribute("tabindex",this.getTabIndex());
+  if (isSelectable())   target.addAttribute("selectmode",(isMultiSelect() ? "multi" : "single"));
+ else   target.addAttribute("selectmode","none");
+  if (isNewItemsAllowed())   target.addAttribute("allownewitem",true);
+  Set actionSet=new LinkedHashSet();
+  String[] selectedKeys;
+  if (isMultiSelect())   selectedKeys=new String[((Set)getValue()).size()];
+ else   selectedKeys=new String[(getValue() == null ? 0 : 1)];
+  int keyIndex=0;
+  LinkedList expandedKeys=new LinkedList();
+  Stack iteratorStack=new Stack();
+  Collection ids=rootItemIds();
+  if (ids != null)   iteratorStack.push(ids.iterator());
+  while (!iteratorStack.isEmpty()) {
+    Iterator i=(Iterator)iteratorStack.peek();
+    if (!i.hasNext()) {
+      iteratorStack.pop();
+      if (!iteratorStack.isEmpty())       target.endTag("node");
+    }
+ else {
+      Object itemId=i.next();
+      boolean isNode=areChildrenAllowed(itemId);
+      if (isNode)       target.startTag("node");
+ else       target.startTag("leaf");
+      target.addAttribute("caption",getItemCaption(itemId));
+      Resource icon=getItemIcon(itemId);
+      if (icon != null)       target.addAttribute("icon",getItemIcon(itemId));
+      String key=itemIdMapper.key(itemId);
+      target.addAttribute("key",key);
+      if (isSelected(itemId)) {
+        target.addAttribute("selected",true);
+        selectedKeys[keyIndex++]=key;
+      }
+      if (areChildrenAllowed(itemId) && isExpanded(itemId)) {
+        target.addAttribute("expanded",true);
+        expandedKeys.add(key);
+      }
+      if (actionHandlers != null) {
+        target.startTag("al");
+        for (Iterator ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
+          Action[] aa=((Action.Handler)ahi.next()).getActions(itemId,this);
+          if (aa != null)           for (int ai=0; ai < aa.length; ai++) {
+            String akey=actionMapper.key(aa[ai]);
+            actionSet.add(aa[ai]);
+            target.addSection("ak",akey);
+          }
+        }
+        target.endTag("al");
+      }
+      if (isExpanded(itemId) && hasChildren(itemId) && areChildrenAllowed(itemId)) {
+        iteratorStack.push(getChildren(itemId).iterator());
+      }
+ else {
+        if (isNode)         target.endTag("node");
+ else         target.endTag("leaf");
+      }
+    }
+  }
+  if (!actionSet.isEmpty()) {
+    target.startTag("actions");
+    target.addVariable(this,"action","");
+    for (Iterator i=actionSet.iterator(); i.hasNext(); ) {
+      Action a=(Action)i.next();
+      target.startTag("action");
+      if (a.getCaption() != null)       target.addAttribute("caption",a.getCaption());
+      if (a.getIcon() != null)       target.addAttribute("icon",a.getIcon());
+      target.addAttribute("key",actionMapper.key(a));
+      target.endTag("action");
+    }
+    target.endTag("actions");
+  }
+  target.addVariable(this,"selected",selectedKeys);
+  target.addVariable(this,"expand",new String[]{});
+  target.addVariable(this,"collapse",new String[]{});
+  target.addVariable(this,"newitem",new String[]{});
+}

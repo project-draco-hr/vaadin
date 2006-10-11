@@ -1,0 +1,21 @@
+{
+synchronized (rawUIDL) {
+    String currentUIDL=(String)rawUIDL.get(tabs.getSelectedTab());
+    if (currentUIDL == null)     return;
+    DateFormat df=new SimpleDateFormat("yyyyMMdd-HHmmss");
+    File file=new File("/uidl-debug" + df.format(new Date(System.currentTimeMillis())) + ".xml");
+    try {
+      BufferedWriter out=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
+      out.write(currentUIDL);
+      out.close();
+      open(new FileResource(file,this.getApplication()));
+      Log.info("UIDL written to file " + file);
+    }
+ catch (    FileNotFoundException e) {
+      Log.info("Failed to write debug to " + file + ": "+ e);
+    }
+catch (    IOException e) {
+      Log.info("Failed to write debug to " + file + ": "+ e);
+    }
+  }
+}

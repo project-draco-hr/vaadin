@@ -1,0 +1,41 @@
+{
+  this.file=file;
+  this.jar=new JarFile(file);
+  this.theme=null;
+  this.path=path;
+  if (this.path.length() > 0 && !this.path.endsWith("/")) {
+    this.path=this.path + "/";
+  }
+  this.name=file.getName();
+  if (this.name.toLowerCase().endsWith(".jar")) {
+    this.name=this.name.substring(0,this.name.length() - 4);
+  }
+  this.webAdapterServlet=webAdapterServlet;
+  JarEntry entry=jar.getJarEntry(this.path + Theme.DESCRIPTIONFILE);
+  if (entry != null) {
+    try {
+      this.theme=new Theme(jar.getInputStream(entry));
+    }
+ catch (    Exception e) {
+      throw new ThemeException("JarThemeSource: Failed to load '" + path + "': ",e);
+    }
+    if (webAdapterServlet.isDebugMode()) {
+      Log.debug("Added JarThemeSource: " + this.file + ":"+ this.path);
+    }
+  }
+ else {
+    for (Enumeration entries=jar.entries(); entries.hasMoreElements(); ) {
+      JarEntry e=(JarEntry)entries.nextElement();
+      if (e.getName().startsWith(this.path)) {
+        if (e.getName().endsWith("/") && e.getName().indexOf('/',this.path.length()) == (e.getName().length() - 1)) {
+          this.subdirs.add(new JarThemeSource(this.file,this.webAdapterServlet,e.getName()));
+        }
+      }
+    }
+    if (this.subdirs.isEmpty()) {
+      if (webAdapterServlet.isDebugMode()) {
+        Log.info("JarThemeSource: Ignoring empty JAR path: " + this.file + " path: "+ this.path);
+      }
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  String strContentType=null;
+  String strName=null;
+  String strFilename=null;
+  String strLine=null;
+  int read=-1;
+  read=readLine(in,blockOfBytes);
+  strLine=read > 0 ? new String(blockOfBytes,0,read,charEncoding) : null;
+  if (strLine == null || strLine.indexOf(this.strBoundary) == -1)   return;
+  while (true) {
+    read=readLine(in,blockOfBytes);
+    if (read <= 0)     break;
+ else {
+      strLine=new String(blockOfBytes,0,read,charEncoding);
+      strName=trimQuotes(getValue("name",strLine));
+      strFilename=trimQuotes(getValue("filename",strLine));
+      if (strFilename != null) {
+        if (strFilename.length() > 0) {
+          read=readLine(in,blockOfBytes);
+          strLine=read > 0 ? new String(blockOfBytes,0,read,charEncoding) : null;
+          strContentType="application/octet-stream";
+          if (strLine != null && strLine.length() > "Content-Type: ".length())           strContentType=strLine.substring("Content-Type: ".length());
+        }
+ else {
+          read=readLine(in,blockOfBytes);
+          strLine=read > 0 ? new String(blockOfBytes,0,read,charEncoding) : null;
+          if (strLine != null && strLine.startsWith("Content-Type:"))           readLine(in,blockOfBytes);
+        }
+      }
+      readLine(in,blockOfBytes);
+      if (strFilename == null) {
+        String param=readParameter(in);
+        addParameter(strName,param);
+      }
+ else {
+        if (strFilename.length() > 0) {
+          long filesize=-1;
+          byte[] contentsOfFile=null;
+          strFilename=getBasename(strFilename);
+          if (loadIntoMemory) {
+            contentsOfFile=readFile(in);
+            if (contentsOfFile != null)             filesize=contentsOfFile.length;
+          }
+ else           filesize=readAndWriteFile(in,strFilename);
+          if (filesize > 0)           addFileParameter(strName,new Object[]{strFilename,strContentType,new Long(filesize),contentsOfFile});
+ else           addFileParameter(strName,new Object[]{strFilename,null,new Long(0),null});
+        }
+ else {
+          addFileParameter(strName,new Object[]{null,null,null,null});
+          readLine(in,blockOfBytes);
+        }
+      }
+    }
+  }
+}

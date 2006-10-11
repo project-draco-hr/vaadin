@@ -1,0 +1,42 @@
+{
+  int width=state.length;
+  int height=state[0].length;
+  if (x < 0 || y < 0 || x >= width || y >= width)   return;
+  int color=state[x][y];
+  if (color == EMPTY || (lastx >= 0 && lasty >= 0 && color == state[lastx][lasty]))   return;
+  int checked[][]=new int[state.length][state[0].length];
+  checked[x][y]=color;
+  while (true) {
+    boolean stillGrowing=false;
+    for (int i=0; i < width; i++)     for (int j=0; j < height; j++)     for (int o=0; o < 4; o++)     if (checked[i][j] == EMPTY) {
+      int nx=i;
+      int ny=j;
+switch (o) {
+case 0:
+        nx++;
+      break;
+case 1:
+    nx--;
+  break;
+case 2:
+ny++;
+break;
+case 3:
+ny--;
+break;
+}
+if (nx >= 0 && ny >= 0 && nx < width && ny < height && checked[nx][ny] == color) {
+checked[i][j]=state[i][j];
+if (checked[i][j] == color) stillGrowing=true;
+ else if (checked[i][j] == EMPTY) return;
+}
+}
+if (!stillGrowing) {
+for (int i=0; i < width; i++) for (int j=0; j < height; j++) if (checked[i][j] == color) {
+state[i][j]=EMPTY;
+captured[color]++;
+}
+return;
+}
+}
+}

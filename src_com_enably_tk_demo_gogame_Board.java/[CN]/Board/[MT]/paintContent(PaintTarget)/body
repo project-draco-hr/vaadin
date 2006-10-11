@@ -1,0 +1,23 @@
+{
+  target.addAttribute("xmlns","GO Sample Namespace");
+  target.addAttribute("whitename",game.getWhitePlayer());
+  target.addAttribute("blackname",game.getBlackPlayer());
+  target.addAttribute("moves",game.getMoves());
+  target.addAttribute("whitescaptured",game.getCapturedWhiteStones());
+  target.addAttribute("blackscaptured",game.getCapturedBlackStones());
+  int[][] state=game.getState();
+  for (int j=0; j < state.length; j++) {
+    target.startTag("row");
+    for (int i=0; i < state.length; i++) {
+      target.startTag("col");
+      if (state[i][j] == Game.EMPTY)       target.addAttribute("move","" + i + ","+ j);
+ else {
+        if (i == lastX && j == lastY)         target.addAttribute("stone",state[i][j] == Game.BLACK ? "black-last" : "white-last");
+ else         target.addAttribute("stone",state[i][j] == Game.BLACK ? "black" : "white");
+      }
+      target.endTag("col");
+    }
+    target.endTag("row");
+  }
+  target.addVariable(this,"move","");
+}

@@ -1,0 +1,22 @@
+{
+  if (chatWriter != null)   chatWriter.close();
+  PipedOutputStream chatStream=new PipedOutputStream();
+  chatWriter=new PrintWriter(chatStream);
+  InputStream is=null;
+  try {
+    is=new PipedInputStream(chatStream);
+  }
+ catch (  IOException ignored) {
+    chatWriter=null;
+    return null;
+  }
+  ;
+  printToStream("<html><head><title>Discussion " + (new Date()) + "</title>"+ "</head><body>\n");
+  Object[] msgs;
+synchronized (lastMessages) {
+    msgs=lastMessages.toArray();
+  }
+  for (int i=0; i < msgs.length; i++)   printToStream(msgs[i].toString());
+  listUsers();
+  return is;
+}

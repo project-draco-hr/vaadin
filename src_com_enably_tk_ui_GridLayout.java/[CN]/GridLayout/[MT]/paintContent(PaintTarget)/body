@@ -1,0 +1,89 @@
+{
+  target.addAttribute("h",height);
+  target.addAttribute("w",width);
+  Iterator areaiterator=areas.iterator();
+  Area area=areaiterator.hasNext() ? (Area)areaiterator.next() : null;
+  HashMap cellUsed=new HashMap();
+  int emptyCells=0;
+  for (int cury=0; cury < height; cury++) {
+    target.startTag("gr");
+    for (int curx=0; curx < width; curx++) {
+      if (area != null && (area.y1 == cury) && (area.x1 == curx)) {
+        if (emptyCells > 0) {
+          target.startTag("gc");
+          target.addAttribute("x",curx - emptyCells);
+          target.addAttribute("y",cury);
+          if (emptyCells > 1) {
+            target.addAttribute("w",emptyCells);
+          }
+          target.endTag("gc");
+          emptyCells=0;
+        }
+        int cols=(area.x2 - area.x1) + 1;
+        int rows=(area.y2 - area.y1) + 1;
+        target.startTag("gc");
+        target.addAttribute("x",curx);
+        target.addAttribute("y",cury);
+        if (cols > 1) {
+          target.addAttribute("w",cols);
+        }
+        if (rows > 1) {
+          target.addAttribute("h",rows);
+        }
+        area.getComponent().paint(target);
+        target.endTag("gc");
+        if (areaiterator.hasNext()) {
+          area=(Area)areaiterator.next();
+        }
+ else {
+          area=null;
+        }
+        if (rows > 1) {
+          int spannedx=curx;
+          for (int j=1; j <= cols; j++) {
+            cellUsed.put(new Integer(spannedx),new Integer(cury + rows - 1));
+            spannedx++;
+          }
+        }
+        if (cols > 1) {
+          curx+=cols - 1;
+        }
+      }
+ else {
+        if (cellUsed.containsKey(new Integer(curx))) {
+          int rowspanDepth=((Integer)cellUsed.get(new Integer(curx))).intValue();
+          if (rowspanDepth >= cury) {
+            if (emptyCells > 0) {
+              target.startTag("gc");
+              target.addAttribute("x",curx - emptyCells);
+              target.addAttribute("y",cury);
+              if (emptyCells > 1) {
+                target.addAttribute("w",emptyCells);
+              }
+              target.endTag("gc");
+              emptyCells=0;
+            }
+          }
+ else {
+            emptyCells++;
+            cellUsed.remove(new Integer(curx));
+          }
+        }
+ else {
+          emptyCells++;
+        }
+      }
+    }
+    if (emptyCells > 0) {
+      target.startTag("gc");
+      target.addAttribute("x",width - emptyCells);
+      target.addAttribute("y",cury);
+      if (emptyCells > 1) {
+        target.addAttribute("w",emptyCells);
+      }
+      target.endTag("gc");
+      emptyCells=0;
+    }
+    target.endTag("gr");
+  }
+}

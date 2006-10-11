@@ -1,0 +1,27 @@
+{
+  if ((newValue == null && value != null) || (newValue != null && !newValue.equals(value))) {
+    if (isReadOnly())     throw new Property.ReadOnlyException();
+    if (!isInvalidAllowed()) {
+      Collection v=getValidators();
+      if (v != null)       for (Iterator i=v.iterator(); i.hasNext(); )       ((Validator)i.next()).validate(newValue);
+    }
+    setInternalValue(newValue);
+    modified=dataSource != null;
+    if (isWriteThrough() && dataSource != null && (isInvalidCommitted() || isValid())) {
+      try {
+        dataSource.setValue(newValue);
+        modified=false;
+      }
+ catch (      Throwable e) {
+        currentBufferedSourceException=new Buffered.SourceException(this,e);
+        requestRepaint();
+        throw currentBufferedSourceException;
+      }
+    }
+    if (currentBufferedSourceException != null) {
+      currentBufferedSourceException=null;
+      requestRepaint();
+    }
+    fireValueChange();
+  }
+}

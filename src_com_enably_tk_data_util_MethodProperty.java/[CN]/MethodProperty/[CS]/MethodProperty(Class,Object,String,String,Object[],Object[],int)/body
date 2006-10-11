@@ -1,0 +1,83 @@
+{
+  if (setMethodName != null && setArgs == null)   throw new IndexOutOfBoundsException("The setArgs can not be null");
+  if (setMethodName != null && (setArgumentIndex < 0 || setArgumentIndex >= setArgs.length))   throw new IndexOutOfBoundsException("The setArgumentIndex must be >= 0 and < setArgs.length");
+  this.type=type;
+  Method[] m=instance.getClass().getMethods();
+  boolean found=false;
+  for (int i=0; i < m.length; i++) {
+    if (!m[i].getName().equals(getMethodName)) {
+      continue;
+    }
+    if (!type.equals(m[i].getReturnType()))     continue;
+    Class[] c=m[i].getParameterTypes();
+    if (c.length != getArgs.length) {
+      continue;
+    }
+    int j=0;
+    while (j < c.length) {
+      if (getArgs[j] != null && !c[j].isAssignableFrom(getArgs[j].getClass())) {
+        break;
+      }
+      j++;
+    }
+    if (j == c.length) {
+      if (found == true) {
+        throw new MethodProperty.MethodException("Could not uniquely identify " + getMethodName + "-method");
+      }
+ else {
+        found=true;
+        getMethod=m[i];
+      }
+    }
+  }
+  if (found != true) {
+    throw new MethodProperty.MethodException("Could not find " + getMethodName + "-method");
+  }
+  if (setMethodName != null) {
+    found=false;
+    for (int i=0; i < m.length; i++) {
+      if (!m[i].getName().equals(setMethodName)) {
+        continue;
+      }
+      Class[] c=m[i].getParameterTypes();
+      if (c.length != setArgs.length) {
+        continue;
+      }
+      int j=0;
+      while (j < c.length) {
+        if (setArgs[j] != null && !c[j].isAssignableFrom(setArgs[j].getClass())) {
+          break;
+        }
+ else         if (j == setArgumentIndex && !c[j].equals(type)) {
+          break;
+        }
+        j++;
+      }
+      if (j == c.length) {
+        if (found == true) {
+          throw new MethodProperty.MethodException("Could not identify unique " + setMethodName + "-method");
+        }
+ else {
+          found=true;
+          setMethod=m[i];
+        }
+      }
+    }
+    if (found != true) {
+      throw new MethodProperty.MethodException("Could not identify " + setMethodName + "-method");
+    }
+  }
+  if (type.isPrimitive()) {
+    if (type.equals(Boolean.TYPE))     type=Boolean.class;
+ else     if (type.equals(Integer.TYPE))     type=Integer.class;
+ else     if (type.equals(Float.TYPE))     type=Float.class;
+ else     if (type.equals(Double.TYPE))     type=Double.class;
+ else     if (type.equals(Byte.TYPE))     type=Byte.class;
+ else     if (type.equals(Character.TYPE))     type=Character.class;
+ else     if (type.equals(Short.TYPE))     type=Short.class;
+ else     if (type.equals(Long.TYPE))     type=Long.class;
+  }
+  setArguments(getArgs,setArgs,setArgumentIndex);
+  this.readOnly=(setMethod == null);
+  this.instance=instance;
+}

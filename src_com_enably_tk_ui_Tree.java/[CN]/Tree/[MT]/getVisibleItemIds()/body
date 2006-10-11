@@ -1,0 +1,20 @@
+{
+  LinkedList visible=new LinkedList();
+  Stack iteratorStack=new Stack();
+  Collection ids=rootItemIds();
+  if (ids != null)   iteratorStack.push(ids.iterator());
+  while (!iteratorStack.isEmpty()) {
+    Iterator i=(Iterator)iteratorStack.peek();
+    if (!i.hasNext()) {
+      iteratorStack.pop();
+    }
+ else {
+      Object itemId=i.next();
+      visible.add(itemId);
+      if (isExpanded(itemId) && hasChildren(itemId)) {
+        iteratorStack.push(getChildren(itemId).iterator());
+      }
+    }
+  }
+  return visible;
+}

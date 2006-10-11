@@ -1,0 +1,24 @@
+{
+  long modTime=0;
+  if (this.theme != null) {
+    modTime=new File(this.path,Theme.DESCRIPTIONFILE).lastModified();
+    if (this.path.lastModified() > modTime) {
+      modTime=this.path.lastModified();
+    }
+    Collection fileNames=theme.getFileNames();
+    for (Iterator i=fileNames.iterator(); i.hasNext(); ) {
+      File f=new File(this.path,(String)i.next());
+      if (f.lastModified() > modTime) {
+        modTime=f.lastModified();
+      }
+    }
+  }
+ else {
+    for (Iterator i=this.subdirs.iterator(); i.hasNext(); ) {
+      ThemeSource source=(ThemeSource)i.next();
+      long t=source.getModificationTime();
+      if (t > modTime)       modTime=t;
+    }
+  }
+  return modTime;
+}

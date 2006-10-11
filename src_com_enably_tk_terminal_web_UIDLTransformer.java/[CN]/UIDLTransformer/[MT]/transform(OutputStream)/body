@@ -1,0 +1,16 @@
+{
+  StreamResult result=new StreamResult(new BufferedOutputStream(outputStream));
+  try {
+    InputSource uidl=new InputSource(new StringReader(paintTarget.getUIDL()));
+    XMLReader reader=org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
+    reader.setErrorHandler(this.errorHandler);
+    SAXSource source=new SAXSource(reader,uidl);
+    uidlTransformer.transform(source,result);
+  }
+ catch (  Exception e) {
+    throw new UIDLTransformerException(e.toString(),e,errorHandler.getUIDLErrorReport());
+  }
+  if (errorHandler.hasFatalErrors()) {
+    throw new UIDLTransformerException("UIDL Transform failed",errorHandler.getFirstFatalError(),errorHandler.getUIDLErrorReport() + "<br /><br />" + errorHandler.getXSLErrorReport(themeSource,transformerType));
+  }
+}

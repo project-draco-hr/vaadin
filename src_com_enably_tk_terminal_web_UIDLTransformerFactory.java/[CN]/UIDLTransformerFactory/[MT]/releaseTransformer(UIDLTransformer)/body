@@ -1,0 +1,20 @@
+{
+  try {
+    transformer.reset();
+    TransformerList list=(TransformerList)this.transformerSpool.get(transformer.getTransformerType());
+    if (list != null) {
+      list.add(transformer);
+      if (webAdapterServlet.isDebugMode()) {
+        Log.info("Released transformer: " + transformer.getTransformerType() + "(In use: "+ transformersInUse+ ",Spooled: "+ list.size()+ ")");
+      }
+      list.lastUsed=System.currentTimeMillis();
+    }
+ else {
+      Log.info("Tried to release non-existing transformer. Ignoring." + " (Type:" + transformer.getTransformerType() + ")");
+    }
+  }
+  finally {
+    if (transformersInUse > 0)     transformersInUse--;
+    notifyAll();
+  }
+}

@@ -1,0 +1,26 @@
+{
+  super();
+  setCaption("Properties");
+  addComponent(formsLayout);
+  this.objectToConfigure=objectToConfigure;
+  config=new BeanItem(objectToConfigure);
+  OrderedLayout buttons=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+  buttons.addComponent(setButton);
+  buttons.addComponent(discardButton);
+  addComponent(buttons);
+  addBasicComponentProperties();
+  if (objectToConfigure instanceof Select)   addSelectProperties();
+  if (objectToConfigure instanceof AbstractField && !(objectToConfigure instanceof Table || objectToConfigure instanceof Tree))   addFieldProperties();
+  if ((objectToConfigure instanceof AbstractComponentContainer) && !(objectToConfigure instanceof FrameWindow))   addComponentContainerProperties();
+  addComponent(showAllProperties);
+  showAllProperties.setSwitchMode(true);
+  allProperties.setVisible(false);
+  allProperties.addContainerProperty("Name",String.class,"");
+  allProperties.addContainerProperty("Type",String.class,"");
+  allProperties.addContainerProperty("R/W",String.class,"");
+  allProperties.addContainerProperty("Demo",String.class,"");
+  allProperties.setColumnAlignments(new String[]{Table.ALIGN_LEFT,Table.ALIGN_LEFT,Table.ALIGN_CENTER,Table.ALIGN_CENTER});
+  allProperties.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_ID);
+  updatePropertyList();
+  addComponent(allProperties);
+}

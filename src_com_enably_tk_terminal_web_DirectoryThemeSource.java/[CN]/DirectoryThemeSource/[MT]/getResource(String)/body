@@ -1,0 +1,23 @@
+{
+  if (this.theme != null) {
+    try {
+      return new FileInputStream(new File(this.path,resourceId));
+    }
+ catch (    FileNotFoundException e) {
+      throw new ThemeSource.ThemeException("Resource " + resourceId + " not found.");
+    }
+  }
+ else {
+    int delim=resourceId.indexOf("/");
+    String subResourceName="";
+    if (delim < resourceId.length() - 1)     subResourceName=resourceId.substring(delim + 1);
+    String subSourceName=resourceId.substring(0,delim);
+    for (Iterator i=this.subdirs.iterator(); i.hasNext(); ) {
+      ThemeSource source=(ThemeSource)i.next();
+      if (source.getName().equals(subSourceName)) {
+        return source.getResource(subResourceName);
+      }
+    }
+  }
+  throw new ThemeSource.ThemeException("Resource " + resourceId + " not found.");
+}

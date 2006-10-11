@@ -1,0 +1,77 @@
+{
+  if (pageBuffer != null && isPageBufferingEnabled())   return pageBuffer;
+  if (listenedProperties == null)   listenedProperties=new LinkedList();
+ else   for (Iterator i=listenedProperties.iterator(); i.hasNext(); ) {
+    ((Property.ValueChangeNotifier)i.next()).removeListener(this);
+  }
+  if (visibleComponents == null)   visibleComponents=new LinkedList();
+ else   for (Iterator i=visibleComponents.iterator(); i.hasNext(); ) {
+    ((Component)i.next()).setParent(null);
+  }
+  Object[] colids=getVisibleColumns();
+  int cols=colids.length;
+  int pagelen=getPageLength();
+  int firstIndex=getCurrentPageFirstItemIndex();
+  int rows=size();
+  if (rows > 0 && firstIndex >= 0)   rows-=firstIndex;
+  if (pagelen > 0 && pagelen < rows)   rows=pagelen;
+  Object[][] cells=new Object[cols + CELL_FIRSTCOL][rows];
+  if (rows == 0)   return cells;
+  Object id=getCurrentPageFirstItemId();
+  int headmode=getRowHeaderMode();
+  boolean[] iscomponent=new boolean[cols];
+  for (int i=0; i < cols; i++)   iscomponent[i]=Component.class.isAssignableFrom(getType(colids[i]));
+  int filledRows=0;
+  for (int i=0; i < rows && id != null; i++) {
+    cells[CELL_ITEMID][i]=id;
+    cells[CELL_KEY][i]=itemIdMapper.key(id);
+    if (headmode != ROW_HEADER_MODE_HIDDEN) {
+switch (headmode) {
+case ROW_HEADER_MODE_INDEX:
+        cells[CELL_HEADER][i]=String.valueOf(i + firstIndex + 1);
+      break;
+default :
+    cells[CELL_HEADER][i]=getItemCaption(id);
+}
+cells[CELL_ICON][i]=getItemIcon(id);
+}
+if (cols > 0) {
+for (int j=0; j < cols; j++) {
+  Object value=null;
+  Property p=getContainerProperty(id,colids[j]);
+  if (p != null) {
+    if (p instanceof Property.ValueChangeNotifier) {
+      ((Property.ValueChangeNotifier)p).addListener(this);
+      listenedProperties.add(p);
+    }
+    if (iscomponent[j]) {
+      value=p.getValue();
+    }
+ else     if (p != null) {
+      value=getPropertyValue(id,colids[j],p);
+    }
+ else {
+      value=getPropertyValue(id,colids[j],null);
+    }
+  }
+ else {
+    value="";
+  }
+  if (value instanceof Component) {
+    ((Component)value).setParent(this);
+    visibleComponents.add((Component)value);
+  }
+  cells[CELL_FIRSTCOL + j][i]=value;
+}
+}
+id=((Container.Ordered)items).nextItemId(id);
+filledRows++;
+}
+if (filledRows != cells[0].length) {
+Object[][] temp=new Object[cells.length][filledRows];
+for (int i=0; i < cells.length; i++) for (int j=0; j < filledRows; j++) temp[i][j]=cells[i][j];
+cells=temp;
+}
+if (isPageBufferingEnabled()) pageBuffer=cells;
+return cells;
+}

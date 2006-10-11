@@ -1,0 +1,25 @@
+{
+  if (variables.containsKey("collapse")) {
+    String[] keys=(String[])variables.get("collapse");
+    for (int i=0; i < keys.length; i++) {
+      Object id=itemIdMapper.get(keys[i]);
+      if (id != null)       collapseItem(id);
+    }
+  }
+  if (variables.containsKey("expand")) {
+    String[] keys=(String[])variables.get("expand");
+    for (int i=0; i < keys.length; i++) {
+      Object id=itemIdMapper.get(keys[i]);
+      if (id != null)       expandItem(id);
+    }
+  }
+  super.changeVariables(source,variables);
+  if (variables.containsKey("action")) {
+    StringTokenizer st=new StringTokenizer((String)variables.get("action"),",");
+    if (st.countTokens() == 2) {
+      Object itemId=itemIdMapper.get(st.nextToken());
+      Action action=(Action)actionMapper.get(st.nextToken());
+      if (action != null && containsId(itemId) && actionHandlers != null)       for (Iterator i=actionHandlers.iterator(); i.hasNext(); )       ((Action.Handler)i.next()).handleAction(action,this,itemId);
+    }
+  }
+}

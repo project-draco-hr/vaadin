@@ -1,0 +1,17 @@
+{
+  this.debug=debug;
+  if (strContentTypeText != null && strContentTypeText.startsWith("multipart/form-data") && strContentTypeText.indexOf("boundary=") != -1)   strBoundary=strContentTypeText.substring(strContentTypeText.indexOf("boundary=") + "boundary=".length()).trim();
+ else {
+    debug("ContentType = " + strContentTypeText);
+    throw new IllegalArgumentException("Invalid Content Type.");
+  }
+  this.intContentLength=intContentLength;
+  if (intContentLength > intMaxReadBytes)   throw new IOException("Content Length Error (" + intContentLength + " > "+ intMaxReadBytes+ ")");
+  htParameters=new Hashtable();
+  htFiles=new Hashtable();
+  blockOfBytes=new byte[READ_LINE_BLOCK];
+  parse(new BufferedInputStream(in));
+  this.blockOfBytes=null;
+  this.debug=null;
+  this.strBoundary=null;
+}

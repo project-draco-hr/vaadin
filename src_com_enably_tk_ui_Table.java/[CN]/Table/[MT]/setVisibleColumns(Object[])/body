@@ -1,0 +1,22 @@
+{
+  if (visibleColumns == null)   throw new NullPointerException("Can not set visible columns to null value");
+  Collection properties=getContainerPropertyIds();
+  for (int i=0; i < visibleColumns.length; i++) {
+    if (visibleColumns[i] == null)     throw new NullPointerException("Properties must be non-nulls");
+ else     if (!properties.contains(visibleColumns[i]))     throw new IllegalArgumentException("Properties must exist in the Container, missing property: " + visibleColumns[i]);
+  }
+  LinkedList newVC=new LinkedList();
+  for (int i=0; i < visibleColumns.length; i++) {
+    newVC.add(visibleColumns[i]);
+  }
+  if (this.visibleColumns != null)   for (Iterator i=this.visibleColumns.iterator(); i.hasNext(); ) {
+    Object col=i.next();
+    if (!newVC.contains(col)) {
+      setColumnHeader(col,null);
+      setColumnAlignment(col,null);
+      setColumnIcon(col,null);
+    }
+  }
+  this.visibleColumns=newVC;
+  refreshCurrentPage();
+}

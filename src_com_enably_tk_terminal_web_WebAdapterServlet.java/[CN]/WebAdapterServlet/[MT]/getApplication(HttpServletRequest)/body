@@ -1,0 +1,19 @@
+{
+  HttpSession session=request.getSession(false);
+  if (session == null)   return null;
+  LinkedList applications=(LinkedList)session.getAttribute(SESSION_ATTR_APPS);
+  if (applications == null)   return null;
+  Application application=null;
+  for (Iterator i=applications.iterator(); i.hasNext() && application == null; ) {
+    Application a=(Application)i.next();
+    String aPath=a.getURL().getPath();
+    String servletPath=request.getContextPath() + request.getServletPath();
+    if (servletPath.length() < aPath.length())     servletPath+="/";
+    if (servletPath.equals(aPath))     application=a;
+  }
+  if (application != null && !application.isRunning()) {
+    applications.remove(application);
+    application=null;
+  }
+  return application;
+}

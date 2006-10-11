@@ -1,0 +1,38 @@
+{
+  if (newIndex < 0)   newIndex=0;
+  if (newIndex >= size())   newIndex=size() - 1;
+  if (items instanceof Container.Indexed) {
+    try {
+      currentPageFirstItemId=((Container.Indexed)items).getIdByIndex(newIndex);
+    }
+ catch (    IndexOutOfBoundsException e) {
+      currentPageFirstItemId=null;
+    }
+    this.currentPageFirstItemIndex=newIndex;
+  }
+ else {
+    this.currentPageFirstItemId=((Container.Ordered)items).firstItemId();
+    while (this.currentPageFirstItemIndex < newIndex && !((Container.Ordered)items).isLastId(currentPageFirstItemId)) {
+      this.currentPageFirstItemIndex++;
+      currentPageFirstItemId=((Container.Ordered)items).nextItemId(currentPageFirstItemId);
+    }
+    if (((Container.Ordered)items).isLastId(currentPageFirstItemId)) {
+      this.currentPageFirstItemIndex=size() - 1;
+    }
+    while (this.currentPageFirstItemIndex > newIndex && !((Container.Ordered)items).isFirstId(currentPageFirstItemId)) {
+      this.currentPageFirstItemIndex--;
+      currentPageFirstItemId=((Container.Ordered)items).prevItemId(currentPageFirstItemId);
+    }
+    if (((Container.Ordered)items).isFirstId(currentPageFirstItemId)) {
+      this.currentPageFirstItemIndex=0;
+    }
+    while (this.currentPageFirstItemIndex < newIndex && !((Container.Ordered)items).isLastId(currentPageFirstItemId)) {
+      this.currentPageFirstItemIndex++;
+      currentPageFirstItemId=((Container.Ordered)items).nextItemId(currentPageFirstItemId);
+    }
+    if (((Container.Ordered)items).isLastId(currentPageFirstItemId)) {
+      newIndex=this.currentPageFirstItemIndex=size() - 1;
+    }
+  }
+  refreshCurrentPage();
+}

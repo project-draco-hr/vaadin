@@ -1,0 +1,31 @@
+{
+  int oldLocation=-1;
+  int newLocation=-1;
+  int location=0;
+  for (Iterator i=components.iterator(); i.hasNext(); ) {
+    Component component=(Component)i.next();
+    if (component == oldComponent)     oldLocation=location;
+    if (component == newComponent)     newLocation=location;
+    location++;
+  }
+  if (oldLocation == -1)   addComponent(newComponent);
+ else   if (newLocation == -1) {
+    removeComponent(oldComponent);
+    addComponent(newComponent,oldLocation);
+  }
+ else {
+    if (oldLocation > newLocation) {
+      components.remove(oldComponent);
+      components.add(newLocation,oldComponent);
+      components.remove(newComponent);
+      components.add(oldLocation,newComponent);
+    }
+ else {
+      components.remove(newComponent);
+      components.add(oldLocation,newComponent);
+      components.remove(oldComponent);
+      components.add(newLocation,oldComponent);
+    }
+    requestRepaint();
+  }
+}

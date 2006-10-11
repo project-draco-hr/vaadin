@@ -1,0 +1,34 @@
+{
+  Collection xslFiles=new LinkedList();
+  if (this.theme != null) {
+    if (webAdapterServlet.isDebugMode()) {
+      Log.info("DirectoryThemeSource: Loading XSL from: " + theme);
+    }
+    File description=new File(path,Theme.DESCRIPTIONFILE);
+    if (description.exists()) {
+      try {
+        this.theme=new Theme(description);
+      }
+ catch (      IOException e) {
+        throw new ThemeException("Failed to reload theme description" + e);
+      }
+    }
+    Collection fileNames=theme.getFileNames(type);
+    for (Iterator i=fileNames.iterator(); i.hasNext(); ) {
+      File f=new File(this.path,(String)i.next());
+      try {
+        xslFiles.add(new XSLStream(f.getName(),new FileInputStream(f)));
+      }
+ catch (      FileNotFoundException e) {
+        throw new ThemeException("XSL File not found: " + f);
+      }
+    }
+  }
+ else {
+    for (Iterator i=this.subdirs.iterator(); i.hasNext(); ) {
+      ThemeSource source=(ThemeSource)i.next();
+      if (source.getThemes().contains(theme))       xslFiles.addAll(source.getXSLStreams(theme,type));
+    }
+  }
+  return xslFiles;
+}

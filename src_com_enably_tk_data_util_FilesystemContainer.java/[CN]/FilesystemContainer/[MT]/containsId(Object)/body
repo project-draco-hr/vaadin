@@ -1,0 +1,13 @@
+{
+  if (!(itemId instanceof File))   return false;
+  boolean val=false;
+  for (int i=0; i < roots.length; i++) {
+    try {
+      val|=((File)itemId).getCanonicalPath().startsWith(roots[i].getCanonicalPath());
+    }
+ catch (    IOException e) {
+    }
+  }
+  if (val && this.filter != null)   val&=this.filter.accept(((File)itemId).getParentFile(),((File)itemId).getName());
+  return val;
+}

@@ -1,0 +1,28 @@
+{
+  for (int i=0; i < fileList.length; i++) {
+    String path=this.getServletContext().getRealPath(fileList[i]);
+    File file=null;
+    if (path != null && (file=new File(path)).exists()) {
+      return file;
+    }
+  }
+  for (int i=0; i < fileList.length; i++) {
+    InputStream defaultTheme=this.getServletContext().getResourceAsStream(fileList[i]);
+    if (defaultTheme != null) {
+      return createTemporaryFile(defaultTheme,".jar");
+    }
+  }
+  String path=this.getServletContext().getRealPath("/WEB-INF/lib");
+  if (path != null) {
+    File lib=new File(path);
+    String[] files=lib.list();
+    if (files != null) {
+      for (int i=0; i < files.length; i++) {
+        if (files[i].toLowerCase().endsWith(".jar") && files[i].startsWith(DEFAULT_THEME_JAR_PREFIX)) {
+          return new File(lib,files[i]);
+        }
+      }
+    }
+  }
+  return null;
+}

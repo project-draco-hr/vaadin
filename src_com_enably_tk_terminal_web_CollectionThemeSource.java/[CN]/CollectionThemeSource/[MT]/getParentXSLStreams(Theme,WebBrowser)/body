@@ -1,0 +1,15 @@
+{
+  Collection xslFiles=new LinkedList();
+  Collection parents=theme.getParentThemes();
+  for (Iterator i=parents.iterator(); i.hasNext(); ) {
+    String name=(String)i.next();
+    Theme parent=this.getThemeByName(name);
+    if (parent != null) {
+      xslFiles.addAll(this.getXSLStreams(parent,type));
+    }
+ else {
+      throw new ThemeSource.ThemeException("Parent theme not found for name: " + name);
+    }
+  }
+  return xslFiles;
+}

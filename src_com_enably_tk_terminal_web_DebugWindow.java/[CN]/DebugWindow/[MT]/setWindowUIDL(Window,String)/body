@@ -1,0 +1,20 @@
+{
+  String caption="UIDL:" + window.getName();
+synchronized (tabs) {
+    for (Iterator i=tabs.getComponentIterator(); i.hasNext(); ) {
+      Component c=(Component)i.next();
+      if (tabs.getTabCaption(c).equals(caption)) {
+        ((Label)c).setValue(getHTMLFormattedUIDL(caption,uidl));
+        ((Label)c).setContentMode(Label.CONTENT_XHTML);
+        rawUIDL.put(c,uidl);
+        caption=null;
+      }
+    }
+    if (caption != null) {
+      Label l=new Label(getHTMLFormattedUIDL(caption,uidl));
+      l.setContentMode(Label.CONTENT_XHTML);
+      rawUIDL.put(l,uidl);
+      tabs.addTab(l,caption,null);
+    }
+  }
+}

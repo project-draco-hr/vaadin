@@ -1,0 +1,25 @@
+{
+  this.transformerType=type;
+  this.themeSource=themes;
+  this.webAdapterServlet=webAdapterServlet;
+  errorHandler=new TransformerErrorHandler();
+  xsltFactory.setErrorListener(errorHandler);
+  try {
+    XMLReader parser=XMLReaderFactory.createXMLReader();
+    XMLReader xmlReader=new XSLReader(parser,themes.getXSLStreams(type.getTheme(),type.getWebBrowser()));
+    xmlReader.setErrorHandler(errorHandler);
+    SAXSource source=new SAXSource(xmlReader,new InputSource());
+    uidlTransformer=xsltFactory.newTransformer(source);
+    if (uidlTransformer != null) {
+      uidlTransformer.setErrorListener(errorHandler);
+      uidlTransformer.setOutputProperty(OutputKeys.METHOD,"html");
+      uidlTransformer.setOutputProperty(OutputKeys.INDENT,"no");
+    }
+    if (errorHandler.hasFatalErrors()) {
+      throw new UIDLTransformerException("XSL Transformer creation failed",errorHandler.getFirstFatalError(),errorHandler.getUIDLErrorReport() + "<br /><br />" + errorHandler.getXSLErrorReport(themeSource,transformerType));
+    }
+  }
+ catch (  Exception e) {
+    throw new UIDLTransformerException(e.toString(),e,errorHandler.getXSLErrorReport(themeSource,transformerType));
+  }
+}

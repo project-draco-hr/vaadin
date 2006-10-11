@@ -1,0 +1,37 @@
+{
+  Collection xslFiles=new LinkedList();
+  if (this.theme != null) {
+    if (webAdapterServlet.isDebugMode()) {
+      Log.info("JarThemeSource: Loading XSL from: " + theme);
+    }
+    JarEntry entry=jar.getJarEntry(this.path + Theme.DESCRIPTIONFILE);
+    if (entry != null) {
+      try {
+        this.theme=new Theme(jar.getInputStream(entry));
+      }
+ catch (      IOException e) {
+        throw new ThemeException("Failed to read description: " + this.file + ":"+ this.path+ Theme.DESCRIPTIONFILE);
+      }
+    }
+    Collection fileNames=theme.getFileNames(type);
+    for (Iterator i=fileNames.iterator(); i.hasNext(); ) {
+      entry=jar.getJarEntry(this.path + (String)i.next());
+      try {
+        xslFiles.add(new XSLStream(entry.getName(),jar.getInputStream(entry)));
+      }
+ catch (      java.io.FileNotFoundException e) {
+        throw new ThemeException("XSL File not found: " + this.file + ": "+ entry);
+      }
+catch (      java.io.IOException e) {
+        throw new ThemeException("Failed to read XSL file. " + this.file + ": "+ entry);
+      }
+    }
+  }
+ else {
+    for (Iterator i=this.subdirs.iterator(); i.hasNext(); ) {
+      ThemeSource source=(ThemeSource)i.next();
+      if (source.getThemes().contains(theme))       xslFiles.addAll(source.getXSLStreams(theme,type));
+    }
+  }
+  return xslFiles;
+}

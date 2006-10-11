@@ -1,0 +1,46 @@
+{
+  WebBrowser res=browser;
+  if (res == null) {
+    res=probe(request.getHeader("User-Agent"));
+  }
+  Collection locales=res.getLocales();
+  locales.clear();
+  for (Enumeration e=request.getLocales(); e.hasMoreElements(); ) {
+    locales.add(e.nextElement());
+  }
+  if (params.containsKey("wa_jsversion")) {
+    String val=((String[])params.get("wa_jsversion"))[0];
+    if (val != null) {
+      res.setJavaScriptVersion(WebBrowser.parseJavaScriptVersion(val));
+    }
+  }
+  if (params.containsKey("wa_javaenabled")) {
+    String val=((String[])params.get("wa_javaenabled"))[0];
+    if (val != null) {
+      res.setJavaEnabled(Boolean.valueOf(val).booleanValue());
+    }
+  }
+  if (params.containsKey("wa_screenwidth")) {
+    String val=((String[])params.get("wa_screenwidth"))[0];
+    if (val != null) {
+      try {
+        res.setScreenWidth(Integer.parseInt(val));
+      }
+ catch (      NumberFormatException e) {
+        res.setScreenWidth(-1);
+      }
+    }
+  }
+  if (params.containsKey("wa_screenheight")) {
+    String val=((String[])params.get("wa_screenheight"))[0];
+    if (val != null) {
+      try {
+        res.setScreenHeight(Integer.parseInt(val));
+      }
+ catch (      NumberFormatException e) {
+        res.setScreenHeight(-1);
+      }
+    }
+  }
+  return res;
+}

@@ -1,0 +1,60 @@
+{
+  super.changeVariables(source,variables);
+  if (variables.containsKey("firstvisible")) {
+    Integer value=(Integer)variables.get("firstvisible");
+    if (value != null)     setCurrentPageFirstItemIndex(value.intValue() - 1);
+  }
+  if (variables.containsKey("action")) {
+    StringTokenizer st=new StringTokenizer((String)variables.get("action"),",");
+    if (st.countTokens() == 2) {
+      Object itemId=itemIdMapper.get(st.nextToken());
+      Action action=(Action)actionMapper.get(st.nextToken());
+      if (action != null && containsId(itemId) && actionHandlers != null)       for (Iterator i=actionHandlers.iterator(); i.hasNext(); )       ((Action.Handler)i.next()).handleAction(action,this,itemId);
+    }
+  }
+  boolean doSort=false;
+  if (variables.containsKey("sortcolumn")) {
+    String colId=(String)variables.get("sortcolumn");
+    if (colId != null && !"".equals(colId) && !"null".equals(colId)) {
+      Object id=this.columnIdMap.get(colId);
+      setSortContainerPropertyId(id);
+      doSort=true;
+    }
+  }
+  if (variables.containsKey("sortascending")) {
+    boolean state=((Boolean)variables.get("sortascending")).booleanValue();
+    if (state != this.sortAscending) {
+      setSortAscending(state);
+      doSort=true;
+    }
+  }
+  if (doSort)   this.sort();
+  if (this.isColumnCollapsingAllowed()) {
+    if (variables.containsKey("collapsedcolumns")) {
+      try {
+        Object[] ids=(Object[])variables.get("collapsedcolumns");
+        for (Iterator it=this.visibleColumns.iterator(); it.hasNext(); ) {
+          this.setColumnCollapsed(it.next(),false);
+        }
+        for (int i=0; i < ids.length; i++) {
+          this.setColumnCollapsed(columnIdMap.get(ids[i].toString()),true);
+        }
+      }
+ catch (      Exception ignored) {
+      }
+    }
+  }
+  if (this.isColumnReorderingAllowed()) {
+    if (variables.containsKey("columnorder")) {
+      try {
+        Object[] ids=(Object[])variables.get("columnorder");
+        for (int i=0; i < ids.length; i++) {
+          ids[i]=columnIdMap.get(ids[i].toString());
+        }
+        this.setColumnOrder(ids);
+      }
+ catch (      Exception ignored) {
+      }
+    }
+  }
+}

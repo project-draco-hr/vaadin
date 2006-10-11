@@ -1,0 +1,33 @@
+{
+  if (!isReadOnly() && (variables.containsKey("year") || variables.containsKey("month") || variables.containsKey("day")|| variables.containsKey("hour")|| variables.containsKey("min")|| variables.containsKey("sec")|| variables.containsKey("msec"))) {
+    Date oldDate=(Date)getValue();
+    Date newDate=null;
+    int year=variables.containsKey("year") ? (variables.get("year") == null ? -1 : ((Integer)variables.get("year")).intValue()) : -1;
+    int month=variables.containsKey("month") ? (variables.get("month") == null ? -1 : ((Integer)variables.get("month")).intValue() - 1) : -1;
+    int day=variables.containsKey("day") ? (variables.get("day") == null ? -1 : ((Integer)variables.get("day")).intValue()) : -1;
+    int hour=variables.containsKey("hour") ? (variables.get("hour") == null ? -1 : ((Integer)variables.get("hour")).intValue()) : -1;
+    int min=variables.containsKey("min") ? (variables.get("min") == null ? -1 : ((Integer)variables.get("min")).intValue()) : -1;
+    int sec=variables.containsKey("sec") ? (variables.get("sec") == null ? -1 : ((Integer)variables.get("sec")).intValue()) : -1;
+    int msec=variables.containsKey("msec") ? (variables.get("msec") == null ? -1 : ((Integer)variables.get("msec")).intValue()) : -1;
+    if (year < 0 && month < 0 && day < 0 && hour < 0 && min < 0 && sec < 0 && msec < 0)     newDate=null;
+ else {
+      Calendar cal=(Calendar)getCalendar();
+      year=year < 0 ? cal.get(Calendar.YEAR) : year;
+      month=month < 0 ? cal.get(Calendar.MONTH) : month;
+      day=day < 0 ? cal.get(Calendar.DAY_OF_MONTH) : day;
+      hour=hour < 0 ? cal.get(Calendar.HOUR_OF_DAY) : hour;
+      min=min < 0 ? cal.get(Calendar.MINUTE) : min;
+      sec=sec < 0 ? cal.get(Calendar.SECOND) : sec;
+      msec=msec < 0 ? cal.get(Calendar.MILLISECOND) : msec;
+      cal.set(Calendar.YEAR,year);
+      cal.set(Calendar.MONTH,month);
+      cal.set(Calendar.DAY_OF_MONTH,day);
+      cal.set(Calendar.HOUR_OF_DAY,hour);
+      cal.set(Calendar.MINUTE,min);
+      cal.set(Calendar.SECOND,sec);
+      cal.set(Calendar.MILLISECOND,msec);
+      newDate=cal.getTime();
+    }
+    if (newDate != oldDate && (newDate == null || !newDate.equals(oldDate)))     setValue(newDate);
+  }
+}

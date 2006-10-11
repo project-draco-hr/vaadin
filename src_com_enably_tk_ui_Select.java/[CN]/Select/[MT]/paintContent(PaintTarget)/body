@@ -1,0 +1,46 @@
+{
+  super.paintContent(target);
+  if (isMultiSelect())   target.addAttribute("selectmode","multi");
+  if (isNewItemsAllowed())   target.addAttribute("allownewitem",true);
+  String[] selectedKeys;
+  if (isMultiSelect())   selectedKeys=new String[((Set)getValue()).size()];
+ else   selectedKeys=new String[(getValue() == null && getNullSelectionItemId() == null ? 0 : 1)];
+  int keyIndex=0;
+  target.startTag("options");
+  Collection ids=getItemIds();
+  if (getNullSelectionItemId() != null && (!ids.contains(getNullSelectionItemId()))) {
+    Object id=getNullSelectionItemId();
+    String key=itemIdMapper.key(id);
+    String caption=getItemCaption(id);
+    Resource icon=getItemIcon(id);
+    target.startTag("so");
+    if (icon != null)     target.addAttribute("icon",icon);
+    target.addAttribute("caption",caption);
+    target.addAttribute("nullselection",true);
+    target.addAttribute("key",key);
+    if (isSelected(id)) {
+      target.addAttribute("selected",true);
+      selectedKeys[keyIndex++]=key;
+    }
+    target.endTag("so");
+  }
+  for (Iterator i=getItemIds().iterator(); i.hasNext(); ) {
+    Object id=i.next();
+    String key=itemIdMapper.key(id);
+    String caption=getItemCaption(id);
+    Resource icon=getItemIcon(id);
+    target.startTag("so");
+    if (icon != null)     target.addAttribute("icon",icon);
+    target.addAttribute("caption",caption);
+    if (id != null && id.equals(getNullSelectionItemId()))     target.addAttribute("nullselection",true);
+    target.addAttribute("key",key);
+    if (isSelected(id) && keyIndex < selectedKeys.length) {
+      target.addAttribute("selected",true);
+      selectedKeys[keyIndex++]=key;
+    }
+    target.endTag("so");
+  }
+  target.endTag("options");
+  target.addVariable(this,"selected",selectedKeys);
+  if (isNewItemsAllowed())   target.addVariable(this,"newitem","");
+}

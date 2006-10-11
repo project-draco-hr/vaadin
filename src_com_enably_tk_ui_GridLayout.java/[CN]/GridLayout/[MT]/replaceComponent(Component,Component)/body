@@ -1,0 +1,20 @@
+{
+  Area oldLocation=null;
+  Area newLocation=null;
+  for (Iterator i=areas.iterator(); i.hasNext(); ) {
+    Area location=(Area)i.next();
+    Component component=(Component)location.getComponent();
+    if (component == oldComponent)     oldLocation=location;
+    if (component == newComponent)     newLocation=location;
+  }
+  if (oldLocation == null)   addComponent(newComponent);
+ else   if (newLocation == null) {
+    removeComponent(oldComponent);
+    addComponent(newComponent,oldLocation.getX1(),oldLocation.getY1(),oldLocation.getX2(),oldLocation.getY2());
+  }
+ else {
+    oldLocation.setComponent(newComponent);
+    newLocation.setComponent(oldComponent);
+    requestRepaint();
+  }
+}

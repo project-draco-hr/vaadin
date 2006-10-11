@@ -1,0 +1,45 @@
+{
+  StringBuffer script=new StringBuffer();
+  LinkedList update=new LinkedList();
+  Set dirtyWindows=wa != null ? wa.getDirtyWindows(app) : null;
+  if (dirtyWindows != null)   for (Iterator i=dirtyWindows.iterator(); i.hasNext(); ) {
+    Window w=(Window)i.next();
+    if (w != window) {
+      if (w instanceof FrameWindow)       update.addFirst(w);
+ else       update.addLast(w);
+    }
+  }
+  Object[] u=update.toArray();
+  if (u.length > 0 && (window != null && window instanceof FrameWindow))   u[u.length - 1]=window;
+  for (int i=0; i < u.length; i++) {
+    try {
+      FrameWindow w=(FrameWindow)u[i];
+      LinkedList framesets=new LinkedList();
+      framesets.add(w.getFrameset());
+      while (!framesets.isEmpty()) {
+        FrameWindow.Frameset fs=(FrameWindow.Frameset)framesets.removeFirst();
+        for (Iterator j=fs.getFrames().iterator(); j.hasNext(); ) {
+          FrameWindow.Frame f=(FrameWindow.Frame)j.next();
+          if (f instanceof FrameWindow.Frameset)           framesets.add(f);
+ else           if (f.getWindow() != null) {
+            update.remove(f.getWindow());
+            wa.removeDirtyWindow(app,f.getWindow());
+          }
+        }
+      }
+    }
+ catch (    ClassCastException ignored) {
+    }
+  }
+  if (window != null) {
+    script.append("window.name = \"" + getWindowTargetName(app,window) + "\";\n");
+  }
+  for (Iterator i=update.iterator(); i.hasNext(); ) {
+    Window w=(Window)i.next();
+    script.append(getWindowRefreshScript(app,w,browser));
+    wa.removeDirtyWindow(app,w);
+    if (w.getApplication() == null || !w.isVisible())     w.requestRepaintRequests();
+  }
+  if (window == null || !window.isVisible())   script.append("window.close();\n");
+  return script.toString();
+}

@@ -1,0 +1,55 @@
+{
+  super.init(servletConfig);
+  String applicationClassName=servletConfig.getInitParameter("application");
+  if (applicationClassName == null) {
+    Log.error("Application not specified in servlet parameters");
+  }
+  this.applicationProperties=new Properties();
+  for (Enumeration e=servletConfig.getInitParameterNames(); e.hasMoreElements(); ) {
+    String name=(String)e.nextElement();
+    this.applicationProperties.setProperty(name,servletConfig.getInitParameter(name));
+  }
+  ServletContext context=servletConfig.getServletContext();
+  for (Enumeration e=context.getInitParameterNames(); e.hasMoreElements(); ) {
+    String name=(String)e.nextElement();
+    this.applicationProperties.setProperty(name,context.getInitParameter(name));
+  }
+  String debug=getApplicationOrSystemProperty(PARAMETER_DEBUG,"false");
+  this.debugMode=debug.equals("true");
+  this.maxConcurrentTransformers=Integer.parseInt(getApplicationOrSystemProperty(PARAMETER_MAX_TRANSFORMERS,"-1"));
+  if (this.maxConcurrentTransformers < 1)   this.maxConcurrentTransformers=DEFAULT_MAX_TRANSFORMERS;
+  this.transformerCacheTime=Integer.parseInt(getApplicationOrSystemProperty(PARAMETER_TRANSFORMER_CACHETIME,"-1")) * 1000;
+  this.themeCacheTime=Integer.parseInt(getApplicationOrSystemProperty(PARAMETER_THEME_CACHETIME,"-1")) * 1000;
+  if (this.themeCacheTime < 0) {
+    this.themeCacheTime=DEFAULT_THEME_CACHETIME;
+  }
+  this.themeSource=new CollectionThemeSource();
+  List directorySources=getThemeSources();
+  for (Iterator i=directorySources.iterator(); i.hasNext(); ) {
+    this.themeSource.add((ThemeSource)i.next());
+  }
+  String[] defaultThemeFiles=new String[]{getApplicationOrSystemProperty(PARAMETER_DEFAULT_THEME_JAR,DEFAULT_THEME_JAR),DEFAULT_THEME_SNAPSHOT_JAR};
+  File f=findDefaultThemeJar(defaultThemeFiles);
+  try {
+    if (f != null && f.exists())     this.themeSource.add(new JarThemeSource(f,this,""));
+ else {
+      Log.warn("Default theme JAR not found in: " + Arrays.asList(defaultThemeFiles));
+    }
+  }
+ catch (  Exception e) {
+    throw new ServletException("Failed to load default theme from " + Arrays.asList(defaultThemeFiles),e);
+  }
+  if (this.themeSource.getThemes().size() <= 0) {
+    throw new ServletException("No themes found in specified themesources.");
+  }
+  if (this.transformerFactory == null) {
+    this.transformerFactory=new UIDLTransformerFactory(this.themeSource,this,this.maxConcurrentTransformers,this.transformerCacheTime);
+  }
+  ClassLoader loader=this.getClass().getClassLoader();
+  try {
+    this.applicationClass=loader.loadClass(applicationClassName);
+  }
+ catch (  ClassNotFoundException e) {
+    throw new ServletException("Failed to load application class: " + applicationClassName);
+  }
+}

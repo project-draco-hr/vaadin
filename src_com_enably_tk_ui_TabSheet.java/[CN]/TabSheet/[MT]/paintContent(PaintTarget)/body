@@ -1,0 +1,24 @@
+{
+  if (areTabsHidden())   target.addAttribute("hidetabs",true);
+  target.startTag("tabs");
+  for (Iterator i=getComponentIterator(); i.hasNext(); ) {
+    Component c=(Component)i.next();
+    if (!c.isVisible())     continue;
+    target.startTag("tab");
+    Resource icon=getTabIcon(c);
+    if (icon != null)     target.addAttribute("icon",icon);
+    String caption=getTabCaption(c);
+    if (!c.isEnabled()) {
+      target.addAttribute("disabled",true);
+    }
+    if (caption != null && caption.length() > 0)     target.addAttribute("caption",caption);
+    target.addAttribute("key",keyMapper.key(c));
+    if (c.equals(selected)) {
+      target.addAttribute("selected",true);
+      c.paint(target);
+    }
+    target.endTag("tab");
+  }
+  target.endTag("tabs");
+  if (selected != null)   target.addVariable(this,"selected",keyMapper.key(selected));
+}

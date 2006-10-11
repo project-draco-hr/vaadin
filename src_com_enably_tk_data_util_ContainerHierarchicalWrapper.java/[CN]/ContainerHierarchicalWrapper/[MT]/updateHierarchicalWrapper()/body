@@ -1,0 +1,28 @@
+{
+  if (!hierarchical) {
+    if (noChildrenAllowed == null || parent == null || children == null || roots == null) {
+      noChildrenAllowed=new HashSet();
+      parent=new Hashtable();
+      children=new Hashtable();
+      roots=new LinkedList(container.getItemIds());
+    }
+ else {
+      HashSet s=new HashSet();
+      s.add(parent.keySet());
+      s.add(children.keySet());
+      s.addAll(roots);
+      for (Iterator i=s.iterator(); i.hasNext(); ) {
+        Object id=i.next();
+        if (!container.containsId(id))         removeFromHierarchyWrapper(id);
+      }
+      Collection ids=container.getItemIds();
+      for (Iterator i=ids.iterator(); i.hasNext(); ) {
+        Object id=i.next();
+        if (!s.contains(id)) {
+          addToHierarchyWrapper(id);
+          s.add(id);
+        }
+      }
+    }
+  }
+}

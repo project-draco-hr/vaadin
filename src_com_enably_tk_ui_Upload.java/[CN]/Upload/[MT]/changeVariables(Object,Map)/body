@@ -1,0 +1,28 @@
+{
+  if (!variables.containsKey("stream"))   return;
+  UploadStream upload=(UploadStream)variables.get("stream");
+  String filename=upload.getContentName();
+  String type=upload.getContentType();
+  OutputStream out=receiver.receiveUpload(filename,type);
+  if (out == null)   throw new RuntimeException("Error getting outputstream from upload receiver");
+  InputStream in=upload.getStream();
+  if (null == in) {
+    fireUploadInterrupted(filename,type,0);
+    return;
+  }
+  byte buffer[]=new byte[BUFFER_SIZE];
+  int bytesRead=0;
+  long totalBytes=0;
+  try {
+    while ((bytesRead=in.read(buffer)) > 0) {
+      out.write(buffer,0,bytesRead);
+      totalBytes+=bytesRead;
+    }
+    out.close();
+    fireUploadSuccess(filename,type,totalBytes);
+    requestRepaint();
+  }
+ catch (  IOException e) {
+    fireUploadInterrupted(filename,type,totalBytes);
+  }
+}

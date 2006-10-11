@@ -1,0 +1,26 @@
+{
+  if (window == null)   return;
+  String name=window.getName();
+  if (name != null && windows.containsKey(name)) {
+    if (window == windows.get(name))     return;
+    throw new IllegalArgumentException("Window with name '" + window.getName() + "' is already present in the application");
+  }
+  if (name == null) {
+    boolean accepted=false;
+    while (!accepted) {
+      name=String.valueOf(Math.abs(nameGenerator.nextInt()));
+      if (!windows.containsKey(name))       accepted=true;
+    }
+    window.setName(name);
+  }
+  windows.put(name,window);
+  window.setApplication(this);
+  if (windowAttachListeners != null) {
+    Object[] listeners=windowAttachListeners.toArray();
+    WindowAttachEvent event=new WindowAttachEvent(window);
+    for (int i=0; i < listeners.length; i++) {
+      ((WindowAttachListener)listeners[i]).windowAttached(event);
+    }
+  }
+  if (getMainWindow() == null)   setMainWindow(window);
+}

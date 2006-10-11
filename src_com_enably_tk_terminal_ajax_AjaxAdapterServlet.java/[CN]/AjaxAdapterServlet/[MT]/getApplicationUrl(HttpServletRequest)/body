@@ -1,0 +1,14 @@
+{
+  URL applicationUrl;
+  try {
+    URL reqURL=new URL((request.isSecure() ? "https://" : "http://") + request.getServerName() + ":"+ request.getServerPort()+ request.getRequestURI());
+    String servletPath=request.getContextPath() + request.getServletPath();
+    if (servletPath.length() == 0 || servletPath.charAt(servletPath.length() - 1) != '/')     servletPath=servletPath + "/";
+    applicationUrl=new URL(reqURL,servletPath);
+  }
+ catch (  MalformedURLException e) {
+    Log.error("Error constructing application url " + request.getRequestURI() + " ("+ e+ ")");
+    throw new RuntimeException("Error constructing application url",e);
+  }
+  return applicationUrl;
+}

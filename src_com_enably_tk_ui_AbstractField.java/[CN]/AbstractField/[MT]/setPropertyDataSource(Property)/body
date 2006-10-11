@@ -1,0 +1,24 @@
+{
+  Object oldValue=value;
+  try {
+    discard();
+  }
+ catch (  Buffered.SourceException ignored) {
+  }
+  if (dataSource != null && Property.ValueChangeNotifier.class.isAssignableFrom(dataSource.getClass()))   ((Property.ValueChangeNotifier)dataSource).removeListener(this);
+  dataSource=newDataSource;
+  try {
+    if (dataSource != null)     setInternalValue(dataSource.getValue());
+    modified=false;
+  }
+ catch (  Throwable e) {
+    currentBufferedSourceException=new Buffered.SourceException(this,e);
+    modified=true;
+  }
+  if (dataSource instanceof Property.ValueChangeNotifier)   ((Property.ValueChangeNotifier)dataSource).addListener(this);
+  if (dataSource instanceof Validatable) {
+    Collection validators=((Validatable)dataSource).getValidators();
+    if (validators != null)     for (Iterator i=validators.iterator(); i.hasNext(); )     addValidator((Validator)i.next());
+  }
+  if ((value != oldValue) && ((value != null && !value.equals(oldValue)) || value == null))   fireValueChange();
+}

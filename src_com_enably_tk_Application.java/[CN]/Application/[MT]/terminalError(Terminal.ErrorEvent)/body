@@ -1,0 +1,17 @@
+{
+  Object owner=null;
+  if (event instanceof VariableOwner.ErrorEvent) {
+    owner=((VariableOwner.ErrorEvent)event).getVariableOwner();
+  }
+ else   if (event instanceof URIHandler.ErrorEvent) {
+    owner=((URIHandler.ErrorEvent)event).getURIHandler();
+  }
+ else   if (event instanceof ParameterHandler.ErrorEvent) {
+    owner=((ParameterHandler.ErrorEvent)event).getParameterHandler();
+  }
+  if (owner instanceof AbstractComponent) {
+    Throwable e=event.getThrowable();
+    if (e instanceof ErrorMessage)     ((AbstractComponent)owner).setComponentError((ErrorMessage)e);
+ else     ((AbstractComponent)owner).setComponentError(new SystemError(e));
+  }
+}

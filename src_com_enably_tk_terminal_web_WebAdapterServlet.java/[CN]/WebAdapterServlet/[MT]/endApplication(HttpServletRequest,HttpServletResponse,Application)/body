@@ -1,0 +1,10 @@
+{
+  String logoutUrl=application.getLogoutURL();
+  if (logoutUrl == null)   logoutUrl=application.getURL().toString();
+  HttpSession session=request.getSession();
+  if (session != null) {
+    LinkedList applications=(LinkedList)session.getAttribute(SESSION_ATTR_APPS);
+    if (applications != null)     applications.remove(application);
+  }
+  response.sendRedirect(response.encodeRedirectURL(logoutUrl));
+}

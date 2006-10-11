@@ -1,0 +1,34 @@
+{
+  OrderedLayout l=new OrderedLayout();
+  Panel show=new Panel("Embedded component");
+  Embedded emb=new Embedded("Embedded Caption");
+  emb.setClassId("clsid:F08DF954-8592-11D1-B16A-00C0F0283628");
+  emb.setWidth(100);
+  emb.setHeight(50);
+  emb.setParameter("BorderStyle","1");
+  emb.setParameter("MousePointer","1");
+  emb.setParameter("Enabled","1");
+  emb.setParameter("Min","1");
+  emb.setParameter("Max","10");
+  show.addComponent(emb);
+  l.addComponent(show);
+  PropertyPanel p=new PropertyPanel(emb);
+  Form ap=p.createBeanPropertySet(new String[]{"type","source","width","height","widthUnits","heightUnits","codebase","codetype","archive","mimeType","standby","classId"});
+  ap.replaceWithSelect("type",new Object[]{new Integer(Embedded.TYPE_IMAGE),new Integer(Embedded.TYPE_OBJECT)},new Object[]{"Image","Object"});
+  Object[] units=new Object[Sizeable.UNIT_SYMBOLS.length];
+  Object[] symbols=new Object[Sizeable.UNIT_SYMBOLS.length];
+  for (int i=0; i < units.length; i++) {
+    units[i]=new Integer(i);
+    symbols[i]=Sizeable.UNIT_SYMBOLS[i];
+  }
+  ap.replaceWithSelect("heightUnits",units,symbols);
+  ap.replaceWithSelect("widthUnits",units,symbols);
+  ap.replaceWithSelect("source",new Object[]{null,new ClassResource("millstone-logo.gif",getApplication())},new Object[]{"null","Millstone logo"});
+  p.addProperties("Embedded Properties",ap);
+  p.getField("standby").setDescription("The text to display while loading the object.");
+  p.getField("codebase").setDescription("root-path used to access resources with relative paths.");
+  p.getField("codetype").setDescription("MIME-type of the code.");
+  p.getField("classId").setDescription("Unique object id. This can be used for example to identify windows components.");
+  l.addComponent(p);
+  return l;
+}

@@ -1,0 +1,22 @@
+{
+  String uidl="UIDL Source Not Available.";
+  if (paintTarget != null)   uidl=paintTarget.getUIDL();
+  StringBuffer sb=new StringBuffer();
+  int row=0;
+  int prev=0;
+  int index=0;
+  boolean lastLineWasEmpty=false;
+  sb.append(toString());
+  sb.append("<table width=\"100%\" style=\"border-left: 1px solid black; " + "border-right: 1px solid black; border-bottom: " + "1px solid black; border-top: 1px solid black\""+ " cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr>"+ "<th bgcolor=\"#ddddff\" colspan=\"2\">"+ "<font size=\"+2\">UIDL</font><br />"+ "</th></tr>\n");
+  while ((index=uidl.indexOf('\n',prev)) >= 0) {
+    String line=uidl.substring(prev,index);
+    prev=index + 1;
+    row++;
+    line=WebPaintTarget.escapeXML(line);
+    boolean isEmpty=(line.length() == 0 || line.equals("\r"));
+    if (!(isEmpty && lastLineWasEmpty))     sb.append("<tr" + ((row % 10) > 4 ? " bgcolor=\"#eeeeff\"" : "") + "><td style=\"border-right: 1px solid gray\">&nbsp;"+ String.valueOf(row)+ "&nbsp;</td><td>"+ "<nobr>"+ line+ "</nobr>"+ "</td></tr>\n");
+    lastLineWasEmpty=isEmpty;
+  }
+  sb.append("</table>\n");
+  return sb.toString();
+}
