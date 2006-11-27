@@ -1,0 +1,26 @@
+{
+  if (node.getNodeType() == Node.COMMENT_NODE || node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE)   return;
+  if (node.getNodeType() == Node.TEXT_NODE) {
+    String value=node.getNodeValue();
+    if (value.matches("^\\s*$"))     return;
+  }
+  if (node.getNodeType() == Node.ELEMENT_NODE && "signature".equals(node.getNodeName()))   return;
+  sink.write(node.getNodeName().toLowerCase());
+  String value=node.getNodeValue();
+  if (value != null)   sink.write("='" + value + "'");
+  NamedNodeMap attrs=node.getAttributes();
+  if (attrs != null) {
+    TreeSet names=new TreeSet();
+    for (int i=0; i < attrs.getLength(); i++)     names.add(attrs.item(i).getNodeName());
+    for (Iterator i=names.iterator(); i.hasNext(); )     serialize(attrs.getNamedItem((String)i.next()),sink);
+  }
+  Node child=node.getFirstChild();
+  if (child != null && node.getNodeType() != Node.ATTRIBUTE_NODE) {
+    sink.write("{");
+    while (child != null) {
+      if (child.getNodeType() != Node.ATTRIBUTE_NODE)       serialize(child,sink);
+      child=child.getNextSibling();
+    }
+    sink.write("}");
+  }
+}
