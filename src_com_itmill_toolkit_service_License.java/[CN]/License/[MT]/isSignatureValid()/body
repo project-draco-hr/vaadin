@@ -1,7 +1,9 @@
 {
-  Signature dsa;
   try {
-    dsa=Signature.getInstance("SHA1withDSA");
+    CertificateFactory x509factory=CertificateFactory.getInstance("X.509");
+    X509Certificate cert=(X509Certificate)x509factory.generateCertificate(new ByteArrayInputStream(certificate.getBytes()));
+    PublicKey publicKey=cert.getPublicKey();
+    Signature dsa=Signature.getInstance("SHA1withDSA");
     dsa.initVerify(publicKey);
     dsa.update(getNormalizedLisenceData().getBytes("UTF-8"));
     if (dsa.verify(getSignature()))     return true;
@@ -16,6 +18,9 @@ catch (  SignatureException e) {
     throw new InvalidLicenseFile("Signature does not match contents.");
   }
 catch (  UnsupportedEncodingException e) {
+    throw new RuntimeException(e);
+  }
+catch (  CertificateException e) {
     throw new RuntimeException(e);
   }
   return false;
