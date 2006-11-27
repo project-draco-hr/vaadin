@@ -4,23 +4,19 @@
     dsa=Signature.getInstance("SHA1withDSA");
     dsa.initVerify(publicKey);
     dsa.update(getNormalizedLisenceData().getBytes("UTF-8"));
-    boolean verifies=dsa.verify(getSignature());
-    System.out.println("signature verifies: " + verifies);
+    if (dsa.verify(getSignature()))     return true;
   }
  catch (  NoSuchAlgorithmException e) {
-    e.printStackTrace();
-    return false;
+    throw new RuntimeException(e);
   }
 catch (  InvalidKeyException e) {
-    e.printStackTrace();
-    return false;
+    throw new RuntimeException(e);
   }
 catch (  SignatureException e) {
-    e.printStackTrace();
+    throw new InvalidLicenseFile("Signature does not match contents.");
   }
 catch (  UnsupportedEncodingException e) {
-    e.printStackTrace();
-    return false;
+    throw new RuntimeException(e);
   }
   return false;
 }
