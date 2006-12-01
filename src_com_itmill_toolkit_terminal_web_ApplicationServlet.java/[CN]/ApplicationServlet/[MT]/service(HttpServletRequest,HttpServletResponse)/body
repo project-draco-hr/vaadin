@@ -1,0 +1,144 @@
+{
+  UIDLTransformer transformer=null;
+  HttpVariableMap variableMap=null;
+  OutputStream out=response.getOutputStream();
+  HashSet currentlyDirtyWindowsForThisApplication=new HashSet();
+  try {
+    if (resourcePath == null)     resourcePath=request.getContextPath() + request.getServletPath() + RESOURCE_URI;
+    if (handleResourceRequest(request,response))     return;
+    if (handleServerCommands(request,response))     return;
+    Application application=getApplication(request);
+    if (application == null)     application=createApplication(request);
+    DownloadStream download=null;
+    WebApplicationContext appContext=null;
+    if (application != null) {
+      appContext=(WebApplicationContext)application.getContext();
+    }
+    if (appContext != null) {
+      appContext.startTransaction(application,request);
+    }
+    applicationToLastRequestDate.put(application,new Date());
+synchronized (application) {
+      String resourceId=request.getPathInfo();
+      if (resourceId != null && resourceId.startsWith(AJAX_UIDL_URI)) {
+        getApplicationManager(application).handleXmlHttpRequest(request,response);
+        if (appContext != null) {
+          appContext.endTransaction(application,request);
+        }
+        return;
+      }
+      variableMap=getVariableMap(application,request);
+      if (variableMap == null)       return;
+      Map unhandledParameters=variableMap.handleVariables(request,application);
+      WebBrowserProbe.handleProbeRequest(request,unhandledParameters);
+      if (application.isRunning())       download=handleURI(application,request,response);
+      if (download == null) {
+        response.setHeader("Cache-Control","no-cache");
+        response.setHeader("Pragma","no-cache");
+        response.setDateHeader("Expires",0);
+        Window window=null;
+        if (application.isRunning())         window=getApplicationWindow(request,application);
+        if (window != null && unhandledParameters != null && !unhandledParameters.isEmpty()) {
+          try {
+            window.handleParameters(unhandledParameters);
+          }
+ catch (          Throwable t) {
+            application.terminalError(new ParameterHandlerErrorImpl(window,t));
+          }
+        }
+        if (!application.isRunning()) {
+          endApplication(request,response,application);
+          return;
+        }
+        if (window == null) {
+          response.setContentType("text/html");
+          BufferedWriter page=new BufferedWriter(new OutputStreamWriter(out));
+          page.write("<html><head><script>");
+          page.write(ThemeFunctionLibrary.generateWindowScript(null,application,this,WebBrowserProbe.getTerminalType(request.getSession())));
+          page.write("</script></head><body>");
+          page.write("The requested window has been removed from application.");
+          page.write("</body></html>");
+          page.close();
+          return;
+        }
+        WebBrowser terminalType=(WebBrowser)window.getTerminal();
+        if (terminalType == null) {
+          terminalType=WebBrowserProbe.getTerminalType(request.getSession());
+          window.setTerminal(terminalType);
+        }
+        UIDLTransformerType transformerType=null;
+        if (window.getTheme() != null) {
+          Theme activeTheme;
+          if ((activeTheme=this.themeSource.getThemeByName(window.getTheme())) != null) {
+            transformerType=new UIDLTransformerType(terminalType,activeTheme);
+          }
+ else {
+            Log.info("Theme named '" + window.getTheme() + "' not found. Using system default theme.");
+          }
+        }
+        if (transformerType == null) {
+          Theme defaultTheme=this.themeSource.getThemeByName(ApplicationServlet.DEFAULT_THEME);
+          if (defaultTheme == null) {
+            throw new ServletException("Default theme not found in the specified theme source(s).");
+          }
+          transformerType=new UIDLTransformerType(terminalType,defaultTheme);
+        }
+        transformer=this.transformerFactory.getTransformer(transformerType);
+        response.setContentType(terminalType.getContentType());
+        WebPaintTarget paintTarget=transformer.getPaintTarget(variableMap);
+        DebugWindow debugWindow=(DebugWindow)application.getWindow(DebugWindow.WINDOW_NAME);
+        if (debugWindow != null && debugWindow != window) {
+          debugWindow.setWindowUIDL(window,"Painting...");
+        }
+        window.paint(paintTarget);
+        paintTarget.close();
+        Collection dirtyWindows=(Collection)applicationToDirtyWindowSetMap.get(application);
+        if (dirtyWindows == null) {
+          dirtyWindows=new HashSet();
+          applicationToDirtyWindowSetMap.put(application,dirtyWindows);
+        }
+        currentlyDirtyWindowsForThisApplication.addAll(dirtyWindows);
+        windowPainted(application,window);
+        if (debugWindow != null && debugWindow != window) {
+          debugWindow.setWindowUIDL(window,paintTarget.getUIDL());
+        }
+        ThemeFunctionLibrary.setState(application,window,transformerType.getWebBrowser(),request.getSession(),this,transformerType.getTheme().getName());
+      }
+    }
+    if (download == null) {
+      transformer.transform(out);
+    }
+ else {
+      handleDownload(download,request,response);
+    }
+    if (appContext != null) {
+      appContext.endTransaction(application,request);
+    }
+  }
+ catch (  UIDLTransformerException te) {
+    try {
+      response.setContentType("text/html");
+      BufferedWriter err=new BufferedWriter(new OutputStreamWriter(out));
+      err.write("<html><head><title>Application Internal Error</title></head><body>");
+      err.write("<h1>" + te.getMessage() + "</h1>");
+      err.write(te.getHTMLDescription());
+      err.write("</body></html>");
+      err.close();
+    }
+ catch (    Throwable t) {
+      Log.except("Failed to write error page: " + t + ". Original exception was: ",te);
+    }
+    Application currentApplication=getApplication(request);
+    for (Iterator iter=currentlyDirtyWindowsForThisApplication.iterator(); iter.hasNext(); ) {
+      Window dirtyWindow=(Window)iter.next();
+      addDirtyWindow(currentApplication,dirtyWindow);
+    }
+  }
+catch (  Throwable e) {
+    throw new ServletException(e);
+  }
+ finally {
+    if (transformer != null)     transformerFactory.releaseTransformer(transformer);
+    ThemeFunctionLibrary.cleanState();
+  }
+}

@@ -1,0 +1,71 @@
+{
+  ParameterContainer parcon=new ParameterContainer(req);
+  List listeners=getDependencySortedListenerList(parcon.getOwners());
+  while (!listeners.isEmpty()) {
+    VariableOwner listener=(VariableOwner)listeners.remove(0);
+    boolean changed=false;
+    Set params=parcon.getParameters(listener);
+    if (params != null) {
+      Map variables=new HashMap();
+      for (Iterator pi=params.iterator(); pi.hasNext(); ) {
+        String param=(String)pi.next();
+        String varName=(String)idToNameMap.get(param);
+        Class varType=(Class)idToTypeMap.get(param);
+        Object varOldValue=idToValueMap.get(param);
+        if (varName == null || varType == null)         System.err.println("VariableMap: No variable found for parameter " + param + " ("+ varName+ ","+ listener+ ")");
+ else {
+          ServletMultipartRequest parser=parcon.getParser();
+          if (varType.equals(UploadStream.class)) {
+            if (parser != null && parser.getFileParameter(param,MultipartRequest.FILENAME) != null) {
+              String filename=(String)parser.getFileParameter(param,MultipartRequest.FILENAME);
+              String contentType=(String)parser.getFileParameter(param,MultipartRequest.CONTENT_TYPE);
+              UploadStream upload=new AjaxHttpUploadStream(varName,parser.getFileContents(param),filename,contentType);
+              variables.put(varName,upload);
+              changed=true;
+            }
+          }
+ else {
+            String[] values=parcon.getValue(param);
+            if (values != null) {
+              if (varType.equals(String[].class)) {
+                variables.put(varName,values);
+                changed|=(!Arrays.equals(values,(String[])varOldValue));
+              }
+ else {
+                try {
+                  if (values.length == 1) {
+                    Object val=convert(varType,values[0]);
+                    variables.put(varName,val);
+                    changed|=((val == null && varOldValue != null) || (val != null && !val.equals(varOldValue)));
+                  }
+ else                   if (values.length == 0 && varType.equals(Boolean.class)) {
+                    Object val=new Boolean(false);
+                    variables.put(varName,val);
+                    changed|=(!val.equals(varOldValue));
+                  }
+ else {
+                    System.err.println("Empty variable '" + varName + "' of type "+ varType.toString());
+                  }
+                }
+ catch (                java.lang.ClassCastException e) {
+                  System.err.println("WebVariableMap conversion exception");
+                  e.printStackTrace(System.err);
+                  errorListener.terminalError(new TerminalErrorImpl(e));
+                }
+              }
+            }
+          }
+        }
+      }
+      if (listener.isEnabled() && changed) {
+        try {
+          listener.changeVariables(req,variables);
+        }
+ catch (        Throwable t) {
+          errorListener.terminalError(new VariableOwnerErrorImpl(listener,t));
+        }
+      }
+    }
+  }
+  return parcon.getNonVariables();
+}
