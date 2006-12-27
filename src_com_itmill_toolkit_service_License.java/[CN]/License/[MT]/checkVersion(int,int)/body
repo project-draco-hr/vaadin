@@ -1,0 +1,28 @@
+{
+  NodeList verL=licenseXML.getElementsByTagName("version");
+  if (verL != null && verL.getLength() > 0) {
+    NodeList checks=verL.item(0).getChildNodes();
+    for (int i=0; i < checks.getLength(); i++) {
+      Node n=checks.item(i);
+      if (n.getNodeType() == Node.ELEMENT_NODE) {
+        Element e=(Element)n;
+        String tag=e.getTagName();
+        String eq=e.getAttribute("equals-to");
+        String eqol=e.getAttribute("equals-to-or-is-less-than");
+        String eqom=e.getAttribute("equals-to-or-is-more-than");
+        int value=-1;
+        if ("major".equalsIgnoreCase(tag)) {
+          value=majorVersion;
+        }
+ else         if ("minor".equalsIgnoreCase(tag)) {
+          value=minorVersion;
+        }
+        if (value >= 0) {
+          if (eq != null && eq.length() > 0)           if (value != Integer.parseInt(eq))           throw new LicenseViolation("Product " + tag + " version is "+ value+ " but license requires it to be "+ eq);
+          if (eqol != null && eqol.length() > 0)           if (value <= Integer.parseInt(eqol))           throw new LicenseViolation("Product " + tag + " version is "+ value+ " but license requires it to be equal or less than"+ eqol);
+          if (eqom != null && eqom.length() > 0)           if (value != Integer.parseInt(eqom))           throw new LicenseViolation("Product " + tag + " version is "+ value+ " but license requires it to be equal or more than"+ eqom);
+        }
+      }
+    }
+  }
+}
