@@ -1,0 +1,19 @@
+{
+  StringBuffer v=new StringBuffer();
+  NodeList verL=licenseXML.getElementsByTagName("version");
+  if (verL != null && verL.getLength() > 0) {
+    NodeList checks=verL.item(0).getChildNodes();
+    for (int i=0; i < checks.getLength(); i++) {
+      Node n=checks.item(i);
+      if (n.getNodeType() == Node.ELEMENT_NODE) {
+        Element e=(Element)n;
+        String tag=e.getTagName();
+        appendVersionDescription(e.getAttribute("equals-to"),v,tag,"=");
+        appendVersionDescription(e.getAttribute("equals-to-or-is-less-than"),v,tag,"<=");
+        appendVersionDescription(e.getAttribute("equals-to-or-is-more-than"),v,tag,">=");
+      }
+    }
+  }
+  if (v.length() == 0)   return null;
+  return v.toString();
+}
