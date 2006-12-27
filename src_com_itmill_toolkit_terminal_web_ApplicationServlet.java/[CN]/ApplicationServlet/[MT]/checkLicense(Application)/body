@@ -1,0 +1,39 @@
+{
+  License license=application.getToolkitLicense();
+  if (!license.hasBeenRead()) {
+    InputStream lis;
+    try {
+      lis=getServletContext().getResource("/WEB-INF/itmill-toolkit-license.xml").openStream();
+      license.readLicenseFile(lis);
+    }
+ catch (    MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
+catch (    IOException e) {
+      throw new RuntimeException(e);
+    }
+catch (    LicenseFileHasAlreadyBeenRead e) {
+      throw new RuntimeException(e);
+    }
+  }
+  System.out.print(license.getDescription());
+  try {
+    license.check(applicationClass,1,VERSION_MAJOR,VERSION_MINOR,"IT Mill Toolkit",null);
+  }
+ catch (  LicenseFileHasNotBeenRead e) {
+    application.close();
+    throw e;
+  }
+catch (  LicenseSignatureIsInvalid e) {
+    application.close();
+    throw e;
+  }
+catch (  InvalidLicenseFile e) {
+    application.close();
+    throw e;
+  }
+catch (  LicenseViolation e) {
+    application.close();
+    throw e;
+  }
+}
