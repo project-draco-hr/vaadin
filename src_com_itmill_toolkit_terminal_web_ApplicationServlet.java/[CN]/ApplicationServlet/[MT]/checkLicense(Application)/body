@@ -16,9 +16,12 @@ catch (    LicenseFileHasAlreadyBeenRead e) {
       throw new RuntimeException(e);
     }
   }
-  System.out.print(license.getDescription());
+  if (!licensePrintedForApplicationClass.contains(applicationClass)) {
+    licensePrintedForApplicationClass.add(applicationClass);
+    if (license.shouldLimitsBePrintedOnInit())     System.out.print(license.getDescription());
+  }
   try {
-    license.check(applicationClass,1,VERSION_MAJOR,VERSION_MINOR,"IT Mill Toolkit",null);
+    license.check(applicationClass,getNumberOfActiveUsers() + 1,VERSION_MAJOR,VERSION_MINOR,"IT Mill Toolkit",null);
   }
  catch (  LicenseFileHasNotBeenRead e) {
     application.close();
