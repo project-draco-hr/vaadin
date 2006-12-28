@@ -1,6 +1,23 @@
 {
   if (this.listeners == null)   return;
-  for (Iterator i=this.listeners.iterator(); i.hasNext(); ) {
+  LinkedList exceptions=null;
+  for (Iterator i=this.listeners.iterator(); i.hasNext(); )   try {
     ((ApplicationContext.TransactionListener)i.next()).transactionEnd(application,request);
+  }
+ catch (  RuntimeException t) {
+    if (exceptions == null)     exceptions=new LinkedList();
+    exceptions.add(t);
+  }
+  if (exceptions != null) {
+    StringBuffer msg=new StringBuffer();
+    for (Iterator i=listeners.iterator(); i.hasNext(); ) {
+      RuntimeException e=(RuntimeException)i.next();
+      if (msg.length() == 0)       msg.append("\n\n--------------------------\n\n");
+      msg.append(e.getMessage() + "\n");
+      StringWriter trace=new StringWriter();
+      e.printStackTrace(new PrintWriter(trace,true));
+      msg.append(trace.toString());
+    }
+    throw new RuntimeException(msg.toString());
   }
 }
