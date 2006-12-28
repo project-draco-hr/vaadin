@@ -3,14 +3,15 @@
   HttpVariableMap variableMap=null;
   OutputStream out=response.getOutputStream();
   HashSet currentlyDirtyWindowsForThisApplication=new HashSet();
+  WebApplicationContext appContext=null;
+  Application application=null;
   try {
     if (resourcePath == null)     resourcePath=request.getContextPath() + request.getServletPath() + RESOURCE_URI;
     if (handleResourceRequest(request,response))     return;
     if (handleServerCommands(request,response))     return;
-    Application application=getApplication(request);
+    application=getApplication(request);
     if (application == null)     application=createApplication(request);
     DownloadStream download=null;
-    WebApplicationContext appContext=null;
     if (application != null) {
       appContext=(WebApplicationContext)application.getContext();
     }
@@ -22,9 +23,6 @@ synchronized (application) {
       String resourceId=request.getPathInfo();
       if (resourceId != null && resourceId.startsWith(AJAX_UIDL_URI)) {
         getApplicationManager(application).handleXmlHttpRequest(request,response);
-        if (appContext != null) {
-          appContext.endTransaction(application,request);
-        }
         return;
       }
       variableMap=getVariableMap(application,request);
@@ -111,9 +109,6 @@ synchronized (application) {
  else {
       handleDownload(download,request,response);
     }
-    if (appContext != null) {
-      appContext.endTransaction(application,request);
-    }
   }
  catch (  UIDLTransformerException te) {
     try {
@@ -139,6 +134,9 @@ catch (  Throwable e) {
   }
  finally {
     if (transformer != null)     transformerFactory.releaseTransformer(transformer);
+    if (appContext != null && application != null) {
+      appContext.endTransaction(application,request);
+    }
     ThemeFunctionLibrary.cleanState();
   }
 }
