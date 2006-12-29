@@ -13,10 +13,10 @@
         throw new ThemeException("Failed to read description: " + this.file + ":"+ this.path+ Theme.DESCRIPTIONFILE);
       }
     }
-    Collection fileNames=theme.getFileNames(type);
+    Collection fileNames=theme.getFileNames(type,Theme.MODE_XSLT);
     for (Iterator i=fileNames.iterator(); i.hasNext(); ) {
       entry=jar.getJarEntry(this.path + (String)i.next());
-      try {
+      if (entry.getName().endsWith(".xsl"))       try {
         xslFiles.add(new XSLStream(entry.getName(),jar.getInputStream(entry)));
       }
  catch (      java.io.FileNotFoundException e) {

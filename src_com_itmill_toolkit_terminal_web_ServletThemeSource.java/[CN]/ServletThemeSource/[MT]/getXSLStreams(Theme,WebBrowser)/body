@@ -20,11 +20,13 @@
  catch (      IOException ignored) {
       }
     }
-    Collection fileNames=theme.getFileNames(type);
+    Collection fileNames=theme.getFileNames(type,Theme.MODE_XSLT);
     for (Iterator i=fileNames.iterator(); i.hasNext(); ) {
       String entryName=(String)i.next();
-      entry=context.getResourceAsStream((this.path + entryName));
-      xslFiles.add(new XSLStream(entryName,entry));
+      if (entryName.endsWith(".xsl")) {
+        entry=context.getResourceAsStream((this.path + entryName));
+        xslFiles.add(new XSLStream(entryName,entry));
+      }
     }
   }
   return xslFiles;

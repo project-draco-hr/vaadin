@@ -21,12 +21,10 @@
   }
  else   if (TAG_FILESET.equals(qName)) {
     Fileset fs;
-    if (atts.getValue(ATTR_NAME) != null) {
-      fs=new Fileset(atts.getValue(ATTR_NAME));
-    }
- else {
-      fs=new Fileset(atts.getValue(UNNAMED_FILESET));
-    }
+    String mode=atts.getValue(ATTR_MODE);
+    if (mode != null && mode.length() == 0)     mode=null;
+    if (mode != null && !mode.equals(MODE_UIDL) && !mode.equals(MODE_XSLT))     throw new IllegalStateException("Given mode '" + mode + "' is not supported. (This version only supports '"+ MODE_XSLT+ "' and '"+ MODE_UIDL+ "')");
+    fs=new Fileset(mode);
     if (this.files == null) {
       this.files=fs;
     }
@@ -38,15 +36,35 @@
  else   if (TAG_AUTHOR.equals(qName)) {
     this.author=new Author(atts.getValue(ATTR_NAME),atts.getValue(ATTR_EMAIL));
   }
+ else   if (TAG_MODES.equals(qName)) {
+    if (modesListCurrentlyOpen)     throw new IllegalStateException("Modes element can not be inside another modes element");
+    modesListCurrentlyOpen=true;
+  }
+ else   if (TAG_MODE.equals(qName)) {
+    if (!modesListCurrentlyOpen)     throw new IllegalStateException("Mode elements must be placed inside modes element");
+    if (currentlyOpenMode != null)     throw new IllegalStateException("No mode is allowed inside mode");
+    String name=atts.getValue(ATTR_NAME);
+    if (name == null || name.length() == 0)     throw new IllegalStateException("Name is required for mode elements");
+    this.currentlyOpenMode=name;
+    RequirementCollection rc=new AndRequirement();
+    supportedModes.put(name,rc);
+  }
  else   if (TAG_REQUIRE.equals(qName)) {
-    if (this.openFilesets.isEmpty()) {
-      throw new IllegalStateException("Element '" + TAG_REQUIRE + "' must be within '"+ TAG_FILESET+ "' element.");
+    if (currentlyOpenMode != null) {
+      RequirementCollection rc=(RequirementCollection)supportedModes.get(this.currentlyOpenMode);
+      if (rc == null)       throw new IllegalStateException("Tried to add requirements to mode '" + name + "', but requirements set was not properly created. (internal error)");
+      this.openRequirements.push(rc);
     }
-    Fileset fs=(Fileset)this.openFilesets.peek();
-    this.openRequirements.push(fs.getRequirements());
+ else {
+      if (this.openFilesets.isEmpty()) {
+        throw new IllegalStateException("Element '" + TAG_REQUIRE + "' must be within '"+ TAG_FILESET+ "' element.");
+      }
+      Fileset fs=(Fileset)this.openFilesets.peek();
+      this.openRequirements.push(fs.getRequirements());
+    }
   }
  else   if (TAG_SUPPORTS.equals(qName)) {
-    if (this.openFilesets.isEmpty()) {
+    if (this.openFilesets.isEmpty() && currentlyOpenMode == null) {
       throw new IllegalStateException("Element '" + TAG_REQUIRE + "' must be within '"+ TAG_FILESET+ "' element.");
     }
     if (this.openRequirements.isEmpty()) {
