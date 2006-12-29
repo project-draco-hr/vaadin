@@ -3,26 +3,19 @@
   HttpVariableMap variableMap=null;
   OutputStream out=response.getOutputStream();
   HashSet currentlyDirtyWindowsForThisApplication=new HashSet();
-  WebApplicationContext appContext=null;
   Application application=null;
   try {
-    if (resourcePath == null)     resourcePath=request.getContextPath() + request.getServletPath() + RESOURCE_URI;
     if (handleResourceRequest(request,response))     return;
     if (handleServerCommands(request,response))     return;
     application=getApplication(request);
     if (application == null)     application=createApplication(request);
-    DownloadStream download=null;
-    if (application != null) {
-      appContext=(WebApplicationContext)application.getContext();
-    }
-    if (appContext != null) {
-      appContext.startTransaction(application,request);
-    }
     applicationToLastRequestDate.put(application,new Date());
+    ((WebApplicationContext)application.getContext()).startTransaction(application,request);
+    DownloadStream download=null;
 synchronized (application) {
       String resourceId=request.getPathInfo();
       if (resourceId != null && resourceId.startsWith(AJAX_UIDL_URI)) {
-        getApplicationManager(application).handleXmlHttpRequest(request,response);
+        getApplicationManager(application).handleUidlRequest(request,response);
         return;
       }
       variableMap=getVariableMap(application,request);
@@ -64,23 +57,58 @@ synchronized (application) {
           terminalType=WebBrowserProbe.getTerminalType(request.getSession());
           window.setTerminal(terminalType);
         }
-        UIDLTransformerType transformerType=null;
-        if (window.getTheme() != null) {
-          Theme activeTheme;
-          if ((activeTheme=this.themeSource.getThemeByName(window.getTheme())) != null) {
-            transformerType=new UIDLTransformerType(terminalType,activeTheme);
+        Theme theme=themeSource.getThemeByName(window.getTheme() != null ? window.getTheme() : DEFAULT_THEME);
+        if (theme == null)         throw new ServletException("Default theme (named '" + DEFAULT_THEME + "') can not be found");
+        String renderingMode=theme.getPreferredMode(terminalType,themeSource);
+        if (Theme.MODE_UIDL.equals(renderingMode)) {
+          response.setContentType("text/html");
+          BufferedWriter page=new BufferedWriter(new OutputStreamWriter(out));
+          page.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" " + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n");
+          page.write("<html><head>\n<title>" + window.getCaption() + "</title>\n");
+          Theme t=theme;
+          Vector themes=new Vector();
+          themes.add(t);
+          while (t.getParent() != null) {
+            String parentName=t.getParent();
+            t=themeSource.getThemeByName(parentName);
+            themes.add(t);
           }
- else {
-            Log.info("Theme named '" + window.getTheme() + "' not found. Using system default theme.");
+          for (int k=themes.size() - 1; k >= 0; k--) {
+            t=(Theme)themes.get(k);
+            Collection files=t.getFileNames(terminalType,Theme.MODE_UIDL);
+            for (Iterator i=files.iterator(); i.hasNext(); ) {
+              String file=(String)i.next();
+              if (file.endsWith(".css"))               page.write("<link rel=\"stylesheet\" href=\"" + getResourceLocation(t.getName(),new ThemeResource(file)) + "\" type=\"text/css\" />\n");
+ else               if (file.endsWith(".js"))               page.write("<script src=\"" + getResourceLocation(t.getName(),new ThemeResource(file)) + "\" type=\"text/javascript\"></script>\n");
+            }
           }
+          page.write("</head><body>\n");
+          page.write("<div id=\"ajax-wait\"><div>Loading...</div></div>\n");
+          page.write("<div id=\"ajax-window\"></div>\n");
+          page.write("<script language=\"JavaScript\">\n");
+          page.write("var client = new ITMillToolkitClient(" + "document.getElementById('ajax-window')," + "\"" + getApplicationUrl(request) + "/UIDL/"+ "\",\""+ resourcePath+ ((Theme)themes.get(themes.size() - 1)).getName()+ "/"+ "client/\",document.getElementById('ajax-wait'));\n");
+          for (int k=themes.size() - 1; k >= 0; k--) {
+            t=(Theme)themes.get(k);
+            String themeObjName=t.getName() + "Theme";
+            themeObjName=themeObjName.substring(0,1).toUpperCase() + themeObjName.substring(1);
+            page.write(" (new " + themeObjName + "(\""+ resourcePath+ ((Theme)themes.get(k)).getName()+ "/\")).registerTo(client);\n");
+          }
+          page.write("client.start();\n");
+          page.write("</script>\n");
+          page.write("</body></html>\n");
+          page.close();
+          return;
         }
-        if (transformerType == null) {
-          Theme defaultTheme=this.themeSource.getThemeByName(ApplicationServlet.DEFAULT_THEME);
-          if (defaultTheme == null) {
-            throw new ServletException("Default theme not found in the specified theme source(s).");
-          }
-          transformerType=new UIDLTransformerType(terminalType,defaultTheme);
+        if (!Theme.MODE_XSLT.equals(renderingMode)) {
+          response.setContentType("text/html");
+          BufferedWriter page=new BufferedWriter(new OutputStreamWriter(out));
+          page.write("<html><head></head><body>");
+          page.write("Unsupported browser.");
+          page.write("</body></html>");
+          page.close();
+          return;
         }
+        UIDLTransformerType transformerType=new UIDLTransformerType(terminalType,theme);
         transformer=this.transformerFactory.getTransformer(transformerType);
         response.setContentType(terminalType.getContentType());
         WebPaintTarget paintTarget=transformer.getPaintTarget(variableMap);
@@ -134,9 +162,7 @@ catch (  Throwable e) {
   }
  finally {
     if (transformer != null)     transformerFactory.releaseTransformer(transformer);
-    if (appContext != null && application != null) {
-      appContext.endTransaction(application,request);
-    }
+    if (application != null)     ((WebApplicationContext)application.getContext()).endTransaction(application,request);
     ThemeFunctionLibrary.cleanState();
   }
 }

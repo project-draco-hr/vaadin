@@ -1,0 +1,12 @@
+{
+  if (parentTheme != null && supportedModes.keySet().isEmpty()) {
+    Theme parent=themeSource.getThemeByName(parentTheme);
+    if (parent == null)     throw new IllegalStateException("Parent theme '" + parentTheme + "' is not found for theme '"+ getName()+ "'.");
+    return parent.getPreferredMode(terminal,themeSource);
+  }
+  for (Iterator i=supportedModes.keySet().iterator(); i.hasNext(); ) {
+    String mode=(String)i.next();
+    if (supportsMode(mode,terminal,themeSource))     return mode;
+  }
+  return null;
+}

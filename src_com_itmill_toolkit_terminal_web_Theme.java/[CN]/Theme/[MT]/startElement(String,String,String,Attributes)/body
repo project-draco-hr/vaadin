@@ -9,7 +9,8 @@
  else   if (TAG_EXTENDS.equals(qName)) {
     String themeName=atts.getValue(ATTR_THEME);
     if (this.name.equals(themeName))     throw new IllegalArgumentException("Theme " + this.name + " extends itself.");
-    this.parentThemes.add(themeName);
+    if (parentTheme != null)     throw new IllegalArgumentException("Only one extends statement is allowed");
+    this.parentTheme=themeName;
   }
  else   if (TAG_FILE.equals(qName)) {
     File f=new File(atts.getValue(ATTR_NAME));
