@@ -28,7 +28,7 @@ synchronized (application) {
         response.setHeader("Pragma","no-cache");
         response.setDateHeader("Expires",0);
         Window window=null;
-        if (application.isRunning())         window=getApplicationWindow(request,application);
+        if (application.isRunning())         window=getApplicationWindow(request,application,unhandledParameters);
         if (window != null && unhandledParameters != null && !unhandledParameters.isEmpty()) {
           try {
             window.handleParameters(unhandledParameters);
@@ -60,7 +60,8 @@ synchronized (application) {
         Theme theme=themeSource.getThemeByName(window.getTheme() != null ? window.getTheme() : DEFAULT_THEME);
         if (theme == null)         throw new ServletException("Default theme (named '" + DEFAULT_THEME + "') can not be found");
         String renderingMode=theme.getPreferredMode(terminalType,themeSource);
-        if (Theme.MODE_UIDL.equals(renderingMode)) {
+        if (unhandledParameters.get("renderingMode") != null)         renderingMode=(String)((Object[])unhandledParameters.get("renderingMode"))[0];
+        if (Theme.MODE_UIDL.equals(renderingMode) && !(window instanceof DebugWindow)) {
           response.setContentType("text/html");
           BufferedWriter page=new BufferedWriter(new OutputStreamWriter(out));
           page.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" " + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n");
@@ -94,13 +95,14 @@ synchronized (application) {
             themeObjName=themeObjName.substring(0,1).toUpperCase() + themeObjName.substring(1);
             page.write(" (new " + themeObjName + "(\""+ resourcePath+ ((Theme)themes.get(k)).getName()+ "/\")).registerTo(client);\n");
           }
+          if (isDebugMode(unhandledParameters))           page.write("client.debugEnabled =true;\n");
           page.write("client.start();\n");
           page.write("</script>\n");
           page.write("</body></html>\n");
           page.close();
           return;
         }
-        if (!Theme.MODE_XSLT.equals(renderingMode)) {
+        if (!Theme.MODE_XSLT.equals(renderingMode) && !(window instanceof DebugWindow)) {
           response.setContentType("text/html");
           BufferedWriter page=new BufferedWriter(new OutputStreamWriter(out));
           page.write("<html><head></head><body>");

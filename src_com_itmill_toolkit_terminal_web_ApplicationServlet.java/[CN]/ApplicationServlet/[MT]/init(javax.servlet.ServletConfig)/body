@@ -14,8 +14,9 @@
     String name=(String)e.nextElement();
     this.applicationProperties.setProperty(name,context.getInitParameter(name));
   }
-  String debug=getApplicationOrSystemProperty(PARAMETER_DEBUG,"false");
-  this.debugMode=debug.equals("true");
+  String debug=getApplicationOrSystemProperty(PARAMETER_DEBUG,"").toLowerCase();
+  if (!"".equals(debug) && !"true".equals(debug) && !"false".equals(debug))   throw new ServletException("If debug parameter is given for an application, it must be 'true' or 'false'");
+  this.debugMode=debug;
   this.maxConcurrentTransformers=Integer.parseInt(getApplicationOrSystemProperty(PARAMETER_MAX_TRANSFORMERS,"-1"));
   if (this.maxConcurrentTransformers < 1)   this.maxConcurrentTransformers=DEFAULT_MAX_TRANSFORMERS;
   this.transformerCacheTime=Integer.parseInt(getApplicationOrSystemProperty(PARAMETER_TRANSFORMER_CACHETIME,"-1")) * 1000;

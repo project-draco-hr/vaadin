@@ -24,14 +24,21 @@
       return null;
     }
   }
-  if (this.debugMode && application.getWindow(DebugWindow.WINDOW_NAME) == null)   try {
-    DebugWindow debugWindow=new DebugWindow(application,request.getSession(false),this);
-    debugWindow.setWidth(370);
-    debugWindow.setHeight(480);
-    application.addWindow(debugWindow);
+  Window debugWindow=application.getWindow(DebugWindow.WINDOW_NAME);
+  if (debugWindow == null) {
+    if (isDebugMode(params))     try {
+      debugWindow=new DebugWindow(application,request.getSession(false),this);
+      debugWindow.setWidth(370);
+      debugWindow.setHeight(480);
+      application.addWindow(debugWindow);
+    }
+ catch (    Exception e) {
+      throw new ServletException("Failed to create debug window for application",e);
+    }
   }
- catch (  Exception e) {
-    throw new ServletException("Failed to create debug window for application",e);
+ else   if (window != debugWindow) {
+    if (isDebugMode(params))     debugWindow.requestRepaint();
+ else     application.removeWindow(debugWindow);
   }
   return window;
 }
