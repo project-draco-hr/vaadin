@@ -57,8 +57,12 @@ synchronized (application) {
           terminalType=WebBrowserProbe.getTerminalType(request.getSession());
           window.setTerminal(terminalType);
         }
-        Theme theme=themeSource.getThemeByName(window.getTheme() != null ? window.getTheme() : DEFAULT_THEME);
-        if (theme == null)         throw new ServletException("Default theme (named '" + DEFAULT_THEME + "') can not be found");
+        String themeName=window.getTheme() != null ? window.getTheme() : DEFAULT_THEME;
+        if (unhandledParameters.get("theme") != null) {
+          themeName=(String)((Object[])unhandledParameters.get("theme"))[0];
+        }
+        Theme theme=themeSource.getThemeByName(themeName);
+        if (theme == null)         throw new ServletException("Theme (named '" + themeName + "') can not be found");
         String renderingMode=theme.getPreferredMode(terminalType,themeSource);
         if (unhandledParameters.get("renderingMode") != null)         renderingMode=(String)((Object[])unhandledParameters.get("renderingMode"))[0];
         if (Theme.MODE_UIDL.equals(renderingMode) && !(window instanceof DebugWindow)) {
@@ -88,11 +92,10 @@ synchronized (application) {
           page.write("<div id=\"ajax-window\"></div>\n");
           page.write("<script language=\"JavaScript\">\n");
           String appUrl=getApplicationUrl(request).toString();
-          page.write("var client = new ITMillToolkitClient(" + "document.getElementById('ajax-window')," + "\"" + appUrl + (appUrl.endsWith("/") ? "" : "/")+ "UIDL/"+ "\",\""+ resourcePath+ ((Theme)themes.get(themes.size() - 1)).getName()+ "/"+ "client/\",document.getElementById('ajax-wait'));\n");
+          page.write("var client = new itmill.toolkit.Client(" + "document.getElementById('ajax-window')," + "\"" + appUrl + (appUrl.endsWith("/") ? "" : "/")+ "UIDL/"+ "\",\""+ resourcePath+ ((Theme)themes.get(themes.size() - 1)).getName()+ "/"+ "client/\",document.getElementById('ajax-wait'));\n");
           for (int k=themes.size() - 1; k >= 0; k--) {
             t=(Theme)themes.get(k);
-            String themeObjName=t.getName() + "Theme";
-            themeObjName=themeObjName.substring(0,1).toUpperCase() + themeObjName.substring(1);
+            String themeObjName="itmill.toolkit.themes." + t.getName().substring(0,1).toUpperCase() + t.getName().substring(1);
             page.write(" (new " + themeObjName + "(\""+ resourcePath+ ((Theme)themes.get(k)).getName()+ "/\")).registerTo(client);\n");
           }
           if (isDebugMode(unhandledParameters))           page.write("client.debugEnabled =true;\n");
