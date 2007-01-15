@@ -65,11 +65,11 @@ synchronized (application) {
         if (theme == null)         throw new ServletException("Theme (named '" + themeName + "') can not be found");
         String renderingMode=theme.getPreferredMode(terminalType,themeSource);
         if (unhandledParameters.get("renderingMode") != null)         renderingMode=(String)((Object[])unhandledParameters.get("renderingMode"))[0];
-        if (Theme.MODE_UIDL.equals(renderingMode) && !(window instanceof DebugWindow)) {
+        if (Theme.MODE_AJAX.equals(renderingMode) && !(window instanceof DebugWindow)) {
           writeAjaxPage(request,response,out,unhandledParameters,window,terminalType,theme);
           return;
         }
-        if (!Theme.MODE_XSLT.equals(renderingMode) && !(window instanceof DebugWindow)) {
+        if (!Theme.MODE_HTML.equals(renderingMode) && !(window instanceof DebugWindow)) {
           response.setContentType("text/html");
           BufferedWriter page=new BufferedWriter(new OutputStreamWriter(out));
           page.write("<html><head></head><body>");
