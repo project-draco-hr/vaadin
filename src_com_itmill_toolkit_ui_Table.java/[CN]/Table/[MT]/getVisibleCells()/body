@@ -15,9 +15,17 @@
   int rows=size();
   if (rows > 0 && firstIndex >= 0)   rows-=firstIndex;
   if (pagelen > 0 && pagelen < rows)   rows=pagelen;
+  if (reqRowsToPaint >= 0)   rows=reqRowsToPaint;
+  Object id;
+  if (reqFirstRowToPaint >= 0 && reqFirstRowToPaint < size())   firstIndex=reqFirstRowToPaint;
+  if (rows + firstIndex > size())   rows=size() - firstIndex;
+  if (items instanceof Container.Indexed)   id=((Container.Indexed)items).getIdByIndex(firstIndex);
+ else {
+    id=((Container.Ordered)items).firstItemId();
+    for (int i=0; i < firstIndex; i++)     id=((Container.Ordered)items).nextItemId(id);
+  }
   Object[][] cells=new Object[cols + CELL_FIRSTCOL][rows];
   if (rows == 0)   return cells;
-  Object id=getCurrentPageFirstItemId();
   int headmode=getRowHeaderMode();
   boolean[] iscomponent=new boolean[cols];
   for (int i=0; i < cols; i++)   iscomponent[i]=Component.class.isAssignableFrom(getType(colids[i]));
