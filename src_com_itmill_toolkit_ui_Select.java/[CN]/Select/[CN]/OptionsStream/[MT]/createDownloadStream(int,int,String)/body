@@ -1,0 +1,15 @@
+{
+  ByteArrayOutputStream os=new ByteArrayOutputStream();
+  OutputStreamWriter osw=new OutputStreamWriter(os,Charset.forName("utf-8"));
+  String json=getJSON(size,first,filter);
+  try {
+    osw.write(json);
+    osw.flush();
+    os.flush();
+  }
+ catch (  IOException e) {
+    e.printStackTrace();
+  }
+  DownloadStream ds=new DownloadStream(new ByteArrayInputStream(os.toByteArray()),"text/plain;charset=utf-8","options.js");
+  return ds;
+}

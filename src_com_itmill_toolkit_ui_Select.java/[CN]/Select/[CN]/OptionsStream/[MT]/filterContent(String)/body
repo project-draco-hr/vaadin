@@ -1,0 +1,20 @@
+{
+  if ("".equals(prefix)) {
+    this.filteredItemsBuffer=new ArrayList(getItemIds());
+    return this.filteredItemsBuffer;
+  }
+ else   if (items != null) {
+    this.filteredItemsBuffer=new ArrayList();
+    for (Iterator iter=items.getItemIds().iterator(); iter.hasNext(); ) {
+      Object id=iter.next();
+      Item item=getItem(id);
+      String test="";
+      if (getItemCaptionMode() == ITEM_CAPTION_MODE_PROPERTY)       test=item.getItemProperty(getItemCaptionPropertyId()).getValue().toString().trim();
+ else       test=String.valueOf(id);
+      if (test.toLowerCase().startsWith(prefix)) {
+        this.filteredItemsBuffer.add(id);
+      }
+    }
+  }
+  return this.filteredItemsBuffer;
+}
