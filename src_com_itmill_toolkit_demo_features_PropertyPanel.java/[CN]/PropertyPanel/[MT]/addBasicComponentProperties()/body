@@ -9,7 +9,9 @@
     sampleException=e;
   }
   set.replaceWithSelect("componentError",new Object[]{null,new UserError("Sample text error message."),new UserError("<h3>Error message formatting</h3><p>Error messages can " + "contain any UIDL formatting, like: <ul><li><b>Bold" + "</b></li><li><i>Italic</i></li></ul></p>",UserError.CONTENT_UIDL,ErrorMessage.INFORMATION),new SystemError("This is an example of exception error reposting",sampleException)},new Object[]{"No error","Sample text error","Sample Formatted error","Sample System Error"});
-  set.replaceWithSelect("style",new Object[]{null},new Object[]{"Default"}).setNewItemsAllowed(true);
+  String currentStyle=((Component)objectToConfigure).getStyle();
+  if (currentStyle == null)   set.replaceWithSelect("style",new Object[]{null},new Object[]{"Default"}).setNewItemsAllowed(true);
+ else   set.replaceWithSelect("style",new Object[]{null,currentStyle},new Object[]{"Default",currentStyle}).setNewItemsAllowed(true);
   set.getField("caption").setDescription("Component caption is the title of the component. Usage of the caption is optional and the " + "exact behavior of the propery is defined by the component. Setting caption null " + "or empty disables the caption.");
   set.getField("enabled").setDescription("Enabled property controls the usage of the component. If the component is disabled (enabled=false)," + " it can not receive any events from the terminal. In most cases it makes the usage" + " of the component easier, if the component visually looks disbled (for example is grayed), "+ "when it can not be used.");
   set.getField("icon").setDescription("Icon of the component selects the main icon of the component. The usage of the icon is identical " + "to caption and in most components caption and icon are kept together. Icons can be " + "loaded from any resources (see Terminal/Resources for more information). Some components "+ "contain more than just the captions icon. Those icons are controlled through their "+ "own properties.");
