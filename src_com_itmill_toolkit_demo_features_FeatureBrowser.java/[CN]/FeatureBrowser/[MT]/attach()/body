@@ -8,17 +8,11 @@
   features.setItemCaptionPropertyId("name");
   features.addListener(this);
   features.setImmediate(true);
-  layout=new GridLayout(2,1);
+  layout=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
   setCompositionRoot(layout);
-  OrderedLayout left=new OrderedLayout();
+  OrderedLayout left=new OrderedLayout(OrderedLayout.ORIENTATION_VERTICAL);
   left.addComponent(features);
-  layout.addComponent(left,0,0,0,0);
-  Label greeting=new Label(WELCOME_TEXT,Label.CONTENT_XHTML);
-  OrderedLayout welcomePanel=new OrderedLayout();
-  welcome=new Embedded("",new ClassResource(getClass(),"itmill.gif",getApplication()));
-  welcomePanel.addComponent(welcome);
-  welcomePanel.addComponent(greeting);
-  layout.addComponent(welcomePanel,1,0,1,0);
+  layout.addComponent(left);
   left.addComponent(themeSelector);
   themeSelector.addItem("corporate");
   themeSelector.addItem("base");
@@ -54,4 +48,12 @@
   registerFeature("/Data Model/Buffering",new FeatureBuffering());
   registerFeature("/Terminal/Parameters and URI Handling",new FeatureParameters());
   for (Iterator i=features.getItemIds().iterator(); i.hasNext(); )   features.expandItem(i.next());
+  currentFeature=new FeatureButton();
+  layout.addComponent(currentFeature);
+  right=new OrderedLayout(OrderedLayout.ORIENTATION_VERTICAL);
+  layout.addComponent(right);
+  Select propertiesSelect=new Select("Show properties");
+  right.addComponent(propertiesSelect);
+  properties=currentFeature.getPropertyPanel();
+  right.addComponent(properties);
 }
