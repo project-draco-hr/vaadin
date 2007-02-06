@@ -24,6 +24,7 @@
   Button close=new Button("restart",getApplication(),"close");
   close.setStyle("link");
   left.addComponent(close);
+  registerFeature("/Welcome",new IntroWelcome());
   registerFeature("/UI Components",new IntroComponents());
   registerFeature("/UI Components/Basic",new IntroBasic());
   registerFeature("/UI Components/Basic/Text Field",new FeatureTextField());
@@ -55,7 +56,7 @@
   registerFeature("/Terminal",new IntroTerminal());
   registerFeature("/Terminal/Parameters and URI Handling",new FeatureParameters());
   for (Iterator i=features.getItemIds().iterator(); i.hasNext(); )   features.expandItem(i.next());
-  currentFeature=new FeatureTable();
+  currentFeature=new IntroWelcome();
   layout.addComponent(currentFeature);
   right=new OrderedLayout(OrderedLayout.ORIENTATION_VERTICAL);
   layout.addComponent(right);
@@ -63,6 +64,8 @@
   propertiesSelect.setSwitchMode(true);
   right.addComponent(propertiesSelect);
   properties=currentFeature.getPropertyPanel();
-  properties.setVisible(false);
-  right.addComponent(properties);
+  if (properties != null) {
+    properties.setVisible(false);
+    right.addComponent(properties);
+  }
 }
