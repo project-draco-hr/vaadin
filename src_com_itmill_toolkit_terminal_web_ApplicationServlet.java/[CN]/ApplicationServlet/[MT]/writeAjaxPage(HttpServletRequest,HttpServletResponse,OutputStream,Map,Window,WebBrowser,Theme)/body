@@ -26,7 +26,9 @@
   page.write("<div id=\"ajax-window\"></div>\n");
   page.write("<script language=\"JavaScript\">\n");
   String appUrl=getApplicationUrl(request).toString();
-  page.write("var client = new itmill.Client(" + "document.getElementById('ajax-window')," + "\"" + appUrl + (appUrl.endsWith("/") ? "" : "/")+ "UIDL/"+ "\",\""+ resourcePath+ ((Theme)themes.get(themes.size() - 1)).getName()+ "/"+ "client/\",document.getElementById('ajax-wait'));\n");
+  if (appUrl.endsWith("/"))   appUrl=appUrl.substring(0,appUrl.length() - 1);
+  if (appUrl.endsWith(":80"))   appUrl=appUrl.substring(0,appUrl.length() - 3);
+  page.write("var client = new itmill.Client(" + "document.getElementById('ajax-window')," + "\"" + appUrl + "/UIDL/"+ "\",\""+ resourcePath+ ((Theme)themes.get(themes.size() - 1)).getName()+ "/"+ "client/\",document.getElementById('ajax-wait'));\n");
   t=theme;
   String themeObjName="itmill.themes." + t.getName().substring(0,1).toUpperCase() + t.getName().substring(1);
   page.write(" (new " + themeObjName + "(\""+ resourcePath+ t.getName()+ "/\")).registerTo(client);\n");
