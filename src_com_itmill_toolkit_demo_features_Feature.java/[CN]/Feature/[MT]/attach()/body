@@ -7,21 +7,25 @@
   Component demo=getDemoComponent();
   if (demo != null)   layout.addComponent(demo);
   ts=new TabSheet();
-  layout.addComponent(ts);
   String desc=getDescriptionXHTML();
   String title=getTitle();
-  if (desc != null && title != null) {
+  if (desc != null) {
     GridLayout gl=new GridLayout(2,1);
     if (getImage() != null)     gl.addComponent(new Embedded("",new ClassResource(getImage(),this.getApplication())));
-    gl.addComponent(new Label("<h2>" + title + "</h2>"+ desc,Label.CONTENT_XHTML));
+    String label="";
+    if (title != null)     label+="<h2>" + title + "</h2>";
+    label+=desc;
+    if (propsReminder)     label+=PROP_REMINDER_TEXT;
+    gl.addComponent(new Label(label,Label.CONTENT_XHTML));
     ts.addTab(gl,"Description",null);
   }
+  if (!javadoc.getValue().equals(""))   ts.addTab(javadoc,"Javadoc",null);
   String example=getExampleSrc();
   if (example != null) {
     OrderedLayout l=new OrderedLayout();
-    l.addComponent(new Label("<h2>" + getTitle() + " example</h2>",Label.CONTENT_XHTML));
+    if (getTitle() != null)     l.addComponent(new Label("<b>// " + getTitle() + " example</b>",Label.CONTENT_XHTML));
     l.addComponent(new Label(example,Label.CONTENT_PREFORMATTED));
     ts.addTab(l,"Code Sample",null);
   }
-  ts.addTab(javadoc,"Javadoc",null);
+  layout.addComponent(ts);
 }
