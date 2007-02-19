@@ -1,0 +1,16 @@
+{
+  this.connection=connection;
+  this.queryStatement=queryStatement;
+  refresh();
+  ResultSetMetaData metadata;
+  metadata=result.getMetaData();
+  int count=metadata.getColumnCount();
+  ArrayList list=new ArrayList(count);
+  for (int i=1; i <= count; i++) {
+    String columnName=metadata.getColumnName(i);
+    list.add(columnName);
+    Property p=getContainerProperty(new Integer(1),columnName);
+    propertyTypes.put(columnName,p == null ? Object.class : p.getType());
+  }
+  propertyIds=Collections.unmodifiableCollection(list);
+}
