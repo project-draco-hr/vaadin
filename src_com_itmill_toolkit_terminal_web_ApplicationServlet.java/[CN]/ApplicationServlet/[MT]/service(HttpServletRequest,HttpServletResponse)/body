@@ -30,12 +30,20 @@ synchronized (application) {
         }
         Theme theme=themeSource.getThemeByName(themeName);
         String renderingMode=theme.getPreferredMode(wb,themeSource);
-        if (unhandledParameters.get("renderingMode") != null)         renderingMode=(String)((Object[])unhandledParameters.get("renderingMode"))[0];
         if (Theme.MODE_AJAX.equals(renderingMode)) {
           wb.setRenderingMode(WebBrowser.RENDERING_MODE_AJAX);
         }
  else {
           wb.setRenderingMode(WebBrowser.RENDERING_MODE_HTML);
+        }
+      }
+      if (unhandledParameters.get("renderingMode") != null) {
+        String renderingMode=(String)((Object[])unhandledParameters.get("renderingMode"))[0];
+        if (renderingMode.equals("html")) {
+          wb.setRenderingMode(WebBrowser.RENDERING_MODE_HTML);
+        }
+ else {
+          wb.setRenderingMode(WebBrowser.RENDERING_MODE_AJAX);
         }
       }
       if (application.isRunning())       download=handleURI(application,request,response);
@@ -68,9 +76,8 @@ synchronized (application) {
           page.close();
           return;
         }
-        WebBrowser terminalType=(WebBrowser)window.getTerminal();
-        if (terminalType == null) {
-          window.setTerminal(terminalType=wb);
+        if (window.getTerminal() == null) {
+          window.setTerminal(wb);
         }
         String themeName=window.getTheme() != null ? window.getTheme() : DEFAULT_THEME;
         if (unhandledParameters.get("theme") != null) {
@@ -78,12 +85,12 @@ synchronized (application) {
         }
         Theme theme=themeSource.getThemeByName(themeName);
         if (theme == null)         throw new ServletException("Theme (named '" + themeName + "') can not be found");
-        if (terminalType.getRenderingMode() == WebBrowser.RENDERING_MODE_AJAX) {
-          writeAjaxPage(request,response,out,unhandledParameters,window,terminalType,theme);
+        if (wb.getRenderingMode() == WebBrowser.RENDERING_MODE_AJAX) {
+          writeAjaxPage(request,response,out,unhandledParameters,window,wb,theme);
           return;
         }
-        String renderingMode=theme.getPreferredMode(terminalType,themeSource);
-        if (!Theme.MODE_HTML.equals(renderingMode) && !(window instanceof DebugWindow)) {
+        String renderingMode=theme.getPreferredMode(wb,themeSource);
+        if (wb.getRenderingMode() == WebBrowser.RENDERING_MODE_UNDEFINED && !(window instanceof DebugWindow)) {
           response.setContentType("text/html");
           BufferedWriter page=new BufferedWriter(new OutputStreamWriter(out));
           page.write("<html><head></head><body>");
@@ -92,9 +99,9 @@ synchronized (application) {
           page.close();
           return;
         }
-        UIDLTransformerType transformerType=new UIDLTransformerType(terminalType,theme);
+        UIDLTransformerType transformerType=new UIDLTransformerType(wb,theme);
         transformer=this.transformerFactory.getTransformer(transformerType);
-        response.setContentType(terminalType.getContentType());
+        response.setContentType(wb.getContentType());
         WebPaintTarget paintTarget=transformer.getPaintTarget(variableMap);
         DebugWindow debugWindow=(DebugWindow)application.getWindow(DebugWindow.WINDOW_NAME);
         if (debugWindow != null && debugWindow != window) {
