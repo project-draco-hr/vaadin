@@ -30,12 +30,13 @@
   String appUrl="";
   for (int i=0; i < urlParts.length; i++)   appUrl+=(i > 0 ? "/" : "") + urlParts[i];
   if (appUrl.endsWith("/"))   appUrl=appUrl.substring(0,appUrl.length() - 1);
-  page.write("var client = new itmill.Client(" + "document.getElementById('ajax-window')," + "\"" + appUrl + "/UIDL/"+ "\",\""+ resourcePath+ ((Theme)themes.get(themes.size() - 1)).getName()+ "/"+ "client/\",document.getElementById('ajax-wait'));\n");
+  page.write("itmill.tmp = new itmill.Client(" + "document.getElementById('ajax-window')," + "\"" + appUrl + "/UIDL/"+ "\",\""+ resourcePath+ ((Theme)themes.get(themes.size() - 1)).getName()+ "/"+ "client/\",document.getElementById('ajax-wait'));\n");
   t=theme;
   String themeObjName="itmill.themes." + t.getName().substring(0,1).toUpperCase() + t.getName().substring(1);
-  page.write(" (new " + themeObjName + "(\""+ resourcePath+ t.getName()+ "/\")).registerTo(client);\n");
-  if (isDebugMode(unhandledParameters))   page.write("client.debugEnabled =true;\n");
-  page.write("client.start();\n");
+  page.write(" (new " + themeObjName + "(\""+ resourcePath+ t.getName()+ "/\")).registerTo(itmill.tmp);\n");
+  if (isDebugMode(unhandledParameters))   page.write("itmill.tmp.debugEnabled =true;\n");
+  page.write("itmill.tmp.start();\n");
+  page.write("delete itmill.tmp;\n");
   page.write("</script>\n");
   page.write("</body></html>\n");
   page.close();
