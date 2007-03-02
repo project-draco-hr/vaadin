@@ -35,6 +35,10 @@ synchronized (application) {
         if (repaintAll) {
           paintables=new LinkedHashSet();
           paintables.add(window);
+          for (Iterator i=window.getApplication().getWindows().iterator(); i.hasNext(); ) {
+            Window w=(Window)i.next();
+            if (!"native".equals(w.getStyle()) && w != window)             paintables.add(w);
+          }
         }
  else         paintables=getDirtyComponents();
         if (paintables != null) {
