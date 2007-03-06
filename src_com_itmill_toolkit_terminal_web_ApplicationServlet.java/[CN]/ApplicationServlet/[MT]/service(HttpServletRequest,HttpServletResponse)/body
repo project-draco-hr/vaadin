@@ -23,7 +23,7 @@ synchronized (application) {
       Map unhandledParameters=variableMap.handleVariables(request,application);
       WebBrowserProbe.handleProbeRequest(request,unhandledParameters);
       WebBrowser wb=WebBrowserProbe.getTerminalType(request.getSession());
-      if (wb.getRenderingMode() == WebBrowser.RENDERING_MODE_UNDEFINED) {
+      if (unhandledParameters.get("renderingMode").equals("detect") || wb.getRenderingMode() == WebBrowser.RENDERING_MODE_UNDEFINED) {
         String themeName=application.getTheme();
         if (themeName == null)         themeName=DEFAULT_THEME;
         if (unhandledParameters.get("theme") != null) {
@@ -43,7 +43,7 @@ synchronized (application) {
         if (renderingMode.equals("html")) {
           wb.setRenderingMode(WebBrowser.RENDERING_MODE_HTML);
         }
- else {
+ else         if (renderingMode.equals("ajax")) {
           wb.setRenderingMode(WebBrowser.RENDERING_MODE_AJAX);
         }
       }
