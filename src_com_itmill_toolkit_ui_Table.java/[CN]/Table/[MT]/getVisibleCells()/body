@@ -18,9 +18,14 @@
   if (reqRowsToPaint >= 0)   rows=reqRowsToPaint;
   Object id;
   if (reqFirstRowToPaint >= 0 && reqFirstRowToPaint < size())   firstIndex=reqFirstRowToPaint;
-  if (rows + firstIndex > size())   rows=size() - firstIndex;
+  if (size() > 0) {
+    if (rows + firstIndex > size())     rows=size() - firstIndex;
+  }
+ else {
+    rows=0;
+  }
   Object[][] cells=new Object[cols + CELL_FIRSTCOL][rows];
-  if (rows == 0 || size() == 0)   return cells;
+  if (rows == 0)   return cells;
   if (items instanceof Container.Indexed)   id=((Container.Indexed)items).getIdByIndex(firstIndex);
  else {
     id=((Container.Ordered)items).firstItemId();
