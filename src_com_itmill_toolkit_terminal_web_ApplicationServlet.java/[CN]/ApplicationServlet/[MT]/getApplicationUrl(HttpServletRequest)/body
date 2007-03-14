@@ -1,7 +1,7 @@
 {
   URL applicationUrl;
   try {
-    URL reqURL=new URL((request.isSecure() ? "https://" : "http://") + request.getServerName() + ":"+ request.getServerPort()+ request.getRequestURI());
+    URL reqURL=new URL((request.isSecure() ? "https://" : "http://") + request.getServerName() + ((request.isSecure() && request.getServerPort() == 443) || (!request.isSecure() && request.getServerPort() == 80) ? "" : ":" + request.getServerPort())+ request.getRequestURI());
     String servletPath=request.getContextPath() + request.getServletPath();
     if (servletPath.length() == 0 || servletPath.charAt(servletPath.length() - 1) != '/')     servletPath=servletPath + "/";
     applicationUrl=new URL(reqURL,servletPath);
