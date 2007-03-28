@@ -9,4 +9,36 @@
     state=false;
   }
   target.addVariable(this,"state",state);
+  if (actionHandlers != null) {
+    Set actionSet=new LinkedHashSet();
+    for (Iterator ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
+      Action[] aa=((Action.Handler)ahi.next()).getActions(this,this);
+      if (aa != null)       for (int ai=0; ai < aa.length; ai++) {
+        actionSet.add(aa[ai]);
+      }
+    }
+    target.startTag("actions");
+    target.addVariable(this,"action","");
+    for (Iterator i=actionSet.iterator(); i.hasNext(); ) {
+      try {
+        ShortcutAction a=(ShortcutAction)i.next();
+        target.startTag("action");
+        if (a.getCaption() != null)         target.addAttribute("caption",a.getCaption());
+        if (a.getIcon() != null)         target.addAttribute("icon",a.getIcon());
+        target.addAttribute("key",actionMapper.key(a));
+        target.addAttribute("keycode",a.getKeyCode());
+        if (a.getModifiers() != null) {
+          int[] modifiers=a.getModifiers();
+          target.addAttribute("modifiers",modifiers.length);
+          for (int j=0; j < modifiers.length; j++) {
+            target.addAttribute("modifier" + j,modifiers[j]);
+          }
+        }
+        target.endTag("action");
+      }
+ catch (      Exception e) {
+      }
+    }
+    target.endTag("actions");
+  }
 }
