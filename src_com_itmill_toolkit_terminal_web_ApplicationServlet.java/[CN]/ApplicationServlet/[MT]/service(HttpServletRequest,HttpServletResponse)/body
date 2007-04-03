@@ -34,6 +34,7 @@ synchronized (application) {
           themeName=(String)((Object[])unhandledParameters.get("theme"))[0];
         }
         Theme theme=themeSource.getThemeByName(themeName);
+        if (theme == null)         throw new ServletException("Failed to load theme with name " + themeName + ". Check that theme's description.xml "+ "contains correct theme name.");
         String renderingMode=theme.getPreferredMode(wb,themeSource);
         if (Theme.MODE_AJAX.equals(renderingMode)) {
           wb.setRenderingMode(WebBrowser.RENDERING_MODE_AJAX);
