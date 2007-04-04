@@ -1,0 +1,40 @@
+{
+  Window w=new Window("Buffered UI components demo");
+  addWindow(w);
+  setTheme("corporate");
+  Float floatValue=new Float(1.0f);
+  property=new ObjectProperty(floatValue);
+  text=new TextField("TextField (Buffered, using ObjectProperty)",property);
+  text.setImmediate(true);
+  text.setWriteThrough(false);
+  w.addComponent(text);
+  Label propertyState=new Label(property);
+  propertyState.setCaption("Property (data source) state");
+  w.addComponent(propertyState);
+  Label textState=new Label(text);
+  textState.setCaption("TextField state");
+  w.addComponent(textState);
+  w.addComponent(new Button("increase property value",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      Float currentValue=(Float)property.getValue();
+      property.setValue(new Float(currentValue.floatValue() + 1.0));
+    }
+  }
+));
+  w.addComponent(new Button("Write through enabled",new MethodProperty(text,"writeThrough")));
+  w.addComponent(new Button("discard",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      text.discard();
+    }
+  }
+));
+  w.addComponent(new Button("commit",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      text.commit();
+    }
+  }
+));
+  Button restart=new Button("restart",this,"close");
+  restart.setStyle("link");
+  w.addComponent(restart);
+}
