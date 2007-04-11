@@ -1,0 +1,29 @@
+{
+  if (event.getButton().getCaption().equals("Remove")) {
+    Window w=event.getButton().getWindow();
+    FrameWindow.Frameset fs=(FrameWindow.Frameset)windowToFramesetMap.get(w);
+    if (fs == demoWindow.getFrameset() && fs.size() <= 1) {
+    }
+ else     if (fs.size() > 1) {
+      fs.removeFrame(fs.getFrame(w.getName()));
+      windowToFramesetMap.remove(w);
+    }
+ else {
+      FrameWindow.Frameset p=fs.getParentFrameset();
+      if (p != demoWindow.getFrameset() || p.size() > 1)       p.removeFrame(fs);
+      if (p.size() == 0)       p.newFrame(createFrame(p));
+    }
+  }
+  if (event.getButton().getCaption().equals("Split")) {
+    Window w=event.getButton().getWindow();
+    FrameWindow.Frameset fs=(FrameWindow.Frameset)windowToFramesetMap.get(w);
+    int index=0;
+    List l=fs.getFrames();
+    while (index < l.size() && fs.getFrame(index).getWindow() != w)     index++;
+    fs.removeFrame(fs.getFrame(w.getName()));
+    windowToFramesetMap.remove(w);
+    if (index > fs.size())     index=fs.size();
+    fs=fs.newFrameset((Math.random() > 0.5),index);
+    for (int i=2 + (int)(Math.random() * 2.0); i > 0; i--)     fs.newFrame(createFrame(fs));
+  }
+}

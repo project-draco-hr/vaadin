@@ -1,0 +1,16 @@
+{
+  allProperties.removeAllItems();
+  HashSet listed=new HashSet();
+  for (Iterator i=forms.iterator(); i.hasNext(); )   listed.addAll(((Form)i.next()).getItemPropertyIds());
+  BeanInfo info;
+  try {
+    info=Introspector.getBeanInfo(objectToConfigure.getClass());
+  }
+ catch (  IntrospectionException e) {
+    throw new RuntimeException(e.toString());
+  }
+  PropertyDescriptor[] pd=info.getPropertyDescriptors();
+  for (int i=0; i < pd.length; i++) {
+    allProperties.addItem(new Object[]{pd[i].getName(),pd[i].getPropertyType().getName(),(pd[i].getWriteMethod() == null ? "R" : "R/W"),(listed.contains(pd[i].getName()) ? "x" : "")},pd[i]);
+  }
+}

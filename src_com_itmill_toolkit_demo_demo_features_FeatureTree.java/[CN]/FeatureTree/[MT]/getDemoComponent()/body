@@ -1,0 +1,23 @@
+{
+  OrderedLayout l=new OrderedLayout();
+  String[] names=new String[100];
+  for (int i=0; i < names.length; i++)   names[i]=firstnames[(int)(Math.random() * (firstnames.length - 1))] + " " + lastnames[(int)(Math.random() * (lastnames.length - 1))];
+  t=new Tree("Family Tree");
+  for (int i=0; i < 100; i++) {
+    t.addItem(names[i]);
+    String parent=names[(int)(Math.random() * (names.length - 1))];
+    if (t.containsId(parent))     t.setParent(names[i],parent);
+  }
+  for (int i=0; i < 100; i++)   if (!t.hasChildren(names[i]))   t.setChildrenAllowed(names[i],false);
+  l.addComponent(t);
+  l.addComponent(this.actionHandlerSwitch);
+  l.addComponent(new Button("Expand All",this,"expandAll"));
+  l.addComponent(new Button("Collapse All",this,"collapseAll"));
+  propertyPanel=new PropertyPanel(t);
+  Form ap=propertyPanel.createBeanPropertySet(new String[]{"selectable"});
+  Select themes=(Select)propertyPanel.getField("style");
+  themes.addItem("menu").getItemProperty(themes.getItemCaptionPropertyId()).setValue("menu");
+  propertyPanel.addProperties("Tree Properties",ap);
+  setJavadocURL("ui/Tree.html");
+  return l;
+}
