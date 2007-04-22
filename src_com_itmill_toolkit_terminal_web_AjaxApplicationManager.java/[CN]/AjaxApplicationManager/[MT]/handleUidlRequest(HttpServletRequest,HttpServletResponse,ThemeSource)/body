@@ -104,6 +104,34 @@ synchronized (application) {
           }
           paintTarget.endTag("meta");
         }
+        String themeName=application.getTheme() != null ? application.getTheme() : ApplicationServlet.DEFAULT_THEME;
+        for (Iterator i=paintTarget.preCachedResources.iterator(); i.hasNext(); ) {
+          String resource=(String)i.next();
+          InputStream is=null;
+          try {
+            is=themeSource.getResource(themeName + "/" + resource);
+          }
+ catch (          ThemeSource.ThemeException e) {
+            Log.info(e.getMessage());
+          }
+          if (is != null) {
+            paintTarget.startTag("precache");
+            paintTarget.addAttribute("resource",resource);
+            StringBuffer layout=new StringBuffer();
+            try {
+              InputStreamReader r=new InputStreamReader(is);
+              char[] buffer=new char[20000];
+              int charsRead=0;
+              while ((charsRead=r.read(buffer)) > 0)               layout.append(buffer,0,charsRead);
+              r.close();
+            }
+ catch (            java.io.IOException e) {
+              Log.info("Resource transfer failed:  " + request.getRequestURI() + ". ("+ e.getMessage()+ ")");
+            }
+            paintTarget.addCharacterData(layout.toString());
+            paintTarget.endTag("precache");
+          }
+        }
         paintTarget.close();
         out.flush();
       }
