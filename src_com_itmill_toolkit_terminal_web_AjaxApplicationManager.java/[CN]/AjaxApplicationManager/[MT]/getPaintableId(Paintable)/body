@@ -1,8 +1,13 @@
 {
   String id=(String)paintableIdMap.get(paintable);
   if (id == null) {
-    id="PID" + Integer.toString(idSequence++);
-    paintableIdMap.put(paintable,id);
+    String UIID=null;
+    if (paintable instanceof Identifiable)     UIID=((Identifiable)paintable).getUIID();
+    if (UIID != null)     id="PID" + UIID;
+ else {
+      id="PID" + Integer.toString(idSequence++);
+    }
   }
+  paintableIdMap.put(paintable,id);
   return id;
 }
