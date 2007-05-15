@@ -2,7 +2,7 @@
   UIDLTransformer transformer=null;
   HttpVariableMap variableMap=null;
   OutputStream out=response.getOutputStream();
-  HashSet currentlyDirtyWindowsForThisApplication=new HashSet();
+  WeakHashMap currentlyDirtyWindowsForThisApplication=new WeakHashMap();
   Application application=null;
   try {
     if (handleResourceRequest(request,response))     return;
@@ -114,12 +114,12 @@ synchronized (application) {
         }
         window.paint(paintTarget);
         paintTarget.close();
-        Collection dirtyWindows=(Collection)applicationToDirtyWindowSetMap.get(application);
+        WeakHashMap dirtyWindows=(WeakHashMap)applicationToDirtyWindowSetMap.get(application);
         if (dirtyWindows == null) {
-          dirtyWindows=new HashSet();
+          dirtyWindows=new WeakHashMap();
           applicationToDirtyWindowSetMap.put(application,dirtyWindows);
         }
-        currentlyDirtyWindowsForThisApplication.addAll(dirtyWindows);
+        currentlyDirtyWindowsForThisApplication.putAll((Map)dirtyWindows);
         windowPainted(application,window);
         if (debugWindow != null && debugWindow != window) {
           debugWindow.setWindowUIDL(window,paintTarget.getUIDL());
@@ -148,7 +148,7 @@ synchronized (application) {
       Log.except("Failed to write error page: " + t + ". Original exception was: ",te);
     }
     Application currentApplication=getApplication(request);
-    for (Iterator iter=currentlyDirtyWindowsForThisApplication.iterator(); iter.hasNext(); ) {
+    for (Iterator iter=currentlyDirtyWindowsForThisApplication.keySet().iterator(); iter.hasNext(); ) {
       Window dirtyWindow=(Window)iter.next();
       addDirtyWindow(currentApplication,dirtyWindow);
     }
