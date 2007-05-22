@@ -31,16 +31,18 @@
   }
   String[] defaultThemeFiles=new String[]{getApplicationOrSystemProperty(PARAMETER_DEFAULT_THEME_JAR,DEFAULT_THEME_JAR)};
   File f=findDefaultThemeJar(defaultThemeFiles);
+  boolean defaultThemeFound=false;
   try {
-    if (f != null && f.exists())     this.themeSource.add(new JarThemeSource(f,this,""));
- else {
-      Log.warn("Default theme JAR not found in: " + Arrays.asList(defaultThemeFiles));
+    if (f != null && f.exists()) {
+      this.themeSource.add(new JarThemeSource(f,this,""));
+      defaultThemeFound=true;
     }
   }
  catch (  Exception e) {
     throw new ServletException("Failed to load default theme from " + Arrays.asList(defaultThemeFiles),e);
   }
   if (this.themeSource.getThemes().size() <= 0) {
+    if (!defaultThemeFound)     Log.warn("Default theme JAR not found in: " + Arrays.asList(defaultThemeFiles));
     throw new ServletException("No themes found in specified themesources. " + "You can provide themes by e.g. adding " + "itmill-toolkit-x.y.z-themes.jar "+ "to WEB-INF/lib directory.");
   }
   if (this.transformerFactory == null) {
