@@ -42,8 +42,10 @@
     throw new ServletException("Failed to load default theme from " + Arrays.asList(defaultThemeFiles),e);
   }
   if (this.themeSource.getThemes().size() <= 0) {
+    throw new ServletException("No themes found in specified themesources. " + Theme.MESSAGE_CONFIGURE_HELP);
+  }
+  if (this.themeSource.getThemeByName(DEFAULT_THEME) == null) {
     if (!defaultThemeFound)     Log.warn("Default theme JAR not found in: " + Arrays.asList(defaultThemeFiles));
-    throw new ServletException("No themes found in specified themesources. " + "You can provide themes by e.g. adding " + "itmill-toolkit-x.y.z-themes.jar "+ "to WEB-INF/lib directory.");
   }
   if (this.transformerFactory == null) {
     this.transformerFactory=new UIDLTransformerFactory(this.themeSource,this,this.maxConcurrentTransformers,this.transformerCacheTime);
