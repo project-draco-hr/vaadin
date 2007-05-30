@@ -5,6 +5,25 @@
   }
   String resourceId=request.getPathInfo();
   if (resourceId == null || !resourceId.startsWith(RESOURCE_URI))   return false;
+  if (resourceId.endsWith("compiledstyle.css") || resourceId.endsWith("compiledjavascript.js")) {
+    String[] parts=resourceId.split("/");
+    Theme t=themeSource.getThemeByName(parts[2]);
+    try {
+      if (resourceId.endsWith("compiledstyle.css")) {
+        writeCss(response,WebBrowserProbe.getTerminalType(request.getSession()),t);
+      }
+ else {
+        writeJavascript(response,WebBrowserProbe.getTerminalType(request.getSession()),t);
+      }
+    }
+ catch (    IOException e) {
+      e.printStackTrace();
+    }
+    return true;
+  }
+  if (resourceId.endsWith("compiledjavascript.js")) {
+    return true;
+  }
   resourceId=resourceId.substring(RESOURCE_URI.length());
   InputStream data=null;
   try {
