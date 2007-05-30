@@ -9,8 +9,13 @@
     String[] parts=resourceId.split("/");
     Theme t=themeSource.getThemeByName(parts[2]);
     try {
+      WebBrowser wb=WebBrowserProbe.getTerminalType(request.getSession());
+      if (wb == null) {
+        WebBrowserProbe.handleProbeRequest(request,new HashMap());
+        wb=WebBrowserProbe.getTerminalType(request.getSession());
+      }
       if (resourceId.endsWith("compiledstyle.css")) {
-        writeCss(response,WebBrowserProbe.getTerminalType(request.getSession()),t);
+        writeCss(response,wb,t);
       }
  else {
         writeJavascript(response,WebBrowserProbe.getTerminalType(request.getSession()),t);
