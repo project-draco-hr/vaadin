@@ -1,10 +1,12 @@
 {
-  Set apps=applicationToLastRequestDate.keySet();
   int active=0;
-  long now=System.currentTimeMillis();
-  for (Iterator i=apps.iterator(); i.hasNext(); ) {
-    Date lastReq=(Date)applicationToLastRequestDate.get(i.next());
-    if (now - lastReq.getTime() < ACTIVE_USER_REQUEST_INTERVAL)     active++;
+synchronized (applicationToLastRequestDate) {
+    Set apps=applicationToLastRequestDate.keySet();
+    long now=System.currentTimeMillis();
+    for (Iterator i=apps.iterator(); i.hasNext(); ) {
+      Date lastReq=(Date)applicationToLastRequestDate.get(i.next());
+      if (now - lastReq.getTime() < ACTIVE_USER_REQUEST_INTERVAL)       active++;
+    }
   }
   return active;
 }

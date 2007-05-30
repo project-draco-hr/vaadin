@@ -8,14 +8,19 @@
         if (lock != null) synchronized (lock) {
           lock.notifyAll();
         }
-        applicationToServerCommandStreamLock.remove(apps[i]);
+synchronized (applicationToServerCommandStreamLock) {
+          applicationToServerCommandStreamLock.remove(apps[i]);
+        }
+synchronized (applicationToDirtyWindowSetMap) {
+          applicationToDirtyWindowSetMap.remove(apps[i]);
+        }
+synchronized (applicationToLastRequestDate) {
+          applicationToLastRequestDate.remove(apps[i]);
+        }
+synchronized (applicationToAjaxAppMgrMap) {
+          applicationToAjaxAppMgrMap.remove(apps[i]);
+        }
         applications.remove(apps[i]);
-        if (applicationToAjaxAppMgrMap.get((Application)apps[i]) == null) {
-          System.out.println("ERROR: tried to remove nonexistent application (" + (Application)apps[i] + ")");
-        }
- else {
-          applicationToAjaxAppMgrMap.remove((Application)apps[i]);
-        }
       }
     }
   }

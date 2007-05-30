@@ -22,7 +22,10 @@ synchronized (applicationToServerCommandStreamLock) {
     }
     while (applicationToServerCommandStreamLock.get(application) == lock && application.isRunning()) {
 synchronized (application) {
-        Date lastRequest=(Date)applicationToLastRequestDate.get(application);
+        Date lastRequest;
+synchronized (applicationToLastRequestDate) {
+          lastRequest=(Date)applicationToLastRequestDate.get(application);
+        }
         if (lastRequest != null && lastRequest.getTime() + request.getSession().getMaxInactiveInterval() * 1000 < System.currentTimeMillis()) {
           application.close();
         }

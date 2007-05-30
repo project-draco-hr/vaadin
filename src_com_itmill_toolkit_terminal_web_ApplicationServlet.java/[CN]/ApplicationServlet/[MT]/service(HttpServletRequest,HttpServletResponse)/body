@@ -9,7 +9,9 @@
     if (handleServerCommands(request,response))     return;
     application=getApplication(request);
     if (application == null)     application=createApplication(request);
-    applicationToLastRequestDate.put(application,new Date());
+synchronized (applicationToLastRequestDate) {
+      applicationToLastRequestDate.put(application,new Date());
+    }
     ((WebApplicationContext)application.getContext()).startTransaction(application,request);
     DownloadStream download=null;
 synchronized (application) {
@@ -114,9 +116,9 @@ synchronized (application) {
         }
         window.paint(paintTarget);
         paintTarget.close();
-        WeakHashMap dirtyWindows=(WeakHashMap)applicationToDirtyWindowSetMap.get(application);
+        HashMap dirtyWindows=(HashMap)applicationToDirtyWindowSetMap.get(application);
         if (dirtyWindows == null) {
-          dirtyWindows=new WeakHashMap();
+          dirtyWindows=new HashMap();
           applicationToDirtyWindowSetMap.put(application,dirtyWindows);
         }
         currentlyDirtyWindowsForThisApplication.putAll((Map)dirtyWindows);

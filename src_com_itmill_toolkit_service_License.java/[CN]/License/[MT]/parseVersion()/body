@@ -1,0 +1,44 @@
+{
+  equalsToMajor=-1;
+  equalsToOrIsLessThanMajor=-1;
+  equalsToOrIsMoreThanMajor=-1;
+  equalsToMinor=-1;
+  equalsToOrIsLessThanMinor=-1;
+  equalsToOrIsMoreThanMinor=-1;
+  NodeList verL=licenseXML.getElementsByTagName("version");
+  if (verL != null && verL.getLength() > 0) {
+    NodeList checks=verL.item(0).getChildNodes();
+    for (int i=0; i < checks.getLength(); i++) {
+      Node n=checks.item(i);
+      if (n.getNodeType() == Node.ELEMENT_NODE) {
+        Element e=(Element)n;
+        String tag=e.getTagName();
+        String eq=e.getAttribute("equals-to");
+        String eqol=e.getAttribute("equals-to-or-is-less-than");
+        String eqom=e.getAttribute("equals-to-or-is-more-than");
+        if ("major".equalsIgnoreCase(tag)) {
+          if (eq != null && eq.length() > 0) {
+            equalsToMajor=Integer.parseInt(eq);
+          }
+ else           if (eqol != null && eqol.length() > 0) {
+            equalsToOrIsLessThanMajor=Integer.parseInt(eqol);
+          }
+ else           if (eqom != null && eqom.length() > 0) {
+            equalsToOrIsMoreThanMajor=Integer.parseInt(eqom);
+          }
+        }
+ else         if ("minor".equalsIgnoreCase(tag)) {
+          if (eq != null && eq.length() > 0) {
+            equalsToMinor=Integer.parseInt(eq);
+          }
+ else           if (eqol != null && eqol.length() > 0) {
+            equalsToOrIsLessThanMinor=Integer.parseInt(eqol);
+          }
+ else           if (eqom != null && eqom.length() > 0) {
+            equalsToOrIsMoreThanMinor=Integer.parseInt(eqom);
+          }
+        }
+      }
+    }
+  }
+}

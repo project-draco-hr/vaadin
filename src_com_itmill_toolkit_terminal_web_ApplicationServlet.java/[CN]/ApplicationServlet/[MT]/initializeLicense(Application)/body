@@ -1,8 +1,11 @@
 {
-  License license=(License)licenseForApplicationClass.get(application.getClass());
-  if (license == null) {
-    license=new License();
-    licenseForApplicationClass.put(application.getClass(),license);
+  License license;
+synchronized (licenseForApplicationClass) {
+    license=(License)licenseForApplicationClass.get(application.getClass());
+    if (license == null) {
+      license=new License();
+      licenseForApplicationClass.put(application.getClass(),license);
+    }
   }
   application.setToolkitLicense(license);
 }

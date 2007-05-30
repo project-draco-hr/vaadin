@@ -1,42 +1,53 @@
 {
   License license=application.getToolkitLicense();
-  if (!license.hasBeenRead()) {
-    InputStream lis;
-    try {
-      URL url=getServletContext().getResource("/WEB-INF/itmill-toolkit-license.xml");
-      if (url == null) {
-        throw new RuntimeException("License file could not be read. " + "You can install it to " + "WEB-INF/itmill-toolkit-license.xml.");
+  if (!license.hasBeenRead()) synchronized (license) {
+    if (!license.hasBeenRead()) {
+      InputStream lis;
+      try {
+        URL url=getServletContext().getResource("/WEB-INF/itmill-toolkit-license.xml");
+        if (url == null) {
+          throw new RuntimeException("License file could not be read. " + "You can install it to " + "WEB-INF/itmill-toolkit-license.xml.");
+        }
+        lis=url.openStream();
+        license.readLicenseFile(lis);
       }
-      lis=url.openStream();
-      license.readLicenseFile(lis);
+ catch (      MalformedURLException e) {
+        throw new RuntimeException(e);
+      }
+catch (      IOException e) {
+        throw new RuntimeException(e);
+      }
+      if (!licensePrintedForApplicationClass.containsKey(applicationClass)) {
+        licensePrintedForApplicationClass.put(applicationClass,Boolean.TRUE);
+        if (license.shouldLimitsBePrintedOnInit()) {
+          System.out.println(license.getDescription(application.getClass().toString()));
+        }
+      }
+      try {
+        license.check(applicationClass,VERSION_MAJOR,VERSION_MINOR,"IT Mill Toolkit",null);
+      }
+ catch (      LicenseFileHasNotBeenRead e) {
+        application.close();
+        throw e;
+      }
+catch (      LicenseSignatureIsInvalid e) {
+        application.close();
+        throw e;
+      }
+catch (      InvalidLicenseFile e) {
+        application.close();
+        throw e;
+      }
+catch (      LicenseViolation e) {
+        application.close();
+        throw e;
+      }
     }
- catch (    MalformedURLException e) {
-      throw new RuntimeException(e);
-    }
-catch (    IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-  if (!licensePrintedForApplicationClass.containsKey(applicationClass)) {
-    licensePrintedForApplicationClass.put(applicationClass,Boolean.TRUE);
-    if (license.shouldLimitsBePrintedOnInit())     System.out.print(license.getDescription());
   }
   try {
-    license.check(applicationClass,getNumberOfActiveUsers() + 1,VERSION_MAJOR,VERSION_MINOR,"IT Mill Toolkit",null);
+    license.checkConcurrentUsers(getNumberOfActiveUsers() + 1);
   }
- catch (  LicenseFileHasNotBeenRead e) {
-    application.close();
-    throw e;
-  }
-catch (  LicenseSignatureIsInvalid e) {
-    application.close();
-    throw e;
-  }
-catch (  InvalidLicenseFile e) {
-    application.close();
-    throw e;
-  }
-catch (  LicenseViolation e) {
+ catch (  LicenseViolation e) {
     application.close();
     throw e;
   }
