@@ -1,0 +1,162 @@
+{
+  boolean repaintAll=(request.getParameter(GET_PARAM_REPAINT_ALL) != null) || request.getSession().isNew();
+  OutputStream out=response.getOutputStream();
+  try {
+    DownloadStream download=null;
+synchronized (application) {
+      Map unhandledParameters=getVariableMap().handleVariables(request,application);
+      if (application.isRunning())       download=handleURI(application,request,response);
+      if (download == null) {
+        Window window=null;
+        if (application.isRunning())         window=getApplicationWindow(request,application);
+        if (window != null && unhandledParameters != null && !unhandledParameters.isEmpty())         window.handleParameters(unhandledParameters);
+        if (!application.isRunning()) {
+          endApplication(request,response,application);
+          return;
+        }
+        if (window == null)         return;
+        if (isJson) {
+          response.setContentType("application/json; charset=UTF-8");
+          paintTarget=new AjaxJsonPaintTarget(getVariableMap(),this,out);
+        }
+ else {
+          response.setContentType("application/xml; charset=UTF-8");
+          paintTarget=new AjaxXmlPaintTarget(getVariableMap(),this,out);
+        }
+        Set removed=new HashSet(getRemovedWindows());
+        if (removed.size() > 0) {
+          for (Iterator i=removed.iterator(); i.hasNext(); ) {
+            Window w=(Window)i.next();
+            paintTarget.startTag("change");
+            paintTarget.addAttribute("format","uidl");
+            String pid=getPaintableId(w);
+            paintTarget.addAttribute("pid",pid);
+            paintTarget.addAttribute("windowname",w.getName());
+            paintTarget.addAttribute("visible",false);
+            paintTarget.endTag("change");
+            removedWindowNotified(w);
+          }
+        }
+        Set paintables;
+        if (repaintAll) {
+          paintables=new LinkedHashSet();
+          paintables.add(window);
+          for (Iterator i=window.getApplication().getWindows().iterator(); i.hasNext(); ) {
+            Window w=(Window)i.next();
+            if (!"native".equals(w.getStyle()) && w != window)             paintables.add(w);
+          }
+        }
+ else         paintables=getDirtyComponents();
+        if (paintables != null) {
+          List currentPaintables=new ArrayList(paintables);
+          Collections.sort(currentPaintables,new Comparator(){
+            public int compare(            Object o1,            Object o2){
+              if (!(o1 instanceof Window)) {
+                return (o2 instanceof Window) ? 1 : 0;
+              }
+              if (!(o2 instanceof Window)) {
+                return -1;
+              }
+              String n1=((Window)o1).getName();
+              String n2=((Window)o2).getName();
+              if (o1 instanceof FrameWindow) {
+                if (((FrameWindow)o1).getFrameset().getFrame(n2) != null) {
+                  return -1;
+                }
+ else                 if (!(o2 instanceof FrameWindow)) {
+                  return -1;
+                }
+              }
+              if (o2 instanceof FrameWindow) {
+                if (((FrameWindow)o2).getFrameset().getFrame(n1) != null) {
+                  return 1;
+                }
+ else                 if (!(o1 instanceof FrameWindow)) {
+                  return 1;
+                }
+              }
+              return 0;
+            }
+          }
+);
+          for (Iterator i=currentPaintables.iterator(); i.hasNext(); ) {
+            Paintable p=(Paintable)i.next();
+            if (p instanceof Window) {
+              Window w=(Window)p;
+              if (w.getTerminal() == null)               w.setTerminal(application.getMainWindow().getTerminal());
+            }
+            paintTarget.startTag("change");
+            paintTarget.addAttribute("format","uidl");
+            String pid=getPaintableId(p);
+            paintTarget.addAttribute("pid",pid);
+            ((AjaxPaintTarget)paintTarget).setTrackPaints(true);
+            p.paint(paintTarget);
+            if (((AjaxPaintTarget)paintTarget).getNumberOfPaints() <= 0) {
+              paintTarget.addAttribute("visible",false);
+            }
+            paintTarget.endTag("change");
+            paintablePainted(p);
+          }
+        }
+        Paintable f=(Paintable)application.consumeFocus();
+        boolean init=application.ajaxInit();
+        if (init || f != null) {
+          paintTarget.startTag("meta");
+          if (init)           paintTarget.addAttribute("appInit",true);
+          if (f != null) {
+            paintTarget.startTag("focus");
+            paintTarget.addAttribute("pid",getPaintableId(f));
+            paintTarget.endTag("focus");
+          }
+          paintTarget.endTag("meta");
+        }
+        String themeName=application.getTheme() != null ? application.getTheme() : ApplicationServlet.DEFAULT_THEME;
+        for (Iterator i=((AjaxPaintTarget)paintTarget).getPreCachedResources().iterator(); i.hasNext(); ) {
+          String resource=(String)i.next();
+          InputStream is=null;
+          try {
+            is=themeSource.getResource(themeName + "/" + resource);
+          }
+ catch (          ThemeSource.ThemeException e) {
+            Log.info(e.getMessage());
+          }
+          if (is != null) {
+            paintTarget.startTag("precache");
+            paintTarget.addAttribute("resource",resource);
+            StringBuffer layout=new StringBuffer();
+            try {
+              InputStreamReader r=new InputStreamReader(is);
+              char[] buffer=new char[20000];
+              int charsRead=0;
+              while ((charsRead=r.read(buffer)) > 0)               layout.append(buffer,0,charsRead);
+              r.close();
+            }
+ catch (            java.io.IOException e) {
+              Log.info("Resource transfer failed:  " + request.getRequestURI() + ". ("+ e.getMessage()+ ")");
+            }
+            paintTarget.addCharacterData(layout.toString());
+            paintTarget.endTag("precache");
+          }
+        }
+        ((AjaxPaintTarget)paintTarget).close();
+        out.flush();
+      }
+ else {
+        handleDownload(download,request,response);
+      }
+    }
+    out.flush();
+    out.close();
+  }
+ catch (  Throwable e) {
+    OutputStreamWriter w=new OutputStreamWriter(out);
+    PrintWriter err=new PrintWriter(w);
+    err.write("<html><head><title>Application Internal Error</title></head><body>");
+    err.write("<h1>" + e.toString() + "</h1><pre>\n");
+    e.printStackTrace(new PrintWriter(err));
+    err.write("\n</pre></body></html>");
+    err.close();
+  }
+ finally {
+  }
+}
