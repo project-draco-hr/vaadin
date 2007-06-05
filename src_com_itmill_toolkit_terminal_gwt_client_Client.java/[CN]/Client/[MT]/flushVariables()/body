@@ -1,0 +1,20 @@
+{
+  StringBuffer sb=new StringBuffer();
+  int i=0;
+  while (!pendingVariables.isEmpty()) {
+    Variable v=(Variable)pendingVariables.lastElement();
+    pendingVariables.removeElement(v);
+    if (i > 0) {
+      sb.append("&");
+    }
+    String encodedName=URL.encodeComponent(v.getId());
+    sb.append(encodedName);
+    sb.append("=");
+    String encodedValue=URL.encodeComponent(v.getEncodedValue());
+    sb.append(encodedValue);
+  }
+  String buf=sb.toString();
+  console.log("Making following request to server:");
+  console.log(buf);
+  makeUidlRequest(buf);
+}
