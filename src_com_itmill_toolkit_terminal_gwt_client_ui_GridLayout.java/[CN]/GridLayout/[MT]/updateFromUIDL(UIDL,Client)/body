@@ -1,0 +1,19 @@
+{
+  clear();
+  if (uidl.hasAttribute("caption"))   setTitle(uidl.getStringAttribute("caption"));
+  for (Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
+    UIDL r=(UIDL)i.next();
+    if ("gr".equals(r.getTag())) {
+      HorizontalPanel row=new HorizontalPanel();
+      add(row);
+      for (Iterator j=r.getChildIterator(); j.hasNext(); ) {
+        UIDL c=(UIDL)j.next();
+        if ("gc".equals(c.getTag())) {
+          UIDL u=c.getChildUIDL(0);
+          Widget child=client.createWidgetFromUIDL(u);
+          if (child != null)           row.add(child);
+        }
+      }
+    }
+  }
+}
