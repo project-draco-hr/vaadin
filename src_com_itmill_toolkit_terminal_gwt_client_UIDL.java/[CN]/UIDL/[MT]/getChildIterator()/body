@@ -1,16 +1,21 @@
 {
   return new Iterator(){
-    JSONArray children=(JSONArray)((JSONObject)json.get(getTag())).get("c");
-    int index=0;
+    int index=2;
     public void remove(){
       throw new UnsupportedOperationException();
     }
     public Object next(){
-      if (children != null)       return new UIDL((JSONObject)children.get(index++));
+      if (json.size() > index) {
+        JSONValue c=json.get(index++);
+        if (c.isString() != null)         return c.isString().stringValue();
+ else         if (c.isArray() != null)         return new UIDL(c.isArray());
+ else         if (c.isObject() != null)         return new XML(c.isObject());
+ else         throw new IllegalStateException("Illegal child of type " + c.getClass().toString() + " in tag "+ getTag()+ " at index "+ index);
+      }
       return null;
     }
     public boolean hasNext(){
-      return children != null && children.size() > index;
+      return json.size() > index;
     }
   }
 ;
