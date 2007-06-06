@@ -7,20 +7,7 @@
         console.error("Got error");
       }
       public void onResponseReceived(      Request request,      Response response){
-        console.log("Got response:" + response.getText() + "\n");
-        JSONValue update=JSONParser.parse(response.getText().substring(3) + "}");
-        console.log(update.toString());
-        JSONArray changes=(JSONArray)((JSONObject)update).get("changes");
-        for (int i=0; i < changes.size(); i++) {
-          try {
-            console.log("Change " + i);
-            UIDL u=new UIDL((JSONArray)changes.get(i));
-            console.log("\nUIDL = " + u);
-          }
- catch (          Throwable e) {
-            e.printStackTrace();
-          }
-        }
+        handleReceivedJSONMessage(response);
       }
     }
 );
