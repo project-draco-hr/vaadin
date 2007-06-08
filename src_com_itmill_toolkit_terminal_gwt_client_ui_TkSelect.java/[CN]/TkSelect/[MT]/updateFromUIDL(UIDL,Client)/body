@@ -1,8 +1,15 @@
 {
+  this.client=client;
+  this.id=uidl.getStringAttribute("id");
+  this.immediate=uidl.getBooleanAttribute("immediate");
   if (uidl.hasAttribute("caption"))   caption.setText(uidl.getStringAttribute("caption"));
+  if (uidl.hasAttribute("selectmode"))   select.setMultipleSelect(true);
+ else   select.setMultipleSelect(false);
   UIDL options=uidl.getChildUIDL(0);
+  select.clear();
   for (Iterator i=options.getChildIterator(); i.hasNext(); ) {
     UIDL optionUidl=(UIDL)i.next();
     select.addItem(optionUidl.getStringAttribute("caption"),optionUidl.getStringAttribute("key"));
+    if (optionUidl.hasAttribute("selected"))     select.setItemSelected(select.getItemCount() - 1,true);
   }
 }
