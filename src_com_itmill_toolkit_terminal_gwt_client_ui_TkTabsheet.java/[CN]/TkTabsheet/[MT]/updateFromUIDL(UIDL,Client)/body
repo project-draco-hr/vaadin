@@ -1,0 +1,16 @@
+{
+  this.client=client;
+  id=uidl.getId();
+  UIDL tabs=uidl.getChildUIDL(0);
+  for (Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
+    UIDL tab=(UIDL)it.next();
+    if (tab.getBooleanAttribute("selected")) {
+      Widget content=client.createWidgetFromUIDL(tab.getChildUIDL(0));
+      this.add(content,tab.getStringAttribute("caption"));
+      this.selectTab(this.getWidgetIndex(content));
+    }
+ else {
+      this.add(new Label(),tab.getStringAttribute("caption"));
+    }
+  }
+}
