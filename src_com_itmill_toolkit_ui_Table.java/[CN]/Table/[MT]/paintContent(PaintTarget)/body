@@ -64,24 +64,24 @@
       if (cells[CELL_ICON][i] != null)       target.addAttribute("icon",(Resource)cells[CELL_ICON][i]);
       if (cells[CELL_HEADER][i] != null)       target.addAttribute("caption",(String)cells[CELL_HEADER][i]);
     }
+    target.addAttribute("key",Integer.parseInt(cells[CELL_KEY][i].toString()));
     if (actionHandlers != null || isSelectable()) {
-      target.addAttribute("key",(String)cells[CELL_KEY][i]);
       if (isSelected(itemId) && keyIndex < selectedKeys.length) {
         target.addAttribute("selected",true);
         selectedKeys[keyIndex++]=(String)cells[CELL_KEY][i];
       }
     }
     if (actionHandlers != null) {
-      target.startTag("al");
+      ArrayList keys=new ArrayList();
       for (Iterator ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
         Action[] aa=((Action.Handler)ahi.next()).getActions(itemId,this);
         if (aa != null)         for (int ai=0; ai < aa.length; ai++) {
           String key=actionMapper.key(aa[ai]);
           actionSet.add(aa[ai]);
-          target.addSection("ak",key);
+          keys.add(key);
         }
       }
-      target.endTag("al");
+      target.addAttribute("al",keys.toArray());
     }
     int currentColumn=0;
     for (Iterator it=this.visibleColumns.iterator(); it.hasNext(); currentColumn++) {
@@ -89,10 +89,10 @@
       if (columnId == null || this.isColumnCollapsed(columnId))       continue;
       if ((iscomponent[currentColumn] || iseditable) && Component.class.isInstance(cells[CELL_FIRSTCOL + currentColumn][i])) {
         Component c=(Component)cells[CELL_FIRSTCOL + currentColumn][i];
-        if (c == null)         target.addSection("label","");
+        if (c == null)         target.addText("");
  else         c.paint(target);
       }
- else       target.addSection("label",(String)cells[CELL_FIRSTCOL + currentColumn][i]);
+ else       target.addText((String)cells[CELL_FIRSTCOL + currentColumn][i]);
     }
     target.endTag("tr");
   }
@@ -109,8 +109,8 @@
   target.addVariable(this,"reqrows",reqRowsToPaint);
   target.addVariable(this,"reqfirstrow",reqFirstRowToPaint);
   if (!actionSet.isEmpty()) {
-    target.startTag("actions");
     target.addVariable(this,"action","");
+    target.startTag("actions");
     for (Iterator it=actionSet.iterator(); it.hasNext(); ) {
       Action a=(Action)it.next();
       target.startTag("action");
