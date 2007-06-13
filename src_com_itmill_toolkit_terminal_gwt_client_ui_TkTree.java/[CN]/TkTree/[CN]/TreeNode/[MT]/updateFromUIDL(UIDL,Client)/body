@@ -1,13 +1,10 @@
 {
   this.setText(uidl.getStringAttribute("caption"));
+  key=uidl.getStringAttribute("key");
   for (Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
     UIDL childUidl=(UIDL)i.next();
-    if (childUidl.getTag().equals("leaf"))     this.addItem(childUidl.getStringAttribute("caption"));
-    if (childUidl.getTag().equals("node")) {
-      TreeNode childTree=new TreeNode();
-      childTree.updateFromUIDL(childUidl,client);
-      this.addItem(childTree);
-    }
+    TreeNode childTree=new TreeNode();
+    childTree.updateFromUIDL(childUidl,client);
+    this.addItem(childTree);
   }
-  if (uidl.getBooleanAttribute("expanded"))   setState(true);
 }
