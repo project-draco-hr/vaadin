@@ -2,15 +2,45 @@
   this.client=client;
   id=uidl.getId();
   UIDL tabs=uidl.getChildUIDL(0);
-  for (Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
-    UIDL tab=(UIDL)it.next();
-    if (tab.getBooleanAttribute("selected")) {
-      Widget content=client.createWidgetFromUIDL(tab.getChildUIDL(0));
-      this.add(content,tab.getStringAttribute("caption"));
-      this.selectTab(this.getWidgetIndex(content));
+  boolean keepCurrentTabs=tabKeys.size() == tabs.getNumberOfChildren();
+  for (int i=0; keepCurrentTabs && i < tabKeys.size(); i++)   keepCurrentTabs=tabKeys.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("key")) && captions.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("caption"));
+  if (keepCurrentTabs) {
+    int index=0;
+    for (Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
+      UIDL tab=(UIDL)it.next();
+      if (tab.getBooleanAttribute("selected")) {
+        activeTabIndex=index;
+        Widget content=client.createWidgetFromUIDL(tab.getChildUIDL(0));
+        getTabBar().selectTab(index);
+        DeckPanel dp=getDeckPanel();
+        dp.remove(index);
+        dp.insert(content,index);
+        dp.showWidget(index);
+      }
+      index++;
     }
+  }
  else {
-      this.add(new Label(),tab.getStringAttribute("caption"));
+    tabKeys.clear();
+    captions.clear();
+    clear();
+    int index=0;
+    for (Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
+      UIDL tab=(UIDL)it.next();
+      String key=tab.getStringAttribute("key");
+      String caption=tab.getStringAttribute("caption");
+      captions.add(caption);
+      tabKeys.add(key);
+      if (tab.getBooleanAttribute("selected")) {
+        activeTabIndex=index;
+        Widget content=client.createWidgetFromUIDL(tab.getChildUIDL(0));
+        this.add(content,caption);
+        this.selectTab(this.getWidgetIndex(content));
+      }
+ else {
+        this.add(new Label(),caption);
+      }
+      index++;
     }
   }
 }
