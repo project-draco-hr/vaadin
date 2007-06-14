@@ -1,0 +1,17 @@
+{
+  if (manageCaption) {
+    Layout parent=getParentLayout(component);
+    if (parent != null)     parent.updateCaption(component,uidl);
+  }
+  boolean visible=!uidl.getBooleanAttribute("invisible");
+  component.setVisible(visible);
+  if (!visible)   return true;
+  if (widgetFactory.isCorrectImplementation(component,uidl))   return false;
+  Layout parent=getParentLayout(component);
+  if (parent == null)   return false;
+  Widget w=widgetFactory.createWidget(uidl);
+  registerPaintable(uidl.getId(),(Paintable)w);
+  parent.replaceChildComponent(component,w);
+  ((Paintable)w).updateFromUIDL(uidl,this);
+  return true;
+}
