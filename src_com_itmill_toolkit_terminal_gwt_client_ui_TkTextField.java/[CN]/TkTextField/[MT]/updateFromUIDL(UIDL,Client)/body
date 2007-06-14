@@ -1,24 +1,8 @@
 {
   this.client=client;
   id=uidl.getId();
+  if (client.replaceComponentWithCorrectImplementation(this,uidl))   return;
   if (uidl.hasAttribute("immediate") && uidl.getBooleanAttribute("immediate"))   immediate=true;
-  if (uidl.hasAttribute("caption"))   caption.setText(uidl.getStringAttribute("caption"));
- else   caption.setVisible(false);
-  if (field != null && (uidl.hasAttribute("rows") && !multiline)) {
-    p.remove(p.getWidgetIndex(field));
-  }
-  if (field == null) {
-    if (uidl.hasAttribute("rows")) {
-      field=new TextArea();
-      multiline=true;
-    }
- else {
-      field=new TextBox();
-    }
-    p.add(field);
-  }
-  if (multiline)   field.setHeight(uidl.getStringAttribute("height") + "em");
-  if (uidl.hasAttribute("cols"))   field.setWidth(uidl.getStringAttribute("cols") + "em");
-  field.setText(uidl.getStringVariable("text"));
-  field.addChangeListener(this);
+  if (uidl.hasAttribute("cols"))   setWidth(uidl.getStringAttribute("cols") + "em");
+  setText(uidl.getStringVariable("text"));
 }

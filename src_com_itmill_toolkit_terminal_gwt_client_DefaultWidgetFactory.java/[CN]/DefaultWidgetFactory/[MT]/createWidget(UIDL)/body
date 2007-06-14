@@ -16,7 +16,11 @@
   if ("panel".equals(tag) || "component".equals(tag))   return new TkPanel();
   if ("tabsheet".equals(tag))   return new TkTabsheet();
   if ("embedded".equals(tag))   return new TkEmbedded();
-  if ("textfield".equals(tag))   return new TkTextField();
+  if ("textfield".equals(tag)) {
+    if (uidl.hasAttribute("multiline"))     return new TkTextArea();
+ else     if (uidl.hasAttribute("secret") && uidl.getBooleanAttribute("secret"))     return new TkPasswordField();
+    return new TkTextField();
+  }
   if ("table".equals(tag))   return new TkTable();
   return new TkUnknownComponent();
 }
