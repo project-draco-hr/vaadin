@@ -1,4 +1,20 @@
 {
-  if (!hasChildComponent(component) || uidl == null)   return false;
-  return false;
+  CaptionWrapper wrapper=(CaptionWrapper)componentToWrapper.get(component);
+  if (CaptionWrapper.isNeeded(uidl)) {
+    if (wrapper == null) {
+      wrapper=new CaptionWrapper(component);
+      componentToWrapper.put(component,wrapper);
+    }
+    wrapper.updateCaption(uidl);
+  }
+ else {
+    if (wrapper != null) {
+      int index=getWidgetIndex(wrapper);
+      if (index >= 0) {
+        remove(index);
+        insert(wrapper.getWidget(),index);
+      }
+      componentToWrapper.remove(component);
+    }
+  }
 }
