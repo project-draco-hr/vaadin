@@ -2,6 +2,9 @@
   if (widgetFactory.isCorrectImplementation(currentWidget,uidl))   return false;
   Layout parent=getParentLayout(currentWidget);
   if (parent == null)   return false;
-  parent.replaceChildComponent(currentWidget,createWidgetFromUIDL(uidl));
+  Widget w=widgetFactory.createWidget(uidl);
+  registerPaintable(uidl.getId(),(Paintable)w);
+  parent.replaceChildComponent(currentWidget,w);
+  ((Paintable)w).updateFromUIDL(uidl,this);
   return true;
 }
