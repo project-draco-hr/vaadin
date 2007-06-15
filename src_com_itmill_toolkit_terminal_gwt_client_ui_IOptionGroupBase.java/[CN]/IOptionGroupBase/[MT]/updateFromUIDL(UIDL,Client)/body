@@ -1,0 +1,28 @@
+{
+  this.client=client;
+  this.id=uidl.getId();
+  if (client.updateComponent(this,uidl,true))   return;
+  selectedKeys=uidl.getStringArrayVariableAsSet("selected");
+  readonly=uidl.getBooleanAttribute("readonly");
+  disabled=uidl.getBooleanAttribute("disabled");
+  multiselect="multi".equals(uidl.getStringAttribute("selectmode"));
+  UIDL ops=uidl.getChildUIDL(0);
+  buildOptions(ops);
+  if (uidl.getBooleanAttribute("allownewitem")) {
+    if (newItemField == null) {
+      newItemButton=new IButton();
+      newItemButton.setText("+");
+      newItemButton.addClickListener(this);
+      newItemField=new ITextField();
+    }
+    newItemField.setEnabled(!disabled && !readonly);
+    newItemButton.setEnabled(!disabled && !readonly);
+    if (newItemField != null && newItemField.getParent() == container)     return;
+    container.add(newItemField);
+    container.add(newItemButton);
+  }
+ else   if (newItemField != null) {
+    container.remove(newItemField);
+    container.remove(newItemButton);
+  }
+}

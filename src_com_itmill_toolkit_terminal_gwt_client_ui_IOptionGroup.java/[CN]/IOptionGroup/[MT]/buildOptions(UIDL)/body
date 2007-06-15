@@ -1,0 +1,20 @@
+{
+  panel.clear();
+  for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
+    UIDL opUidl=(UIDL)it.next();
+    CheckBox op;
+    if (multiselect) {
+      op=new ICheckBox();
+      op.setText(opUidl.getStringAttribute("caption"));
+    }
+ else {
+      op=new RadioButton(id,opUidl.getStringAttribute("caption"));
+    }
+    op.setStyleName(CLASSNAME_OPTION);
+    op.setChecked(opUidl.getBooleanAttribute("selected"));
+    op.setEnabled(!opUidl.getBooleanAttribute("disabled") && !readonly && !disabled);
+    op.addClickListener(this);
+    optionsToKeys.put(op,opUidl.getStringAttribute("key"));
+    panel.add(op);
+  }
+}
