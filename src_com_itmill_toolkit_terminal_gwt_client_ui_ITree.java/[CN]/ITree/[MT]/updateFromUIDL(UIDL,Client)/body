@@ -1,21 +1,18 @@
 {
+  if (client.updateComponent(this,uidl,true))   return;
   this.client=client;
-  id=uidl.getId();
-  if (uidl.hasAttribute("caption"))   caption.setText(uidl.getStringAttribute("caption"));
-  tree.clear();
+  this.id=uidl.getId();
+  clear();
   for (Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
     UIDL childUidl=(UIDL)i.next();
-    if (childUidl.getTag().equals("leaf"))     tree.addItem(childUidl.getStringAttribute("caption"));
-    if (childUidl.getTag().equals("node")) {
-      TreeNode childTree=new TreeNode();
-      tree.addItem(childTree);
-      childTree.updateFromUIDL(childUidl,client);
-    }
+    TreeNode childTree=new TreeNode();
+    addItem(childTree);
+    childTree.updateFromUIDL(childUidl,client);
   }
   String selectMode=uidl.getStringAttribute("selectmode");
   selectable=selectMode != null;
   multiselect="multi".equals(selectMode);
-  tree.addTreeListener(new TreeListener(){
+  addTreeListener(new TreeListener(){
     public void onTreeItemStateChanged(    TreeItem item){
     }
     public void onTreeItemSelected(    TreeItem item){

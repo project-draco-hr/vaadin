@@ -1,3 +1,15 @@
 {
-  super.updateFromUIDL(uidl,client);
+  if (client.updateComponent(this,uidl,false))   return;
+  this.client=client;
+  this.id=uidl.getId();
+  if (uidl.hasAttribute("caption"))   caption.setText(uidl.getStringAttribute("caption"));
+ else   caption.setText("");
+  if (uidl.hasAttribute("style"))   setStyleName(CLASSNAME + " " + CLASSNAME+ "-"+ uidl.getStringAttribute("style"));
+ else   setStyleName(CLASSNAME);
+  clear();
+  add(caption);
+  UIDL layoutUidl=uidl.getChildUIDL(0);
+  Widget layout=client.getWidget(layoutUidl);
+  ((Paintable)layout).updateFromUIDL(layoutUidl,client);
+  add(layout);
 }
