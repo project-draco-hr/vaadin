@@ -15,16 +15,14 @@
       Property p=features.getContainerProperty(id,"feature");
       Feature feature=p != null ? ((Feature)p.getValue()) : null;
       if (feature != null) {
-        layout.replaceComponent(currentFeature,feature);
+        mainlayout.removeComponent(currentFeature);
+        mainlayout.removeComponent(currentFeature.getTabSheet());
+        mainlayout.addComponent(feature,"demo");
+        mainlayout.addComponent(feature.getTabSheet(),"tabsheet");
         currentFeature=feature;
         properties=feature.getPropertyPanel();
         if (properties != null) {
-          Iterator i=right.getComponentIterator();
-          i.next();
-          PropertyPanel oldProps=(PropertyPanel)i.next();
-          if (oldProps != null)           right.replaceComponent(oldProps,properties);
- else           right.addComponent(properties);
-          properties.setVisible(((Boolean)propertiesSelect.getValue()).booleanValue());
+          mainlayout.addComponent(properties,"properties");
         }
         getWindow().setCaption("IT Mill Toolkit Features / " + features.getContainerProperty(id,"name"));
       }
