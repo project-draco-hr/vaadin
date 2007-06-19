@@ -1,0 +1,38 @@
+{
+  if (client.updateComponent(this,uidl,true))   return;
+  this.client=client;
+  id=uidl.getId();
+  immediate=uidl.getBooleanAttribute("immediate");
+  int newResolution=RESOLUTION_YEAR;
+  if (uidl.hasAttribute("month"))   newResolution=RESOLUTION_MONTH;
+  if (uidl.hasAttribute("day"))   newResolution=RESOLUTION_DAY;
+  if (uidl.hasAttribute("hour"))   newResolution=RESOLUTION_HOUR;
+  if (uidl.hasAttribute("min"))   newResolution=RESOLUTION_MIN;
+  if (uidl.hasAttribute("sec"))   newResolution=RESOLUTION_SEC;
+  if (uidl.hasAttribute("msec"))   newResolution=RESOLUTION_MSEC;
+  if (currentResolution > newResolution)   container.clear();
+  if (uidl.hasVariable("year")) {
+    int selectedYear=uidl.getIntVariable("year");
+    int y=container.getWidgetIndex(year);
+    if (y > -1) {
+      year=(ListBox)container.getWidget(y);
+      year.setItemSelected(year.getSelectedIndex(),false);
+      for (int i=0; i < year.getItemCount(); i++)       if (year.getValue(i).equals("" + selectedYear)) {
+        year.setSelectedIndex(i);
+        break;
+      }
+    }
+ else {
+      year=new ListBox();
+      year.setStyleName(ISelect.CLASSNAME);
+      int today=1900 + (new Date()).getYear();
+      for (int i=1970; i < today + 400; i++) {
+        year.addItem("" + i,"" + i);
+        if (i == selectedYear)         year.setSelectedIndex(year.getItemCount() - 1);
+      }
+      year.addChangeListener(this);
+      container.add(year);
+    }
+  }
+  currentResolution=newResolution;
+}
