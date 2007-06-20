@@ -1,10 +1,12 @@
 {
   rowRequestHandler.cancel();
-  firstRowInViewPort=scrollTop / rowHeight;
+  firstRowInViewPort=(int)Math.ceil(scrollTop / rowHeight);
   client.console.log("At scrolltop: " + scrollTop + " At row "+ firstRowInViewPort);
   int postLimit=(int)(firstRowInViewPort + pageLength + pageLength * CACHE_REACT_RATE);
+  if (postLimit > totalRows)   postLimit=totalRows;
   int preLimit=(int)(firstRowInViewPort - pageLength * CACHE_REACT_RATE);
-  if (postLimit > lastRendered && (preLimit < 1 || preLimit < firstRendered)) {
+  if (preLimit < 0)   preLimit=0;
+  if ((postLimit <= lastRendered && preLimit >= firstRendered)) {
     client.updateVariable(this.id,"firstvisible",firstRowInViewPort,false);
     return;
   }
@@ -18,7 +20,7 @@
   if (preLimit < firstRendered) {
     client.console.log("Table: need some rows to the beginning of the rendered area");
     rowRequestHandler.setReqFirstRow((int)(firstRowInViewPort - pageLength * CACHE_RATE));
-    rowRequestHandler.setReqRows((int)(2 * CACHE_RATE * pageLength + pageLength));
+    rowRequestHandler.setReqRows(firstRendered - rowRequestHandler.getReqFirstRow());
     rowRequestHandler.deferRowFetch();
     return;
   }

@@ -1,0 +1,30 @@
+{
+  if (uidl == null || reqRows < 1)   return;
+  Iterator it=uidl.getChildIterator();
+  if (firstRendered == -1 || firstRow == lastRendered + 1) {
+    while (it.hasNext()) {
+      appendRow((UIDL)it.next());
+      if (colWidthsInitialized)       resizePostSpacer(-1);
+    }
+    if (firstRendered == -1) {
+      firstRendered=firstRow;
+    }
+  }
+ else   if (firstRendered == firstRow + reqRows) {
+    int rowsAdded=0;
+    while (it.hasNext()) {
+      tBody.insertRow(rowsAdded);
+      resizePreSpacer(-1);
+      updateRow((UIDL)it.next(),rowsAdded);
+    }
+    firstRendered=firstRow;
+  }
+ else {
+    tBody.clear();
+    firstRendered=-1;
+    lastRendered=-1;
+    updateBody(uidl,firstRow,reqRows);
+  }
+  trimBody();
+  if (colWidthsInitialized)   updateSpacers();
+}

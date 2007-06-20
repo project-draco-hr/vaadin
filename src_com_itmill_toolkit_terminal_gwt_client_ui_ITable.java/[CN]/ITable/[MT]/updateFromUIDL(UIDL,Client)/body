@@ -1,8 +1,11 @@
 {
+  if (client.updateComponent(this,uidl,true))   return;
   this.client=client;
   this.id=uidl.getStringAttribute("id");
   this.immediate=uidl.getBooleanAttribute("immediate");
   this.totalRows=uidl.getIntAttribute("totalrows");
+  this.pageLength=uidl.getIntAttribute("pagelength");
+  if (uidl.hasAttribute("rowheaders"))   rowHeaders=true;
   UIDL columnInfo=null;
   UIDL rowData=null;
   for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
@@ -13,12 +16,19 @@
  else     if (c.getTag().equals("visiblecolumns"))     ;
   }
   updateHeader(columnInfo);
-  updateBody(rowData);
+  updateBody(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
   if (!colWidthsInitialized) {
     DeferredCommand.add(new Command(){
       public void execute(){
         initSize();
         updateSpacers();
+        bodyContainer.setScrollPosition(getRowHeight() * (firstRowInViewPort - 1));
+        colWidthsInitialized=true;
+        if (totalRows > lastRendered) {
+          rowRequestHandler.setReqFirstRow(lastRendered + 1);
+          rowRequestHandler.setReqRows((int)(pageLength * CACHE_RATE));
+          rowRequestHandler.deferRowFetch();
+        }
       }
     }
 );
