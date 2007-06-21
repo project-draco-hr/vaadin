@@ -1,0 +1,27 @@
+{
+  Iterator it=uidl.getChildIterator();
+  int curRowIndex=1;
+  while (it.hasNext()) {
+    UIDL row=(UIDL)it.next();
+    int colIndex=0;
+    if (rowHeaders) {
+      tBody.setText(curRowIndex,colIndex,row.getStringAttribute("caption"));
+      colIndex++;
+    }
+    Iterator cells=row.getChildIterator();
+    while (cells.hasNext()) {
+      Object cell=cells.next();
+      if (cell instanceof String) {
+        tBody.setText(curRowIndex,colIndex,(String)cell);
+      }
+ else {
+        Widget cellContent=client.getWidget((UIDL)cell);
+        tBody.setWidget(curRowIndex,colIndex,cellContent);
+      }
+      colIndex++;
+    }
+    Element rowElement=tBody.getRowFormatter().getElement(curRowIndex);
+    DOM.setIntAttribute(rowElement,"key",uidl.getIntAttribute("key"));
+    curRowIndex++;
+  }
+}

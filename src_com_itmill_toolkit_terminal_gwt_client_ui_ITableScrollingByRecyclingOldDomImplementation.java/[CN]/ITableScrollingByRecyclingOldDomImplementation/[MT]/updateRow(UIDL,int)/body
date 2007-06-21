@@ -1,0 +1,19 @@
+{
+  int colIndex=0;
+  if (rowHeaders) {
+    setCellContent(rowIndex,colIndex,uidl.getStringAttribute("caption"));
+    colIndex++;
+  }
+  for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
+    Object cell=it.next();
+    if (cell instanceof String) {
+      setCellContent(rowIndex,colIndex,(String)cell);
+    }
+ else {
+      setCellContent(rowIndex,colIndex,(UIDL)cell);
+    }
+    colIndex++;
+  }
+  Element row=tBody.getRowFormatter().getElement(rowIndex);
+  DOM.setIntAttribute(row,"key",uidl.getIntAttribute("key"));
+}

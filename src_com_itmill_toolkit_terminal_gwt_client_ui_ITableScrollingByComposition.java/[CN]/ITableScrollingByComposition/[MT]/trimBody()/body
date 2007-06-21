@@ -1,0 +1,20 @@
+{
+  int toBeRemovedFromTheBeginning=(int)(firstRowInViewPort - CACHE_RATE * pageLength) - firstRendered;
+  int toBeRemovedFromTheEnd=lastRendered - (int)(firstRowInViewPort + CACHE_RATE * pageLength + pageLength);
+  if (toBeRemovedFromTheBeginning > 0) {
+    while (toBeRemovedFromTheBeginning > 0) {
+      tBody.removeRow(0);
+      firstRendered++;
+      toBeRemovedFromTheBeginning--;
+      updateSpacers();
+    }
+  }
+  if (toBeRemovedFromTheEnd > 0) {
+    while (toBeRemovedFromTheEnd > 0) {
+      tBody.removeRow(tBody.getRowCount() - 1);
+      toBeRemovedFromTheEnd--;
+      lastRendered--;
+      updateSpacers();
+    }
+  }
+}
