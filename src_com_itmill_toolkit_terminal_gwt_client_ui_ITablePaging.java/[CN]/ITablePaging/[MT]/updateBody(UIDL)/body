@@ -2,26 +2,27 @@
   Iterator it=uidl.getChildIterator();
   int curRowIndex=1;
   while (it.hasNext()) {
-    UIDL row=(UIDL)it.next();
+    UIDL rowUidl=(UIDL)it.next();
+    TableRow row=new TableRow(curRowIndex,String.valueOf(rowUidl.getIntAttribute("key")),rowUidl.hasAttribute("selected"));
     int colIndex=0;
     if (rowHeaders) {
-      tBody.setText(curRowIndex,colIndex,row.getStringAttribute("caption"));
+      tBody.setWidget(curRowIndex,colIndex,new BodyCell(row,rowUidl.getStringAttribute("caption")));
       colIndex++;
     }
-    Iterator cells=row.getChildIterator();
+    Iterator cells=rowUidl.getChildIterator();
     while (cells.hasNext()) {
       Object cell=cells.next();
       if (cell instanceof String) {
-        tBody.setText(curRowIndex,colIndex,(String)cell);
+        tBody.setWidget(curRowIndex,colIndex,new BodyCell(row,(String)cell));
       }
  else {
         Widget cellContent=client.getWidget((UIDL)cell);
-        tBody.setWidget(curRowIndex,colIndex,cellContent);
+        BodyCell bodyCell=new BodyCell(row);
+        bodyCell.setWidget(cellContent);
+        tBody.setWidget(curRowIndex,colIndex,bodyCell);
       }
       colIndex++;
     }
-    Element rowElement=tBody.getRowFormatter().getElement(curRowIndex);
-    DOM.setIntAttribute(rowElement,"key",uidl.getIntAttribute("key"));
     curRowIndex++;
   }
 }
