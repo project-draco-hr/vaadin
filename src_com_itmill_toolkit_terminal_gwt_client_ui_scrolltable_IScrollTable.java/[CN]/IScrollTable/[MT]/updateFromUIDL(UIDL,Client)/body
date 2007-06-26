@@ -1,0 +1,30 @@
+{
+  if (client.updateComponent(this,uidl,true))   return;
+  this.client=client;
+  this.id=uidl.getStringAttribute("id");
+  this.immediate=uidl.getBooleanAttribute("immediate");
+  this.totalRows=uidl.getIntAttribute("totalrows");
+  this.pageLength=uidl.getIntAttribute("pagelength");
+  this.firstvisible=uidl.getIntVariable("firstvisible");
+  if (uidl.hasAttribute("rowheaders"))   rowHeaders=true;
+  if (uidl.hasAttribute("width"))   width=uidl.getIntAttribute("width");
+  if (uidl.hasAttribute("height"))   width=uidl.getIntAttribute("height");
+  UIDL columnInfo=null;
+  UIDL rowData=null;
+  for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
+    UIDL c=(UIDL)it.next();
+    if (c.getTag().equals("cols"))     columnInfo=c;
+ else     if (c.getTag().equals("rows"))     rowData=c;
+ else     if (c.getTag().equals("actions"))     updateActionMap(c);
+ else     if (c.getTag().equals("visiblecolumns"))     ;
+  }
+  updateHeader(columnInfo);
+  if (initializedAndAttached) {
+    updateBody(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
+  }
+ else {
+    getTBody().renderInitialRows(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"),totalRows);
+    bodyContainer.add(tBody);
+    initializedAndAttached=true;
+  }
+}

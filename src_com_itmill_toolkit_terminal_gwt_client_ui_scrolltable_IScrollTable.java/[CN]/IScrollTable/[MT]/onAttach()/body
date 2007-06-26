@@ -1,0 +1,27 @@
+{
+  super.onAttach();
+  initColumnWidths();
+  if (height < 0) {
+    bodyContainer.setHeight((tBody.getRowHeight() * pageLength) + "px");
+  }
+ else {
+    bodyContainer.setHeight(height + "px");
+  }
+  if (width < 0) {
+    bodyContainer.setWidth((tBody.getOffsetWidth() + getScrollBarWidth()) + "px");
+  }
+ else {
+    bodyContainer.setWidth(width + "px");
+  }
+  if (firstvisible > 0)   bodyContainer.setScrollPosition(firstvisible * tBody.getRowHeight());
+  DeferredCommand.add(new Command(){
+    public void execute(){
+      if (totalRows - 1 > tBody.getLastRendered()) {
+        rowRequestHandler.setReqFirstRow(tBody.getLastRendered() + 1);
+        rowRequestHandler.setReqRows((int)(pageLength * CACHE_RATE));
+        rowRequestHandler.deferRowFetch();
+      }
+    }
+  }
+);
+}

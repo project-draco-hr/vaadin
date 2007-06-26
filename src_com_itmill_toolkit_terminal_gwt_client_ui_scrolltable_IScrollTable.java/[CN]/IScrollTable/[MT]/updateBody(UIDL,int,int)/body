@@ -1,0 +1,12 @@
+{
+  if (uidl == null || reqRows < 1)   return;
+  tBody.renderRows(uidl,firstRow,reqRows);
+  int optimalFirstRow=(int)(firstRowInViewPort - pageLength * CACHE_RATE);
+  while (tBody.getFirstRendered() < optimalFirstRow) {
+    tBody.unlinkRow(true);
+  }
+  int optimalLastRow=(int)(firstRowInViewPort + pageLength + pageLength * CACHE_RATE);
+  while (tBody.getLastRendered() > optimalLastRow) {
+    tBody.unlinkRow(false);
+  }
+}

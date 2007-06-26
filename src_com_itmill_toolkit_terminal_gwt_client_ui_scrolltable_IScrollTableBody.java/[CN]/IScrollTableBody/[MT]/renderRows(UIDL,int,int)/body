@@ -1,0 +1,35 @@
+{
+  Iterator it=rowData.getChildIterator();
+  if (firstIndex == lastRendered + 1) {
+    while (it.hasNext()) {
+      IScrollTableRow row=createRow((UIDL)it.next());
+      addRow(row);
+      lastRendered++;
+    }
+    fixSpacers();
+  }
+ else   if (firstIndex + rows == firstRendered) {
+    IScrollTableRow[] rowArray=new IScrollTableRow[rows];
+    int i=rows;
+    while (it.hasNext()) {
+      i--;
+      rowArray[i]=createRow((UIDL)it.next());
+    }
+    for (i=0; i < rows; i++) {
+      addRowBeforeFirstRendered(rowArray[i]);
+      firstRendered--;
+    }
+  }
+ else   if (firstIndex > lastRendered || firstIndex + rows < firstRendered) {
+    IScrollTableRow row=createRow((UIDL)it.next());
+    while (lastRendered + 1 > firstRendered)     unlinkRow(false);
+    addRow(row);
+    firstRendered=firstIndex;
+    this.lastRendered=firstIndex + rows - 1;
+    while (it.hasNext())     addRow(createRow((UIDL)it.next()));
+    fixSpacers();
+  }
+ else {
+    client.console.log("Bad update" + firstIndex + "/"+ rows);
+  }
+}
