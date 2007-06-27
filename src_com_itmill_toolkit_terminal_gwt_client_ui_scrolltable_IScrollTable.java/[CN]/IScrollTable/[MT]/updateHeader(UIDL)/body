@@ -1,10 +1,26 @@
 {
   if (uidl == null)   return;
+  int columnCount=uidl.getChidlCount();
+  if (rowHeaders)   columnCount++;
+  tHead.resizeColumns(columnCount);
   for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
     UIDL col=(UIDL)it.next();
     String cid=col.getStringAttribute("cid");
     int colIndex=getColIndexByKey(cid);
-    if (colIndex > -1)     tHead.setWidget(0,colIndex,new HeaderCell(cid,col.getStringAttribute("caption")));
+    if (colIndex > -1) {
+      HeaderCell c=(HeaderCell)tHead.getWidget(0,colIndex);
+      if (c != null && c.getColKey().equals(cid)) {
+        c.setText(col.getStringAttribute("caption"));
+      }
+ else {
+        tHead.setWidget(0,colIndex,new HeaderCell(cid,col.getStringAttribute("caption")));
+      }
+    }
   }
-  if (rowHeaders)   tHead.setWidget(0,0,new HeaderCell("0",""));
+  if (rowHeaders) {
+    HeaderCell c=(HeaderCell)tHead.getWidget(0,0);
+    if (c == null) {
+      tHead.setWidget(0,0,new HeaderCell("0",""));
+    }
+  }
 }
