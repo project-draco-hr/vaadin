@@ -1,2 +1,21 @@
 {
+  CaptionWrapper wrapper=(CaptionWrapper)widgetToCaptionWrapper.get(component);
+  if (CaptionWrapper.isNeeded(uidl)) {
+    if (wrapper == null) {
+      String loc=getLocation(component);
+      super.remove(component);
+      wrapper=new CaptionWrapper(component);
+      super.add(wrapper,(Element)locationToElement.get(loc));
+      widgetToCaptionWrapper.put(component,wrapper);
+    }
+    wrapper.updateCaption(uidl);
+  }
+ else {
+    if (wrapper != null) {
+      String loc=getLocation(component);
+      super.remove(wrapper);
+      super.add(wrapper.getWidget(),(Element)locationToElement.get(loc));
+      widgetToCaptionWrapper.remove(component);
+    }
+  }
 }
