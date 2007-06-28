@@ -5,10 +5,15 @@
   this.immediate=uidl.getBooleanAttribute("immediate");
   this.totalRows=uidl.getIntAttribute("totalrows");
   this.pageLength=uidl.getIntAttribute("pagelength");
-  this.firstvisible=uidl.getIntVariable("firstvisible");
+  if (pageLength == 0)   pageLength=totalRows;
+  this.firstvisible=uidl.hasVariable("firstvisible") ? uidl.getIntVariable("firstvisible") : 0;
   if (uidl.hasAttribute("rowheaders"))   rowHeaders=true;
   if (uidl.hasAttribute("width"))   width=uidl.getIntAttribute("width");
   if (uidl.hasAttribute("height"))   width=uidl.getIntAttribute("height");
+  if (uidl.hasVariable("sortascending")) {
+    this.sortAscending=uidl.getBooleanVariable("sortascending");
+    this.sortColumn=uidl.getStringVariable("sortcolumn");
+  }
   UIDL columnInfo=null;
   UIDL rowData=null;
   for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
