@@ -5,12 +5,12 @@
   firstRowInViewPort=(int)Math.ceil(scrollTop / (double)tBody.getRowHeight());
   client.console.log("At scrolltop: " + scrollTop + " At row "+ firstRowInViewPort);
   int postLimit=(int)(firstRowInViewPort + pageLength + pageLength * CACHE_REACT_RATE);
-  if (postLimit > totalRows)   postLimit=totalRows;
+  if (postLimit > totalRows - 1)   postLimit=totalRows - 1;
   int preLimit=(int)(firstRowInViewPort - pageLength * CACHE_REACT_RATE);
   if (preLimit < 0)   preLimit=0;
   int lastRendered=tBody.getLastRendered();
   int firstRendered=tBody.getFirstRendered();
-  if ((postLimit <= lastRendered && preLimit >= firstRendered)) {
+  if (postLimit <= lastRendered && preLimit >= firstRendered) {
     client.updateVariable(this.id,"firstvisible",firstRowInViewPort,false);
     return;
   }

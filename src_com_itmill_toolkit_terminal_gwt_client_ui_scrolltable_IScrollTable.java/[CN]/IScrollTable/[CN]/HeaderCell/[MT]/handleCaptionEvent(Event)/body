@@ -1,0 +1,45 @@
+{
+switch (DOM.eventGetType(event)) {
+case Event.ONMOUSEDOWN:
+    dragging=true;
+  moved=false;
+DOM.setCapture(getElement());
+System.out.println("Started column reordering");
+this.headerX=tHead.getAbsoluteLeft();
+DOM.eventPreventDefault(event);
+break;
+case Event.ONMOUSEUP:
+dragging=false;
+System.out.println("Stopped column reordering");
+DOM.releaseCapture(getElement());
+break;
+case Event.ONMOUSEMOVE:
+if (dragging) {
+moved=true;
+System.out.print("Dragging column, optimal index...");
+int x=DOM.eventGetClientX(event);
+int slotX=headerX;
+int closestIndex=0;
+int closestDistance=-1;
+int start=0;
+if (rowHeaders) {
+start++;
+slotX+=getColWidth(getColKeyByIndex(0));
+}
+for (int i=start; i < columnWidths.size(); i++) {
+String colKey=getColKeyByIndex(i);
+int dist=Math.abs(x - slotX);
+if (closestDistance == -1 || dist < closestDistance) {
+closestDistance=dist;
+closestIndex=i;
+}
+slotX+=getColWidth(colKey);
+}
+focusSlot(closestIndex);
+System.out.println(closestIndex);
+}
+break;
+default :
+break;
+}
+}

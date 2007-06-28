@@ -1,8 +1,7 @@
 {
-  super.onBrowserEvent(event);
 switch (DOM.eventGetType(event)) {
 case Event.ONMOUSEDOWN:
-    dragging=true;
+    isResizing=true;
   DOM.setCapture(getElement());
 dragStartX=DOM.eventGetClientX(event);
 colIndex=getColIndexByKey(cid);
@@ -10,11 +9,11 @@ originalWidth=IScrollTable.this.tBody.getColWidth(colIndex);
 DOM.eventPreventDefault(event);
 break;
 case Event.ONMOUSEUP:
-dragging=false;
+isResizing=false;
 DOM.releaseCapture(getElement());
 break;
 case Event.ONMOUSEMOVE:
-if (dragging) {
+if (isResizing) {
 int deltaX=DOM.eventGetClientX(event) - dragStartX;
 if (deltaX == 0) return;
 int newWidth=originalWidth + deltaX;
