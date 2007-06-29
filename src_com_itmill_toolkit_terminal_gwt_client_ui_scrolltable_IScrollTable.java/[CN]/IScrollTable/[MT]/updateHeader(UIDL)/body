@@ -1,32 +1,31 @@
 {
   if (uidl == null)   return;
   int columnCount=uidl.getChidlCount();
-  if (rowHeaders)   columnCount++;
-  tHead.resizeColumns(columnCount);
+  int colIndex=0;
+  if (rowHeaders) {
+    columnCount++;
+    HeaderCell c=(HeaderCell)tHead.getHeaderCell(0);
+    if (c == null) {
+      tHead.setHeaderCell(0,new HeaderCell("0",""));
+    }
+    colIndex++;
+  }
   for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
     UIDL col=(UIDL)it.next();
     String cid=col.getStringAttribute("cid");
-    int colIndex=getColIndexByKey(cid);
-    if (colIndex > -1) {
-      HeaderCell c=(HeaderCell)tHead.getWidget(0,colIndex);
-      if (c != null && c.getColKey().equals(cid)) {
-        c.setText(col.getStringAttribute("caption"));
-      }
+    HeaderCell c=(HeaderCell)tHead.getHeaderCell(colIndex);
+    if (c != null && c.getColKey().equals(cid)) {
+      c.setText(col.getStringAttribute("caption"));
+    }
  else {
-        c=new HeaderCell(cid,col.getStringAttribute("caption"));
-        tHead.setWidget(0,colIndex,c);
-      }
-      if (col.hasAttribute("sortable")) {
-        c.setSortable(true);
-        if (cid.equals(sortColumn))         c.setSorted(true);
- else         c.setSorted(false);
-      }
+      c=new HeaderCell(cid,col.getStringAttribute("caption"));
+      tHead.setHeaderCell(colIndex,c);
     }
-  }
-  if (rowHeaders) {
-    HeaderCell c=(HeaderCell)tHead.getWidget(0,0);
-    if (c == null) {
-      tHead.setWidget(0,0,new HeaderCell("0",""));
+    if (col.hasAttribute("sortable")) {
+      c.setSortable(true);
+      if (cid.equals(sortColumn))       c.setSorted(true);
+ else       c.setSorted(false);
     }
+    colIndex++;
   }
 }

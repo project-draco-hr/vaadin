@@ -1,11 +1,12 @@
 {
-  int cols=tHead.getCellCount(0);
-  CellFormatter hf=tHead.getCellFormatter();
-  for (int i=0; i < cols; i++) {
-    Element hCell=hf.getElement(0,i);
+  Iterator headCells=tHead.iterator();
+  int i=0;
+  while (headCells.hasNext()) {
+    Element hCell=((HeaderCell)headCells.next()).getElement();
     int hw=DOM.getIntAttribute(hCell,"offsetWidth");
     int cw=tBody.getColWidth(i);
     int w=(hw > cw ? hw : cw) + IScrollTableBody.CELL_EXTRA_WIDTH;
     setColWidth(i,w);
+    i++;
   }
 }
