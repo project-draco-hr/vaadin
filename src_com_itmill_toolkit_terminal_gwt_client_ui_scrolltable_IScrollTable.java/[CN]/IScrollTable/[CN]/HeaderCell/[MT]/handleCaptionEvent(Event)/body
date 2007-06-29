@@ -11,7 +11,21 @@ DOM.eventPreventDefault(event);
 break;
 case Event.ONMOUSEUP:
 dragging=false;
+DOM.releaseCapture(getElement());
 if (!moved) {
+if (sortable) {
+if (sortColumn.equals(cid)) {
+client.updateVariable(id,"sortascending",!sortAscending,false);
+}
+ else {
+client.updateVariable(id,"sortcolumn",cid,false);
+}
+bodyContainer.setScrollPosition(0);
+firstvisible=0;
+rowRequestHandler.setReqFirstRow(0);
+rowRequestHandler.setReqRows((int)(2 * pageLength * CACHE_RATE + pageLength));
+rowRequestHandler.deferRowFetch();
+}
 break;
 }
 System.out.println("Stopped column reordering");
@@ -20,7 +34,6 @@ if (closestSlot != colIndex && closestSlot != (colIndex + 1)) {
 if (closestSlot > colIndex) reOrderColumn(cid,closestSlot - 1);
  else reOrderColumn(cid,closestSlot);
 }
-DOM.releaseCapture(getElement());
 break;
 case Event.ONMOUSEMOVE:
 if (dragging) {
