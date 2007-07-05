@@ -1,0 +1,30 @@
+{
+  if (forceRedraw) {
+    prevYear=new IButton();
+    prevYear.setText("&laquo;");
+    nextYear=new IButton();
+    nextYear.setText("&raquo;");
+    prevMonth=new IButton();
+    prevMonth.setText("&lsaquo;");
+    nextMonth=new IButton();
+    nextMonth.setText("&rsaquo;");
+    prevYear.addClickListener(this);
+    nextYear.addClickListener(this);
+    prevMonth.addClickListener(this);
+    nextMonth.addClickListener(this);
+    setWidget(0,0,prevYear);
+    setWidget(0,1,prevMonth);
+    setWidget(0,3,nextMonth);
+    setWidget(0,4,nextYear);
+    getFlexCellFormatter().setColSpan(0,2,3);
+    int firstDay=datefield.dts.getFirstDayOfWeek();
+    for (int i=0; i < 7; i++) {
+      int day=i + firstDay;
+      if (day > 6)       day=0;
+      setText(1,i,datefield.dts.getShortDay(day));
+    }
+  }
+  String monthName=datefield.dts.getMonth(datefield.date.getMonth());
+  int year=datefield.date.getYear() + 1900;
+  setText(0,2,monthName + " " + year);
+}

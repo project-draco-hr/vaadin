@@ -24,6 +24,8 @@ synchronized (application) {
         if (repaintAll) {
           paintables=new LinkedHashSet();
           paintables.add(window);
+          locales=null;
+          requireLocale(application.getLocale().getLanguage());
           for (Iterator i=window.getApplication().getWindows().iterator(); i.hasNext(); ) {
             Window w=(Window)i.next();
             if (!"native".equals(w.getStyle()) && w != window)             paintables.add(w);
@@ -122,6 +124,36 @@ synchronized (application) {
           }
         }
         outWriter.print("}");
+        Locale jvmDefault=Locale.getDefault();
+        outWriter.print(", \"locales\":[");
+        for (; pendingLocalesIndex < locales.size(); pendingLocalesIndex++) {
+          Locale l=new Locale((String)locales.get(pendingLocalesIndex));
+          outWriter.print("{\"name\":\"" + l.toString() + "\",");
+          DateFormatSymbols dfs=new DateFormatSymbols(l);
+          String[] short_months=dfs.getShortMonths();
+          String[] months=dfs.getMonths();
+          outWriter.print("\"smn\":[\"" + short_months[0] + "\",\""+ short_months[1]+ "\",\""+ short_months[2]+ "\",\""+ short_months[3]+ "\",\""+ short_months[4]+ "\",\""+ short_months[5]+ "\",\""+ short_months[6]+ "\",\""+ short_months[7]+ "\",\""+ short_months[8]+ "\",\""+ short_months[9]+ "\",\""+ short_months[10]+ "\",\""+ short_months[11]+ "\""+ "],");
+          outWriter.print("\"mn\":[\"" + months[0] + "\",\""+ months[1]+ "\",\""+ months[2]+ "\",\""+ months[3]+ "\",\""+ months[4]+ "\",\""+ months[5]+ "\",\""+ months[6]+ "\",\""+ months[7]+ "\",\""+ months[8]+ "\",\""+ months[9]+ "\",\""+ months[10]+ "\",\""+ months[11]+ "\""+ "],");
+          String[] short_days=dfs.getShortWeekdays();
+          String[] days=dfs.getWeekdays();
+          outWriter.print("\"sdn\":[\"" + short_days[1] + "\",\""+ short_days[2]+ "\",\""+ short_days[3]+ "\",\""+ short_days[4]+ "\",\""+ short_days[5]+ "\",\""+ short_days[6]+ "\",\""+ short_days[7]+ "\""+ "],");
+          outWriter.print("\"dn\":[\"" + days[1] + "\",\""+ days[2]+ "\",\""+ days[3]+ "\",\""+ days[4]+ "\",\""+ days[5]+ "\",\""+ days[6]+ "\",\""+ days[7]+ "\""+ "],");
+          Calendar cal=new GregorianCalendar(l);
+          outWriter.print("\"fdow\":" + (cal.getFirstDayOfWeek() - 1) + ",");
+          Locale.setDefault(l);
+          String df=new SimpleDateFormat().toPattern();
+          String dateformat=df.substring(0,df.indexOf(" "));
+          outWriter.print("\"df\":\"" + dateformat + "\",");
+          String timeformat=df.substring(df.indexOf(" ") + 1,df.length());
+          boolean twelve_hour_clock=timeformat.contains("a");
+          String hour_min_delimiter=timeformat.contains(".") ? "." : ":";
+          outWriter.print("\"thc\":" + twelve_hour_clock + ",");
+          outWriter.print("\"hmd\":\"" + hour_min_delimiter + "\"");
+          outWriter.print("}");
+          if (pendingLocalesIndex < locales.size() - 1)           outWriter.print(",");
+        }
+        outWriter.print("]");
+        Locale.setDefault(jvmDefault);
         outWriter.flush();
         outWriter.close();
         out.flush();
