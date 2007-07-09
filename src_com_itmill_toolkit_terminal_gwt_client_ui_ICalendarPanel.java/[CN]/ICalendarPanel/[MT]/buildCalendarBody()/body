@@ -3,18 +3,24 @@
   int startWeekDay=datefield.dts.getStartWeekDay(date);
   int numDays=DateTimeService.getNumberOfDaysInMonth(date);
   int dayCount=0;
+  Date today=new Date();
   for (int row=2; row < 8; row++) {
     for (int col=0; col < 7; col++) {
-      if (row == 2 && col < startWeekDay) {
-        setText(row,col,"");
-      }
- else {
-        if (numDays > dayCount) {
+      if (!(row == 2 && col < startWeekDay)) {
+        if (dayCount < numDays) {
           int selectedDate=++dayCount;
-          setText(row,col,"" + selectedDate);
+          if (date.getDate() == dayCount) {
+            setHTML(row,col,"<span class=\"" + datefield.CLASSNAME + "-calendarpanel-day-selected\">"+ selectedDate+ "</span>");
+          }
+ else           if (today.getDate() == dayCount && today.getMonth() == date.getMonth() && today.getYear() == date.getYear()) {
+            setHTML(row,col,"<span class=\"" + datefield.CLASSNAME + "-calendarpanel-day-today\">"+ selectedDate+ "</span>");
+          }
+ else {
+            setHTML(row,col,"<span class=\"" + datefield.CLASSNAME + "-calendarpanel-day\">"+ selectedDate+ "</span>");
+          }
         }
  else {
-          setText(row,col,"");
+          break;
         }
       }
     }

@@ -1,8 +1,10 @@
 {
   if (client.updateComponent(this,uidl,true))   return;
   this.client=client;
-  id=uidl.getId();
-  immediate=uidl.getBooleanAttribute("immediate");
+  this.id=uidl.getId();
+  this.immediate=uidl.getBooleanAttribute("immediate");
+  readonly=uidl.getBooleanAttribute("readonly");
+  enabled=!uidl.getBooleanAttribute("disabled");
   if (uidl.hasAttribute("locale")) {
     String locale=uidl.getStringAttribute("locale");
     try {
@@ -10,26 +12,26 @@
       currentLocale=locale;
     }
  catch (    LocaleNotLoadedException e) {
-      dts=new DateTimeService();
       currentLocale=dts.getLocale();
       System.out.println("Tried to use an unloaded locale \"" + locale + "\". Using default locale ("+ currentLocale+ ").");
     }
   }
-  int newResolution=RESOLUTION_YEAR;
-  if (uidl.hasAttribute("month"))   newResolution=RESOLUTION_MONTH;
-  if (uidl.hasAttribute("day"))   newResolution=RESOLUTION_DAY;
-  if (uidl.hasAttribute("hour"))   newResolution=RESOLUTION_HOUR;
-  if (uidl.hasAttribute("min"))   newResolution=RESOLUTION_MIN;
-  if (uidl.hasAttribute("sec"))   newResolution=RESOLUTION_SEC;
-  if (uidl.hasAttribute("msec"))   newResolution=RESOLUTION_MSEC;
-  if (currentResolution > newResolution)   container.clear();
+  int newResolution;
+  if (uidl.hasVariable("msec"))   newResolution=RESOLUTION_MSEC;
+ else   if (uidl.hasVariable("sec"))   newResolution=RESOLUTION_SEC;
+ else   if (uidl.hasVariable("min"))   newResolution=RESOLUTION_MIN;
+ else   if (uidl.hasVariable("hour"))   newResolution=RESOLUTION_HOUR;
+ else   if (uidl.hasVariable("day"))   newResolution=RESOLUTION_DAY;
+ else   if (uidl.hasVariable("month"))   newResolution=RESOLUTION_MONTH;
+ else   newResolution=RESOLUTION_YEAR;
   currentResolution=newResolution;
-  int year=uidl.getIntAttribute("year");
-  int month=uidl.getIntAttribute("month");
-  int day=uidl.getIntAttribute("day");
-  int hour=uidl.getIntAttribute("hour");
-  int min=uidl.getIntAttribute("min");
-  int sec=uidl.getIntAttribute("sec");
-  int msec=uidl.getIntAttribute("msec");
-  date=new Date((long)buildDate(year,month,day,hour,min,sec,msec));
+  int year=uidl.getIntVariable("year");
+  int month=(currentResolution >= RESOLUTION_MONTH) ? uidl.getIntVariable("month") : -1;
+  int day=(currentResolution >= RESOLUTION_DAY) ? uidl.getIntVariable("day") : -1;
+  int hour=(currentResolution >= RESOLUTION_HOUR) ? uidl.getIntVariable("hour") : -1;
+  int min=(currentResolution >= RESOLUTION_MIN) ? uidl.getIntVariable("min") : -1;
+  int sec=(currentResolution >= RESOLUTION_SEC) ? uidl.getIntVariable("sec") : -1;
+  int msec=(currentResolution >= RESOLUTION_MSEC) ? uidl.getIntVariable("msec") : -1;
+  date=new Date((long)buildTime(year,month,day,hour,min,sec,msec));
+  milliseconds=msec < 0 ? 0 : msec;
 }

@@ -25,7 +25,7 @@ synchronized (application) {
           paintables=new LinkedHashSet();
           paintables.add(window);
           locales=null;
-          requireLocale(application.getLocale().getLanguage());
+          requireLocale(application.getLocale().toString());
           for (Iterator i=window.getApplication().getWindows().iterator(); i.hasNext(); ) {
             Window w=(Window)i.next();
             if (!"native".equals(w.getStyle()) && w != window)             paintables.add(w);
@@ -127,7 +127,7 @@ synchronized (application) {
         Locale jvmDefault=Locale.getDefault();
         outWriter.print(", \"locales\":[");
         for (; pendingLocalesIndex < locales.size(); pendingLocalesIndex++) {
-          Locale l=new Locale((String)locales.get(pendingLocalesIndex));
+          Locale l=generateLocale((String)locales.get(pendingLocalesIndex));
           outWriter.print("{\"name\":\"" + l.toString() + "\",");
           DateFormatSymbols dfs=new DateFormatSymbols(l);
           String[] short_months=dfs.getShortMonths();
@@ -149,6 +149,10 @@ synchronized (application) {
           String hour_min_delimiter=timeformat.contains(".") ? "." : ":";
           outWriter.print("\"thc\":" + twelve_hour_clock + ",");
           outWriter.print("\"hmd\":\"" + hour_min_delimiter + "\"");
+          if (twelve_hour_clock) {
+            String[] ampm=dfs.getAmPmStrings();
+            outWriter.print(",\"ampm\":[\"" + ampm[0] + "\",\""+ ampm[1]+ "\"]");
+          }
           outWriter.print("}");
           if (pendingLocalesIndex < locales.size() - 1)           outWriter.print(",");
         }
