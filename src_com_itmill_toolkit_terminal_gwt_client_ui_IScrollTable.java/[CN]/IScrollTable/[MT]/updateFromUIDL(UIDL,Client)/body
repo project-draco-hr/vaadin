@@ -25,6 +25,13 @@
     this.columnReordering=true;
     this.columnOrder=uidl.getStringArrayVariable("columnorder");
   }
+  if (uidl.hasVariable("collapsedcolumns")) {
+    tHead.setColumnCollapsingAllowed(true);
+    this.collapsedColumns=uidl.getStringArrayVariableAsSet("collapsedcolumns");
+  }
+ else {
+    tHead.setColumnCollapsingAllowed(false);
+  }
   UIDL columnInfo=null;
   UIDL rowData=null;
   for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
@@ -32,7 +39,7 @@
     if (c.getTag().equals("cols"))     columnInfo=c;
  else     if (c.getTag().equals("rows"))     rowData=c;
  else     if (c.getTag().equals("actions"))     updateActionMap(c);
- else     if (c.getTag().equals("visiblecolumns"))     ;
+ else     if (c.getTag().equals("visiblecolumns"))     updateVisibleColumns(c);
   }
   updateHeader(columnInfo);
   if (initializedAndAttached) {
