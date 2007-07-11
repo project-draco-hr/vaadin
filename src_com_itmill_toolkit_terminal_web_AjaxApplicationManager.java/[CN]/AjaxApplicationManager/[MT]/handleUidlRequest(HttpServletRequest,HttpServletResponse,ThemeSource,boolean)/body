@@ -142,9 +142,13 @@ synchronized (application) {
           outWriter.print("\"fdow\":" + (cal.getFirstDayOfWeek() - 1) + ",");
           Locale.setDefault(l);
           String df=new SimpleDateFormat().toPattern();
-          String dateformat=df.substring(0,df.indexOf(" "));
-          outWriter.print("\"df\":\"" + dateformat + "\",");
-          String timeformat=df.substring(df.indexOf(" ") + 1,df.length());
+          int timeStart=df.indexOf("H");
+          if (timeStart < 0)           timeStart=df.indexOf("h");
+          int ampm_first=df.indexOf("a");
+          if (ampm_first > 0 && ampm_first < timeStart)           timeStart=ampm_first;
+          String dateformat=df.substring(0,timeStart - 1);
+          outWriter.print("\"df\":\"" + dateformat.trim() + "\",");
+          String timeformat=df.substring(timeStart,df.length());
           boolean twelve_hour_clock=timeformat.contains("a");
           String hour_min_delimiter=timeformat.contains(".") ? "." : ":";
           outWriter.print("\"thc\":" + twelve_hour_clock + ",");
