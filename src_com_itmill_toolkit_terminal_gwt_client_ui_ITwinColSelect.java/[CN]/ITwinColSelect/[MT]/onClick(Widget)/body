@@ -1,17 +1,31 @@
 {
   super.onClick(sender);
   if (sender == add) {
-    String[] sel=getItemsToAdd();
+    boolean[] sel=getItemsToAdd();
     for (int i=0; i < sel.length; i++) {
-      if (sel[i] != null)       selectedKeys.add(sel[i]);
+      if (sel[i]) {
+        int optionIndex=i - (sel.length - options.getItemCount());
+        selectedKeys.add(options.getValue(optionIndex));
+        String text=options.getItemText(optionIndex);
+        String value=options.getValue(optionIndex);
+        selections.addItem(text,value);
+        options.removeItem(optionIndex);
+      }
     }
-    client.updateVariable(id,"selected",selectedKeys.toArray(),true);
+    client.updateVariable(id,"selected",selectedKeys.toArray(),immediate);
   }
  else   if (sender == remove) {
-    String[] sel=getItemsToRemove();
+    boolean[] sel=getItemsToRemove();
     for (int i=0; i < sel.length; i++) {
-      if (sel[i] != null)       selectedKeys.remove(sel[i]);
+      if (sel[i]) {
+        int selectionIndex=i - (sel.length - selections.getItemCount());
+        selectedKeys.remove(selections.getValue(selectionIndex));
+        String text=selections.getItemText(selectionIndex);
+        String value=selections.getValue(selectionIndex);
+        options.addItem(text,value);
+        selections.removeItem(selectionIndex);
+      }
     }
-    client.updateVariable(id,"selected",selectedKeys.toArray(),true);
+    client.updateVariable(id,"selected",selectedKeys.toArray(),immediate);
   }
 }
