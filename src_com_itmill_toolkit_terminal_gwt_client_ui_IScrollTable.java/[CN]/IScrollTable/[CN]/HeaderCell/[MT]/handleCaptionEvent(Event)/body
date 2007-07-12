@@ -1,14 +1,17 @@
 {
 switch (DOM.eventGetType(event)) {
 case Event.ONMOUSEDOWN:
-    dragging=true;
-  moved=false;
+    client.console.log("HeaderCaption: mouse down");
+  dragging=true;
+moved=false;
 colIndex=getColIndexByKey(cid);
 DOM.setCapture(getElement());
 this.headerX=tHead.getAbsoluteLeft();
+client.console.log("HeaderCaption: Caption set to capture mouse events");
 DOM.eventPreventDefault(event);
 break;
 case Event.ONMOUSEUP:
+client.console.log("HeaderCaption: mouseUP");
 dragging=false;
 DOM.releaseCapture(getElement());
 if (!moved) {
@@ -27,7 +30,7 @@ rowRequestHandler.deferRowFetch();
 }
 break;
 }
-System.out.println("Stopped column reordering");
+client.console.log("HeaderCaption: Stopped column reordering");
 hideFloatingCopy();
 tHead.removeSlotFocus();
 if (closestSlot != colIndex && closestSlot != (colIndex + 1)) {
@@ -37,7 +40,7 @@ if (closestSlot > colIndex) reOrderColumn(cid,closestSlot - 1);
 break;
 case Event.ONMOUSEMOVE:
 if (dragging) {
-System.out.print("Dragging column, optimal index...");
+client.console.log("HeaderCaption: Dragging column, optimal index...");
 if (!moved) {
 createFloatingCopy();
 moved=true;
@@ -64,7 +67,7 @@ closestSlot=i;
 }
 tHead.focusSlot(closestSlot);
 updateFloatingCopysPosition(x,-1);
-System.out.println(closestSlot);
+client.console.log("" + closestSlot);
 }
 break;
 default :
