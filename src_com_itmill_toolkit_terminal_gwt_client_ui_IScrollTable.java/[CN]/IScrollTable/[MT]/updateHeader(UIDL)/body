@@ -1,27 +1,24 @@
 {
   if (uidl == null)   return;
-  int columnCount=uidl.getChidlCount();
   int colIndex=0;
+  int visibleCols=uidl.getChidlCount();
   if (rowHeaders) {
-    columnCount++;
-    HeaderCell c=(HeaderCell)tHead.getHeaderCell(0);
-    if (c == null) {
-      tHead.setHeaderCell(0,new HeaderCell("0",""));
-    }
+    tHead.enableColumn("0",colIndex);
+    visibleCols++;
+    visibleColOrder=new String[visibleCols];
+    visibleColOrder[colIndex]="0";
     colIndex++;
+  }
+ else {
+    visibleColOrder=new String[visibleCols];
   }
   for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
     UIDL col=(UIDL)it.next();
     String cid=col.getStringAttribute("cid");
-    HeaderCell c=(HeaderCell)tHead.getHeaderCell(colIndex);
-    if (c != null && c.getColKey().equals(cid)) {
-      c.setText(col.getStringAttribute("caption"));
-    }
- else {
-      c=new HeaderCell(cid,col.getStringAttribute("caption"));
-      tHead.setHeaderCell(colIndex,c);
-    }
+    visibleColOrder[colIndex]=cid;
+    tHead.enableColumn(cid,colIndex);
     if (col.hasAttribute("sortable")) {
+      HeaderCell c=tHead.getHeaderCell(cid);
       c.setSortable(true);
       if (cid.equals(sortColumn))       c.setSorted(true);
  else       c.setSorted(false);

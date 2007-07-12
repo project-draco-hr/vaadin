@@ -1,13 +1,12 @@
 {
-  IAction[] actions=new IAction[columnCaptions.size()];
-  Iterator it=columnCaptions.keySet().iterator();
-  int i=0;
-  while (it.hasNext()) {
-    String cid=(String)it.next();
-    VisibleColumnAction a=new VisibleColumnAction(cid);
-    a.setCaption((String)columnCaptions.get(cid));
+  IAction[] actions=new IAction[columnOrder.length];
+  for (int i=0; i < columnOrder.length; i++) {
+    String cid=columnOrder[i];
+    HeaderCell c=getHeaderCell(cid);
+    VisibleColumnAction a=new VisibleColumnAction(c.getColKey());
+    a.setCaption(c.getCaption());
+    if (!c.isEnabled())     a.setCollapsed(true);
     actions[i]=a;
-    i++;
   }
   return actions;
 }
