@@ -1,16 +1,21 @@
 {
   this(uidl.getIntAttribute("key"));
-  if (uidl.hasAttribute("caption"))   addCell(uidl.getStringAttribute("caption"));
+  tHead.getColumnAlignments();
+  int col=0;
+  if (rowHeaders) {
+    addCell(uidl.getStringAttribute("caption"),aligns[col++]);
+  }
   if (uidl.hasAttribute("al"))   actionKeys=uidl.getStringArrayAttribute("al");
   Iterator cells=uidl.getChildIterator();
   while (cells.hasNext()) {
     Object cell=cells.next();
     if (cell instanceof String) {
-      addCell(cell.toString());
+      addCell(cell.toString(),aligns[col++]);
     }
  else {
       Widget cellContent=client.getWidget((UIDL)cell);
       ((Paintable)cellContent).updateFromUIDL((UIDL)cell,client);
+      addCell(cellContent,aligns[col++]);
     }
   }
   if (uidl.hasAttribute("selected") && !isSelected())   toggleSelection();

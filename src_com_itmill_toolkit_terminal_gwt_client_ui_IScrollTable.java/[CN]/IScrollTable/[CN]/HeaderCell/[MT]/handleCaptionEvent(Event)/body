@@ -2,18 +2,31 @@
 switch (DOM.eventGetType(event)) {
 case Event.ONMOUSEDOWN:
     client.console.log("HeaderCaption: mouse down");
-  dragging=true;
-moved=false;
-colIndex=getColIndexByKey(cid);
-DOM.setCapture(getElement());
-this.headerX=tHead.getAbsoluteLeft();
-client.console.log("HeaderCaption: Caption set to capture mouse events");
-DOM.eventPreventDefault(event);
+  if (columnReordering) {
+    dragging=true;
+    moved=false;
+    colIndex=getColIndexByKey(cid);
+    DOM.setCapture(getElement());
+    this.headerX=tHead.getAbsoluteLeft();
+    client.console.log("HeaderCaption: Caption set to capture mouse events");
+    DOM.eventPreventDefault(event);
+  }
 break;
 case Event.ONMOUSEUP:
 client.console.log("HeaderCaption: mouseUP");
+if (columnReordering) {
 dragging=false;
 DOM.releaseCapture(getElement());
+client.console.log("HeaderCaption: Stopped column reordering");
+if (moved) {
+hideFloatingCopy();
+tHead.removeSlotFocus();
+if (closestSlot != colIndex && closestSlot != (colIndex + 1)) {
+  if (closestSlot > colIndex)   reOrderColumn(cid,closestSlot - 1);
+ else   reOrderColumn(cid,closestSlot);
+}
+}
+}
 if (!moved) {
 if (sortable) {
 if (sortColumn.equals(cid)) {
@@ -29,13 +42,6 @@ rowRequestHandler.setReqRows((int)(2 * pageLength * CACHE_RATE + pageLength));
 rowRequestHandler.deferRowFetch();
 }
 break;
-}
-client.console.log("HeaderCaption: Stopped column reordering");
-hideFloatingCopy();
-tHead.removeSlotFocus();
-if (closestSlot != colIndex && closestSlot != (colIndex + 1)) {
-if (closestSlot > colIndex) reOrderColumn(cid,closestSlot - 1);
- else reOrderColumn(cid,closestSlot);
 }
 break;
 case Event.ONMOUSEMOVE:
