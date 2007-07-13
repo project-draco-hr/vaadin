@@ -1,10 +1,13 @@
 {
-  if (uidl == null)   return;
+  Iterator it=c.getChildIterator();
+  visibleColumns.clear();
   int colIndex=(rowHeaders ? 1 : 0);
-  for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
+  while (it.hasNext()) {
     UIDL col=(UIDL)it.next();
     String cid=col.getStringAttribute("cid");
-    tBody.setWidget(0,colIndex,new HeaderCell(cid,col.getStringAttribute("caption")));
+    if (!col.hasAttribute("collapsed")) {
+      tBody.setWidget(0,colIndex,new HeaderCell(cid,col.getStringAttribute("caption")));
+    }
     colIndex++;
   }
 }

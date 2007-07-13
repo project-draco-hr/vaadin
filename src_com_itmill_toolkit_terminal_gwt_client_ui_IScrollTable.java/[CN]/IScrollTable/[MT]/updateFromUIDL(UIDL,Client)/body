@@ -14,9 +14,11 @@
     this.sortAscending=uidl.getBooleanVariable("sortascending");
     this.sortColumn=uidl.getStringVariable("sortcolumn");
   }
-  Set selectedKeys=uidl.getStringArrayVariableAsSet("selected");
-  selectedRowKeys.clear();
-  for (Iterator it=selectedKeys.iterator(); it.hasNext(); )   selectedRowKeys.add((String)it.next());
+  if (uidl.hasVariable("selected")) {
+    Set selectedKeys=uidl.getStringArrayVariableAsSet("selected");
+    selectedRowKeys.clear();
+    for (Iterator it=selectedKeys.iterator(); it.hasNext(); )     selectedRowKeys.add((String)it.next());
+  }
   if (uidl.hasAttribute("selectmode")) {
     if (uidl.getStringAttribute("selectmode").equals("multi"))     selectMode=ITable.SELECT_MODE_MULTI;
  else     selectMode=ITable.SELECT_MODE_SINGLE;
@@ -36,18 +38,20 @@
   UIDL rowData=null;
   for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
     UIDL c=(UIDL)it.next();
-    if (c.getTag().equals("cols"))     columnInfo=c;
- else     if (c.getTag().equals("rows"))     rowData=c;
+    if (c.getTag().equals("rows"))     rowData=c;
  else     if (c.getTag().equals("actions"))     updateActionMap(c);
  else     if (c.getTag().equals("visiblecolumns"))     updateVisibleColumns(c);
   }
-  updateHeader(columnInfo);
+  updateHeader(uidl.getStringArrayAttribute("vcolorder"));
   if (initializedAndAttached) {
     updateBody(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
   }
  else {
     getTBody().renderInitialRows(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"),totalRows);
     bodyContainer.add(tBody);
-    initializedAndAttached=true;
+    initialContentReceived=true;
+    if (isAttached()) {
+      sizeInit();
+    }
   }
 }

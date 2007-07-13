@@ -1,10 +1,17 @@
 {
   if (!initializedAndAttached) {
     tHead.addAvailableCell(new RowHeadersHeaderCell());
-    Iterator it=c.getChildIterator();
+    Iterator it=uidl.getChildIterator();
     while (it.hasNext()) {
       UIDL col=(UIDL)it.next();
-      tHead.addAvailableCell(new HeaderCell(col.getStringAttribute("cid"),col.getStringAttribute("caption")));
+      String cid=col.getStringAttribute("cid");
+      HeaderCell c=new HeaderCell(cid,col.getStringAttribute("caption"));
+      tHead.addAvailableCell(c);
+      if (col.hasAttribute("sortable")) {
+        c.setSortable(true);
+        if (cid.equals(sortColumn))         c.setSorted(true);
+ else         c.setSorted(false);
+      }
     }
   }
  else {
