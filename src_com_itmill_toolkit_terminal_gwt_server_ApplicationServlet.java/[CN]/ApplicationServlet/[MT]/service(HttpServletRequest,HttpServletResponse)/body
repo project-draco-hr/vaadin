@@ -1,0 +1,84 @@
+{
+  HttpVariableMap variableMap=null;
+  OutputStream out=response.getOutputStream();
+  Application application=null;
+  try {
+    application=getApplication(request);
+    if (application == null)     application=createApplication(request);
+synchronized (applicationToLastRequestDate) {
+      applicationToLastRequestDate.put(application,new Date());
+    }
+    ((WebApplicationContext)application.getContext()).startTransaction(application,request);
+    DownloadStream download=null;
+synchronized (application) {
+      String resourceId=request.getPathInfo();
+      if (resourceId != null && resourceId.startsWith(AJAX_UIDL_URI)) {
+        getApplicationManager(application).handleUidlRequest(request,response);
+        return;
+      }
+      variableMap=getVariableMap(application,request);
+      if (variableMap == null)       return;
+      Map unhandledParameters=variableMap.handleVariables(request,application);
+      WebBrowserProbe.handleProbeRequest(request,unhandledParameters);
+      WebBrowser wb=WebBrowserProbe.getTerminalType(request.getSession());
+      boolean detect=false;
+      if (unhandledParameters.get("renderingMode") != null) {
+        detect=((String)((Object[])unhandledParameters.get("renderingMode"))[0]).equals("detect");
+      }
+      if (detect) {
+        String themeName=application.getTheme();
+        if (themeName == null)         themeName=DEFAULT_THEME;
+        if (unhandledParameters.get("theme") != null) {
+          themeName=(String)((Object[])unhandledParameters.get("theme"))[0];
+        }
+      }
+      if (application.isRunning())       download=handleURI(application,request,response);
+      if (download == null) {
+        response.setHeader("Cache-Control","no-cache");
+        response.setHeader("Pragma","no-cache");
+        response.setDateHeader("Expires",0);
+        Window window=null;
+        if (application.isRunning())         window=getApplicationWindow(request,application,unhandledParameters);
+        if (window != null && unhandledParameters != null && !unhandledParameters.isEmpty()) {
+          try {
+            window.handleParameters(unhandledParameters);
+          }
+ catch (          Throwable t) {
+            application.terminalError(new ParameterHandlerErrorImpl(window,t));
+          }
+        }
+        if (!application.isRunning()) {
+          endApplication(request,response,application);
+          return;
+        }
+        if (window == null) {
+          response.setContentType("text/html");
+          BufferedWriter page=new BufferedWriter(new OutputStreamWriter(out));
+          page.write("<html><head><script>");
+          page.write("</script></head><body>");
+          page.write("The requested window has been removed from application.");
+          page.write("</body></html>");
+          page.close();
+          return;
+        }
+        if (window.getTerminal() == null) {
+          window.setTerminal(wb);
+        }
+        String themeName=window.getTheme() != null ? window.getTheme() : DEFAULT_THEME;
+        if (unhandledParameters.get("theme") != null) {
+          themeName=(String)((Object[])unhandledParameters.get("theme"))[0];
+        }
+        if (handleResourceRequest(request,response,themeName))         return;
+        writeAjaxPage(request,response,out,unhandledParameters,window,wb,themeName);
+      }
+    }
+    if (download != null)     handleDownload(download,request,response);
+  }
+ catch (  Throwable e) {
+    e.printStackTrace();
+    throw new ServletException(e);
+  }
+ finally {
+    if (application != null)     ((WebApplicationContext)application.getContext()).endTransaction(application,request);
+  }
+}
