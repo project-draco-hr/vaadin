@@ -1,8 +1,7 @@
 {
   HttpSession session=request.getSession(false);
   if (session == null)   return null;
-  LinkedList applications=(LinkedList)session.getAttribute(SESSION_ATTR_APPS);
-  if (applications == null)   return null;
+  Collection applications=WebApplicationContext.getApplicationContext(session).getApplications();
   Application application=null;
   for (Iterator i=applications.iterator(); i.hasNext() && application == null; ) {
     Application a=(Application)i.next();
@@ -12,7 +11,7 @@
     if (servletPath.equals(aPath))     application=a;
   }
   if (application != null && !application.isRunning()) {
-    applications.remove(application);
+    WebApplicationContext.getApplicationContext(session).removeApplication(application);
     application=null;
   }
   return application;

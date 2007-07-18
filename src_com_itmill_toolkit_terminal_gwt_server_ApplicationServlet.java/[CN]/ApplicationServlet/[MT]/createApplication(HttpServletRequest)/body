@@ -1,27 +1,14 @@
 {
-  Application application=null;
+  WebApplicationContext context=WebApplicationContext.getApplicationContext(request.getSession());
   URL applicationUrl=getApplicationUrl(request);
-  HttpSession session=request.getSession();
-  if (session == null)   return null;
-  LinkedList applications=(LinkedList)session.getAttribute(SESSION_ATTR_APPS);
-  if (applications == null) {
-    applications=new LinkedList();
-    session.setAttribute(SESSION_ATTR_APPS,applications);
-    HttpSessionBindingListener sessionBindingListener=new SessionBindingListener(applications);
-    session.setAttribute(SESSION_BINDING_LISTENER,sessionBindingListener);
-  }
   try {
-    application=(Application)this.applicationClass.newInstance();
-    applications.add(application);
+    Application application=(Application)this.applicationClass.newInstance();
+    context.addApplication(application);
     application.setLocale(request.getLocale());
-    WebApplicationContext context=(WebApplicationContext)session.getAttribute(SESSION_ATTR_CONTEXT);
-    if (context == null) {
-      context=new WebApplicationContext(session);
-      session.setAttribute(SESSION_ATTR_CONTEXT,context);
-    }
     initializeLicense(application);
     application.start(applicationUrl,this.applicationProperties,context);
     checkLicense(application);
+    return application;
   }
  catch (  IllegalAccessException e) {
     Log.error("Illegal access to application class " + this.applicationClass.getName());
@@ -31,5 +18,4 @@ catch (  InstantiationException e) {
     Log.error("Failed to instantiate application class: " + this.applicationClass.getName());
     throw e;
   }
-  return application;
 }

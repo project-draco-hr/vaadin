@@ -1,3 +1,8 @@
 {
-  return new WebApplicationContext(session);
+  WebApplicationContext cx=(WebApplicationContext)session.getAttribute(WebApplicationContext.class.getName());
+  if (cx == null) {
+    cx=new WebApplicationContext(session);
+    session.setAttribute(WebApplicationContext.class.getName(),cx);
+  }
+  return cx;
 }
