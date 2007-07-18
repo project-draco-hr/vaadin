@@ -1,0 +1,27 @@
+{
+  Map params=new HashMap(request.getParameterMap());
+  String changes=(String)((params.get("changes") instanceof String[]) ? ((String[])params.get("changes"))[0] : params.get("changes"));
+  params.remove("changes");
+  if (changes != null) {
+    String[] ca=changes.split("\u0001");
+    System.out.println("Changes = " + changes);
+    for (int i=0; i < ca.length; i++) {
+      String[] vid=ca[i].split("_");
+      VariableOwner owner=(VariableOwner)idPaintableMap.get(vid[0]);
+      if (owner != null) {
+        Map m;
+        if (i + 2 >= ca.length || !vid[0].equals(ca[i + 2].split("_")[0]))         m=new SingleValueMap(vid[1],convertVariableValue(vid[2].charAt(0),ca[++i]));
+ else {
+          m=new HashMap();
+          m.put(vid[1],convertVariableValue(vid[2].charAt(0),ca[++i]));
+        }
+        while (i + 1 < ca.length && vid[0].equals(ca[i + 1].split("_")[0])) {
+          vid=ca[++i].split("_");
+          m.put(vid[1],convertVariableValue(vid[2].charAt(0),ca[++i]));
+        }
+        owner.changeVariables(request,m);
+      }
+    }
+  }
+  return params;
+}
