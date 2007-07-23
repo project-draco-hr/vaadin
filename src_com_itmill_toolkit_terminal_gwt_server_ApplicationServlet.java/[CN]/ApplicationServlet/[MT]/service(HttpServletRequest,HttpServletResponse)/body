@@ -1,6 +1,8 @@
 {
   Application application=null;
   try {
+    WebBrowser browser=WebApplicationContext.getApplicationContext(request.getSession()).getBrowser();
+    browser.updateBrowserProperties(request);
     application=getApplication(request);
 synchronized (applicationToLastRequestDate) {
       applicationToLastRequestDate.put(application,new Date());
@@ -25,7 +27,7 @@ synchronized (application) {
           return;
         }
         if (window.getTerminal() == null) {
-          window.setTerminal(new WebBrowser());
+          window.setTerminal(browser);
         }
         String themeName=window.getTheme();
         if (request.getParameter("theme") != null) {
