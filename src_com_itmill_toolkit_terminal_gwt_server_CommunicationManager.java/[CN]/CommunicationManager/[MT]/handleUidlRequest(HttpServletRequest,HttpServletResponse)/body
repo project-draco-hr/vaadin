@@ -96,7 +96,11 @@ synchronized (application) {
           outWriter.write("\"focus\":\"" + getPaintableId(f) + "\"");
         }
         outWriter.print("}, \"resources\" : {");
-        String themeName=application.getTheme() != null ? application.getTheme() : ApplicationServlet.DEFAULT_THEME;
+        String themeName=window.getTheme();
+        if (request.getParameter("theme") != null) {
+          themeName=request.getParameter("theme");
+        }
+        if (themeName == null)         themeName="default";
         int resourceIndex=0;
         for (Iterator i=paintTarget.getPreCachedResources().iterator(); i.hasNext(); ) {
           String resource=(String)i.next();

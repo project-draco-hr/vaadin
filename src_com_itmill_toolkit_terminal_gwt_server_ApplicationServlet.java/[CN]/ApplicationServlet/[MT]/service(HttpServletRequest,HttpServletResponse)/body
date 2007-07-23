@@ -1,9 +1,7 @@
 {
-  OutputStream out=response.getOutputStream();
   Application application=null;
   try {
     application=getApplication(request);
-    if (application == null)     application=createApplication(request);
 synchronized (applicationToLastRequestDate) {
       applicationToLastRequestDate.put(application,new Date());
     }
@@ -26,25 +24,15 @@ synchronized (application) {
           endApplication(request,response,application);
           return;
         }
-        if (window == null) {
-          response.setContentType("text/html");
-          BufferedWriter page=new BufferedWriter(new OutputStreamWriter(out));
-          page.write("<html><head><script>");
-          page.write("</script></head><body>");
-          page.write("The requested window has been removed from application.");
-          page.write("</body></html>");
-          page.close();
-          return;
-        }
         if (window.getTerminal() == null) {
           window.setTerminal(new WebBrowser());
         }
-        String themeName=window.getTheme() != null ? window.getTheme() : DEFAULT_THEME;
+        String themeName=window.getTheme();
         if (request.getParameter("theme") != null) {
           themeName=request.getParameter("theme");
         }
         if (handleResourceRequest(request,response,themeName))         return;
-        writeAjaxPage(request,response,out,window,themeName);
+        writeAjaxPage(request,response,window,themeName);
       }
     }
     if (download != null)     handleDownload(download,request,response);

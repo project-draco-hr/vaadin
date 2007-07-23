@@ -1,18 +1,33 @@
 {
-  HttpSession session=request.getSession(false);
-  if (session == null)   return null;
+  HttpSession session=request.getSession(true);
   Collection applications=WebApplicationContext.getApplicationContext(session).getApplications();
-  Application application=null;
-  for (Iterator i=applications.iterator(); i.hasNext() && application == null; ) {
+  for (Iterator i=applications.iterator(); i.hasNext(); ) {
     Application a=(Application)i.next();
     String aPath=a.getURL().getPath();
     String servletPath=request.getContextPath() + request.getServletPath();
     if (servletPath.length() < aPath.length())     servletPath+="/";
-    if (servletPath.equals(aPath))     application=a;
+    if (servletPath.equals(aPath)) {
+      if (a.isRunning())       return a;
+      WebApplicationContext.getApplicationContext(session).removeApplication(a);
+    }
   }
-  if (application != null && !application.isRunning()) {
-    WebApplicationContext.getApplicationContext(session).removeApplication(application);
-    application=null;
+  WebApplicationContext context=WebApplicationContext.getApplicationContext(request.getSession());
+  URL applicationUrl=getApplicationUrl(request);
+  try {
+    Application application=(Application)this.applicationClass.newInstance();
+    context.addApplication(application);
+    application.setLocale(request.getLocale());
+    initializeLicense(application);
+    application.start(applicationUrl,this.applicationProperties,context);
+    checkLicense(application);
+    return application;
   }
-  return application;
+ catch (  IllegalAccessException e) {
+    Log.error("Illegal access to application class " + this.applicationClass.getName());
+    throw e;
+  }
+catch (  InstantiationException e) {
+    Log.error("Failed to instantiate application class: " + this.applicationClass.getName());
+    throw e;
+  }
 }
