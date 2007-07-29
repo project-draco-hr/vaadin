@@ -1,3 +1,17 @@
 {
   super.paintContent(target);
+  if (values == null) {
+    target.addAttribute("min",(long)min);
+    target.addAttribute("max",(long)max);
+    target.addAttribute("resolution",resolution);
+    if (resolution > 0)     target.addVariable(this,"value",((Float)getValue()).floatValue());
+ else     target.addVariable(this,"value",((Float)getValue()).intValue());
+  }
+ else {
+    target.addVariable(this,"value",getValue().toString());
+    target.addAttribute("values",values.toArray(new String[values.size()]));
+  }
+  if (orientation == ORIENTATION_VERTICAL)   target.addAttribute("vertical",true);
+  if (size > -1)   target.addAttribute("size",size);
+  target.addAttribute("hsize",handleSize);
 }

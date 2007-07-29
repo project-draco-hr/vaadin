@@ -1,0 +1,41 @@
+{
+switch (DOM.eventGetType(event)) {
+case Event.ONMOUSEDOWN:
+    client.console.log("Slider handle: mousedown");
+  if (!disabled && !readonly) {
+    dragging=true;
+    DOM.setCapture(handle);
+    DOM.eventPreventDefault(event);
+  }
+break;
+case Event.ONMOUSEMOVE:
+if (dragging) {
+client.console.log("Slider handle: dragging...");
+int x=DOM.eventGetClientX(event);
+int y=DOM.eventGetClientY(event);
+if (vertical) {
+}
+ else {
+  if (values == null) {
+    float handleW=Integer.parseInt(DOM.getAttribute(handle,"offsetWidth"));
+    float baseX=DOM.getAbsoluteLeft(base);
+    float baseW=Integer.parseInt(DOM.getAttribute(base,"offsetWidth"));
+    float v=((x - baseX) / (baseW - baseX)) * (max - min) + min;
+    if (resolution > 0) {
+      setHandlePosition(new Float(v));
+    }
+ else     setHandlePosition(new Float((int)v));
+  }
+ else {
+  }
+}
+}
+break;
+case Event.ONMOUSEUP:
+dragging=false;
+DOM.releaseCapture(handle);
+break;
+default :
+break;
+}
+}
