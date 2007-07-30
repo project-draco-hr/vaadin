@@ -1,0 +1,21 @@
+{
+  int x=DOM.eventGetClientX(event);
+  int y=DOM.eventGetClientY(event);
+  double v=min;
+  if (vertical) {
+  }
+ else {
+    double handleW=Integer.parseInt(DOM.getAttribute(handle,"offsetWidth"));
+    double baseX=DOM.getAbsoluteLeft(base) + handleW / 2;
+    double baseW=Integer.parseInt(DOM.getAttribute(base,"offsetWidth"));
+    v=((x - baseX) / (baseW - handleW)) * (max - min) + min;
+  }
+  if (v < min)   v=min;
+ else   if (v > max)   v=max;
+  if (resolution > 0) {
+    v=(int)(v * (double)Math.pow(10,resolution));
+    v=v / (double)Math.pow(10,resolution);
+    setValue(new Double(v),animate);
+  }
+ else   setValue(new Double((int)v),animate);
+}

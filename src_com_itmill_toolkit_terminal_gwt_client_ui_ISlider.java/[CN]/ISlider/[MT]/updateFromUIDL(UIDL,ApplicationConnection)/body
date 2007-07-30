@@ -5,19 +5,22 @@
   disabled=uidl.getBooleanAttribute("disabled");
   readonly=uidl.getBooleanAttribute("readonly");
   vertical=uidl.hasAttribute("vertical");
+  arrows=uidl.hasAttribute("arrows");
+  if (arrows) {
+    DOM.setStyleAttribute(smaller,"display","block");
+    DOM.setStyleAttribute(bigger,"display","block");
+    if (vertical) {
+      int arrowSize=Integer.parseInt(DOM.getAttribute(smaller,"offsetWidth"));
+      DOM.setStyleAttribute(bigger,"marginLeft",arrowSize + "px");
+      DOM.setStyleAttribute(bigger,"marginRight",arrowSize + "px");
+    }
+  }
   if (vertical)   addStyleName(CLASSNAME + "-vertical");
  else   removeStyleName(CLASSNAME + "-vertical");
-  if (uidl.hasAttribute("values")) {
-    values=uidl.getStringArrayAttributeAsSet("values");
-    value=uidl.getStringVariable("value");
-  }
- else {
-    min=uidl.getLongAttribute("min");
-    max=uidl.getLongAttribute("max");
-    resolution=uidl.getIntAttribute("resolution");
-    value=new Float(uidl.getFloatVariable("value"));
-    values=null;
-  }
+  min=uidl.getDoubleAttribute("min");
+  max=uidl.getDoubleAttribute("max");
+  resolution=uidl.getIntAttribute("resolution");
+  value=new Double(uidl.getDoubleVariable("value"));
   handleSize=uidl.getIntAttribute("hsize");
   if (uidl.hasAttribute("size"))   size=uidl.getIntAttribute("size");
   buildBase();
@@ -25,7 +28,7 @@
     Timer delay=new Timer(){
       public void run(){
         buildHandle();
-        setHandlePosition(value);
+        setValue(value,true);
       }
     }
 ;
@@ -33,6 +36,6 @@
   }
  else {
     buildHandle();
-    setHandlePosition(value);
+    setValue(value,true);
   }
 }

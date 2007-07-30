@@ -1,4 +1,15 @@
 {
-  if (dragging || DOM.compare(DOM.eventGetTarget(event),handle))   processHandleEvent(event);
- else   processBaseEvent(event);
+  Element targ=DOM.eventGetTarget(event);
+  if (dragging || DOM.compare(targ,handle)) {
+    processHandleEvent(event);
+  }
+ else   if (DOM.compare(targ,smaller)) {
+    if (DOM.eventGetType(event) == Event.ONMOUSEDOWN)     decrease();
+  }
+ else   if (DOM.compare(targ,bigger)) {
+    if (DOM.eventGetType(event) == Event.ONMOUSEDOWN)     increase();
+  }
+ else {
+    processBaseEvent(event);
+  }
 }

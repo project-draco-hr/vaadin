@@ -1,0 +1,38 @@
+{
+  if (vertical) {
+  }
+ else {
+    int handleWidth=Integer.parseInt(DOM.getAttribute(handle,"offsetWidth"));
+    int baseWidth=Integer.parseInt(DOM.getAttribute(base,"offsetWidth"));
+    int range=baseWidth - handleWidth;
+    double v=value.doubleValue();
+    double valueRange=max - min;
+    final double pos=range * ((v - min) / valueRange);
+    String styleLeft=DOM.getStyleAttribute(handle,"left");
+    int left=Integer.parseInt(styleLeft.substring(0,styleLeft.length() - 2));
+    if ((int)pos != left && animate) {
+      if (anim != null)       anim.cancel();
+      anim=new Timer(){
+        private int left;
+        private int goal=(int)pos;
+        private int dir=0;
+        public void run(){
+          String styleLeft=DOM.getStyleAttribute(handle,"left");
+          left=Integer.parseInt(styleLeft.substring(0,styleLeft.length() - 2));
+          if (dir == 0)           dir=(goal - left) / Math.abs(goal - left);
+          if ((dir > 0 && left >= goal) || (dir < 0 && left <= goal)) {
+            this.cancel();
+            return;
+          }
+          int increment=(goal - left) / 2;
+          DOM.setStyleAttribute(handle,"left",(left + increment) + "px");
+        }
+      }
+;
+      anim.scheduleRepeating(50);
+    }
+ else     DOM.setStyleAttribute(handle,"left",pos + "px");
+    DOM.setAttribute(handle,"title","" + v);
+  }
+  this.value=value;
+}

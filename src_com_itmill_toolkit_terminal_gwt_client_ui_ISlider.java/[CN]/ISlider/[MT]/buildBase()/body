@@ -5,7 +5,21 @@
   }
  else {
     if (size > -1)     DOM.setStyleAttribute(base,"width",size + "px");
- else     DOM.setStyleAttribute(base,"width","100%");
+ else {
+      Element p=DOM.getParent(getElement());
+      if (Integer.parseInt(DOM.getAttribute(p,"offsetWidth")) > 50)       DOM.setStyleAttribute(base,"width","auto");
+ else {
+        DOM.setStyleAttribute(base,"width","50px");
+        Timer adjust=new Timer(){
+          public void run(){
+            Element p=DOM.getParent(getElement());
+            if (Integer.parseInt(DOM.getAttribute(p,"offsetWidth")) > 50)             DOM.setStyleAttribute(base,"width","auto");
+          }
+        }
+;
+        adjust.schedule(100);
+      }
+    }
   }
   DOM.setStyleAttribute(base,"position","relative");
 }
