@@ -1,11 +1,22 @@
 {
   enabled=uidl.hasAttribute("disabled") ? false : true;
-  readonly=uidl.hasAttribute("disabled") ? true : false;
+  readonly=uidl.hasAttribute("readonly") ? true : false;
   if (uidl.hasAttribute("target"))   target=uidl.getStringAttribute(target);
   if (uidl.hasAttribute("src")) {
     src=uidl.getStringAttribute("src");
   }
+  if (uidl.hasAttribute("border")) {
+    if ("none".equals(uidl.getStringAttribute("border")))     borderStyle=BORDER_STYLE_NONE;
+ else     borderStyle=BORDER_STYLE_MINIMAL;
+  }
+ else {
+    borderStyle=BORDER_STYLE_DEFAULT;
+  }
   height=uidl.hasAttribute("height") ? uidl.getIntAttribute("height") : -1;
   width=uidl.hasAttribute("width") ? uidl.getIntAttribute("width") : -1;
   DOM.setInnerHTML(getElement(),uidl.getStringAttribute("caption"));
+  if (readonly)   addStyleName("readonly");
+ else   removeStyleName("readonly");
+  if (enabled)   addStyleName("enabled");
+ else   removeStyleName("enabled");
 }
