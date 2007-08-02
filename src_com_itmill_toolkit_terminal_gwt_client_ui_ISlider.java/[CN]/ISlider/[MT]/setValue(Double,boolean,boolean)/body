@@ -7,14 +7,16 @@
     int range=baseWidth - handleWidth;
     double v=value.doubleValue();
     double valueRange=max - min;
-    final double pos=range * ((v - min) / valueRange);
+    double p=0;
+    if (valueRange != 0)     p=range * ((v - min) / valueRange);
+    final double pos=p;
     String styleLeft=DOM.getStyleAttribute(handle,"left");
     int left=Integer.parseInt(styleLeft.substring(0,styleLeft.length() - 2));
-    if ((int)pos != left && animate) {
+    if ((int)(Math.round(pos)) != left && animate) {
       if (anim != null)       anim.cancel();
       anim=new Timer(){
         private int left;
-        private int goal=(int)pos;
+        private int goal=(int)Math.round(pos);
         private int dir=0;
         public void run(){
           String styleLeft=DOM.getStyleAttribute(handle,"left");
@@ -32,7 +34,7 @@
       anim.scheduleRepeating(50);
     }
  else     DOM.setStyleAttribute(handle,"left",pos + "px");
-    DOM.setAttribute(handle,"title","" + v);
   }
   this.value=value;
+  if (updateToServer)   client.updateVariable(id,"value",value.doubleValue(),immediate);
 }

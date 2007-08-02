@@ -2,7 +2,7 @@
 switch (DOM.eventGetType(event)) {
 case Event.ONMOUSEDOWN:
     if (!disabled && !readonly) {
-      anim.cancel();
+      if (anim != null)       anim.cancel();
       dragging=true;
       DOM.setCapture(handle);
       DOM.eventPreventDefault(event);
@@ -11,12 +11,14 @@ case Event.ONMOUSEDOWN:
   break;
 case Event.ONMOUSEMOVE:
 if (dragging) {
-  setValueByEvent(event,false);
+  DOM.setCapture(handle);
+  setValueByEvent(event,false,false);
 }
 break;
 case Event.ONMOUSEUP:
 dragging=false;
 DOM.releaseCapture(handle);
+setValueByEvent(event,true,true);
 break;
 default :
 break;

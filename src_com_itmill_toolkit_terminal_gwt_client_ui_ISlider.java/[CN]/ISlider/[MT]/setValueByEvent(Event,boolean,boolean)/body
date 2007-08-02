@@ -1,6 +1,5 @@
 {
   int x=DOM.eventGetClientX(event);
-  int y=DOM.eventGetClientY(event);
   double v=min;
   if (vertical) {
   }
@@ -12,10 +11,12 @@
   }
   if (v < min)   v=min;
  else   if (v > max)   v=max;
-  if (resolution > 0) {
-    v=(int)(v * (double)Math.pow(10,resolution));
-    v=v / (double)Math.pow(10,resolution);
-    setValue(new Double(v),animate);
+  if (roundup) {
+    if (resolution > 0) {
+      v=(int)(v * (double)Math.pow(10,resolution));
+      v=v / (double)Math.pow(10,resolution);
+    }
+ else     v=Math.round(v);
   }
- else   setValue(new Double((int)v),animate);
+  setValue(new Double(v),animate,roundup);
 }

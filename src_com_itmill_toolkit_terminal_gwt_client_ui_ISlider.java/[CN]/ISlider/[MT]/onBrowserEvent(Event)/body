@@ -1,15 +1,42 @@
 {
+  if (disabled || readonly)   return;
   Element targ=DOM.eventGetTarget(event);
   if (dragging || DOM.compare(targ,handle)) {
     processHandleEvent(event);
   }
  else   if (DOM.compare(targ,smaller)) {
-    if (DOM.eventGetType(event) == Event.ONMOUSEDOWN)     decrease();
+    if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
+      setValue(new Double(value.doubleValue() - Math.pow(10,-resolution)),false,true);
+      if (anim != null)       anim.cancel();
+      anim=new Timer(){
+        public void run(){
+          if (value.doubleValue() - Math.pow(10,-resolution) > min)           setValue(new Double(value.doubleValue() - Math.pow(10,-resolution)),false,true);
+        }
+      }
+;
+      anim.scheduleRepeating(100);
+      DOM.eventCancelBubble(event,true);
+    }
+ else     if (DOM.eventGetType(event) == Event.ONMOUSEUP) {
+      anim.cancel();
+    }
   }
  else   if (DOM.compare(targ,bigger)) {
-    if (DOM.eventGetType(event) == Event.ONMOUSEDOWN)     increase();
+    if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
+      setValue(new Double(value.doubleValue() + Math.pow(10,-resolution)),false,true);
+      if (anim != null)       anim.cancel();
+      anim=new Timer(){
+        public void run(){
+          if (value.doubleValue() - Math.pow(10,-resolution) < max)           setValue(new Double(value.doubleValue() + Math.pow(10,-resolution)),false,true);
+        }
+      }
+;
+      anim.scheduleRepeating(100);
+      DOM.eventCancelBubble(event,true);
+    }
+ else     if (DOM.eventGetType(event) == Event.ONMOUSEUP) {
+      anim.cancel();
+    }
   }
- else {
-    processBaseEvent(event);
-  }
+ else   processBaseEvent(event);
 }

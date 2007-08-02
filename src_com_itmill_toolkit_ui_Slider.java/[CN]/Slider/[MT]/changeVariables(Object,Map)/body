@@ -1,10 +1,17 @@
 {
   if (variables.containsKey("value")) {
-    Object newValue=variables.get("value");
-    if (resolution > 0)     newValue=new Double(newValue.toString());
- else     newValue=new Integer(newValue.toString());
+    Object value=variables.get("value");
+    Double newValue=new Double(value.toString());
     if (newValue != null && newValue != getValue() && !newValue.equals(getValue())) {
-      setValue(newValue,true);
+      try {
+        setValue(newValue,true);
+      }
+ catch (      ValueOutOfBoundsException e) {
+        double out=e.getValue().doubleValue();
+        if (out < min)         out=min;
+        if (out > max)         out=max;
+        super.setValue(new Double(out),false);
+      }
     }
   }
 }
