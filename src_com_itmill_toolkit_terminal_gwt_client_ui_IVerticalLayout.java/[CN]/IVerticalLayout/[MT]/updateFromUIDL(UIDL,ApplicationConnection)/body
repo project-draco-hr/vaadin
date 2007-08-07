@@ -5,15 +5,16 @@
   for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
     UIDL uidlForChild=(UIDL)it.next();
     Widget child=client.getWidget(uidlForChild);
-    ((Paintable)child).updateFromUIDL(uidlForChild,client);
     uidlWidgets.add(child);
   }
   Vector oldWidgets=getPaintables();
   Iterator oldIt=oldWidgets.iterator();
   Iterator newIt=uidlWidgets.iterator();
+  Iterator newUidl=uidl.getChildIterator();
   Widget oldChild=null;
   while (newIt.hasNext()) {
     Widget child=(Widget)newIt.next();
+    UIDL childUidl=(UIDL)newUidl.next();
     if (oldChild == null && oldIt.hasNext()) {
       while (oldIt.hasNext()) {
         oldChild=(Widget)oldIt.next();
@@ -26,15 +27,17 @@
     }
     if (oldChild == null) {
       add(child);
-      continue;
     }
-    if (child == oldChild) {
+ else     if (child == oldChild) {
       oldChild=null;
-      continue;
     }
-    if (hasChildComponent(child)) {
-      this.insert(child,getWidgetIndex(oldChild));
+ else     if (hasChildComponent(child)) {
+      removeCaption(child);
+      int index=getWidgetIndex(oldChild);
+      if (componentToCaption.containsKey(oldChild))       index--;
+      this.insert(child,index);
     }
+    ((Paintable)child).updateFromUIDL(childUidl,client);
   }
   while (oldIt.hasNext()) {
     oldChild=(Widget)oldIt.next();
