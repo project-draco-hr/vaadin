@@ -2,6 +2,7 @@
   clear();
   if (uidl.hasAttribute("caption"))   setTitle(uidl.getStringAttribute("caption"));
   int row=0, column=0;
+  ArrayList detachdedPaintables=new ArrayList();
   for (Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
     UIDL r=(UIDL)i.next();
     if ("gr".equals(r.getTag())) {
@@ -18,11 +19,26 @@
           UIDL u=c.getChildUIDL(0);
           if (u != null) {
             Widget child=client.getWidget(u);
-            setWidget(row,column,child);
+            prepareCell(row,column);
+            Widget oldChild=getWidget(row,column);
+            if (child != oldChild) {
+              if (oldChild != null) {
+                CaptionWrapper cw=(CaptionWrapper)oldChild;
+                detachdedPaintables.add(cw.getPaintable());
+                widgetToCaptionWrapper.remove(oldChild);
+              }
+              CaptionWrapper wrapper=new CaptionWrapper((Paintable)child);
+              setWidget(row,column,wrapper);
+              widgetToCaptionWrapper.put(child,wrapper);
+            }
             ((Paintable)child).updateFromUIDL(u,client);
           }
         }
       }
     }
+  }
+  for (Iterator it=detachdedPaintables.iterator(); it.hasNext(); ) {
+    Widget w=(Widget)it.next();
+    if (!w.isAttached())     client.unregisterPaintable((Paintable)w);
   }
 }
