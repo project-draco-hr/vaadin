@@ -1,0 +1,28 @@
+{
+switch (DOM.eventGetType(event)) {
+case Event.ONMOUSEDOWN:
+    resizing=true;
+  startX=DOM.eventGetScreenX(event);
+startY=DOM.eventGetScreenY(event);
+origW=getOffsetWidth();
+origH=getOffsetHeight();
+DOM.addEventPreview(this);
+break;
+case Event.ONMOUSEUP:
+resizing=false;
+DOM.removeEventPreview(this);
+break;
+case Event.ONMOUSEMOVE:
+if (resizing) {
+int w=DOM.eventGetScreenX(event) - startX + origW;
+if (w < 60) w=60;
+int h=DOM.eventGetScreenY(event) - startY + origH;
+if (h < 60) h=60;
+setPixelSize(w,h);
+DOM.eventPreventDefault(event);
+}
+break;
+default :
+break;
+}
+}
