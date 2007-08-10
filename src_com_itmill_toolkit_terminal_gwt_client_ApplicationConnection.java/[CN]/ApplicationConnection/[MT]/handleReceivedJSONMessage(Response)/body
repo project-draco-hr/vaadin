@@ -11,6 +11,15 @@
     console.log(jsonText);
     return;
   }
+  JSONObject redirect=(JSONObject)((JSONObject)json).get("redirect");
+  if (redirect != null) {
+    JSONString url=(JSONString)redirect.get("url");
+    if (url != null) {
+      console.log("redirecting to " + url.stringValue());
+      redirect(url.stringValue());
+      return;
+    }
+  }
   JSONObject resources=(JSONObject)((JSONObject)json).get("resources");
   for (Iterator i=resources.keySet().iterator(); i.hasNext(); ) {
     String key=(String)i.next();
