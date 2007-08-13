@@ -1,6 +1,10 @@
 {
   if (client.updateComponent(this,uidl,true))   return;
   this.client=client;
+  if (uidl.hasAttribute("partialUpdate")) {
+    handleUpdate(uidl);
+    return;
+  }
   this.paintableId=uidl.getId();
   clear();
   for (Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
@@ -18,6 +22,17 @@
   multiselect="multi".equals(selectMode);
   addTreeListener(new TreeListener(){
     public void onTreeItemStateChanged(    TreeItem item){
+      if (item instanceof TreeNode) {
+        TreeNode tn=(TreeNode)item;
+        if (item.getState()) {
+          if (!tn.isChildrenLoaded()) {
+            String key=tn.key;
+            ITree.this.client.updateVariable(paintableId,"expand",new String[]{key},true);
+          }
+        }
+ else {
+        }
+      }
     }
     public void onTreeItemSelected(    TreeItem item){
       if (!selectable)       return;
