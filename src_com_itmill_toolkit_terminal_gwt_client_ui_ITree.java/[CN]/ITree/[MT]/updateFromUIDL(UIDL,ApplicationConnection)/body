@@ -1,10 +1,14 @@
 {
   if (client.updateComponent(this,uidl,true))   return;
   this.client=client;
-  this.id=uidl.getId();
+  this.paintableId=uidl.getId();
   clear();
   for (Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
     UIDL childUidl=(UIDL)i.next();
+    if ("actions".equals(childUidl.getTag())) {
+      updateActionMap(childUidl);
+      continue;
+    }
     TreeNode childTree=new TreeNode();
     addItem(childTree);
     childTree.updateFromUIDL(childUidl,client);
@@ -23,7 +27,7 @@
         if (!multiselect)         selectedIds.clear();
         if (selectedIds.contains(key))         selectedIds.remove(key);
  else         selectedIds.add(key);
-        ITree.this.client.updateVariable(ITree.this.id,"selected",selectedIds.toArray(),true);
+        ITree.this.client.updateVariable(ITree.this.paintableId,"selected",selectedIds.toArray(),true);
       }
     }
   }

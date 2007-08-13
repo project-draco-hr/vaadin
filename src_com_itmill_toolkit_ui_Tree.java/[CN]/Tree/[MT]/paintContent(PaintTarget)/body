@@ -40,16 +40,16 @@
         expandedKeys.add(key);
       }
       if (actionHandlers != null) {
-        target.startTag("al");
+        ArrayList keys=new ArrayList();
         for (Iterator ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
           Action[] aa=((Action.Handler)ahi.next()).getActions(itemId,this);
           if (aa != null)           for (int ai=0; ai < aa.length; ai++) {
             String akey=actionMapper.key(aa[ai]);
             actionSet.add(aa[ai]);
-            target.addSection("ak",akey);
+            keys.add(akey);
           }
         }
-        target.endTag("al");
+        target.addAttribute("al",keys.toArray());
       }
       if (isExpanded(itemId) && hasChildren(itemId) && areChildrenAllowed(itemId)) {
         iteratorStack.push(getChildren(itemId).iterator());
@@ -61,8 +61,8 @@
     }
   }
   if (!actionSet.isEmpty()) {
-    target.startTag("actions");
     target.addVariable(this,"action","");
+    target.startTag("actions");
     for (Iterator i=actionSet.iterator(); i.hasNext(); ) {
       Action a=(Action)i.next();
       target.startTag("action");
