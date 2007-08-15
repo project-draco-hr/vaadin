@@ -1,14 +1,31 @@
 {
   setVisible(!uidl.getBooleanAttribute("invisible"));
-  String c=uidl.getStringAttribute("caption");
-  if (c == null) {
+  if (uidl.hasAttribute("error")) {
+    UIDL errorUidl=uidl.getErrors();
+    if (errorIndicatorElement == null) {
+      errorIndicatorElement=DOM.createDiv();
+      DOM.setAttribute(errorIndicatorElement,"className","i-errorindicator");
+      DOM.insertChild(getElement(),errorIndicatorElement,0);
+    }
+    errorMessage=new ErrorMessage();
+    errorMessage.updateFromUIDL(errorUidl);
   }
- else {
-    setText(c);
+ else   if (errorIndicatorElement != null) {
+    DOM.setStyleAttribute(errorIndicatorElement,"display","none");
+  }
+  if (uidl.hasAttribute("caption")) {
+    if (captionText == null) {
+      captionText=DOM.createSpan();
+      DOM.appendChild(getElement(),captionText);
+    }
+    DOM.setInnerText(captionText,uidl.getStringAttribute("caption"));
   }
   if (uidl.hasAttribute("description")) {
-    setTitle(uidl.getStringAttribute("description"));
-  }
-  if (uidl.hasAttribute("error")) {
+    if (captionText != null) {
+      DOM.setAttribute(captionText,"title",uidl.getStringAttribute("description"));
+    }
+ else {
+      setTitle(uidl.getStringAttribute("description"));
+    }
   }
 }

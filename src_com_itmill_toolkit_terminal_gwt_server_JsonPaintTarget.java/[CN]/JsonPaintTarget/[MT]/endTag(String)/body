@@ -6,7 +6,14 @@
     String lastTag="";
     lastTag=(String)mOpenTags.pop();
     if (!tagName.equalsIgnoreCase(lastTag))     throw new PaintException("Invalid UIDL: wrong ending tag: '" + tagName + "' expected: '"+ lastTag+ "'.");
-    parent.addData(tag.getJSON());
+    if ("error".equals(lastTag)) {
+      if (errorsOpen == 1)       parent.addAttribute("\"error\":[\"error\",{}" + tag.getData() + "]");
+ else       parent.addData(tag.getJSON());
+      errorsOpen--;
+    }
+ else {
+      parent.addData(tag.getJSON());
+    }
     tag=parent;
   }
  else {
