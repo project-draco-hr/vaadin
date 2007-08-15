@@ -35,13 +35,19 @@
       }
     }
     public void onTreeItemSelected(    TreeItem item){
+      TreeNode n=((TreeNode)item);
       if (!selectable)       return;
-      item.setSelected(true);
-      String key=((TreeNode)item).key;
+      String key=n.key;
       if (key != null) {
-        if (!multiselect)         selectedIds.clear();
-        if (selectedIds.contains(key))         selectedIds.remove(key);
- else         selectedIds.add(key);
+        if (selectedIds.contains(key)) {
+          selectedIds.remove(key);
+          n.setISelected(false);
+        }
+ else {
+          if (!multiselect)           selectedIds.clear();
+          selectedIds.add(key);
+          n.setISelected(true);
+        }
         ITree.this.client.updateVariable(ITree.this.paintableId,"selected",selectedIds.toArray(),true);
       }
     }
