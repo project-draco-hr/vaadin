@@ -1,0 +1,30 @@
+{
+  int i=0;
+  for (Iterator it=uidl.getChildIterator(); it.hasNext(); i++) {
+    prepareCell(i,1);
+    UIDL childUidl=(UIDL)it.next();
+    Paintable p=(Paintable)client.getWidget(childUidl);
+    Caption c=(Caption)componentToCaption.get(p);
+    if (c == null) {
+      c=new Caption(p);
+      componentToCaption.put(p,c);
+    }
+    Paintable oldComponent=(Paintable)getWidget(i,1);
+    if (oldComponent == null) {
+      setWidget(i,1,(Widget)p);
+    }
+ else     if (oldComponent != p) {
+      client.unregisterPaintable(oldComponent);
+      setWidget(i,1,(Widget)p);
+    }
+    setWidget(i,0,c);
+    p.updateFromUIDL(childUidl,client);
+  }
+  i++;
+  while (getRowCount() > i) {
+    Paintable p=(Paintable)getWidget(i,1);
+    client.unregisterPaintable(p);
+    componentToCaption.remove(p);
+    removeRow(i);
+  }
+}
