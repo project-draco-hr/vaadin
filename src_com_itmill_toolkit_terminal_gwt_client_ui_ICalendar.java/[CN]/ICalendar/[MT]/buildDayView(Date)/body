@@ -4,6 +4,11 @@
     hourTable=new FlexTable();
     firstRender=true;
     hourTable.addTableListener(this.ftListener);
+    SimplePanel p=new SimplePanel();
+    p.add(hourTable);
+    p.setStyleName(getStyleName() + "-hours");
+    this.calPanel.getFlexCellFormatter().setColSpan(8,0,7);
+    this.calPanel.setWidget(8,0,p);
   }
   Date curr=new Date(date.getTime());
   for (int i=0; i < 24; i++) {
@@ -21,7 +26,8 @@
         String ampm=(i < 12 ? "am" : "pm");
         hstr=(i <= 12 ? i : i - 12) + ":00 " + ampm;
       }
-      hourTable.setHTML(i,0,"<span class=\"" + getStyleName() + "-time\" >"+ hstr+ "</span>");
+      hourTable.setHTML(i,0,"<span>" + hstr + "</span>");
+      hourTable.getCellFormatter().setStyleName(i,0,getStyleName() + "-time");
     }
     List entries=this.entrySource.getEntries(curr,DateTimeService.RESOLUTION_HOUR);
     if (entries != null) {
@@ -30,9 +36,8 @@
         String title=((ICalendarEntry)it.next()).getTitle();
         text+=(text == "" ? "" : ", ") + (title != null ? title : "?");
       }
-      hourTable.setHTML(i,1,"<span class=\"" + getStyleName() + "-title\" >"+ text+ "</span>");
+      hourTable.setHTML(i,1,"<span>" + text + "</span>");
+      hourTable.getCellFormatter().setStyleName(i,1,getStyleName() + "-title");
     }
   }
-  this.calPanel.getFlexCellFormatter().setColSpan(8,0,7);
-  this.calPanel.setWidget(8,0,hourTable);
 }
