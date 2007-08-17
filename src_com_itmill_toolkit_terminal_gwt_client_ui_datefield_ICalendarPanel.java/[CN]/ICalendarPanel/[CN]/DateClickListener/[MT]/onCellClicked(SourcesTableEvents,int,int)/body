@@ -1,0 +1,14 @@
+{
+  if (sender != cal || row < 2 || row > 7 || !cal.datefield.isEnabled() || cal.datefield.isReadonly())   return;
+  String text=cal.getText(row,col);
+  if (text.equals(" "))   return;
+  Integer day=new Integer(text);
+  Date newDate=new Date(cal.datefield.getCurrentDate().getTime());
+  newDate.setDate(day.intValue());
+  if (!isEnabledDate(newDate)) {
+    return;
+  }
+  cal.datefield.getCurrentDate().setTime(newDate.getTime());
+  cal.datefield.getClient().updateVariable(cal.datefield.getId(),"day",cal.datefield.getCurrentDate().getDate(),cal.datefield.isImmediate());
+  updateCalendar();
+}

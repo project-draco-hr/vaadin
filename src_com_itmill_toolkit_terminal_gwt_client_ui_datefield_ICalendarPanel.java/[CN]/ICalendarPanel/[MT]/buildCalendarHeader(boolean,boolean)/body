@@ -1,0 +1,50 @@
+{
+  if (datefield.getCurrentDate() == null)   datefield.setCurrentDate(new Date());
+  if (forceRedraw) {
+    if (prevMonth == null) {
+      prevYear=new IEventButton();
+      prevYear.setHTML("&laquo;");
+      nextYear=new IEventButton();
+      nextYear.setHTML("&raquo;");
+      prevYear.addMouseListener(this);
+      nextYear.addMouseListener(this);
+      prevYear.addClickListener(this);
+      nextYear.addClickListener(this);
+      setWidget(0,0,prevYear);
+      setWidget(0,4,nextYear);
+      if (needsMonth) {
+        prevMonth=new IEventButton();
+        prevMonth.setHTML("&lsaquo;");
+        nextMonth=new IEventButton();
+        nextMonth.setHTML("&rsaquo;");
+        prevMonth.addMouseListener(this);
+        nextMonth.addMouseListener(this);
+        prevMonth.addClickListener(this);
+        nextMonth.addClickListener(this);
+        setWidget(0,3,nextMonth);
+        setWidget(0,1,prevMonth);
+      }
+      getFlexCellFormatter().setColSpan(0,2,3);
+    }
+ else     if (!needsMonth) {
+      prevMonth.removeClickListener(this);
+      prevMonth.removeMouseListener(this);
+      nextMonth.removeClickListener(this);
+      nextMonth.removeMouseListener(this);
+      remove(prevMonth);
+      remove(nextMonth);
+      prevMonth=null;
+      nextMonth=null;
+    }
+    int firstDay=datefield.getDateTimeService().getFirstDayOfWeek();
+    for (int i=0; i < 7; i++) {
+      int day=i + firstDay;
+      if (day > 6)       day=0;
+      if (datefield.getCurrentResolution() > IDateField.RESOLUTION_MONTH)       setHTML(1,i,"<strong>" + datefield.getDateTimeService().getShortDay(day) + "</strong>");
+ else       setHTML(1,i,"");
+    }
+  }
+  String monthName=needsMonth ? datefield.getDateTimeService().getMonth(datefield.getCurrentDate().getMonth()) : "";
+  int year=datefield.getCurrentDate().getYear() + 1900;
+  setHTML(0,2,"<span class=\"" + datefield.CLASSNAME + "-calendarpanel-month\">"+ monthName+ " "+ year+ "</span>");
+}
