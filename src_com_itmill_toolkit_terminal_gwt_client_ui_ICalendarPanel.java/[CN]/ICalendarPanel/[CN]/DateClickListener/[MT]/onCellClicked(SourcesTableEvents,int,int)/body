@@ -3,7 +3,12 @@
   String text=cal.getText(row,col);
   if (text.equals(" "))   return;
   Integer day=new Integer(text);
-  cal.datefield.date.setDate(day.intValue());
+  Date newDate=new Date(cal.datefield.date.getTime());
+  newDate.setDate(day.intValue());
+  if (!isEnabledDate(newDate)) {
+    return;
+  }
+  cal.datefield.date.setTime(newDate.getTime());
   cal.datefield.client.updateVariable(cal.datefield.id,"day",cal.datefield.date.getDate(),cal.datefield.immediate);
   updateCalendar();
 }

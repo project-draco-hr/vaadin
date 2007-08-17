@@ -1,0 +1,38 @@
+{
+  boolean firstRender=false;
+  if (this.hourTable == null) {
+    hourTable=new FlexTable();
+    firstRender=true;
+    hourTable.addTableListener(this.ftListener);
+  }
+  Date curr=new Date(date.getTime());
+  for (int i=0; i < 24; i++) {
+    curr.setHours(i);
+    String style=(i % 2 == 0 ? "even" : "odd");
+    if (realResolution >= RESOLUTION_HOUR) {
+      if (this.date != null && this.date.getHours() == i) {
+        style="selected";
+      }
+    }
+    hourTable.getRowFormatter().setStyleName(i,getStyleName() + "-row-" + style);
+    if (firstRender) {
+      String hstr=(i < 10 ? "0" : "") + i + ":00";
+      if (this.dts.isTwelveHourClock()) {
+        String ampm=(i < 12 ? "am" : "pm");
+        hstr=(i <= 12 ? i : i - 12) + ":00 " + ampm;
+      }
+      hourTable.setHTML(i,0,"<span class=\"" + getStyleName() + "-time\" >"+ hstr+ "</span>");
+    }
+    List entries=this.entrySource.getEntries(curr,DateTimeService.RESOLUTION_HOUR);
+    if (entries != null) {
+      String text="";
+      for (Iterator it=entries.iterator(); it.hasNext(); ) {
+        String title=((ICalendarEntry)it.next()).getTitle();
+        text+=(text == "" ? "" : ", ") + (title != null ? title : "?");
+      }
+      hourTable.setHTML(i,1,"<span class=\"" + getStyleName() + "-title\" >"+ text+ "</span>");
+    }
+  }
+  this.calPanel.getFlexCellFormatter().setColSpan(8,0,7);
+  this.calPanel.setWidget(8,0,hourTable);
+}
