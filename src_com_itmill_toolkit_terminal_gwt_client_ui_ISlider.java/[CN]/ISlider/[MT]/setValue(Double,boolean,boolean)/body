@@ -9,6 +9,7 @@
     double valueRange=max - min;
     double p=0;
     if (valueRange != 0)     p=range * ((v - min) / valueRange);
+    if (p < 0)     p=0;
     final double pos=p;
     String styleLeft=DOM.getStyleAttribute(handle,"left");
     int left=Integer.parseInt(styleLeft.substring(0,styleLeft.length() - 2));
@@ -35,6 +36,8 @@
     }
  else     DOM.setStyleAttribute(handle,"left",pos + "px");
   }
+  if (value.doubleValue() < min)   value=new Double(min);
+ else   if (value.doubleValue() > max)   value=new Double(max);
   this.value=value;
   if (updateToServer)   client.updateVariable(id,"value",value.doubleValue(),immediate);
 }
