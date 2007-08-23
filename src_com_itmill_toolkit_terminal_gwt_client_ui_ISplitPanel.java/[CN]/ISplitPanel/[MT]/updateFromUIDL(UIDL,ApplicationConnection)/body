@@ -1,0 +1,18 @@
+{
+  client.updateComponent(this,uidl,true);
+  setSplitPosition(uidl.getStringAttribute("position"));
+  setWidth(uidl.getStringAttribute("width"));
+  setHeight(uidl.getStringAttribute("height"));
+  Paintable newFirstChild=(Paintable)client.getWidget(uidl.getChildUIDL(0));
+  Paintable newSecondChild=(Paintable)client.getWidget(uidl.getChildUIDL(1));
+  if (firstChild != newFirstChild) {
+    if (firstChild != null)     client.unregisterPaintable((Paintable)firstChild);
+    setFirstWidget((Widget)newFirstChild);
+  }
+  if (secondChild != newSecondChild) {
+    if (secondChild != null)     client.unregisterPaintable((Paintable)secondChild);
+    setSecondWidget((Widget)newSecondChild);
+  }
+  newFirstChild.updateFromUIDL(uidl.getChildUIDL(0),client);
+  newSecondChild.updateFromUIDL(uidl.getChildUIDL(1),client);
+}
