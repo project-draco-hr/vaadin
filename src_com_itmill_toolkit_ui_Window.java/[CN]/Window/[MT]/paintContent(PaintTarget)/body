@@ -1,6 +1,8 @@
 {
-  target.addAttribute("name",getName());
-  target.addAttribute("theme",getTheme());
+  String name=getName();
+  target.addAttribute("name",name == null ? "" : name);
+  String theme=getTheme();
+  target.addAttribute("theme",theme == null ? "" : theme);
   if (getApplication() != null && this == getApplication().getMainWindow())   target.addAttribute("main",true);
 synchronized (openList) {
     if (!openList.isEmpty()) {
@@ -14,4 +16,8 @@ synchronized (openList) {
   target.addVariable(this,"close",false);
   if (this.focusedComponent != null)   target.addVariable(this,"focused","" + this.focusedComponent.getFocusableId());
  else   target.addVariable(this,"focused","");
+  for (Iterator i=subwindows.iterator(); i.hasNext(); ) {
+    Window w=(Window)i.next();
+    w.paint(target);
+  }
 }
