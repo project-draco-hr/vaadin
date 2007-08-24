@@ -3,14 +3,19 @@
   this.client=client;
   this.id=uidl.getId();
   clear();
+  Element deco=DOM.getChild(getElement(),0);
+  if (deco != null)   DOM.removeChild(getElement(),deco);
   if (uidl.hasAttribute("style"))   setStyleName(CLASSNAME + " " + CLASSNAME+ "-"+ uidl.getStringAttribute("style"));
  else   setStyleName(CLASSNAME);
   if (uidl.hasAttribute("caption") && !uidl.getStringAttribute("caption").equals("")) {
     caption.setText(uidl.getStringAttribute("caption"));
+    caption.setStyleName(CLASSNAME + "-caption");
     add(caption);
   }
- else   if (uidl.hasAttribute("style")) {
-    addStyleName(CLASSNAME + "-nocaption");
+ else {
+    caption.setStyleName(CLASSNAME + "-nocaption");
+    caption.setText("");
+    add(caption);
   }
   String widthUnit="px";
   String heightUnit="px";
@@ -26,4 +31,7 @@
   ((Paintable)layout).updateFromUIDL(layoutUidl,client);
   content.setWidget(layout);
   add(content);
+  deco=DOM.createDiv();
+  DOM.setElementProperty(deco,"className",CLASSNAME + "-deco");
+  DOM.appendChild(getElement(),deco);
 }
