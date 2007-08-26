@@ -1,4 +1,5 @@
 {
+  clear();
   theme=uidl.getStringAttribute("theme");
   com.google.gwt.user.client.Window.setTitle(uidl.getStringAttribute("caption"));
   UIDL childUidl=uidl.getChildUIDL(0);
@@ -14,4 +15,26 @@
     setWidget((Widget)lo);
   }
   lo.updateFromUIDL(childUidl,client);
+  int i=1;
+  HashSet removedSubWindows=new HashSet(subWindows);
+  while ((childUidl=uidl.getChildUIDL(i++)) != null) {
+    if ("window".equals(childUidl.getTag())) {
+      Widget w=client.getWidget(childUidl);
+      if (subWindows.contains(w)) {
+        removedSubWindows.remove(w);
+        client.registerPaintable(childUidl.getId(),(Paintable)w);
+      }
+ else {
+        subWindows.add(w);
+        RootPanel.get().add(w);
+      }
+      ((Paintable)w).updateFromUIDL(childUidl,client);
+    }
+  }
+  for (Iterator rem=removedSubWindows.iterator(); rem.hasNext(); ) {
+    IWindow w=(IWindow)rem.next();
+    client.unregisterPaintable(w);
+    subWindows.remove(w);
+    RootPanel.get().remove(w);
+  }
 }
