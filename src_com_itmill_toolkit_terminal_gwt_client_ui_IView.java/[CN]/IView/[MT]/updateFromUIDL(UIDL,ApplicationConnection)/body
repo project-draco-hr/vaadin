@@ -2,7 +2,15 @@
   clear();
   theme=uidl.getStringAttribute("theme");
   com.google.gwt.user.client.Window.setTitle(uidl.getStringAttribute("caption"));
-  UIDL childUidl=uidl.getChildUIDL(0);
+  int childIndex=0;
+  while (childIndex < uidl.getChidlCount() && "open".equals(uidl.getChildUIDL(childIndex).getTag())) {
+    UIDL open=uidl.getChildUIDL(childIndex);
+    String url=open.getStringAttribute("src");
+    String target=open.getStringAttribute("target");
+    Window.open(url,target != null ? target : null,"");
+    childIndex++;
+  }
+  UIDL childUidl=uidl.getChildUIDL(childIndex);
   Paintable lo=(Paintable)client.getWidget(childUidl);
   if (layout != null) {
     if (layout != lo) {
@@ -15,9 +23,8 @@
     setWidget((Widget)lo);
   }
   lo.updateFromUIDL(childUidl,client);
-  int i=1;
   HashSet removedSubWindows=new HashSet(subWindows);
-  while ((childUidl=uidl.getChildUIDL(i++)) != null) {
+  while ((childUidl=uidl.getChildUIDL(childIndex++)) != null) {
     if ("window".equals(childUidl.getTag())) {
       Widget w=client.getWidget(childUidl);
       if (subWindows.contains(w)) {

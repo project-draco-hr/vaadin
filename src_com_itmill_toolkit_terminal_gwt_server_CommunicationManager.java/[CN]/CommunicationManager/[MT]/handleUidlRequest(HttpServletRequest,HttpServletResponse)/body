@@ -26,10 +26,6 @@ synchronized (application) {
           paintables.add(window);
           locales=null;
           requireLocale(application.getLocale().toString());
-          for (Iterator i=window.getApplication().getWindows().iterator(); i.hasNext(); ) {
-            Window w=(Window)i.next();
-            if (!"native".equals(w.getStyle()) && w != window)             paintables.add(w);
-          }
         }
  else         paintables=getDirtyComponents();
         if (paintables != null) {
@@ -87,9 +83,6 @@ synchronized (application) {
         outWriter.print("]");
         outWriter.print(", \"meta\" : {");
         boolean metaOpen=false;
-        if (application.ajaxInit()) {
-          outWriter.print("\"appInit\":true");
-        }
         Paintable f=(Paintable)application.consumeFocus();
         if (f != null) {
           if (metaOpen)           outWriter.append(",");
