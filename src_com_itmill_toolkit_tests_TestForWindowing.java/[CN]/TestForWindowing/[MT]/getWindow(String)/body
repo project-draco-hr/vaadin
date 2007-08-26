@@ -1,0 +1,20 @@
+{
+  Window w=super.getWindow(name);
+  if (w != null)   return w;
+  if (name != null && name.startsWith("mainwin-")) {
+    String postfix=name.substring("mainwin-".length());
+    final Window ww=new Window("Window: " + postfix);
+    ww.setName(name);
+    ww.addComponent(new Label("This is a application-level window opened with name: " + name));
+    ww.addComponent(new Button("Click me",new Button.ClickListener(){
+      int state=0;
+      public void buttonClick(      ClickEvent event){
+        ww.addComponent(new Label("Button clicked " + (++state) + " times"));
+      }
+    }
+));
+    addWindow(ww);
+    return ww;
+  }
+  return null;
+}

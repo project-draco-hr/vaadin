@@ -1,0 +1,27 @@
+{
+  setMainWindow(main);
+  main.addComponent(new Button("Add new subwindow",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      final Window w=new Window("Subwindow " + System.currentTimeMillis());
+      main.addWindow(w);
+      Button closebutton=new Button("Close " + w.getCaption(),new Button.ClickListener(){
+        public void buttonClick(        ClickEvent event){
+          main.removeWindow(w);
+        }
+      }
+);
+      w.addComponent(closebutton);
+    }
+  }
+));
+  main.addComponent(new Button("Open a currently uncreated application level window",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      try {
+        main.open(new com.itmill.toolkit.terminal.ExternalResource(new URL(getURL(),"mainwin-" + System.currentTimeMillis() + "/")),null);
+      }
+ catch (      MalformedURLException e) {
+      }
+    }
+  }
+));
+}
