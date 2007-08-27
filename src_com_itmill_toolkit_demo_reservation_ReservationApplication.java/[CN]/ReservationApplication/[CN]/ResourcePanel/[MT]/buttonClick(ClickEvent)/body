@@ -1,0 +1,21 @@
+{
+  Object source=event.getSource();
+  if (source instanceof Button) {
+    Object data=((Button)source).getData();
+    if (data instanceof Integer) {
+      Integer resourceId=(Integer)data;
+      setSelectedResourceId(resourceId);
+      refreshReservations(new int[]{resourceId.intValue()});
+    }
+ else {
+      setSelectedResourceId(null);
+      String category=(String)data;
+      LinkedList resources=(LinkedList)categoryResources.get(category);
+      int[] rids=new int[resources.size()];
+      for (int i=0; i < rids.length; i++) {
+        rids[i]=((Integer)resources.get(i)).intValue();
+      }
+      refreshReservations(rids);
+    }
+  }
+}

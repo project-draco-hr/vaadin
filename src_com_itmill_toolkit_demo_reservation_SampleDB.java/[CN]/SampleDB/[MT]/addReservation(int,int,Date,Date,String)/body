@@ -1,0 +1,33 @@
+{
+  String checkQ="SELECT count(*) FROM " + Reservation.TABLE + " WHERE "+ Reservation.PROPERTY_ID_RESOURCE_ID+ "=? AND (("+ Reservation.PROPERTY_ID_RESERVED_FROM+ ">=? AND "+ Reservation.PROPERTY_ID_RESERVED_FROM+ "<=?) OR ("+ Reservation.PROPERTY_ID_RESERVED_TO+ ">=? AND "+ Reservation.PROPERTY_ID_RESERVED_TO+ "<=?) OR ("+ Reservation.PROPERTY_ID_RESERVED_FROM+ "<=? AND "+ Reservation.PROPERTY_ID_RESERVED_TO+ ">=?)"+ ")";
+  System.err.println(checkQ);
+  String q="INSERT INTO " + Reservation.TABLE + " ("+ Reservation.PROPERTY_ID_RESOURCE_ID+ ","+ Reservation.PROPERTY_ID_RESERVED_BY_ID+ ","+ Reservation.PROPERTY_ID_RESERVED_FROM+ ","+ Reservation.PROPERTY_ID_RESERVED_TO+ ","+ Reservation.PROPERTY_ID_DESCRIPTION+ ")"+ "VALUES (?,?,?,?,?)";
+synchronized (DB_URL) {
+    try {
+      PreparedStatement p=connection.prepareStatement(checkQ);
+      p.setInt(1,resourceId);
+      p.setTimestamp(2,new java.sql.Timestamp(reservedFrom.getTime()));
+      p.setTimestamp(3,new java.sql.Timestamp(reservedTo.getTime()));
+      p.setTimestamp(4,new java.sql.Timestamp(reservedFrom.getTime()));
+      p.setTimestamp(5,new java.sql.Timestamp(reservedTo.getTime()));
+      p.setTimestamp(6,new java.sql.Timestamp(reservedFrom.getTime()));
+      p.setTimestamp(7,new java.sql.Timestamp(reservedTo.getTime()));
+      p.execute();
+      ResultSet rs=p.getResultSet();
+      if (rs.next() && rs.getInt(1) > 0) {
+        throw new RuntimeException("Not free!");
+      }
+      p=connection.prepareStatement(q);
+      p.setInt(1,resourceId);
+      p.setInt(2,reservedById);
+      p.setTimestamp(3,new java.sql.Timestamp(reservedFrom.getTime()));
+      p.setTimestamp(4,new java.sql.Timestamp(reservedTo.getTime()));
+      p.setString(5,description);
+      p.execute();
+    }
+ catch (    Exception e) {
+      System.err.println(e);
+      e.printStackTrace(System.err);
+    }
+  }
+}

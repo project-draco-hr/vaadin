@@ -1,0 +1,56 @@
+{
+  mainWindow=new Window("Reservr");
+  setMainWindow(mainWindow);
+  setTheme("example");
+  db=new SampleDB(true);
+  db.generateResources();
+  db.generateDemoUser();
+  ResourcePanel resourcePanel=new ResourcePanel("Resources");
+  resourcePanel.setResourceContainer(db.getResources(null));
+  mainWindow.addComponent(resourcePanel);
+  Panel reservationPanel=new Panel(new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL));
+  mainWindow.addComponent(reservationPanel);
+  OrderedLayout infoLayout=new OrderedLayout();
+  reservationPanel.addComponent(infoLayout);
+  description=new TextField();
+  description.setColumns(30);
+  description.setRows(5);
+  infoLayout.addComponent(description);
+  reservationButton=new Button("Make reservation",this,"makeReservation");
+  infoLayout.addComponent(reservationButton);
+  Date now=new Date();
+  reservedFrom=new CalendarField();
+  reservedFrom.setMinimumDate(now);
+  initCalendarFieldPropertyIds(reservedFrom);
+  reservationPanel.addComponent(reservedFrom);
+  reservedTo=new CalendarField();
+  reservedTo.setMinimumDate(now);
+  initCalendarFieldPropertyIds(reservedTo);
+  reservationPanel.addComponent(reservedTo);
+  refreshReservations(null);
+  reservedFrom.addListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      Date fd=(Date)reservedFrom.getValue();
+      Date td=(Date)reservedTo.getValue();
+      if (fd == null) {
+        reservedTo.setValue(null);
+        reservedTo.setEnabled(false);
+        return;
+      }
+ else {
+        reservedTo.setEnabled(true);
+      }
+      reservedTo.setMinimumDate(fd);
+      if (td == null || td.before(fd)) {
+        reservedTo.setValue(fd);
+      }
+    }
+  }
+);
+  reservedFrom.setImmediate(true);
+  reservedFrom.setValue(now);
+  mainWindow.addComponent(new Button("close",this,"close"));
+  Table tbl=new Table();
+  tbl.setContainerDataSource(db.getUsers());
+  mainWindow.addComponent(tbl);
+}
