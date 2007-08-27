@@ -8,7 +8,7 @@
       w=hCell.getWidth();
     }
  else {
-      int hw=DOM.getIntAttribute(hCell.getElement(),"offsetWidth");
+      int hw=DOM.getElementPropertyInt(hCell.getElement(),"offsetWidth");
       int cw=tBody.getColWidth(i);
       w=(hw > cw ? hw : cw) + IScrollTableBody.CELL_EXTRA_WIDTH;
     }
@@ -30,8 +30,11 @@
     tHead.setWidth(width);
   }
   tHead.disableBrowserIntelligence();
-  if (firstvisible > 0)   bodyContainer.setScrollPosition(firstvisible * tBody.getRowHeight());
-  DeferredCommand.add(new Command(){
+  if (firstvisible > 0) {
+    bodyContainer.setScrollPosition(firstvisible * tBody.getRowHeight());
+    firstRowInViewPort=firstvisible;
+  }
+  DeferredCommand.addCommand(new Command(){
     public void execute(){
       if (totalRows - 1 > tBody.getLastRendered()) {
         rowRequestHandler.setReqFirstRow(tBody.getLastRendered() + 1);
