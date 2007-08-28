@@ -51,6 +51,17 @@
       e.printStackTrace();
     }
   }
+  if (((JSONObject)json).containsKey("meta")) {
+    JSONObject meta=((JSONObject)json).get("meta").isObject();
+    if (meta.containsKey("focus")) {
+      String focusPid=meta.get("focus").isString().stringValue();
+      Paintable toBeFocused=this.getPaintable(focusPid);
+      if (toBeFocused instanceof HasFocus) {
+        HasFocus toBeFocusedWidget=(HasFocus)toBeFocused;
+        toBeFocusedWidget.setFocus(true);
+      }
+    }
+  }
   long prosessingTime=(new Date().getTime()) - start.getTime();
   console.log(" Processing time was " + String.valueOf(prosessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
 }
