@@ -1,7 +1,13 @@
 {
-  Integer rid=getSelectedResourceId();
-  if (rid != null) {
-    db.addReservation(rid.intValue(),0,(Date)reservedFrom.getValue(),(Date)reservedTo.getValue(),(String)description.getValue());
-    refreshReservations(new int[]{rid.intValue()});
+  try {
+    Item resource=getActiveResource();
+    if (resource != null) {
+      db.addReservation(resource,0,(Date)reservedFrom.getValue(),(Date)reservedTo.getValue(),(String)description.getValue());
+    }
   }
+ catch (  ResourceNotAvailableException e) {
+    statusLabel.setCaption("Reservation failed");
+    statusLabel.setValue("The selected resource was not available for the selected period.");
+  }
+  refreshReservations();
 }

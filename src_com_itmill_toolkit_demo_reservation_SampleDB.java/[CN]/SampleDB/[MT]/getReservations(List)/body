@@ -1,0 +1,26 @@
+{
+  String q="SELECT * FROM " + Reservation.TABLE;
+  if (resources != null && resources.size() > 0) {
+    StringBuilder s=new StringBuilder();
+    for (Iterator it=resources.iterator(); it.hasNext(); ) {
+      if (s.length() > 0) {
+        s.append(",");
+      }
+      s.append(((Item)it.next()).getItemProperty(Resource.PROPERTY_ID_ID));
+    }
+    q+=" HAVING " + Reservation.PROPERTY_ID_RESOURCE_ID + " IN ("+ s+ ")";
+  }
+  q+=" ORDER BY " + Reservation.PROPERTY_ID_RESERVED_FROM;
+  try {
+    QueryContainer qc=new QueryContainer(q,connection,ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+    if (qc.size() < 1) {
+      return null;
+    }
+ else {
+      return qc;
+    }
+  }
+ catch (  SQLException e) {
+    throw new RuntimeException(e);
+  }
+}

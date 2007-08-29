@@ -1,0 +1,26 @@
+{
+  if (reservedFrom.after(reservedTo)) {
+    Date tmp=reservedTo;
+    reservedTo=reservedFrom;
+    reservedFrom=tmp;
+  }
+  int resourceId=((Integer)resource.getItemProperty(Resource.PROPERTY_ID_ID).getValue()).intValue();
+  String q="INSERT INTO " + Reservation.TABLE + " ("+ Reservation.PROPERTY_ID_RESOURCE_ID+ ","+ Reservation.PROPERTY_ID_RESERVED_BY_ID+ ","+ Reservation.PROPERTY_ID_RESERVED_FROM+ ","+ Reservation.PROPERTY_ID_RESERVED_TO+ ","+ Reservation.PROPERTY_ID_DESCRIPTION+ ")"+ "VALUES (?,?,?,?,?)";
+synchronized (DB_URL) {
+    try {
+      if (!isAvailableResource(resourceId,reservedFrom,reservedTo)) {
+        throw new ResourceNotAvailableException("The resource is not available at that time.");
+      }
+      PreparedStatement p=connection.prepareStatement(q);
+      p.setInt(1,resourceId);
+      p.setInt(2,reservedById);
+      p.setTimestamp(3,new java.sql.Timestamp(reservedFrom.getTime()));
+      p.setTimestamp(4,new java.sql.Timestamp(reservedTo.getTime()));
+      p.setString(5,description);
+      p.execute();
+    }
+ catch (    Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+}

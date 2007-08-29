@@ -1,23 +1,34 @@
 {
-  mainWindow=new Window("Reservr");
-  setMainWindow(mainWindow);
-  setTheme("example");
   db=new SampleDB(true);
   db.generateResources();
   db.generateDemoUser();
-  ResourcePanel resourcePanel=new ResourcePanel("Resources");
+  Window mainWindow=new Window("Reservr");
+  setMainWindow(mainWindow);
+  setTheme("example");
+  TabSheet mainTabs=new TabSheet();
+  mainWindow.addComponent(mainTabs);
+  mainWindow.addComponent(new Button("close",this,"close"));
+  OrderedLayout reservationTab=new OrderedLayout();
+  mainTabs.addTab(reservationTab,"Make reservation",null);
+  resourcePanel=new ResourceSelectorPanel("Resources");
   resourcePanel.setResourceContainer(db.getResources(null));
-  mainWindow.addComponent(resourcePanel);
+  resourcePanel.addListener(ResourceSelectorPanel.SelectedResourcesChangedEvent.class,this,"selectedResourcesChanged");
+  reservationTab.addComponent(resourcePanel);
   Panel reservationPanel=new Panel(new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL));
-  mainWindow.addComponent(reservationPanel);
+  reservationTab.addComponent(reservationPanel);
   OrderedLayout infoLayout=new OrderedLayout();
   reservationPanel.addComponent(infoLayout);
+  resourceName=new Label("Choose resource");
+  resourceName.setCaption("Selected resource");
+  infoLayout.addComponent(resourceName);
   description=new TextField();
   description.setColumns(30);
   description.setRows(5);
   infoLayout.addComponent(description);
   reservationButton=new Button("Make reservation",this,"makeReservation");
   infoLayout.addComponent(reservationButton);
+  statusLabel=new Label();
+  infoLayout.addComponent(statusLabel);
   Date now=new Date();
   reservedFrom=new CalendarField();
   reservedFrom.setMinimumDate(now);
@@ -27,7 +38,6 @@
   reservedTo.setMinimumDate(now);
   initCalendarFieldPropertyIds(reservedTo);
   reservationPanel.addComponent(reservedTo);
-  refreshReservations(null);
   reservedFrom.addListener(new ValueChangeListener(){
     public void valueChange(    ValueChangeEvent event){
       Date fd=(Date)reservedFrom.getValue();
@@ -35,6 +45,7 @@
       if (fd == null) {
         reservedTo.setValue(null);
         reservedTo.setEnabled(false);
+        refreshSelectedResources();
         return;
       }
  else {
@@ -44,13 +55,20 @@
       if (td == null || td.before(fd)) {
         reservedTo.setValue(fd);
       }
+      refreshSelectedResources();
+      resetStatus();
     }
   }
 );
   reservedFrom.setImmediate(true);
   reservedFrom.setValue(now);
-  mainWindow.addComponent(new Button("close",this,"close"));
-  Table tbl=new Table();
-  tbl.setContainerDataSource(db.getUsers());
-  mainWindow.addComponent(tbl);
+  allReservations=new Table();
+  mainTabs.addTab(allReservations,"All reservations",null);
+  mainTabs.addListener(new TabSheet.SelectedTabChangeListener(){
+    public void selectedTabChange(    SelectedTabChangeEvent event){
+      refreshReservations();
+    }
+  }
+);
+  refreshReservations();
 }
