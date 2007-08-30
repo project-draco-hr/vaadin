@@ -1,11 +1,17 @@
 {
+  int type=DOM.eventGetType(event);
+  if (type == Event.ONKEYDOWN && shortcutHandler != null) {
+    int modifiers=KeyboardListenerCollection.getKeyboardModifiers(event);
+    shortcutHandler.handleKeyboardEvent((char)DOM.eventGetKeyCode(event),modifiers);
+    return;
+  }
   if (!isActive()) {
     bringToFront();
   }
   Element target=DOM.eventGetTarget(event);
   if (dragging || DOM.compare(header,target))   onHeaderEvent(event);
  else   if (resizing || DOM.compare(resizeBox,target))   onResizeEvent(event);
- else   if (DOM.compare(target,closeBox) && DOM.eventGetType(event) == Event.ONCLICK) {
+ else   if (DOM.compare(target,closeBox) && type == Event.ONCLICK) {
     onCloseClick();
   }
 }
