@@ -33,11 +33,17 @@
     String text="";
     if (entries != null) {
       for (Iterator it=entries.iterator(); it.hasNext(); ) {
-        String title=((ICalendarEntry)it.next()).getTitle();
-        text+=(text == "" ? "" : ", ") + (title != null ? title : "?");
+        ICalendarEntry entry=(ICalendarEntry)it.next();
+        String title=entry.getTitle();
+        String desc=entry.getDescription();
+        text+=(text == "" ? "" : ", ");
+        String e="<span" + (desc != null ? " title=\"" + desc + "\"" : "") + ">";
+        e+=(title != null ? title : "?");
+        e+="</span>";
+        text+=e;
       }
     }
-    hourTable.setHTML(i,1,"<span>" + text + "</span>");
+    hourTable.setHTML(i,1,text);
     hourTable.getCellFormatter().setStyleName(i,1,CLASSNAME + "-title");
   }
 }
