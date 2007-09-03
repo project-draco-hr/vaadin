@@ -6,8 +6,8 @@
   if (isMultiSelect())   selectedKeys=new String[((Set)getValue()).size()];
  else   selectedKeys=new String[(getValue() == null && getNullSelectionItemId() == null ? 0 : 1)];
   target.startTag("options");
+  int keyIndex=0;
   if (!isLazyLoading()) {
-    int keyIndex=0;
     Collection ids=getItemIds();
     if (getNullSelectionItemId() != null && (!ids.contains(getNullSelectionItemId()))) {
       Object id=getNullSelectionItemId();
@@ -25,33 +25,36 @@
       }
       target.endTag("so");
     }
-    for (Iterator i=getItemIds().iterator(); i.hasNext(); ) {
-      Object id=i.next();
-      String key=itemIdMapper.key(id);
-      String caption=getItemCaption(id);
-      Resource icon=getItemIcon(id);
-      target.startTag("so");
-      if (icon != null)       target.addAttribute("icon",icon);
-      target.addAttribute("caption",caption);
-      if (id != null && id.equals(getNullSelectionItemId()))       target.addAttribute("nullselection",true);
-      target.addAttribute("key",key);
-      if (isSelected(id) && keyIndex < selectedKeys.length) {
-        target.addAttribute("selected",true);
-        selectedKeys[keyIndex++]=key;
-      }
-      target.endTag("so");
-    }
+  }
+  Iterator i;
+  if (isLazyLoading()) {
+    i=optionFilter.filter(filterstring,lazyLoadingPageLength,page).iterator();
+    target.addAttribute("totalMatches",optionFilter.getMatchCount());
   }
  else {
-    if (getApplication() != null) {
-      target.addAttribute("loadfrom",getApplication().getURL().toString() + optionsStream.uri);
-      target.addAttribute("total",(getItemIds() != null) ? getItemIds().size() : 0);
-      target.addAttribute("initial",optionsStream.getJSON(this.lazyLoadingPageLength,0,""));
-      String caption=getItemCaption(getValue());
-      target.addAttribute("selectedValue",caption == null ? "" : caption);
+    i=getItemIds().iterator();
+  }
+  while (i.hasNext()) {
+    Object id=i.next();
+    String key=itemIdMapper.key(id);
+    String caption=getItemCaption(id);
+    Resource icon=getItemIcon(id);
+    target.startTag("so");
+    if (icon != null)     target.addAttribute("icon",icon);
+    target.addAttribute("caption",caption);
+    if (id != null && id.equals(getNullSelectionItemId()))     target.addAttribute("nullselection",true);
+    target.addAttribute("key",key);
+    if (isSelected(id) && keyIndex < selectedKeys.length) {
+      target.addAttribute("selected",true);
+      selectedKeys[keyIndex++]=key;
     }
+    target.endTag("so");
   }
   target.endTag("options");
   target.addVariable(this,"selected",selectedKeys);
   if (isNewItemsAllowed())   target.addVariable(this,"newitem","");
+  if (isLazyLoading()) {
+    target.addVariable(this,"filter",filterstring);
+    target.addVariable(this,"page",page);
+  }
 }

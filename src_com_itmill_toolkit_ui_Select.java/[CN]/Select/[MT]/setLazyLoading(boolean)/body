@@ -1,14 +1,7 @@
 {
-  if (useLazyLoading != isLazyLoading()) {
-    if (useLazyLoading) {
-      optionsStream=new OptionsStream(this);
-      Application app=getApplication();
-      if (app != null)       app.getMainWindow().addURIHandler(optionsStream);
-    }
- else {
-      if (getApplication() != null)       getWindow().removeURIHandler(optionsStream);
-      optionsStream=null;
-    }
+  if (useLazyLoading != isLazyLoading) {
+    isLazyLoading=useLazyLoading;
+    if (getOptionFilter() == null)     setOptionFilter(new StartsWithFilter(this));
     requestRepaint();
   }
 }
