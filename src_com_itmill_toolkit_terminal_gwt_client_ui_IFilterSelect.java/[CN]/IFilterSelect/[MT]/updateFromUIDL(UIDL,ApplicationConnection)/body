@@ -1,0 +1,18 @@
+{
+  this.paintableId=uidl.getId();
+  this.client=client;
+  if (uidl.hasAttribute("immediate"))   immediate=true;
+ else   immediate=false;
+  currentSuggestions.clear();
+  UIDL options=uidl.getChildUIDL(0);
+  totalSuggestions=options.getIntAttribute("totalMatches");
+  for (Iterator i=options.getChildIterator(); i.hasNext(); ) {
+    UIDL optionUidl=(UIDL)i.next();
+    FilterSelectSuggestion suggestion=new FilterSelectSuggestion(optionUidl);
+    currentSuggestions.add(suggestion);
+  }
+  if (filtering && lastFilter.equals(uidl.getStringVariable("filter"))) {
+    suggestionPopup.showSuggestions(currentSuggestions,currentPage,totalSuggestions);
+    filtering=false;
+  }
+}
