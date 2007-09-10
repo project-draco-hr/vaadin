@@ -1,35 +1,83 @@
 {
   Iterator headCells=tHead.iterator();
   int i=0;
+  int totalExplicitColumnsWidths=0;
+  int total=0;
+  int[] widths=new int[tHead.visibleCells.size()];
   while (headCells.hasNext()) {
     HeaderCell hCell=(HeaderCell)headCells.next();
     int w;
     if (hCell.getWidth() > 0) {
       w=hCell.getWidth();
+      totalExplicitColumnsWidths+=w;
     }
  else {
       int hw=DOM.getElementPropertyInt(hCell.getElement(),"offsetWidth");
       int cw=tBody.getColWidth(i);
       w=(hw > cw ? hw : cw) + IScrollTableBody.CELL_EXTRA_WIDTH;
     }
-    setColWidth(i,w);
+    widths[i]=w;
+    total+=w;
     i++;
   }
-  if (height < 0) {
+  tHead.disableBrowserIntelligence();
+  if (height == null) {
     bodyContainer.setHeight((tBody.getRowHeight() * pageLength) + "px");
   }
  else {
-    bodyContainer.setHeight(height + "px");
+    bodyContainer.setHeight(height);
   }
-  if (width < 0) {
-    bodyContainer.setWidth((tBody.getOffsetWidth()) + "px");
-    tHead.setWidth(bodyContainer.getOffsetWidth());
+  if (width == null) {
+    int w=total;
+    w+=getScrollbarWidth();
+    bodyContainer.setWidth(w + "px");
+    tHead.setWidth(w + "px");
+    this.setWidth(w + "px");
   }
  else {
-    bodyContainer.setWidth(width + "px");
-    tHead.setWidth(width);
+    if (width.indexOf("px") > 0) {
+      bodyContainer.setWidth(width);
+      tHead.setWidth(width);
+      this.setWidth(width);
+    }
+ else     if (width.indexOf("%") > 0) {
+      this.setWidth(width);
+      bodyContainer.setWidth("100%");
+      tHead.setWidth("100%");
+    }
   }
-  tHead.disableBrowserIntelligence();
+  int availW=tBody.getAvailableWidth();
+  if (availW > total) {
+    int extraSpace=availW - total;
+    int totalWidthR=total - totalExplicitColumnsWidths;
+    if (totalWidthR > 0) {
+      headCells=tHead.iterator();
+      i=0;
+      HeaderCell hCell;
+      while (headCells.hasNext()) {
+        hCell=(HeaderCell)headCells.next();
+        if (hCell.getWidth() == -1) {
+          int w=widths[i];
+          int newSpace=extraSpace * w / totalWidthR;
+          w+=newSpace;
+          widths[i]=w;
+        }
+        i++;
+      }
+    }
+  }
+ else {
+  }
+  i=0;
+  headCells=tHead.iterator();
+  while (headCells.hasNext()) {
+    HeaderCell hCell=(HeaderCell)headCells.next();
+    if (hCell.getWidth() == -1) {
+      int w=widths[i];
+      setColWidth(i,w);
+    }
+    i++;
+  }
   if (firstvisible > 0) {
     bodyContainer.setScrollPosition(firstvisible * tBody.getRowHeight());
     firstRowInViewPort=firstvisible;
