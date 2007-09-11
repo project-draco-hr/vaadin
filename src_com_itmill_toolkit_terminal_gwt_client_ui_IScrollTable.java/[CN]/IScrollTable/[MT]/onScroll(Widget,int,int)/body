@@ -3,7 +3,7 @@
   rowRequestHandler.cancel();
   tHead.setHorizontalScrollPosition(scrollLeft);
   firstRowInViewPort=(int)Math.ceil(scrollTop / (double)tBody.getRowHeight());
-  client.console.log("At scrolltop: " + scrollTop + " At row "+ firstRowInViewPort);
+  ApplicationConnection.getConsole().log("At scrolltop: " + scrollTop + " At row "+ firstRowInViewPort);
   int postLimit=(int)(firstRowInViewPort + pageLength + pageLength * CACHE_REACT_RATE);
   if (postLimit > totalRows - 1)   postLimit=totalRows - 1;
   int preLimit=(int)(firstRowInViewPort - pageLength * CACHE_REACT_RATE);
@@ -15,21 +15,21 @@
     return;
   }
   if (firstRowInViewPort - pageLength * CACHE_RATE > lastRendered || firstRowInViewPort + pageLength + pageLength * CACHE_RATE < firstRendered) {
-    client.console.log("Table: need a totally new set");
+    ApplicationConnection.getConsole().log("Table: need a totally new set");
     rowRequestHandler.setReqFirstRow((int)(firstRowInViewPort - pageLength * CACHE_RATE));
     rowRequestHandler.setReqRows((int)(2 * CACHE_RATE * pageLength + pageLength));
     rowRequestHandler.deferRowFetch();
     return;
   }
   if (preLimit < firstRendered) {
-    client.console.log("Table: need some rows to the beginning of the rendered area");
+    ApplicationConnection.getConsole().log("Table: need some rows to the beginning of the rendered area");
     rowRequestHandler.setReqFirstRow((int)(firstRowInViewPort - pageLength * CACHE_RATE));
     rowRequestHandler.setReqRows(firstRendered - rowRequestHandler.getReqFirstRow());
     rowRequestHandler.deferRowFetch();
     return;
   }
   if (postLimit > lastRendered) {
-    client.console.log("need some rows to the end of the rendered area");
+    ApplicationConnection.getConsole().log("need some rows to the end of the rendered area");
     rowRequestHandler.setReqFirstRow(lastRendered + 1);
     rowRequestHandler.setReqRows((int)((firstRowInViewPort + pageLength + pageLength * CACHE_RATE) - lastRendered));
     rowRequestHandler.deferRowFetch();
