@@ -1,0 +1,36 @@
+{
+  GLatLng pos=null;
+  for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
+    UIDL u=(UIDL)it.next();
+    if (u.getTag().equals("markers")) {
+      for (Iterator m=u.getChildIterator(); m.hasNext(); ) {
+        UIDL umarker=(UIDL)m.next();
+        String html=umarker.getStringAttribute("html");
+        float x=umarker.getFloatAttribute("x");
+        float y=umarker.getFloatAttribute("y");
+        pos=new GLatLng(x,y);
+        GMarker marker=new GMarker(pos);
+        map.addOverlay(marker);
+        if (html != null) {
+          addMarkerPopup(marker,html);
+        }
+      }
+    }
+  }
+  if (uidl.hasAttribute("width")) {
+    setWidth("" + uidl.getIntAttribute("width"));
+  }
+  if (uidl.hasAttribute("height")) {
+    setHeight("" + uidl.getIntAttribute("height"));
+  }
+  if (uidl.hasAttribute("zoom")) {
+    map.setZoom(uidl.getIntAttribute("zoom"));
+  }
+  if (uidl.hasAttribute("centerX") && uidl.hasAttribute("centerY")) {
+    GLatLng center=new GLatLng(uidl.getFloatAttribute("centerX"),uidl.getFloatAttribute("centerY"));
+    map.setCenter(center);
+  }
+ else   if (pos != null) {
+    map.setCenter(pos);
+  }
+}
