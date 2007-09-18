@@ -1,0 +1,21 @@
+{
+  if (location == null) {
+    throw new IllegalArgumentException("Location must be non-null");
+  }
+  if (this.dataSource == null) {
+    initDataSource();
+  }
+  Object markerId=this.dataSource.addItem();
+  if (markerId == null) {
+    return null;
+  }
+  Item marker=this.dataSource.getItem(markerId);
+  Property p=marker.getItemProperty(getItemMarkerXPropertyId());
+  p.setValue(new Float(location.x));
+  p=marker.getItemProperty(getItemMarkerYPropertyId());
+  p.setValue(new Float(location.y));
+  p=marker.getItemProperty(getItemMarkerHtmlPropertyId());
+  p.setValue(html);
+  requestRepaint();
+  return markerId;
+}
