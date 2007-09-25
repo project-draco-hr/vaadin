@@ -1,14 +1,6 @@
 {
   this.client=client;
   id=uidl.getId();
-  DeckPanel dp=getDeckPanel();
-  dp.setStyleName(CLASSNAME + "-content");
-  TabBar tb=getTabBar();
-  tb.setStyleName(CLASSNAME + "-tabs");
-  String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : "";
-  String w=uidl.hasAttribute("width") ? uidl.getStringAttribute("width") : "";
-  setWidth(w != "" ? w : "auto");
-  dp.setHeight(h != "" ? h : "auto");
   UIDL tabs=uidl.getChildUIDL(0);
   boolean keepCurrentTabs=tabKeys.size() == tabs.getNumberOfChildren();
   for (int i=0; keepCurrentTabs && i < tabKeys.size(); i++)   keepCurrentTabs=tabKeys.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("key")) && captions.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("caption"));
@@ -19,11 +11,9 @@
       if (tab.getBooleanAttribute("selected")) {
         activeTabIndex=index;
         Widget content=client.getWidget(tab.getChildUIDL(0));
-        tb.selectTab(index);
-        remove(index);
-        insert(content,(String)captions.get(index),index);
-        this.selectTab(index);
         ((Paintable)content).updateFromUIDL(tab.getChildUIDL(0),client);
+        tp.remove(index);
+        tp.insert(content,index);
       }
       index++;
     }
@@ -31,7 +21,7 @@
  else {
     tabKeys.clear();
     captions.clear();
-    clear();
+    clearTabs();
     int index=0;
     for (Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
       UIDL tab=(UIDL)it.next();
@@ -39,17 +29,32 @@
       String caption=tab.getStringAttribute("caption");
       captions.add(caption);
       tabKeys.add(key);
+      tb.addTab(caption);
       if (tab.getBooleanAttribute("selected")) {
-        activeTabIndex=index;
         Widget content=client.getWidget(tab.getChildUIDL(0));
-        this.add(content,caption);
-        this.selectTab(this.getWidgetIndex(content));
+        tp.add(content);
+        activeTabIndex=index;
         ((Paintable)content).updateFromUIDL(tab.getChildUIDL(0),client);
       }
- else {
-        this.add(new Label(),caption);
-      }
+ else       tp.add(new ILabel(""));
       index++;
     }
+  }
+  tb.selectTab(activeTabIndex);
+  tp.showWidget(activeTabIndex);
+  String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : null;
+  String w=uidl.hasAttribute("width") ? uidl.getStringAttribute("width") : null;
+  setWidth(w != null ? w : "auto");
+  if (h != null) {
+    setHeight(h);
+    int neededHeight=getOffsetHeight();
+    setHeight("auto");
+    tp.setHeight("0");
+    int height=getOffsetHeight();
+    tp.setHeight(neededHeight - height + "px");
+  }
+ else {
+    tp.setHeight("auto");
+    DOM.setStyleAttribute(tp.getElement(),"overflow","hidden");
   }
 }
