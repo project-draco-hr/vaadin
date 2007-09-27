@@ -3,12 +3,13 @@
   if (scrollPositionElement == null) {
     scrollPositionElement=DOM.createDiv();
     DOM.setElementProperty(scrollPositionElement,"className","i-table-scrollposition");
-    DOM.appendChild(RootPanel.get().getElement(),scrollPositionElement);
+    DOM.appendChild(getElement(),scrollPositionElement);
   }
-  DOM.setStyleAttribute(scrollPositionElement,"left",(DOM.getAbsoluteLeft(getElement()) + DOM.getElementPropertyInt(getElement(),"offsetWidth") / 2 - 75) + "px");
-  DOM.setStyleAttribute(scrollPositionElement,"top",(DOM.getAbsoluteTop(getElement())) + "px");
+  DOM.setStyleAttribute(scrollPositionElement,"position","absolute");
+  DOM.setStyleAttribute(scrollPositionElement,"marginLeft",(DOM.getElementPropertyInt(getElement(),"offsetWidth") / 2 - 80) + "px");
+  DOM.setStyleAttribute(scrollPositionElement,"marginTop",-(DOM.getElementPropertyInt(getElement(),"offsetHeight") / 2) + "px");
   int last=(firstRowInViewPort + pageLength);
   if (last > totalRows)   last=totalRows;
-  DOM.setInnerHTML(scrollPositionElement,firstRowInViewPort + " - " + last+ "...");
+  DOM.setInnerHTML(scrollPositionElement,"<span>" + firstRowInViewPort + " &ndash; "+ last+ "..."+ "</span>");
   DOM.setStyleAttribute(scrollPositionElement,"display","block");
 }
