@@ -1,0 +1,54 @@
+{
+  ServletFileUpload upload=new ServletFileUpload();
+  UploadProgressListener pl=new UploadProgressListener();
+  upload.setProgressListener(pl);
+  FileItemIterator iter;
+  try {
+    iter=upload.getItemIterator(request);
+    while (iter.hasNext()) {
+      FileItemStream item=iter.next();
+      String name=item.getFieldName();
+      final String filename=item.getName();
+      final String mimeType=item.getContentType();
+      final InputStream stream=item.openStream();
+      if (item.isFormField()) {
+      }
+ else {
+        String pid=name.split("_")[0];
+        Upload uploadComponent=(Upload)idPaintableMap.get(pid);
+        if (uploadComponent == null) {
+          throw new FileUploadException("Upload component not found");
+        }
+synchronized (application) {
+          uploadComponent.startUpload();
+        }
+        UploadStream upstream=new UploadStream(){
+          public String getContentName(){
+            return filename;
+          }
+          public String getContentType(){
+            return mimeType;
+          }
+          public InputStream getStream(){
+            return stream;
+          }
+          public String getStreamName(){
+            return "stream";
+          }
+        }
+;
+        pl.setUpload(uploadComponent);
+        uploadComponent.receiveUpload(upstream);
+      }
+    }
+  }
+ catch (  FileUploadException e) {
+    e.printStackTrace();
+  }
+  response.setContentType("text/html");
+  OutputStream out=response.getOutputStream();
+  PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
+  outWriter.print("<html><body>download handled</body></html>");
+  outWriter.flush();
+  out.close();
+}

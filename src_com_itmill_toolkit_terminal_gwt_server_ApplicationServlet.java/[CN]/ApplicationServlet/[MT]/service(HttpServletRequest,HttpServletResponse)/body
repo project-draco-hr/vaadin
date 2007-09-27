@@ -1,6 +1,11 @@
 {
   Application application=null;
   try {
+    if (ServletFileUpload.isMultipartContent(request)) {
+      application=getApplication(request);
+      getApplicationManager(application).handleFileUpload(request,response);
+      return;
+    }
     WebBrowser browser=WebApplicationContext.getApplicationContext(request.getSession()).getBrowser();
     browser.updateBrowserProperties(request);
     application=getApplication(request);
@@ -9,33 +14,31 @@ synchronized (applicationToLastRequestDate) {
     }
     ((WebApplicationContext)application.getContext()).startTransaction(application,request);
     DownloadStream download=null;
-synchronized (application) {
-      String resourceId=request.getPathInfo();
-      if (resourceId != null && resourceId.startsWith(AJAX_UIDL_URI)) {
-        getApplicationManager(application).handleUidlRequest(request,response);
+    String resourceId=request.getPathInfo();
+    if (resourceId != null && resourceId.startsWith(AJAX_UIDL_URI)) {
+      getApplicationManager(application).handleUidlRequest(request,response);
+      return;
+    }
+    if (application.isRunning())     download=handleURI(application,request,response);
+    if (download == null) {
+      response.setHeader("Cache-Control","no-cache");
+      response.setHeader("Pragma","no-cache");
+      response.setDateHeader("Expires",0);
+      Window window=null;
+      if (application.isRunning())       window=getApplicationWindow(request,application);
+      if (!application.isRunning()) {
+        endApplication(request,response,application);
         return;
       }
-      if (application.isRunning())       download=handleURI(application,request,response);
-      if (download == null) {
-        response.setHeader("Cache-Control","no-cache");
-        response.setHeader("Pragma","no-cache");
-        response.setDateHeader("Expires",0);
-        Window window=null;
-        if (application.isRunning())         window=getApplicationWindow(request,application);
-        if (!application.isRunning()) {
-          endApplication(request,response,application);
-          return;
-        }
-        if (window.getTerminal() == null) {
-          window.setTerminal(browser);
-        }
-        String themeName=window.getTheme();
-        if (request.getParameter("theme") != null) {
-          themeName=request.getParameter("theme");
-        }
-        if (handleResourceRequest(request,response,themeName))         return;
-        writeAjaxPage(request,response,window,themeName);
+      if (window.getTerminal() == null) {
+        window.setTerminal(browser);
       }
+      String themeName=window.getTheme();
+      if (request.getParameter("theme") != null) {
+        themeName=request.getParameter("theme");
+      }
+      if (handleResourceRequest(request,response,themeName))       return;
+      writeAjaxPage(request,response,window,themeName);
     }
     if (download != null)     handleDownload(download,request,response);
   }

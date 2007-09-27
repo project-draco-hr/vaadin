@@ -1,0 +1,17 @@
+{
+  if (fu.getFilename().length() == 0 || submitted) {
+    event.setCancelled(true);
+    ApplicationConnection.getConsole().log("Submit cancelled (no file or already submitted)");
+    return;
+  }
+  submitted=true;
+  ApplicationConnection.getConsole().log("Submitted form");
+  disableUpload();
+  t=new Timer(){
+    public void run(){
+      client.sendPendingVariableChanges();
+    }
+  }
+;
+  t.schedule(800);
+}

@@ -2,7 +2,6 @@
   boolean repaintAll=(request.getParameter(GET_PARAM_REPAINT_ALL) != null) || request.getSession().isNew();
   OutputStream out=response.getOutputStream();
   PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
-  outWriter.print(")/*{");
   try {
     DownloadStream download=null;
 synchronized (application) {
@@ -18,6 +17,7 @@ synchronized (application) {
         }
         if (window == null)         return;
         response.setContentType("application/json; charset=UTF-8");
+        outWriter.print(")/*{");
         outWriter.print("\"changes\":[");
         paintTarget=new JsonPaintTarget(this,outWriter);
         Set paintables;

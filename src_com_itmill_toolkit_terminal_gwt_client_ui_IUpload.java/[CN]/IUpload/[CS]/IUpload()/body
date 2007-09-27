@@ -3,22 +3,9 @@
   setEncoding(FormPanel.ENCODING_MULTIPART);
   setMethod(FormPanel.METHOD_POST);
   setWidget(panel);
-  panel.add(new Label("UPLOAD component incomplete"));
   panel.add(fu);
-  b=new Button("Upload");
+  b=new Button("Click to Upload");
   b.addClickListener(this);
   panel.add(b);
-  addFormHandler(new FormHandler(){
-    public void onSubmitComplete(    FormSubmitCompleteEvent event){
-      if (client != null) {
-        client.sendPendingVariableChanges();
-      }
-    }
-    public void onSubmit(    FormSubmitEvent event){
-      if (fu.getFilename().length() == 0) {
-        event.setCancelled(true);
-      }
-    }
-  }
-);
+  addFormHandler(this);
 }

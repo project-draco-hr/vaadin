@@ -1,0 +1,30 @@
+{
+  setCompositionRoot(main);
+  main.addComponent(new Label("This is a simple test for upload application. " + "Upload should work with big files and concurrent " + "requests should not be blocked. Button 'b' reads "+ "current state into label below it. TODO make "+ "streaming example/test where upload contents "+ "is read but not saved and memory consumption is "+ "verified low. TODO make test where contents is "+ "written to disk and verifiy low memory consumption."));
+  main.addComponent(new Label("Clicking on button b updates information about upload components status."));
+  up=new Upload("Upload",buffer);
+  up.setImmediate(true);
+  up.addListener((FinishedListener)this);
+  up.addListener((FailedListener)this);
+  up.addListener((SucceededListener)this);
+  up.addListener((StartedListener)this);
+  up.setProgressListener(this);
+  Button b=new Button("b",this,"readState");
+  main.addComponent(b);
+  main.addComponent(up);
+  l=new Label("Idle");
+  main.addComponent(l);
+  pi.setVisible(false);
+  pi.setPollingInterval(1000);
+  main.addComponent(pi);
+  status.setVisible(false);
+  main.addComponent(status);
+  Button restart=new Button("R");
+  restart.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      getApplication().close();
+    }
+  }
+);
+  main.addComponent(restart);
+}
