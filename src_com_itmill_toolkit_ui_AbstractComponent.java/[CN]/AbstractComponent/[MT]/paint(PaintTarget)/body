@@ -1,5 +1,5 @@
 {
-  if (!target.startTag(this,this.getTag())) {
+  if (!target.startTag(this,this.getTag()) || repaintRequestListenersNotified) {
     if (styles != null && styles.size() > 0)     target.addAttribute("style",getStyle());
     if (isReadOnly())     target.addAttribute("readonly",true);
     if (!isVisible())     target.addAttribute("invisible",true);
@@ -16,6 +16,9 @@
       ErrorMessage error=getErrorMessage();
       if (error != null)       error.paint(target);
     }
+  }
+ else {
+    target.addAttribute("cached",true);
   }
   target.endTag(this.getTag());
   repaintRequestListenersNotified=false;
