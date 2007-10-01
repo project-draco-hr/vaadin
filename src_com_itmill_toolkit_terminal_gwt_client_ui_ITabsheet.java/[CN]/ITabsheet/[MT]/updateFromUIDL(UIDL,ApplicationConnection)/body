@@ -1,6 +1,7 @@
 {
   this.client=client;
   id=uidl.getId();
+  if (uidl.getBooleanAttribute("cached"))   return;
   UIDL tabs=uidl.getChildUIDL(0);
   boolean keepCurrentTabs=tabKeys.size() == tabs.getNumberOfChildren();
   for (int i=0; keepCurrentTabs && i < tabKeys.size(); i++)   keepCurrentTabs=tabKeys.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("key")) && captions.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("caption"));
@@ -10,8 +11,9 @@
       UIDL tab=(UIDL)it.next();
       if (tab.getBooleanAttribute("selected")) {
         activeTabIndex=index;
-        Widget content=client.getWidget(tab.getChildUIDL(0));
-        ((Paintable)content).updateFromUIDL(tab.getChildUIDL(0),client);
+        UIDL contentUIDL=tab.getChildUIDL(0);
+        Widget content=client.getWidget(contentUIDL);
+        ((Paintable)content).updateFromUIDL(contentUIDL,client);
         tp.remove(index);
         tp.insert(content,index);
       }
