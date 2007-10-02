@@ -7,20 +7,16 @@
     return;
   }
  else {
-    try {
+    if (uidl.hasVariable("width")) {
       String width=uidl.getStringVariable("width");
-      String height=uidl.getStringVariable("width");
-      if (width != null && width.endsWith("px")) {
-        uidlWidth=Integer.parseInt(width.substring(0,width.length() - 2));
-        setPixelWidth(uidlWidth);
-      }
-      if (height != null && height.endsWith("px")) {
-        uidlHeight=Integer.parseInt(height.substring(0,height.length() - 2));
-        setPixelHeight(uidlHeight);
-      }
+      setWidth(width);
     }
- catch (    IllegalArgumentException e) {
+    if (uidl.hasVariable("height")) {
+      String height=uidl.getStringVariable("height");
+      setHeight(height);
     }
+    contentPanel.setScrollPosition(uidl.getIntVariable("scrolltop"));
+    contentPanel.setHorizontalScrollPosition(uidl.getIntVariable("scrollleft"));
     try {
       int positionx=uidl.getIntVariable("positionx");
       int positiony=uidl.getIntVariable("positiony");
@@ -39,13 +35,13 @@
   if (layout != null) {
     if (layout != lo) {
       client.unregisterPaintable(layout);
-      this.remove((Widget)layout);
-      setWidget((Widget)lo);
+      contentPanel.remove((Widget)layout);
+      contentPanel.setWidget((Widget)lo);
       layout=lo;
     }
   }
  else {
-    setWidget((Widget)lo);
+    contentPanel.setWidget((Widget)lo);
   }
   if (uidl.hasAttribute("caption")) {
     setCaption(uidl.getStringAttribute("caption"));
