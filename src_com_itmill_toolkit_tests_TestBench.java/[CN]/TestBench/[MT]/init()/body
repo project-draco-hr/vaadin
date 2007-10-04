@@ -1,0 +1,48 @@
+{
+  for (int p=0; p < testablePackages.length; p++) {
+    testables.addItem(testablePackages[p]);
+    try {
+      List testableClasses=this.getTestableClassesForPackage(testablePackages[p]);
+      for (Iterator it=testableClasses.iterator(); it.hasNext(); ) {
+        Class t=(Class)it.next();
+        System.out.println(t);
+        if (t.equals(TestBench.class))         continue;
+        try {
+          testables.addItem(t);
+          itemCaptions.put(t,t.getSimpleName());
+          testables.setParent(t,testablePackages[p]);
+          continue;
+        }
+ catch (        Exception e) {
+          try {
+            testables.addItem(t);
+            itemCaptions.put(t,t.getSimpleName());
+            testables.setParent(t,testablePackages[p]);
+            continue;
+          }
+ catch (          Exception e1) {
+            e1.printStackTrace();
+          }
+        }
+        System.out.println(" Skipped " + t);
+      }
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
+  }
+  menu=new Tree("Testables",testables);
+  for (Iterator i=itemCaptions.keySet().iterator(); i.hasNext(); ) {
+    Class testable=(Class)i.next();
+    menu.setItemCaption(testable,testable.getSimpleName());
+  }
+  menu.setStyle("menu");
+  menu.addListener(this);
+  menu.setImmediate(true);
+  mainLayout.setHeight(700);
+  mainLayout.setHeightUnits(SplitPanel.UNITS_PIXELS);
+  mainLayout.addComponent(menu);
+  mainLayout.addComponent(bodyLayout);
+  mainWindow.addComponent(mainLayout);
+  setMainWindow(mainWindow);
+}
