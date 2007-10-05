@@ -1,15 +1,19 @@
 {
+  if (expandedWidget == null) {
+    return;
+  }
   Element expandedElement=DOM.getParent(expandedWidget.getElement());
-  String origDisplay=DOM.getStyleAttribute(expandedElement,"display");
-  DOM.setStyleAttribute(expandedElement,"display","none");
+  String origiginalPositioning=DOM.getStyleAttribute(expandedWidget.getElement(),"position");
+  DOM.setStyleAttribute(expandedWidget.getElement(),"position","absolute");
+  DOM.setStyleAttribute(expandedElement,"height","");
   Element meter=createWidgetWrappper();
   DOM.setStyleAttribute(meter,"overflow","hidden");
-  DOM.setStyleAttribute(meter,"height","1px");
+  DOM.setStyleAttribute(meter,"height","0px");
   DOM.appendChild(childContainer,meter);
   int usedSpace=DOM.getElementPropertyInt(meter,"offsetTop") - DOM.getElementPropertyInt(DOM.getFirstChild(childContainer),"offsetTop");
   int freeSpace=getOffsetHeight() - usedSpace;
   DOM.setStyleAttribute(expandedElement,"height",freeSpace + "px");
-  DOM.setStyleAttribute(expandedElement,"display",origDisplay);
+  DOM.setStyleAttribute(expandedWidget.getElement(),"position",origiginalPositioning);
   DOM.removeChild(childContainer,meter);
   Util.runAnchestorsLayout(this);
 }

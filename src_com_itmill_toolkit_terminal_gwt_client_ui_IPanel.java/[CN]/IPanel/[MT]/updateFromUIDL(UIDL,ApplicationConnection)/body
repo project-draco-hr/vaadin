@@ -2,42 +2,32 @@
   if (client.updateComponent(this,uidl,false))   return;
   this.client=client;
   this.id=uidl.getId();
-  clear();
-  Element deco=DOM.getChild(getElement(),0);
-  if (deco != null)   DOM.removeChild(getElement(),deco);
-  if (uidl.hasAttribute("style"))   setStyleName(CLASSNAME + " " + CLASSNAME+ "-"+ uidl.getStringAttribute("style"));
- else   setStyleName(CLASSNAME);
-  if (uidl.hasAttribute("caption") && !uidl.getStringAttribute("caption").equals("")) {
-    caption.setText(uidl.getStringAttribute("caption"));
-    caption.setStyleName(CLASSNAME + "-caption");
-    add(caption);
-  }
- else {
-    caption.setStyleName(CLASSNAME + "-nocaption");
-    caption.setText("");
-    add(caption);
-  }
-  UIDL layoutUidl=uidl.getChildUIDL(0);
-  Widget layout=client.getWidget(layoutUidl);
-  content.setWidget(layout);
-  add(content);
-  ((Paintable)layout).updateFromUIDL(layoutUidl,client);
-  deco=DOM.createDiv();
-  DOM.setElementProperty(deco,"className",CLASSNAME + "-deco");
-  DOM.appendChild(getElement(),deco);
   String h=uidl.hasVariable("height") ? uidl.getStringVariable("height") : null;
   String w=uidl.hasVariable("width") ? uidl.getStringVariable("width") : null;
   setWidth(w != null ? w : "");
   if (h != null) {
     setHeight(h);
-    int neededHeight=getOffsetHeight();
-    setHeight("auto");
-    content.setHeight("0");
-    int height=getOffsetHeight();
-    content.setHeight(neededHeight - height + "px");
   }
  else {
-    content.setHeight("");
-    DOM.setStyleAttribute(content.getElement(),"overflow","hidden");
+    DOM.setStyleAttribute(contentNode,"height","");
+    DOM.setStyleAttribute(contentNode,"overflow","hidden");
   }
+  if (getWidget() != null) {
+    clear();
+  }
+  if (uidl.hasAttribute("style"))   setStyleName(CLASSNAME + " " + CLASSNAME+ "-"+ uidl.getStringAttribute("style"));
+ else   setStyleName(CLASSNAME);
+  if (uidl.hasAttribute("caption") && !uidl.getStringAttribute("caption").equals("")) {
+    DOM.setInnerHTML(captionNode,uidl.getStringAttribute("caption"));
+    DOM.setElementProperty(captionNode,"className",CLASSNAME + "-caption");
+  }
+ else {
+    DOM.setElementProperty(captionNode,"className",CLASSNAME + "-nocaption");
+    DOM.setInnerHTML(captionNode,"");
+  }
+  iLayout();
+  UIDL layoutUidl=uidl.getChildUIDL(0);
+  Widget layout=client.getWidget(layoutUidl);
+  setWidget(layout);
+  ((Paintable)layout).updateFromUIDL(layoutUidl,client);
 }

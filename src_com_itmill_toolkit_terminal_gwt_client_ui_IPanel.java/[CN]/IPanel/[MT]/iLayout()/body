@@ -1,0 +1,23 @@
+{
+  String h=DOM.getStyleAttribute(getElement(),"height");
+  if (h != null && h != "") {
+    boolean hasChildren=getWidget() != null;
+    Element contentEl=null;
+    String origPositioning=null;
+    if (hasChildren) {
+      contentEl=getWidget().getElement();
+      origPositioning=DOM.getStyleAttribute(contentEl,"position");
+      DOM.setStyleAttribute(contentEl,"position","absolute");
+    }
+    DOM.setStyleAttribute(contentNode,"height","");
+    int availableH=DOM.getElementPropertyInt(getElement(),"clientHeight");
+    int usedH=DOM.getElementPropertyInt(bottomDecoration,"offsetTop") + DOM.getElementPropertyInt(bottomDecoration,"offsetHeight");
+    int contentH=availableH - usedH;
+    if (contentH < 0)     contentH=0;
+    DOM.setStyleAttribute(contentNode,"height",contentH + "px");
+    if (hasChildren) {
+      DOM.setStyleAttribute(contentEl,"position",origPositioning);
+    }
+  }
+  Util.runAnchestorsLayout(this);
+}
