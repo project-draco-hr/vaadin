@@ -1,0 +1,15 @@
+{
+  Element expandedElement=DOM.getParent(expandedWidget.getElement());
+  String origDisplay=DOM.getStyleAttribute(expandedElement,"display");
+  DOM.setStyleAttribute(expandedElement,"display","none");
+  Element meter=createWidgetWrappper();
+  DOM.setStyleAttribute(meter,"overflow","hidden");
+  DOM.setStyleAttribute(meter,"height","1px");
+  DOM.appendChild(childContainer,meter);
+  int usedSpace=DOM.getElementPropertyInt(meter,"offsetTop") - DOM.getElementPropertyInt(DOM.getFirstChild(childContainer),"offsetTop");
+  int freeSpace=getOffsetHeight() - usedSpace;
+  DOM.setStyleAttribute(expandedElement,"height",freeSpace + "px");
+  DOM.setStyleAttribute(expandedElement,"display",origDisplay);
+  DOM.removeChild(childContainer,meter);
+  Util.runAnchestorsLayout(this);
+}
