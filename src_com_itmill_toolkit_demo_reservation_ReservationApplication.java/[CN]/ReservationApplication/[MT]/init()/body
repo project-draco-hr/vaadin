@@ -14,15 +14,15 @@
   resourcePanel.setResourceContainer(db.getResources(null));
   resourcePanel.addListener(ResourceSelectorPanel.SelectedResourcesChangedEvent.class,this,"selectedResourcesChanged");
   reservationTab.addComponent(resourcePanel);
-  Panel reservationPanel=new Panel(new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL));
+  Panel reservationPanel=new Panel("Reservation",new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL));
   reservationTab.addComponent(reservationPanel);
   OrderedLayout infoLayout=new OrderedLayout();
   reservationPanel.addComponent(infoLayout);
-  resourceName=new Label("Choose resource");
-  resourceName.setCaption("Reserving resource");
+  resourceName=new Label("From the list above");
+  resourceName.setCaption("Choose resource");
   infoLayout.addComponent(resourceName);
   description=new TextField();
-  description.setColumns(40);
+  description.setColumns(55);
   description.setRows(5);
   infoLayout.addComponent(description);
   reservationButton=new Button("Make reservation",this,"makeReservation");
@@ -30,27 +30,31 @@
   statusLabel=new Label();
   infoLayout.addComponent(statusLabel);
   map=new GoogleMap();
-  map.setWidth(290);
-  map.setHeight(150);
-  map.setZoomLevel(12);
+  map.setWidth(360);
+  map.setHeight(270);
   map.setItemMarkerHtmlPropertyId(SampleDB.Resource.PROPERTY_ID_NAME);
   map.setItemMarkerXPropertyId(SampleDB.Resource.PROPERTY_ID_LOCATIONX);
   map.setItemMarkerYPropertyId(SampleDB.Resource.PROPERTY_ID_LOCATIONY);
   map.setContainerDataSource(db.getResources(null));
   infoLayout.addComponent(map);
-  Date now=new Date();
+  Calendar from=Calendar.getInstance();
   reservedFrom=new CalendarField();
-  reservedFrom.setMinimumDate(now);
+  reservedFrom.setMinimumDate(from.getTime());
+  reservedFrom.setValue(from.getTime());
+  reservedFrom.setImmediate(true);
   initCalendarFieldPropertyIds(reservedFrom);
   reservationPanel.addComponent(reservedFrom);
+  Calendar to=Calendar.getInstance();
+  to.add(Calendar.MILLISECOND,(int)currentGapMillis);
   reservedTo=new CalendarField();
-  reservedTo.setMinimumDate(now);
+  reservedTo.setMinimumDate(from.getTime());
+  reservedTo.setValue(to.getTime());
+  reservedTo.setImmediate(true);
   initCalendarFieldPropertyIds(reservedTo);
   reservationPanel.addComponent(reservedTo);
   reservedFrom.addListener(new ValueChangeListener(){
     public void valueChange(    ValueChangeEvent event){
       Date fd=(Date)reservedFrom.getValue();
-      Date td=(Date)reservedTo.getValue();
       if (fd == null) {
         reservedTo.setValue(null);
         reservedTo.setEnabled(false);
@@ -61,25 +65,31 @@
         reservedTo.setEnabled(true);
       }
       reservedTo.setMinimumDate(fd);
-      if (td == null || td.before(fd)) {
-        reservedTo.setValue(fd);
+      Calendar to=Calendar.getInstance();
+      to.setTime(fd);
+      to.add(Calendar.MILLISECOND,(int)currentGapMillis);
+      reservedTo.setValue(to.getTime());
+      refreshSelectedResources();
+      resetStatus();
+    }
+  }
+);
+  reservedTo.addListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      Date from=(Date)reservedFrom.getValue();
+      Date to=(Date)reservedTo.getValue();
+      currentGapMillis=to.getTime() - from.getTime();
+      if (currentGapMillis <= 0) {
+        Calendar t=Calendar.getInstance();
+        t.setTime(from);
+        t.add(Calendar.MILLISECOND,(int)DEFAULT_GAP_MILLIS);
+        reservedTo.setValue(t.getTime());
       }
       refreshSelectedResources();
       resetStatus();
     }
   }
 );
-  reservedFrom.setImmediate(true);
-  reservedFrom.setValue(now);
-  reservedTo.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
-      refreshSelectedResources();
-      resetStatus();
-    }
-  }
-);
-  reservedTo.setImmediate(true);
-  reservedTo.setValue(now);
   OrderedLayout allLayout=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
   allCalendar=new CalendarField();
   initCalendarFieldPropertyIds(allCalendar);
