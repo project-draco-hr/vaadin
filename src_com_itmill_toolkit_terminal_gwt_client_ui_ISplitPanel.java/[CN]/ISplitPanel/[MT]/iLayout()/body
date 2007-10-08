@@ -4,10 +4,13 @@
   ApplicationConnection.getConsole().log("splitterpaneeeli");
 switch (orientation) {
 case ORIENTATION_HORIZONTAL:
-    wholeSize=DOM.getElementPropertyInt(wrapper,"offsetWidth");
+    wholeSize=DOM.getElementPropertyInt(wrapper,"clientWidth");
   pixelPosition=DOM.getElementPropertyInt(splitter,"offsetLeft");
-ApplicationConnection.getConsole().log(wholeSize + "");
-ApplicationConnection.getConsole().log(pixelPosition + "");
+if (pixelPosition + SPLITTER_SIZE > wholeSize) {
+  pixelPosition=wholeSize - SPLITTER_SIZE;
+  setSplitPosition(pixelPosition + "px");
+  return;
+}
 DOM.setStyleAttribute(firstContainer,"width",pixelPosition + "px");
 int secondContainerWidth=(wholeSize - pixelPosition - SPLITTER_SIZE);
 if (secondContainerWidth < 0) secondContainerWidth=0;
@@ -17,14 +20,18 @@ break;
 case ORIENTATION_VERTICAL:
 wholeSize=DOM.getElementPropertyInt(wrapper,"clientHeight");
 pixelPosition=DOM.getElementPropertyInt(splitter,"offsetTop");
-ApplicationConnection.getConsole().log(wholeSize + "");
-ApplicationConnection.getConsole().log(pixelPosition + "");
+if (pixelPosition + SPLITTER_SIZE > wholeSize) {
+pixelPosition=wholeSize - SPLITTER_SIZE;
+setSplitPosition(pixelPosition + "px");
+return;
+}
 DOM.setStyleAttribute(firstContainer,"height",pixelPosition + "px");
 int secondContainerHeight=(wholeSize - pixelPosition - SPLITTER_SIZE);
 if (secondContainerHeight < 0) secondContainerHeight=0;
 DOM.setStyleAttribute(secondContainer,"height",secondContainerHeight + "px");
 DOM.setStyleAttribute(secondContainer,"top",(pixelPosition + SPLITTER_SIZE) + "px");
 default :
+ApplicationConnection.getConsole().log("???");
 break;
 }
 Util.runAnchestorsLayout(this);
