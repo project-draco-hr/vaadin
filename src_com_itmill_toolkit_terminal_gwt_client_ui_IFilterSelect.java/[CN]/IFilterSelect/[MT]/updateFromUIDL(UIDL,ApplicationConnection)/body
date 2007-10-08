@@ -15,6 +15,7 @@
   currentSuggestions.clear();
   UIDL options=uidl.getChildUIDL(0);
   totalSuggestions=options.getIntAttribute("totalMatches");
+  String captions="";
   if (clientSideFiltering) {
     allSuggestions=new ArrayList();
   }
@@ -29,9 +30,23 @@
       tb.setText(suggestion.getReplacementString());
       currentSuggestion=suggestion;
     }
+    if (captions.length() > 0)     captions+="|";
+    captions+=suggestion.getReplacementString();
   }
   if (filtering && lastFilter.equals(uidl.getStringVariable("filter"))) {
     suggestionPopup.showSuggestions(currentSuggestions,currentPage,totalSuggestions);
     filtering=false;
   }
+  int minw=minWidth(captions);
+  if (Util.isIE()) {
+    Element spacer=DOM.createDiv();
+    DOM.setStyleAttribute(spacer,"width",minw + "px");
+    DOM.setStyleAttribute(spacer,"height","0");
+    DOM.setStyleAttribute(spacer,"overflow","hidden");
+    DOM.appendChild(panel.getElement(),spacer);
+  }
+ else {
+    DOM.setStyleAttribute(tb.getElement(),"minWidth",minw + "px");
+  }
+  if (uidl.hasAttribute("cols"))   DOM.setStyleAttribute(getElement(),"width",uidl.getIntAttribute("cols") + "em");
 }

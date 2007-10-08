@@ -2,6 +2,23 @@
   this.client=client;
   id=uidl.getId();
   if (uidl.getBooleanAttribute("cached"))   return;
+  String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : null;
+  String w=uidl.hasAttribute("width") ? uidl.getStringAttribute("width") : null;
+  setWidth(w != null ? w : "auto");
+  if (h != null) {
+    setHeight(h);
+    int neededHeight=getOffsetHeight();
+    setHeight("");
+    tp.setHeight("0");
+    DOM.setStyleAttribute(tp.getElement(),"overflow","hidden");
+    int height=getOffsetHeight();
+    tp.setHeight(neededHeight - height + "px");
+    DOM.setStyleAttribute(tp.getElement(),"overflow","");
+  }
+ else {
+    tp.setHeight("auto");
+    DOM.setStyleAttribute(tp.getElement(),"overflow","hidden");
+  }
   UIDL tabs=uidl.getChildUIDL(0);
   boolean keepCurrentTabs=tabKeys.size() == tabs.getNumberOfChildren();
   for (int i=0; keepCurrentTabs && i < tabKeys.size(); i++)   keepCurrentTabs=tabKeys.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("key")) && captions.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("caption"));
@@ -44,19 +61,4 @@
   }
   tb.selectTab(activeTabIndex);
   tp.showWidget(activeTabIndex);
-  String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : null;
-  String w=uidl.hasAttribute("width") ? uidl.getStringAttribute("width") : null;
-  setWidth(w != null ? w : "auto");
-  if (h != null) {
-    setHeight(h);
-    int neededHeight=getOffsetHeight();
-    setHeight("auto");
-    tp.setHeight("0");
-    int height=getOffsetHeight();
-    tp.setHeight(neededHeight - height + "px");
-  }
- else {
-    tp.setHeight("auto");
-    DOM.setStyleAttribute(tp.getElement(),"overflow","hidden");
-  }
 }
