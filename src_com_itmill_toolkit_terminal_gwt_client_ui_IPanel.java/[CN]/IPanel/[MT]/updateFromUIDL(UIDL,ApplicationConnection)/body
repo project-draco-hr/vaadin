@@ -9,15 +9,18 @@
   if (getWidget() != null) {
     clear();
   }
-  if (uidl.hasAttribute("style"))   setStyleName(CLASSNAME + " " + CLASSNAME+ "-"+ uidl.getStringAttribute("style"));
- else   setStyleName(CLASSNAME);
+  String className=CLASSNAME;
+  if (uidl.hasAttribute("style"))   className+="-" + uidl.getStringAttribute("style");
+  setStyleName(className);
+  DOM.setElementProperty(contentNode,"className",className + "-content");
+  DOM.setElementProperty(bottomDecoration,"className",className + "-deco");
   if (uidl.hasAttribute("caption") && !uidl.getStringAttribute("caption").equals("")) {
-    DOM.setInnerHTML(captionNode,uidl.getStringAttribute("caption"));
-    DOM.setElementProperty(captionNode,"className",CLASSNAME + "-caption");
+    DOM.setInnerText(captionNode,uidl.getStringAttribute("caption"));
+    DOM.setElementProperty(captionNode,"className",className + "-caption");
   }
  else {
-    DOM.setElementProperty(captionNode,"className",CLASSNAME + "-nocaption");
-    DOM.setInnerHTML(captionNode,"");
+    DOM.setElementProperty(captionNode,"className",className + "-nocaption");
+    DOM.setInnerText(captionNode,"");
   }
   iLayout();
   UIDL layoutUidl=uidl.getChildUIDL(0);
