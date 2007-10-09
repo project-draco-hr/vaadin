@@ -4,35 +4,37 @@
   }
   int wholeSize;
   int pixelPosition;
-  ApplicationConnection.getConsole().log("splitterpaneeeli");
 switch (orientation) {
 case ORIENTATION_HORIZONTAL:
     wholeSize=DOM.getElementPropertyInt(wrapper,"clientWidth");
   pixelPosition=DOM.getElementPropertyInt(splitter,"offsetLeft");
-if (pixelPosition + SPLITTER_SIZE > wholeSize) {
-  pixelPosition=wholeSize - SPLITTER_SIZE;
+if (pixelPosition > 0 && pixelPosition + getSplitterSize() > wholeSize) {
+  pixelPosition=wholeSize - getSplitterSize();
+  if (pixelPosition < 0)   pixelPosition=0;
   setSplitPosition(pixelPosition + "px");
   return;
 }
 DOM.setStyleAttribute(firstContainer,"width",pixelPosition + "px");
-int secondContainerWidth=(wholeSize - pixelPosition - SPLITTER_SIZE);
+int secondContainerWidth=(wholeSize - pixelPosition - getSplitterSize());
 if (secondContainerWidth < 0) secondContainerWidth=0;
 DOM.setStyleAttribute(secondContainer,"width",secondContainerWidth + "px");
-DOM.setStyleAttribute(secondContainer,"left",(pixelPosition + SPLITTER_SIZE) + "px");
+DOM.setStyleAttribute(secondContainer,"left",(pixelPosition + getSplitterSize()) + "px");
 break;
 case ORIENTATION_VERTICAL:
 wholeSize=DOM.getElementPropertyInt(wrapper,"clientHeight");
 pixelPosition=DOM.getElementPropertyInt(splitter,"offsetTop");
-if (pixelPosition + SPLITTER_SIZE > wholeSize) {
-pixelPosition=wholeSize - SPLITTER_SIZE;
+if (pixelPosition > 0 && pixelPosition + getSplitterSize() > wholeSize) {
+pixelPosition=wholeSize - getSplitterSize();
+if (pixelPosition < 0) pixelPosition=0;
 setSplitPosition(pixelPosition + "px");
 return;
 }
 DOM.setStyleAttribute(firstContainer,"height",pixelPosition + "px");
-int secondContainerHeight=(wholeSize - pixelPosition - SPLITTER_SIZE);
+int secondContainerHeight=(wholeSize - pixelPosition - getSplitterSize());
 if (secondContainerHeight < 0) secondContainerHeight=0;
 DOM.setStyleAttribute(secondContainer,"height",secondContainerHeight + "px");
-DOM.setStyleAttribute(secondContainer,"top",(pixelPosition + SPLITTER_SIZE) + "px");
+DOM.setStyleAttribute(secondContainer,"top",(pixelPosition + getSplitterSize()) + "px");
+break;
 default :
 ApplicationConnection.getConsole().log("???");
 break;
