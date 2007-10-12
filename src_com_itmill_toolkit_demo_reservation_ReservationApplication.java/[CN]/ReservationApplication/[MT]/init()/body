@@ -7,7 +7,6 @@
   setTheme("reservr");
   TabSheet mainTabs=new TabSheet();
   mainWindow.addComponent(mainTabs);
-  mainWindow.addComponent(new Button("close",this,"close"));
   OrderedLayout reservationTab=new OrderedLayout();
   mainTabs.addTab(reservationTab,"Make reservation",null);
   resourcePanel=new ResourceSelectorPanel("Resources");
@@ -22,7 +21,7 @@
   resourceName.setCaption("Choose resource");
   infoLayout.addComponent(resourceName);
   description=new TextField();
-  description.setColumns(55);
+  description.setColumns(47);
   description.setRows(5);
   infoLayout.addComponent(description);
   reservationButton=new Button("Make reservation",this,"makeReservation");
@@ -30,7 +29,7 @@
   statusLabel=new Label();
   infoLayout.addComponent(statusLabel);
   map=new GoogleMap();
-  map.setWidth(360);
+  map.setWidth(330);
   map.setHeight(270);
   map.setItemMarkerHtmlPropertyId(SampleDB.Resource.PROPERTY_ID_NAME);
   map.setItemMarkerXPropertyId(SampleDB.Resource.PROPERTY_ID_LOCATIONX);
@@ -38,16 +37,21 @@
   map.setContainerDataSource(db.getResources(null));
   infoLayout.addComponent(map);
   Calendar from=Calendar.getInstance();
-  reservedFrom=new CalendarField();
+  from.add(Calendar.HOUR,1);
+  from.set(Calendar.MINUTE,0);
+  from.set(Calendar.SECOND,0);
+  from.set(Calendar.MILLISECOND,0);
+  reservedFrom=new CalendarField("From ?");
   reservedFrom.setMinimumDate(from.getTime());
   reservedFrom.setValue(from.getTime());
   reservedFrom.setImmediate(true);
   initCalendarFieldPropertyIds(reservedFrom);
   reservationPanel.addComponent(reservedFrom);
   Calendar to=Calendar.getInstance();
-  to.add(Calendar.MILLISECOND,(int)currentGapMillis);
-  reservedTo=new CalendarField();
-  reservedTo.setMinimumDate(from.getTime());
+  to.setTime(from.getTime());
+  to.add(Calendar.MILLISECOND,(int)DEFAULT_GAP_MILLIS);
+  reservedTo=new CalendarField("? To");
+  reservedTo.setMinimumDate(to.getTime());
   reservedTo.setValue(to.getTime());
   reservedTo.setImmediate(true);
   initCalendarFieldPropertyIds(reservedTo);
@@ -64,7 +68,7 @@
  else {
         reservedTo.setEnabled(true);
       }
-      reservedTo.setMinimumDate(fd);
+      reservedTo.setMinimumDate(new Date(fd.getTime() + DEFAULT_GAP_MILLIS));
       Calendar to=Calendar.getInstance();
       to.setTime(fd);
       to.add(Calendar.MILLISECOND,(int)currentGapMillis);
@@ -95,6 +99,8 @@
   initCalendarFieldPropertyIds(allCalendar);
   allLayout.addComponent(allCalendar);
   allTable=new Table();
+  allTable.setColumnCollapsingAllowed(true);
+  allTable.setColumnReorderingAllowed(true);
   allLayout.addComponent(allTable);
   mainTabs.addTab(allLayout,"All reservations",null);
   mainTabs.addListener(new TabSheet.SelectedTabChangeListener(){

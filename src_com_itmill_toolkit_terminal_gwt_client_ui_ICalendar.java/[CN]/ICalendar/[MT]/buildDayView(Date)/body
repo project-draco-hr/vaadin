@@ -27,7 +27,6 @@
     }
     hourTable.setHTML(i,0,"<span>" + hstr + "</span>");
     hourTable.getCellFormatter().setStyleName(i,0,CLASSNAME + "-time");
-    hourTable.getCellFormatter().setWidth(i,0,"55");
   }
   List entries=this.entrySource.getEntries(date,DateTimeService.RESOLUTION_DAY);
   int currentCol=1;
@@ -53,7 +52,21 @@
       this.hourTable.getFlexCellFormatter().addStyleName(start,col,CLASSNAME + "-" + entry.getStyleName());
     }
     Element el=this.hourTable.getFlexCellFormatter().getElement(start,col);
-    DOM.setElementProperty(el,"title",entry.getDescription());
+    String tooltip;
+    if (DateTimeService.isSameDay(entry.getStart(),entry.getEnd())) {
+      tooltip=(start < 10 ? "0" : "") + start + ":00";
+      if (this.dts.isTwelveHourClock()) {
+        String ampm=(start < 12 ? "am" : "pm");
+        tooltip=(start <= 12 ? start : start - 12) + ":00 " + ampm;
+      }
+      tooltip+=" (" + hours + "h) ";
+      tooltip+=entry.getTitle() + "\n ";
+    }
+ else {
+      tooltip=entry.getStringForDate(entry.getEnd()) + "\n ";
+    }
+    tooltip+="\"" + entry.getDescription() + "\"";
+    DOM.setElementProperty(el,"title",tooltip);
     currentCol++;
   }
 }
