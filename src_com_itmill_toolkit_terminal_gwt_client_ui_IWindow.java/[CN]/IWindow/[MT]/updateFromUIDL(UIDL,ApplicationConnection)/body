@@ -6,29 +6,27 @@
     this.hide();
     return;
   }
- else {
-    if (uidl.hasVariable("width")) {
-      String width=uidl.getStringVariable("width");
-      setWidth(width);
+  if (uidl.hasVariable("width")) {
+    String width=uidl.getStringVariable("width");
+    setWidth(width);
+  }
+  if (uidl.hasVariable("height")) {
+    String height=uidl.getStringVariable("height");
+    setHeight(height);
+  }
+  contentPanel.setScrollPosition(uidl.getIntVariable("scrolltop"));
+  contentPanel.setHorizontalScrollPosition(uidl.getIntVariable("scrollleft"));
+  try {
+    int positionx=uidl.getIntVariable("positionx");
+    int positiony=uidl.getIntVariable("positiony");
+    if (positionx >= 0 && positiony >= 0) {
+      setPopupPosition(positionx,positiony);
     }
-    if (uidl.hasVariable("height")) {
-      String height=uidl.getStringVariable("height");
-      setHeight(height);
-    }
-    contentPanel.setScrollPosition(uidl.getIntVariable("scrolltop"));
-    contentPanel.setHorizontalScrollPosition(uidl.getIntVariable("scrollleft"));
-    try {
-      int positionx=uidl.getIntVariable("positionx");
-      int positiony=uidl.getIntVariable("positiony");
-      if (positionx >= 0 && positiony >= 0) {
-        setPopupPosition(positionx,positiony);
-      }
-    }
- catch (    IllegalArgumentException e) {
-    }
-    if (!isAttached()) {
-      show();
-    }
+  }
+ catch (  IllegalArgumentException e) {
+  }
+  if (!isAttached()) {
+    show();
   }
   UIDL childUidl=uidl.getChildUIDL(0);
   Paintable lo=(Paintable)client.getWidget(childUidl);
