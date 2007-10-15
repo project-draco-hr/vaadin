@@ -1,4 +1,5 @@
 {
+  boolean firstRender=true;
   if (this.hourPanel == null) {
     this.hourPanel=new SimplePanel();
     this.hourPanel.setStyleName(CLASSNAME + "-hours");
@@ -6,6 +7,7 @@
     this.calPanel.setWidget(8,0,this.hourPanel);
   }
  else {
+    firstRender=false;
     this.hourPanel.clear();
   }
   this.hourTable=new FlexTable();
@@ -69,4 +71,11 @@
     DOM.setElementProperty(el,"title",tooltip);
     currentCol++;
   }
+  int hour=this.date.getHours() + 1;
+  int h1=(int)this.hourPanel.getOffsetHeight() / 2;
+  int oh=this.hourTable.getOffsetHeight();
+  int h2=(int)(hour / 24.0 * oh);
+  int scrollTop=(int)h2 - h1;
+  Element el=this.hourPanel.getElement();
+  setScrollTop(el,scrollTop);
 }
