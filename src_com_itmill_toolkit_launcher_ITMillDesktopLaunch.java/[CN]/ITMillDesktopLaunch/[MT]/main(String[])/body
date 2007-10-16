@@ -1,0 +1,27 @@
+{
+  Map serverArgs=ITMillStandardLaunch.parseArguments(args);
+  boolean deployed=false;
+  try {
+    deployed=deployEmbeddedWarfile(serverArgs);
+  }
+ catch (  IOException e1) {
+    e1.printStackTrace();
+    deployed=false;
+  }
+  if (!deployed && !serverArgs.containsKey("webroot")) {
+    if (new File("WebContent").exists()) {
+      serverArgs.put("webroot","WebContent");
+    }
+ else {
+      System.err.print("Failed to deploy Toolkit application. " + "Please add --webroot parameter. Exiting.");
+      return;
+    }
+  }
+  String url=ITMillStandardLaunch.runServer(serverArgs);
+  if (url != null) {
+    BrowserLauncher.openBrowser(url);
+  }
+  if (url != null) {
+    openServerControlDialog(url);
+  }
+}
