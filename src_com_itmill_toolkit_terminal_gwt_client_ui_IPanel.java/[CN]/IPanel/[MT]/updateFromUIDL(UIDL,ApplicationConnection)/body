@@ -9,18 +9,28 @@
   if (getWidget() != null) {
     clear();
   }
-  String className=CLASSNAME;
-  if (uidl.hasAttribute("style"))   className+="-" + uidl.getStringAttribute("style");
-  setStyleName(className);
-  DOM.setElementProperty(contentNode,"className",className + "-content");
-  DOM.setElementProperty(bottomDecoration,"className",className + "-deco");
+  boolean hasCaption=false;
   if (uidl.hasAttribute("caption") && !uidl.getStringAttribute("caption").equals("")) {
     DOM.setInnerText(captionNode,uidl.getStringAttribute("caption"));
-    DOM.setElementProperty(captionNode,"className",className + "-caption");
+    hasCaption=true;
   }
- else {
-    DOM.setElementProperty(captionNode,"className",className + "-nocaption");
-    DOM.setInnerText(captionNode,"");
+ else   DOM.setInnerText(captionNode,"");
+  if (uidl.hasAttribute("style")) {
+    String[] styles=uidl.getStringAttribute("style").split(" ");
+    String captionBaseClass=CLASSNAME + (hasCaption ? "-caption" : "-nocaption");
+    String contentBaseClass=CLASSNAME + "-content";
+    String decoBaseClass=CLASSNAME + "-deco";
+    String captionClass=captionBaseClass;
+    String contentClass=contentBaseClass;
+    String decoClass=decoBaseClass;
+    for (int i=0; i < styles.length; i++) {
+      captionClass+=" " + captionBaseClass + "-"+ styles[i];
+      contentClass+=" " + contentBaseClass + "-"+ styles[i];
+      decoClass+=" " + decoBaseClass + "-"+ styles[i];
+    }
+    DOM.setElementProperty(captionNode,"className",captionClass);
+    DOM.setElementProperty(contentNode,"className",contentClass);
+    DOM.setElementProperty(bottomDecoration,"className",decoClass);
   }
   iLayout();
   UIDL layoutUidl=uidl.getChildUIDL(0);

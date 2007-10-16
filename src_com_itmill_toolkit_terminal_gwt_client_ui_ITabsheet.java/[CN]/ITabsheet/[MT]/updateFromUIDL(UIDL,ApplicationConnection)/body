@@ -2,6 +2,23 @@
   this.client=client;
   id=uidl.getId();
   if (client.updateComponent(this,uidl,false))   return;
+  if (uidl.hasAttribute("style")) {
+    String[] styles=uidl.getStringAttribute("style").split(" ");
+    String tabsBaseClass=CLASSNAME + "-tabs";
+    String contentBaseClass=CLASSNAME + "-content";
+    String decoBaseClass=CLASSNAME + "-deco";
+    String tabsClass=tabsBaseClass;
+    String contentClass=contentBaseClass;
+    String decoClass=decoBaseClass;
+    for (int i=0; i < styles.length; i++) {
+      tabsClass+=" " + tabsBaseClass + "-"+ styles[i];
+      contentClass+=" " + contentBaseClass + "-"+ styles[i];
+      decoClass+=" " + decoBaseClass + "-"+ styles[i];
+    }
+    tp.setStyleName(contentClass);
+    tb.setStyleName(tabsClass);
+    DOM.setElementProperty(deco,"className",decoClass);
+  }
   String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : null;
   String w=uidl.hasAttribute("width") ? uidl.getStringAttribute("width") : null;
   setWidth(w != null ? w : "auto");
