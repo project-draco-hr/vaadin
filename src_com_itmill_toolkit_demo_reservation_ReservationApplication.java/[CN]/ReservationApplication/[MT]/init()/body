@@ -2,10 +2,12 @@
   db=new SampleDB(true);
   db.generateResources();
   db.generateDemoUser();
+  db.generateReservations();
   Window mainWindow=new Window("Reservr");
   setMainWindow(mainWindow);
   setTheme("reservr");
   TabSheet mainTabs=new TabSheet();
+  mainTabs.addStyleName(TabSheet.STYLE_NO_PADDING);
   mainWindow.addComponent(mainTabs);
   OrderedLayout reservationTab=new OrderedLayout();
   mainTabs.addTab(reservationTab,"Make reservation",null);
@@ -14,6 +16,7 @@
   resourcePanel.addListener(ResourceSelectorPanel.SelectedResourcesChangedEvent.class,this,"selectedResourcesChanged");
   reservationTab.addComponent(resourcePanel);
   Panel reservationPanel=new Panel("Reservation",new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL));
+  reservationPanel.setStyle("light");
   reservationTab.addComponent(reservationPanel);
   OrderedLayout infoLayout=new OrderedLayout();
   reservationPanel.addComponent(infoLayout);
@@ -48,7 +51,8 @@
   reservedFrom.setImmediate(true);
   initCalendarFieldPropertyIds(reservedFrom);
   reservationPanel.addComponent(reservedFrom);
-  Label arrowLabel=new Label("?");
+  Label arrowLabel=new Label("&raquo;");
+  arrowLabel.setContentMode(Label.CONTENT_XHTML);
   arrowLabel.setStyle("arrow");
   reservationPanel.addComponent(arrowLabel);
   Calendar to=Calendar.getInstance();
@@ -103,6 +107,7 @@
   initCalendarFieldPropertyIds(allCalendar);
   allLayout.addComponent(allCalendar);
   allTable=new Table();
+  allTable.setWidth(700);
   allTable.setColumnCollapsingAllowed(true);
   allTable.setColumnReorderingAllowed(true);
   allLayout.addComponent(allTable);
