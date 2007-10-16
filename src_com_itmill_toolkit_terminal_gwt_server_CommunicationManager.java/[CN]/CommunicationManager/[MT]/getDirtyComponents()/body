@@ -1,4 +1,10 @@
 {
-  Object[] paintables=dirtyPaintabletSet.toArray();
-  return Collections.unmodifiableSet(dirtyPaintabletSet);
+  HashSet resultset=new HashSet(dirtyPaintabletSet);
+  for (Iterator i=dirtyPaintabletSet.iterator(); i.hasNext(); ) {
+    Paintable p=(Paintable)i.next();
+    if (p instanceof Component) {
+      if (dirtyPaintabletSet.contains(((Component)p).getParent()))       resultset.remove(p);
+    }
+  }
+  return resultset;
 }
