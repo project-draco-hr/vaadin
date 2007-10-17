@@ -8,8 +8,14 @@
   String title=item.getStringAttribute("title");
   String desc=item.getStringAttribute("description");
   boolean notime=item.getBooleanAttribute("notime");
-  if (items.containsKey(id)) {
-    items.remove(id);
+  CalendarEntry entry=new CalendarEntry(styleName,startDate,endDate,title,desc,notime);
+  for (Date d=entry.getStart(); d.getYear() <= entry.getEnd().getYear() && d.getMonth() <= entry.getEnd().getYear() && d.getDate() <= entry.getEnd().getDate(); d.setTime(d.getTime() + 86400000)) {
+    String key=d.getYear() + "" + d.getMonth()+ ""+ d.getDate();
+    ArrayList l=(ArrayList)dates.get(key);
+    if (l == null) {
+      l=new ArrayList();
+      dates.put(key,l);
+    }
+    l.add(entry);
   }
-  items.put(id,new CalendarEntry(styleName,startDate,endDate,title,desc,notime));
 }
