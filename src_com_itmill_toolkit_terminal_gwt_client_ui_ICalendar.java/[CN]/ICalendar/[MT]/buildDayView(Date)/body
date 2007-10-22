@@ -41,12 +41,15 @@
       start=(d.getDate() < date.getDate() ? 0 : d.getHours());
       d=entry.getEnd();
       hours=(d.getDate() > date.getDate() ? 24 : d.getHours()) - start;
+      if (hours == 0) {
+        hours=1;
+      }
     }
     int col=currentCol;
     if (col > 1) {
       while (!this.hourTable.isCellPresent(start,col - 1))       col--;
     }
-    this.hourTable.setHTML(start,col,"<span>" + entry.getTitle() + "</span>");
+    this.hourTable.setHTML(start,col,"<span>" + (entry.getTitle() != null ? entry.getTitle() : "&nbsp") + "</span>");
     this.hourTable.getFlexCellFormatter().setRowSpan(start,col,hours);
     this.hourTable.getFlexCellFormatter().setStyleName(start,col,CLASSNAME + "-entry");
     String sn=entry.getStyleName();
@@ -62,12 +65,16 @@
         tooltip=(start <= 12 ? start : start - 12) + ":00 " + ampm;
       }
       tooltip+=" (" + hours + "h) ";
-      tooltip+=entry.getTitle() + "\n ";
+      if (entry.getTitle() != null) {
+        tooltip+=entry.getTitle() + "\n ";
+      }
     }
  else {
       tooltip=entry.getStringForDate(entry.getEnd()) + "\n ";
     }
-    tooltip+="\"" + entry.getDescription() + "\"";
+    if (entry.getDescription() != null) {
+      tooltip+="\"" + entry.getDescription() + "\"";
+    }
     DOM.setElementProperty(el,"title",tooltip);
     currentCol++;
   }
