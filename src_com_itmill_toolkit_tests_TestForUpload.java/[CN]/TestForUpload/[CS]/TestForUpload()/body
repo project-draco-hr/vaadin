@@ -1,41 +1,41 @@
 {
-  setCompositionRoot(main);
-  main.addComponent(new Label("This is a simple test for upload application. " + "Upload should work with big files and concurrent " + "requests should not be blocked. Button 'b' reads "+ "current state into label below it. Memory receiver "+ "streams upload contents into memory. You may track"+ "consumption."+ "tempfile receiver writes upload to file and "+ "should have low memory consumption."));
-  main.addComponent(new Label("Clicking on button b updates information about upload components status or same with garbage collector."));
-  up=new Upload("Upload",buffer);
-  up.setImmediate(true);
-  up.addListener((FinishedListener)this);
-  up.addListener((FailedListener)this);
-  up.addListener((SucceededListener)this);
-  up.addListener((StartedListener)this);
-  up.setProgressListener(this);
+  setCompositionRoot(this.main);
+  this.main.addComponent(new Label("This is a simple test for upload application. " + "Upload should work with big files and concurrent " + "requests should not be blocked. Button 'b' reads "+ "current state into label below it. Memory receiver "+ "streams upload contents into memory. You may track"+ "consumption."+ "tempfile receiver writes upload to file and "+ "should have low memory consumption."));
+  this.main.addComponent(new Label("Clicking on button b updates information about upload components status or same with garbage collector."));
+  this.up=new Upload("Upload",this.buffer);
+  this.up.setImmediate(true);
+  this.up.addListener((FinishedListener)this);
+  this.up.addListener((FailedListener)this);
+  this.up.addListener((SucceededListener)this);
+  this.up.addListener((StartedListener)this);
+  this.up.setProgressListener(this);
   Button b=new Button("b",this,"readState");
   Button c=new Button("b with gc",this,"gc");
-  main.addComponent(b);
-  main.addComponent(c);
-  uploadBufferSelector=new Select("Receiver type");
-  uploadBufferSelector.setColumns(6);
-  uploadBufferSelector.setImmediate(true);
-  uploadBufferSelector.addItem("memory");
-  uploadBufferSelector.setValue("memory");
-  uploadBufferSelector.addItem("tempfile");
-  uploadBufferSelector.addListener(new AbstractField.ValueChangeListener(){
+  this.main.addComponent(b);
+  this.main.addComponent(c);
+  this.uploadBufferSelector=new Select("Receiver type");
+  this.uploadBufferSelector.setColumns(6);
+  this.uploadBufferSelector.setImmediate(true);
+  this.uploadBufferSelector.addItem("memory");
+  this.uploadBufferSelector.setValue("memory");
+  this.uploadBufferSelector.addItem("tempfile");
+  this.uploadBufferSelector.addListener(new AbstractField.ValueChangeListener(){
     public void valueChange(    ValueChangeEvent event){
       setBuffer();
     }
   }
 );
-  main.addComponent(uploadBufferSelector);
-  main.addComponent(up);
-  l=new Label("Idle");
-  main.addComponent(l);
-  pi.setVisible(false);
-  pi.setPollingInterval(1000);
-  main.addComponent(pi);
-  memoryStatus=new Label();
-  main.addComponent(memoryStatus);
-  status.setVisible(false);
-  main.addComponent(status);
+  this.main.addComponent(this.uploadBufferSelector);
+  this.main.addComponent(this.up);
+  this.l=new Label("Idle");
+  this.main.addComponent(this.l);
+  this.pi.setVisible(false);
+  this.pi.setPollingInterval(1000);
+  this.main.addComponent(this.pi);
+  this.memoryStatus=new Label();
+  this.main.addComponent(this.memoryStatus);
+  this.status.setVisible(false);
+  this.main.addComponent(this.status);
   Button restart=new Button("R");
   restart.addListener(new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
@@ -43,5 +43,5 @@
     }
   }
 );
-  main.addComponent(restart);
+  this.main.addComponent(restart);
 }
