@@ -1,0 +1,15 @@
+{
+  if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
+    setValue(new Double(value.doubleValue() - Math.pow(10,-resolution)),false,true);
+    if (anim != null)     anim.cancel();
+    anim=new Timer(){
+      public void run(){
+        if (value.doubleValue() - Math.pow(10,-resolution) > min)         setValue(new Double(value.doubleValue() - Math.pow(10,-resolution)),false,true);
+      }
+    }
+;
+    anim.scheduleRepeating(100);
+    DOM.eventCancelBubble(event,true);
+  }
+ else   anim.cancel();
+}

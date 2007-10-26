@@ -7,14 +7,12 @@
   readonly=uidl.getBooleanAttribute("readonly");
   vertical=uidl.hasAttribute("vertical");
   arrows=uidl.hasAttribute("arrows");
+  String style="";
+  if (uidl.hasAttribute("style"))   style=uidl.getStringAttribute("style");
+  scrollbarStyle=style.indexOf("scrollbar") > -1;
   if (arrows) {
     DOM.setStyleAttribute(smaller,"display","block");
     DOM.setStyleAttribute(bigger,"display","block");
-    if (vertical) {
-      int arrowSize=Integer.parseInt(DOM.getElementProperty(smaller,"offsetWidth"));
-      DOM.setStyleAttribute(bigger,"marginLeft",arrowSize + "px");
-      DOM.setStyleAttribute(bigger,"marginRight",arrowSize + "px");
-    }
   }
   if (vertical)   addStyleName(CLASSNAME + "-vertical");
  else   removeStyleName(CLASSNAME + "-vertical");
@@ -26,14 +24,13 @@
   if (uidl.hasAttribute("size"))   size=uidl.getIntAttribute("size");
   buildBase();
   if (!vertical) {
-    Timer delay=new Timer(){
-      public void run(){
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
         buildHandle();
         setValue(value,false,false);
       }
     }
-;
-    delay.schedule(100);
+);
   }
  else {
     buildHandle();
