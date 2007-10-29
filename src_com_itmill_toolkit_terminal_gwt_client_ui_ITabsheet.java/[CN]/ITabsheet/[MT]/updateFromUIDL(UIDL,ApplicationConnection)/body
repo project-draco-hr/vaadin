@@ -4,19 +4,13 @@
   if (client.updateComponent(this,uidl,false))   return;
   if (uidl.hasAttribute("style")) {
     String[] styles=uidl.getStringAttribute("style").split(" ");
-    String tabsBaseClass=CLASSNAME + "-tabs";
-    String contentBaseClass=CLASSNAME + "-content";
     String decoBaseClass=CLASSNAME + "-deco";
-    String tabsClass=tabsBaseClass;
-    String contentClass=contentBaseClass;
     String decoClass=decoBaseClass;
     for (int i=0; i < styles.length; i++) {
-      tabsClass+=" " + tabsBaseClass + "-"+ styles[i];
-      contentClass+=" " + contentBaseClass + "-"+ styles[i];
+      tb.addStyleDependentName(styles[i]);
+      tp.addStyleDependentName(styles[i]);
       decoClass+=" " + decoBaseClass + "-"+ styles[i];
     }
-    tp.setStyleName(contentClass);
-    tb.setStyleName(tabsClass);
     DOM.setElementProperty(deco,"className",decoClass);
   }
   String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : null;
@@ -39,11 +33,7 @@
       UIDL tab=(UIDL)it.next();
       if (tab.getBooleanAttribute("selected")) {
         activeTabIndex=index;
-        UIDL contentUIDL=tab.getChildUIDL(0);
-        Widget content=client.getWidget(contentUIDL);
-        ((Paintable)content).updateFromUIDL(contentUIDL,client);
-        tp.remove(index);
-        tp.insert(content,index);
+        renderContent(tab.getChildUIDL(0));
       }
       index++;
     }
@@ -59,17 +49,14 @@
       String caption=tab.getStringAttribute("caption");
       captions.add(caption);
       tabKeys.add(key);
-      tb.addTab(caption);
+      tb.insertTab("<span>" + caption + "</span>",true,tb.getTabCount());
+      tp.add(new ILabel(""));
       if (tab.getBooleanAttribute("selected")) {
-        Widget content=client.getWidget(tab.getChildUIDL(0));
-        tp.add(content);
         activeTabIndex=index;
-        ((Paintable)content).updateFromUIDL(tab.getChildUIDL(0),client);
+        renderContent(tab.getChildUIDL(0));
       }
- else       tp.add(new ILabel(""));
       index++;
     }
   }
   tb.selectTab(activeTabIndex);
-  tp.showWidget(activeTabIndex);
 }
