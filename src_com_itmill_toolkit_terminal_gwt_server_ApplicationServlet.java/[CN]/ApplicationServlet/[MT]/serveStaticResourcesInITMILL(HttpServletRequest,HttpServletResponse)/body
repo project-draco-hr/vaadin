@@ -3,8 +3,14 @@
   ServletContext sc=getServletContext();
   InputStream is=sc.getResourceAsStream(filename);
   if (is == null) {
-    response.setStatus(404);
-    return;
+    try {
+      is=this.classLoader.getResourceAsStream(filename);
+    }
+ catch (    Exception e) {
+      System.err.println("Requested resource [" + filename + "] not found from filesystem or through class loader.");
+      response.setStatus(404);
+      return;
+    }
   }
   String mimetype=sc.getMimeType(filename);
   if (mimetype != null)   response.setContentType(mimetype);
