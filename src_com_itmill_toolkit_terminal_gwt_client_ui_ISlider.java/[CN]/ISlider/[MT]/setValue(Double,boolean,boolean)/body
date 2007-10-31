@@ -35,7 +35,12 @@
     anim.scheduleRepeating(50);
   }
  else   DOM.setStyleAttribute(handle,styleAttribute,((int)pos) + "px");
+  if (resolution > 0) {
+    v=(int)(v * (double)Math.pow(10,resolution));
+    v=v / (double)Math.pow(10,resolution);
+  }
+ else   v=Math.round(v);
   DOM.setElementAttribute(handle,"title","" + v);
-  this.value=value;
-  if (updateToServer)   client.updateVariable(id,"value",value.doubleValue(),immediate);
+  this.value=new Double(v);
+  if (updateToServer)   client.updateVariable(id,"value",this.value.doubleValue(),immediate);
 }
