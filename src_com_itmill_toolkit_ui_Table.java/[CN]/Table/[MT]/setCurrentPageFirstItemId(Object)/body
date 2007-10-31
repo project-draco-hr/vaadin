@@ -1,15 +1,17 @@
 {
   int index=-1;
   try {
-    index=((Container.Indexed)items).indexOfId(currentPageFirstItemId);
+    index=((Container.Indexed)this.items).indexOfId(currentPageFirstItemId);
   }
  catch (  ClassCastException e) {
-    Object id=((Container.Ordered)items).firstItemId();
+    Object id=((Container.Ordered)this.items).firstItemId();
     while (id != null && !id.equals(currentPageFirstItemId)) {
       index++;
-      id=((Container.Ordered)items).nextItemId(id);
+      id=((Container.Ordered)this.items).nextItemId(id);
     }
-    if (id == null)     index=-1;
+    if (id == null) {
+      index=-1;
+    }
   }
   if (index >= 0) {
     this.currentPageFirstItemId=currentPageFirstItemId;

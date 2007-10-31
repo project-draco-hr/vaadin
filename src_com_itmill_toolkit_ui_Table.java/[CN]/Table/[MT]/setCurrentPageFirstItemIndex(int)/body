@@ -1,36 +1,40 @@
 {
-  if (newIndex < 0)   newIndex=0;
-  if (newIndex >= size())   newIndex=size() - 1;
-  if (items instanceof Container.Indexed) {
+  if (newIndex < 0) {
+    newIndex=0;
+  }
+  if (newIndex >= size()) {
+    newIndex=size() - 1;
+  }
+  if (this.items instanceof Container.Indexed) {
     try {
-      currentPageFirstItemId=((Container.Indexed)items).getIdByIndex(newIndex);
+      this.currentPageFirstItemId=((Container.Indexed)this.items).getIdByIndex(newIndex);
     }
  catch (    IndexOutOfBoundsException e) {
-      currentPageFirstItemId=null;
+      this.currentPageFirstItemId=null;
     }
     this.currentPageFirstItemIndex=newIndex;
   }
  else {
-    this.currentPageFirstItemId=((Container.Ordered)items).firstItemId();
-    while (this.currentPageFirstItemIndex < newIndex && !((Container.Ordered)items).isLastId(currentPageFirstItemId)) {
+    this.currentPageFirstItemId=((Container.Ordered)this.items).firstItemId();
+    while (this.currentPageFirstItemIndex < newIndex && !((Container.Ordered)this.items).isLastId(this.currentPageFirstItemId)) {
       this.currentPageFirstItemIndex++;
-      currentPageFirstItemId=((Container.Ordered)items).nextItemId(currentPageFirstItemId);
+      this.currentPageFirstItemId=((Container.Ordered)this.items).nextItemId(this.currentPageFirstItemId);
     }
-    if (((Container.Ordered)items).isLastId(currentPageFirstItemId)) {
+    if (((Container.Ordered)this.items).isLastId(this.currentPageFirstItemId)) {
       this.currentPageFirstItemIndex=size() - 1;
     }
-    while (this.currentPageFirstItemIndex > newIndex && !((Container.Ordered)items).isFirstId(currentPageFirstItemId)) {
+    while (this.currentPageFirstItemIndex > newIndex && !((Container.Ordered)this.items).isFirstId(this.currentPageFirstItemId)) {
       this.currentPageFirstItemIndex--;
-      currentPageFirstItemId=((Container.Ordered)items).prevItemId(currentPageFirstItemId);
+      this.currentPageFirstItemId=((Container.Ordered)this.items).prevItemId(this.currentPageFirstItemId);
     }
-    if (((Container.Ordered)items).isFirstId(currentPageFirstItemId)) {
+    if (((Container.Ordered)this.items).isFirstId(this.currentPageFirstItemId)) {
       this.currentPageFirstItemIndex=0;
     }
-    while (this.currentPageFirstItemIndex < newIndex && !((Container.Ordered)items).isLastId(currentPageFirstItemId)) {
+    while (this.currentPageFirstItemIndex < newIndex && !((Container.Ordered)this.items).isLastId(this.currentPageFirstItemId)) {
       this.currentPageFirstItemIndex++;
-      currentPageFirstItemId=((Container.Ordered)items).nextItemId(currentPageFirstItemId);
+      this.currentPageFirstItemId=((Container.Ordered)this.items).nextItemId(this.currentPageFirstItemId);
     }
-    if (((Container.Ordered)items).isLastId(currentPageFirstItemId)) {
+    if (((Container.Ordered)this.items).isLastId(this.currentPageFirstItemId)) {
       newIndex=this.currentPageFirstItemIndex=size() - 1;
     }
   }

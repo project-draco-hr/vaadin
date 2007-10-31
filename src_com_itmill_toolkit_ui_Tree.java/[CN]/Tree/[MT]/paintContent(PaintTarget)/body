@@ -1,44 +1,70 @@
 {
-  initialPaint=false;
-  if (partialUpdate) {
+  this.initialPaint=false;
+  if (this.partialUpdate) {
     target.addAttribute("partialUpdate",true);
-    target.addAttribute("rootKey",itemIdMapper.key(expandedItemId));
+    target.addAttribute("rootKey",this.itemIdMapper.key(this.expandedItemId));
   }
  else {
-    if (this.getFocusableId() > 0) {
-      target.addAttribute("focusid",this.getFocusableId());
+    if (getFocusableId() > 0) {
+      target.addAttribute("focusid",getFocusableId());
     }
-    if (this.getTabIndex() > 0)     target.addAttribute("tabindex",this.getTabIndex());
-    if (isSelectable())     target.addAttribute("selectmode",(isMultiSelect() ? "multi" : "single"));
- else     target.addAttribute("selectmode","none");
-    if (isNewItemsAllowed())     target.addAttribute("allownewitem",true);
+    if (getTabIndex() > 0) {
+      target.addAttribute("tabindex",getTabIndex());
+    }
+    if (isSelectable()) {
+      target.addAttribute("selectmode",(isMultiSelect() ? "multi" : "single"));
+    }
+ else {
+      target.addAttribute("selectmode","none");
+    }
+    if (isNewItemsAllowed()) {
+      target.addAttribute("allownewitem",true);
+    }
   }
   Set actionSet=new LinkedHashSet();
   String[] selectedKeys;
-  if (isMultiSelect())   selectedKeys=new String[((Set)getValue()).size()];
- else   selectedKeys=new String[(getValue() == null ? 0 : 1)];
+  if (isMultiSelect()) {
+    selectedKeys=new String[((Set)getValue()).size()];
+  }
+ else {
+    selectedKeys=new String[(getValue() == null ? 0 : 1)];
+  }
   int keyIndex=0;
   LinkedList expandedKeys=new LinkedList();
   Stack iteratorStack=new Stack();
   Collection ids;
-  if (partialUpdate)   ids=getChildren(expandedItemId);
- else   ids=rootItemIds();
-  if (ids != null)   iteratorStack.push(ids.iterator());
+  if (this.partialUpdate) {
+    ids=getChildren(this.expandedItemId);
+  }
+ else {
+    ids=rootItemIds();
+  }
+  if (ids != null) {
+    iteratorStack.push(ids.iterator());
+  }
   while (!iteratorStack.isEmpty()) {
     Iterator i=(Iterator)iteratorStack.peek();
     if (!i.hasNext()) {
       iteratorStack.pop();
-      if (!iteratorStack.isEmpty())       target.endTag("node");
+      if (!iteratorStack.isEmpty()) {
+        target.endTag("node");
+      }
     }
  else {
       Object itemId=i.next();
       boolean isNode=areChildrenAllowed(itemId) && hasChildren(itemId);
-      if (isNode)       target.startTag("node");
- else       target.startTag("leaf");
+      if (isNode) {
+        target.startTag("node");
+      }
+ else {
+        target.startTag("leaf");
+      }
       target.addAttribute("caption",getItemCaption(itemId));
       Resource icon=getItemIcon(itemId);
-      if (icon != null)       target.addAttribute("icon",getItemIcon(itemId));
-      String key=itemIdMapper.key(itemId);
+      if (icon != null) {
+        target.addAttribute("icon",getItemIcon(itemId));
+      }
+      String key=this.itemIdMapper.key(itemId);
       target.addAttribute("key",key);
       if (isSelected(itemId)) {
         target.addAttribute("selected",true);
@@ -48,14 +74,16 @@
         target.addAttribute("expanded",true);
         expandedKeys.add(key);
       }
-      if (actionHandlers != null) {
+      if (this.actionHandlers != null) {
         ArrayList keys=new ArrayList();
-        for (Iterator ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
+        for (Iterator ahi=this.actionHandlers.iterator(); ahi.hasNext(); ) {
           Action[] aa=((Action.Handler)ahi.next()).getActions(itemId,this);
-          if (aa != null)           for (int ai=0; ai < aa.length; ai++) {
-            String akey=actionMapper.key(aa[ai]);
-            actionSet.add(aa[ai]);
-            keys.add(akey);
+          if (aa != null) {
+            for (int ai=0; ai < aa.length; ai++) {
+              String akey=this.actionMapper.key(aa[ai]);
+              actionSet.add(aa[ai]);
+              keys.add(akey);
+            }
           }
         }
         target.addAttribute("al",keys.toArray());
@@ -64,8 +92,12 @@
         iteratorStack.push(getChildren(itemId).iterator());
       }
  else {
-        if (isNode)         target.endTag("node");
- else         target.endTag("leaf");
+        if (isNode) {
+          target.endTag("node");
+        }
+ else {
+          target.endTag("leaf");
+        }
       }
     }
   }
@@ -75,15 +107,19 @@
     for (Iterator i=actionSet.iterator(); i.hasNext(); ) {
       Action a=(Action)i.next();
       target.startTag("action");
-      if (a.getCaption() != null)       target.addAttribute("caption",a.getCaption());
-      if (a.getIcon() != null)       target.addAttribute("icon",a.getIcon());
-      target.addAttribute("key",actionMapper.key(a));
+      if (a.getCaption() != null) {
+        target.addAttribute("caption",a.getCaption());
+      }
+      if (a.getIcon() != null) {
+        target.addAttribute("icon",a.getIcon());
+      }
+      target.addAttribute("key",this.actionMapper.key(a));
       target.endTag("action");
     }
     target.endTag("actions");
   }
-  if (partialUpdate) {
-    partialUpdate=false;
+  if (this.partialUpdate) {
+    this.partialUpdate=false;
   }
  else {
     target.addVariable(this,"selected",selectedKeys);

@@ -1,0 +1,34 @@
+{
+  if (newDataSource == null) {
+    newDataSource=new IndexedContainer();
+  }
+  if (this.items != newDataSource) {
+    if (this.items != null) {
+      try {
+        ((Container.ItemSetChangeNotifier)this.items).removeListener(this);
+      }
+ catch (      ClassCastException ignored) {
+      }
+      try {
+        ((Container.PropertySetChangeNotifier)this.items).removeListener(this);
+      }
+ catch (      ClassCastException ignored) {
+      }
+    }
+    this.items=newDataSource;
+    this.itemIdMapper.removeAll();
+    if (this.items != null) {
+      try {
+        ((Container.ItemSetChangeNotifier)this.items).addListener(this);
+      }
+ catch (      ClassCastException ignored) {
+      }
+      try {
+        ((Container.PropertySetChangeNotifier)this.items).addListener(this);
+      }
+ catch (      ClassCastException ignored) {
+      }
+    }
+    fireValueChange(false);
+  }
+}

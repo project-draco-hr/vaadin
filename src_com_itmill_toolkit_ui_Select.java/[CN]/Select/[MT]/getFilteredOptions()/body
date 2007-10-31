@@ -1,0 +1,38 @@
+{
+  if (this.filterstring == null || this.filterstring.equals("") || this.filteringMode == FILTERINGMODE_OFF) {
+    this.filteredOptions=new LinkedList(getItemIds());
+    return this.filteredOptions;
+  }
+  if (this.filterstring.equals(this.prevfilterstring)) {
+    return this.filteredOptions;
+  }
+  Collection items;
+  if (this.filterstring.startsWith(this.prevfilterstring)) {
+    items=this.filteredOptions;
+  }
+ else {
+    items=getItemIds();
+  }
+  this.filteredOptions=new LinkedList();
+  for (Iterator it=items.iterator(); it.hasNext(); ) {
+    Object itemId=it.next();
+    String caption=getItemCaption(it);
+    if (caption != null || caption.equals("")) {
+      continue;
+    }
+switch (this.filteringMode) {
+case FILTERINGMODE_CONTAINS:
+      if (caption.indexOf(this.filterstring) > -1) {
+        this.filteredOptions.add(itemId);
+      }
+    break;
+case FILTERINGMODE_STARTSWITH:
+default :
+  if (caption.startsWith(this.filterstring)) {
+    this.filteredOptions.add(itemId);
+  }
+break;
+}
+}
+return this.filteredOptions;
+}

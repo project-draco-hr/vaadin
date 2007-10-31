@@ -1,49 +1,58 @@
 {
-  super.paintContent(target);
-  if (isMultiSelect())   target.addAttribute("selectmode","multi");
-  if (isNewItemsAllowed())   target.addAttribute("allownewitem",true);
-  if (getColumns() > -1)   target.addAttribute("cols",getColumns());
-  String[] selectedKeys;
-  if (isMultiSelect())   selectedKeys=new String[((Set)getValue()).size()];
- else   selectedKeys=new String[(getValue() == null && getNullSelectionItemId() == null ? 0 : 1)];
-  target.startTag("options");
-  int keyIndex=0;
-  if (!isLazyLoading()) {
-    Collection ids=getItemIds();
-    if (getNullSelectionItemId() != null && (!ids.contains(getNullSelectionItemId()))) {
-      Object id=getNullSelectionItemId();
-      String key=itemIdMapper.key(id);
-      String caption=getItemCaption(id);
-      Resource icon=getItemIcon(id);
-      target.startTag("so");
-      if (icon != null)       target.addAttribute("icon",icon);
-      target.addAttribute("caption",caption);
-      target.addAttribute("nullselection",true);
-      target.addAttribute("key",key);
-      if (isSelected(id)) {
-        target.addAttribute("selected",true);
-        selectedKeys[keyIndex++]=key;
-      }
-      target.endTag("so");
-    }
+  if (getFocusableId() > 0) {
+    target.addAttribute("focusid",getFocusableId());
   }
-  Iterator i;
-  if (isLazyLoading()) {
-    i=optionFilter.filter(filterstring,lazyLoadingPageLength,page).iterator();
-    target.addAttribute("totalMatches",optionFilter.getMatchCount());
+  if (getTabIndex() > 0) {
+    target.addAttribute("tabindex",getTabIndex());
+  }
+  if (isModified()) {
+    target.addAttribute("modified",true);
+  }
+  if (isRequired()) {
+    target.addAttribute("required",true);
+  }
+  if (isMultiSelect()) {
+    target.addAttribute("selectmode","multi");
+  }
+  if (isNewItemsAllowed()) {
+    target.addAttribute("allownewitem",true);
+  }
+  if (!isNullSelectionAllowed()) {
+    target.addAttribute("nullselect",false);
+  }
+  String[] selectedKeys;
+  if (isMultiSelect()) {
+    selectedKeys=new String[((Set)getValue()).size()];
   }
  else {
-    i=getItemIds().iterator();
+    selectedKeys=new String[(getValue() == null && getNullSelectionItemId() == null ? 0 : 1)];
   }
+  target.addAttribute("filteringmode",getFilteringMode());
+  int keyIndex=0;
+  List options=getFilteredOptions();
+  if (options.size() > this.pageLength) {
+    int first=this.currentPage * this.pageLength;
+    int last=first + this.pageLength;
+    if (options.size() < last) {
+      last=options.size();
+    }
+    options=options.subList(first,last);
+  }
+  Iterator i=options.iterator();
+  target.startTag("options");
   while (i.hasNext()) {
     Object id=i.next();
-    String key=itemIdMapper.key(id);
+    String key=this.itemIdMapper.key(id);
     String caption=getItemCaption(id);
     Resource icon=getItemIcon(id);
     target.startTag("so");
-    if (icon != null)     target.addAttribute("icon",icon);
+    if (icon != null) {
+      target.addAttribute("icon",icon);
+    }
     target.addAttribute("caption",caption);
-    if (id != null && id.equals(getNullSelectionItemId()))     target.addAttribute("nullselection",true);
+    if (id != null && id.equals(getNullSelectionItemId())) {
+      target.addAttribute("nullselection",true);
+    }
     target.addAttribute("key",key);
     if (isSelected(id) && keyIndex < selectedKeys.length) {
       target.addAttribute("selected",true);
@@ -52,10 +61,14 @@
     target.endTag("so");
   }
   target.endTag("options");
-  target.addVariable(this,"selected",selectedKeys);
-  if (isNewItemsAllowed())   target.addVariable(this,"newitem","");
-  if (isLazyLoading()) {
-    target.addVariable(this,"filter",filterstring);
-    target.addVariable(this,"page",page);
+  target.addAttribute("totalitems",size());
+  if (this.filteredOptions != null) {
+    target.addAttribute("totalMatches",this.filteredOptions.size());
   }
+  target.addVariable(this,"selected",selectedKeys);
+  if (isNewItemsAllowed()) {
+    target.addVariable(this,"newitem","");
+  }
+  target.addVariable(this,"filter",this.filterstring);
+  target.addVariable(this,"page",this.currentPage);
 }

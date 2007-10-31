@@ -1,19 +1,23 @@
 {
   String newFilter;
   if ((newFilter=(String)variables.get("filter")) != null) {
-    page=((Integer)variables.get("page")).intValue();
-    filterstring=newFilter;
+    this.currentPage=((Integer)variables.get("page")).intValue();
+    this.filterstring=newFilter;
     requestRepaint();
     return;
   }
   String newitem=(String)variables.get("newitem");
   if (newitem != null && newitem.length() > 0) {
-    if (isReadOnly())     throw new Property.ReadOnlyException();
+    if (isReadOnly()) {
+      throw new Property.ReadOnlyException();
+    }
     if (addItem(newitem) != null) {
-      if (getItemCaptionPropertyId() != null)       try {
-        getContainerProperty(newitem,getItemCaptionPropertyId()).setValue(newitem);
-      }
- catch (      Property.ConversionException ignored) {
+      if (getItemCaptionPropertyId() != null) {
+        try {
+          getContainerProperty(newitem,getItemCaptionPropertyId()).setValue(newitem);
+        }
+ catch (        Property.ConversionException ignored) {
+        }
       }
     }
   }
@@ -22,15 +26,23 @@
     if (isMultiSelect()) {
       LinkedList s=new LinkedList();
       for (int i=0; i < ka.length; i++) {
-        Object id=itemIdMapper.get(ka[i]);
-        if (id != null && containsId(id))         s.add(id);
- else         if (itemIdMapper.isNewIdKey(ka[i]) && newitem != null && newitem.length() > 0)         s.add(newitem);
+        Object id=this.itemIdMapper.get(ka[i]);
+        if (id != null && containsId(id)) {
+          s.add(id);
+        }
+ else         if (this.itemIdMapper.isNewIdKey(ka[i]) && newitem != null && newitem.length() > 0) {
+          s.add(newitem);
+        }
       }
       Collection visible=getVisibleItemIds();
       if (visible != null) {
         Set newsel=(Set)getValue();
-        if (newsel == null)         newsel=new HashSet();
- else         newsel=new HashSet(newsel);
+        if (newsel == null) {
+          newsel=new HashSet();
+        }
+ else {
+          newsel=new HashSet(newsel);
+        }
         newsel.removeAll(visible);
         newsel.addAll(s);
         setValue(newsel,true);
@@ -40,13 +52,21 @@
       if (ka.length == 0) {
         Object current=getValue();
         Collection visible=getVisibleItemIds();
-        if (visible != null && visible.contains(current))         setValue(null,true);
+        if (visible != null && visible.contains(current)) {
+          setValue(null,true);
+        }
       }
  else {
-        Object id=itemIdMapper.get(ka[0]);
-        if (id != null && id.equals(getNullSelectionItemId()))         setValue(null,true);
- else         if (itemIdMapper.isNewIdKey(ka[0]))         setValue(newitem);
- else         setValue(id,true);
+        Object id=this.itemIdMapper.get(ka[0]);
+        if (id != null && id.equals(getNullSelectionItemId())) {
+          setValue(null,true);
+        }
+ else         if (this.itemIdMapper.isNewIdKey(ka[0])) {
+          setValue(newitem);
+        }
+ else {
+          setValue(id,true);
+        }
       }
     }
   }
