@@ -17,8 +17,10 @@
   if (isNewItemsAllowed()) {
     target.addAttribute("allownewitem",true);
   }
+  boolean needNullSelectOption=false;
   if (isNullSelectionAllowed()) {
     target.addAttribute("nullselect",true);
+    needNullSelectOption=getNullSelectionItemId() == null;
   }
   String[] selectedKeys;
   if (isMultiSelect()) {
@@ -29,17 +31,30 @@
   }
   target.addAttribute("filteringmode",getFilteringMode());
   int keyIndex=0;
+  target.startTag("options");
+  boolean paintNullSelection=needNullSelectOption && (currentPage == 0 && (filterstring == null || filterstring.equals("") || filterstring.equals("-")));
+  if (paintNullSelection) {
+    target.startTag("so");
+    target.addAttribute("caption","-");
+    target.addAttribute("key","");
+    target.endTag("so");
+  }
   List options=getFilteredOptions();
   if (options.size() > this.pageLength) {
     int first=this.currentPage * this.pageLength;
     int last=first + this.pageLength;
+    if (needNullSelectOption) {
+      if (currentPage > 0) {
+        first--;
+      }
+      last--;
+    }
     if (options.size() < last) {
       last=options.size();
     }
     options=options.subList(first,last);
   }
   Iterator i=options.iterator();
-  target.startTag("options");
   while (i.hasNext()) {
     Object id=i.next();
     String key=this.itemIdMapper.key(id);
@@ -61,9 +76,9 @@
     target.endTag("so");
   }
   target.endTag("options");
-  target.addAttribute("totalitems",size());
+  target.addAttribute("totalitems",size() + (needNullSelectOption ? 1 : 0));
   if (this.filteredOptions != null) {
-    target.addAttribute("totalMatches",this.filteredOptions.size());
+    target.addAttribute("totalMatches",this.filteredOptions.size() + (needNullSelectOption ? 1 : 0));
   }
   target.addVariable(this,"selected",selectedKeys);
   if (isNewItemsAllowed()) {
