@@ -1,17 +1,19 @@
 {
   this.client=client;
-  id=uidl.getId();
-  if (client.updateComponent(this,uidl,false))   return;
+  this.id=uidl.getId();
+  if (client.updateComponent(this,uidl,false)) {
+    return;
+  }
   if (uidl.hasAttribute("style")) {
     String[] styles=uidl.getStringAttribute("style").split(" ");
     String decoBaseClass=CLASSNAME + "-deco";
     String decoClass=decoBaseClass;
     for (int i=0; i < styles.length; i++) {
-      tb.addStyleDependentName(styles[i]);
-      tp.addStyleDependentName(styles[i]);
+      this.tb.addStyleDependentName(styles[i]);
+      this.tp.addStyleDependentName(styles[i]);
       decoClass+=" " + decoBaseClass + "-"+ styles[i];
     }
-    DOM.setElementProperty(deco,"className",decoClass);
+    DOM.setElementProperty(this.deco,"className",decoClass);
   }
   String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : null;
   String w=uidl.hasAttribute("width") ? uidl.getStringAttribute("width") : null;
@@ -21,42 +23,47 @@
   }
  else {
     this.height=null;
-    tp.setHeight("auto");
-    DOM.setStyleAttribute(tp.getElement(),"overflow","hidden");
+    this.tp.setHeight("auto");
+    DOM.setStyleAttribute(this.tp.getElement(),"overflow","hidden");
   }
   UIDL tabs=uidl.getChildUIDL(0);
-  boolean keepCurrentTabs=tabKeys.size() == tabs.getNumberOfChildren();
-  for (int i=0; keepCurrentTabs && i < tabKeys.size(); i++)   keepCurrentTabs=tabKeys.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("key")) && captions.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("caption"));
+  boolean keepCurrentTabs=this.tabKeys.size() == tabs.getNumberOfChildren();
+  for (int i=0; keepCurrentTabs && i < this.tabKeys.size(); i++) {
+    keepCurrentTabs=this.tabKeys.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("key")) && this.captions.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("caption"));
+  }
   if (keepCurrentTabs) {
     int index=0;
     for (Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
       UIDL tab=(UIDL)it.next();
       if (tab.getBooleanAttribute("selected")) {
-        activeTabIndex=index;
+        this.activeTabIndex=index;
         renderContent(tab.getChildUIDL(0));
       }
       index++;
     }
   }
  else {
-    tabKeys.clear();
-    captions.clear();
+    this.tabKeys.clear();
+    this.captions.clear();
     clearTabs();
     int index=0;
     for (Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
       UIDL tab=(UIDL)it.next();
       String key=tab.getStringAttribute("key");
       String caption=tab.getStringAttribute("caption");
-      captions.add(caption);
-      tabKeys.add(key);
-      tb.insertTab("<span>" + caption + "</span>",true,tb.getTabCount());
-      tp.add(new ILabel(""));
+      if (caption == null) {
+        caption="";
+      }
+      this.captions.add(caption);
+      this.tabKeys.add(key);
+      this.tb.insertTab("<span>" + caption + "</span>",true,this.tb.getTabCount());
+      this.tp.add(new ILabel(""));
       if (tab.getBooleanAttribute("selected")) {
-        activeTabIndex=index;
+        this.activeTabIndex=index;
         renderContent(tab.getChildUIDL(0));
       }
       index++;
     }
   }
-  tb.selectTab(activeTabIndex);
+  this.tb.selectTab(this.activeTabIndex);
 }
