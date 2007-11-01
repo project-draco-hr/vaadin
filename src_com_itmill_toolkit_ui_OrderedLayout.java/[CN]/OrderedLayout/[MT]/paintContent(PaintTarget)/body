@@ -1,9 +1,16 @@
 {
+  super.paintContent(target);
   if (orientation == ORIENTATION_HORIZONTAL)   target.addAttribute("orientation","horizontal");
+  if (this.spacing)   target.addAttribute("spacing",this.spacing);
+  String alignments="";
   for (Iterator i=components.iterator(); i.hasNext(); ) {
     Component c=(Component)i.next();
     if (c != null) {
       c.paint(target);
+      if (componentToAlignment.containsKey(c))       alignments+=((Integer)componentToAlignment.get(c)).intValue();
+ else       alignments+=ALIGNMENT_TOP + ALIGNMENT_LEFT;
+      if (i.hasNext())       alignments+=",";
     }
   }
+  target.addAttribute("alignments",alignments);
 }

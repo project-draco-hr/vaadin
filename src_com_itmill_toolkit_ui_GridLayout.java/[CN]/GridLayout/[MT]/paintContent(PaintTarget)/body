@@ -1,14 +1,16 @@
 {
-  target.addAttribute("h",height);
-  target.addAttribute("w",width);
+  super.paintContent(target);
+  target.addAttribute("rows",rows);
+  target.addAttribute("cols",cols);
+  if (this.spacing)   target.addAttribute("spacing",this.spacing);
   Iterator areaiterator=areas.iterator();
   Area area=areaiterator.hasNext() ? (Area)areaiterator.next() : null;
   HashMap cellUsed=new HashMap();
   int emptyCells=0;
-  for (int cury=0; cury < height; cury++) {
+  for (int cury=0; cury < rows; cury++) {
     target.startTag("gr");
-    for (int curx=0; curx < width; curx++) {
-      if (area != null && (area.y1 == cury) && (area.x1 == curx)) {
+    for (int curx=0; curx < cols; curx++) {
+      if (area != null && (area.row1 == cury) && (area.column1 == curx)) {
         if (emptyCells > 0) {
           target.startTag("gc");
           target.addAttribute("x",curx - emptyCells);
@@ -19,8 +21,8 @@
           target.endTag("gc");
           emptyCells=0;
         }
-        int cols=(area.x2 - area.x1) + 1;
-        int rows=(area.y2 - area.y1) + 1;
+        int cols=(area.column2 - area.column1) + 1;
+        int rows=(area.row2 - area.row1) + 1;
         target.startTag("gc");
         target.addAttribute("x",curx);
         target.addAttribute("y",cury);
@@ -76,7 +78,7 @@
     }
     if (emptyCells > 0) {
       target.startTag("gc");
-      target.addAttribute("x",width - emptyCells);
+      target.addAttribute("x",cols - emptyCells);
       target.addAttribute("y",cury);
       if (emptyCells > 1) {
         target.addAttribute("w",emptyCells);
