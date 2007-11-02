@@ -1,6 +1,29 @@
 {
   Window main=new Window("Hello window");
   setMainWindow(main);
+  OrderedLayout ol=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
   setTheme("example");
-  main.addComponent(new Label("Hello World!"));
+  Slider s=new Slider();
+  s.setCaption("Volume");
+  s.setMax(20);
+  s.setMin(12);
+  s.setImmediate(true);
+  s.setOrientation(Slider.ORIENTATION_VERTICAL);
+  s.setSize(200);
+  s.addListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      value.setValue(event.getProperty().getValue());
+    }
+  }
+);
+  ol.addComponent(s);
+  Panel p=new Panel("Volume level");
+  p.setHeight(400);
+  p.setHeightUnits(Panel.UNITS_PIXELS);
+  ((OrderedLayout)p.getLayout()).setMargin(false,true,true,false);
+  p.addComponent(value);
+  ol.addComponent(p);
+  value.setValue(s.getValue());
+  ol.setComponentAlignment(s,OrderedLayout.ALIGNMENT_LEFT,OrderedLayout.ALIGNMENT_BOTTOM);
+  main.setLayout(ol);
 }

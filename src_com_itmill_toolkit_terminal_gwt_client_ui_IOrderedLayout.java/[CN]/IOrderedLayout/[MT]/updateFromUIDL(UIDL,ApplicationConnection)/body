@@ -49,4 +49,31 @@
     Paintable p=(Paintable)oldChild;
     if (!uidlWidgets.contains(p))     removePaintable(p);
   }
+  String[] alignments=uidl.getStringAttribute("alignments").split(",");
+  int alignmentIndex=0;
+  Iterator it=getPaintables().iterator();
+  while (it.hasNext()) {
+    int alignment=Integer.parseInt((alignments[alignmentIndex++]));
+    String vAlign="";
+    if ((alignment & ALIGNMENT_TOP) == ALIGNMENT_TOP)     vAlign="top";
+ else     if ((alignment & ALIGNMENT_BOTTOM) == ALIGNMENT_BOTTOM)     vAlign="bottom";
+ else     if ((alignment & VERTICAL_ALIGNMENT_CENTER) == VERTICAL_ALIGNMENT_CENTER)     vAlign="middle";
+    String hAlign="";
+    if ((alignment & ALIGNMENT_LEFT) == ALIGNMENT_LEFT)     hAlign="left";
+ else     if ((alignment & ALIGNMENT_RIGHT) == ALIGNMENT_RIGHT)     hAlign="right";
+ else     if ((alignment & HORIZONTAL_ALIGNMENT_CENTER) == HORIZONTAL_ALIGNMENT_CENTER)     hAlign="center";
+    Element td=DOM.getParent(((Widget)it.next()).getElement());
+    DOM.setStyleAttribute(td,"vertical-align",vAlign);
+    DOM.setStyleAttribute(td,"text-align",hAlign);
+  }
+  String marginClasses="";
+  if (uidl.hasAttribute("marginTop"))   marginClasses=StyleConstants.LAYOUT_MARGIN_TOP;
+  if (uidl.hasAttribute("marginRight"))   marginClasses=StyleConstants.LAYOUT_MARGIN_RIGHT;
+  if (uidl.hasAttribute("marginBottom"))   marginClasses=StyleConstants.LAYOUT_MARGIN_BOTTOM;
+  if (uidl.hasAttribute("marginLeft"))   marginClasses=StyleConstants.LAYOUT_MARGIN_LEFT;
+  DOM.setElementProperty(margin,"className",marginClasses);
+  if (uidl.hasAttribute("width"))   setWidth(uidl.getStringAttribute("width"));
+ else   setWidth("100%");
+  if (uidl.hasAttribute("height"))   setHeight(uidl.getStringAttribute("height"));
+ else   setHeight("");
 }
