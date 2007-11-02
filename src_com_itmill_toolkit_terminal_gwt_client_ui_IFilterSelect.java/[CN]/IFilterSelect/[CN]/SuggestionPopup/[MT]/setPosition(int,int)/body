@@ -1,12 +1,16 @@
 {
-  ApplicationConnection.getConsole().log("callback");
   menu.setHeight("");
-  menu.setWidth("");
   offsetHeight=getOffsetHeight();
-  offsetWidth=getOffsetWidth();
   int desiredWidth=IFilterSelect.this.getOffsetWidth() - popupOpener.getOffsetWidth();
-  if (offsetWidth < desiredWidth) {
+  int w2=DOM.getElementPropertyInt(DOM.getFirstChild(menu.getElement()),"offsetWidth");
+  if (w2 < desiredWidth) {
     menu.setWidth(desiredWidth + "px");
+    DOM.setStyleAttribute(DOM.getFirstChild(menu.getElement()),"width","100%");
+    w2=desiredWidth;
+  }
+  if (Util.isIE()) {
+    ApplicationConnection.getConsole().log("perseensuti");
+    DOM.setStyleAttribute(getElement(),"width",w2 + "px");
   }
   if (!isPagingEnabled && offsetHeight > Window.getClientHeight()) {
     offsetHeight=Window.getClientHeight();
