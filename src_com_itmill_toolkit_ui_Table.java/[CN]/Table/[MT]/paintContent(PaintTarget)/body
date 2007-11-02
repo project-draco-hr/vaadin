@@ -21,6 +21,11 @@
   boolean rowheads=getRowHeaderMode() != ROW_HEADER_MODE_HIDDEN;
   Object[][] cells=getVisibleCells();
   boolean iseditable=isEditable();
+  int rows=cells[0].length;
+  if (!isNullSelectionAllowed() && getNullSelectionItemId() != null && containsId(getNullSelectionItemId())) {
+    total--;
+    rows--;
+  }
   String[] selectedKeys;
   if (isMultiSelect()) {
     selectedKeys=new String[((Set)getValue()).size()];
@@ -36,7 +41,7 @@
     target.addAttribute("selectmode","none");
   }
   target.addAttribute("cols",cols);
-  target.addAttribute("rows",cells[0].length);
+  target.addAttribute("rows",rows);
   target.addAttribute("firstrow",(this.reqFirstRowToPaint >= 0 ? this.reqFirstRowToPaint : first));
   target.addAttribute("totalrows",total);
   if (pagelen != 0) {
