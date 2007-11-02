@@ -4,7 +4,11 @@
   this.client=client;
   this.paintableId=uidl.getStringAttribute("id");
   this.immediate=uidl.getBooleanAttribute("immediate");
-  this.totalRows=uidl.getIntAttribute("totalrows");
+  int newTotalRows=uidl.getIntAttribute("totalrows");
+  if (newTotalRows != totalRows) {
+    this.totalRows=newTotalRows;
+    if (initializedAndAttached)     tBody.setContainerHeight();
+  }
   this.pageLength=uidl.getIntAttribute("pagelength");
   if (pageLength == 0)   pageLength=totalRows;
   this.firstvisible=uidl.hasVariable("firstvisible") ? uidl.getIntVariable("firstvisible") : 0;
@@ -49,7 +53,8 @@
     updateBody(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
   }
  else {
-    getTBody().renderInitialRows(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"),totalRows);
+    tBody=new IScrollTableBody();
+    tBody.renderInitialRows(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
     bodyContainer.add(tBody);
     initialContentReceived=true;
     if (isAttached()) {
