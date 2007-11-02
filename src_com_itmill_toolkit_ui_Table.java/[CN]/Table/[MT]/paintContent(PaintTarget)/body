@@ -68,8 +68,11 @@
   }
   target.startTag("rows");
   for (int i=0; i < cells[0].length; i++) {
-    target.startTag("tr");
     Object itemId=cells[CELL_ITEMID][i];
+    if (!isNullSelectionAllowed() && getNullSelectionItemId() != null && itemId == getNullSelectionItemId()) {
+      continue;
+    }
+    target.startTag("tr");
     if (rowheads) {
       if (cells[CELL_ICON][i] != null) {
         target.addAttribute("icon",(Resource)cells[CELL_ICON][i]);
