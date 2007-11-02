@@ -19,7 +19,7 @@
   target.startTag("options");
   int keyIndex=0;
   Collection ids=getItemIds();
-  if (getNullSelectionItemId() != null && (!ids.contains(getNullSelectionItemId()))) {
+  if (isNullSelectionAllowed() && getNullSelectionItemId() != null && !ids.contains(getNullSelectionItemId())) {
     Object id=getNullSelectionItemId();
     String key=this.itemIdMapper.key(id);
     String caption=getItemCaption(id);
@@ -40,6 +40,9 @@
   Iterator i=getItemIds().iterator();
   while (i.hasNext()) {
     Object id=i.next();
+    if (!isNullSelectionAllowed() && id != null && id.equals(getNullSelectionItemId())) {
+      continue;
+    }
     String key=this.itemIdMapper.key(id);
     String caption=getItemCaption(id);
     Resource icon=getItemIcon(id);
