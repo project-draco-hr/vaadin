@@ -1,0 +1,38 @@
+{
+  hide();
+  setOpacity(getElement(),startOpacity);
+  if (style != null) {
+    this.temporaryStyle=style;
+    addStyleName(style);
+  }
+  super.show();
+  setPosition(position);
+  if (eventPreview == null) {
+    eventPreview=new EventPreview(){
+      int x=-1;
+      int y=-1;
+      public boolean onEventPreview(      Event event){
+switch (DOM.eventGetType(event)) {
+case Event.ONMOUSEMOVE:
+          if (x < 0) {
+            x=DOM.eventGetClientX(event);
+            y=DOM.eventGetClientY(event);
+          }
+ else           if (Math.abs(DOM.eventGetClientX(event) - x) > mouseMoveThreshold || Math.abs(DOM.eventGetClientY(event) - y) > mouseMoveThreshold) {
+            startDelay();
+          }
+        break;
+case Event.KEYEVENTS:
+case Event.ONCLICK:
+case Event.ONDBLCLICK:
+case Event.ONSCROLL:
+default :
+      startDelay();
+  }
+  return true;
+}
+}
+;
+}
+DOM.addEventPreview(eventPreview);
+}
