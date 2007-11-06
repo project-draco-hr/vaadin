@@ -7,6 +7,7 @@
   }
   this.paintableId=uidl.getId();
   this.immediate=uidl.hasAttribute("immediate");
+  isNullSelectionAllowed=uidl.getBooleanAttribute("nullselect");
   clear();
   for (Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
     UIDL childUidl=(UIDL)i.next();
@@ -20,41 +21,7 @@
   }
   String selectMode=uidl.getStringAttribute("selectmode");
   selectable=selectMode != null;
-  multiselect="multi".equals(selectMode);
-  addTreeListener(new TreeListener(){
-    public void onTreeItemStateChanged(    TreeItem item){
-      if (item instanceof TreeNode) {
-        TreeNode tn=(TreeNode)item;
-        if (item.getState()) {
-          if (!tn.isChildrenLoaded()) {
-            String key=tn.key;
-            ITree.this.client.updateVariable(paintableId,"expand",new String[]{key},true);
-          }
-        }
- else {
-        }
-      }
-    }
-    public void onTreeItemSelected(    TreeItem item){
-      TreeNode n=((TreeNode)item);
-      if (!selectable)       return;
-      String key=n.key;
-      if (key != null) {
-        if (selectedIds.contains(key) && multiselect) {
-          selectedIds.remove(key);
-          n.setISelected(false);
-        }
- else {
-          if (!multiselect) {
-            selectedIds.clear();
-          }
-          selectedIds.add(key);
-          n.setISelected(true);
-        }
-        ITree.this.client.updateVariable(ITree.this.paintableId,"selected",selectedIds.toArray(),immediate);
-      }
-    }
-  }
-);
+  isMultiselect="multi".equals(selectMode);
+  addTreeListener(this);
   selectedIds=uidl.getStringArrayVariableAsSet("selected");
 }
