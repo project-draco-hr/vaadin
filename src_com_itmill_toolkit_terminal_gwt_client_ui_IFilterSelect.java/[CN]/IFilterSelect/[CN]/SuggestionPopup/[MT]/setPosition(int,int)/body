@@ -1,4 +1,6 @@
 {
+  int top=-1;
+  int left=-1;
   menu.setHeight("");
   offsetHeight=getOffsetHeight();
   int desiredWidth=IFilterSelect.this.getOffsetWidth();
@@ -11,14 +13,20 @@
   if (Util.isIE()) {
     DOM.setStyleAttribute(getElement(),"width",naturalMenuWidth + "px");
   }
-  if (!isPagingEnabled && offsetHeight > Window.getClientHeight()) {
-    offsetHeight=Window.getClientHeight();
-    menu.setHeight((offsetHeight - EXTRASPACE) + "px");
-    DOM.setStyleAttribute(menu.getElement(),"overflow","auto");
-    menu.setWidth((menu.getOffsetWidth() * 2 - DOM.getElementPropertyInt(menu.getElement(),"clientWidth")) + "px");
-  }
   if (offsetHeight + getPopupTop() > Window.getClientHeight()) {
-    int top=Window.getClientHeight() - offsetHeight - EXTRASPACE / 2;
-    setPopupPosition(getPopupLeft(),top);
+    top=Window.getClientHeight() - offsetHeight - EXTRASPACE / 2;
+    if (top < 0)     top=0;
   }
+ else {
+    top=getPopupTop();
+  }
+  offsetWidth=DOM.getElementPropertyInt(DOM.getFirstChild(menu.getElement()),"offsetWidth");
+  if (offsetWidth + getPopupLeft() > Window.getClientWidth()) {
+    left=IFilterSelect.this.getAbsoluteLeft() + IFilterSelect.this.getOffsetWidth() - offsetWidth;
+    if (left < 0)     left=0;
+  }
+ else {
+    left=getPopupLeft();
+  }
+  setPopupPosition(left,top);
 }
