@@ -1,7 +1,24 @@
 {
-  if (client.updateComponent(this,uidl,false))   return;
   this.client=client;
   id=uidl.getId();
+  if (client.updateComponent(this,uidl,false))   return;
+  if (uidl.hasAttribute("error")) {
+    UIDL errorUidl=uidl.getErrors();
+    if (errorIndicatorElement == null) {
+      errorIndicatorElement=DOM.createDiv();
+      DOM.sinkEvents(errorIndicatorElement,Event.MOUSEEVENTS);
+      DOM.setElementProperty(errorIndicatorElement,"className","i-errorindicator");
+      DOM.appendChild(getElement(),errorIndicatorElement);
+    }
+    if (errorMessage == null)     errorMessage=new ErrorMessage();
+    errorMessage.updateFromUIDL(errorUidl);
+  }
+ else   if (errorIndicatorElement != null) {
+    DOM.setStyleAttribute(errorIndicatorElement,"display","none");
+  }
+  if (uidl.hasAttribute("description")) {
+    setTitle(uidl.getStringAttribute("description"));
+  }
   setText(uidl.getStringAttribute("caption"));
   setChecked(uidl.getBooleanVariable("state"));
   immediate=uidl.getBooleanAttribute("immediate");
