@@ -14,7 +14,14 @@
   Widget parent=getParent();
   while (parent != null && !(parent instanceof IView))   parent=parent.getParent();
   if (parent != null && ((IView)parent).getTheme() != null) {
-    prefixImgSrcs(getElement(),"../ITMILL/themes/" + ((IView)parent).getTheme() + "/layouts/");
+    String prefix;
+    if (uriEndsWithSlash()) {
+      prefix="../ITMILL/themes/";
+    }
+ else {
+      prefix="ITMILL/themes/";
+    }
+    prefixImgSrcs(getElement(),prefix + ((IView)parent).getTheme() + "/layouts/");
   }
  else {
     throw (new IllegalStateException("Could not find IView; maybe updateFromUIDL() was called before attaching the widget?"));
