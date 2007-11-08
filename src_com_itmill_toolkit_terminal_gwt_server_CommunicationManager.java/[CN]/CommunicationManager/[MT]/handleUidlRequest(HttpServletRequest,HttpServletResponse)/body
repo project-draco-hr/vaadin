@@ -9,12 +9,10 @@
   try {
     DownloadStream download=null;
 synchronized (application) {
-      Map unhandledParameters=handleVariables(request,application);
-      if (application.isRunning())       download=handleURI(application,request,response);
+      handleVariables(request,application);
       if (download == null) {
         Window window=null;
         if (application.isRunning())         window=getApplicationWindow(request,application);
-        if (window != null && unhandledParameters != null && !unhandledParameters.isEmpty())         window.handleParameters(unhandledParameters);
         if (!application.isRunning()) {
           endApplication(request,response,application);
           return;
