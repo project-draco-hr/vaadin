@@ -5,7 +5,9 @@
     this.hide();
     return;
   }
-  if (client.updateComponent(this,uidl,false))   return;
+  if (client.updateComponent(this,uidl,false)) {
+    return;
+  }
   if (uidl.hasVariable("width")) {
     String width=uidl.getStringVariable("width");
     setWidth(width);
@@ -28,27 +30,45 @@
   if (!isAttached()) {
     show();
   }
-  UIDL childUidl=uidl.getChildUIDL(0);
-  Paintable lo=(Paintable)client.getWidget(childUidl);
-  if (layout != null) {
-    if (layout != lo) {
-      client.unregisterPaintable(layout);
-      contentPanel.remove((Widget)layout);
-      contentPanel.setWidget((Widget)lo);
-      layout=lo;
-    }
-  }
- else {
-    contentPanel.setWidget((Widget)lo);
-  }
   if (uidl.hasAttribute("caption")) {
     setCaption(uidl.getStringAttribute("caption"));
   }
-  lo.updateFromUIDL(childUidl,client);
+  UIDL childUidl=uidl.getChildUIDL(0);
+  if ("open".equals(childUidl.getTag())) {
+    if (!childUidl.hasAttribute("name")) {
+      Frame frame=new Frame();
+      DOM.setStyleAttribute(frame.getElement(),"width","100%");
+      DOM.setStyleAttribute(frame.getElement(),"height","100%");
+      DOM.setStyleAttribute(frame.getElement(),"border","0px");
+      frame.setUrl(childUidl.getStringAttribute("src"));
+      contentPanel.setWidget(frame);
+    }
+ else {
+      String target=childUidl.getStringAttribute("name");
+      Window.open(childUidl.getStringAttribute("src"),target != null ? target : null,"");
+    }
+  }
+ else {
+    Paintable lo=(Paintable)client.getWidget(childUidl);
+    if (layout != null) {
+      if (layout != lo) {
+        client.unregisterPaintable(layout);
+        contentPanel.remove((Widget)layout);
+        contentPanel.setWidget((Widget)lo);
+        layout=lo;
+      }
+    }
+ else {
+      contentPanel.setWidget((Widget)lo);
+    }
+    lo.updateFromUIDL(childUidl,client);
+  }
   if (uidl.getChidlCount() > 1) {
     childUidl=uidl.getChildUIDL(1);
     if (childUidl.getTag().equals("actions")) {
-      if (shortcutHandler == null)       shortcutHandler=new ShortcutActionHandler(id,client);
+      if (shortcutHandler == null) {
+        shortcutHandler=new ShortcutActionHandler(id,client);
+      }
       shortcutHandler.updateActionMap(childUidl);
     }
   }
