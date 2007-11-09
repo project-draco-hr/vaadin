@@ -5,9 +5,6 @@
   String w=uidl.hasVariable("width") ? uidl.getStringVariable("width") : null;
   height=uidl.hasVariable("height") ? uidl.getStringVariable("height") : null;
   setWidth(w != null ? w : "");
-  if (getWidget() != null) {
-    clear();
-  }
   boolean hasCaption=false;
   if (uidl.hasAttribute("caption") && !uidl.getStringAttribute("caption").equals("")) {
     DOM.setInnerText(captionNode,uidl.getStringAttribute("caption"));
@@ -36,7 +33,11 @@
   }
   iLayout();
   UIDL layoutUidl=uidl.getChildUIDL(0);
-  Widget layout=client.getWidget(layoutUidl);
-  setWidget(layout);
+  Widget newLayout=client.getWidget(layoutUidl);
+  if (newLayout != layout) {
+    if (layout != null)     client.unregisterPaintable((Paintable)layout);
+    setWidget(newLayout);
+    layout=newLayout;
+  }
   ((Paintable)layout).updateFromUIDL(layoutUidl,client);
 }
