@@ -1,13 +1,9 @@
 {
   Window main=new Window("Notification demo");
   setMainWindow(main);
-  Window conf=new Window("Show Notification");
-  conf.setWidth(470);
-  conf.setHeight(360);
-  main.addWindow(conf);
   type=new NativeSelect("Notification type");
-  type.addContainerProperty("caption",String.class,null);
   type.setNullSelectionAllowed(false);
+  type.addContainerProperty("caption",String.class,null);
   type.setItemCaptionMode(Select.ITEM_CAPTION_MODE_PROPERTY);
   type.setItemCaptionPropertyId("caption");
   Item i=type.addItem(new Integer(Window.Notification.TYPE_HUMANIZED_MESSAGE));
@@ -19,20 +15,20 @@
   i=type.addItem(new Integer(Window.Notification.TYPE_TRAY_NOTIFICATION));
   i.getItemProperty("caption").setValue("Tray notification");
   type.setValue(new Integer(Window.Notification.TYPE_HUMANIZED_MESSAGE));
-  conf.addComponent(type);
+  main.addComponent(type);
   caption=new TextField("Caption");
-  caption.setValue("Brown Fox!");
   caption.setColumns(20);
-  conf.addComponent(caption);
+  caption.setValue("Brown Fox!");
+  main.addComponent(caption);
   message=new RichTextArea();
   message.setCaption("Message");
   message.setValue("A quick one jumped over the lazy dog.");
-  conf.addComponent(message);
+  main.addComponent(message);
   Button b=new Button("Show notification",new ClickListener(){
     public void buttonClick(    ClickEvent event){
       getMainWindow().showNotification((String)caption.getValue(),(String)message.getValue(),((Integer)type.getValue()).intValue());
     }
   }
 );
-  conf.addComponent(b);
+  main.addComponent(b);
 }
