@@ -1,12 +1,22 @@
 {
   MenuItem item=this.getSelectedItem();
-  if (item != null) {
+  if (item != null && item.getText().toLowerCase().startsWith(lastFilter.toLowerCase())) {
     doItemAction(item,true);
   }
  else   if (allowNewItem) {
     String newItemValue=tb.getText();
-    if (!newItemValue.equals("")) {
-      client.updateVariable(paintableId,"newitem",newItemValue,true);
+    if (this.getItems().size() == 1) {
+      MenuItem potentialExactMatch=(MenuItem)getItems().get(0);
+      if (potentialExactMatch.getText().equals(newItemValue)) {
+        this.selectItem(potentialExactMatch);
+        this.doSelectedItemAction();
+        return;
+      }
+    }
+ else {
+      if (!newItemValue.equals("")) {
+        client.updateVariable(paintableId,"newitem",newItemValue,true);
+      }
     }
   }
   suggestionPopup.hide();
