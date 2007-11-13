@@ -1,0 +1,17 @@
+{
+  if (open == state)   return;
+  if (state) {
+    if (!childrenLoaded && notifyServer) {
+      client.updateVariable(paintableId,"requestChildTree",true,false);
+    }
+    if (notifyServer)     client.updateVariable(paintableId,"expand",new String[]{key},true);
+    addStyleName(CLASSNAME + "-expanded");
+    childNodeContainer.setVisible(true);
+  }
+ else {
+    removeStyleName(CLASSNAME + "-expanded");
+    childNodeContainer.setVisible(false);
+    if (notifyServer)     client.updateVariable(paintableId,"collapse",new String[]{key},true);
+  }
+  open=state;
+}
