@@ -4,25 +4,20 @@
   keyToNode.put(key,this);
   if (uidl.hasAttribute("al"))   actionKeys=uidl.getStringArrayAttribute("al");
   if (uidl.getTag().equals("node")) {
-    isLeaf=false;
     if (uidl.getChidlCount() == 0) {
-      TreeNode childTree=new TreeNode();
-      childTree.setText("Loading...");
-      childrenLoaded=false;
-      this.addItem(childTree);
     }
  else {
       renderChildNodes(uidl.getChildIterator());
+      childrenLoaded=true;
     }
   }
  else {
-    isLeaf=true;
+    addStyleName(CLASSNAME + "-leaf");
   }
   if (uidl.getBooleanAttribute("expanded") && !getState()) {
-    setState(true);
+    open=true;
   }
   if (uidl.getBooleanAttribute("selected")) {
-    setISelected(true);
-    if (!isMultiselect)     setSelected(true);
+    setSelected(true);
   }
 }
