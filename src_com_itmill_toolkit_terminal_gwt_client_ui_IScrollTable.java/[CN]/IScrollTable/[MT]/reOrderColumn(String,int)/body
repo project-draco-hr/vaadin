@@ -3,10 +3,16 @@
   tHead.moveCell(oldIndex,newIndex);
   tBody.moveCol(oldIndex,newIndex);
   String oldKeyOnNewIndex=visibleColOrder[newIndex];
-  if (rowHeaders)   newIndex--;
+  if (showRowHeaders) {
+    newIndex--;
+  }
   for (int i=0; i < columnOrder.length; i++) {
-    if (columnOrder[i].equals(oldKeyOnNewIndex))     break;
-    if (isCollapsedColumn(columnOrder[i]))     newIndex++;
+    if (columnOrder[i].equals(oldKeyOnNewIndex)) {
+      break;
+    }
+    if (isCollapsedColumn(columnOrder[i])) {
+      newIndex++;
+    }
   }
   String[] newOrder=new String[columnOrder.length];
   for (int i=0, j=0; j < newOrder.length; i++) {
@@ -14,16 +20,22 @@
       newOrder[j]=columnKey;
       j++;
     }
-    if (i == columnOrder.length)     break;
-    if (columnOrder[i].equals(columnKey))     continue;
+    if (i == columnOrder.length) {
+      break;
+    }
+    if (columnOrder[i].equals(columnKey)) {
+      continue;
+    }
     newOrder[j]=columnOrder[i];
     j++;
   }
   columnOrder=newOrder;
-  int i=rowHeaders ? 1 : 0;
+  int i=showRowHeaders ? 1 : 0;
   for (int j=0; j < newOrder.length; j++) {
     String cid=newOrder[j];
-    if (!isCollapsedColumn(cid))     visibleColOrder[i++]=cid;
+    if (!isCollapsedColumn(cid)) {
+      visibleColOrder[i++]=cid;
+    }
   }
   client.updateVariable(paintableId,"columnorder",columnOrder,false);
 }
