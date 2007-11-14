@@ -1,13 +1,9 @@
 {
-  select.setMultipleSelect(isMultiselect());
-  if (isMultiselect()) {
-    select.setVisibleItemCount(VISIBLE_COUNT);
-  }
- else {
-    select.setVisibleItemCount(1);
-  }
   select.setEnabled(!isDisabled() && !isReadonly());
   select.clear();
+  if (isNullSelectionAllowed() && !isNullSelectionItemAvailable()) {
+    select.addItem("",null);
+  }
   for (Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
     UIDL optionUidl=(UIDL)i.next();
     select.addItem(optionUidl.getStringAttribute("caption"),optionUidl.getStringAttribute("key"));
