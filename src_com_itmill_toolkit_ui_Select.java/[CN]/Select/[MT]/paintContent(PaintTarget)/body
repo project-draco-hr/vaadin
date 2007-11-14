@@ -20,7 +20,10 @@
   boolean needNullSelectOption=false;
   if (isNullSelectionAllowed()) {
     target.addAttribute("nullselect",true);
-    needNullSelectOption=getNullSelectionItemId() == null;
+    needNullSelectOption=(getNullSelectionItemId() == null);
+    if (!needNullSelectOption) {
+      target.addAttribute("nullselectitem",true);
+    }
   }
   String[] selectedKeys;
   if (isMultiSelect()) {
@@ -40,9 +43,9 @@
     target.endTag("so");
   }
   List options=getFilteredOptions();
-  if (options.size() > this.pageLength) {
-    int first=this.currentPage * this.pageLength;
-    int last=first + this.pageLength;
+  if (options.size() > pageLength) {
+    int first=currentPage * pageLength;
+    int last=first + pageLength;
     if (needNullSelectOption) {
       if (currentPage > 0) {
         first--;
@@ -57,7 +60,7 @@
   Iterator i=options.iterator();
   while (i.hasNext()) {
     Object id=i.next();
-    String key=this.itemIdMapper.key(id);
+    String key=itemIdMapper.key(id);
     String caption=getItemCaption(id);
     Resource icon=getItemIcon(id);
     target.startTag("so");
@@ -77,13 +80,13 @@
   }
   target.endTag("options");
   target.addAttribute("totalitems",size() + (needNullSelectOption ? 1 : 0));
-  if (this.filteredOptions != null) {
-    target.addAttribute("totalMatches",this.filteredOptions.size() + (needNullSelectOption ? 1 : 0));
+  if (filteredOptions != null) {
+    target.addAttribute("totalMatches",filteredOptions.size() + (needNullSelectOption ? 1 : 0));
   }
   target.addVariable(this,"selected",selectedKeys);
   if (isNewItemsAllowed()) {
     target.addVariable(this,"newitem","");
   }
-  target.addVariable(this,"filter",this.filterstring);
-  target.addVariable(this,"page",this.currentPage);
+  target.addVariable(this,"filter",filterstring);
+  target.addVariable(this,"page",currentPage);
 }

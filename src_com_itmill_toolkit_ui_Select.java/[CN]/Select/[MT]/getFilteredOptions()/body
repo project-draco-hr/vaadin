@@ -1,39 +1,39 @@
 {
-  if (this.filterstring == null || this.filterstring.equals("") || this.filteringMode == FILTERINGMODE_OFF) {
-    this.filteredOptions=new LinkedList(getItemIds());
-    return this.filteredOptions;
+  if (filterstring == null || filterstring.equals("") || filteringMode == FILTERINGMODE_OFF) {
+    filteredOptions=new LinkedList(getItemIds());
+    return filteredOptions;
   }
-  if (this.filterstring.equals(this.prevfilterstring)) {
-    return this.filteredOptions;
+  if (filterstring.equals(prevfilterstring)) {
+    return filteredOptions;
   }
   Collection items;
-  if (prevfilterstring != null && filterstring.startsWith(this.prevfilterstring)) {
+  if (prevfilterstring != null && filterstring.startsWith(prevfilterstring)) {
     items=filteredOptions;
   }
  else {
     items=getItemIds();
   }
   prevfilterstring=filterstring;
-  this.filteredOptions=new LinkedList();
+  filteredOptions=new LinkedList();
   for (Iterator it=items.iterator(); it.hasNext(); ) {
     Object itemId=it.next();
     String caption=getItemCaption(itemId);
     if (caption == null || caption.equals("")) {
       continue;
     }
-switch (this.filteringMode) {
+switch (filteringMode) {
 case FILTERINGMODE_CONTAINS:
-      if (caption.indexOf(this.filterstring) > -1) {
-        this.filteredOptions.add(itemId);
+      if (caption.indexOf(filterstring) > -1) {
+        filteredOptions.add(itemId);
       }
     break;
 case FILTERINGMODE_STARTSWITH:
 default :
-  if (caption.startsWith(this.filterstring)) {
-    this.filteredOptions.add(itemId);
+  if (caption.startsWith(filterstring)) {
+    filteredOptions.add(itemId);
   }
 break;
 }
 }
-return this.filteredOptions;
+return filteredOptions;
 }
