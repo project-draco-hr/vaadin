@@ -1,12 +1,15 @@
 {
   this.client=client;
-  this.id=uidl.getId();
-  if (client.updateComponent(this,uidl,true))   return;
+  id=uidl.getId();
+  if (client.updateComponent(this,uidl,true)) {
+    return;
+  }
   selectedKeys=uidl.getStringArrayVariableAsSet("selected");
   readonly=uidl.getBooleanAttribute("readonly");
   disabled=uidl.getBooleanAttribute("disabled");
   multiselect="multi".equals(uidl.getStringAttribute("selectmode"));
   immediate=uidl.getBooleanAttribute("immediate");
+  nullSelectionAllowed=uidl.getBooleanAttribute("nullselect");
   UIDL ops=uidl.getChildUIDL(0);
   buildOptions(ops);
   if (uidl.getBooleanAttribute("allownewitem")) {
@@ -20,7 +23,9 @@
     }
     newItemField.setEnabled(!disabled && !readonly);
     newItemButton.setEnabled(!disabled && !readonly);
-    if (newItemField != null && newItemField.getParent() == container)     return;
+    if (newItemField != null && newItemField.getParent() == container) {
+      return;
+    }
     container.add(newItemField);
     container.add(newItemButton);
   }
