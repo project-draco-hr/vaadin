@@ -13,17 +13,21 @@
   if (Util.isIE()) {
     DOM.setStyleAttribute(getElement(),"width",naturalMenuWidth + "px");
   }
-  if (offsetHeight + getPopupTop() > Window.getClientHeight()) {
-    top=Window.getClientHeight() - offsetHeight - EXTRASPACE / 2;
-    if (top < 0)     top=0;
+  if (offsetHeight + getPopupTop() > Window.getClientHeight() + Window.getScrollTop()) {
+    top=Window.getClientHeight() + Window.getScrollTop() - offsetHeight - EXTRASPACE - IFilterSelect.this.getOffsetHeight();
+    if (top < 0) {
+      top=0;
+    }
   }
  else {
     top=getPopupTop();
   }
   offsetWidth=DOM.getElementPropertyInt(DOM.getFirstChild(menu.getElement()),"offsetWidth");
-  if (offsetWidth + getPopupLeft() > Window.getClientWidth()) {
-    left=IFilterSelect.this.getAbsoluteLeft() + IFilterSelect.this.getOffsetWidth() - offsetWidth;
-    if (left < 0)     left=0;
+  if (offsetWidth + getPopupLeft() > Window.getClientWidth() + Window.getScrollLeft()) {
+    left=IFilterSelect.this.getAbsoluteLeft() + IFilterSelect.this.getOffsetWidth() + Window.getScrollLeft() - offsetWidth;
+    if (left < 0) {
+      left=0;
+    }
   }
  else {
     left=getPopupLeft();
