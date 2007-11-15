@@ -1,0 +1,39 @@
+{
+  String marginClasses="";
+  MarginInfo margins=new MarginInfo(uidl.getIntAttribute("margins"));
+  if (margins.hasTop()) {
+    marginClasses+=" " + StyleConstants.LAYOUT_MARGIN_TOP;
+    if (topMargin == null) {
+      topMargin=createWidgetWrappper();
+      DOM.appendChild(getWidgetContainerFromWrapper(topMargin),DOM.createDiv());
+      DOM.setElementProperty(topMargin,"className",CLASSNAME + "-toppad");
+      if (orientationMode == ORIENTATION_HORIZONTAL) {
+        DOM.setElementAttribute(DOM.getFirstChild(topMargin),"colspan","" + getPaintables().size());
+      }
+      DOM.insertChild(childContainer,topMargin,0);
+    }
+  }
+ else {
+    if (topMargin != null)     DOM.removeChild(childContainer,DOM.getFirstChild(childContainer));
+    topMargin=null;
+  }
+  if (margins.hasRight())   marginClasses+=" " + StyleConstants.LAYOUT_MARGIN_RIGHT;
+  if (margins.hasBottom()) {
+    marginClasses+=" " + StyleConstants.LAYOUT_MARGIN_BOTTOM;
+    if (bottomMargin == null) {
+      bottomMargin=createWidgetWrappper();
+      DOM.appendChild(getWidgetContainerFromWrapper(bottomMargin),DOM.createDiv());
+      DOM.setElementProperty(bottomMargin,"className",CLASSNAME + "-bottompad");
+      if (orientationMode == ORIENTATION_HORIZONTAL) {
+        DOM.setElementAttribute(DOM.getFirstChild(bottomMargin),"colspan","" + getPaintables().size());
+      }
+      DOM.appendChild(childContainer,bottomMargin);
+    }
+  }
+ else {
+    if (bottomMargin != null)     DOM.removeChild(childContainer,DOM.getChild(childContainer,DOM.getChildCount(childContainer) - 1));
+    bottomMargin=null;
+  }
+  if (margins.hasLeft())   marginClasses+=" " + StyleConstants.LAYOUT_MARGIN_LEFT;
+  DOM.setElementProperty(margin,"className",marginClasses);
+}

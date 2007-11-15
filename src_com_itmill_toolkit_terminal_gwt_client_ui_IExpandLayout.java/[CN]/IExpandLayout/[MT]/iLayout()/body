@@ -3,19 +3,25 @@
     return;
   }
   Element expandedElement=DOM.getParent(expandedWidget.getElement());
-  String origiginalPositioning=DOM.getStyleAttribute(expandedWidget.getElement(),"position");
-  DOM.setStyleAttribute(expandedWidget.getElement(),"position","absolute");
   DOM.setStyleAttribute(expandedElement,"height","");
+  DOM.setStyleAttribute(DOM.getParent(expandedElement),"height","");
+  int availableHeight=getOffsetHeight();
+  Element table=DOM.getFirstChild(margin);
+  String height=DOM.getStyleAttribute(table,"height");
+  DOM.setStyleAttribute(table,"height","");
+  String originalPositioning=DOM.getStyleAttribute(expandedWidget.getElement(),"position");
+  DOM.setStyleAttribute(expandedWidget.getElement(),"position","absolute");
   Element meter=createWidgetWrappper();
   DOM.setStyleAttribute(meter,"overflow","hidden");
   DOM.setStyleAttribute(meter,"height","0");
   DOM.appendChild(childContainer,meter);
   int usedSpace=DOM.getElementPropertyInt(meter,"offsetTop") - DOM.getElementPropertyInt(DOM.getFirstChild(childContainer),"offsetTop");
-  int freeSpace=getOffsetHeight() - usedSpace;
+  int freeSpace=availableHeight - usedSpace;
   if (freeSpace < 0)   freeSpace=0;
   DOM.setStyleAttribute(expandedElement,"height",freeSpace + "px");
-  DOM.setStyleAttribute(expandedElement,"overflow","auto");
-  DOM.setStyleAttribute(expandedWidget.getElement(),"position",origiginalPositioning);
+  DOM.setStyleAttribute(DOM.getParent(expandedElement),"height",freeSpace + "px");
+  DOM.setStyleAttribute(expandedWidget.getElement(),"position",originalPositioning);
   DOM.removeChild(childContainer,meter);
+  DOM.setStyleAttribute(table,"height",height);
   Util.runDescendentsLayout(this);
 }

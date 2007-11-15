@@ -1,6 +1,24 @@
 {
   this.client=client;
   if (client.updateComponent(this,uidl,false))   return;
+  if (uidl.hasAttribute("width")) {
+    setWidth(uidl.getStringAttribute("width"));
+    DOM.setStyleAttribute(DOM.getFirstChild(margin),"width","100%");
+  }
+ else {
+    setWidth("");
+    DOM.setStyleAttribute(DOM.getFirstChild(margin),"width","");
+  }
+  if (uidl.hasAttribute("height")) {
+    setHeight(uidl.getStringAttribute("height"));
+    DOM.setStyleAttribute(margin,"height","100%");
+    DOM.setStyleAttribute(DOM.getFirstChild(margin),"height","100%");
+  }
+ else {
+    setHeight("");
+    DOM.setStyleAttribute(margin,"height","");
+    DOM.setStyleAttribute(DOM.getFirstChild(margin),"height","");
+  }
   ArrayList uidlWidgets=new ArrayList();
   for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
     UIDL uidlForChild=(UIDL)it.next();
@@ -49,12 +67,12 @@
     Paintable p=(Paintable)oldChild;
     if (!uidlWidgets.contains(p))     removePaintable(p);
   }
-  String[] alignments=uidl.getStringAttribute("alignments").split(",");
+  int[] alignments=uidl.getIntArrayAttribute("alignments");
   int alignmentIndex=0;
   Iterator it=getPaintables().iterator();
   while (it.hasNext()) {
-    int alignment=Integer.parseInt((alignments[alignmentIndex++]));
-    String vAlign="";
+    int alignment=alignments[alignmentIndex++];
+    String vAlign="top";
     if ((alignment & ALIGNMENT_TOP) == ALIGNMENT_TOP)     vAlign="top";
  else     if ((alignment & ALIGNMENT_BOTTOM) == ALIGNMENT_BOTTOM)     vAlign="bottom";
  else     if ((alignment & ALIGNMENT_VERTICAL_CENTER) == ALIGNMENT_VERTICAL_CENTER)     vAlign="middle";
@@ -66,11 +84,5 @@
     DOM.setStyleAttribute(td,"vertical-align",vAlign);
     DOM.setStyleAttribute(td,"text-align",hAlign);
   }
-  String marginClasses="";
-  if (uidl.hasAttribute("marginTop"))   marginClasses+=" " + StyleConstants.LAYOUT_MARGIN_TOP;
-  if (uidl.hasAttribute("marginRight"))   marginClasses+=" " + StyleConstants.LAYOUT_MARGIN_RIGHT;
-  if (uidl.hasAttribute("marginBottom"))   marginClasses+=" " + StyleConstants.LAYOUT_MARGIN_BOTTOM;
-  if (uidl.hasAttribute("marginLeft"))   marginClasses+=" " + StyleConstants.LAYOUT_MARGIN_LEFT;
-  if (marginClasses.equals(""))   DOM.setElementProperty(margin,"className",CLASSNAME);
- else   DOM.setElementProperty(margin,"className",CLASSNAME + marginClasses);
+  handleMargins(uidl);
 }
