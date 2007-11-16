@@ -3,7 +3,8 @@
   if (getHeight() >= 0)   target.addAttribute("height","" + getHeight() + Sizeable.UNIT_SYMBOLS[getHeightUnits()]);
   if (getWidth() >= 0)   target.addAttribute("width","" + getWidth() + Sizeable.UNIT_SYMBOLS[getWidthUnits()]);
   if (getOrientation() == ORIENTATION_HORIZONTAL)   target.addAttribute("orientation","horizontal");
-  StringBuffer alignments=new StringBuffer();
+  String[] alignmentsArray=new String[components.size()];
+  int index=0;
   for (Iterator i=getComponentIterator(); i.hasNext(); ) {
     Component c=(Component)i.next();
     if (c != null) {
@@ -12,8 +13,7 @@
       c.paint(target);
       target.endTag("cc");
     }
-    alignments.append(getComponentAlignment(c));
-    if (i.hasNext())     alignments.append(",");
+    alignmentsArray[index++]=String.valueOf(getComponentAlignment(c));
   }
-  target.addAttribute("alignments",alignments.toString());
+  target.addAttribute("alignments",alignmentsArray);
 }

@@ -75,21 +75,5 @@
   if (uidlWidgets.size() == 0)   return;
   iLayout();
   ((Paintable)expandedWidget).updateFromUIDL(expandedWidgetUidl,client);
-  String[] alignments=uidl.getStringAttribute("alignments").split(",");
-  int alignmentIndex=0;
-  Iterator it=getPaintables().iterator();
-  while (it.hasNext()) {
-    int alignment=Integer.parseInt((alignments[alignmentIndex++]));
-    String vAlign="top";
-    if ((alignment & ALIGNMENT_TOP) == ALIGNMENT_TOP)     vAlign="top";
- else     if ((alignment & ALIGNMENT_BOTTOM) == ALIGNMENT_BOTTOM)     vAlign="bottom";
- else     if ((alignment & ALIGNMENT_VERTICAL_CENTER) == ALIGNMENT_VERTICAL_CENTER)     vAlign="middle";
-    String hAlign="";
-    if ((alignment & ALIGNMENT_LEFT) == ALIGNMENT_LEFT)     hAlign="left";
- else     if ((alignment & ALIGNMENT_RIGHT) == ALIGNMENT_RIGHT)     hAlign="right";
- else     if ((alignment & ALIGNMENT_HORIZONTAL_CENTER) == ALIGNMENT_HORIZONTAL_CENTER)     hAlign="center";
-    Element td=DOM.getParent(((Widget)it.next()).getElement());
-    DOM.setStyleAttribute(td,"vertical-align",vAlign);
-    DOM.setStyleAttribute(td,"text-align",hAlign);
-  }
+  handleAlignments(uidl);
 }
