@@ -26,7 +26,9 @@
   }
   if (((JSONObject)json).containsKey("locales")) {
     JSONArray l=(JSONArray)((JSONObject)json).get("locales");
-    for (int i=0; i < l.size(); i++)     LocaleService.addLocale((JSONObject)l.get(i));
+    for (int i=0; i < l.size(); i++) {
+      LocaleService.addLocale((JSONObject)l.get(i));
+    }
   }
   JSONArray changes=(JSONArray)((JSONObject)json).get("changes");
   for (int i=0; i < changes.size(); i++) {
@@ -40,10 +42,16 @@
       }
       UIDL uidl=change.getChildUIDL(0);
       Paintable paintable=getPaintable(uidl.getId());
-      if (paintable != null)       paintable.updateFromUIDL(uidl,this);
+      if (paintable != null) {
+        paintable.updateFromUIDL(uidl,this);
+      }
  else {
-        if (!uidl.getTag().equals("window"))         throw new IllegalStateException("Received update for " + uidl.getTag() + ", but there is no such paintable ("+ uidl.getId()+ ") registered yet.");
-        view.updateFromUIDL(uidl,this);
+        if (!uidl.getTag().equals("window")) {
+          System.out.println("Received update for " + uidl.getTag() + ", but there is no such paintable ("+ uidl.getId()+ ") rendered.");
+        }
+ else {
+          view.updateFromUIDL(uidl,this);
+        }
       }
     }
  catch (    Throwable e) {
@@ -54,7 +62,7 @@
     JSONObject meta=((JSONObject)json).get("meta").isObject();
     if (meta.containsKey("focus")) {
       String focusPid=meta.get("focus").isString().stringValue();
-      Paintable toBeFocused=this.getPaintable(focusPid);
+      Paintable toBeFocused=getPaintable(focusPid);
       if (toBeFocused instanceof HasFocus) {
         HasFocus toBeFocusedWidget=(HasFocus)toBeFocused;
         toBeFocusedWidget.setFocus(true);
