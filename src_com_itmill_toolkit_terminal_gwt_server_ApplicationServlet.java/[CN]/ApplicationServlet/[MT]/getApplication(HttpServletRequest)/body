@@ -5,9 +5,13 @@
     Application a=(Application)i.next();
     String aPath=a.getURL().getPath();
     String servletPath=request.getContextPath() + request.getServletPath();
-    if (servletPath.length() < aPath.length())     servletPath+="/";
+    if (servletPath.length() < aPath.length()) {
+      servletPath+="/";
+    }
     if (servletPath.equals(aPath)) {
-      if (a.isRunning())       return a;
+      if (a.isRunning()) {
+        return a;
+      }
       WebApplicationContext.getApplicationContext(session).removeApplication(a);
       break;
     }
@@ -15,18 +19,18 @@
   WebApplicationContext context=WebApplicationContext.getApplicationContext(request.getSession());
   URL applicationUrl=getApplicationUrl(request);
   try {
-    Application application=(Application)this.applicationClass.newInstance();
+    Application application=(Application)applicationClass.newInstance();
     context.addApplication(application);
     application.setLocale(request.getLocale());
-    application.start(applicationUrl,this.applicationProperties,context);
+    application.start(applicationUrl,applicationProperties,context);
     return application;
   }
  catch (  IllegalAccessException e) {
-    System.err.println("Illegal access to application class " + this.applicationClass.getName());
+    System.err.println("Illegal access to application class " + applicationClass.getName());
     throw e;
   }
 catch (  InstantiationException e) {
-    System.err.println("Failed to instantiate application class: " + this.applicationClass.getName());
+    System.err.println("Failed to instantiate application class: " + applicationClass.getName());
     throw e;
   }
 }

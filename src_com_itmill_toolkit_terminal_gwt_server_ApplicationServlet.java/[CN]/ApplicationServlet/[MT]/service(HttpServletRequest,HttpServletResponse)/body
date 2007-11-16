@@ -23,13 +23,17 @@ synchronized (applicationToLastRequestDate) {
       getApplicationManager(application).handleUidlRequest(request,response);
       return;
     }
-    if (application.isRunning())     download=handleURI(application,request,response);
+    if (application.isRunning()) {
+      download=handleURI(application,request,response);
+    }
     if (download == null) {
       response.setHeader("Cache-Control","no-cache");
       response.setHeader("Pragma","no-cache");
       response.setDateHeader("Expires",0);
       Window window=null;
-      if (application.isRunning())       window=getApplicationWindow(request,application);
+      if (application.isRunning()) {
+        window=getApplicationWindow(request,application);
+      }
       if (!application.isRunning()) {
         endApplication(request,response,application);
         return;
@@ -41,18 +45,26 @@ synchronized (applicationToLastRequestDate) {
       if (request.getParameter("theme") != null) {
         themeName=request.getParameter("theme");
       }
-      if (handleResourceRequest(request,response,themeName))       return;
+      if (handleResourceRequest(request,response,themeName)) {
+        return;
+      }
       Map parameters=request.getParameterMap();
-      if (window != null && parameters != null)       window.handleParameters(parameters);
+      if (window != null && parameters != null) {
+        window.handleParameters(parameters);
+      }
       writeAjaxPage(request,response,window,themeName);
     }
-    if (download != null)     handleDownload(download,request,response);
+    if (download != null) {
+      handleDownload(download,request,response);
+    }
   }
  catch (  Throwable e) {
     e.printStackTrace();
     throw new ServletException(e);
   }
  finally {
-    if (application != null)     ((WebApplicationContext)application.getContext()).endTransaction(application,request);
+    if (application != null) {
+      ((WebApplicationContext)application.getContext()).endTransaction(application,request);
+    }
   }
 }

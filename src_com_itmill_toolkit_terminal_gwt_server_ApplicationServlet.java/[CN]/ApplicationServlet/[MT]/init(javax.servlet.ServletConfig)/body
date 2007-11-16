@@ -4,22 +4,26 @@
   if (applicationClassName == null) {
     System.err.println("Application not specified in servlet parameters");
   }
-  this.applicationProperties=new Properties();
+  applicationProperties=new Properties();
   for (Enumeration e=servletConfig.getInitParameterNames(); e.hasMoreElements(); ) {
     String name=(String)e.nextElement();
-    this.applicationProperties.setProperty(name,servletConfig.getInitParameter(name));
+    applicationProperties.setProperty(name,servletConfig.getInitParameter(name));
   }
   ServletContext context=servletConfig.getServletContext();
   for (Enumeration e=context.getInitParameterNames(); e.hasMoreElements(); ) {
     String name=(String)e.nextElement();
-    this.applicationProperties.setProperty(name,context.getInitParameter(name));
+    applicationProperties.setProperty(name,context.getInitParameter(name));
   }
   String debug=getApplicationOrSystemProperty(PARAMETER_DEBUG,"").toLowerCase();
-  if (!"".equals(debug) && !"true".equals(debug) && !"false".equals(debug))   throw new ServletException("If debug parameter is given for an application, it must be 'true' or 'false'");
-  this.debugMode=debug;
+  if (!"".equals(debug) && !"true".equals(debug) && !"false".equals(debug)) {
+    throw new ServletException("If debug parameter is given for an application, it must be 'true' or 'false'");
+  }
+  debugMode=debug;
   String classLoaderName=getApplicationOrSystemProperty("ClassLoader",null);
   ClassLoader classLoader;
-  if (classLoaderName == null)   classLoader=getClass().getClassLoader();
+  if (classLoaderName == null) {
+    classLoader=getClass().getClassLoader();
+  }
  else {
     try {
       Class classLoaderClass=getClass().getClassLoader().loadClass(classLoaderName);
@@ -33,7 +37,7 @@
   }
   this.classLoader=classLoader;
   try {
-    this.applicationClass=classLoader.loadClass(applicationClassName);
+    applicationClass=classLoader.loadClass(applicationClassName);
   }
  catch (  ClassNotFoundException e) {
     throw new ServletException("Failed to load application class: " + applicationClassName);
