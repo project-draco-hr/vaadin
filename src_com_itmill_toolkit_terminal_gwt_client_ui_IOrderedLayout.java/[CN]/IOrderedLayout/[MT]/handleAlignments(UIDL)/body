@@ -5,7 +5,17 @@
   while (it.hasNext()) {
     AlignmentInfo ai=new AlignmentInfo(alignments[alignmentIndex++]);
     Element td=DOM.getParent(((Widget)it.next()).getElement());
-    DOM.setStyleAttribute(td,"vertical-align",ai.getVerticalAlignment());
-    DOM.setStyleAttribute(td,"text-align",ai.getHorizontalAlignment());
+    if (Util.isIE()) {
+      DOM.setElementAttribute(td,"vAlign",ai.getVerticalAlignment());
+    }
+ else {
+      DOM.setStyleAttribute(td,"verticalAlign",ai.getVerticalAlignment());
+    }
+    if (Util.isIE()) {
+      DOM.setElementAttribute(td,"align",ai.getHorizontalAlignment());
+    }
+ else {
+      DOM.setStyleAttribute(td,"textAlign",ai.getHorizontalAlignment());
+    }
   }
 }
