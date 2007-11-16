@@ -1,7 +1,11 @@
 {
-  if (client.updateComponent(this,uidl,false))   return;
+  if (client.updateComponent(this,uidl,false)) {
+    return;
+  }
   clear();
-  if (uidl.hasAttribute("caption"))   setTitle(uidl.getStringAttribute("caption"));
+  if (uidl.hasAttribute("caption")) {
+    setTitle(uidl.getStringAttribute("caption"));
+  }
   int row=0, column=0;
   ArrayList detachdedPaintables=new ArrayList();
   for (Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
@@ -17,7 +21,9 @@
           if (c.hasAttribute("w")) {
             w=c.getIntAttribute("w");
           }
- else           w=1;
+ else {
+            w=1;
+          }
           ((FlexCellFormatter)getCellFormatter()).setColSpan(row,column,w);
           UIDL u=c.getChildUIDL(0);
           if (u != null) {
@@ -30,7 +36,7 @@
                 detachdedPaintables.add(cw.getPaintable());
                 widgetToCaptionWrapper.remove(oldChild);
               }
-              CaptionWrapper wrapper=new CaptionWrapper((Paintable)child);
+              CaptionWrapper wrapper=new CaptionWrapper((Paintable)child,client);
               setWidget(row,column,wrapper);
               widgetToCaptionWrapper.put(child,wrapper);
             }
@@ -43,6 +49,8 @@
   }
   for (Iterator it=detachdedPaintables.iterator(); it.hasNext(); ) {
     Widget w=(Widget)it.next();
-    if (!w.isAttached())     client.unregisterPaintable((Paintable)w);
+    if (!w.isAttached()) {
+      client.unregisterPaintable((Paintable)w);
+    }
   }
 }

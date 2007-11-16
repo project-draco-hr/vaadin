@@ -7,7 +7,9 @@
       DOM.setElementProperty(errorIndicatorElement,"className","i-errorindicator");
       DOM.insertChild(getElement(),errorIndicatorElement,0);
     }
-    if (errorMessage == null)     errorMessage=new ErrorMessage();
+    if (errorMessage == null) {
+      errorMessage=new ErrorMessage();
+    }
     errorMessage.updateFromUIDL(errorUidl);
   }
  else   if (errorIndicatorElement != null) {
@@ -15,13 +17,16 @@
   }
   if (uidl.hasAttribute("icon")) {
     if (icon == null) {
-      icon=DOM.createImg();
-      DOM.appendChild(getElement(),icon);
+      icon=new Icon(client);
+      DOM.appendChild(getElement(),icon.getElement());
     }
-    DOM.setElementAttribute(icon,"src",uidl.getStringAttribute("icon"));
+    icon.setUri(uidl.getStringAttribute("icon"));
   }
  else {
-    if (icon != null)     DOM.removeChild(getElement(),icon);
+    if (icon != null) {
+      DOM.removeChild(getElement(),icon.getElement());
+      icon=null;
+    }
   }
   if (uidl.hasAttribute("caption")) {
     if (captionText == null) {
