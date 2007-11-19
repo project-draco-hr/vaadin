@@ -5,11 +5,19 @@
  else   if (value instanceof ApplicationResource) {
     ApplicationResource r=(ApplicationResource)value;
     Application a=r.getApplication();
-    if (a == null)     throw new PaintException("Application not specified for resorce " + value.getClass().getName());
+    if (a == null) {
+      throw new PaintException("Application not specified for resorce " + value.getClass().getName());
+    }
     String uri;
-    if (a.getURL() != null)     uri=a.getURL().getPath();
- else     uri="";
-    if (uri.length() > 0 && uri.charAt(uri.length() - 1) != '/')     uri+="/";
+    if (a.getURL() != null) {
+      uri=a.getURL().getPath();
+    }
+ else {
+      uri="";
+    }
+    if (uri.length() > 0 && uri.charAt(uri.length() - 1) != '/') {
+      uri+="/";
+    }
     uri+=a.getRelativeLocation(r);
     addAttribute(name,uri);
   }
@@ -17,5 +25,7 @@
     String uri="theme://" + ((ThemeResource)value).getResourceId();
     addAttribute(name,uri);
   }
- else   throw new PaintException("Ajax adapter does not " + "support resources of type: " + value.getClass().getName());
+ else {
+    throw new PaintException("Ajax adapter does not " + "support resources of type: " + value.getClass().getName());
+  }
 }

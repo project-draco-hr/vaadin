@@ -1,6 +1,10 @@
 {
-  if (value.doubleValue() < min)   value=new Double(min);
- else   if (value.doubleValue() > max)   value=new Double(max);
+  if (value.doubleValue() < min) {
+    value=new Double(min);
+  }
+ else   if (value.doubleValue() > max) {
+    value=new Double(max);
+  }
   final String styleAttribute=vertical ? "marginTop" : "marginLeft";
   String domProperty=vertical ? "offsetHeight" : "offsetWidth";
   int handleSize=Integer.parseInt(DOM.getElementProperty(handle,domProperty));
@@ -9,22 +13,32 @@
   double v=value.doubleValue();
   double valueRange=max - min;
   double p=0;
-  if (valueRange > 0)   p=range * ((v - min) / valueRange);
-  if (p < 0)   p=0;
-  if (vertical)   p=range - p - (Util.isIE6() ? 1 : 0);
+  if (valueRange > 0) {
+    p=range * ((v - min) / valueRange);
+  }
+  if (p < 0) {
+    p=0;
+  }
+  if (vertical) {
+    p=range - p - (Util.isIE6() ? 1 : 0);
+  }
   final double pos=p;
   int current=DOM.getIntStyleAttribute(handle,styleAttribute);
   if ((int)(Math.round(pos)) != current && animate) {
-    if (anim != null)     anim.cancel();
+    if (anim != null) {
+      anim.cancel();
+    }
     anim=new Timer(){
       private int current;
       private int goal=(int)Math.round(pos);
       private int dir=0;
       public void run(){
         current=DOM.getIntStyleAttribute(handle,styleAttribute);
-        if (dir == 0)         dir=(goal - current) / Math.abs(goal - current);
+        if (dir == 0) {
+          dir=(goal - current) / Math.abs(goal - current);
+        }
         if ((dir > 0 && current >= goal) || (dir < 0 && current <= goal)) {
-          this.cancel();
+          cancel();
           return;
         }
         int increment=(goal - current) / 2;
@@ -34,13 +48,19 @@
 ;
     anim.scheduleRepeating(50);
   }
- else   DOM.setStyleAttribute(handle,styleAttribute,((int)pos) + "px");
-  if (resolution > 0) {
-    v=(int)(v * (double)Math.pow(10,resolution));
-    v=v / (double)Math.pow(10,resolution);
+ else {
+    DOM.setStyleAttribute(handle,styleAttribute,((int)pos) + "px");
   }
- else   v=Math.round(v);
+  if (resolution > 0) {
+    v=(int)(v * Math.pow(10,resolution));
+    v=v / Math.pow(10,resolution);
+  }
+ else {
+    v=Math.round(v);
+  }
   DOM.setElementAttribute(handle,"title","" + v);
   this.value=new Double(v);
-  if (updateToServer)   client.updateVariable(id,"value",this.value.doubleValue(),immediate);
+  if (updateToServer) {
+    client.updateVariable(id,"value",this.value.doubleValue(),immediate);
+  }
 }

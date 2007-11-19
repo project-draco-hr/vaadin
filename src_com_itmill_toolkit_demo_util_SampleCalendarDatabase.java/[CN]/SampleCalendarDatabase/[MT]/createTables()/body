@@ -12,7 +12,7 @@
       if (Math.random() < 0.7) {
         long t=end.getTime();
         long hour=60 * 60 * 1000;
-        t=t + hour + (long)(Math.round(Math.random() * 3 * hour));
+        t=t + hour + (Math.round(Math.random() * 3 * hour));
         end.setTime(t);
       }
       stmt="INSERT INTO " + DB_TABLE_NAME + "(TITLE, EVENTSTART, EVENTEND, NOTIME) VALUES ("+ "'"+ titles[(int)(Math.round(Math.random() * (titles.length - 1)))]+ "','"+ start+ "','"+ end+ "',"+ (Math.random() > 0.7)+ ")";
@@ -20,6 +20,8 @@
     }
   }
  catch (  SQLException e) {
-    if (e.toString().indexOf("Table already exists") == -1)     throw new RuntimeException(e);
+    if (e.toString().indexOf("Table already exists") == -1) {
+      throw new RuntimeException(e);
+    }
   }
 }

@@ -42,7 +42,7 @@
   }
   target.addAttribute("cols",cols);
   target.addAttribute("rows",rows);
-  target.addAttribute("firstrow",(this.reqFirstRowToPaint >= 0 ? this.reqFirstRowToPaint : first));
+  target.addAttribute("firstrow",(reqFirstRowToPaint >= 0 ? reqFirstRowToPaint : first));
   target.addAttribute("totalrows",total);
   if (pagelen != 0) {
     target.addAttribute("pagelength",pagelen);
@@ -55,18 +55,18 @@
   }
   Collection sortables=getSortableContainerPropertyIds();
   ArrayList visibleColOrder=new ArrayList();
-  for (Iterator it=this.visibleColumns.iterator(); it.hasNext(); ) {
+  for (Iterator it=visibleColumns.iterator(); it.hasNext(); ) {
     Object columnId=it.next();
     if (!isColumnCollapsed(columnId)) {
-      visibleColOrder.add(this.columnIdMap.key(columnId));
+      visibleColOrder.add(columnIdMap.key(columnId));
     }
   }
   target.addAttribute("vcolorder",visibleColOrder.toArray());
   Set actionSet=new LinkedHashSet();
   boolean selectable=isSelectable();
-  boolean[] iscomponent=new boolean[this.visibleColumns.size()];
+  boolean[] iscomponent=new boolean[visibleColumns.size()];
   int iscomponentIndex=0;
-  for (Iterator it=this.visibleColumns.iterator(); it.hasNext() && iscomponentIndex < iscomponent.length; ) {
+  for (Iterator it=visibleColumns.iterator(); it.hasNext() && iscomponentIndex < iscomponent.length; ) {
     Object columnId=it.next();
     Class colType=getType(columnId);
     iscomponent[iscomponentIndex++]=colType != null && Component.class.isAssignableFrom(colType);
@@ -87,19 +87,19 @@
       }
     }
     target.addAttribute("key",Integer.parseInt(cells[CELL_KEY][i].toString()));
-    if (this.actionHandlers != null || isSelectable()) {
+    if (actionHandlers != null || isSelectable()) {
       if (isSelected(itemId) && keyIndex < selectedKeys.length) {
         target.addAttribute("selected",true);
         selectedKeys[keyIndex++]=(String)cells[CELL_KEY][i];
       }
     }
-    if (this.actionHandlers != null) {
+    if (actionHandlers != null) {
       ArrayList keys=new ArrayList();
-      for (Iterator ahi=this.actionHandlers.iterator(); ahi.hasNext(); ) {
+      for (Iterator ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
         Action[] aa=((Action.Handler)ahi.next()).getActions(itemId,this);
         if (aa != null) {
           for (int ai=0; ai < aa.length; ai++) {
-            String key=this.actionMapper.key(aa[ai]);
+            String key=actionMapper.key(aa[ai]);
             actionSet.add(aa[ai]);
             keys.add(key);
           }
@@ -108,7 +108,7 @@
       target.addAttribute("al",keys.toArray());
     }
     int currentColumn=0;
-    for (Iterator it=this.visibleColumns.iterator(); it.hasNext(); currentColumn++) {
+    for (Iterator it=visibleColumns.iterator(); it.hasNext(); currentColumn++) {
       Object columnId=it.next();
       if (columnId == null || isColumnCollapsed(columnId)) {
         continue;
@@ -136,14 +136,14 @@
     target.addVariable(this,"firstvisible",first);
   }
   if (getContainerDataSource() instanceof Container.Sortable) {
-    target.addVariable(this,"sortcolumn",this.columnIdMap.key(this.sortContainerPropertyId));
-    target.addVariable(this,"sortascending",this.sortAscending);
+    target.addVariable(this,"sortcolumn",columnIdMap.key(sortContainerPropertyId));
+    target.addVariable(this,"sortascending",sortAscending);
   }
-  this.reqFirstRowToPaint=-1;
-  this.reqRowsToPaint=-1;
-  this.pageBuffer=null;
-  target.addVariable(this,"reqrows",this.reqRowsToPaint);
-  target.addVariable(this,"reqfirstrow",this.reqFirstRowToPaint);
+  reqFirstRowToPaint=-1;
+  reqRowsToPaint=-1;
+  pageBuffer=null;
+  target.addVariable(this,"reqrows",reqRowsToPaint);
+  target.addVariable(this,"reqfirstrow",reqFirstRowToPaint);
   if (!actionSet.isEmpty()) {
     target.addVariable(this,"action","");
     target.startTag("actions");
@@ -156,22 +156,22 @@
       if (a.getIcon() != null) {
         target.addAttribute("icon",a.getIcon());
       }
-      target.addAttribute("key",this.actionMapper.key(a));
+      target.addAttribute("key",actionMapper.key(a));
       target.endTag("action");
     }
     target.endTag("actions");
   }
-  if (this.columnReorderingAllowed) {
-    String[] colorder=new String[this.visibleColumns.size()];
+  if (columnReorderingAllowed) {
+    String[] colorder=new String[visibleColumns.size()];
     int i=0;
-    for (Iterator it=this.visibleColumns.iterator(); it.hasNext() && i < colorder.length; ) {
-      colorder[i++]=this.columnIdMap.key(it.next());
+    for (Iterator it=visibleColumns.iterator(); it.hasNext() && i < colorder.length; ) {
+      colorder[i++]=columnIdMap.key(it.next());
     }
     target.addVariable(this,"columnorder",colorder);
   }
-  if (this.columnCollapsingAllowed) {
+  if (columnCollapsingAllowed) {
     HashSet ccs=new HashSet();
-    for (Iterator i=this.visibleColumns.iterator(); i.hasNext(); ) {
+    for (Iterator i=visibleColumns.iterator(); i.hasNext(); ) {
       Object o=i.next();
       if (isColumnCollapsed(o)) {
         ccs.add(o);
@@ -179,21 +179,21 @@
     }
     String[] collapsedkeys=new String[ccs.size()];
     int nextColumn=0;
-    for (Iterator it=this.visibleColumns.iterator(); it.hasNext() && nextColumn < collapsedkeys.length; ) {
+    for (Iterator it=visibleColumns.iterator(); it.hasNext() && nextColumn < collapsedkeys.length; ) {
       Object columnId=it.next();
       if (isColumnCollapsed(columnId)) {
-        collapsedkeys[nextColumn++]=this.columnIdMap.key(columnId);
+        collapsedkeys[nextColumn++]=columnIdMap.key(columnId);
       }
     }
     target.addVariable(this,"collapsedcolumns",collapsedkeys);
   }
   target.startTag("visiblecolumns");
   int i=0;
-  for (Iterator it=this.visibleColumns.iterator(); it.hasNext(); i++) {
+  for (Iterator it=visibleColumns.iterator(); it.hasNext(); i++) {
     Object columnId=it.next();
     if (columnId != null) {
       target.startTag("column");
-      target.addAttribute("cid",this.columnIdMap.key(columnId));
+      target.addAttribute("cid",columnIdMap.key(columnId));
       String head=getColumnHeader(columnId);
       target.addAttribute("caption",(head != null ? head : ""));
       if (isColumnCollapsed(columnId)) {

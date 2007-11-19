@@ -1,6 +1,6 @@
 {
   this.client=client;
-  this.id=uidl.getId();
+  id=uidl.getId();
   if (client.updateComponent(this,uidl,false)) {
     return;
   }
@@ -9,11 +9,11 @@
     String decoBaseClass=CLASSNAME + "-deco";
     String decoClass=decoBaseClass;
     for (int i=0; i < styles.length; i++) {
-      this.tb.addStyleDependentName(styles[i]);
-      this.tp.addStyleDependentName(styles[i]);
+      tb.addStyleDependentName(styles[i]);
+      tp.addStyleDependentName(styles[i]);
       decoClass+=" " + decoBaseClass + "-"+ styles[i];
     }
-    DOM.setElementProperty(this.deco,"className",decoClass);
+    DOM.setElementProperty(deco,"className",decoClass);
   }
   String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : null;
   String w=uidl.hasAttribute("width") ? uidl.getStringAttribute("width") : null;
@@ -24,28 +24,28 @@
     }
   }
  else {
-    this.height=null;
-    this.tp.setHeight("");
+    height=null;
+    tp.setHeight("");
   }
   UIDL tabs=uidl.getChildUIDL(0);
-  boolean keepCurrentTabs=this.tabKeys.size() == tabs.getNumberOfChildren();
-  for (int i=0; keepCurrentTabs && i < this.tabKeys.size(); i++) {
-    keepCurrentTabs=this.tabKeys.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("key")) && this.captions.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("caption"));
+  boolean keepCurrentTabs=tabKeys.size() == tabs.getNumberOfChildren();
+  for (int i=0; keepCurrentTabs && i < tabKeys.size(); i++) {
+    keepCurrentTabs=tabKeys.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("key")) && captions.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("caption"));
   }
   if (keepCurrentTabs) {
     int index=0;
     for (Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
       UIDL tab=(UIDL)it.next();
       if (tab.getBooleanAttribute("selected")) {
-        this.activeTabIndex=index;
+        activeTabIndex=index;
         renderContent(tab.getChildUIDL(0));
       }
       index++;
     }
   }
  else {
-    this.tabKeys.clear();
-    this.captions.clear();
+    tabKeys.clear();
+    captions.clear();
     clearTabs();
     int index=0;
     for (Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
@@ -55,16 +55,16 @@
       if (caption == null) {
         caption="&nbsp;";
       }
-      this.captions.add(caption);
-      this.tabKeys.add(key);
-      this.tb.insertTab("<span>" + caption + "</span>",true,this.tb.getTabCount());
-      this.tp.add(new ILabel(""));
+      captions.add(caption);
+      tabKeys.add(key);
+      tb.insertTab("<span>" + caption + "</span>",true,tb.getTabCount());
+      tp.add(new ILabel(""));
       if (tab.getBooleanAttribute("selected")) {
-        this.activeTabIndex=index;
+        activeTabIndex=index;
         renderContent(tab.getChildUIDL(0));
       }
       index++;
     }
   }
-  this.tb.selectTab(this.activeTabIndex);
+  tb.selectTab(activeTabIndex);
 }

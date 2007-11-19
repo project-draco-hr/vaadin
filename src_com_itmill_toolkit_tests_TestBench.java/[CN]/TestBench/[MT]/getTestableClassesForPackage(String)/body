@@ -2,7 +2,9 @@
   ArrayList directories=new ArrayList();
   try {
     ClassLoader cld=Thread.currentThread().getContextClassLoader();
-    if (cld == null)     throw new ClassNotFoundException("Can't get class loader.");
+    if (cld == null) {
+      throw new ClassNotFoundException("Can't get class loader.");
+    }
     String path=packageName.replace('.','/');
     Enumeration resources=cld.getResources(path);
     while (resources.hasMoreElements()) {
@@ -22,11 +24,13 @@
         if (files[j].endsWith(".class")) {
           String p=packageName + '.' + files[j].substring(0,files[j].length() - 6);
           Class c=Class.forName(p);
-          if (c.getSuperclass() != null)           if ((c.getSuperclass().equals(com.itmill.toolkit.Application.class))) {
-            classes.add(c);
-          }
- else           if ((c.getSuperclass().equals(com.itmill.toolkit.ui.CustomComponent.class))) {
-            classes.add(c);
+          if (c.getSuperclass() != null) {
+            if ((c.getSuperclass().equals(com.itmill.toolkit.Application.class))) {
+              classes.add(c);
+            }
+ else             if ((c.getSuperclass().equals(com.itmill.toolkit.ui.CustomComponent.class))) {
+              classes.add(c);
+            }
           }
         }
       }

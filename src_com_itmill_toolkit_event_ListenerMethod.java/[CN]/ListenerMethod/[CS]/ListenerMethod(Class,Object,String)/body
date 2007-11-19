@@ -1,17 +1,27 @@
 {
   Method[] methods=object.getClass().getMethods();
   Method method=null;
-  for (int i=0; i < methods.length; i++)   if (methods[i].getName().equals(methodName))   method=methods[i];
-  if (method == null)   throw new IllegalArgumentException();
+  for (int i=0; i < methods.length; i++) {
+    if (methods[i].getName().equals(methodName)) {
+      method=methods[i];
+    }
+  }
+  if (method == null) {
+    throw new IllegalArgumentException();
+  }
   this.eventType=eventType;
   this.object=object;
   this.method=method;
-  this.eventArgumentIndex=-1;
+  eventArgumentIndex=-1;
   Class[] params=method.getParameterTypes();
-  if (params.length == 0)   this.arguments=new Object[0];
- else   if (params.length == 1 && params[0].isAssignableFrom(eventType)) {
-    this.arguments=new Object[]{null};
-    this.eventArgumentIndex=0;
+  if (params.length == 0) {
+    arguments=new Object[0];
   }
- else   throw new IllegalArgumentException();
+ else   if (params.length == 1 && params[0].isAssignableFrom(eventType)) {
+    arguments=new Object[]{null};
+    eventArgumentIndex=0;
+  }
+ else {
+    throw new IllegalArgumentException();
+  }
 }

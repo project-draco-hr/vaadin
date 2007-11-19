@@ -12,12 +12,16 @@ synchronized (application) {
       handleVariables(request,application);
       if (download == null) {
         Window window=null;
-        if (application.isRunning())         window=getApplicationWindow(request,application);
+        if (application.isRunning()) {
+          window=getApplicationWindow(request,application);
+        }
         if (!application.isRunning()) {
           endApplication(request,response,application);
           return;
         }
-        if (window == null)         return;
+        if (window == null) {
+          return;
+        }
         response.setContentType("application/json; charset=UTF-8");
         outWriter.print(")/*{");
         outWriter.print("\"changes\":[");
@@ -29,7 +33,9 @@ synchronized (application) {
           locales=null;
           requireLocale(application.getLocale().toString());
         }
- else         paintables=getDirtyComponents();
+ else {
+          paintables=getDirtyComponents();
+        }
         if (paintables != null) {
           List currentPaintables=new ArrayList(paintables);
           Collections.sort(currentPaintables,new Comparator(){
@@ -48,7 +54,9 @@ synchronized (application) {
             Paintable p=(Paintable)i.next();
             if (p instanceof Window) {
               Window w=(Window)p;
-              if (w.getTerminal() == null)               w.setTerminal(application.getMainWindow().getTerminal());
+              if (w.getTerminal() == null) {
+                w.setTerminal(application.getMainWindow().getTerminal());
+              }
             }
             paintTarget.startTag("change");
             paintTarget.addAttribute("format","uidl");
@@ -69,7 +77,9 @@ synchronized (application) {
         boolean metaOpen=false;
         Paintable f=(Paintable)application.consumeFocus();
         if (f != null) {
-          if (metaOpen)           outWriter.write(",");
+          if (metaOpen) {
+            outWriter.write(",");
+          }
           outWriter.write("\"focus\":\"" + getPaintableId(f) + "\"");
         }
         outWriter.print("}, \"resources\" : {");
@@ -77,7 +87,9 @@ synchronized (application) {
         if (request.getParameter("theme") != null) {
           themeName=request.getParameter("theme");
         }
-        if (themeName == null)         themeName="default";
+        if (themeName == null) {
+          themeName="default";
+        }
         int resourceIndex=0;
         for (Iterator i=paintTarget.getPreCachedResources().iterator(); i.hasNext(); ) {
           String resource=(String)i.next();
@@ -95,7 +107,9 @@ synchronized (application) {
               InputStreamReader r=new InputStreamReader(is);
               char[] buffer=new char[20000];
               int charsRead=0;
-              while ((charsRead=r.read(buffer)) > 0)               layout.append(buffer,0,charsRead);
+              while ((charsRead=r.read(buffer)) > 0) {
+                layout.append(buffer,0,charsRead);
+              }
               r.close();
             }
  catch (            java.io.IOException e) {

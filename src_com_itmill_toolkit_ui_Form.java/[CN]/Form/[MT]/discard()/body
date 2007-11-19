@@ -1,11 +1,15 @@
 {
   LinkedList problems=null;
-  for (Iterator i=propertyIds.iterator(); i.hasNext(); )   try {
-    ((Field)fields.get(i.next())).discard();
-  }
- catch (  Buffered.SourceException e) {
-    if (problems == null)     problems=new LinkedList();
-    problems.add(e);
+  for (Iterator i=propertyIds.iterator(); i.hasNext(); ) {
+    try {
+      ((Field)fields.get(i.next())).discard();
+    }
+ catch (    Buffered.SourceException e) {
+      if (problems == null) {
+        problems=new LinkedList();
+      }
+      problems.add(e);
+    }
   }
   if (problems == null) {
     if (currentBufferedSourceException != null) {
@@ -16,7 +20,9 @@
   }
   Throwable[] causes=new Throwable[problems.size()];
   int index=0;
-  for (Iterator i=problems.iterator(); i.hasNext(); )   causes[index++]=(Throwable)i.next();
+  for (Iterator i=problems.iterator(); i.hasNext(); ) {
+    causes[index++]=(Throwable)i.next();
+  }
   Buffered.SourceException e=new Buffered.SourceException(this,causes);
   currentBufferedSourceException=e;
   requestRepaint();

@@ -1,10 +1,14 @@
 {
-  if (!isUploading)   throw new IllegalStateException("uploading not started");
+  if (!isUploading) {
+    throw new IllegalStateException("uploading not started");
+  }
   String filename=upload.getContentName();
   String type=upload.getContentType();
   fireStarted(filename,type);
   OutputStream out=receiver.receiveUpload(filename,type);
-  if (out == null)   throw new RuntimeException("Error getting outputstream from upload receiver");
+  if (out == null) {
+    throw new RuntimeException("Error getting outputstream from upload receiver");
+  }
   InputStream in=upload.getStream();
   if (null == in) {
     fireUploadInterrupted(filename,type,0);

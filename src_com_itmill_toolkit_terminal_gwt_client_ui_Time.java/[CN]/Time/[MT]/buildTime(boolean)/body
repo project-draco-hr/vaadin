@@ -5,7 +5,9 @@
     int numHours=thc ? 12 : 24;
     hours=new ListBox();
     hours.setStyleName(INativeSelect.CLASSNAME);
-    for (int i=0; i < numHours; i++)     hours.addItem((i < 10) ? "0" + i : "" + i);
+    for (int i=0; i < numHours; i++) {
+      hours.addItem((i < 10) ? "0" + i : "" + i);
+    }
     hours.addChangeListener(this);
     if (thc) {
       ampm=new ListBox();
@@ -18,22 +20,32 @@
     if (datefield.getCurrentResolution() >= IDateField.RESOLUTION_MIN) {
       mins=new ListBox();
       mins.setStyleName(INativeSelect.CLASSNAME);
-      for (int i=0; i < 60; i++)       mins.addItem((i < 10) ? "0" + i : "" + i);
+      for (int i=0; i < 60; i++) {
+        mins.addItem((i < 10) ? "0" + i : "" + i);
+      }
       mins.addChangeListener(this);
     }
     if (datefield.getCurrentResolution() >= IDateField.RESOLUTION_SEC) {
       sec=new ListBox();
       sec.setStyleName(INativeSelect.CLASSNAME);
-      for (int i=0; i < 60; i++)       sec.addItem((i < 10) ? "0" + i : "" + i);
+      for (int i=0; i < 60; i++) {
+        sec.addItem((i < 10) ? "0" + i : "" + i);
+      }
       sec.addChangeListener(this);
     }
     if (datefield.getCurrentResolution() == IDateField.RESOLUTION_MSEC) {
       msec=new ListBox();
       msec.setStyleName(INativeSelect.CLASSNAME);
       for (int i=0; i < 1000; i++) {
-        if (i < 10)         msec.addItem("00" + i);
- else         if (i < 100)         msec.addItem("0" + i);
- else         msec.addItem("" + i);
+        if (i < 10) {
+          msec.addItem("00" + i);
+        }
+ else         if (i < 100) {
+          msec.addItem("0" + i);
+        }
+ else {
+          msec.addItem("" + i);
+        }
       }
       msec.addChangeListener(this);
     }
@@ -41,18 +53,26 @@
     boolean ro=datefield.isReadonly();
     if (ro) {
       int h=0;
-      if (datefield.getCurrentDate() != null)       h=datefield.getCurrentDate().getHours();
-      if (thc)       h-=h < 12 ? 0 : 12;
+      if (datefield.getCurrentDate() != null) {
+        h=datefield.getCurrentDate().getHours();
+      }
+      if (thc) {
+        h-=h < 12 ? 0 : 12;
+      }
       add(new ILabel(h < 10 ? "0" + h : "" + h));
     }
- else     add(hours);
+ else {
+      add(hours);
+    }
     if (datefield.getCurrentResolution() >= IDateField.RESOLUTION_MIN) {
       add(new ILabel(delimiter));
       if (ro) {
         int m=mins.getSelectedIndex();
         add(new ILabel(m < 10 ? "0" + m : "" + m));
       }
- else       add(mins);
+ else {
+        add(mins);
+      }
     }
     if (datefield.getCurrentResolution() >= IDateField.RESOLUTION_SEC) {
       add(new ILabel(delimiter));
@@ -60,7 +80,9 @@
         int s=sec.getSelectedIndex();
         add(new ILabel(s < 10 ? "0" + s : "" + s));
       }
- else       add(sec);
+ else {
+        add(sec);
+      }
     }
     if (datefield.getCurrentResolution() == IDateField.RESOLUTION_MSEC) {
       add(new ILabel("."));
@@ -69,17 +91,25 @@
         String ms=m < 100 ? "0" + m : "" + m;
         add(new ILabel(m < 10 ? "0" + ms : ms));
       }
- else       add(msec);
+ else {
+        add(msec);
+      }
     }
     if (datefield.getCurrentResolution() == IDateField.RESOLUTION_HOUR) {
       add(new ILabel(delimiter + "00"));
     }
     if (thc) {
       add(new ILabel("&nbsp;"));
-      if (ro)       add(new ILabel(ampm.getItemText(datefield.getCurrentDate().getHours() < 12 ? 0 : 1)));
- else       add(ampm);
+      if (ro) {
+        add(new ILabel(ampm.getItemText(datefield.getCurrentDate().getHours() < 12 ? 0 : 1)));
+      }
+ else {
+        add(ampm);
+      }
     }
-    if (ro)     return;
+    if (ro) {
+      return;
+    }
   }
   if (thc) {
     int h=datefield.getCurrentDate().getHours();
@@ -87,16 +117,28 @@
     h-=ampm.getSelectedIndex() * 12;
     hours.setSelectedIndex(h);
   }
- else   hours.setSelectedIndex(datefield.getCurrentDate().getHours());
-  if (datefield.getCurrentResolution() >= IDateField.RESOLUTION_MIN)   mins.setSelectedIndex(datefield.getCurrentDate().getMinutes());
-  if (datefield.getCurrentResolution() >= IDateField.RESOLUTION_SEC)   sec.setSelectedIndex(datefield.getCurrentDate().getSeconds());
-  if (datefield.getCurrentResolution() == IDateField.RESOLUTION_MSEC)   msec.setSelectedIndex(datefield.getMilliseconds());
-  if (thc)   ampm.setSelectedIndex(datefield.getCurrentDate().getHours() < 12 ? 0 : 1);
+ else {
+    hours.setSelectedIndex(datefield.getCurrentDate().getHours());
+  }
+  if (datefield.getCurrentResolution() >= IDateField.RESOLUTION_MIN) {
+    mins.setSelectedIndex(datefield.getCurrentDate().getMinutes());
+  }
+  if (datefield.getCurrentResolution() >= IDateField.RESOLUTION_SEC) {
+    sec.setSelectedIndex(datefield.getCurrentDate().getSeconds());
+  }
+  if (datefield.getCurrentResolution() == IDateField.RESOLUTION_MSEC) {
+    msec.setSelectedIndex(datefield.getMilliseconds());
+  }
+  if (thc) {
+    ampm.setSelectedIndex(datefield.getCurrentDate().getHours() < 12 ? 0 : 1);
+  }
   if (datefield.isReadonly() && !redraw) {
     clear();
     String delimiter=datefield.getDateTimeService().getClockDelimeter();
     int h=datefield.getCurrentDate().getHours();
-    if (thc)     h-=h < 12 ? 0 : 12;
+    if (thc) {
+      h-=h < 12 ? 0 : 12;
+    }
     add(new ILabel(h < 10 ? "0" + h : "" + h));
     if (datefield.getCurrentResolution() >= IDateField.RESOLUTION_MIN) {
       add(new ILabel(delimiter));
@@ -124,8 +166,16 @@
   }
   boolean enabled=datefield.isEnabled();
   hours.setEnabled(enabled);
-  if (mins != null)   mins.setEnabled(enabled);
-  if (sec != null)   sec.setEnabled(enabled);
-  if (msec != null)   msec.setEnabled(enabled);
-  if (ampm != null)   ampm.setEnabled(enabled);
+  if (mins != null) {
+    mins.setEnabled(enabled);
+  }
+  if (sec != null) {
+    sec.setEnabled(enabled);
+  }
+  if (msec != null) {
+    msec.setEnabled(enabled);
+  }
+  if (ampm != null) {
+    ampm.setEnabled(enabled);
+  }
 }

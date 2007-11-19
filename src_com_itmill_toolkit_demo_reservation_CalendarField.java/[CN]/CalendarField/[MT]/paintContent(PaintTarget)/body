@@ -1,26 +1,26 @@
 {
   super.paintContent(target);
-  if (this.minDate != null) {
-    target.addAttribute("min",String.valueOf(this.minDate.getTime()));
+  if (minDate != null) {
+    target.addAttribute("min",String.valueOf(minDate.getTime()));
   }
-  if (this.maxDate != null) {
-    target.addAttribute("max",String.valueOf(this.maxDate.getTime()));
+  if (maxDate != null) {
+    target.addAttribute("max",String.valueOf(maxDate.getTime()));
   }
-  if (this.dataSource != null) {
+  if (dataSource != null) {
     target.startTag("items");
     int month=new Date().getMonth();
     Object value=getValue();
     if (value != null && value instanceof Date) {
       month=((Date)value).getMonth();
     }
-    for (Iterator it=this.dataSource.getItemIds().iterator(); it.hasNext(); ) {
+    for (Iterator it=dataSource.getItemIds().iterator(); it.hasNext(); ) {
       Object itemId=it.next();
-      Item item=(Item)this.dataSource.getItem(itemId);
-      Property p=item.getItemProperty(this.itemStartPropertyId);
+      Item item=dataSource.getItem(itemId);
+      Property p=item.getItemProperty(itemStartPropertyId);
       Date start=(Date)p.getValue();
       Date end=start;
-      if (this.itemEndPropertyId != null) {
-        p=item.getItemProperty(this.itemEndPropertyId);
+      if (itemEndPropertyId != null) {
+        p=item.getItemProperty(itemEndPropertyId);
         end=(Date)p.getValue();
         if (end == null) {
           end=start;
@@ -35,8 +35,8 @@
         if ((start.getMonth() <= month || end.getMonth() >= month)) {
           target.startTag("item");
           target.addAttribute("id",itemId.hashCode());
-          if (this.itemStyleNamePropertyId != null) {
-            p=item.getItemProperty(this.itemStyleNamePropertyId);
+          if (itemStyleNamePropertyId != null) {
+            p=item.getItemProperty(itemStyleNamePropertyId);
             String styleName=(String)p.getValue();
             target.addAttribute("styleName",styleName);
           }
@@ -44,22 +44,22 @@
           if (end != start) {
             target.addAttribute("end","" + end.getTime());
           }
-          if (this.itemTitlePropertyId != null) {
-            p=item.getItemProperty(this.itemTitlePropertyId);
+          if (itemTitlePropertyId != null) {
+            p=item.getItemProperty(itemTitlePropertyId);
             Object val=p.getValue();
             if (val != null) {
               target.addAttribute("title",val.toString());
             }
           }
-          if (this.itemDescriptionPropertyId != null) {
-            p=item.getItemProperty(this.itemDescriptionPropertyId);
+          if (itemDescriptionPropertyId != null) {
+            p=item.getItemProperty(itemDescriptionPropertyId);
             Object val=p.getValue();
             if (val != null) {
               target.addAttribute("description",val.toString());
             }
           }
-          if (this.itemNotimePropertyId != null) {
-            p=item.getItemProperty(this.itemNotimePropertyId);
+          if (itemNotimePropertyId != null) {
+            p=item.getItemProperty(itemNotimePropertyId);
             Object val=p.getValue();
             if (val != null) {
               target.addAttribute("notime",((Boolean)val).booleanValue());

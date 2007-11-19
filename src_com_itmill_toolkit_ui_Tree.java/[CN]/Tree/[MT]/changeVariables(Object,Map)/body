@@ -6,9 +6,9 @@
   if (variables.containsKey("collapse")) {
     String[] keys=(String[])variables.get("collapse");
     for (int i=0; i < keys.length; i++) {
-      Object id=this.itemIdMapper.get(keys[i]);
+      Object id=itemIdMapper.get(keys[i]);
       if (id != null && isExpanded(id)) {
-        this.expanded.remove(id);
+        expanded.remove(id);
         fireCollapseEvent(id);
       }
     }
@@ -20,7 +20,7 @@
     }
     String[] keys=(String[])variables.get("expand");
     for (int i=0; i < keys.length; i++) {
-      Object id=this.itemIdMapper.get(keys[i]);
+      Object id=itemIdMapper.get(keys[i]);
       if (id != null) {
         expandItem(id,sendChildTree);
       }
@@ -30,10 +30,10 @@
   if (variables.containsKey("action")) {
     StringTokenizer st=new StringTokenizer((String)variables.get("action"),",");
     if (st.countTokens() == 2) {
-      Object itemId=this.itemIdMapper.get(st.nextToken());
-      Action action=(Action)this.actionMapper.get(st.nextToken());
-      if (action != null && containsId(itemId) && this.actionHandlers != null) {
-        for (Iterator i=this.actionHandlers.iterator(); i.hasNext(); ) {
+      Object itemId=itemIdMapper.get(st.nextToken());
+      Action action=(Action)actionMapper.get(st.nextToken());
+      if (action != null && containsId(itemId) && actionHandlers != null) {
+        for (Iterator i=actionHandlers.iterator(); i.hasNext(); ) {
           ((Action.Handler)i.next()).handleAction(action,this,itemId);
         }
       }

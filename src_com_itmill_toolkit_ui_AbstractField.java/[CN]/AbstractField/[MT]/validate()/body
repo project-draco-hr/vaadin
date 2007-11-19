@@ -1,25 +1,37 @@
 {
-  if (validators == null)   return;
+  if (validators == null) {
+    return;
+  }
   Validator.InvalidValueException firstError=null;
   LinkedList errors=null;
   Object value=getValue();
-  for (Iterator i=validators.iterator(); i.hasNext(); )   try {
-    ((Validator)i.next()).validate(value);
-  }
- catch (  Validator.InvalidValueException e) {
-    if (firstError == null)     firstError=e;
- else {
-      if (errors == null) {
-        errors=new LinkedList();
-        errors.add(firstError);
+  for (Iterator i=validators.iterator(); i.hasNext(); ) {
+    try {
+      ((Validator)i.next()).validate(value);
+    }
+ catch (    Validator.InvalidValueException e) {
+      if (firstError == null) {
+        firstError=e;
       }
-      errors.add(e);
+ else {
+        if (errors == null) {
+          errors=new LinkedList();
+          errors.add(firstError);
+        }
+        errors.add(e);
+      }
     }
   }
-  if (firstError == null)   return;
-  if (errors == null)   throw firstError;
+  if (firstError == null) {
+    return;
+  }
+  if (errors == null) {
+    throw firstError;
+  }
   Validator.InvalidValueException[] exceptions=new Validator.InvalidValueException[errors.size()];
   int index=0;
-  for (Iterator i=errors.iterator(); i.hasNext(); )   exceptions[index++]=(Validator.InvalidValueException)i.next();
+  for (Iterator i=errors.iterator(); i.hasNext(); ) {
+    exceptions[index++]=(Validator.InvalidValueException)i.next();
+  }
   throw new Validator.InvalidValueException(null,exceptions);
 }

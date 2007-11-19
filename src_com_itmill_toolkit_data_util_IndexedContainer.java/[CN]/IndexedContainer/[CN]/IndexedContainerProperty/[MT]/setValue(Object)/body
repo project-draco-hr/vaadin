@@ -1,13 +1,19 @@
 {
   Hashtable propertySet=(Hashtable)items.get(itemId);
-  if (newValue == null)   propertySet.remove(propertyId);
- else   if (getType().isAssignableFrom(newValue.getClass()))   propertySet.put(propertyId,newValue);
- else   try {
-    Constructor constr=getType().getConstructor(new Class[]{String.class});
-    propertySet.put(propertyId,constr.newInstance(new Object[]{newValue.toString()}));
+  if (newValue == null) {
+    propertySet.remove(propertyId);
   }
- catch (  java.lang.Exception e) {
-    throw new Property.ConversionException("Conversion for value '" + newValue + "' of class "+ newValue.getClass().getName()+ " to "+ getType().getName()+ " failed");
+ else   if (getType().isAssignableFrom(newValue.getClass())) {
+    propertySet.put(propertyId,newValue);
+  }
+ else {
+    try {
+      Constructor constr=getType().getConstructor(new Class[]{String.class});
+      propertySet.put(propertyId,constr.newInstance(new Object[]{newValue.toString()}));
+    }
+ catch (    java.lang.Exception e) {
+      throw new Property.ConversionException("Conversion for value '" + newValue + "' of class "+ newValue.getClass().getName()+ " to "+ getType().getName()+ " failed");
+    }
   }
   firePropertyValueChange(this);
 }

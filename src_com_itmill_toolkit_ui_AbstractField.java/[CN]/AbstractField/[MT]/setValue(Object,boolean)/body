@@ -1,9 +1,15 @@
 {
   if ((newValue == null && value != null) || (newValue != null && !newValue.equals(value))) {
-    if (isReadOnly())     throw new Property.ReadOnlyException();
+    if (isReadOnly()) {
+      throw new Property.ReadOnlyException();
+    }
     if (!isInvalidAllowed()) {
       Collection v=getValidators();
-      if (v != null)       for (Iterator i=v.iterator(); i.hasNext(); )       ((Validator)i.next()).validate(newValue);
+      if (v != null) {
+        for (Iterator i=v.iterator(); i.hasNext(); ) {
+          ((Validator)i.next()).validate(newValue);
+        }
+      }
     }
     setInternalValue(newValue);
     modified=dataSource != null;

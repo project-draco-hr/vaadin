@@ -13,40 +13,40 @@
   if (variables.containsKey("reqfirstrow") || variables.containsKey("reqrows")) {
     Integer value=(Integer)variables.get("reqfirstrow");
     if (value != null) {
-      this.reqFirstRowToPaint=value.intValue();
+      reqFirstRowToPaint=value.intValue();
     }
     value=(Integer)variables.get("reqrows");
     if (value != null) {
-      this.reqRowsToPaint=value.intValue();
+      reqRowsToPaint=value.intValue();
     }
-    this.pageBuffer=null;
+    pageBuffer=null;
     requestRepaint();
   }
   if (variables.containsKey("action")) {
     StringTokenizer st=new StringTokenizer((String)variables.get("action"),",");
     if (st.countTokens() == 2) {
-      Object itemId=this.itemIdMapper.get(st.nextToken());
-      Action action=(Action)this.actionMapper.get(st.nextToken());
-      if (action != null && containsId(itemId) && this.actionHandlers != null) {
-        for (Iterator i=this.actionHandlers.iterator(); i.hasNext(); ) {
+      Object itemId=itemIdMapper.get(st.nextToken());
+      Action action=(Action)actionMapper.get(st.nextToken());
+      if (action != null && containsId(itemId) && actionHandlers != null) {
+        for (Iterator i=actionHandlers.iterator(); i.hasNext(); ) {
           ((Action.Handler)i.next()).handleAction(action,this,itemId);
         }
       }
     }
   }
   boolean doSort=false;
-  if (!this.sortDisabled) {
+  if (!sortDisabled) {
     if (variables.containsKey("sortcolumn")) {
       String colId=(String)variables.get("sortcolumn");
       if (colId != null && !"".equals(colId) && !"null".equals(colId)) {
-        Object id=this.columnIdMap.get(colId);
+        Object id=columnIdMap.get(colId);
         setSortContainerPropertyId(id);
         doSort=true;
       }
     }
     if (variables.containsKey("sortascending")) {
       boolean state=((Boolean)variables.get("sortascending")).booleanValue();
-      if (state != this.sortAscending) {
+      if (state != sortAscending) {
         setSortAscending(state);
         doSort=true;
       }
@@ -59,11 +59,11 @@
     if (variables.containsKey("collapsedcolumns")) {
       try {
         Object[] ids=(Object[])variables.get("collapsedcolumns");
-        for (Iterator it=this.visibleColumns.iterator(); it.hasNext(); ) {
+        for (Iterator it=visibleColumns.iterator(); it.hasNext(); ) {
           setColumnCollapsed(it.next(),false);
         }
         for (int i=0; i < ids.length; i++) {
-          setColumnCollapsed(this.columnIdMap.get(ids[i].toString()),true);
+          setColumnCollapsed(columnIdMap.get(ids[i].toString()),true);
         }
       }
  catch (      Exception ignored) {
@@ -75,7 +75,7 @@
       try {
         Object[] ids=(Object[])variables.get("columnorder");
         for (int i=0; i < ids.length; i++) {
-          ids[i]=this.columnIdMap.get(ids[i].toString());
+          ids[i]=columnIdMap.get(ids[i].toString());
         }
         setColumnOrder(ids);
       }

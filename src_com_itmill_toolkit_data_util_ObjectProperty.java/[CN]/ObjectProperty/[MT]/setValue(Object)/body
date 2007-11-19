@@ -1,12 +1,18 @@
 {
-  if (isReadOnly())   throw new Property.ReadOnlyException();
-  if (newValue == null || type.isAssignableFrom(newValue.getClass()))   value=newValue;
- else   try {
-    Constructor constr=getType().getConstructor(new Class[]{String.class});
-    value=constr.newInstance(new Object[]{newValue.toString()});
+  if (isReadOnly()) {
+    throw new Property.ReadOnlyException();
   }
- catch (  java.lang.Exception e) {
-    throw new Property.ConversionException(e);
+  if (newValue == null || type.isAssignableFrom(newValue.getClass())) {
+    value=newValue;
+  }
+ else {
+    try {
+      Constructor constr=getType().getConstructor(new Class[]{String.class});
+      value=constr.newInstance(new Object[]{newValue.toString()});
+    }
+ catch (    java.lang.Exception e) {
+      throw new Property.ConversionException(e);
+    }
   }
   fireValueChange();
 }

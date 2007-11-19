@@ -2,17 +2,27 @@
   ArrayList ids=new ArrayList();
   ArrayList orders=new ArrayList();
   Collection sortable=getSortableContainerPropertyIds();
-  for (int i=0; i < propertyId.length; i++)   if (sortable.contains(propertyId[i])) {
-    ids.add(propertyId[i]);
-    orders.add(new Boolean(i < ascending.length ? ascending[i] : true));
+  for (int i=0; i < propertyId.length; i++) {
+    if (sortable.contains(propertyId[i])) {
+      ids.add(propertyId[i]);
+      orders.add(new Boolean(i < ascending.length ? ascending[i] : true));
+    }
   }
-  if (ids.size() == 0)   return;
+  if (ids.size() == 0) {
+    return;
+  }
   sortPropertyId=ids.toArray();
   sortDirection=new boolean[orders.size()];
-  for (int i=0; i < sortDirection.length; i++)   sortDirection[i]=((Boolean)orders.get(i)).booleanValue();
-  Collections.sort(this.itemIds,this);
-  if (filteredItemIds != null)   updateContainerFiltering();
- else   fireContentsChange();
+  for (int i=0; i < sortDirection.length; i++) {
+    sortDirection[i]=((Boolean)orders.get(i)).booleanValue();
+  }
+  Collections.sort(itemIds,this);
+  if (filteredItemIds != null) {
+    updateContainerFiltering();
+  }
+ else {
+    fireContentsChange();
+  }
   sortPropertyId=null;
   sortDirection=null;
 }

@@ -7,10 +7,18 @@
     public Object next(){
       if (json.size() > index) {
         JSONValue c=json.get(index++);
-        if (c.isString() != null)         return c.isString().stringValue();
- else         if (c.isArray() != null)         return new UIDL(c.isArray());
- else         if (c.isObject() != null)         return new XML(c.isObject());
- else         throw new IllegalStateException("Illegal child " + c + " in tag "+ getTag()+ " at index "+ index);
+        if (c.isString() != null) {
+          return c.isString().stringValue();
+        }
+ else         if (c.isArray() != null) {
+          return new UIDL(c.isArray());
+        }
+ else         if (c.isObject() != null) {
+          return new XML(c.isObject());
+        }
+ else {
+          throw new IllegalStateException("Illegal child " + c + " in tag "+ getTag()+ " at index "+ index);
+        }
       }
       return null;
     }

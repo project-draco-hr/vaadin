@@ -1,8 +1,8 @@
 {
-  this.initialPaint=false;
-  if (this.partialUpdate) {
+  initialPaint=false;
+  if (partialUpdate) {
     target.addAttribute("partialUpdate",true);
-    target.addAttribute("rootKey",this.itemIdMapper.key(this.expandedItemId));
+    target.addAttribute("rootKey",itemIdMapper.key(expandedItemId));
   }
  else {
     if (getFocusableId() > 0) {
@@ -36,8 +36,8 @@
   LinkedList expandedKeys=new LinkedList();
   Stack iteratorStack=new Stack();
   Collection ids;
-  if (this.partialUpdate) {
-    ids=getChildren(this.expandedItemId);
+  if (partialUpdate) {
+    ids=getChildren(expandedItemId);
   }
  else {
     ids=rootItemIds();
@@ -67,7 +67,7 @@
       if (icon != null) {
         target.addAttribute("icon",getItemIcon(itemId));
       }
-      String key=this.itemIdMapper.key(itemId);
+      String key=itemIdMapper.key(itemId);
       target.addAttribute("key",key);
       if (isSelected(itemId)) {
         target.addAttribute("selected",true);
@@ -77,13 +77,13 @@
         target.addAttribute("expanded",true);
         expandedKeys.add(key);
       }
-      if (this.actionHandlers != null) {
+      if (actionHandlers != null) {
         ArrayList keys=new ArrayList();
-        for (Iterator ahi=this.actionHandlers.iterator(); ahi.hasNext(); ) {
+        for (Iterator ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
           Action[] aa=((Action.Handler)ahi.next()).getActions(itemId,this);
           if (aa != null) {
             for (int ai=0; ai < aa.length; ai++) {
-              String akey=this.actionMapper.key(aa[ai]);
+              String akey=actionMapper.key(aa[ai]);
               actionSet.add(aa[ai]);
               keys.add(akey);
             }
@@ -116,13 +116,13 @@
       if (a.getIcon() != null) {
         target.addAttribute("icon",a.getIcon());
       }
-      target.addAttribute("key",this.actionMapper.key(a));
+      target.addAttribute("key",actionMapper.key(a));
       target.endTag("action");
     }
     target.endTag("actions");
   }
-  if (this.partialUpdate) {
-    this.partialUpdate=false;
+  if (partialUpdate) {
+    partialUpdate=false;
   }
  else {
     target.addVariable(this,"selected",selectedKeys);

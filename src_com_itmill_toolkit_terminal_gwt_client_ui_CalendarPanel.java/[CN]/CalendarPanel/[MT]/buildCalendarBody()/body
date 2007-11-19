@@ -1,6 +1,8 @@
 {
   Date date=datefield.getCurrentDate();
-  if (date == null)   date=new Date();
+  if (date == null) {
+    date=new Date();
+  }
   int startWeekDay=datefield.getDateTimeService().getStartWeekDay(date);
   int numDays=DateTimeService.getNumberOfDaysInMonth(date);
   int dayCount=0;
@@ -12,9 +14,9 @@
         if (dayCount < numDays) {
           int selectedDate=++dayCount;
           String title="";
-          if (this.entrySource != null) {
+          if (entrySource != null) {
             curr.setDate(dayCount);
-            List entries=this.entrySource.getEntries(curr,IDateField.RESOLUTION_DAY);
+            List entries=entrySource.getEntries(curr,IDateField.RESOLUTION_DAY);
             if (entries != null) {
               for (Iterator it=entries.iterator(); it.hasNext(); ) {
                 CalendarEntry entry=(CalendarEntry)it.next();
@@ -22,7 +24,7 @@
               }
             }
           }
-          String baseclass=datefield.CLASSNAME + "-calendarpanel-day";
+          String baseclass=IDateField.CLASSNAME + "-calendarpanel-day";
           String cssClass=baseclass;
           if (!isEnabledDate(curr)) {
             cssClass+=" " + baseclass + "-disabled";
@@ -33,7 +35,9 @@
           if (today.getDate() == dayCount && today.getMonth() == date.getMonth() && today.getYear() == date.getYear()) {
             cssClass+=" " + baseclass + "-today";
           }
-          if (title.length() > 0)           cssClass+=" " + baseclass + "-entry";
+          if (title.length() > 0) {
+            cssClass+=" " + baseclass + "-entry";
+          }
           setHTML(row,col,"<span title=\"" + title + "\" class=\""+ cssClass+ "\">"+ selectedDate+ "</span>");
         }
  else {
