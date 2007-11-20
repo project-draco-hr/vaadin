@@ -4,48 +4,57 @@
   if (client.updateComponent(this,uidl,false)) {
     return;
   }
+  disabled=uidl.hasAttribute("disabled");
   if (uidl.hasAttribute("style")) {
     String[] styles=uidl.getStringAttribute("style").split(" ");
+    String contentBaseClass="CLASSNAME" + "-content";
+    String contentClass=contentBaseClass;
     String decoBaseClass=CLASSNAME + "-deco";
     String decoClass=decoBaseClass;
     for (int i=0; i < styles.length; i++) {
-      this.tb.addStyleDependentName(styles[i]);
-      this.tp.addStyleDependentName(styles[i]);
+      tb.addStyleDependentName(styles[i]);
+      contentClass+=" " + contentBaseClass + "-"+ styles[i];
       decoClass+=" " + decoBaseClass + "-"+ styles[i];
     }
-    DOM.setElementProperty(this.deco,"className",decoClass);
-  }
-  String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : null;
-  String w=uidl.hasAttribute("width") ? uidl.getStringAttribute("width") : null;
-  setWidth(w != null ? w : "auto");
-  if (h != null) {
-    if (!h.equals(height)) {
-      setHeight(h);
-    }
+    DOM.setElementProperty(contentNode,"className",contentClass);
+    DOM.setElementProperty(deco,"className",decoClass);
   }
  else {
-    this.height=null;
-    this.tp.setHeight("");
+    tb.setStyleName(CLASSNAME + "-tabs");
+    DOM.setElementProperty(contentNode,"className",CLASSNAME + "-content");
+    DOM.setElementProperty(deco,"className",CLASSNAME + "-deco");
+  }
+  if (uidl.hasAttribute("height")) {
+    setHeight(uidl.getStringAttribute("height"));
+  }
+ else {
+    setHeight("");
+  }
+  if (uidl.hasAttribute("width")) {
+    setWidth(uidl.getStringAttribute("width"));
+  }
+ else {
+    setWidth("");
   }
   UIDL tabs=uidl.getChildUIDL(0);
-  boolean keepCurrentTabs=this.tabKeys.size() == tabs.getNumberOfChildren();
-  for (int i=0; keepCurrentTabs && i < this.tabKeys.size(); i++) {
-    keepCurrentTabs=this.tabKeys.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("key")) && this.captions.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("caption"));
+  boolean keepCurrentTabs=tabKeys.size() == tabs.getNumberOfChildren();
+  for (int i=0; keepCurrentTabs && i < tabKeys.size(); i++) {
+    keepCurrentTabs=tabKeys.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("key")) && captions.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("caption"));
   }
   if (keepCurrentTabs) {
     int index=0;
     for (Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
       UIDL tab=(UIDL)it.next();
       if (tab.getBooleanAttribute("selected")) {
-        this.activeTabIndex=index;
+        activeTabIndex=index;
         renderContent(tab.getChildUIDL(0));
       }
       index++;
     }
   }
  else {
-    this.tabKeys.clear();
-    this.captions.clear();
+    tabKeys.clear();
+    captions.clear();
     clearTabs();
     int index=0;
     for (Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
@@ -55,16 +64,16 @@
       if (caption == null) {
         caption="&nbsp;";
       }
-      this.captions.add(caption);
-      this.tabKeys.add(key);
-      this.tb.insertTab("<span>" + caption + "</span>",true,this.tb.getTabCount());
-      this.tp.add(new ILabel(""));
+      captions.add(caption);
+      tabKeys.add(key);
+      tb.insertTab("<span>" + caption + "</span>",true,tb.getTabCount());
+      tp.add(new ILabel(""));
       if (tab.getBooleanAttribute("selected")) {
-        this.activeTabIndex=index;
+        activeTabIndex=index;
         renderContent(tab.getChildUIDL(0));
       }
       index++;
     }
   }
-  this.tb.selectTab(this.activeTabIndex);
+  if (tabKeys.size() > 0)   tb.selectTab(activeTabIndex);
 }

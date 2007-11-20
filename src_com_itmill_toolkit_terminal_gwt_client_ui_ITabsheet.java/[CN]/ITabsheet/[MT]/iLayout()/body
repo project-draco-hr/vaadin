@@ -1,13 +1,23 @@
 {
-  if (this.height != null) {
-    this.tp.setHeight("0");
-    DOM.setStyleAttribute(this.tp.getElement(),"overflow","hidden");
-    super.setHeight(this.height);
-    int neededHeight=getOffsetHeight();
+  if (height != null && height != "") {
+    String originalPositioning=DOM.getStyleAttribute(tp.getElement(),"position");
+    DOM.setStyleAttribute(tp.getElement(),"position","absolute");
+    DOM.setStyleAttribute(contentNode,"overflow","hidden");
+    int targetHeight=0;
+    super.setHeight(height);
+    targetHeight=getOffsetHeight();
     super.setHeight("");
-    int pixelHeight=getOffsetHeight();
-    this.tp.setHeight(neededHeight - pixelHeight + "px");
-    DOM.setStyleAttribute(this.tp.getElement(),"overflow","");
+    int usedHeight=getOffsetHeight();
+    int h=targetHeight - usedHeight;
+    if (h < 0) {
+      h=0;
+    }
+    tp.setHeight(h + "px");
+    DOM.setStyleAttribute(tp.getElement(),"position",originalPositioning);
+    DOM.setStyleAttribute(contentNode,"overflow","auto");
+  }
+ else {
+    tp.setHeight("");
   }
   Util.runDescendentsLayout(this);
 }
