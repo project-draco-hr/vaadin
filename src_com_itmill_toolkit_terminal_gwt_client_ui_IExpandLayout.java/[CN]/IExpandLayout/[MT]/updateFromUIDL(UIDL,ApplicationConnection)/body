@@ -3,24 +3,10 @@
   if (client.updateComponent(this,uidl,false)) {
     return;
   }
-  if (uidl.hasAttribute("width")) {
-    setWidth(uidl.getStringAttribute("width"));
-    DOM.setStyleAttribute(DOM.getFirstChild(DOM.getFirstChild(getElement())),"width","100%");
-  }
- else {
-    setWidth("");
-    DOM.setStyleAttribute(DOM.getFirstChild(DOM.getFirstChild(getElement())),"width","");
-  }
-  if (uidl.hasAttribute("height")) {
-    setHeight(uidl.getStringAttribute("height"));
-    DOM.setStyleAttribute(margin,"height","100%");
-    DOM.setStyleAttribute(DOM.getFirstChild(DOM.getFirstChild(getElement())),"height","100%");
-  }
- else {
-    setHeight("");
-    DOM.setStyleAttribute(margin,"height","");
-    DOM.setStyleAttribute(DOM.getFirstChild(DOM.getFirstChild(getElement())),"height","");
-  }
+  handleMargins(uidl);
+  setWidth(uidl.hasAttribute("width") ? uidl.getStringAttribute("width") : "");
+  setHeight(uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : "");
+  hasComponentSpacing=uidl.getBooleanAttribute("spacing");
   ArrayList uidlWidgets=new ArrayList();
   for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
     UIDL cellUidl=(UIDL)it.next();
@@ -64,7 +50,7 @@
         index--;
       }
       remove(child);
-      this.insert(child,index);
+      insert(child,index);
     }
  else {
       int index=getWidgetIndex(oldChild);
@@ -81,11 +67,10 @@
       removePaintable(p);
     }
   }
-  handleMargins(uidl);
   if (uidlWidgets.size() == 0) {
     return;
   }
+  handleAlignments(uidl);
   iLayout();
   ((Paintable)expandedWidget).updateFromUIDL(expandedWidgetUidl,client);
-  handleAlignments(uidl);
 }

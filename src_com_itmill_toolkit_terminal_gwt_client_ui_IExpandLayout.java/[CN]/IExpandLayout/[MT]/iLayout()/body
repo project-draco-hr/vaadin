@@ -1,29 +1,21 @@
 {
+  if (orientationMode == ORIENTATION_HORIZONTAL) {
+    int pixels=getOffsetHeight() - getTopMargin() - getBottomMargin();
+    if (pixels < 0) {
+      pixels=0;
+    }
+    DOM.setStyleAttribute(me,"height",pixels + "px");
+  }
   if (expandedWidget == null) {
     return;
   }
-  Element expandedElement=DOM.getParent(expandedWidget.getElement());
-  DOM.setStyleAttribute(expandedElement,"height","");
-  DOM.setStyleAttribute(DOM.getParent(expandedElement),"height","");
-  int availableHeight=getOffsetHeight();
-  Element table=DOM.getFirstChild(margin);
-  String height=DOM.getStyleAttribute(table,"height");
-  DOM.setStyleAttribute(table,"height","");
-  String originalPositioning=DOM.getStyleAttribute(expandedWidget.getElement(),"position");
-  DOM.setStyleAttribute(expandedWidget.getElement(),"position","absolute");
-  Element meter=createWidgetWrappper();
-  DOM.setStyleAttribute(meter,"overflow","hidden");
-  DOM.setStyleAttribute(meter,"height","0");
-  DOM.appendChild(childContainer,meter);
-  int usedSpace=DOM.getElementPropertyInt(meter,"offsetTop") - DOM.getElementPropertyInt(DOM.getFirstChild(childContainer),"offsetTop");
-  int freeSpace=availableHeight - usedSpace;
-  if (freeSpace < 0) {
-    freeSpace=0;
+  int availableSpace=getAvailableSpace();
+  int usedSpace=getUsedSpace();
+  int spaceForExpandedWidget=availableSpace - usedSpace;
+  if (spaceForExpandedWidget < 0) {
+    spaceForExpandedWidget=0;
   }
-  DOM.setStyleAttribute(expandedElement,"height",freeSpace + "px");
-  DOM.setStyleAttribute(DOM.getParent(expandedElement),"height",freeSpace + "px");
-  DOM.setStyleAttribute(expandedWidget.getElement(),"position",originalPositioning);
-  DOM.removeChild(childContainer,meter);
-  DOM.setStyleAttribute(table,"height",height);
+  WidgetWrapper wr=getWidgetWrapperFor(expandedWidget);
+  wr.setExpandedSize(spaceForExpandedWidget);
   Util.runDescendentsLayout(this);
 }
