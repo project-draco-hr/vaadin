@@ -5,16 +5,15 @@
   while (it.hasNext()) {
     Widget w=(Widget)it.next();
     if (w != expandedWidget) {
-switch (orientationMode) {
-case ORIENTATION_VERTICAL:
-        total+=DOM.getElementPropertyInt(DOM.getParent(w.getElement()),"offsetHeight");
-      break;
-default :
-    total+=DOM.getElementPropertyInt(DOM.getParent(w.getElement()),"offsetWidth");
-  break;
-}
-}
-}
-total+=getSpacingSize() * (widgetCount - 1);
-return total;
+      WidgetWrapper wr=getWidgetWrapperFor(w);
+      if (orientationMode == ORIENTATION_VERTICAL) {
+        total+=wr.getOffsetHeight();
+      }
+ else {
+        total+=wr.getOffsetWidth();
+      }
+    }
+  }
+  total+=getSpacingSize() * (widgetCount - 1);
+  return total;
 }
