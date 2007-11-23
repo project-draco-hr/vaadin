@@ -9,6 +9,7 @@
         String text=options.getItemText(optionIndex);
         String value=options.getValue(optionIndex);
         selections.addItem(text,value);
+        selections.setItemSelected(selections.getItemCount() - 1,true);
         options.removeItem(optionIndex);
       }
     }
@@ -23,9 +24,22 @@
         String text=selections.getItemText(selectionIndex);
         String value=selections.getValue(selectionIndex);
         options.addItem(text,value);
+        options.setItemSelected(options.getItemCount() - 1,true);
         selections.removeItem(selectionIndex);
       }
     }
     client.updateVariable(id,"selected",selectedKeys.toArray(),isImmediate());
+  }
+ else   if (sender == options) {
+    int c=selections.getItemCount();
+    for (int i=0; i < c; i++) {
+      selections.setItemSelected(i,false);
+    }
+  }
+ else   if (sender == selections) {
+    int c=options.getItemCount();
+    for (int i=0; i < c; i++) {
+      options.setItemSelected(i,false);
+    }
   }
 }

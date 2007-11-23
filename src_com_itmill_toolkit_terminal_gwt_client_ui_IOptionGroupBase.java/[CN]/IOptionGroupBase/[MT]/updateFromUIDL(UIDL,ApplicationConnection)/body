@@ -11,24 +11,34 @@
   immediate=uidl.getBooleanAttribute("immediate");
   nullSelectionAllowed=uidl.getBooleanAttribute("nullselect");
   nullSelectionItemAvailable=uidl.getBooleanAttribute("nullselectitem");
+  cols=uidl.getIntAttribute("cols");
+  rows=uidl.getIntAttribute("rows");
   UIDL ops=uidl.getChildUIDL(0);
+  if (getColumns() > 0) {
+    container.setWidth(getColumns() + "em");
+    if (container != optionsContainer) {
+      optionsContainer.setWidth("100%");
+    }
+  }
   buildOptions(ops);
   if (uidl.getBooleanAttribute("allownewitem")) {
     if (newItemField == null) {
       newItemButton=new IButton();
       newItemButton.setText("+");
+      newItemButton.setWidth("1.5em");
       newItemButton.addClickListener(this);
       newItemField=new ITextField();
       newItemField.addKeyboardListener(this);
-      newItemField.setColumns(16);
+      if (getColumns() > 0) {
+        newItemField.setWidth((getColumns() - 2) + "em");
+      }
     }
     newItemField.setEnabled(!disabled && !readonly);
     newItemButton.setEnabled(!disabled && !readonly);
-    if (newItemField != null && newItemField.getParent() == container) {
-      return;
+    if (newItemField == null || newItemField.getParent() != container) {
+      container.add(newItemField);
+      container.add(newItemButton);
     }
-    container.add(newItemField);
-    container.add(newItemButton);
   }
  else   if (newItemField != null) {
     container.remove(newItemField);
