@@ -23,6 +23,17 @@
   if (uidl.hasAttribute("description")) {
     setTitle(uidl.getStringAttribute("description"));
   }
+  if (uidl.hasAttribute("icon")) {
+    if (icon == null) {
+      icon=new Icon(client);
+      DOM.insertChild(getElement(),icon.getElement(),1);
+    }
+    icon.setUri(uidl.getStringAttribute("icon"));
+  }
+ else   if (icon != null) {
+    DOM.removeChild(getElement(),icon.getElement());
+    icon=null;
+  }
   setText(uidl.getStringAttribute("caption"));
   setChecked(uidl.getBooleanVariable("state"));
   immediate=uidl.getBooleanAttribute("immediate");
