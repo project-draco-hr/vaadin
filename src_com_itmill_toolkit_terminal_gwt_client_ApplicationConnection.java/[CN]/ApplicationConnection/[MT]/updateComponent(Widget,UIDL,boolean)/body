@@ -4,6 +4,12 @@
   }
   boolean visible=!uidl.getBooleanAttribute("invisible");
   component.setVisible(visible);
+  if (manageCaption) {
+    Container parent=getParentLayout(component);
+    if (parent != null) {
+      parent.updateCaption((Paintable)component,uidl);
+    }
+  }
   if (!visible) {
     return true;
   }
@@ -15,12 +21,6 @@
       registerPaintable(uidl.getId(),(Paintable)w);
       ((Paintable)w).updateFromUIDL(uidl,this);
       return true;
-    }
-  }
-  if (manageCaption) {
-    Container parent=getParentLayout(component);
-    if (parent != null) {
-      parent.updateCaption((Paintable)component,uidl);
     }
   }
   component.setStyleName(component.getStylePrimaryName());
