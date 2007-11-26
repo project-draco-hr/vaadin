@@ -3,15 +3,15 @@
     Item resource=getActiveResource();
     if (resource != null) {
       db.addReservation(resource,0,(Date)reservedFrom.getValue(),(Date)reservedTo.getValue(),(String)description.getValue());
-      statusLabel.setCaption("Success!");
-      statusLabel.setValue("You have reserved the resource for the selected period.");
+      getMainWindow().showNotification("Success!","You have reserved the resource for the selected period.",Notification.TYPE_WARNING_MESSAGE);
+      refreshReservations(false);
     }
  else {
-      showMessage("No resource selected","Please select a resource (or category) to reserve.");
+      getMainWindow().showNotification("Oops!","Please select a resource (or category) to reserve.",Notification.TYPE_WARNING_MESSAGE);
     }
   }
  catch (  ResourceNotAvailableException e) {
-    showMessage("Reservation failed","The selected resource was not available for the selected period.");
+    getMainWindow().showNotification("Not available!","The selected resource is already reserved for the selected period.",Notification.TYPE_ERROR_MESSAGE);
+    refreshReservations(false);
   }
-  refreshReservations();
 }

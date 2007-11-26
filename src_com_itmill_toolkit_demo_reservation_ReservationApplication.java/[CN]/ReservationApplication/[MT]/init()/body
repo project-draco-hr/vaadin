@@ -19,21 +19,19 @@
   reservationPanel.getLayout().setMargin(true);
   reservationTab.addComponent(reservationPanel);
   OrderedLayout infoLayout=new OrderedLayout();
+  infoLayout.setMargin(false,true,false,false);
   reservationPanel.addComponent(infoLayout);
   resourceName=new Label("From the list above");
   resourceName.setCaption("Choose resource");
   infoLayout.addComponent(resourceName);
   description=new TextField();
-  description.setColumns(45);
+  description.setColumns(20);
   description.setRows(5);
   infoLayout.addComponent(description);
   reservationButton=new Button("Make reservation",this,"makeReservation");
   infoLayout.addComponent(reservationButton);
-  statusLabel=new Label("");
-  statusLabel.setCaption("");
-  infoLayout.addComponent(statusLabel);
   map=new GoogleMap();
-  map.setWidth(325);
+  map.setWidth(266);
   map.setHeight(210);
   map.setItemMarkerHtmlPropertyId(SampleDB.Resource.PROPERTY_ID_NAME);
   map.setItemMarkerXPropertyId(SampleDB.Resource.PROPERTY_ID_LOCATIONX);
@@ -82,7 +80,6 @@
       to.add(Calendar.MILLISECOND,(int)currentGapMillis);
       reservedTo.setValue(to.getTime());
       refreshSelectedResources();
-      resetStatus();
     }
   }
 );
@@ -98,7 +95,6 @@
         reservedTo.setValue(t.getTime());
       }
       refreshSelectedResources();
-      resetStatus();
     }
   }
 );
@@ -116,9 +112,9 @@
   mainTabs.addTab(allLayout,"All reservations",null);
   mainTabs.addListener(new TabSheet.SelectedTabChangeListener(){
     public void selectedTabChange(    SelectedTabChangeEvent event){
-      refreshReservations();
+      refreshReservations(true);
     }
   }
 );
-  refreshReservations();
+  refreshReservations(true);
 }
