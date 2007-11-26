@@ -1,0 +1,50 @@
+{
+  for (int p=0; p < testablePackages.length; p++) {
+    testables.addItem(testablePackages[p]);
+    try {
+      List testableClasses=getTestableClassesForPackage(testablePackages[p]);
+      for (Iterator it=testableClasses.iterator(); it.hasNext(); ) {
+        Class t=(Class)it.next();
+        if (t.equals(TestBench.class)) {
+          continue;
+        }
+        try {
+          testables.addItem(t);
+          itemCaptions.put(t,t.getName());
+          testables.setParent(t,testablePackages[p]);
+          continue;
+        }
+ catch (        Exception e) {
+          try {
+            testables.addItem(t);
+            itemCaptions.put(t,t.getName());
+            testables.setParent(t,testablePackages[p]);
+            continue;
+          }
+ catch (          Exception e1) {
+            e1.printStackTrace();
+          }
+        }
+      }
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
+  }
+  menu=new Tree("Testables",testables);
+  for (Iterator i=itemCaptions.keySet().iterator(); i.hasNext(); ) {
+    Class testable=(Class)i.next();
+    menu.setItemCaption(testable,testable.getName());
+  }
+  menu.addListener(this);
+  menu.setImmediate(true);
+  mainLayout.addComponent(menu);
+  bodyLayout.addStyleName("light");
+  bodyLayout.setHeight(100);
+  bodyLayout.setHeightUnits(Sizeable.UNITS_PERCENTAGE);
+  bodyLayout.setLayout(new ExpandLayout());
+  mainLayout.addComponent(bodyLayout);
+  mainLayout.setSplitPosition(30);
+  mainWindow.setLayout(mainLayout);
+  setMainWindow(mainWindow);
+}
