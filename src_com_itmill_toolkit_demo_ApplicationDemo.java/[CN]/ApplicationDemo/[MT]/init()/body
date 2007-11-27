@@ -1,0 +1,72 @@
+{
+  Window main=new Window("IT Mill Toolkit 5");
+  setMainWindow(main);
+  SplitPanel split=new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL);
+  split.setSplitPosition(200,Sizeable.UNITS_PIXELS);
+  main.setLayout(split);
+  HashMap sectionIds=new HashMap();
+  HierarchicalContainer container=createContainer();
+  for (int i=0; i < demos.length; i++) {
+    Object[] demo=demos[i];
+    String section=(String)demo[0];
+    Object sectionId;
+    if (sectionIds.containsKey(section)) {
+      sectionId=sectionIds.get(section);
+    }
+ else {
+      sectionId=container.addItem();
+      sectionIds.put(section,sectionId);
+      Item item=container.getItem(sectionId);
+      Property p=item.getItemProperty(PROPERTY_ID_NAME);
+      p.setValue(section);
+    }
+    Object id=container.addItem();
+    container.setParent(id,sectionId);
+    initItem(container.getItem(id),demo);
+  }
+  tree=new Tree();
+  tree.setSelectable(true);
+  tree.setMultiSelect(false);
+  tree.setNullSelectionAllowed(false);
+  tree.setContainerDataSource(container);
+  tree.setItemCaptionMode(Tree.ITEM_CAPTION_MODE_PROPERTY);
+  tree.setItemCaptionPropertyId(PROPERTY_ID_NAME);
+  tree.addListener(this);
+  tree.setImmediate(true);
+  for (Iterator it=sectionIds.values().iterator(); it.hasNext(); ) {
+    tree.expandItemsRecursively(it.next());
+  }
+  split.addComponent(tree);
+  SplitPanel split2=new SplitPanel();
+  split2.setSplitPosition(200,Sizeable.UNITS_PIXELS);
+  split.addComponent(split2);
+  table=new Table();
+  table.setSizeFull();
+  table.setColumnReorderingAllowed(true);
+  table.setColumnCollapsingAllowed(true);
+  table.setSelectable(true);
+  table.setMultiSelect(false);
+  table.setNullSelectionAllowed(false);
+  try {
+    table.setContainerDataSource((IndexedContainer)container.clone());
+  }
+ catch (  Exception e) {
+    e.printStackTrace(System.err);
+  }
+  table.addListener(this);
+  table.setImmediate(true);
+  split2.addComponent(table);
+  ExpandLayout exp=new ExpandLayout();
+  exp.setMargin(true);
+  split2.addComponent(exp);
+  exp.addComponent(new Label("Short desc + open in window (+native)"));
+  TabSheet ts=new TabSheet();
+  ts.setSizeFull();
+  ts.addTab(new Label("asd"),"Demo",null);
+  ts.addTab(new Label("asd"),"Source",null);
+  exp.addComponent(ts);
+  exp.expand(ts);
+  Label status=new Label("Copyright IT Mill 2007");
+  exp.addComponent(status);
+  exp.setComponentAlignment(status,exp.ALIGNMENT_RIGHT,exp.ALIGNMENT_VERTICAL_CENTER);
+}

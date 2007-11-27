@@ -1,0 +1,27 @@
+{
+  if (event.getProperty() == tree) {
+    Object id=tree.getValue();
+    Item item=tree.getItem(id);
+    String section;
+    if (tree.hasChildren(id)) {
+      section=(String)item.getItemProperty(PROPERTY_ID_NAME).getValue();
+    }
+ else {
+      section=(String)item.getItemProperty(PROPERTY_ID_CATEGORY).getValue();
+    }
+    table.setValue(null);
+    IndexedContainer c=(IndexedContainer)table.getContainerDataSource();
+    c.removeAllContainerFilters();
+    c.addContainerFilter(PROPERTY_ID_CATEGORY,section,false,true);
+    if (!tree.hasChildren(id)) {
+      table.setValue(id);
+    }
+  }
+ else   if (event.getProperty() == table) {
+    if (table.getValue() != null) {
+      table.removeListener(this);
+      tree.setValue(table.getValue());
+      table.addListener(this);
+    }
+  }
+}
