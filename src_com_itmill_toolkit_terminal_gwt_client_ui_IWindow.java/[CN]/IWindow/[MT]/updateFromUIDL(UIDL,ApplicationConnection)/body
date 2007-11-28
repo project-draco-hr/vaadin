@@ -65,12 +65,31 @@
     lo.updateFromUIDL(childUidl,client);
   }
   if (uidl.getChidlCount() > 1) {
-    childUidl=uidl.getChildUIDL(1);
-    if (childUidl.getTag().equals("actions")) {
-      if (shortcutHandler == null) {
-        shortcutHandler=new ShortcutActionHandler(id,client);
+    int cnt=uidl.getChidlCount();
+    for (int i=1; i < cnt; i++) {
+      childUidl=uidl.getChildUIDL(i);
+      if (childUidl.getTag().equals("actions")) {
+        if (shortcutHandler == null) {
+          shortcutHandler=new ShortcutActionHandler(id,client);
+        }
+        shortcutHandler.updateActionMap(childUidl);
       }
-      shortcutHandler.updateActionMap(childUidl);
+ else       if (childUidl.getTag().equals("notifications")) {
+        for (Iterator it=childUidl.getChildIterator(); it.hasNext(); ) {
+          UIDL notification=(UIDL)it.next();
+          String html="";
+          if (notification.hasAttribute("caption")) {
+            html+="<H1>" + notification.getStringAttribute("caption") + "</H1>";
+          }
+          if (notification.hasAttribute("message")) {
+            html+="<p>" + notification.getStringAttribute("message") + "</p>";
+          }
+          String style=notification.hasAttribute("style") ? notification.getStringAttribute("style") : null;
+          int position=notification.getIntAttribute("position");
+          int delay=notification.getIntAttribute("delay");
+          new Notification(delay).show(html,position,style);
+        }
+      }
     }
   }
   contentPanel.setScrollPosition(uidl.getIntVariable("scrolltop"));
