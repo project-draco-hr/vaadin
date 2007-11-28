@@ -4,7 +4,11 @@
     Paintable p=(Paintable)i.next();
     if (p instanceof Component) {
       Component component=(Component)p;
-      if (component.getWindow() != w || dirtyPaintabletSet.contains(component.getParent())) {
+      Window componentsRoot=component.getWindow();
+      if (componentsRoot.getParent() != null) {
+        componentsRoot=(Window)componentsRoot.getParent();
+      }
+      if (componentsRoot != w || dirtyPaintabletSet.contains(component.getParent())) {
         resultset.remove(p);
       }
     }
