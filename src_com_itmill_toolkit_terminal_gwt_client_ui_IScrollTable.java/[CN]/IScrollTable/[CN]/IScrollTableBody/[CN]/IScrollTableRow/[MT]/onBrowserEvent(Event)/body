@@ -1,15 +1,14 @@
 {
-  String s=DOM.getElementProperty(DOM.eventGetTarget(event),"className");
 switch (DOM.eventGetType(event)) {
 case Event.ONCLICK:
-    if ((CLASSNAME + "-cell-content").equals(s)) {
-      ApplicationConnection.getConsole().log("Row click");
-      if (selectMode > Table.SELECT_MODE_NONE) {
-        toggleSelection();
-        client.updateVariable(paintableId,"selected",selectedRowKeys.toArray(),immediate);
-      }
+    Element tdOrTr=DOM.getParent(DOM.eventGetTarget(event));
+  if (DOM.compare(getElement(),tdOrTr) || DOM.compare(getElement(),DOM.getParent(tdOrTr))) {
+    if (selectMode > Table.SELECT_MODE_NONE) {
+      toggleSelection();
+      client.updateVariable(paintableId,"selected",selectedRowKeys.toArray(),immediate);
     }
-  break;
+  }
+break;
 default :
 break;
 }
