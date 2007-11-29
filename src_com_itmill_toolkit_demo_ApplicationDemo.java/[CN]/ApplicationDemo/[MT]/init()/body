@@ -6,6 +6,10 @@
   main.setLayout(split);
   HashMap sectionIds=new HashMap();
   HierarchicalContainer container=createContainer();
+  Object rootId=container.addItem();
+  Item item=container.getItem(rootId);
+  Property p=item.getItemProperty(PROPERTY_ID_NAME);
+  p.setValue("All");
   for (int i=0; i < demos.length; i++) {
     Object[] demo=demos[i];
     String section=(String)demo[0];
@@ -16,8 +20,9 @@
  else {
       sectionId=container.addItem();
       sectionIds.put(section,sectionId);
-      Item item=container.getItem(sectionId);
-      Property p=item.getItemProperty(PROPERTY_ID_NAME);
+      container.setParent(sectionId,rootId);
+      item=container.getItem(sectionId);
+      p=item.getItemProperty(PROPERTY_ID_NAME);
       p.setValue(section);
     }
     Object id=container.addItem();
@@ -33,9 +38,7 @@
   tree.setItemCaptionPropertyId(PROPERTY_ID_NAME);
   tree.addListener(this);
   tree.setImmediate(true);
-  for (Iterator it=sectionIds.values().iterator(); it.hasNext(); ) {
-    tree.expandItemsRecursively(it.next());
-  }
+  tree.expandItemsRecursively(rootId);
   split.addComponent(tree);
   SplitPanel split2=new SplitPanel();
   split2.setSplitPosition(200,Sizeable.UNITS_PIXELS);
@@ -59,14 +62,65 @@
   ExpandLayout exp=new ExpandLayout();
   exp.setMargin(true);
   split2.addComponent(exp);
-  exp.addComponent(new Label("Short desc + open in window (+native)"));
-  TabSheet ts=new TabSheet();
+  OrderedLayout wbLayout=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+  wbLayout.addComponent(new Button("Open in popup window",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      Component component=(Component)ts.getComponentIterator().next();
+      String caption=ts.getTabCaption(component);
+      try {
+        component=(Component)component.getClass().newInstance();
+      }
+ catch (      Exception e) {
+        return;
+      }
+      Window w=new Window(caption);
+      if (Layout.class.isAssignableFrom(component.getClass())) {
+        w.setLayout((Layout)component);
+      }
+ else {
+        w.getLayout().setSizeFull();
+        w.addComponent(component);
+      }
+      getMainWindow().addWindow(w);
+    }
+  }
+));
+  wbLayout.addComponent(new Button("Open in native window",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      Component component=(Component)ts.getComponentIterator().next();
+      String caption=ts.getTabCaption(component);
+      Window w=getWindow(caption);
+      if (w == null) {
+        try {
+          component=(Component)component.getClass().newInstance();
+        }
+ catch (        Exception e) {
+          return;
+        }
+        w=new Window(caption);
+        w.setName(caption);
+        if (Layout.class.isAssignableFrom(component.getClass())) {
+          w.setLayout((Layout)component);
+        }
+ else {
+          w.getLayout().setSizeFull();
+          w.addComponent(component);
+        }
+        addWindow(w);
+      }
+      getMainWindow().open(new ExternalResource(w.getURL()),caption);
+    }
+  }
+));
+  exp.addComponent(wbLayout);
+  exp.setComponentAlignment(wbLayout,exp.ALIGNMENT_RIGHT,exp.ALIGNMENT_TOP);
+  ts=new TabSheet();
   ts.setSizeFull();
-  ts.addTab(new Label("asd"),"Demo",null);
-  ts.addTab(new Label("asd"),"Source",null);
+  ts.addTab(new Label("Choose demo (Only Notification and CliensSideCaching yet"),"Demo",null);
   exp.addComponent(ts);
   exp.expand(ts);
   Label status=new Label("Copyright IT Mill 2007");
   exp.addComponent(status);
   exp.setComponentAlignment(status,exp.ALIGNMENT_RIGHT,exp.ALIGNMENT_VERTICAL_CENTER);
+  tree.setValue(rootId);
 }
