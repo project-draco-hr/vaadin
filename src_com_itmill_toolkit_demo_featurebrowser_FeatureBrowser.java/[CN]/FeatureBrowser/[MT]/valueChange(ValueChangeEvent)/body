@@ -1,0 +1,40 @@
+{
+  if (event.getProperty() == tree) {
+    Object id=tree.getValue();
+    Item item=tree.getItem(id);
+    String section;
+    if (tree.isRoot(id)) {
+      section="";
+    }
+ else     if (tree.hasChildren(id)) {
+      section=(String)item.getItemProperty(PROPERTY_ID_NAME).getValue();
+    }
+ else {
+      section=(String)item.getItemProperty(PROPERTY_ID_CATEGORY).getValue();
+    }
+    table.setValue(null);
+    IndexedContainer c=(IndexedContainer)table.getContainerDataSource();
+    c.removeAllContainerFilters();
+    if (section != null) {
+      c.addContainerFilter(PROPERTY_ID_CATEGORY,section,false,true);
+    }
+    if (!tree.hasChildren(id)) {
+      table.setValue(id);
+    }
+  }
+ else   if (event.getProperty() == table) {
+    if (table.getValue() != null) {
+      table.removeListener(this);
+      tree.setValue(table.getValue());
+      table.addListener(this);
+      Item item=table.getItem(table.getValue());
+      Class c=(Class)item.getItemProperty(PROPERTY_ID_CLASS).getValue();
+      Component component=getComponent(c);
+      if (component != null) {
+        String caption=(String)item.getItemProperty(PROPERTY_ID_NAME).getValue();
+        ts.removeAllComponents();
+        ts.addTab(component,caption,null);
+      }
+    }
+  }
+}
