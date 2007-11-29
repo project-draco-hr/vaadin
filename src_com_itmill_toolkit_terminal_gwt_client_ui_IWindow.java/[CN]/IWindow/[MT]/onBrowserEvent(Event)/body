@@ -5,9 +5,6 @@
     shortcutHandler.handleKeyboardEvent((char)DOM.eventGetKeyCode(event),modifiers);
     return;
   }
-  if (!isActive()) {
-    bringToFront();
-  }
   Element target=DOM.eventGetTarget(event);
   if (dragging || DOM.isOrHasChild(header,target)) {
     onHeaderEvent(event);
@@ -20,5 +17,10 @@
  else   if (DOM.compare(target,closeBox) && type == Event.ONCLICK) {
     onCloseClick();
     DOM.eventCancelBubble(event,true);
+  }
+ else {
+    if (!isActive()) {
+      bringToFront();
+    }
   }
 }
