@@ -1,0 +1,25 @@
+{
+  OrderedLayout main=new OrderedLayout();
+  main.setMargin(true);
+  setCompositionRoot(main);
+  main.addComponent(new Label(desc));
+  tf=new TextField("Edit item caption");
+  tf.setImmediate(true);
+  tf.setEnabled(false);
+  tf.setColumns(15);
+  main.addComponent(tf);
+  tree=new Tree();
+  tree.setImmediate(true);
+  tree.addContainerProperty(CAPTION_PROPERTY,String.class,"");
+  tree.setItemCaptionMode(Tree.ITEM_CAPTION_MODE_PROPERTY);
+  tree.setItemCaptionPropertyId(CAPTION_PROPERTY);
+  for (int i=1; i <= 3; i++) {
+    Object id=addCaptionedItem("Section " + i,null);
+    tree.expandItem(id);
+    addCaptionedItem("Team A",id);
+    addCaptionedItem("Team B",id);
+  }
+  tree.addListener(this);
+  tree.addActionHandler(this);
+  main.addComponent(tree);
+}
