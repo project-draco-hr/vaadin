@@ -1,4 +1,43 @@
 {
   OrderedLayout main=new OrderedLayout();
+  main.setMargin(true);
   setCompositionRoot(main);
+  Label l=new Label(txt);
+  l.setContentMode(Label.CONTENT_XHTML);
+  main.addComponent(l);
+  main.addComponent(new Button("Create a new subwindow",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      Window w=new Window("Subwindow");
+      Label l=new Label(txt);
+      l.setContentMode(Label.CONTENT_XHTML);
+      w.addComponent(l);
+      getApplication().getMainWindow().addWindow(w);
+    }
+  }
+));
+  main.addComponent(new Button("Open a application-level window, with shared state",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      if (windowUrl == null) {
+        Window w=new Window("Subwindow");
+        Label l=new Label(txt);
+        l.setContentMode(Label.CONTENT_XHTML);
+        w.addComponent(l);
+        getApplication().addWindow(w);
+        windowUrl=w.getURL();
+      }
+      getApplication().getMainWindow().open(new ExternalResource(windowUrl),"_new");
+    }
+  }
+));
+  main.addComponent(new Button("Create a new application-level window, with it's own state",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      Window w=new Window("Subwindow");
+      getApplication().addWindow(w);
+      Label l=new Label(w.getName());
+      l.setCaption("Each opened window has a separate value:");
+      w.addComponent(l);
+      getApplication().getMainWindow().open(new ExternalResource(w.getURL()),"_new");
+    }
+  }
+));
 }
