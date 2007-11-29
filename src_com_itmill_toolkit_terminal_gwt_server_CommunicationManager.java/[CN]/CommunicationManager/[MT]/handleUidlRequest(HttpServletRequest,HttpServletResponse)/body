@@ -36,11 +36,13 @@ synchronized (application) {
           List currentPaintables=new ArrayList(paintables);
           Collections.sort(currentPaintables,new Comparator(){
             public int compare(            Object o1,            Object o2){
-              if (!(o1 instanceof Window)) {
-                return (o2 instanceof Window) ? 1 : 0;
-              }
-              if (!(o2 instanceof Window)) {
+              Component c1=(Component)o1;
+              Component c2=(Component)o2;
+              if (isChildOf(c1,c2)) {
                 return -1;
+              }
+              if (isChildOf(c2,c1)) {
+                return 1;
               }
               return 0;
             }
