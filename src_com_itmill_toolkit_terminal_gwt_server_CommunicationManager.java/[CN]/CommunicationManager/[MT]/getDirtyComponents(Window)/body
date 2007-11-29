@@ -4,12 +4,18 @@
     Paintable p=(Paintable)i.next();
     if (p instanceof Component) {
       Component component=(Component)p;
-      Window componentsRoot=component.getWindow();
-      if (componentsRoot.getParent() != null) {
-        componentsRoot=(Window)componentsRoot.getParent();
-      }
-      if (componentsRoot != w || dirtyPaintabletSet.contains(component.getParent())) {
+      if (component.getApplication() == null) {
         resultset.remove(p);
+        i.remove();
+      }
+ else {
+        Window componentsRoot=component.getWindow();
+        if (componentsRoot.getParent() != null) {
+          componentsRoot=(Window)componentsRoot.getParent();
+        }
+        if (componentsRoot != w || dirtyPaintabletSet.contains(component.getParent())) {
+          resultset.remove(p);
+        }
       }
     }
   }
