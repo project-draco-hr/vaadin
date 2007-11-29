@@ -20,7 +20,8 @@
     errorMessage.updateFromUIDL(errorUidl);
   }
  else   if (errorIndicatorElement != null) {
-    DOM.setStyleAttribute(errorIndicatorElement,"display","none");
+    DOM.removeChild(getElement(),errorIndicatorElement);
+    errorIndicatorElement=null;
   }
   if (uidl.hasAttribute("icon")) {
     if (icon == null) {
@@ -29,7 +30,16 @@
     }
     icon.setUri(uidl.getStringAttribute("icon"));
   }
+ else {
+    if (icon != null) {
+      DOM.removeChild(getElement(),icon.getElement());
+      icon=null;
+    }
+  }
   if (uidl.hasAttribute("description")) {
     setTitle(uidl.getStringAttribute("description"));
+  }
+ else {
+    setTitle(null);
   }
 }
