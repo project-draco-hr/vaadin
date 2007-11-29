@@ -12,13 +12,16 @@
   DOM.setElementProperty(bottomDecoration,"className",CLASSNAME + "-deco");
   boolean hasCaption=false;
   if (uidl.hasAttribute("caption") && !uidl.getStringAttribute("caption").equals("")) {
-    DOM.setInnerText(captionNode,uidl.getStringAttribute("caption"));
+    setCaption(uidl.getStringAttribute("caption"));
     hasCaption=true;
   }
  else {
-    DOM.setInnerText(captionNode,"");
+    setCaption("");
     DOM.setElementProperty(captionNode,"className",CLASSNAME + "-nocaption");
   }
+  setIconUri(uidl,client);
+  handleDescription(uidl);
+  handleError(uidl);
   if (uidl.hasAttribute("style")) {
     String[] styles=uidl.getStringAttribute("style").split(" ");
     String captionBaseClass=CLASSNAME + (hasCaption ? "-caption" : "-nocaption");
