@@ -3,128 +3,134 @@
   OutputStream out=response.getOutputStream();
   PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
   try {
-    DownloadStream download=null;
 synchronized (application) {
-      handleVariables(request,application);
-      if (download == null) {
-        Window window=null;
-        if (application.isRunning()) {
-          window=getApplicationWindow(request,application);
-        }
-        if (!application.isRunning()) {
-          endApplication(request,response,application);
-          return;
-        }
+      Window window=null;
+      if (application.isRunning()) {
+        window=getApplicationWindow(request,application);
         if (window == null) {
           return;
         }
-        response.setContentType("application/json; charset=UTF-8");
-        outWriter.print(")/*{");
-        outWriter.print("\"changes\":[");
-        paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
-        Set paintables;
-        if (repaintAll) {
-          paintables=new LinkedHashSet();
-          paintables.add(window);
-          locales=null;
-          requireLocale(application.getLocale().toString());
-        }
+      }
  else {
-          paintables=getDirtyComponents(window);
-        }
-        if (paintables != null) {
-          List currentPaintables=new ArrayList(paintables);
-          Collections.sort(currentPaintables,new Comparator(){
-            public int compare(            Object o1,            Object o2){
-              Component c1=(Component)o1;
-              Component c2=(Component)o2;
-              if (isChildOf(c1,c2)) {
-                return -1;
-              }
-              if (isChildOf(c2,c1)) {
-                return 1;
-              }
-              return 0;
-            }
+        return;
+      }
+      if (repaintAll) {
+        for (Iterator it=idPaintableMap.keySet().iterator(); it.hasNext(); ) {
+          Component c=(Component)idPaintableMap.get(it.next());
+          if (isChildOf(window,c)) {
+            it.remove();
+            paintableIdMap.remove(c);
           }
+        }
+      }
+      handleVariables(request,application);
+      if (!application.isRunning()) {
+        endApplication(request,response,application);
+        return;
+      }
+      response.setContentType("application/json; charset=UTF-8");
+      outWriter.print(")/*{");
+      outWriter.print("\"changes\":[");
+      paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
+      Set paintables;
+      if (repaintAll) {
+        paintables=new LinkedHashSet();
+        paintables.add(window);
+        locales=null;
+        requireLocale(application.getLocale().toString());
+      }
+ else {
+        paintables=getDirtyComponents(window);
+      }
+      if (paintables != null) {
+        List currentPaintables=new ArrayList(paintables);
+        Collections.sort(currentPaintables,new Comparator(){
+          public int compare(          Object o1,          Object o2){
+            Component c1=(Component)o1;
+            Component c2=(Component)o2;
+            if (isChildOf(c1,c2)) {
+              return -1;
+            }
+            if (isChildOf(c2,c1)) {
+              return 1;
+            }
+            return 0;
+          }
+        }
 );
-          for (Iterator i=currentPaintables.iterator(); i.hasNext(); ) {
-            Paintable p=(Paintable)i.next();
-            if (p instanceof Window) {
-              Window w=(Window)p;
-              if (w.getTerminal() == null) {
-                w.setTerminal(application.getMainWindow().getTerminal());
-              }
+        for (Iterator i=currentPaintables.iterator(); i.hasNext(); ) {
+          Paintable p=(Paintable)i.next();
+          if (p instanceof Window) {
+            Window w=(Window)p;
+            if (w.getTerminal() == null) {
+              w.setTerminal(application.getMainWindow().getTerminal());
             }
-            paintTarget.startTag("change");
-            paintTarget.addAttribute("format","uidl");
-            String pid=getPaintableId(p);
-            paintTarget.addAttribute("pid",pid);
-            paintTarget.setTrackPaints(true);
-            p.paint(paintTarget);
-            if (paintTarget.getNumberOfPaints() <= 0) {
-              paintTarget.addAttribute("visible",false);
-            }
-            paintTarget.endTag("change");
-            paintablePainted(p);
           }
-        }
-        paintTarget.close();
-        outWriter.print("]");
-        outWriter.print(", \"meta\" : {");
-        boolean metaOpen=false;
-        Paintable f=(Paintable)application.consumeFocus();
-        if (f != null) {
-          if (metaOpen) {
-            outWriter.write(",");
+          paintTarget.startTag("change");
+          paintTarget.addAttribute("format","uidl");
+          String pid=getPaintableId(p);
+          paintTarget.addAttribute("pid",pid);
+          paintTarget.setTrackPaints(true);
+          p.paint(paintTarget);
+          if (paintTarget.getNumberOfPaints() <= 0) {
+            paintTarget.addAttribute("visible",false);
           }
-          outWriter.write("\"focus\":\"" + getPaintableId(f) + "\"");
+          paintTarget.endTag("change");
+          paintablePainted(p);
         }
-        outWriter.print("}, \"resources\" : {");
-        String themeName=window.getTheme();
-        if (request.getParameter("theme") != null) {
-          themeName=request.getParameter("theme");
+      }
+      paintTarget.close();
+      outWriter.print("]");
+      outWriter.print(", \"meta\" : {");
+      boolean metaOpen=false;
+      Paintable f=(Paintable)application.consumeFocus();
+      if (f != null) {
+        if (metaOpen) {
+          outWriter.write(",");
         }
-        if (themeName == null) {
-          themeName="default";
+        outWriter.write("\"focus\":\"" + getPaintableId(f) + "\"");
+      }
+      outWriter.print("}, \"resources\" : {");
+      String themeName=window.getTheme();
+      if (request.getParameter("theme") != null) {
+        themeName=request.getParameter("theme");
+      }
+      if (themeName == null) {
+        themeName="default";
+      }
+      int resourceIndex=0;
+      for (Iterator i=paintTarget.getPreCachedResources().iterator(); i.hasNext(); ) {
+        String resource=(String)i.next();
+        InputStream is=null;
+        try {
+          is=applicationServlet.getServletContext().getResourceAsStream("/" + ApplicationServlet.THEME_DIRECTORY_PATH + themeName+ "/"+ resource);
         }
-        int resourceIndex=0;
-        for (Iterator i=paintTarget.getPreCachedResources().iterator(); i.hasNext(); ) {
-          String resource=(String)i.next();
-          InputStream is=null;
+ catch (        Exception e) {
+          e.printStackTrace();
+        }
+        if (is != null) {
+          outWriter.print((resourceIndex++ > 0 ? ", " : "") + "\"" + resource+ "\" : ");
+          StringBuffer layout=new StringBuffer();
           try {
-            is=applicationServlet.getServletContext().getResourceAsStream("/" + ApplicationServlet.THEME_DIRECTORY_PATH + themeName+ "/"+ resource);
-          }
- catch (          Exception e) {
-            e.printStackTrace();
-          }
-          if (is != null) {
-            outWriter.print((resourceIndex++ > 0 ? ", " : "") + "\"" + resource+ "\" : ");
-            StringBuffer layout=new StringBuffer();
-            try {
-              InputStreamReader r=new InputStreamReader(is);
-              char[] buffer=new char[20000];
-              int charsRead=0;
-              while ((charsRead=r.read(buffer)) > 0) {
-                layout.append(buffer,0,charsRead);
-              }
-              r.close();
+            InputStreamReader r=new InputStreamReader(is);
+            char[] buffer=new char[20000];
+            int charsRead=0;
+            while ((charsRead=r.read(buffer)) > 0) {
+              layout.append(buffer,0,charsRead);
             }
- catch (            java.io.IOException e) {
-              System.err.println("Resource transfer failed:  " + request.getRequestURI() + ". ("+ e.getMessage()+ ")");
-            }
-            outWriter.print("\"" + JsonPaintTarget.escapeJSON(layout.toString()) + "\"");
+            r.close();
           }
+ catch (          java.io.IOException e) {
+            System.err.println("Resource transfer failed:  " + request.getRequestURI() + ". ("+ e.getMessage()+ ")");
+          }
+          outWriter.print("\"" + JsonPaintTarget.escapeJSON(layout.toString()) + "\"");
         }
-        outWriter.print("}");
-        printLocaleDeclarations(outWriter);
-        outWriter.flush();
-        outWriter.close();
-        out.flush();
       }
- else {
-        handleDownload(download,request,response);
-      }
+      outWriter.print("}");
+      printLocaleDeclarations(outWriter);
+      outWriter.flush();
+      outWriter.close();
+      out.flush();
     }
     out.flush();
     out.close();
