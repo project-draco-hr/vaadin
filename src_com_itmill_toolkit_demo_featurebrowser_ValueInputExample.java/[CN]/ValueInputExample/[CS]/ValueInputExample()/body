@@ -1,0 +1,90 @@
+{
+  OrderedLayout main=new OrderedLayout();
+  main.setMargin(true);
+  setCompositionRoot(main);
+  OrderedLayout horiz=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+  main.addComponent(horiz);
+  Panel left=new Panel("TextField");
+  left.setStyleName(Panel.STYLE_LIGHT);
+  horiz.addComponent(left);
+  Panel right=new Panel("Last input");
+  right.setStyleName(Panel.STYLE_LIGHT);
+  horiz.addComponent(right);
+  textfieldValue=new Label();
+  textfieldValue.setContentMode(Label.CONTENT_PREFORMATTED);
+  right.addComponent(textfieldValue);
+  Field.ValueChangeListener listener=new Field.ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      textfieldValue.setValue(event.getProperty().getValue());
+    }
+  }
+;
+  TextField tf=new TextField("Basic");
+  tf.setColumns(15);
+  tf.setImmediate(true);
+  tf.addListener(listener);
+  left.addComponent(tf);
+  tf=new TextField("Area");
+  tf.setColumns(15);
+  tf.setRows(5);
+  tf.setImmediate(true);
+  tf.addListener(listener);
+  left.addComponent(tf);
+  horiz=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+  main.addComponent(horiz);
+  left=new Panel("DateField");
+  left.setStyleName(Panel.STYLE_LIGHT);
+  horiz.addComponent(left);
+  right=new Panel("Inline ");
+  right.setStyleName(Panel.STYLE_LIGHT);
+  horiz.addComponent(right);
+  DateField df=new DateField("Default (day) resolution");
+  left.addComponent(df);
+  df=new DateField("Minute resolution");
+  df.setResolution(DateField.RESOLUTION_MIN);
+  left.addComponent(df);
+  df=new DateField("Year resolution");
+  df.setResolution(DateField.RESOLUTION_YEAR);
+  left.addComponent(df);
+  df=new DateField("Millisecond resolution");
+  df.setResolution(DateField.RESOLUTION_MSEC);
+  left.addComponent(df);
+  df=new InlineDateField();
+  right.addComponent(df);
+  left=new Panel("Slider");
+  left.setStyleName(Panel.STYLE_LIGHT);
+  main.addComponent(left);
+  Slider slider=new Slider(0,100);
+  slider.setSize(300);
+  slider.setImmediate(true);
+  slider.addListener(new Slider.ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      Slider s=(Slider)event.getProperty();
+      s.setCaption("Value: " + s.getValue());
+    }
+  }
+);
+  try {
+    slider.setValue(20);
+  }
+ catch (  Exception e) {
+    e.printStackTrace(System.err);
+  }
+  left.addComponent(slider);
+  slider=new Slider(0.0,1.0,1);
+  slider.setImmediate(true);
+  slider.addListener(new Slider.ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      Slider s=(Slider)event.getProperty();
+      s.setCaption("Value: " + s.getValue());
+    }
+  }
+);
+  try {
+    slider.setValue(0.5);
+  }
+ catch (  Exception e) {
+    e.printStackTrace(System.err);
+  }
+  left.addComponent(slider);
+}
