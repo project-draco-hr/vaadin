@@ -1,0 +1,60 @@
+{
+  Button b=event.getButton();
+  if (b == saveSelected) {
+    Set selected=(Set)source.getValue();
+    if (selected != null) {
+      int s=0;
+      for (Iterator it=selected.iterator(); it.hasNext(); ) {
+        Object id=it.next();
+        if (!saved.containsId(id)) {
+          Item item=source.getItem(id);
+          Item added=saved.addItem(id);
+          Property p=added.getItemProperty(PROPERTY_SPECIES);
+          p.setValue(item.getItemProperty(PROPERTY_SPECIES).getValue());
+          p=added.getItemProperty(PROPERTY_TYPE);
+          p.setValue(item.getItemProperty(PROPERTY_TYPE).getValue());
+          p=added.getItemProperty(PROPERTY_KIND);
+          p.setValue(item.getItemProperty(PROPERTY_KIND).getValue());
+          p=added.getItemProperty(PROPERTY_HIRED);
+          p.setValue(item.getItemProperty(PROPERTY_HIRED).getValue());
+          s++;
+        }
+      }
+      getWindow().showNotification("Saved " + s);
+      saved.requestRepaint();
+    }
+  }
+ else   if (b == hireSelected) {
+    int s=0;
+    Set selected=(Set)source.getValue();
+    for (Iterator it=selected.iterator(); it.hasNext(); ) {
+      Object id=it.next();
+      Item item=source.getItem(id);
+      Property p=item.getItemProperty(PROPERTY_HIRED);
+      if (p.getValue() == Boolean.FALSE) {
+        p.setValue(Boolean.TRUE);
+        source.requestRepaint();
+        s++;
+      }
+      if (saved.containsId(id)) {
+        item=saved.getItem(id);
+        item.getItemProperty(PROPERTY_HIRED).setValue(Boolean.TRUE);
+        saved.requestRepaint();
+      }
+    }
+    getWindow().showNotification("Hired " + s);
+  }
+ else {
+    int s=0;
+    Set selected=(Set)source.getValue();
+    for (Iterator it=selected.iterator(); it.hasNext(); ) {
+      Object id=it.next();
+      if (source.containsId(id)) {
+        s++;
+        source.removeItem(id);
+        source.requestRepaint();
+      }
+    }
+    getWindow().showNotification("Deleted " + s);
+  }
+}
