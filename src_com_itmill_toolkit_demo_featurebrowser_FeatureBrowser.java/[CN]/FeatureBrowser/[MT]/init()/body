@@ -65,7 +65,7 @@
   exp.setMargin(true);
   split2.addComponent(exp);
   OrderedLayout wbLayout=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
-  wbLayout.addComponent(new Button("Open in popup window",new Button.ClickListener(){
+  Button b=new Button("Open in sub-window",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
       Component component=(Component)ts.getComponentIterator().next();
       String caption=ts.getTabCaption(component);
@@ -76,6 +76,7 @@
         return;
       }
       Window w=new Window(caption);
+      w.setWidth(640);
       if (Layout.class.isAssignableFrom(component.getClass())) {
         w.setLayout((Layout)component);
       }
@@ -86,8 +87,10 @@
       getMainWindow().addWindow(w);
     }
   }
-));
-  wbLayout.addComponent(new Button("Open in native window",new Button.ClickListener(){
+);
+  b.setStyleName(Button.STYLE_LINK);
+  wbLayout.addComponent(b);
+  b=new Button("Open in native window",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
       Component component=(Component)ts.getComponentIterator().next();
       String caption=ts.getTabCaption(component);
@@ -113,12 +116,14 @@
       getMainWindow().open(new ExternalResource(w.getURL()),caption);
     }
   }
-));
+);
+  b.setStyleName(Button.STYLE_LINK);
+  wbLayout.addComponent(b);
   exp.addComponent(wbLayout);
   exp.setComponentAlignment(wbLayout,ExpandLayout.ALIGNMENT_RIGHT,ExpandLayout.ALIGNMENT_TOP);
   ts=new TabSheet();
   ts.setSizeFull();
-  ts.addTab(new Label("Choose demo (Only Notification and CliensSideCaching yet"),"Demo",null);
+  ts.addTab(new Label(""),"Choose example",null);
   exp.addComponent(ts);
   exp.expand(ts);
   Label status=new Label("Copyright IT Mill 2007");
