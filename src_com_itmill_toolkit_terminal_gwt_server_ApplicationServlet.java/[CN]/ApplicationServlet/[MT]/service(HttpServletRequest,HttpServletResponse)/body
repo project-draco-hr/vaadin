@@ -1,7 +1,16 @@
 {
-  if (request.getPathInfo() != null && request.getPathInfo().startsWith("/ITMILL/")) {
-    serveStaticResourcesInITMILL(request,response);
-    return;
+  if (request.getPathInfo() != null) {
+    if (applicationRunnerMode && (request.getPathInfo().indexOf("/",1) != -1)) {
+      String resourceUrl=request.getPathInfo().substring(request.getPathInfo().indexOf('/',1));
+      if (resourceUrl.startsWith("/ITMILL/")) {
+        serveStaticResourcesInITMILL(resourceUrl,response);
+        return;
+      }
+    }
+ else     if (request.getPathInfo().startsWith("/ITMILL/")) {
+      serveStaticResourcesInITMILL(request.getPathInfo(),response);
+      return;
+    }
   }
   Application application=null;
   try {
@@ -19,9 +28,22 @@ synchronized (applicationToLastRequestDate) {
     ((WebApplicationContext)application.getContext()).startTransaction(application,request);
     DownloadStream download=null;
     String resourceId=request.getPathInfo();
-    if (resourceId != null && resourceId.startsWith(AJAX_UIDL_URI)) {
-      getApplicationManager(application).handleUidlRequest(request,response);
-      return;
+    if (resourceId != null) {
+      if (applicationRunnerMode) {
+        if (resourceId.indexOf("/",1) != -1) {
+          String resourceUrl=resourceId.substring(resourceId.indexOf('/',1));
+          if (resourceId != null && (resourceUrl.startsWith(AJAX_UIDL_URI))) {
+            getApplicationManager(application).handleUidlRequest(request,response);
+            return;
+          }
+        }
+      }
+ else {
+        if (resourceId.startsWith(AJAX_UIDL_URI)) {
+          getApplicationManager(application).handleUidlRequest(request,response);
+          return;
+        }
+      }
     }
     if (application.isRunning()) {
       download=handleURI(application,request,response);

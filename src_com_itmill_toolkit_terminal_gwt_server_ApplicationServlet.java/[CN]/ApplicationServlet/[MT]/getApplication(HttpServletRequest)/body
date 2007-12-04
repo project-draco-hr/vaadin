@@ -8,6 +8,10 @@
     if (servletPath.length() < aPath.length()) {
       servletPath+="/";
     }
+    if (applicationRunnerMode) {
+      if (request.getPathInfo().indexOf('/',1) == -1)       servletPath+=request.getPathInfo();
+ else       servletPath+=request.getPathInfo().substring(1,request.getPathInfo().indexOf('/',1));
+    }
     if (servletPath.equals(aPath)) {
       if (a.isRunning()) {
         return a;
@@ -18,6 +22,15 @@
   }
   WebApplicationContext context=WebApplicationContext.getApplicationContext(request.getSession());
   URL applicationUrl=getApplicationUrl(request);
+  if (applicationRunnerMode) {
+    String applicationClassName=applicationUrl.getPath().substring(applicationUrl.getPath().lastIndexOf('/') + 1);
+    try {
+      applicationClass=classLoader.loadClass(applicationClassName);
+    }
+ catch (    ClassNotFoundException e) {
+      throw new InstantiationException("Failed to load application class: " + applicationClassName);
+    }
+  }
   try {
     Application application=(Application)applicationClass.newInstance();
     context.addApplication(application);

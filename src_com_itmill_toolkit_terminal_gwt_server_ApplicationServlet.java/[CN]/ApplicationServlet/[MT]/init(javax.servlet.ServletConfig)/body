@@ -1,8 +1,10 @@
 {
   super.init(servletConfig);
-  String applicationClassName=servletConfig.getInitParameter("application");
-  if (applicationClassName == null) {
-    System.err.println("Application not specified in servlet parameters");
+  String applicationRunner=servletConfig.getInitParameter("applicationRunner");
+  if (applicationRunner != null) {
+    if ("true".equals(applicationRunner))     applicationRunnerMode=true;
+ else     if ("false".equals(applicationRunner))     applicationRunnerMode=false;
+ else     throw new ServletException("If applicationRunner parameter is given for an application, it must be 'true' or 'false'");
   }
   applicationProperties=new Properties();
   for (Enumeration e=servletConfig.getInitParameterNames(); e.hasMoreElements(); ) {
@@ -36,10 +38,16 @@
     }
   }
   this.classLoader=classLoader;
-  try {
-    applicationClass=classLoader.loadClass(applicationClassName);
+  if (!applicationRunnerMode) {
+    String applicationClassName=servletConfig.getInitParameter("application");
+    if (applicationClassName == null)     throw new ServletException("Application not specified in servlet parameters");
+    try {
+      applicationClass=classLoader.loadClass(applicationClassName);
+    }
+ catch (    ClassNotFoundException e) {
+      throw new ServletException("Failed to load application class: " + applicationClassName);
+    }
   }
- catch (  ClassNotFoundException e) {
-    throw new ServletException("Failed to load application class: " + applicationClassName);
+ else {
   }
 }
