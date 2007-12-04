@@ -24,7 +24,7 @@
       target.addAttribute("nullselect",true);
     }
   }
-  Set actionSet=new LinkedHashSet();
+  final Set actionSet=new LinkedHashSet();
   String[] selectedKeys;
   if (isMultiSelect()) {
     selectedKeys=new String[((Set)getValue()).size()];
@@ -33,8 +33,8 @@
     selectedKeys=new String[(getValue() == null ? 0 : 1)];
   }
   int keyIndex=0;
-  LinkedList expandedKeys=new LinkedList();
-  Stack iteratorStack=new Stack();
+  final LinkedList expandedKeys=new LinkedList();
+  final Stack iteratorStack=new Stack();
   Collection ids;
   if (partialUpdate) {
     ids=getChildren(expandedItemId);
@@ -46,7 +46,7 @@
     iteratorStack.push(ids.iterator());
   }
   while (!iteratorStack.isEmpty()) {
-    Iterator i=(Iterator)iteratorStack.peek();
+    final Iterator i=(Iterator)iteratorStack.peek();
     if (!i.hasNext()) {
       iteratorStack.pop();
       if (!iteratorStack.isEmpty()) {
@@ -54,8 +54,8 @@
       }
     }
  else {
-      Object itemId=i.next();
-      boolean isNode=areChildrenAllowed(itemId) && hasChildren(itemId);
+      final Object itemId=i.next();
+      final boolean isNode=areChildrenAllowed(itemId) && hasChildren(itemId);
       if (isNode) {
         target.startTag("node");
       }
@@ -63,11 +63,11 @@
         target.startTag("leaf");
       }
       target.addAttribute("caption",getItemCaption(itemId));
-      Resource icon=getItemIcon(itemId);
+      final Resource icon=getItemIcon(itemId);
       if (icon != null) {
         target.addAttribute("icon",getItemIcon(itemId));
       }
-      String key=itemIdMapper.key(itemId);
+      final String key=itemIdMapper.key(itemId);
       target.addAttribute("key",key);
       if (isSelected(itemId)) {
         target.addAttribute("selected",true);
@@ -78,12 +78,12 @@
         expandedKeys.add(key);
       }
       if (actionHandlers != null) {
-        ArrayList keys=new ArrayList();
-        for (Iterator ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
-          Action[] aa=((Action.Handler)ahi.next()).getActions(itemId,this);
+        final ArrayList keys=new ArrayList();
+        for (final Iterator ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
+          final Action[] aa=((Action.Handler)ahi.next()).getActions(itemId,this);
           if (aa != null) {
             for (int ai=0; ai < aa.length; ai++) {
-              String akey=actionMapper.key(aa[ai]);
+              final String akey=actionMapper.key(aa[ai]);
               actionSet.add(aa[ai]);
               keys.add(akey);
             }
@@ -107,8 +107,8 @@
   if (!actionSet.isEmpty()) {
     target.addVariable(this,"action","");
     target.startTag("actions");
-    for (Iterator i=actionSet.iterator(); i.hasNext(); ) {
-      Action a=(Action)i.next();
+    for (final Iterator i=actionSet.iterator(); i.hasNext(); ) {
+      final Action a=(Action)i.next();
       target.startTag("action");
       if (a.getCaption() != null) {
         target.addAttribute("caption",a.getCaption());

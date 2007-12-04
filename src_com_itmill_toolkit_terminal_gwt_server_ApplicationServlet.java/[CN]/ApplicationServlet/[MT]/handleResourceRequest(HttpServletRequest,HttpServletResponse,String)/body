@@ -12,7 +12,7 @@
   try {
     data=getServletContext().getResourceAsStream(THEME_DIRECTORY_PATH + themeName + "/"+ resourceId);
   }
- catch (  Exception e) {
+ catch (  final Exception e) {
     e.printStackTrace();
     data=null;
   }
@@ -22,9 +22,9 @@
       response.setHeader("Cache-Control","max-age=" + DEFAULT_THEME_CACHETIME / 1000);
       response.setDateHeader("Expires",System.currentTimeMillis() + DEFAULT_THEME_CACHETIME);
       response.setHeader("Pragma","cache");
-      byte[] buffer=new byte[DEFAULT_BUFFER_SIZE];
+      final byte[] buffer=new byte[DEFAULT_BUFFER_SIZE];
       int bytesRead=0;
-      OutputStream out=response.getOutputStream();
+      final OutputStream out=response.getOutputStream();
       while ((bytesRead=data.read(buffer)) > 0) {
         out.write(buffer,0,bytesRead);
       }
@@ -35,7 +35,7 @@
       response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
   }
- catch (  java.io.IOException e) {
+ catch (  final java.io.IOException e) {
     System.err.println("Resource transfer failed:  " + request.getRequestURI() + ". ("+ e.getMessage()+ ")");
   }
   return true;

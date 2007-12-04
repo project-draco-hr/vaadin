@@ -1,39 +1,39 @@
 {
-  Locale jvmDefault=Locale.getDefault();
+  final Locale jvmDefault=Locale.getDefault();
   outWriter.print(", \"locales\":[");
   for (; pendingLocalesIndex < locales.size(); pendingLocalesIndex++) {
-    Locale l=generateLocale((String)locales.get(pendingLocalesIndex));
+    final Locale l=generateLocale((String)locales.get(pendingLocalesIndex));
     outWriter.print("{\"name\":\"" + l.toString() + "\",");
-    DateFormatSymbols dfs=new DateFormatSymbols(l);
-    String[] short_months=dfs.getShortMonths();
-    String[] months=dfs.getMonths();
+    final DateFormatSymbols dfs=new DateFormatSymbols(l);
+    final String[] short_months=dfs.getShortMonths();
+    final String[] months=dfs.getMonths();
     outWriter.print("\"smn\":[\"" + short_months[0] + "\",\""+ short_months[1]+ "\",\""+ short_months[2]+ "\",\""+ short_months[3]+ "\",\""+ short_months[4]+ "\",\""+ short_months[5]+ "\",\""+ short_months[6]+ "\",\""+ short_months[7]+ "\",\""+ short_months[8]+ "\",\""+ short_months[9]+ "\",\""+ short_months[10]+ "\",\""+ short_months[11]+ "\""+ "],");
     outWriter.print("\"mn\":[\"" + months[0] + "\",\""+ months[1]+ "\",\""+ months[2]+ "\",\""+ months[3]+ "\",\""+ months[4]+ "\",\""+ months[5]+ "\",\""+ months[6]+ "\",\""+ months[7]+ "\",\""+ months[8]+ "\",\""+ months[9]+ "\",\""+ months[10]+ "\",\""+ months[11]+ "\""+ "],");
-    String[] short_days=dfs.getShortWeekdays();
-    String[] days=dfs.getWeekdays();
+    final String[] short_days=dfs.getShortWeekdays();
+    final String[] days=dfs.getWeekdays();
     outWriter.print("\"sdn\":[\"" + short_days[1] + "\",\""+ short_days[2]+ "\",\""+ short_days[3]+ "\",\""+ short_days[4]+ "\",\""+ short_days[5]+ "\",\""+ short_days[6]+ "\",\""+ short_days[7]+ "\""+ "],");
     outWriter.print("\"dn\":[\"" + days[1] + "\",\""+ days[2]+ "\",\""+ days[3]+ "\",\""+ days[4]+ "\",\""+ days[5]+ "\",\""+ days[6]+ "\",\""+ days[7]+ "\""+ "],");
-    Calendar cal=new GregorianCalendar(l);
+    final Calendar cal=new GregorianCalendar(l);
     outWriter.print("\"fdow\":" + (cal.getFirstDayOfWeek() - 1) + ",");
     Locale.setDefault(l);
-    String df=new SimpleDateFormat().toPattern();
+    final String df=new SimpleDateFormat().toPattern();
     int timeStart=df.indexOf("H");
     if (timeStart < 0) {
       timeStart=df.indexOf("h");
     }
-    int ampm_first=df.indexOf("a");
+    final int ampm_first=df.indexOf("a");
     if (ampm_first > 0 && ampm_first < timeStart) {
       timeStart=ampm_first;
     }
-    String dateformat=df.substring(0,timeStart - 1);
+    final String dateformat=df.substring(0,timeStart - 1);
     outWriter.print("\"df\":\"" + dateformat.trim() + "\",");
-    String timeformat=df.substring(timeStart,df.length());
-    boolean twelve_hour_clock=timeformat.indexOf("a") > -1;
-    String hour_min_delimiter=timeformat.indexOf(".") > -1 ? "." : ":";
+    final String timeformat=df.substring(timeStart,df.length());
+    final boolean twelve_hour_clock=timeformat.indexOf("a") > -1;
+    final String hour_min_delimiter=timeformat.indexOf(".") > -1 ? "." : ":";
     outWriter.print("\"thc\":" + twelve_hour_clock + ",");
     outWriter.print("\"hmd\":\"" + hour_min_delimiter + "\"");
     if (twelve_hour_clock) {
-      String[] ampm=dfs.getAmPmStrings();
+      final String[] ampm=dfs.getAmPmStrings();
       outWriter.print(",\"ampm\":[\"" + ampm[0] + "\",\""+ ampm[1]+ "\"]");
     }
     outWriter.print("}");

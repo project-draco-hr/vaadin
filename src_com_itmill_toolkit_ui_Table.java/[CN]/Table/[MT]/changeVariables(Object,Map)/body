@@ -5,7 +5,7 @@
   }
   super.changeVariables(source,variables);
   if (variables.containsKey("firstvisible")) {
-    Integer value=(Integer)variables.get("firstvisible");
+    final Integer value=(Integer)variables.get("firstvisible");
     if (value != null) {
       setCurrentPageFirstItemIndex(value.intValue());
     }
@@ -23,12 +23,12 @@
     requestRepaint();
   }
   if (variables.containsKey("action")) {
-    StringTokenizer st=new StringTokenizer((String)variables.get("action"),",");
+    final StringTokenizer st=new StringTokenizer((String)variables.get("action"),",");
     if (st.countTokens() == 2) {
-      Object itemId=itemIdMapper.get(st.nextToken());
-      Action action=(Action)actionMapper.get(st.nextToken());
+      final Object itemId=itemIdMapper.get(st.nextToken());
+      final Action action=(Action)actionMapper.get(st.nextToken());
       if (action != null && containsId(itemId) && actionHandlers != null) {
-        for (Iterator i=actionHandlers.iterator(); i.hasNext(); ) {
+        for (final Iterator i=actionHandlers.iterator(); i.hasNext(); ) {
           ((Action.Handler)i.next()).handleAction(action,this,itemId);
         }
       }
@@ -37,15 +37,15 @@
   boolean doSort=false;
   if (!sortDisabled) {
     if (variables.containsKey("sortcolumn")) {
-      String colId=(String)variables.get("sortcolumn");
+      final String colId=(String)variables.get("sortcolumn");
       if (colId != null && !"".equals(colId) && !"null".equals(colId)) {
-        Object id=columnIdMap.get(colId);
+        final Object id=columnIdMap.get(colId);
         setSortContainerPropertyId(id);
         doSort=true;
       }
     }
     if (variables.containsKey("sortascending")) {
-      boolean state=((Boolean)variables.get("sortascending")).booleanValue();
+      final boolean state=((Boolean)variables.get("sortascending")).booleanValue();
       if (state != sortAscending) {
         setSortAscending(state);
         doSort=true;
@@ -58,28 +58,28 @@
   if (isColumnCollapsingAllowed()) {
     if (variables.containsKey("collapsedcolumns")) {
       try {
-        Object[] ids=(Object[])variables.get("collapsedcolumns");
-        for (Iterator it=visibleColumns.iterator(); it.hasNext(); ) {
+        final Object[] ids=(Object[])variables.get("collapsedcolumns");
+        for (final Iterator it=visibleColumns.iterator(); it.hasNext(); ) {
           setColumnCollapsed(it.next(),false);
         }
         for (int i=0; i < ids.length; i++) {
           setColumnCollapsed(columnIdMap.get(ids[i].toString()),true);
         }
       }
- catch (      Exception ignored) {
+ catch (      final Exception ignored) {
       }
     }
   }
   if (isColumnReorderingAllowed()) {
     if (variables.containsKey("columnorder")) {
       try {
-        Object[] ids=(Object[])variables.get("columnorder");
+        final Object[] ids=(Object[])variables.get("columnorder");
         for (int i=0; i < ids.length; i++) {
           ids[i]=columnIdMap.get(ids[i].toString());
         }
         setColumnOrder(ids);
       }
- catch (      Exception ignored) {
+ catch (      final Exception ignored) {
       }
     }
   }

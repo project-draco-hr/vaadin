@@ -1,12 +1,12 @@
 {
-  ServletContext sc=getServletContext();
+  final ServletContext sc=getServletContext();
   InputStream is=sc.getResourceAsStream(filename);
   if (is == null) {
     try {
       filename=filename.substring(1);
       is=classLoader.getResourceAsStream(filename);
     }
- catch (    Exception e) {
+ catch (    final Exception e) {
       e.printStackTrace();
     }
     if (is == null) {
@@ -15,12 +15,12 @@
       return;
     }
   }
-  String mimetype=sc.getMimeType(filename);
+  final String mimetype=sc.getMimeType(filename);
   if (mimetype != null) {
     response.setContentType(mimetype);
   }
-  OutputStream os=response.getOutputStream();
-  byte buffer[]=new byte[20000];
+  final OutputStream os=response.getOutputStream();
+  final byte buffer[]=new byte[20000];
   int bytes;
   while ((bytes=is.read(buffer)) >= 0) {
     os.write(buffer,0,bytes);

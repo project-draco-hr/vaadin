@@ -1,29 +1,29 @@
 {
-  ArrayList directories=new ArrayList();
+  final ArrayList directories=new ArrayList();
   try {
-    ClassLoader cld=Thread.currentThread().getContextClassLoader();
+    final ClassLoader cld=Thread.currentThread().getContextClassLoader();
     if (cld == null) {
       throw new ClassNotFoundException("Can't get class loader.");
     }
-    String path=packageName.replace('.','/');
-    Enumeration resources=cld.getResources(path);
+    final String path=packageName.replace('.','/');
+    final Enumeration resources=cld.getResources(path);
     while (resources.hasMoreElements()) {
-      URL url=(URL)resources.nextElement();
+      final URL url=(URL)resources.nextElement();
       directories.add(new File(url.getFile()));
     }
   }
- catch (  Exception x) {
+ catch (  final Exception x) {
     throw new Exception(packageName + " does not appear to be a valid package.");
   }
-  ArrayList classes=new ArrayList();
-  for (Iterator it=directories.iterator(); it.hasNext(); ) {
-    File directory=(File)it.next();
+  final ArrayList classes=new ArrayList();
+  for (final Iterator it=directories.iterator(); it.hasNext(); ) {
+    final File directory=(File)it.next();
     if (directory.exists()) {
-      String[] files=directory.list();
+      final String[] files=directory.list();
       for (int j=0; j < files.length; j++) {
         if (files[j].endsWith(".class")) {
-          String p=packageName + '.' + files[j].substring(0,files[j].length() - 6);
-          Class c=Class.forName(p);
+          final String p=packageName + '.' + files[j].substring(0,files[j].length() - 6);
+          final Class c=Class.forName(p);
           if (c.getSuperclass() != null) {
             if ((c.getSuperclass().equals(com.itmill.toolkit.ui.CustomComponent.class))) {
               classes.add(c);

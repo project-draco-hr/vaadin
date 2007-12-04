@@ -1,29 +1,29 @@
 {
-  int days=30;
-  String descriptions[]={"Picking up guests from airport","Sightseeing with the guests","Moving new servers from A to B","Shopping","Customer meeting","Guests arriving at harbour","Moving furniture","Taking guests to see town"};
-  Container cat=getCategories();
-  Collection cIds=cat.getItemIds();
-  for (Iterator it=cIds.iterator(); it.hasNext(); ) {
-    Object id=it.next();
-    Item ci=cat.getItem(id);
-    String c=(String)ci.getItemProperty(Resource.PROPERTY_ID_CATEGORY).getValue();
-    Container resources=getResources(c);
-    Collection rIds=resources.getItemIds();
-    Calendar cal=Calendar.getInstance();
+  final int days=30;
+  final String descriptions[]={"Picking up guests from airport","Sightseeing with the guests","Moving new servers from A to B","Shopping","Customer meeting","Guests arriving at harbour","Moving furniture","Taking guests to see town"};
+  final Container cat=getCategories();
+  final Collection cIds=cat.getItemIds();
+  for (final Iterator it=cIds.iterator(); it.hasNext(); ) {
+    final Object id=it.next();
+    final Item ci=cat.getItem(id);
+    final String c=(String)ci.getItemProperty(Resource.PROPERTY_ID_CATEGORY).getValue();
+    final Container resources=getResources(c);
+    final Collection rIds=resources.getItemIds();
+    final Calendar cal=Calendar.getInstance();
     cal.set(Calendar.MINUTE,0);
     cal.set(Calendar.SECOND,0);
     cal.set(Calendar.MILLISECOND,0);
-    int hourNow=new Date().getHours();
+    final int hourNow=new Date().getHours();
     for (int i=0; i < days; i++) {
       int r=3;
-      for (Iterator rit=rIds.iterator(); rit.hasNext() && r > 0; r--) {
-        Object rid=rit.next();
-        Item resource=resources.getItem(rid);
-        int s=hourNow - 6 + (int)Math.round(Math.random() * 6.0);
-        int e=s + 1 + (int)Math.round(Math.random() * 4.0);
-        Date start=new Date(cal.getTimeInMillis());
+      for (final Iterator rit=rIds.iterator(); rit.hasNext() && r > 0; r--) {
+        final Object rid=rit.next();
+        final Item resource=resources.getItem(rid);
+        final int s=hourNow - 6 + (int)Math.round(Math.random() * 6.0);
+        final int e=s + 1 + (int)Math.round(Math.random() * 4.0);
+        final Date start=new Date(cal.getTimeInMillis());
         start.setHours(s);
-        Date end=new Date(cal.getTimeInMillis());
+        final Date end=new Date(cal.getTimeInMillis());
         end.setHours(e);
         addReservation(resource,0,start,end,descriptions[(int)Math.floor(Math.random() * descriptions.length)]);
       }

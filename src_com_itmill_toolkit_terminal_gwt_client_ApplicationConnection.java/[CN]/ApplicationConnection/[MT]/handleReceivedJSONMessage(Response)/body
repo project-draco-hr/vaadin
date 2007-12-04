@@ -1,48 +1,48 @@
 {
   hideLoadingIndicator();
-  Date start=new Date();
-  String jsonText=response.getText().substring(3) + "}";
+  final Date start=new Date();
+  final String jsonText=response.getText().substring(3) + "}";
   JSONValue json;
   try {
     json=JSONParser.parse(jsonText);
   }
- catch (  com.google.gwt.json.client.JSONException e) {
+ catch (  final com.google.gwt.json.client.JSONException e) {
     console.log(e.getMessage() + " - Original JSON-text:");
     console.log(jsonText);
     return;
   }
-  JSONObject redirect=(JSONObject)((JSONObject)json).get("redirect");
+  final JSONObject redirect=(JSONObject)((JSONObject)json).get("redirect");
   if (redirect != null) {
-    JSONString url=(JSONString)redirect.get("url");
+    final JSONString url=(JSONString)redirect.get("url");
     if (url != null) {
       console.log("redirecting to " + url.stringValue());
       redirect(url.stringValue());
       return;
     }
   }
-  JSONObject resources=(JSONObject)((JSONObject)json).get("resources");
-  for (Iterator i=resources.keySet().iterator(); i.hasNext(); ) {
-    String key=(String)i.next();
+  final JSONObject resources=(JSONObject)((JSONObject)json).get("resources");
+  for (final Iterator i=resources.keySet().iterator(); i.hasNext(); ) {
+    final String key=(String)i.next();
     resourcesMap.put(key,((JSONString)resources.get(key)).stringValue());
   }
   if (((JSONObject)json).containsKey("locales")) {
-    JSONArray l=(JSONArray)((JSONObject)json).get("locales");
+    final JSONArray l=(JSONArray)((JSONObject)json).get("locales");
     for (int i=0; i < l.size(); i++) {
       LocaleService.addLocale((JSONObject)l.get(i));
     }
   }
-  JSONArray changes=(JSONArray)((JSONObject)json).get("changes");
+  final JSONArray changes=(JSONArray)((JSONObject)json).get("changes");
   for (int i=0; i < changes.size(); i++) {
     try {
-      UIDL change=new UIDL((JSONArray)changes.get(i));
+      final UIDL change=new UIDL((JSONArray)changes.get(i));
       try {
         console.dirUIDL(change);
       }
- catch (      Exception e) {
+ catch (      final Exception e) {
         console.log(e.getMessage());
       }
-      UIDL uidl=change.getChildUIDL(0);
-      Paintable paintable=getPaintable(uidl.getId());
+      final UIDL uidl=change.getChildUIDL(0);
+      final Paintable paintable=getPaintable(uidl.getId());
       if (paintable != null) {
         paintable.updateFromUIDL(uidl,this);
       }
@@ -55,22 +55,22 @@
         }
       }
     }
- catch (    Throwable e) {
+ catch (    final Throwable e) {
       e.printStackTrace();
     }
   }
   if (((JSONObject)json).containsKey("meta")) {
-    JSONObject meta=((JSONObject)json).get("meta").isObject();
+    final JSONObject meta=((JSONObject)json).get("meta").isObject();
     if (meta.containsKey("focus")) {
-      String focusPid=meta.get("focus").isString().stringValue();
-      Paintable toBeFocused=getPaintable(focusPid);
+      final String focusPid=meta.get("focus").isString().stringValue();
+      final Paintable toBeFocused=getPaintable(focusPid);
       if (toBeFocused instanceof HasFocus) {
-        HasFocus toBeFocusedWidget=(HasFocus)toBeFocused;
+        final HasFocus toBeFocusedWidget=(HasFocus)toBeFocused;
         toBeFocusedWidget.setFocus(true);
       }
     }
   }
-  long prosessingTime=(new Date().getTime()) - start.getTime();
+  final long prosessingTime=(new Date().getTime()) - start.getTime();
   console.log(" Processing time was " + String.valueOf(prosessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
   console.log("Referenced paintables: " + idToPaintable.size());
 }

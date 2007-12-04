@@ -2,20 +2,20 @@
   if (!isUploading) {
     throw new IllegalStateException("uploading not started");
   }
-  String filename=upload.getContentName();
-  String type=upload.getContentType();
+  final String filename=upload.getContentName();
+  final String type=upload.getContentType();
   fireStarted(filename,type);
-  OutputStream out=receiver.receiveUpload(filename,type);
+  final OutputStream out=receiver.receiveUpload(filename,type);
   if (out == null) {
     throw new RuntimeException("Error getting outputstream from upload receiver");
   }
-  InputStream in=upload.getStream();
+  final InputStream in=upload.getStream();
   if (null == in) {
     fireUploadInterrupted(filename,type,0);
     endUpload();
     return;
   }
-  byte buffer[]=new byte[BUFFER_SIZE];
+  final byte buffer[]=new byte[BUFFER_SIZE];
   int bytesRead=0;
   totalBytes=0;
   try {
@@ -31,7 +31,7 @@
     endUpload();
     requestRepaint();
   }
- catch (  IOException e) {
+ catch (  final IOException e) {
     fireUploadInterrupted(filename,type,totalBytes);
     endUpload();
   }

@@ -12,21 +12,21 @@
     setModal(!modal);
   }
   if (uidl.hasVariable("width")) {
-    String width=uidl.getStringVariable("width");
+    final String width=uidl.getStringVariable("width");
     setWidth(width);
   }
   if (uidl.hasVariable("height")) {
-    String height=uidl.getStringVariable("height");
+    final String height=uidl.getStringVariable("height");
     setHeight(height);
   }
   try {
-    int positionx=uidl.getIntVariable("positionx");
-    int positiony=uidl.getIntVariable("positiony");
+    final int positionx=uidl.getIntVariable("positionx");
+    final int positiony=uidl.getIntVariable("positiony");
     if (positionx >= 0 && positiony >= 0) {
       setPopupPosition(positionx,positiony);
     }
   }
- catch (  IllegalArgumentException e) {
+ catch (  final IllegalArgumentException e) {
   }
   if (!isAttached()) {
     show();
@@ -36,9 +36,9 @@
   }
   UIDL childUidl=uidl.getChildUIDL(0);
   if ("open".equals(childUidl.getTag())) {
-    String parsedUri=client.translateToolkitUri(childUidl.getStringAttribute("src"));
+    final String parsedUri=client.translateToolkitUri(childUidl.getStringAttribute("src"));
     if (!childUidl.hasAttribute("name")) {
-      Frame frame=new Frame();
+      final Frame frame=new Frame();
       DOM.setStyleAttribute(frame.getElement(),"width","100%");
       DOM.setStyleAttribute(frame.getElement(),"height","100%");
       DOM.setStyleAttribute(frame.getElement(),"border","0px");
@@ -46,12 +46,12 @@
       contentPanel.setWidget(frame);
     }
  else {
-      String target=childUidl.getStringAttribute("name");
+      final String target=childUidl.getStringAttribute("name");
       Window.open(parsedUri,target,"");
     }
   }
  else {
-    Paintable lo=(Paintable)client.getWidget(childUidl);
+    final Paintable lo=(Paintable)client.getWidget(childUidl);
     if (layout != null) {
       if (layout != lo) {
         client.unregisterPaintable(layout);
@@ -66,7 +66,7 @@
     lo.updateFromUIDL(childUidl,client);
   }
   if (uidl.getChidlCount() > 1) {
-    int cnt=uidl.getChidlCount();
+    final int cnt=uidl.getChidlCount();
     for (int i=1; i < cnt; i++) {
       childUidl=uidl.getChildUIDL(i);
       if (childUidl.getTag().equals("actions")) {
@@ -76,8 +76,8 @@
         shortcutHandler.updateActionMap(childUidl);
       }
  else       if (childUidl.getTag().equals("notifications")) {
-        for (Iterator it=childUidl.getChildIterator(); it.hasNext(); ) {
-          UIDL notification=(UIDL)it.next();
+        for (final Iterator it=childUidl.getChildIterator(); it.hasNext(); ) {
+          final UIDL notification=(UIDL)it.next();
           String html="";
           if (notification.hasAttribute("caption")) {
             html+="<H1>" + notification.getStringAttribute("caption") + "</H1>";
@@ -85,9 +85,9 @@
           if (notification.hasAttribute("message")) {
             html+="<p>" + notification.getStringAttribute("message") + "</p>";
           }
-          String style=notification.hasAttribute("style") ? notification.getStringAttribute("style") : null;
-          int position=notification.getIntAttribute("position");
-          int delay=notification.getIntAttribute("delay");
+          final String style=notification.hasAttribute("style") ? notification.getStringAttribute("style") : null;
+          final int position=notification.getIntAttribute("position");
+          final int delay=notification.getIntAttribute("delay");
           new Notification(delay).show(html,position,style);
         }
       }

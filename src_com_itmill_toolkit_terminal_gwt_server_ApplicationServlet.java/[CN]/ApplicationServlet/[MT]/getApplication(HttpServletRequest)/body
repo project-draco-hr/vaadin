@@ -1,16 +1,20 @@
 {
-  HttpSession session=request.getSession(true);
-  Collection applications=WebApplicationContext.getApplicationContext(session).getApplications();
-  for (Iterator i=applications.iterator(); i.hasNext(); ) {
-    Application a=(Application)i.next();
-    String aPath=a.getURL().getPath();
+  final HttpSession session=request.getSession(true);
+  final Collection applications=WebApplicationContext.getApplicationContext(session).getApplications();
+  for (final Iterator i=applications.iterator(); i.hasNext(); ) {
+    final Application a=(Application)i.next();
+    final String aPath=a.getURL().getPath();
     String servletPath=request.getContextPath() + request.getServletPath();
     if (servletPath.length() < aPath.length()) {
       servletPath+="/";
     }
     if (applicationRunnerMode) {
-      if (request.getPathInfo().indexOf('/',1) == -1)       servletPath+=request.getPathInfo();
- else       servletPath+=request.getPathInfo().substring(1,request.getPathInfo().indexOf('/',1));
+      if (request.getPathInfo().indexOf('/',1) == -1) {
+        servletPath+=request.getPathInfo();
+      }
+ else {
+        servletPath+=request.getPathInfo().substring(1,request.getPathInfo().indexOf('/',1));
+      }
     }
     if (servletPath.equals(aPath)) {
       if (a.isRunning()) {
@@ -20,29 +24,29 @@
       break;
     }
   }
-  WebApplicationContext context=WebApplicationContext.getApplicationContext(request.getSession());
-  URL applicationUrl=getApplicationUrl(request);
+  final WebApplicationContext context=WebApplicationContext.getApplicationContext(request.getSession());
+  final URL applicationUrl=getApplicationUrl(request);
   if (applicationRunnerMode) {
-    String applicationClassName=applicationUrl.getPath().substring(applicationUrl.getPath().lastIndexOf('/') + 1);
+    final String applicationClassName=applicationUrl.getPath().substring(applicationUrl.getPath().lastIndexOf('/') + 1);
     try {
       applicationClass=classLoader.loadClass(applicationClassName);
     }
- catch (    ClassNotFoundException e) {
+ catch (    final ClassNotFoundException e) {
       throw new InstantiationException("Failed to load application class: " + applicationClassName);
     }
   }
   try {
-    Application application=(Application)applicationClass.newInstance();
+    final Application application=(Application)applicationClass.newInstance();
     context.addApplication(application);
     application.setLocale(request.getLocale());
     application.start(applicationUrl,applicationProperties,context);
     return application;
   }
- catch (  IllegalAccessException e) {
+ catch (  final IllegalAccessException e) {
     System.err.println("Illegal access to application class " + applicationClass.getName());
     throw e;
   }
-catch (  InstantiationException e) {
+catch (  final InstantiationException e) {
     System.err.println("Failed to instantiate application class: " + applicationClass.getName());
     throw e;
   }

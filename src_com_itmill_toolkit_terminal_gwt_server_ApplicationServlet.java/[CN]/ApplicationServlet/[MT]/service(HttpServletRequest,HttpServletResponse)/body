@@ -1,7 +1,7 @@
 {
   if (request.getPathInfo() != null) {
     if (applicationRunnerMode && (request.getPathInfo().indexOf("/",1) != -1)) {
-      String resourceUrl=request.getPathInfo().substring(request.getPathInfo().indexOf('/',1));
+      final String resourceUrl=request.getPathInfo().substring(request.getPathInfo().indexOf('/',1));
       if (resourceUrl.startsWith("/ITMILL/")) {
         serveStaticResourcesInITMILL(resourceUrl,response);
         return;
@@ -19,7 +19,7 @@
       getApplicationManager(application).handleFileUpload(request,response);
       return;
     }
-    WebBrowser browser=WebApplicationContext.getApplicationContext(request.getSession()).getBrowser();
+    final WebBrowser browser=WebApplicationContext.getApplicationContext(request.getSession()).getBrowser();
     browser.updateBrowserProperties(request);
     application=getApplication(request);
 synchronized (applicationToLastRequestDate) {
@@ -27,11 +27,11 @@ synchronized (applicationToLastRequestDate) {
     }
     ((WebApplicationContext)application.getContext()).startTransaction(application,request);
     DownloadStream download=null;
-    String resourceId=request.getPathInfo();
+    final String resourceId=request.getPathInfo();
     if (resourceId != null) {
       if (applicationRunnerMode) {
         if (resourceId.indexOf("/",1) != -1) {
-          String resourceUrl=resourceId.substring(resourceId.indexOf('/',1));
+          final String resourceUrl=resourceId.substring(resourceId.indexOf('/',1));
           if (resourceId != null && (resourceUrl.startsWith(AJAX_UIDL_URI))) {
             getApplicationManager(application).handleUidlRequest(request,response);
             return;
@@ -70,7 +70,7 @@ synchronized (applicationToLastRequestDate) {
       if (handleResourceRequest(request,response,themeName)) {
         return;
       }
-      Map parameters=request.getParameterMap();
+      final Map parameters=request.getParameterMap();
       if (window != null && parameters != null) {
         window.handleParameters(parameters);
       }
@@ -80,7 +80,7 @@ synchronized (applicationToLastRequestDate) {
       handleDownload(download,request,response);
     }
   }
- catch (  Throwable e) {
+ catch (  final Throwable e) {
     e.printStackTrace();
     throw new ServletException(e);
   }

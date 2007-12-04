@@ -1,50 +1,58 @@
 {
   super.init(servletConfig);
-  String applicationRunner=servletConfig.getInitParameter("applicationRunner");
+  final String applicationRunner=servletConfig.getInitParameter("applicationRunner");
   if (applicationRunner != null) {
-    if ("true".equals(applicationRunner))     applicationRunnerMode=true;
- else     if ("false".equals(applicationRunner))     applicationRunnerMode=false;
- else     throw new ServletException("If applicationRunner parameter is given for an application, it must be 'true' or 'false'");
+    if ("true".equals(applicationRunner)) {
+      applicationRunnerMode=true;
+    }
+ else     if ("false".equals(applicationRunner)) {
+      applicationRunnerMode=false;
+    }
+ else {
+      throw new ServletException("If applicationRunner parameter is given for an application, it must be 'true' or 'false'");
+    }
   }
   applicationProperties=new Properties();
-  for (Enumeration e=servletConfig.getInitParameterNames(); e.hasMoreElements(); ) {
-    String name=(String)e.nextElement();
+  for (final Enumeration e=servletConfig.getInitParameterNames(); e.hasMoreElements(); ) {
+    final String name=(String)e.nextElement();
     applicationProperties.setProperty(name,servletConfig.getInitParameter(name));
   }
-  ServletContext context=servletConfig.getServletContext();
-  for (Enumeration e=context.getInitParameterNames(); e.hasMoreElements(); ) {
-    String name=(String)e.nextElement();
+  final ServletContext context=servletConfig.getServletContext();
+  for (final Enumeration e=context.getInitParameterNames(); e.hasMoreElements(); ) {
+    final String name=(String)e.nextElement();
     applicationProperties.setProperty(name,context.getInitParameter(name));
   }
-  String debug=getApplicationOrSystemProperty(PARAMETER_DEBUG,"").toLowerCase();
+  final String debug=getApplicationOrSystemProperty(PARAMETER_DEBUG,"").toLowerCase();
   if (!"".equals(debug) && !"true".equals(debug) && !"false".equals(debug)) {
     throw new ServletException("If debug parameter is given for an application, it must be 'true' or 'false'");
   }
   debugMode=debug;
-  String classLoaderName=getApplicationOrSystemProperty("ClassLoader",null);
+  final String classLoaderName=getApplicationOrSystemProperty("ClassLoader",null);
   ClassLoader classLoader;
   if (classLoaderName == null) {
     classLoader=getClass().getClassLoader();
   }
  else {
     try {
-      Class classLoaderClass=getClass().getClassLoader().loadClass(classLoaderName);
-      Constructor c=classLoaderClass.getConstructor(new Class[]{ClassLoader.class});
+      final Class classLoaderClass=getClass().getClassLoader().loadClass(classLoaderName);
+      final Constructor c=classLoaderClass.getConstructor(new Class[]{ClassLoader.class});
       classLoader=(ClassLoader)c.newInstance(new Object[]{getClass().getClassLoader()});
     }
- catch (    Exception e) {
+ catch (    final Exception e) {
       System.err.println("Could not find specified class loader: " + classLoaderName);
       throw new ServletException(e);
     }
   }
   this.classLoader=classLoader;
   if (!applicationRunnerMode) {
-    String applicationClassName=servletConfig.getInitParameter("application");
-    if (applicationClassName == null)     throw new ServletException("Application not specified in servlet parameters");
+    final String applicationClassName=servletConfig.getInitParameter("application");
+    if (applicationClassName == null) {
+      throw new ServletException("Application not specified in servlet parameters");
+    }
     try {
       applicationClass=classLoader.loadClass(applicationClassName);
     }
- catch (    ClassNotFoundException e) {
+ catch (    final ClassNotFoundException e) {
       throw new ServletException("Failed to load application class: " + applicationClassName);
     }
   }

@@ -9,7 +9,7 @@
     requestRepaint();
     return;
   }
-  String newitem=(String)variables.get("newitem");
+  final String newitem=(String)variables.get("newitem");
   if (newitem != null && newitem.length() > 0) {
     if (isReadOnly()) {
       throw new Property.ReadOnlyException();
@@ -19,18 +19,18 @@
         try {
           getContainerProperty(newitem,getItemCaptionPropertyId()).setValue(newitem);
         }
- catch (        Property.ConversionException ignored) {
+ catch (        final Property.ConversionException ignored) {
         }
       }
       setValue(newitem);
     }
   }
   if (variables.containsKey("selected")) {
-    String[] ka=(String[])variables.get("selected");
+    final String[] ka=(String[])variables.get("selected");
     if (isMultiSelect()) {
-      LinkedList s=new LinkedList();
+      final LinkedList s=new LinkedList();
       for (int i=0; i < ka.length; i++) {
-        Object id=itemIdMapper.get(ka[i]);
+        final Object id=itemIdMapper.get(ka[i]);
         if (id != null && containsId(id)) {
           s.add(id);
         }
@@ -38,7 +38,7 @@
           s.add(newitem);
         }
       }
-      Collection visible=getVisibleItemIds();
+      final Collection visible=getVisibleItemIds();
       if (visible != null) {
         Set newsel=(Set)getValue();
         if (newsel == null) {
@@ -54,14 +54,14 @@
     }
  else {
       if (ka.length == 0) {
-        Object current=getValue();
-        Collection visible=getVisibleItemIds();
+        final Object current=getValue();
+        final Collection visible=getVisibleItemIds();
         if (visible != null && visible.contains(current)) {
           setValue(null,true);
         }
       }
  else {
-        Object id=itemIdMapper.get(ka[0]);
+        final Object id=itemIdMapper.get(ka[0]);
         if (id != null && id.equals(getNullSelectionItemId())) {
           setValue(null,true);
         }

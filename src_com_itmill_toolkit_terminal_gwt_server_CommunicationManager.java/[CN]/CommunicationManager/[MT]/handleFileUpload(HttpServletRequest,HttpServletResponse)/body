@@ -1,28 +1,28 @@
 {
-  ServletFileUpload upload=new ServletFileUpload();
-  UploadProgressListener pl=new UploadProgressListener();
+  final ServletFileUpload upload=new ServletFileUpload();
+  final UploadProgressListener pl=new UploadProgressListener();
   upload.setProgressListener(pl);
   FileItemIterator iter;
   try {
     iter=upload.getItemIterator(request);
     while (iter.hasNext()) {
-      FileItemStream item=iter.next();
-      String name=item.getFieldName();
+      final FileItemStream item=iter.next();
+      final String name=item.getFieldName();
       final String filename=item.getName();
       final String mimeType=item.getContentType();
       final InputStream stream=item.openStream();
       if (item.isFormField()) {
       }
  else {
-        String pid=name.split("_")[0];
-        Upload uploadComponent=(Upload)idPaintableMap.get(pid);
+        final String pid=name.split("_")[0];
+        final Upload uploadComponent=(Upload)idPaintableMap.get(pid);
         if (uploadComponent == null) {
           throw new FileUploadException("Upload component not found");
         }
 synchronized (application) {
           uploadComponent.startUpload();
         }
-        UploadStream upstream=new UploadStream(){
+        final UploadStream upstream=new UploadStream(){
           public String getContentName(){
             return filename;
           }
@@ -42,12 +42,12 @@ synchronized (application) {
       }
     }
   }
- catch (  FileUploadException e) {
+ catch (  final FileUploadException e) {
     e.printStackTrace();
   }
   response.setContentType("text/html");
-  OutputStream out=response.getOutputStream();
-  PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
+  final OutputStream out=response.getOutputStream();
+  final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
   outWriter.print("<html><body>download handled</body></html>");
   outWriter.flush();
   out.close();

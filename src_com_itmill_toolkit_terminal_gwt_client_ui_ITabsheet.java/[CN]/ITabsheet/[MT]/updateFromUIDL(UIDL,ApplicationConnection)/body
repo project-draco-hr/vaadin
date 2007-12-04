@@ -1,15 +1,15 @@
 {
   this.client=client;
-  this.id=uidl.getId();
+  id=uidl.getId();
   if (client.updateComponent(this,uidl,false)) {
     return;
   }
   disabled=uidl.hasAttribute("disabled");
   if (uidl.hasAttribute("style")) {
-    String[] styles=uidl.getStringAttribute("style").split(" ");
-    String contentBaseClass="CLASSNAME" + "-content";
+    final String[] styles=uidl.getStringAttribute("style").split(" ");
+    final String contentBaseClass="CLASSNAME" + "-content";
     String contentClass=contentBaseClass;
-    String decoBaseClass=CLASSNAME + "-deco";
+    final String decoBaseClass=CLASSNAME + "-deco";
     String decoClass=decoBaseClass;
     for (int i=0; i < styles.length; i++) {
       tb.addStyleDependentName(styles[i]);
@@ -36,15 +36,15 @@
  else {
     setWidth("");
   }
-  UIDL tabs=uidl.getChildUIDL(0);
+  final UIDL tabs=uidl.getChildUIDL(0);
   boolean keepCurrentTabs=tabKeys.size() == tabs.getNumberOfChildren();
   for (int i=0; keepCurrentTabs && i < tabKeys.size(); i++) {
     keepCurrentTabs=tabKeys.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("key")) && captions.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("caption"));
   }
   if (keepCurrentTabs) {
     int index=0;
-    for (Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
-      UIDL tab=(UIDL)it.next();
+    for (final Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
+      final UIDL tab=(UIDL)it.next();
       if (tab.getBooleanAttribute("selected")) {
         activeTabIndex=index;
         renderContent(tab.getChildUIDL(0));
@@ -57,9 +57,9 @@
     captions.clear();
     clearTabs();
     int index=0;
-    for (Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
-      UIDL tab=(UIDL)it.next();
-      String key=tab.getStringAttribute("key");
+    for (final Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
+      final UIDL tab=(UIDL)it.next();
+      final String key=tab.getStringAttribute("key");
       String caption=tab.getStringAttribute("caption");
       if (caption == null) {
         caption="&nbsp;";
@@ -75,5 +75,7 @@
       index++;
     }
   }
-  if (tabKeys.size() > 0)   tb.selectTab(activeTabIndex);
+  if (tabKeys.size() > 0) {
+    tb.selectTab(activeTabIndex);
+  }
 }

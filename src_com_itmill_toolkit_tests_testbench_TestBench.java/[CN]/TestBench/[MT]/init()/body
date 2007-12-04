@@ -2,9 +2,9 @@
   for (int p=0; p < testablePackages.length; p++) {
     testables.addItem(testablePackages[p]);
     try {
-      List testableClasses=getTestableClassesForPackage(testablePackages[p]);
-      for (Iterator it=testableClasses.iterator(); it.hasNext(); ) {
-        Class t=(Class)it.next();
+      final List testableClasses=getTestableClassesForPackage(testablePackages[p]);
+      for (final Iterator it=testableClasses.iterator(); it.hasNext(); ) {
+        final Class t=(Class)it.next();
         if (t.equals(TestBench.class)) {
           continue;
         }
@@ -14,30 +14,30 @@
           testables.setParent(t,testablePackages[p]);
           continue;
         }
- catch (        Exception e) {
+ catch (        final Exception e) {
           try {
             testables.addItem(t);
             itemCaptions.put(t,t.getName());
             testables.setParent(t,testablePackages[p]);
             continue;
           }
- catch (          Exception e1) {
+ catch (          final Exception e1) {
             e1.printStackTrace();
           }
         }
       }
     }
- catch (    Exception e) {
+ catch (    final Exception e) {
       e.printStackTrace();
     }
   }
   menu=new Tree("Testables",testables);
-  for (Iterator i=itemCaptions.keySet().iterator(); i.hasNext(); ) {
-    Class testable=(Class)i.next();
-    String name=testable.getName().substring(testable.getName().lastIndexOf('.') + 1);
+  for (final Iterator i=itemCaptions.keySet().iterator(); i.hasNext(); ) {
+    final Class testable=(Class)i.next();
+    final String name=testable.getName().substring(testable.getName().lastIndexOf('.') + 1);
     menu.setItemCaption(testable,name);
   }
-  for (Iterator i=menu.rootItemIds().iterator(); i.hasNext(); ) {
+  for (final Iterator i=menu.rootItemIds().iterator(); i.hasNext(); ) {
     menu.expandItemsRecursively(i.next());
   }
   menu.addListener(this);

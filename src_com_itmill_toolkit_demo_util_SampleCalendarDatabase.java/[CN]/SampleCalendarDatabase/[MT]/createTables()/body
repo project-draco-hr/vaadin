@@ -4,14 +4,14 @@
     stmt="CREATE TABLE " + DB_TABLE_NAME + " ( ID INTEGER IDENTITY, TITLE VARCHAR(100), "+ "EVENTSTART DATETIME, EVENTEND DATETIME, NOTIME BOOLEAN  )";
     update(stmt);
     for (int j=0; j < ENTRYCOUNT; j++) {
-      Timestamp start=new Timestamp(new java.util.Date().getTime());
+      final Timestamp start=new Timestamp(new java.util.Date().getTime());
       start.setDate((int)((Math.random() - 0.4) * 200));
       start.setMinutes(0);
       start.setHours(8 + (int)Math.random() * 12);
-      Timestamp end=new Timestamp(start.getTime());
+      final Timestamp end=new Timestamp(start.getTime());
       if (Math.random() < 0.7) {
         long t=end.getTime();
-        long hour=60 * 60 * 1000;
+        final long hour=60 * 60 * 1000;
         t=t + hour + (Math.round(Math.random() * 3 * hour));
         end.setTime(t);
       }
@@ -19,7 +19,7 @@
       update(stmt);
     }
   }
- catch (  SQLException e) {
+ catch (  final SQLException e) {
     if (e.toString().indexOf("Table already exists") == -1) {
       throw new RuntimeException(e);
     }

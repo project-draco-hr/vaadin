@@ -7,24 +7,24 @@
   setWidth(uidl.hasAttribute("width") ? uidl.getStringAttribute("width") : "");
   setHeight(uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : "");
   hasComponentSpacing=uidl.getBooleanAttribute("spacing");
-  ArrayList uidlWidgets=new ArrayList();
-  for (Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
-    UIDL cellUidl=(UIDL)it.next();
-    Widget child=client.getWidget(cellUidl.getChildUIDL(0));
+  final ArrayList uidlWidgets=new ArrayList();
+  for (final Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
+    final UIDL cellUidl=(UIDL)it.next();
+    final Widget child=client.getWidget(cellUidl.getChildUIDL(0));
     uidlWidgets.add(child);
     if (cellUidl.hasAttribute("expanded")) {
       expandedWidget=child;
       expandedWidgetUidl=cellUidl.getChildUIDL(0);
     }
   }
-  ArrayList oldWidgets=getPaintables();
-  Iterator oldIt=oldWidgets.iterator();
-  Iterator newIt=uidlWidgets.iterator();
-  Iterator newUidl=uidl.getChildIterator();
+  final ArrayList oldWidgets=getPaintables();
+  final Iterator oldIt=oldWidgets.iterator();
+  final Iterator newIt=uidlWidgets.iterator();
+  final Iterator newUidl=uidl.getChildIterator();
   Widget oldChild=null;
   while (newIt.hasNext()) {
-    Widget child=(Widget)newIt.next();
-    UIDL childUidl=((UIDL)newUidl.next()).getChildUIDL(0);
+    final Widget child=(Widget)newIt.next();
+    final UIDL childUidl=((UIDL)newUidl.next()).getChildUIDL(0);
     if (oldChild == null && oldIt.hasNext()) {
       while (oldIt.hasNext()) {
         oldChild=(Widget)oldIt.next();
@@ -53,7 +53,7 @@
       insert(child,index);
     }
  else {
-      int index=getWidgetIndex(oldChild);
+      final int index=getWidgetIndex(oldChild);
       insert(child,index);
     }
     if (child != expandedWidget) {
@@ -62,7 +62,7 @@
   }
   while (oldIt.hasNext()) {
     oldChild=(Widget)oldIt.next();
-    Paintable p=(Paintable)oldChild;
+    final Paintable p=(Paintable)oldChild;
     if (!uidlWidgets.contains(p)) {
       removePaintable(p);
     }

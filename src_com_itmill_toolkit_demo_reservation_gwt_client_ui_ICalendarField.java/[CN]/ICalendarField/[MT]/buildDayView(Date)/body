@@ -24,16 +24,16 @@
     hourTable.getRowFormatter().setStyleName(i,CLASSNAME + "-row-" + style);
     String hstr=(i < 10 ? "0" : "") + i + ":00";
     if (dts.isTwelveHourClock()) {
-      String ampm=(i < 12 ? "am" : "pm");
+      final String ampm=(i < 12 ? "am" : "pm");
       hstr=(i <= 12 ? i : i - 12) + ":00 " + ampm;
     }
     hourTable.setHTML(i,0,"<span>" + hstr + "</span>");
     hourTable.getCellFormatter().setStyleName(i,0,CLASSNAME + "-time");
   }
-  List entries=entrySource.getEntries(date,DateTimeService.RESOLUTION_DAY);
+  final List entries=entrySource.getEntries(date,DateTimeService.RESOLUTION_DAY);
   int currentCol=1;
-  for (Iterator it=entries.iterator(); it.hasNext(); ) {
-    CalendarEntry entry=(CalendarEntry)it.next();
+  for (final Iterator it=entries.iterator(); it.hasNext(); ) {
+    final CalendarEntry entry=(CalendarEntry)it.next();
     int start=0;
     int hours=24;
     if (!entry.isNotime()) {
@@ -54,16 +54,16 @@
     hourTable.setHTML(start,col,"<span>" + (entry.getTitle() != null ? entry.getTitle() : "&nbsp") + "</span>");
     hourTable.getFlexCellFormatter().setRowSpan(start,col,hours);
     hourTable.getFlexCellFormatter().setStyleName(start,col,CLASSNAME + "-entry");
-    String sn=entry.getStyleName();
+    final String sn=entry.getStyleName();
     if (sn != null && !sn.equals("")) {
       hourTable.getFlexCellFormatter().addStyleName(start,col,CLASSNAME + "-" + entry.getStyleName());
     }
-    Element el=hourTable.getFlexCellFormatter().getElement(start,col);
+    final Element el=hourTable.getFlexCellFormatter().getElement(start,col);
     String tooltip;
     if (DateTimeService.isSameDay(entry.getStart(),entry.getEnd())) {
       tooltip=(start < 10 ? "0" : "") + start + ":00";
       if (dts.isTwelveHourClock()) {
-        String ampm=(start < 12 ? "am" : "pm");
+        final String ampm=(start < 12 ? "am" : "pm");
         tooltip=(start <= 12 ? start : start - 12) + ":00 " + ampm;
       }
       tooltip+=" (" + hours + "h) ";
@@ -80,11 +80,11 @@
     DOM.setElementProperty(el,"title",tooltip);
     currentCol++;
   }
-  int hour=this.date.getHours() + 1;
-  int h1=hourPanel.getOffsetHeight() / 2;
-  int oh=hourTable.getOffsetHeight();
-  int h2=(int)(hour / 24.0 * oh);
-  int scrollTop=h2 - h1;
-  Element el=hourPanel.getElement();
+  final int hour=this.date.getHours() + 1;
+  final int h1=hourPanel.getOffsetHeight() / 2;
+  final int oh=hourTable.getOffsetHeight();
+  final int h2=(int)(hour / 24.0 * oh);
+  final int scrollTop=h2 - h1;
+  final Element el=hourPanel.getElement();
   setScrollTop(el,scrollTop);
 }

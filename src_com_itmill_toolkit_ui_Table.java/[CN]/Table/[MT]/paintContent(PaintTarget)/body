@@ -11,16 +11,16 @@
   if (getWidth() >= 0) {
     target.addAttribute("width","" + getWidth() + Sizeable.UNIT_SYMBOLS[getWidthUnits()]);
   }
-  Object[] colids=getVisibleColumns();
-  int cols=colids.length;
-  int first=getCurrentPageFirstItemIndex();
+  final Object[] colids=getVisibleColumns();
+  final int cols=colids.length;
+  final int first=getCurrentPageFirstItemIndex();
   int total=size();
-  int pagelen=getPageLength();
-  int colHeadMode=getColumnHeaderMode();
-  boolean colheads=colHeadMode != COLUMN_HEADER_MODE_HIDDEN;
-  boolean rowheads=getRowHeaderMode() != ROW_HEADER_MODE_HIDDEN;
-  Object[][] cells=getVisibleCells();
-  boolean iseditable=isEditable();
+  final int pagelen=getPageLength();
+  final int colHeadMode=getColumnHeaderMode();
+  final boolean colheads=colHeadMode != COLUMN_HEADER_MODE_HIDDEN;
+  final boolean rowheads=getRowHeaderMode() != ROW_HEADER_MODE_HIDDEN;
+  final Object[][] cells=getVisibleCells();
+  final boolean iseditable=isEditable();
   int rows=cells[0].length;
   if (!isNullSelectionAllowed() && getNullSelectionItemId() != null && containsId(getNullSelectionItemId())) {
     total--;
@@ -53,27 +53,27 @@
   if (rowheads) {
     target.addAttribute("rowheaders",true);
   }
-  Collection sortables=getSortableContainerPropertyIds();
-  ArrayList visibleColOrder=new ArrayList();
-  for (Iterator it=visibleColumns.iterator(); it.hasNext(); ) {
-    Object columnId=it.next();
+  final Collection sortables=getSortableContainerPropertyIds();
+  final ArrayList visibleColOrder=new ArrayList();
+  for (final Iterator it=visibleColumns.iterator(); it.hasNext(); ) {
+    final Object columnId=it.next();
     if (!isColumnCollapsed(columnId)) {
       visibleColOrder.add(columnIdMap.key(columnId));
     }
   }
   target.addAttribute("vcolorder",visibleColOrder.toArray());
-  Set actionSet=new LinkedHashSet();
-  boolean selectable=isSelectable();
-  boolean[] iscomponent=new boolean[visibleColumns.size()];
+  final Set actionSet=new LinkedHashSet();
+  final boolean selectable=isSelectable();
+  final boolean[] iscomponent=new boolean[visibleColumns.size()];
   int iscomponentIndex=0;
-  for (Iterator it=visibleColumns.iterator(); it.hasNext() && iscomponentIndex < iscomponent.length; ) {
-    Object columnId=it.next();
-    Class colType=getType(columnId);
+  for (final Iterator it=visibleColumns.iterator(); it.hasNext() && iscomponentIndex < iscomponent.length; ) {
+    final Object columnId=it.next();
+    final Class colType=getType(columnId);
     iscomponent[iscomponentIndex++]=colType != null && Component.class.isAssignableFrom(colType);
   }
   target.startTag("rows");
   for (int i=0; i < cells[0].length; i++) {
-    Object itemId=cells[CELL_ITEMID][i];
+    final Object itemId=cells[CELL_ITEMID][i];
     if (!isNullSelectionAllowed() && getNullSelectionItemId() != null && itemId == getNullSelectionItemId()) {
       continue;
     }
@@ -94,12 +94,12 @@
       }
     }
     if (actionHandlers != null) {
-      ArrayList keys=new ArrayList();
-      for (Iterator ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
-        Action[] aa=((Action.Handler)ahi.next()).getActions(itemId,this);
+      final ArrayList keys=new ArrayList();
+      for (final Iterator ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
+        final Action[] aa=((Action.Handler)ahi.next()).getActions(itemId,this);
         if (aa != null) {
           for (int ai=0; ai < aa.length; ai++) {
-            String key=actionMapper.key(aa[ai]);
+            final String key=actionMapper.key(aa[ai]);
             actionSet.add(aa[ai]);
             keys.add(key);
           }
@@ -108,13 +108,13 @@
       target.addAttribute("al",keys.toArray());
     }
     int currentColumn=0;
-    for (Iterator it=visibleColumns.iterator(); it.hasNext(); currentColumn++) {
-      Object columnId=it.next();
+    for (final Iterator it=visibleColumns.iterator(); it.hasNext(); currentColumn++) {
+      final Object columnId=it.next();
       if (columnId == null || isColumnCollapsed(columnId)) {
         continue;
       }
       if ((iscomponent[currentColumn] || iseditable) && Component.class.isInstance(cells[CELL_FIRSTCOL + currentColumn][i])) {
-        Component c=(Component)cells[CELL_FIRSTCOL + currentColumn][i];
+        final Component c=(Component)cells[CELL_FIRSTCOL + currentColumn][i];
         if (c == null) {
           target.addText("");
         }
@@ -147,8 +147,8 @@
   if (!actionSet.isEmpty()) {
     target.addVariable(this,"action","");
     target.startTag("actions");
-    for (Iterator it=actionSet.iterator(); it.hasNext(); ) {
-      Action a=(Action)it.next();
+    for (final Iterator it=actionSet.iterator(); it.hasNext(); ) {
+      final Action a=(Action)it.next();
       target.startTag("action");
       if (a.getCaption() != null) {
         target.addAttribute("caption",a.getCaption());
@@ -162,25 +162,25 @@
     target.endTag("actions");
   }
   if (columnReorderingAllowed) {
-    String[] colorder=new String[visibleColumns.size()];
+    final String[] colorder=new String[visibleColumns.size()];
     int i=0;
-    for (Iterator it=visibleColumns.iterator(); it.hasNext() && i < colorder.length; ) {
+    for (final Iterator it=visibleColumns.iterator(); it.hasNext() && i < colorder.length; ) {
       colorder[i++]=columnIdMap.key(it.next());
     }
     target.addVariable(this,"columnorder",colorder);
   }
   if (columnCollapsingAllowed) {
-    HashSet ccs=new HashSet();
-    for (Iterator i=visibleColumns.iterator(); i.hasNext(); ) {
-      Object o=i.next();
+    final HashSet ccs=new HashSet();
+    for (final Iterator i=visibleColumns.iterator(); i.hasNext(); ) {
+      final Object o=i.next();
       if (isColumnCollapsed(o)) {
         ccs.add(o);
       }
     }
-    String[] collapsedkeys=new String[ccs.size()];
+    final String[] collapsedkeys=new String[ccs.size()];
     int nextColumn=0;
-    for (Iterator it=visibleColumns.iterator(); it.hasNext() && nextColumn < collapsedkeys.length; ) {
-      Object columnId=it.next();
+    for (final Iterator it=visibleColumns.iterator(); it.hasNext() && nextColumn < collapsedkeys.length; ) {
+      final Object columnId=it.next();
       if (isColumnCollapsed(columnId)) {
         collapsedkeys[nextColumn++]=columnIdMap.key(columnId);
       }
@@ -189,12 +189,12 @@
   }
   target.startTag("visiblecolumns");
   int i=0;
-  for (Iterator it=visibleColumns.iterator(); it.hasNext(); i++) {
-    Object columnId=it.next();
+  for (final Iterator it=visibleColumns.iterator(); it.hasNext(); i++) {
+    final Object columnId=it.next();
     if (columnId != null) {
       target.startTag("column");
       target.addAttribute("cid",columnIdMap.key(columnId));
-      String head=getColumnHeader(columnId);
+      final String head=getColumnHeader(columnId);
       target.addAttribute("caption",(head != null ? head : ""));
       if (isColumnCollapsed(columnId)) {
         target.addAttribute("collapsed",true);
