@@ -5,19 +5,15 @@
   page.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" " + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n");
   page.write("<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"width:100%;height:100%;border:0;margin:0;\">\n<head>\n<title>IT Mill Toolkit 5</title>\n" + "<script type=\"text/javascript\">\n" + "	var itmill = {\n"+ "		appUri:'");
   String appUrl="";
-  String[] urlParts;
+  String widgetsetUrl="";
   if (applicationRunnerMode) {
-    String servletPath=request.getContextPath() + request.getServletPath();
-    if (request.getPathInfo().indexOf('/',1) == -1) {
-      servletPath+=request.getPathInfo();
-    }
- else {
-      servletPath+=request.getPathInfo().substring(1,request.getPathInfo().indexOf('/',1));
-    }
-    appUrl=servletPath;
+    final String[] URIparts=getApplicationRunnerURIs(request);
+    widgetsetUrl=URIparts[0];
+    appUrl=URIparts[1];
   }
  else {
-    urlParts=getApplicationUrl(request).toString().split("\\/");
+    final String[] urlParts=getApplicationUrl(request).toString().split("\\/");
+    widgetsetUrl="/" + urlParts[3];
     for (int i=3; i < urlParts.length; i++) {
       appUrl+="/" + urlParts[i];
     }
@@ -30,7 +26,7 @@
   if (widgetset == null) {
     widgetset=DEFAULT_WIDGETSET;
   }
-  final String staticFilePath=getApplicationOrSystemProperty(PARAMETER_ITMILL_RESOURCES,appUrl);
+  final String staticFilePath=getApplicationOrSystemProperty(PARAMETER_ITMILL_RESOURCES,widgetsetUrl);
   String themeUri=null;
   if (themeName != null) {
     themeUri=staticFilePath + "/" + THEME_DIRECTORY_PATH+ themeName;

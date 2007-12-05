@@ -1,14 +1,11 @@
 {
-  if (request.getPathInfo() != null) {
-    if (applicationRunnerMode && (request.getPathInfo().indexOf("/",1) != -1)) {
-      final String resourceUrl=request.getPathInfo().substring(request.getPathInfo().indexOf('/',1));
-      if (resourceUrl.startsWith("/ITMILL/")) {
-        serveStaticResourcesInITMILL(resourceUrl,response);
-        return;
-      }
+  if ((request.getPathInfo() != null) && (request.getPathInfo().length() > 10)) {
+    if ((request.getContextPath() != null) && (request.getRequestURI().startsWith("/ITMILL/"))) {
+      serveStaticResourcesInITMILL(request.getRequestURI(),response);
+      return;
     }
- else     if (request.getPathInfo().startsWith("/ITMILL/")) {
-      serveStaticResourcesInITMILL(request.getPathInfo(),response);
+ else     if (request.getRequestURI().startsWith(request.getContextPath() + "/ITMILL/")) {
+      serveStaticResourcesInITMILL(request.getRequestURI().substring(request.getContextPath().length()),response);
       return;
     }
   }
@@ -27,22 +24,16 @@ synchronized (applicationToLastRequestDate) {
     }
     ((WebApplicationContext)application.getContext()).startTransaction(application,request);
     DownloadStream download=null;
-    final String resourceId=request.getPathInfo();
-    if (resourceId != null) {
+    if (request.getPathInfo() != null) {
+      String compare=AJAX_UIDL_URI;
       if (applicationRunnerMode) {
-        if (resourceId.indexOf("/",1) != -1) {
-          final String resourceUrl=resourceId.substring(resourceId.indexOf('/',1));
-          if (resourceId != null && (resourceUrl.startsWith(AJAX_UIDL_URI))) {
-            getApplicationManager(application).handleUidlRequest(request,response);
-            return;
-          }
-        }
+        final String[] URIparts=getApplicationRunnerURIs(request);
+        final String applicationClassname=URIparts[4];
+        compare="/" + applicationClassname + AJAX_UIDL_URI;
       }
- else {
-        if (resourceId.startsWith(AJAX_UIDL_URI)) {
-          getApplicationManager(application).handleUidlRequest(request,response);
-          return;
-        }
+      if (request.getPathInfo().startsWith(compare)) {
+        getApplicationManager(application).handleUidlRequest(request,response);
+        return;
       }
     }
     if (application.isRunning()) {

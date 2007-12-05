@@ -4,16 +4,15 @@
   for (final Iterator i=applications.iterator(); i.hasNext(); ) {
     final Application a=(Application)i.next();
     final String aPath=a.getURL().getPath();
-    String servletPath=request.getContextPath() + request.getServletPath();
-    if (servletPath.length() < aPath.length()) {
-      servletPath+="/";
-    }
+    String servletPath="";
     if (applicationRunnerMode) {
-      if (request.getPathInfo().indexOf('/',1) == -1) {
-        servletPath+=request.getPathInfo();
-      }
+      final String[] URIparts=getApplicationRunnerURIs(request);
+      servletPath=URIparts[1];
+    }
  else {
-        servletPath+=request.getPathInfo().substring(1,request.getPathInfo().indexOf('/',1));
+      servletPath=request.getContextPath() + request.getServletPath();
+      if (servletPath.length() < aPath.length()) {
+        servletPath+="/";
       }
     }
     if (servletPath.equals(aPath)) {
@@ -25,15 +24,20 @@
     }
   }
   final WebApplicationContext context=WebApplicationContext.getApplicationContext(request.getSession());
-  final URL applicationUrl=getApplicationUrl(request);
+  final URL applicationUrl;
   if (applicationRunnerMode) {
-    final String applicationClassName=applicationUrl.getPath().substring(applicationUrl.getPath().lastIndexOf('/') + 1);
+    final String[] URIparts=getApplicationRunnerURIs(request);
+    final String applicationClassname=URIparts[4];
+    applicationUrl=new URL(getApplicationUrl(request).toString() + applicationClassname);
     try {
-      applicationClass=classLoader.loadClass(applicationClassName);
+      applicationClass=classLoader.loadClass(applicationClassname);
     }
  catch (    final ClassNotFoundException e) {
-      throw new InstantiationException("Failed to load application class: " + applicationClassName);
+      throw new InstantiationException("Failed to load application class: " + applicationClassname);
     }
+  }
+ else {
+    applicationUrl=getApplicationUrl(request);
   }
   try {
     final Application application=(Application)applicationClass.newInstance();
