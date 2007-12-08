@@ -1,0 +1,33 @@
+{
+  String appUrl=null;
+  String widgetsetUrl=null;
+  if (applicationRunnerMode) {
+    final String[] URIparts=getApplicationRunnerURIs(request);
+    widgetsetUrl=URIparts[0];
+    if (widgetsetUrl.equals("/")) {
+      widgetsetUrl="";
+    }
+    appUrl=URIparts[1];
+  }
+ else {
+    String[] urlParts;
+    try {
+      urlParts=getApplicationUrl(request).toString().split("\\/");
+      appUrl="";
+      widgetsetUrl="";
+      if (urlParts[3].equals(request.getContextPath().replaceAll("\\/",""))) {
+        widgetsetUrl+="/" + urlParts[3];
+      }
+      for (int i=3; i < urlParts.length; i++) {
+        appUrl+="/" + urlParts[i];
+      }
+      if (appUrl.endsWith("/")) {
+        appUrl=appUrl.substring(0,appUrl.length() - 1);
+      }
+    }
+ catch (    final MalformedURLException e) {
+      e.printStackTrace();
+    }
+  }
+  return new String[]{appUrl,widgetsetUrl};
+}

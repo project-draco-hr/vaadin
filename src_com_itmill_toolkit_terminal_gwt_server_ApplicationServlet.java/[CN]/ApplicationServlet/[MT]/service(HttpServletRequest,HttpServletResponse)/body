@@ -10,17 +10,19 @@
     }
   }
   Application application=null;
+  boolean UIDLrequest=false;
   try {
     if (ServletFileUpload.isMultipartContent(request)) {
-      application=getApplication(request);
+      application=getExistingApplication(request,response);
+      if (application == null) {
+        throw new SessionExpired();
+      }
+      ((WebApplicationContext)application.getContext()).startTransaction(application,request);
       getApplicationManager(application).handleFileUpload(request,response);
       return;
     }
     final WebBrowser browser=WebApplicationContext.getApplicationContext(request.getSession()).getBrowser();
     browser.updateBrowserProperties(request);
-    application=getApplication(request);
-    ((WebApplicationContext)application.getContext()).startTransaction(application,request);
-    DownloadStream download=null;
     if (request.getPathInfo() != null) {
       String compare=AJAX_UIDL_URI;
       if (applicationRunnerMode) {
@@ -29,25 +31,39 @@
         compare="/" + applicationClassname + AJAX_UIDL_URI;
       }
       if (request.getPathInfo().startsWith(compare)) {
+        UIDLrequest=true;
+        application=getExistingApplication(request,response);
+        if (application == null) {
+          final String repaintAll=request.getParameter("repaintAll");
+          if ((repaintAll != null) && (repaintAll.equals("1"))) {
+            application=getNewApplication(request,response);
+          }
+ else {
+            throw new SessionExpired();
+          }
+        }
+        ((WebApplicationContext)application.getContext()).startTransaction(application,request);
         getApplicationManager(application).handleUidlRequest(request,response);
         return;
       }
     }
-    if (application.isRunning()) {
-      download=handleURI(application,request,response);
+    application=getExistingApplication(request,response);
+    if (application == null) {
+      application=getNewApplication(request,response);
     }
+    ((WebApplicationContext)application.getContext()).startTransaction(application,request);
+    if (!application.isRunning()) {
+      endApplication(request,response,application);
+      return;
+    }
+    DownloadStream download=null;
+    download=handleURI(application,request,response);
     if (download == null) {
       response.setHeader("Cache-Control","no-cache");
       response.setHeader("Pragma","no-cache");
       response.setDateHeader("Expires",0);
       Window window=null;
-      if (application.isRunning()) {
-        window=getApplicationWindow(request,application);
-      }
-      if (!application.isRunning()) {
-        endApplication(request,response,application);
-        return;
-      }
+      window=getApplicationWindow(request,application);
       if (window.getTerminal() == null) {
         window.setTerminal(browser);
       }
@@ -68,9 +84,17 @@
       handleDownload(download,request,response);
     }
   }
- catch (  final Throwable e) {
+ catch (  final SessionExpired e) {
+    criticalNotification(request,response,"Your session has expired.");
+  }
+catch (  final Throwable e) {
     e.printStackTrace();
-    throw new ServletException(e);
+    if (UIDLrequest) {
+      criticalNotification(request,response,"Internal error. Please notify administrator.");
+    }
+ else {
+      throw new ServletException(e);
+    }
   }
  finally {
     if (application != null) {
