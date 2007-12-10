@@ -1,9 +1,17 @@
 {
-  try {
-    Class.forName("org.hsqldb.jdbcDriver").newInstance();
-    connection=DriverManager.getConnection(DB_URL);
-  }
- catch (  final Exception e) {
-    throw new RuntimeException(e);
+  if (connection == null) {
+    try {
+      Class.forName("org.hsqldb.jdbcDriver").newInstance();
+      connection=DriverManager.getConnection(DB_URL);
+    }
+ catch (    final Exception e) {
+      throw new RuntimeException(e);
+    }
+    dropTables();
+    createTables();
+    testDatabase();
+    generateResources();
+    generateDemoUser();
+    generateReservations();
   }
 }
