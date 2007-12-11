@@ -1,0 +1,49 @@
+{
+  URLConnection conn;
+  String testCaseProviderURL=getTestingToolsUri();
+  if (testCaseId != null) {
+    testCaseProviderURL+="/ATF-TC/" + testCaseId;
+  }
+  if (testSuiteId != null) {
+    testCaseProviderURL+="/ATF-TS/" + testSuiteId;
+  }
+  if (testSuiteRunId != null) {
+    testCaseProviderURL+="/ATF-TS-RUN-ID/" + testSuiteRunId;
+  }
+  conn=new URL(testCaseProviderURL).openConnection();
+  InputStream is=conn.getInputStream();
+  StringBuffer builder=new StringBuffer();
+  byte[] b=new byte[4096];
+  for (int n; (n=is.read(b)) != -1; ) {
+    builder.append(new String(b,0,n));
+  }
+  is.close();
+  if (builder != null && builder.length() > 0 && builder.toString().startsWith("ATF-TC=")) {
+    int lineEnd=builder.indexOf("\n");
+    String returnedTestCaseId=builder.substring(builder.indexOf("ATF-TC=") + 7,lineEnd);
+    builder.replace(0,lineEnd + 1,"");
+    String returnedTestSuiteRunId=null;
+    if (testSuiteId != null) {
+      lineEnd=builder.indexOf("\n");
+      returnedTestSuiteRunId=builder.substring(builder.indexOf("ATF-TS-RUN-ID=") + 14,lineEnd);
+    }
+    if (builder.length() < lineEnd + 1) {
+      throw new RuntimeException("The received testscript is illegal. Expected testcase script id in first line " + " and the actual script in following lines. The script: " + builder.toString());
+    }
+    page.write("<script language=\"JavaScript\" type=\"text/javascript\">\n");
+    page.write("itmill.ATFtestCaseId = \"" + returnedTestCaseId + "\";");
+    page.write("\n");
+    if (testSuiteId != null) {
+      page.write("itmill.ATFtestSuiteId = \"" + testSuiteId + "\";");
+      page.write("\n");
+    }
+    if (returnedTestSuiteRunId != null) {
+      page.write("itmill.ATFtestSuiteRunId = \"" + returnedTestSuiteRunId + "\";");
+      page.write("\n");
+      builder=builder.delete(0,lineEnd);
+    }
+    String script=builder.toString().replaceAll("\n","\\\\n");
+    page.write("itmill.ATFtestCaseScript = \"" + script + "\";\n");
+    page.write("</script>\n");
+  }
+}

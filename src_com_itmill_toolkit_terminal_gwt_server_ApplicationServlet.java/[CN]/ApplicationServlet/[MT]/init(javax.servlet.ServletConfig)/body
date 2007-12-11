@@ -27,6 +27,10 @@
     throw new ServletException("If debug parameter is given for an application, it must be 'true' or 'false'");
   }
   debugMode=debug;
+  if (getApplicationOrSystemProperty("testingToolsActive","false").equals("true")) {
+    testingToolsActive=true;
+    testingToolsServerUri=getApplicationOrSystemProperty("testingToolsServerUri",null);
+  }
   final String classLoaderName=getApplicationOrSystemProperty("ClassLoader",null);
   ClassLoader classLoader;
   if (classLoaderName == null) {
