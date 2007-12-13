@@ -1,46 +1,7 @@
 {
-  String marginClasses="";
   final MarginInfo margins=new MarginInfo(uidl.getIntAttribute("margins"));
-  final Element topBottomMarginContainer=orientationMode == ORIENTATION_HORIZONTAL ? DOM.getParent(childContainer) : childContainer;
-  if (topMargin != null) {
-    DOM.removeChild(topBottomMarginContainer,topMargin);
-  }
-  topMargin=null;
-  if (margins.hasTop()) {
-    marginClasses+=" " + StyleConstants.LAYOUT_MARGIN_TOP;
-    if (topMargin == null) {
-      topMargin=DOM.createTR();
-      DOM.appendChild(topMargin,DOM.createTD());
-      DOM.appendChild(DOM.getFirstChild(topMargin),DOM.createDiv());
-      DOM.setElementProperty(topMargin,"className",CLASSNAME + "-toppad");
-      if (orientationMode == ORIENTATION_HORIZONTAL) {
-        DOM.setElementAttribute(DOM.getFirstChild(topMargin),"colspan","" + getPaintables().size());
-      }
-      DOM.insertChild(topBottomMarginContainer,topMargin,0);
-    }
-  }
-  if (margins.hasRight()) {
-    marginClasses+=" " + StyleConstants.LAYOUT_MARGIN_RIGHT;
-  }
-  if (bottomMargin != null) {
-    DOM.removeChild(topBottomMarginContainer,bottomMargin);
-  }
-  bottomMargin=null;
-  if (margins.hasBottom()) {
-    marginClasses+=" " + StyleConstants.LAYOUT_MARGIN_BOTTOM;
-    if (bottomMargin == null) {
-      bottomMargin=DOM.createTR();
-      DOM.appendChild(bottomMargin,DOM.createTD());
-      DOM.appendChild(DOM.getFirstChild(bottomMargin),DOM.createDiv());
-      DOM.setElementProperty(bottomMargin,"className",CLASSNAME + "-bottompad");
-      if (orientationMode == ORIENTATION_HORIZONTAL) {
-        DOM.setElementAttribute(DOM.getFirstChild(bottomMargin),"colspan","" + getPaintables().size());
-      }
-      DOM.appendChild(topBottomMarginContainer,bottomMargin);
-    }
-  }
-  if (margins.hasLeft()) {
-    marginClasses+=" " + StyleConstants.LAYOUT_MARGIN_LEFT;
-  }
-  DOM.setElementProperty(margin,"className",marginClasses);
+  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_TOP,margins.hasTop());
+  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_RIGHT,margins.hasRight());
+  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_BOTTOM,margins.hasBottom());
+  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_LEFT,margins.hasLeft());
 }
