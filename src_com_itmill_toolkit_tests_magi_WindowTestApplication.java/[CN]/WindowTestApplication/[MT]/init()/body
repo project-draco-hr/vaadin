@@ -1,0 +1,22 @@
+{
+  final Window main=new Window("Window Test Application");
+  setMainWindow(main);
+  setTheme("tests-magi");
+  final Window mywindow=new Window("Second Window");
+  mywindow.setName("mywindow");
+  mywindow.addComponent(new Label("This is a second window."));
+  addWindow(mywindow);
+  main.addComponent(new Button("Click to open new window",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      main.open(new ExternalResource(mywindow.getURL()),"_new");
+    }
+  }
+));
+  Link link=new Link("Click to open second window",new ExternalResource(mywindow.getURL()));
+  link.setTargetName("_new");
+  main.addComponent(link);
+  main.addComponent(new Label("Second window: <a href='" + mywindow.getURL() + "' target='_new'>click to open</a>",Label.CONTENT_XHTML));
+  main.addComponent(new Label("The second window can be accessed through URL: " + mywindow.getURL()));
+  main.addComponent(new Label("Yet another window: <a href='" + getURL() + "anotherpage/' target='_new'>click to open</a>",Label.CONTENT_XHTML));
+  main.addComponent(new Label("The yet another window can be accessed through URL: " + getURL() + "anotherpage/"));
+}
