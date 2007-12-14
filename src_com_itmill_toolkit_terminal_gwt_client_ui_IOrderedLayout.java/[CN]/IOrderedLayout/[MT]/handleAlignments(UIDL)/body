@@ -2,20 +2,28 @@
   final int[] alignments=uidl.getIntArrayAttribute("alignments");
   int alignmentIndex=0;
   final Iterator it=getPaintables().iterator();
+  boolean first=true;
   while (it.hasNext()) {
     final AlignmentInfo ai=new AlignmentInfo(alignments[alignmentIndex++]);
-    final Element td=DOM.getParent(((Widget)it.next()).getElement());
+    final Element wrapper=DOM.getParent(((Widget)it.next()).getElement());
     if (Util.isIE()) {
-      DOM.setElementAttribute(td,"vAlign",ai.getVerticalAlignment());
+      DOM.setElementAttribute(wrapper,"vAlign",ai.getVerticalAlignment());
     }
  else {
-      DOM.setStyleAttribute(td,"verticalAlign",ai.getVerticalAlignment());
+      DOM.setStyleAttribute(wrapper,"verticalAlign",ai.getVerticalAlignment());
     }
     if (Util.isIE()) {
-      DOM.setElementAttribute(td,"align",ai.getHorizontalAlignment());
+      DOM.setElementAttribute(wrapper,"align",ai.getHorizontalAlignment());
     }
  else {
-      DOM.setStyleAttribute(td,"textAlign",ai.getHorizontalAlignment());
+      DOM.setStyleAttribute(wrapper,"textAlign",ai.getHorizontalAlignment());
+    }
+    if (first) {
+      setSpacingEnabled(wrapper,false);
+      first=false;
+    }
+ else {
+      setSpacingEnabled(wrapper,hasComponentSpacing);
     }
   }
 }
