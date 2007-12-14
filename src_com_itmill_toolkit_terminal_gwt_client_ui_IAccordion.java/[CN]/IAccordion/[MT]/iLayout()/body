@@ -1,7 +1,29 @@
 {
+  StackItem item=getSelectedStack();
+  if (item == null)   return;
   if (height != null && height != "") {
+    Widget w=item.getContent().getContainedWidget();
+    String originalPositioning="";
+    if (w != null) {
+      originalPositioning=DOM.getStyleAttribute(w.getElement(),"position");
+      DOM.setStyleAttribute(w.getElement(),"visibility","hidden");
+      DOM.setStyleAttribute(w.getElement(),"position","absolute");
+    }
+    item.getContent().setHeight("");
+    super.setHeight(height);
+    int targetHeight=getOffsetHeight();
+    super.setHeight("");
+    int usedHeight=getOffsetHeight();
+    int h=targetHeight - usedHeight;
+    if (h < 0)     h=0;
+    item.getContent().setHeight(h + "px");
+    if (w != null) {
+      DOM.setStyleAttribute(w.getElement(),"position",originalPositioning);
+      DOM.setStyleAttribute(w.getElement(),"visibility","");
+    }
   }
  else {
+    item.getContent().setHeight("");
   }
   Util.runDescendentsLayout(this);
 }
