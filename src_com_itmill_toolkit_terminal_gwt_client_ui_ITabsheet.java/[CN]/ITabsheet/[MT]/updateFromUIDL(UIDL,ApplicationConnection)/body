@@ -1,10 +1,5 @@
 {
-  this.client=client;
-  id=uidl.getId();
-  if (client.updateComponent(this,uidl,false)) {
-    return;
-  }
-  disabled=uidl.hasAttribute("disabled");
+  super.updateFromUIDL(uidl,client);
   if (uidl.hasAttribute("style")) {
     final String[] styles=uidl.getStringAttribute("style").split(" ");
     final String contentBaseClass="CLASSNAME" + "-content";
@@ -23,59 +18,5 @@
     tb.setStyleName(CLASSNAME + "-tabs");
     DOM.setElementProperty(contentNode,"className",CLASSNAME + "-content");
     DOM.setElementProperty(deco,"className",CLASSNAME + "-deco");
-  }
-  if (uidl.hasAttribute("height")) {
-    setHeight(uidl.getStringAttribute("height"));
-  }
- else {
-    setHeight("");
-  }
-  if (uidl.hasAttribute("width")) {
-    setWidth(uidl.getStringAttribute("width"));
-  }
- else {
-    setWidth("");
-  }
-  final UIDL tabs=uidl.getChildUIDL(0);
-  boolean keepCurrentTabs=tabKeys.size() == tabs.getNumberOfChildren();
-  for (int i=0; keepCurrentTabs && i < tabKeys.size(); i++) {
-    keepCurrentTabs=tabKeys.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("key")) && captions.get(i).equals(tabs.getChildUIDL(i).getStringAttribute("caption"));
-  }
-  if (keepCurrentTabs) {
-    int index=0;
-    for (final Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
-      final UIDL tab=(UIDL)it.next();
-      if (tab.getBooleanAttribute("selected")) {
-        activeTabIndex=index;
-        renderContent(tab.getChildUIDL(0));
-      }
-      index++;
-    }
-  }
- else {
-    tabKeys.clear();
-    captions.clear();
-    clearTabs();
-    int index=0;
-    for (final Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
-      final UIDL tab=(UIDL)it.next();
-      final String key=tab.getStringAttribute("key");
-      String caption=tab.getStringAttribute("caption");
-      if (caption == null) {
-        caption="&nbsp;";
-      }
-      captions.add(caption);
-      tabKeys.add(key);
-      tb.insertTab("<span>" + caption + "</span>",true,tb.getTabCount());
-      tp.add(new ILabel(""));
-      if (tab.getBooleanAttribute("selected")) {
-        activeTabIndex=index;
-        renderContent(tab.getChildUIDL(0));
-      }
-      index++;
-    }
-  }
-  if (tabKeys.size() > 0) {
-    tb.selectTab(activeTabIndex);
   }
 }

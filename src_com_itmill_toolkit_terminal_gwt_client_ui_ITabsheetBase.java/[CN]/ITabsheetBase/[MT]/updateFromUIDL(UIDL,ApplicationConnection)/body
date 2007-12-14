@@ -1,0 +1,54 @@
+{
+  if (client.updateComponent(this,uidl,true)) {
+    return;
+  }
+  this.client=client;
+  id=uidl.getId();
+  disabled=uidl.hasAttribute("disabled");
+  if (uidl.hasAttribute("height")) {
+    setHeight(uidl.getStringAttribute("height"));
+  }
+ else {
+    setHeight("");
+  }
+  if (uidl.hasAttribute("width")) {
+    setWidth(uidl.getStringAttribute("width"));
+  }
+ else {
+    setWidth("");
+  }
+  final UIDL tabs=uidl.getChildUIDL(0);
+  if (keepCurrentTabs(uidl)) {
+    int index=0;
+    for (final Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
+      final UIDL tab=(UIDL)it.next();
+      final boolean selected=tab.getBooleanAttribute("selected");
+      if (selected) {
+        selectTab(index,tab.getChildUIDL(0));
+      }
+      index++;
+    }
+  }
+ else {
+    tabKeys.clear();
+    captions.clear();
+    clear();
+    int index=0;
+    for (final Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
+      final UIDL tab=(UIDL)it.next();
+      final String key=tab.getStringAttribute("key");
+      final boolean selected=tab.getBooleanAttribute("selected");
+      String caption=tab.getStringAttribute("caption");
+      if (caption == null) {
+        caption="&nbsp;";
+      }
+      captions.add(caption);
+      tabKeys.add(key);
+      if (selected) {
+        activeTabIndex=index;
+      }
+      renderTab(tab.getChildUIDL(0),caption,index,selected);
+      index++;
+    }
+  }
+}
