@@ -48,7 +48,14 @@
       }
     }
     application=getExistingApplication(request,response);
-    if (application == null) {
+    if (application == null || request.getParameter("restartApplication") != null) {
+      if (request.getParameter("restartApplication") != null && application != null) {
+        application.close();
+        final HttpSession session=request.getSession();
+        if (session != null) {
+          WebApplicationContext.getApplicationContext(session).removeApplication(application);
+        }
+      }
       application=getNewApplication(request,response);
     }
     ((WebApplicationContext)application.getContext()).startTransaction(application,request);
