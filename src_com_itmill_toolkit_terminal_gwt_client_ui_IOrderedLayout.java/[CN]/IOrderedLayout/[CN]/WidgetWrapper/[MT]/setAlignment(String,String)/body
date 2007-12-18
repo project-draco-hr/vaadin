@@ -8,28 +8,40 @@
   if (Util.isIE()) {
     DOM.setElementAttribute(getElement(),"align",horizontalAlignment);
   }
- else   if (!horizontalAlignment.equals("left")) {
-    if (td == null) {
-      final Element table=DOM.createTable();
-      final Element tBody=DOM.createTBody();
-      final Element tr=DOM.createTR();
-      td=DOM.createTD();
-      DOM.appendChild(table,tBody);
-      DOM.appendChild(tBody,tr);
-      DOM.appendChild(tr,td);
-      DOM.setElementAttribute(table,"cellpadding","0");
-      DOM.setElementAttribute(table,"cellspacing","0");
-      DOM.setStyleAttribute(table,"width","100%");
-      DOM.setElementProperty(td,"className","i_align");
-      while (DOM.getChildCount(getElement()) > 0) {
-        final Element content=DOM.getFirstChild(getElement());
+ else {
+    if (!horizontalAlignment.equals("left")) {
+      if (td == null) {
+        final Element table=DOM.createTable();
+        final Element tBody=DOM.createTBody();
+        final Element tr=DOM.createTR();
+        td=DOM.createTD();
+        DOM.appendChild(table,tBody);
+        DOM.appendChild(tBody,tr);
+        DOM.appendChild(tr,td);
+        DOM.setElementAttribute(table,"cellpadding","0");
+        DOM.setElementAttribute(table,"cellspacing","0");
+        DOM.setStyleAttribute(table,"width","100%");
+        DOM.setElementProperty(td,"className","i_align");
+        while (DOM.getChildCount(getElement()) > 0) {
+          Element content=DOM.getFirstChild(getElement());
+          if (content != null) {
+            DOM.removeChild(getElement(),content);
+            DOM.appendChild(td,content);
+          }
+        }
+        DOM.appendChild(getElement(),table);
+      }
+      DOM.setElementAttribute(td,"align",horizontalAlignment);
+    }
+ else     if (td != null) {
+      while (DOM.getChildCount(td) > 0) {
+        Element content=DOM.getFirstChild(td);
         if (content != null) {
-          DOM.removeChild(getElement(),content);
-          DOM.appendChild(td,content);
+          DOM.removeChild(td,content);
+          DOM.appendChild(getElement(),content);
         }
       }
-      DOM.appendChild(getElement(),table);
+      DOM.removeChild(getElement(),DOM.getFirstChild(getElement()));
     }
-    DOM.setElementAttribute(td,"align",horizontalAlignment);
   }
 }
