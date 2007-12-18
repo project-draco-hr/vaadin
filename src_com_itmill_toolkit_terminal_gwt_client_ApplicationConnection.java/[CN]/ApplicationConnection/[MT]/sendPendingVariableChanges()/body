@@ -1,12 +1,14 @@
 {
-  final StringBuffer req=new StringBuffer();
-  req.append("changes=");
-  for (int i=0; i < pendingVariables.size(); i++) {
-    if (i > 0) {
-      req.append("\u0001");
+  if (applicationRunning) {
+    final StringBuffer req=new StringBuffer();
+    req.append("changes=");
+    for (int i=0; i < pendingVariables.size(); i++) {
+      if (i > 0) {
+        req.append("\u0001");
+      }
+      req.append(pendingVariables.get(i));
     }
-    req.append(pendingVariables.get(i));
+    pendingVariables.clear();
+    makeUidlRequest(req.toString());
   }
-  pendingVariables.clear();
-  makeUidlRequest(req.toString());
 }
