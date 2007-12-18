@@ -5,25 +5,14 @@
   boolean first=true;
   while (it.hasNext()) {
     final AlignmentInfo ai=new AlignmentInfo(alignments[alignmentIndex++]);
-    final Element wrapper=DOM.getParent(((Widget)it.next()).getElement());
-    if (Util.isIE()) {
-      DOM.setElementAttribute(wrapper,"vAlign",ai.getVerticalAlignment());
-    }
- else {
-      DOM.setStyleAttribute(wrapper,"verticalAlign",ai.getVerticalAlignment());
-    }
-    if (Util.isIE()) {
-      DOM.setElementAttribute(wrapper,"align",ai.getHorizontalAlignment());
-    }
- else {
-      DOM.setStyleAttribute(wrapper,"textAlign",ai.getHorizontalAlignment());
-    }
+    final WidgetWrapper wr=getWidgetWrapperFor((Widget)it.next());
+    wr.setAlignment(ai.getVerticalAlignment(),ai.getHorizontalAlignment());
     if (first) {
-      setSpacingEnabled(wrapper,false);
+      wr.setSpacingEnabled(false);
       first=false;
     }
  else {
-      setSpacingEnabled(wrapper,hasComponentSpacing);
+      wr.setSpacingEnabled(hasComponentSpacing);
     }
   }
 }
