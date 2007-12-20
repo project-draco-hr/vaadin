@@ -2,28 +2,28 @@
   StackItem item=getSelectedStack();
   if (item == null)   return;
   if (height != null && height != "") {
-    Widget w=item.getContent().getContainedWidget();
+    Widget w=item.getWidget();
     String originalPositioning="";
     if (w != null) {
       originalPositioning=DOM.getStyleAttribute(w.getElement(),"position");
       DOM.setStyleAttribute(w.getElement(),"visibility","hidden");
       DOM.setStyleAttribute(w.getElement(),"position","absolute");
     }
-    item.getContent().setHeight("");
+    DOM.setStyleAttribute(item.getContainerElement(),"height","");
     super.setHeight(height);
     int targetHeight=DOM.getElementPropertyInt(DOM.getParent(getElement()),"offsetHeight");
     super.setHeight("");
     int usedHeight=getOffsetHeight();
     int h=targetHeight - usedHeight;
     if (h < 0)     h=0;
-    item.getContent().setHeight(h + "px");
+    DOM.setStyleAttribute(item.getContainerElement(),"height",h + "px");
     if (w != null) {
       DOM.setStyleAttribute(w.getElement(),"position",originalPositioning);
       DOM.setStyleAttribute(w.getElement(),"visibility","");
     }
   }
  else {
-    item.getContent().setHeight("");
+    DOM.setStyleAttribute(item.getContainerElement(),"height","");
   }
   Util.runDescendentsLayout(this);
 }
