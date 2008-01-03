@@ -5,22 +5,24 @@
     final String originalPositioning=DOM.getStyleAttribute(tp.getElement(),"position");
     DOM.setStyleAttribute(tp.getElement(),"position","absolute");
     DOM.setStyleAttribute(contentNode,"overflow","hidden");
+    DOM.setStyleAttribute(contentNode,"height","");
     super.setHeight(height);
     final int targetHeight=getOffsetHeight();
     super.setHeight("");
     final int usedHeight=DOM.getElementPropertyInt(deco,"offsetTop") + DOM.getElementPropertyInt(deco,"offsetHeight") - DOM.getElementPropertyInt(getElement(),"offsetTop");
-    int h=targetHeight - usedHeight;
-    if (h < 0) {
-      h=0;
+    int newHeight=targetHeight - usedHeight;
+    if (newHeight < 0) {
+      newHeight=0;
     }
-    tp.setHeight(h + "px");
-    DOM.setStyleAttribute(tp.getElement(),"position",originalPositioning);
+    DOM.setStyleAttribute(contentNode,"height",newHeight + "px");
     DOM.setStyleAttribute(contentNode,"overflow","auto");
+    DOM.setStyleAttribute(tp.getElement(),"position",originalPositioning);
     DOM.setElementPropertyInt(contentNode,"scrollTop",scrollTop);
     DOM.setElementPropertyInt(contentNode,"scrollLeft",scrollLeft);
   }
  else {
-    tp.setHeight("");
+    DOM.setStyleAttribute(contentNode,"height","");
+    DOM.setStyleAttribute(contentNode,"overflow","");
   }
   Util.runDescendentsLayout(this);
 }
