@@ -32,9 +32,9 @@ synchronized (application) {
       outWriter.print(")/*{");
       outWriter.print("\"changes\":[");
       paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
-      Set paintables;
+      ArrayList paintables;
       if (repaintAll) {
-        paintables=new LinkedHashSet();
+        paintables=new ArrayList();
         paintables.add(window);
         locales=null;
         requireLocale(application.getLocale().toString());
@@ -43,8 +43,7 @@ synchronized (application) {
         paintables=getDirtyComponents(window);
       }
       if (paintables != null) {
-        final List currentPaintables=new ArrayList(paintables);
-        Collections.sort(currentPaintables,new Comparator(){
+        Collections.sort(paintables,new Comparator(){
           public int compare(          Object o1,          Object o2){
             final Component c1=(Component)o1;
             final Component c2=(Component)o2;
@@ -58,7 +57,7 @@ synchronized (application) {
           }
         }
 );
-        for (final Iterator i=currentPaintables.iterator(); i.hasNext(); ) {
+        for (final Iterator i=paintables.iterator(); i.hasNext(); ) {
           final Paintable p=(Paintable)i.next();
           if (p instanceof Window) {
             final Window w=(Window)p;
