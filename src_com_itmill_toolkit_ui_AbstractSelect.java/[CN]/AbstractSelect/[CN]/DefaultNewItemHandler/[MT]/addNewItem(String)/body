@@ -1,0 +1,22 @@
+{
+  if (isReadOnly()) {
+    throw new Property.ReadOnlyException();
+  }
+  if (addItem(newItemCaption) != null) {
+    if (getItemCaptionPropertyId() != null) {
+      try {
+        getContainerProperty(newItemCaption,getItemCaptionPropertyId()).setValue(newItemCaption);
+      }
+ catch (      final Property.ConversionException ignored) {
+      }
+    }
+    if (isMultiSelect()) {
+      Set values=new HashSet((Collection)getValue());
+      values.add(newItemCaption);
+      setValue(values);
+    }
+ else {
+      setValue(newItemCaption);
+    }
+  }
+}

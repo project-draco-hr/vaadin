@@ -11,21 +11,9 @@
   }
   final String newitem=(String)variables.get("newitem");
   if (newitem != null && newitem.length() > 0) {
-    if (isReadOnly()) {
-      throw new Property.ReadOnlyException();
-    }
-    if (addItem(newitem) != null) {
-      if (getItemCaptionPropertyId() != null) {
-        try {
-          getContainerProperty(newitem,getItemCaptionPropertyId()).setValue(newitem);
-        }
- catch (        final Property.ConversionException ignored) {
-        }
-      }
-      setValue(newitem);
-      filterstring=null;
-      prevfilterstring=null;
-    }
+    getNewItemHandler().addNewItem(newitem);
+    filterstring=null;
+    prevfilterstring=null;
   }
   if (variables.containsKey("selected")) {
     final String[] ka=(String[])variables.get("selected");
@@ -35,9 +23,6 @@
         final Object id=itemIdMapper.get(ka[i]);
         if (id != null && containsId(id)) {
           s.add(id);
-        }
- else         if (itemIdMapper.isNewIdKey(ka[i]) && newitem != null && newitem.length() > 0) {
-          s.add(newitem);
         }
       }
       final Collection visible=getVisibleItemIds();
@@ -66,9 +51,6 @@
         final Object id=itemIdMapper.get(ka[0]);
         if (id != null && id.equals(getNullSelectionItemId())) {
           setValue(null,true);
-        }
- else         if (itemIdMapper.isNewIdKey(ka[0])) {
-          setValue(newitem);
         }
  else {
           setValue(id,true);
