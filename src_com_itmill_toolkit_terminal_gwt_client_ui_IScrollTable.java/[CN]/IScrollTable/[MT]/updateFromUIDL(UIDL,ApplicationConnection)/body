@@ -9,8 +9,10 @@
   final int newTotalRows=uidl.getIntAttribute("totalrows");
   if (newTotalRows != totalRows) {
     totalRows=newTotalRows;
-    if (initializedAndAttached) {
-      tBody.setContainerHeight();
+    if (tBody != null) {
+      initializedAndAttached=false;
+      initialContentReceived=false;
+      isNewBody=true;
     }
   }
   pageLength=uidl.getIntAttribute("pagelength");
@@ -66,7 +68,7 @@
       updateActionMap(c);
     }
  else     if (c.getTag().equals("visiblecolumns")) {
-      updateVisibleColumns(c);
+      tHead.updateCellsFromUIDL(c);
     }
   }
   updateHeader(uidl.getStringArrayAttribute("vcolorder"));
@@ -74,6 +76,10 @@
     updateBody(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
   }
  else {
+    if (tBody != null) {
+      tBody.removeFromParent();
+      client.unregisterChildPaintables(tBody);
+    }
     tBody=new IScrollTableBody();
     tBody.renderInitialRows(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
     bodyContainer.add(tBody);

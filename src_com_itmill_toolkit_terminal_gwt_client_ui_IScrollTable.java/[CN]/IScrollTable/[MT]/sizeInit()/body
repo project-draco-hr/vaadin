@@ -4,6 +4,7 @@
   int totalExplicitColumnsWidths=0;
   int total=0;
   final int[] widths=new int[tHead.visibleCells.size()];
+  tHead.enableBrowserIntelligence();
   while (headCells.hasNext()) {
     final HeaderCell hCell=(HeaderCell)headCells.next();
     int w;
@@ -76,12 +77,13 @@
   headCells=tHead.iterator();
   while (headCells.hasNext()) {
     final HeaderCell hCell=(HeaderCell)headCells.next();
-    if (hCell.getWidth() == -1) {
+    if (isNewBody || hCell.getWidth() == -1) {
       final int w=widths[i];
       setColWidth(i,w);
     }
     i++;
   }
+  isNewBody=false;
   if (firstvisible > 0) {
     DeferredCommand.addCommand(new Command(){
       public void execute(){
