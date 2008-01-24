@@ -65,16 +65,18 @@ synchronized (application) {
               w.setTerminal(application.getMainWindow().getTerminal());
             }
           }
-          paintTarget.startTag("change");
-          paintTarget.addAttribute("format","uidl");
-          final String pid=getPaintableId(p);
-          paintTarget.addAttribute("pid",pid);
-          paintTarget.setTrackPaints(true);
-          p.paint(paintTarget);
-          if (paintTarget.getNumberOfPaints() <= 0) {
-            paintTarget.addAttribute("visible",false);
+          if (!paintTarget.isAlreadyPainted(p)) {
+            paintTarget.startTag("change");
+            paintTarget.addAttribute("format","uidl");
+            final String pid=getPaintableId(p);
+            paintTarget.addAttribute("pid",pid);
+            paintTarget.setTrackPaints(true);
+            p.paint(paintTarget);
+            if (paintTarget.getNumberOfPaints() <= 0) {
+              paintTarget.addAttribute("visible",false);
+            }
+            paintTarget.endTag("change");
           }
-          paintTarget.endTag("change");
           paintablePainted(p);
         }
       }
