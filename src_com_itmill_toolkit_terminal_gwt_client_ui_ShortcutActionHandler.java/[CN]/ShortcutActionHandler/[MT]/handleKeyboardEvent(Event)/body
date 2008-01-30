@@ -1,0 +1,19 @@
+{
+  final int modifiers=KeyboardListenerCollection.getKeyboardModifiers(event);
+  final char keyCode=(char)DOM.eventGetKeyCode(event);
+  final ShortcutKeyCombination kc=new ShortcutKeyCombination(keyCode,modifiers);
+  final Iterator it=actions.iterator();
+  while (it.hasNext()) {
+    final ShortcutAction a=(ShortcutAction)it.next();
+    if (a.getShortcutCombination().equals(kc)) {
+      shakeTarget(DOM.eventGetTarget(event));
+      DeferredCommand.addCommand(new Command(){
+        public void execute(){
+          client.updateVariable(paintableId,"action",a.getKey(),true);
+        }
+      }
+);
+      break;
+    }
+  }
+}
