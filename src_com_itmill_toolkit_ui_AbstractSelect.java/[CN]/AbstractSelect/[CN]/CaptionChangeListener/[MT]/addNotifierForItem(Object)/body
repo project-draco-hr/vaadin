@@ -1,0 +1,31 @@
+{
+switch (getItemCaptionMode()) {
+case ITEM_CAPTION_MODE_ITEM:
+    final Item i=getItem(itemId);
+  if (i == null) {
+    return;
+  }
+if (i instanceof Item.PropertySetChangeNotifier) {
+  ((Item.PropertySetChangeNotifier)i).addListener(getCaptionChangeListener());
+  captionChangeNotifiers.add(i);
+}
+Collection pids=i.getItemPropertyIds();
+if (pids != null) {
+for (Iterator it=pids.iterator(); it.hasNext(); ) {
+Property p=i.getItemProperty(it.next());
+if (p != null || p instanceof Property.ValueChangeNotifier) {
+  ((Property.ValueChangeNotifier)p).addListener(getCaptionChangeListener());
+  captionChangeNotifiers.add(p);
+}
+}
+}
+break;
+case ITEM_CAPTION_MODE_PROPERTY:
+final Property p=getContainerProperty(itemId,getItemCaptionPropertyId());
+if (p != null || p instanceof Property.ValueChangeNotifier) {
+((Property.ValueChangeNotifier)p).addListener(getCaptionChangeListener());
+captionChangeNotifiers.add(p);
+}
+break;
+}
+}
