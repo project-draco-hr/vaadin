@@ -3,6 +3,7 @@
   cont.addContainerProperty("Bar",String.class,"foo");
   OrderedLayout main=new OrderedLayout();
   setCompositionRoot(main);
+  main.addComponent(new Label("The same IndexedContainer is wrapped in a ordered/hierarchical wrapper and is set as data source for all components . The buttons only affect the 'original' IndexedContainer."));
   OrderedLayout h=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
   main.addComponent(h);
   OrderedLayout v=new OrderedLayout();
@@ -16,7 +17,7 @@
   tbl.setImmediate(true);
   tbl.setEditable(true);
   tbl.setRowHeaderMode(Table.ROW_HEADER_MODE_ID);
-  tbl.setContainerDataSource(notordered);
+  tbl.setContainerDataSource(hierarchical);
   Table tbl2=new Table();
   tbl2.setHeight(200);
   tbl2.setWidth(300);
@@ -31,7 +32,7 @@
   }
 );
   tbl2.setRowHeaderMode(Table.ROW_HEADER_MODE_ID);
-  tbl2.setContainerDataSource(notordered);
+  tbl2.setContainerDataSource(hierarchical);
   OrderedLayout buttons=new OrderedLayout();
   v.addComponent(buttons);
   Button b=new Button("Commit",new Button.ClickListener(){
@@ -83,16 +84,16 @@
   }
 );
   buttons.addComponent(b);
-  b=new Button("nothierarchical",new Button.ClickListener(){
+  b=new Button("ordered",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
-      tbl.setContainerDataSource(nothierarchical);
+      tbl.setContainerDataSource(ordered);
     }
   }
 );
   buttons.addComponent(b);
-  b=new Button("notordered",new Button.ClickListener(){
+  b=new Button("hierarchical",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
-      tbl.setContainerDataSource(notordered);
+      tbl.setContainerDataSource(hierarchical);
     }
   }
 );
@@ -101,12 +102,12 @@
   p.setStyleName(Panel.STYLE_LIGHT);
   h.addComponent(p);
   Tree tree=new Tree("ITEM_CAPTION_MODE_PROPERTY");
-  tree.setContainerDataSource(nothierarchical);
+  tree.setContainerDataSource(ordered);
   tree.setItemCaptionPropertyId("Asd");
   tree.setItemCaptionMode(Tree.ITEM_CAPTION_MODE_PROPERTY);
   p.addComponent(tree);
   tree=new Tree("ITEM_CAPTION_MODE_ITEM");
-  tree.setContainerDataSource(nothierarchical);
+  tree.setContainerDataSource(ordered);
   tree.setItemCaptionMode(Tree.ITEM_CAPTION_MODE_ITEM);
   p.addComponent(tree);
   p=new Panel("ComboBox");
