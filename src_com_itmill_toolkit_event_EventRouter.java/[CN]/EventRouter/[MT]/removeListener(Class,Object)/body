@@ -1,14 +1,17 @@
 {
   if (listenerList != null) {
-    final Iterator i=listenerList.iterator();
-    while (i.hasNext()) {
-      try {
-        final ListenerMethod lm=(ListenerMethod)i.next();
-        if (lm.matches(eventType,target)) {
-          i.remove();
+synchronized (listenerList) {
+      final Iterator i=listenerList.iterator();
+      while (i.hasNext()) {
+        try {
+          final ListenerMethod lm=(ListenerMethod)i.next();
+          if (lm.matches(eventType,target)) {
+            i.remove();
+            return;
+          }
         }
-      }
- catch (      final java.lang.ClassCastException e) {
+ catch (        final java.lang.ClassCastException e) {
+        }
       }
     }
   }

@@ -1,6 +1,8 @@
 {
   if (listenerList == null) {
-    listenerList=new LinkedList();
+    listenerList=Collections.synchronizedSet(new LinkedHashSet());
   }
-  listenerList.add(new ListenerMethod(eventType,object,methodName));
+synchronized (listenerList) {
+    listenerList.add(new ListenerMethod(eventType,object,methodName));
+  }
 }

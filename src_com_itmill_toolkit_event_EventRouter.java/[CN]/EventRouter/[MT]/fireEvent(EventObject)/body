@@ -1,8 +1,10 @@
 {
   if (listenerList != null) {
-    final Iterator i=new LinkedList(listenerList).iterator();
-    while (i.hasNext()) {
-      ((ListenerMethod)i.next()).receiveEvent(event);
+synchronized (listenerList) {
+      final Iterator i=listenerList.iterator();
+      while (i.hasNext()) {
+        ((ListenerMethod)i.next()).receiveEvent(event);
+      }
     }
   }
 }
