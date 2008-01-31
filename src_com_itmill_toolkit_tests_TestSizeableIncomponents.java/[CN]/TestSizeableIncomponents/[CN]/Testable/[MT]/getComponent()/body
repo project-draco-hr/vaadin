@@ -1,0 +1,35 @@
+{
+  Component c=(Component)classToTest.newInstance();
+  if (c instanceof Button) {
+    ((AbstractComponent)c).setCaption("test");
+  }
+  if (AbstractSelect.class.isAssignableFrom(c.getClass())) {
+    if (c instanceof Table) {
+      Table new_name=(Table)c;
+      new_name.setContainerDataSource(TestForTablesInitialColumnWidthLogicRendering.getTestTable(5,100).getContainerDataSource());
+    }
+ else {
+      AbstractSelect new_name=(AbstractSelect)c;
+      Container cont=TestForTablesInitialColumnWidthLogicRendering.getTestTable(2,8).getContainerDataSource();
+      new_name.setContainerDataSource(cont);
+      new_name.setItemCaptionPropertyId(cont.getContainerPropertyIds().iterator().next());
+    }
+  }
+ else   if (c instanceof ComponentContainer) {
+    ComponentContainer new_name=(ComponentContainer)c;
+    new_name.addComponent(new Label("component 1 in test container"));
+    new_name.addComponent(new Button("component 2"));
+  }
+ else   if (c instanceof Embedded) {
+    Embedded em=(Embedded)c;
+    em.setSource(new ThemeResource("test.png"));
+  }
+ else   if (c instanceof Label) {
+    ((Label)c).setValue("Test label");
+  }
+  for (Iterator i=configurations.iterator(); i.hasNext(); ) {
+    Configuration conf=(Configuration)i.next();
+    conf.configure(c);
+  }
+  return c;
+}

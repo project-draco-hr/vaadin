@@ -1,0 +1,77 @@
+{
+  initComponentList();
+  Window w=new Window();
+  setMainWindow(w);
+  w.setTheme("demo");
+  final ExpandLayout main=new ExpandLayout();
+  w.setLayout(main);
+  select=new ComboBox();
+  select.setImmediate(true);
+  select.setFilteringMode(ComboBox.FILTERINGMODE_CONTAINS);
+  select.setWidth("400px");
+  prev=new Button("<<-|");
+  prev.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      Object cur=select.getValue();
+      Testable prev=(Testable)cont.prevItemId(cur);
+      if (prev == null) {
+        getMainWindow().showNotification("No more test cases");
+      }
+ else {
+        getMainWindow().showNotification("Selected test:" + prev.getTestableName());
+        select.setValue(prev);
+        select.requestRepaint();
+      }
+    }
+  }
+);
+  next=new Button("|->>");
+  next.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      Object cur=select.getValue();
+      Testable next=(Testable)cont.nextItemId(cur);
+      if (next == null) {
+        getMainWindow().showNotification("No more test cases");
+      }
+ else {
+        getMainWindow().showNotification("Selected test:" + next.getTestableName());
+        select.setValue(next);
+        select.requestRepaint();
+      }
+    }
+  }
+);
+  OrderedLayout controllers=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+  controllers.addComponent(prev);
+  controllers.addComponent(select);
+  controllers.addComponent(next);
+  main.addComponent(controllers);
+  select.setContainerDataSource(cont);
+  select.addListener(new ComboBox.ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      Testable t=(Testable)select.getValue();
+      if (t != null) {
+        testPanel.removeAllComponents();
+        try {
+          Component c=t.getComponent();
+          if (c != null) {
+            testPanel.addComponent(c);
+          }
+        }
+ catch (        InstantiationException e) {
+          e.printStackTrace();
+        }
+catch (        IllegalAccessException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+);
+  testPanel=new Panel();
+  testPanel.setSizeFull();
+  testPanel.setLayout(new ExpandLayout());
+  testPanel.setStyleName("testable");
+  main.addComponent(testPanel);
+  main.expand(testPanel);
+}
