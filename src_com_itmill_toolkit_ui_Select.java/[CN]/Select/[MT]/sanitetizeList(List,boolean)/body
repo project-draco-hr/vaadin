@@ -1,0 +1,32 @@
+{
+  if (options.size() > pageLength) {
+    int first=currentPage * pageLength;
+    int last=first + pageLength;
+    if (needNullSelectOption) {
+      if (currentPage > 0) {
+        first--;
+      }
+      last--;
+    }
+    if (options.size() < last) {
+      last=options.size();
+    }
+    if (!optionRequest) {
+      if (!isMultiSelect()) {
+        Object selection=getValue();
+        if (selection != null) {
+          int index=options.indexOf(selection);
+          if (index != -1 && (index < first || index >= last)) {
+            int newPage=(index + (needNullSelectOption ? 1 : 0)) / pageLength;
+            currentPage=newPage;
+            return sanitetizeList(options,needNullSelectOption);
+          }
+        }
+      }
+    }
+    return options.subList(first,last);
+  }
+ else {
+    return options;
+  }
+}

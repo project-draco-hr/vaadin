@@ -47,20 +47,7 @@
     target.endTag("so");
   }
   List options=getFilteredOptions();
-  if (options.size() > pageLength) {
-    int first=currentPage * pageLength;
-    int last=first + pageLength;
-    if (needNullSelectOption) {
-      if (currentPage > 0) {
-        first--;
-      }
-      last--;
-    }
-    if (options.size() < last) {
-      last=options.size();
-    }
-    options=options.subList(first,last);
-  }
+  options=sanitetizeList(options,needNullSelectOption);
   final Iterator i=options.iterator();
   while (i.hasNext()) {
     final Object id=i.next();
@@ -94,4 +81,5 @@
   }
   target.addVariable(this,"filter",filterstring);
   target.addVariable(this,"page",currentPage);
+  optionRequest=true;
 }
