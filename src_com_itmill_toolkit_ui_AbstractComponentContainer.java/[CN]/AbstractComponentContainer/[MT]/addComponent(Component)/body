@@ -1,4 +1,20 @@
 {
+  if (c instanceof ComponentContainer) {
+    for (Component parent=this; parent != null; parent=parent.getParent()) {
+      if (parent == c) {
+        throw new IllegalArgumentException("Component cannot be added inside it's own content");
+      }
+    }
+  }
+  if (c.getParent() != null) {
+    try {
+      ComponentContainer oldParent=(ComponentContainer)c.getParent();
+      oldParent.removeComponent(c);
+    }
+ catch (    Exception e) {
+      throw new IllegalStateException("Component could be removed from it's old parent.");
+    }
+  }
   c.setParent(this);
   fireComponentAttachEvent(c);
 }
