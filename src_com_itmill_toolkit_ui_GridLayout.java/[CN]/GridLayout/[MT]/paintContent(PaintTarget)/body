@@ -9,6 +9,8 @@
   Area area=areaiterator.hasNext() ? (Area)areaiterator.next() : null;
   final HashMap cellUsed=new HashMap();
   int emptyCells=0;
+  final String[] alignmentsArray=new String[components.size()];
+  int index=0;
   for (int cury=0; cury < rows; cury++) {
     target.startTag("gr");
     for (int curx=0; curx < cols; curx++) {
@@ -35,6 +37,7 @@
           target.addAttribute("h",rows);
         }
         area.getComponent().paint(target);
+        alignmentsArray[index++]=String.valueOf(getComponentAlignment(area.getComponent()));
         target.endTag("gc");
         if (areaiterator.hasNext()) {
           area=(Area)areaiterator.next();
@@ -90,4 +93,5 @@
     }
     target.endTag("gr");
   }
+  target.addAttribute("alignments",alignmentsArray);
 }
