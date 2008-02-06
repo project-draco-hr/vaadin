@@ -8,10 +8,12 @@ synchronized (application) {
       if (application.isRunning()) {
         window=getApplicationWindow(request,application);
         if (window == null) {
+          System.err.println("Warning, could not get window for application with request URI " + request.getRequestURI());
           return;
         }
       }
  else {
+        endApplication(request,response,application);
         return;
       }
       if (repaintAll) {
@@ -147,7 +149,5 @@ catch (  final Throwable e) {
     e.printStackTrace(new PrintWriter(err));
     err.write("\n</pre></body></html>");
     err.close();
-  }
- finally {
   }
 }

@@ -1,8 +1,14 @@
 {
-  while (!applications.isEmpty()) {
-    final Application app=(Application)applications.iterator().next();
-    app.close();
-    ApplicationServlet.applicationToAjaxAppMgrMap.remove(app);
-    removeApplication(app);
+  try {
+    while (!applications.isEmpty()) {
+      final Application app=(Application)applications.iterator().next();
+      app.close();
+      ApplicationServlet.applicationToAjaxAppMgrMap.remove(app);
+      removeApplication(app);
+    }
+  }
+ catch (  Exception e) {
+    System.err.println("Could not remove application, leaking memory.");
+    e.printStackTrace();
   }
 }
