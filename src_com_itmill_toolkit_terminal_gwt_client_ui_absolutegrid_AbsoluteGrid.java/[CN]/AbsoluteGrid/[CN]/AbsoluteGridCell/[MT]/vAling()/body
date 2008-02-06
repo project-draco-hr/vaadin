@@ -1,0 +1,28 @@
+{
+  DOM.setStyleAttribute(getElement(),"paddingTop","0");
+  if (!alignmentInfo.isTop()) {
+    Widget c=getWidget();
+    if (c != null) {
+      int oh=getOffsetHeight();
+      int wt=DOM.getElementPropertyInt(container,"offsetTop");
+      int wh=c.getOffsetHeight();
+      int freeSpace=getOffsetHeight() - (DOM.getElementPropertyInt(container,"offsetTop") + c.getOffsetHeight());
+      if (Util.isIE()) {
+        freeSpace-=DOM.getElementPropertyInt(c.getElement(),"offsetTop");
+      }
+      if (freeSpace < 0) {
+        freeSpace=0;
+      }
+      if (alignmentInfo.isVerticalCenter()) {
+        ApplicationConnection.getConsole().log("oh" + oh);
+        ApplicationConnection.getConsole().log("wt" + wt);
+        ApplicationConnection.getConsole().log("wh" + wh);
+        ApplicationConnection.getConsole().log("freespace" + freeSpace);
+        DOM.setStyleAttribute(getElement(),"paddingTop",(freeSpace / 2) + "px");
+      }
+ else {
+        DOM.setStyleAttribute(getElement(),"paddingTop",(freeSpace) + "px");
+      }
+    }
+  }
+}
