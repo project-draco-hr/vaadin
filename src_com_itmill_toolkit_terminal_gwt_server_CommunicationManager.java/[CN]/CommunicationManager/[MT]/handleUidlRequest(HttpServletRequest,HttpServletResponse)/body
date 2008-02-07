@@ -42,6 +42,13 @@ synchronized (application) {
         requireLocale(application.getLocale().toString());
       }
  else {
+        for (Iterator it=paintableIdMap.keySet().iterator(); it.hasNext(); ) {
+          Component p=(Component)it.next();
+          if (p.getApplication() == null) {
+            idPaintableMap.remove(paintableIdMap.get(p));
+            it.remove();
+          }
+        }
         paintables=getDirtyComponents(window);
       }
       if (paintables != null) {
@@ -151,15 +158,6 @@ catch (  final Throwable e) {
     err.close();
   }
  finally {
-synchronized (application) {
-      for (Iterator it=paintableIdMap.keySet().iterator(); it.hasNext(); ) {
-        Component p=(Component)it.next();
-        if (p.getApplication() == null) {
-          idPaintableMap.remove(paintableIdMap.get(p));
-          it.remove();
-        }
-      }
-      Log.debug("paintableIdMap.size=" + paintableIdMap.size() + ", idPaintableMap.size="+ idPaintableMap.size());
-    }
+    Log.debug("paintableIdMap.size=" + paintableIdMap.size() + ", idPaintableMap.size="+ idPaintableMap.size());
   }
 }
