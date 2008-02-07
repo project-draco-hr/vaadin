@@ -15,7 +15,13 @@
   final boolean rowheads=getRowHeaderMode() != ROW_HEADER_MODE_HIDDEN;
   final Object[][] cells=getVisibleCells();
   final boolean iseditable=isEditable();
-  int rows=cells[0].length;
+  int rows;
+  if (reqRowsToPaint >= 0) {
+    rows=reqRowsToPaint;
+  }
+ else {
+    rows=cells[0].length;
+  }
   if (!isNullSelectionAllowed() && getNullSelectionItemId() != null && containsId(getNullSelectionItemId())) {
     total--;
     rows--;
@@ -66,7 +72,18 @@
     iscomponent[iscomponentIndex++]=colType != null && Component.class.isAssignableFrom(colType);
   }
   target.startTag("rows");
-  for (int i=0; i < cells[0].length; i++) {
+  int start=0;
+  if (reqFirstRowToPaint != -1 && firstToBeRenderedInClient != -1) {
+    start=reqFirstRowToPaint - firstToBeRenderedInClient;
+  }
+  int end=cells[0].length;
+  if (reqRowsToPaint != -1) {
+    end=start + reqRowsToPaint;
+  }
+  if (lastToBeRenderedInClient != -1 && lastToBeRenderedInClient < end) {
+    end=lastToBeRenderedInClient + 1;
+  }
+  for (int i=start; i < end; i++) {
     final Object itemId=cells[CELL_ITEMID][i];
     if (!isNullSelectionAllowed() && getNullSelectionItemId() != null && itemId == getNullSelectionItemId()) {
       continue;
@@ -211,4 +228,5 @@
     }
   }
   target.endTag("visiblecolumns");
+  rowFetch=false;
 }

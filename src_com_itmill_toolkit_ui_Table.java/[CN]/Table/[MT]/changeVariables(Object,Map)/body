@@ -11,6 +11,13 @@
     }
   }
   if (variables.containsKey("reqfirstrow") || variables.containsKey("reqrows")) {
+    try {
+      firstToBeRenderedInClient=((Integer)variables.get("firstToBeRendered")).intValue();
+      lastToBeRenderedInClient=((Integer)variables.get("lastToBeRendered")).intValue();
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
     Integer value=(Integer)variables.get("reqfirstrow");
     if (value != null) {
       reqFirstRowToPaint=value.intValue();
@@ -18,9 +25,12 @@
     value=(Integer)variables.get("reqrows");
     if (value != null) {
       reqRowsToPaint=value.intValue();
+      if (reqFirstRowToPaint + reqRowsToPaint > size()) {
+        reqRowsToPaint=size() - reqFirstRowToPaint;
+      }
     }
     pageBuffer=null;
-    requestRepaint();
+    requestRepaint(true);
   }
   if (variables.containsKey("action")) {
     final StringTokenizer st=new StringTokenizer((String)variables.get("action"),",");

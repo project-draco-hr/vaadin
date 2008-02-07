@@ -27,7 +27,11 @@
   if (firstRowInViewPort - pageLength * CACHE_RATE > lastRendered || firstRowInViewPort + pageLength + pageLength * CACHE_RATE < firstRendered) {
     ApplicationConnection.getConsole().log("Table: need a totally new set");
     rowRequestHandler.setReqFirstRow((int)(firstRowInViewPort - pageLength * CACHE_RATE));
-    rowRequestHandler.setReqRows((int)(2 * CACHE_RATE * pageLength + pageLength));
+    int last=firstRowInViewPort + (int)(CACHE_RATE * pageLength + pageLength);
+    if (last > totalRows) {
+      last=totalRows - 1;
+    }
+    rowRequestHandler.setReqRows(last - rowRequestHandler.getReqFirstRow());
     rowRequestHandler.deferRowFetch();
     return;
   }

@@ -1,24 +1,11 @@
 {
+  LinkedList oldListenedProperties=listenedProperties;
+  LinkedList oldVisibleComponents=visibleComponents;
   if (pageBuffer != null && isPageBufferingEnabled()) {
     return pageBuffer;
   }
-  if (listenedProperties == null) {
-    listenedProperties=new LinkedList();
-  }
- else   if (reqRowsToPaint < 0) {
-    for (final Iterator i=listenedProperties.iterator(); i.hasNext(); ) {
-      ((Property.ValueChangeNotifier)i.next()).removeListener(this);
-    }
-  }
-  if (visibleComponents == null) {
-    visibleComponents=new LinkedList();
-  }
- else   if (reqRowsToPaint < 0) {
-    for (final Iterator i=visibleComponents.iterator(); i.hasNext(); ) {
-      ((Component)i.next()).setParent(null);
-    }
-    visibleComponents.clear();
-  }
+  listenedProperties=new LinkedList();
+  visibleComponents=new LinkedList();
   final Object[] colids=getVisibleColumns();
   final int cols=colids.length;
   final int pagelen=getPageLength();
@@ -30,12 +17,17 @@
   if (pagelen > 0 && pagelen < rows) {
     rows=pagelen;
   }
-  if (reqRowsToPaint >= 0) {
-    rows=reqRowsToPaint;
+  if (rowFetch && lastToBeRenderedInClient - firstToBeRenderedInClient > 0) {
+    rows=lastToBeRenderedInClient - firstToBeRenderedInClient;
   }
   Object id;
-  if (reqFirstRowToPaint >= 0 && reqFirstRowToPaint < size()) {
-    firstIndex=reqFirstRowToPaint;
+  if (rowFetch && firstToBeRenderedInClient >= 0) {
+    if (firstToBeRenderedInClient < size()) {
+      firstIndex=firstToBeRenderedInClient;
+    }
+ else {
+      firstIndex=size() - 1;
+    }
   }
   if (size() > 0) {
     if (rows + firstIndex > size()) {
@@ -120,6 +112,28 @@ cells=temp;
 }
 if (isPageBufferingEnabled()) {
 pageBuffer=cells;
+}
+if (oldListenedProperties != null) {
+int c=0;
+for (final Iterator i=oldListenedProperties.iterator(); i.hasNext(); ) {
+Property.ValueChangeNotifier o=(ValueChangeNotifier)i.next();
+if (!listenedProperties.contains(o)) {
+  o.removeListener(this);
+  c++;
+}
+}
+System.out.println(c + " listeners removed");
+}
+if (oldVisibleComponents != null) {
+int count=0;
+for (final Iterator i=oldVisibleComponents.iterator(); i.hasNext(); ) {
+Component c=(Component)i.next();
+if (!visibleComponents.contains(c)) {
+  c.setParent(null);
+  count++;
+}
+}
+System.out.println(count + " components detached");
 }
 return cells;
 }
