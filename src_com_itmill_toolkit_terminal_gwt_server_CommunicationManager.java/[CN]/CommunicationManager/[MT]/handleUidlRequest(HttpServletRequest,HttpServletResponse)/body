@@ -138,7 +138,7 @@ synchronized (application) {
     out.close();
   }
  catch (  SocketException e) {
-    System.err.println("Warning: SocketException in ApplicationServlet");
+    System.err.println("Warning: SocketException in CommunicationManager." + " Most likely client (browser) closed socket.");
   }
 catch (  final Throwable e) {
     e.printStackTrace();
@@ -149,5 +149,17 @@ catch (  final Throwable e) {
     e.printStackTrace(new PrintWriter(err));
     err.write("\n</pre></body></html>");
     err.close();
+  }
+ finally {
+synchronized (application) {
+      for (Iterator it=paintableIdMap.keySet().iterator(); it.hasNext(); ) {
+        Component p=(Component)it.next();
+        if (p.getApplication() == null) {
+          idPaintableMap.remove(paintableIdMap.get(p));
+          it.remove();
+        }
+      }
+      Log.debug("paintableIdMap.size=" + paintableIdMap.size() + ", idPaintableMap.size="+ idPaintableMap.size());
+    }
   }
 }
