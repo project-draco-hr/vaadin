@@ -1,0 +1,138 @@
+{
+  if (getParent() == null) {
+    return;
+  }
+  if (isContentRefreshesEnabled) {
+    LinkedList oldListenedProperties=listenedProperties;
+    LinkedList oldVisibleComponents=visibleComponents;
+    listenedProperties=new LinkedList();
+    visibleComponents=new LinkedList();
+    final Object[] colids=getVisibleColumns();
+    final int cols=colids.length;
+    final int pagelen=getPageLength();
+    int firstIndex=getCurrentPageFirstItemIndex();
+    int rows=size();
+    if (rows > 0 && firstIndex >= 0) {
+      rows-=firstIndex;
+    }
+    if (pagelen > 0 && pagelen < rows) {
+      rows=pagelen;
+    }
+    if (lastToBeRenderedInClient - firstToBeRenderedInClient > 0) {
+      rows=lastToBeRenderedInClient - firstToBeRenderedInClient + 1;
+    }
+    Object id;
+    if (firstToBeRenderedInClient >= 0) {
+      if (firstToBeRenderedInClient < size()) {
+        firstIndex=firstToBeRenderedInClient;
+      }
+ else {
+        firstIndex=size() - 1;
+      }
+    }
+    if (size() > 0) {
+      if (rows + firstIndex > size()) {
+        rows=size() - firstIndex;
+      }
+    }
+ else {
+      rows=0;
+    }
+    Object[][] cells=new Object[cols + CELL_FIRSTCOL][rows];
+    if (rows == 0) {
+      pageBuffer=cells;
+      return;
+    }
+    if (items instanceof Container.Indexed) {
+      id=((Container.Indexed)items).getIdByIndex(firstIndex);
+    }
+ else {
+      id=((Container.Ordered)items).firstItemId();
+      for (int i=0; i < firstIndex; i++) {
+        id=((Container.Ordered)items).nextItemId(id);
+      }
+    }
+    final int headmode=getRowHeaderMode();
+    final boolean[] iscomponent=new boolean[cols];
+    for (int i=0; i < cols; i++) {
+      iscomponent[i]=Component.class.isAssignableFrom(getType(colids[i]));
+    }
+    int filledRows=0;
+    for (int i=0; i < rows && id != null; i++) {
+      cells[CELL_ITEMID][i]=id;
+      cells[CELL_KEY][i]=itemIdMapper.key(id);
+      if (headmode != ROW_HEADER_MODE_HIDDEN) {
+switch (headmode) {
+case ROW_HEADER_MODE_INDEX:
+          cells[CELL_HEADER][i]=String.valueOf(i + firstIndex + 1);
+        break;
+default :
+      cells[CELL_HEADER][i]=getItemCaption(id);
+  }
+  cells[CELL_ICON][i]=getItemIcon(id);
+}
+if (cols > 0) {
+  for (int j=0; j < cols; j++) {
+    Object value=null;
+    final Property p=getContainerProperty(id,colids[j]);
+    if (p != null) {
+      if (p instanceof Property.ValueChangeNotifier) {
+        if (oldListenedProperties == null || !oldListenedProperties.contains(p)) {
+          ((Property.ValueChangeNotifier)p).addListener(this);
+        }
+        listenedProperties.add(p);
+      }
+      if (iscomponent[j]) {
+        value=p.getValue();
+      }
+ else       if (p != null) {
+        value=getPropertyValue(id,colids[j],p);
+      }
+ else {
+        value=getPropertyValue(id,colids[j],null);
+      }
+    }
+ else {
+      value="";
+    }
+    if (value instanceof Component) {
+      if (oldVisibleComponents == null || !oldVisibleComponents.contains(value)) {
+        ((Component)value).setParent(this);
+      }
+      visibleComponents.add(value);
+    }
+    cells[CELL_FIRSTCOL + j][i]=value;
+  }
+}
+id=((Container.Ordered)items).nextItemId(id);
+filledRows++;
+}
+if (filledRows != cells[0].length) {
+final Object[][] temp=new Object[cells.length][filledRows];
+for (int i=0; i < cells.length; i++) {
+  for (int j=0; j < filledRows; j++) {
+    temp[i][j]=cells[i][j];
+  }
+}
+cells=temp;
+}
+pageBuffer=cells;
+if (oldVisibleComponents != null) {
+for (final Iterator i=oldVisibleComponents.iterator(); i.hasNext(); ) {
+  Component c=(Component)i.next();
+  if (!visibleComponents.contains(c)) {
+    c.setParent(null);
+  }
+}
+}
+if (oldListenedProperties != null) {
+for (final Iterator i=oldListenedProperties.iterator(); i.hasNext(); ) {
+  Property.ValueChangeNotifier o=(ValueChangeNotifier)i.next();
+  if (!listenedProperties.contains(o)) {
+    o.removeListener(this);
+  }
+}
+}
+requestRepaint();
+}
+}

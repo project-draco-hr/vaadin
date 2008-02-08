@@ -1,4 +1,6 @@
 {
+  boolean clientNeedsContentRefresh=false;
+  disableContentRefreshing();
   if (!isSelectable() && variables.containsKey("selected")) {
     variables=new HashMap(variables);
     variables.remove("selected");
@@ -29,8 +31,7 @@
         reqRowsToPaint=size() - reqFirstRowToPaint;
       }
     }
-    pageBuffer=null;
-    requestRepaint(true);
+    clientNeedsContentRefresh=true;
   }
   if (variables.containsKey("action")) {
     final StringTokenizer st=new StringTokenizer((String)variables.get("action"),",");
@@ -63,6 +64,7 @@
     }
     if (doSort) {
       this.sort();
+      clientNeedsContentRefresh=true;
     }
   }
   if (isColumnCollapsingAllowed()) {
@@ -78,6 +80,7 @@
       }
  catch (      final Exception ignored) {
       }
+      clientNeedsContentRefresh=true;
     }
   }
   if (isColumnReorderingAllowed()) {
@@ -91,6 +94,8 @@
       }
  catch (      final Exception ignored) {
       }
+      clientNeedsContentRefresh=true;
     }
   }
+  enableContentRefreshing(clientNeedsContentRefresh);
 }

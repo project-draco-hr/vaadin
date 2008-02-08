@@ -1,6 +1,11 @@
 {
-  pageBuffer=null;
   super.containerItemSetChange(event);
+  if (event instanceof IndexedContainer.ItemSetChangeEvent) {
+    IndexedContainer.ItemSetChangeEvent evt=(IndexedContainer.ItemSetChangeEvent)event;
+    if (firstToBeRenderedInClient <= evt.getAddedItemIndex() && lastToBeRenderedInClient >= evt.getAddedItemIndex()) {
+      return;
+    }
+  }
   setCurrentPageFirstItemIndex(getCurrentPageFirstItemIndex());
-  refreshCurrentPage();
+  refreshRenderedCells();
 }
