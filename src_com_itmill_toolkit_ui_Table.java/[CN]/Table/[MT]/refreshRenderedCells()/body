@@ -57,6 +57,13 @@
     for (int i=0; i < cols; i++) {
       iscomponent[i]=Component.class.isAssignableFrom(getType(colids[i]));
     }
+    int firstIndexNotInCache;
+    if (pageBuffer != null) {
+      firstIndexNotInCache=pageBufferFirstIndex + pageBuffer[CELL_ITEMID].length;
+    }
+ else {
+      firstIndexNotInCache=-1;
+    }
     int filledRows=0;
     for (int i=0; i < rows && id != null; i++) {
       cells[CELL_ITEMID][i]=id;
@@ -73,8 +80,9 @@ default :
 }
 if (cols > 0) {
   for (int j=0; j < cols; j++) {
-    Object value=null;
     final Property p=getContainerProperty(id,colids[j]);
+    Object value=null;
+    int index=firstIndex + i;
     if (p != null) {
       if (p instanceof Property.ValueChangeNotifier) {
         if (oldListenedProperties == null || !oldListenedProperties.contains(p)) {
@@ -82,14 +90,20 @@ if (cols > 0) {
         }
         listenedProperties.add(p);
       }
-      if (iscomponent[j]) {
-        value=p.getValue();
-      }
- else       if (p != null) {
-        value=getPropertyValue(id,colids[j],p);
+      if (index < firstIndexNotInCache && index >= pageBufferFirstIndex) {
+        int indexInOldBuffer=index - pageBufferFirstIndex;
+        value=pageBuffer[CELL_FIRSTCOL + j][indexInOldBuffer];
       }
  else {
-        value=getPropertyValue(id,colids[j],null);
+        if (iscomponent[j]) {
+          value=p.getValue();
+        }
+ else         if (p != null) {
+          value=getPropertyValue(id,colids[j],p);
+        }
+ else {
+          value=getPropertyValue(id,colids[j],null);
+        }
       }
     }
  else {
@@ -116,6 +130,7 @@ for (int i=0; i < cells.length; i++) {
 }
 cells=temp;
 }
+pageBufferFirstIndex=firstIndex;
 pageBuffer=cells;
 if (oldVisibleComponents != null) {
 for (final Iterator i=oldVisibleComponents.iterator(); i.hasNext(); ) {
