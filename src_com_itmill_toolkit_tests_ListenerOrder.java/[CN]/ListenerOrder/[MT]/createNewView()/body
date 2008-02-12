@@ -1,0 +1,49 @@
+{
+  final Window main=new Window("Test window");
+  setMainWindow(main);
+  main.removeAllComponents();
+  main.addComponent(new Label("Testing multiple listeners."));
+  b1=new Button("Button 1");
+  main.addComponent(b1);
+  MyClickListener mutualListener=new MyClickListener("mutual1");
+  addListeners(b1,1);
+  b1.addListener(mutualListener);
+  b1.addListener(mutualListener);
+  b1.addListener((Button.ClickListener)this);
+  b1.addListener(mutualListener);
+  Button.ClickListener b1Listener=addListeners(b1,3);
+  b1.addListener(mutualListener);
+  b1.addListener((Button.ClickListener)this);
+  b1.addListener((ValueChangeListener)this);
+  b1.addListener(mutualListener);
+  b1.removeListener(b1Listener);
+  b1.removeListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+    }
+  }
+);
+  s1=new Select("Select 1");
+  main.addComponent(s1);
+  s1.setImmediate(true);
+  s1.setNewItemsAllowed(true);
+  s1.addItem("first");
+  s1.addItem("first");
+  s1.addItem("first");
+  s1.addItem("second");
+  s1.addItem("third");
+  s1.addItem("fourth");
+  s1.addListener((ValueChangeListener)this);
+  s1.addListener((PropertySetChangeListener)this);
+  s1.addListener((ItemSetChangeListener)this);
+  s1.addListener((ItemSetChangeListener)this);
+  s1.addListener((PropertySetChangeListener)this);
+  s1.addListener((PropertySetChangeListener)this);
+  s1.addListener((ItemSetChangeListener)this);
+  s1.addListener((ValueChangeListener)this);
+  s1.addListener((ValueChangeListener)this);
+  Item i=s1.getItem("second");
+  for (Iterator it=i.getItemPropertyIds().iterator(); it.hasNext(); ) {
+    Object o=it.next();
+    System.out.println("[" + o + "]");
+  }
+}
