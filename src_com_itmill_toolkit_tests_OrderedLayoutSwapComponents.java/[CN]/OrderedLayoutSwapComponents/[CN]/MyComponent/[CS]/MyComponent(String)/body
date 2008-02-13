@@ -1,0 +1,42 @@
+{
+  OrderedLayout ol=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+  ol.setDebugId(name.replaceAll(" ",""));
+  ol.addComponent(new Label(name));
+  up=new Button("up");
+  up.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      int newIndex=order.indexOf(MyComponent.this) - 1;
+      MyComponent old=(MyComponent)order.get(newIndex);
+      main.replaceComponent(old,MyComponent.this);
+      order.remove(MyComponent.this);
+      order.add(newIndex,MyComponent.this);
+      if (newIndex == 0) {
+        MyComponent.this.setMode(FIRST);
+      }
+ else {
+        MyComponent.this.setMode(69);
+      }
+    }
+  }
+);
+  ol.addComponent(up);
+  down=new Button("down");
+  down.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      int newIndex=order.indexOf(MyComponent.this) + 1;
+      MyComponent old=(MyComponent)order.get(newIndex);
+      main.replaceComponent(old,MyComponent.this);
+      order.remove(MyComponent.this);
+      order.add(newIndex,MyComponent.this);
+      if (newIndex == order.size() - 1) {
+        MyComponent.this.setMode(LAST);
+      }
+ else {
+        MyComponent.this.setMode(69);
+      }
+    }
+  }
+);
+  ol.addComponent(down);
+  setCompositionRoot(ol);
+}
