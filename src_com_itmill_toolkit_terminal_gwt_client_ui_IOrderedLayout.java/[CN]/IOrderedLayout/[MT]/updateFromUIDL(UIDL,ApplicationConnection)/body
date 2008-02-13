@@ -15,6 +15,7 @@
   final Iterator oldIt=oldWidgets.iterator();
   final Iterator newIt=uidlWidgets.iterator();
   final Iterator newUidl=uidl.getChildIterator();
+  final ArrayList paintedWidgets=new ArrayList();
   Widget oldChild=null;
   while (newIt.hasNext()) {
     final Widget child=(Widget)newIt.next();
@@ -22,7 +23,10 @@
     if (oldChild == null && oldIt.hasNext()) {
       while (oldIt.hasNext()) {
         oldChild=(Widget)oldIt.next();
-        if (uidlWidgets.contains(oldChild)) {
+        if (paintedWidgets.contains(oldChild)) {
+          continue;
+        }
+ else         if (uidlWidgets.contains(oldChild)) {
           break;
         }
  else {
@@ -51,6 +55,7 @@
       insert(child,index);
     }
     ((Paintable)child).updateFromUIDL(childUidl,client);
+    paintedWidgets.add(child);
   }
   while (oldIt.hasNext()) {
     oldChild=(Widget)oldIt.next();
