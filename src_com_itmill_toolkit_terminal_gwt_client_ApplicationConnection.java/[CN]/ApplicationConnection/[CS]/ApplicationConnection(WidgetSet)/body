@@ -15,7 +15,16 @@
   }
   if (checkTestingMode()) {
     usePaintableIdsInDOM=true;
-    initializeTestingTools(this);
+    initializeTestingTools();
+    Window.addWindowCloseListener(new WindowCloseListener(){
+      public void onWindowClosed(){
+        uninitializeTestingTools();
+      }
+      public String onWindowClosing(){
+        return null;
+      }
+    }
+);
   }
   initializeClientHooks();
   makeUidlRequest("repaintAll=1");
