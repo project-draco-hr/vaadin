@@ -1,0 +1,48 @@
+{
+  root.addComponent(header);
+  header.setWidth("100%");
+  header.setHeight("26px");
+  Label label=new Label(labelString);
+  label.setStyleName("caption");
+  header.addComponent(label);
+  OrderedLayout buttonContainer=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+  header.addComponent(buttonContainer);
+  Button edit=new Button("Edit");
+  edit.setStyleName("link");
+  buttonContainer.addComponent(edit);
+  Button copy=new Button("Copy");
+  copy.setStyleName("link");
+  buttonContainer.addComponent(copy);
+  Button move=new Button("Move");
+  move.setStyleName("link");
+  buttonContainer.addComponent(move);
+  Button delete=new Button("Delete");
+  delete.setStyleName("link");
+  buttonContainer.addComponent(delete);
+  Button bind=new Button("Bind");
+  bind.setStyleName("link");
+  buttonContainer.addComponent(bind);
+  Button options=new Button("Options...");
+  options.setStyleName("link");
+  buttonContainer.addComponent(options);
+  Button collapse=new Button("Collapse");
+  collapse.setStyleName("collapse");
+  collapse.addListener(new Button.ClickListener(){
+    public void buttonClick(    Button.ClickEvent event){
+      boolean visible=container.isVisible();
+      container.setVisible(!visible);
+      header.setHeight(!visible ? "26px" : "25px");
+      if (visible) {
+        lastHeight=root.getHeight();
+        lastHeightUnit=root.getHeightUnits();
+        root.setHeight("25px");
+      }
+ else {
+        root.setHeight(lastHeight,lastHeightUnit);
+      }
+      event.getButton().setCaption(visible ? "Expand" : "Collapse");
+    }
+  }
+);
+  buttonContainer.addComponent(collapse);
+}
