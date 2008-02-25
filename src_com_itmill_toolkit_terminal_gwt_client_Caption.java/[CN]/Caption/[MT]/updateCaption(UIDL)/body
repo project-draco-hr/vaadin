@@ -1,7 +1,9 @@
 {
   setVisible(!uidl.getBooleanAttribute("invisible"));
   setStyleName(getElement(),"i-disabled",uidl.hasAttribute("disabled"));
+  boolean isEmpty=true;
   if (uidl.hasAttribute("error")) {
+    isEmpty=false;
     final UIDL errorUidl=uidl.getErrors();
     if (errorIndicatorElement == null) {
       errorIndicatorElement=DOM.createDiv();
@@ -23,6 +25,7 @@
       DOM.appendChild(getElement(),icon.getElement());
     }
     icon.setUri(uidl.getStringAttribute("icon"));
+    isEmpty=false;
   }
  else {
     if (icon != null) {
@@ -35,7 +38,14 @@
       captionText=DOM.createSpan();
       DOM.appendChild(getElement(),captionText);
     }
-    DOM.setInnerText(captionText,uidl.getStringAttribute("caption"));
+    String c=uidl.getStringAttribute("caption");
+    if (c == null) {
+      c="";
+    }
+ else {
+      isEmpty=false;
+    }
+    DOM.setInnerText(captionText,c);
   }
  else {
   }
@@ -46,5 +56,8 @@
  else {
       setTitle(uidl.getStringAttribute("description"));
     }
+  }
+  if (isEmpty && Util.isIE7()) {
+    setHeight("0px");
   }
 }
