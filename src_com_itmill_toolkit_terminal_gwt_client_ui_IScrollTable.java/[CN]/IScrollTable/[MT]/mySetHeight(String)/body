@@ -1,10 +1,19 @@
 {
   if (height.equals("100%")) {
     final int borders=getBorderSpace();
-    final Element elem=getElement();
-    final Element parentElem=DOM.getParent(elem);
+    final Element parentElem=DOM.getParent(getElement());
     DOM.setStyleAttribute(getElement(),"position","absolute");
-    final int availPixels=DOM.getElementPropertyInt(parentElem,"offsetHeight");
+    int availPixels=DOM.getElementPropertyInt(parentElem,"offsetHeight");
+    if (Util.isIE()) {
+      if (availPixels == 0) {
+        if (oldAvailPixels > 0) {
+          availPixels=oldAvailPixels;
+        }
+      }
+ else {
+        oldAvailPixels=availPixels;
+      }
+    }
     DOM.setStyleAttribute(getElement(),"position","static");
     int pixelSize=(availPixels - borders);
     if (pixelSize < 0) {
