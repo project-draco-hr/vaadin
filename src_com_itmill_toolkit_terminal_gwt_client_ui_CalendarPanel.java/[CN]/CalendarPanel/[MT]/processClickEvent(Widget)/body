@@ -19,4 +19,11 @@
     showingDate.setMonth(showingDate.getMonth() + 1);
     updateCalendar();
   }
+  if (datefield.getCurrentResolution() == IDateField.RESOLUTION_YEAR || datefield.getCurrentResolution() == IDateField.RESOLUTION_MONTH) {
+    datefield.setCurrentDate(new Date(showingDate.getTime()));
+    if (datefield.getCurrentResolution() == IDateField.RESOLUTION_MONTH) {
+      datefield.getClient().updateVariable(datefield.getId(),"month",datefield.getCurrentDate().getMonth() + 1,false);
+    }
+    datefield.getClient().updateVariable(datefield.getId(),"year",datefield.getCurrentDate().getYear() + 1900,datefield.isImmediate());
+  }
 }
