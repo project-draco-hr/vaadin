@@ -1,15 +1,12 @@
 {
-  Date date=datefield.getCurrentDate();
-  boolean selected=true;
-  if (date == null) {
-    date=new Date();
-    selected=false;
-  }
-  final int startWeekDay=datefield.getDateTimeService().getStartWeekDay(date);
-  final int numDays=DateTimeService.getNumberOfDaysInMonth(date);
+  Date currentDate=datefield.getCurrentDate();
+  Date showing=datefield.getShowingDate();
+  boolean selected=(currentDate != null && currentDate.getMonth() == showing.getMonth() && currentDate.getYear() == showing.getYear());
+  final int startWeekDay=datefield.getDateTimeService().getStartWeekDay(datefield.getShowingDate());
+  final int numDays=DateTimeService.getNumberOfDaysInMonth(datefield.getShowingDate());
   int dayCount=0;
   final Date today=new Date();
-  final Date curr=new Date(date.getTime());
+  final Date curr=new Date(datefield.getShowingDate().getTime());
   for (int row=2; row < 8; row++) {
     for (int col=0; col < 7; col++) {
       if (!(row == 2 && col < startWeekDay)) {
@@ -31,10 +28,10 @@
           if (!isEnabledDate(curr)) {
             cssClass+=" " + baseclass + "-disabled";
           }
-          if (selected && date.getDate() == dayCount) {
+          if (selected && datefield.getShowingDate().getDate() == dayCount) {
             cssClass+=" " + baseclass + "-selected";
           }
-          if (today.getDate() == dayCount && today.getMonth() == date.getMonth() && today.getYear() == date.getYear()) {
+          if (today.getDate() == dayCount && today.getMonth() == datefield.getShowingDate().getMonth() && today.getYear() == datefield.getShowingDate().getYear()) {
             cssClass+=" " + baseclass + "-today";
           }
           if (title.length() > 0) {
