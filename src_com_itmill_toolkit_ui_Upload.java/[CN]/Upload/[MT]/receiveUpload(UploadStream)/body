@@ -7,13 +7,13 @@
   fireStarted(filename,type);
   final OutputStream out=receiver.receiveUpload(filename,type);
   if (out == null) {
-    fireUploadInterrupted(filename,type,0);
+    fireNoOutputStream(filename,type,0);
     endUpload();
-    throw new RuntimeException("Error getting outputstream from upload receiver");
+    return;
   }
   final InputStream in=upload.getStream();
   if (null == in) {
-    fireUploadInterrupted(filename,type,0);
+    fireNoInputStream(filename,type,0);
     endUpload();
     return;
   }
@@ -33,8 +33,8 @@
     endUpload();
     requestRepaint();
   }
- catch (  final IOException e) {
-    fireUploadInterrupted(filename,type,totalBytes);
+ catch (  final Exception e) {
+    fireUploadInterrupted(filename,type,totalBytes,e);
     endUpload();
   }
 }
