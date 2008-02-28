@@ -65,14 +65,15 @@
       endApplication(request,response,application);
       return;
     }
+    Window window=null;
+    window=getApplicationWindow(request,application);
+    final Map parameters=request.getParameterMap();
+    if (window != null && parameters != null) {
+      window.handleParameters(parameters);
+    }
     DownloadStream download=null;
     download=handleURI(application,request,response);
     if (download == null) {
-      response.setHeader("Cache-Control","no-cache");
-      response.setHeader("Pragma","no-cache");
-      response.setDateHeader("Expires",0);
-      Window window=null;
-      window=getApplicationWindow(request,application);
       if (window.getTerminal() == null) {
         window.setTerminal(browser);
       }
@@ -83,13 +84,9 @@
       if (handleResourceRequest(request,response,themeName)) {
         return;
       }
-      final Map parameters=request.getParameterMap();
-      if (window != null && parameters != null) {
-        window.handleParameters(parameters);
-      }
       writeAjaxPage(request,response,window,themeName,application);
     }
-    if (download != null) {
+ else {
       handleDownload(download,request,response);
     }
   }
