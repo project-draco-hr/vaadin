@@ -9,14 +9,15 @@ startX=DOM.eventGetScreenX(event);
 startY=DOM.eventGetScreenY(event);
 origW=DOM.getIntStyleAttribute(getElement(),"width") - BORDER_WIDTH_HORIZONTAL;
 origH=getWidget().getOffsetHeight();
-DOM.eventPreventDefault(event);
-DOM.addEventPreview(this);
+DOM.setCapture(getElement());
 break;
 case Event.ONMOUSEUP:
 resizing=false;
-DOM.removeEventPreview(this);
+DOM.releaseCapture(getElement());
 setSize(event,true);
 break;
+case Event.ONLOSECAPTURE:
+resizing=false;
 case Event.ONMOUSEMOVE:
 if (resizing) {
 setSize(event,false);
