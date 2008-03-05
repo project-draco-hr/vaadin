@@ -4,16 +4,20 @@
   int totalExplicitColumnsWidths=0;
   int total=0;
   final int[] widths=new int[tHead.visibleCells.size()];
+  if (width == null) {
+    bodyContainer.setWidth("");
+    tHead.setWidth("");
+    super.setWidth("");
+  }
   tHead.enableBrowserIntelligence();
   while (headCells.hasNext()) {
     final HeaderCell hCell=(HeaderCell)headCells.next();
-    int w;
-    if (hCell.getWidth() > 0) {
-      w=hCell.getWidth();
+    int w=hCell.getWidth();
+    if (w > 0) {
       totalExplicitColumnsWidths+=w;
     }
  else {
-      final int hw=DOM.getElementPropertyInt(hCell.getElement(),"offsetWidth");
+      final int hw=hCell.getOffsetWidth();
       final int cw=tBody.getColWidth(i);
       w=(hw > cw ? hw : cw) + IScrollTableBody.CELL_EXTRA_WIDTH;
     }
