@@ -35,8 +35,10 @@
   if (uidl.hasAttribute("caption")) {
     setCaption(uidl.getStringAttribute("caption"));
   }
-  UIDL childUidl=uidl.getChildUIDL(0);
-  if ("open".equals(childUidl.getTag())) {
+  boolean showingUrl=false;
+  int childIndex=0;
+  UIDL childUidl=uidl.getChildUIDL(childIndex++);
+  while ("open".equals(childUidl.getTag())) {
     final String parsedUri=client.translateToolkitUri(childUidl.getStringAttribute("src"));
     if (!childUidl.hasAttribute("name")) {
       final Frame frame=new Frame();
@@ -45,27 +47,29 @@
       DOM.setStyleAttribute(frame.getElement(),"border","0px");
       frame.setUrl(parsedUri);
       contentPanel.setWidget(frame);
+      showingUrl=true;
     }
  else {
       final String target=childUidl.getStringAttribute("name");
       Window.open(parsedUri,target,"");
     }
+    childUidl=uidl.getChildUIDL(childIndex++);
   }
- else {
-    final Paintable lo=client.getPaintable(childUidl);
-    if (layout != null) {
-      if (layout != lo) {
-        client.unregisterPaintable(layout);
-        contentPanel.remove((Widget)layout);
+  final Paintable lo=client.getPaintable(childUidl);
+  if (layout != null) {
+    if (layout != lo) {
+      client.unregisterPaintable(layout);
+      contentPanel.remove((Widget)layout);
+      if (!showingUrl) {
         contentPanel.setWidget((Widget)lo);
-        layout=lo;
       }
+      layout=lo;
     }
- else {
-      contentPanel.setWidget((Widget)lo);
-    }
-    lo.updateFromUIDL(childUidl,client);
   }
+ else   if (!showingUrl) {
+    contentPanel.setWidget((Widget)lo);
+  }
+  lo.updateFromUIDL(childUidl,client);
   if (uidl.getChildCount() > 1) {
     final int cnt=uidl.getChildCount();
     for (int i=1; i < cnt; i++) {
@@ -80,6 +84,10 @@
         for (final Iterator it=childUidl.getChildIterator(); it.hasNext(); ) {
           final UIDL notification=(UIDL)it.next();
           String html="";
+          if (notification.hasAttribute("icon")) {
+            final String parsedUri=client.translateToolkitUri(notification.getStringAttribute("icon"));
+            html+="<IMG src=\"" + parsedUri + "\" />";
+          }
           if (notification.hasAttribute("caption")) {
             html+="<H1>" + notification.getStringAttribute("caption") + "</H1>";
           }
