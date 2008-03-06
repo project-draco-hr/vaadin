@@ -3,10 +3,10 @@
   final String applicationRunner=servletConfig.getInitParameter("applicationRunner");
   if (applicationRunner != null) {
     if ("true".equals(applicationRunner)) {
-      applicationRunnerConfigured=true;
+      isApplicationRunnerServlet=true;
     }
  else     if ("false".equals(applicationRunner)) {
-      applicationRunnerConfigured=false;
+      isApplicationRunnerServlet=false;
     }
  else {
       throw new ServletException("If applicationRunner parameter is given for an application, it must be 'true' or 'false'");
@@ -48,7 +48,7 @@
     }
   }
   this.classLoader=classLoader;
-  if (!applicationRunnerConfigured) {
+  if (!isApplicationRunnerServlet) {
     final String applicationClassName=servletConfig.getInitParameter("application");
     if (applicationClassName == null) {
       throw new ServletException("Application not specified in servlet parameters");
