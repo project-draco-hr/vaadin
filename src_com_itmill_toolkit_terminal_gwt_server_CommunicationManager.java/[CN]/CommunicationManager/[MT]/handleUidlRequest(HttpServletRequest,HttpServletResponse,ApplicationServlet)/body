@@ -33,6 +33,11 @@ synchronized (application) {
       response.setContentType("application/json; charset=UTF-8");
       outWriter.print("for(;;);[{");
       outWriter.print("\"changes\":[");
+      Window newWindow=getApplicationWindow(request,application);
+      if (newWindow != window) {
+        window=newWindow;
+        repaintAll=true;
+      }
       JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
       ArrayList paintables;
       if (repaintAll) {
@@ -93,7 +98,11 @@ synchronized (application) {
       paintTarget.close();
       outWriter.print("]");
       outWriter.print(", \"meta\" : {");
-      final boolean metaOpen=false;
+      boolean metaOpen=false;
+      if (repaintAll) {
+        metaOpen=true;
+        outWriter.write("\"repaintAll\":true");
+      }
       final Paintable f=(Paintable)application.consumeFocus();
       if (f != null) {
         if (metaOpen) {

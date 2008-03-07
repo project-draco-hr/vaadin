@@ -31,6 +31,15 @@
       LocaleService.addLocale((JSONObject)l.get(i));
     }
   }
+  JSONObject meta=null;
+  if (((JSONObject)json).containsKey("meta")) {
+    meta=((JSONObject)json).get("meta").isObject();
+    if (meta.containsKey("repaintAll")) {
+      view.clear();
+      idToPaintable.clear();
+      paintableToId.clear();
+    }
+  }
   final JSONArray changes=(JSONArray)((JSONObject)json).get("changes");
   for (int i=0; i < changes.size(); i++) {
     try {
@@ -59,8 +68,7 @@
       e.printStackTrace();
     }
   }
-  if (((JSONObject)json).containsKey("meta")) {
-    final JSONObject meta=((JSONObject)json).get("meta").isObject();
+  if (meta != null) {
     if (meta.containsKey("focus")) {
       final String focusPid=meta.get("focus").isString().stringValue();
       final Paintable toBeFocused=getPaintable(focusPid);
