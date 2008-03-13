@@ -1,8 +1,13 @@
 {
-  final Paintable content=client.getPaintable(contentUidl);
-  if (content != getWidget()) {
-    client.unregisterPaintable((Paintable)getWidget());
+  final Paintable newPntbl=client.getPaintable(contentUidl);
+  if (getPaintable() == null) {
+    add((Widget)newPntbl,content);
   }
-  setWidget((Widget)content);
-  content.updateFromUIDL(contentUidl,client);
+ else   if (getPaintable() != newPntbl) {
+    client.unregisterPaintable((Paintable)getWidget(1));
+    remove(1);
+    add((Widget)newPntbl,content);
+  }
+  paintable=newPntbl;
+  paintable.updateFromUIDL(contentUidl,client);
 }

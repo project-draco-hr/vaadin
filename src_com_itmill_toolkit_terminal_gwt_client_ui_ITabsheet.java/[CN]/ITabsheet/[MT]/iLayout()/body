@@ -1,25 +1,10 @@
 {
   if (height != null && height != "") {
-    int scrollTop=DOM.getElementPropertyInt(contentNode,"scrollTop");
-    int scrollLeft=DOM.getElementPropertyInt(contentNode,"scrollLeft");
-    final String originalPositioning=DOM.getStyleAttribute(tp.getElement(),"position");
-    DOM.setStyleAttribute(tp.getElement(),"position","absolute");
-    DOM.setStyleAttribute(contentNode,"overflow","hidden");
-    DOM.setStyleAttribute(contentNode,"height","");
     super.setHeight(height);
-    final int targetHeight=getOffsetHeight();
-    super.setHeight("");
-    final int usedHeight=DOM.getElementPropertyInt(deco,"offsetTop") + DOM.getElementPropertyInt(deco,"offsetHeight") - DOM.getElementPropertyInt(getElement(),"offsetTop");
-    int newHeight=targetHeight - usedHeight;
-    if (newHeight < 0) {
-      newHeight=0;
-    }
-    DOM.setStyleAttribute(contentNode,"height",newHeight + "px");
-    tp.setHeight("100%");
+    final int contentHeight=getOffsetHeight() - DOM.getElementPropertyInt(deco,"offsetHeight") - tb.getOffsetHeight();
+    DOM.setStyleAttribute(contentNode,"height",contentHeight + "px");
     DOM.setStyleAttribute(contentNode,"overflow","auto");
-    DOM.setStyleAttribute(tp.getElement(),"position",originalPositioning);
-    DOM.setElementPropertyInt(contentNode,"scrollTop",scrollTop);
-    DOM.setElementPropertyInt(contentNode,"scrollLeft",scrollLeft);
+    tp.setHeight("100%");
   }
  else {
     DOM.setStyleAttribute(contentNode,"height","");

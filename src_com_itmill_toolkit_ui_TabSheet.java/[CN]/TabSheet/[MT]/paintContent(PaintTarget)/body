@@ -9,16 +9,25 @@
       continue;
     }
     target.startTag("tab");
+    if (!c.isEnabled()) {
+      target.addAttribute("disabled",true);
+    }
     final Resource icon=getTabIcon(c);
     if (icon != null) {
       target.addAttribute("icon",icon);
     }
     final String caption=getTabCaption(c);
-    if (!c.isEnabled()) {
-      target.addAttribute("disabled",true);
-    }
     if (caption != null && caption.length() > 0) {
       target.addAttribute("caption",caption);
+    }
+    if (c instanceof AbstractComponent) {
+      AbstractComponent ac=(AbstractComponent)c;
+      if (ac.getDescription() != null) {
+        target.addAttribute("description",ac.getDescription());
+      }
+      if (ac.getComponentError() != null) {
+        ac.getComponentError().paint(target);
+      }
     }
     target.addAttribute("key",keyMapper.key(c));
     if (c.equals(selected)) {
