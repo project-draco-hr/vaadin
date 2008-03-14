@@ -34,6 +34,13 @@
   target.addAttribute("filteringmode",getFilteringMode());
   int keyIndex=0;
   target.startTag("options");
+  if (currentPage < 0) {
+    optionRequest=false;
+    currentPage=0;
+    filterstring="";
+  }
+  List options=getFilteredOptions();
+  options=sanitetizeList(options,needNullSelectOption);
   final boolean paintNullSelection=needNullSelectOption && (currentPage == 0 && (filterstring == null || filterstring.equals("")));
   if (paintNullSelection) {
     target.startTag("so");
@@ -41,8 +48,6 @@
     target.addAttribute("key","");
     target.endTag("so");
   }
-  List options=getFilteredOptions();
-  options=sanitetizeList(options,needNullSelectOption);
   final Iterator i=options.iterator();
   while (i.hasNext()) {
     final Object id=i.next();
@@ -76,5 +81,6 @@
   }
   target.addVariable(this,"filter",filterstring);
   target.addVariable(this,"page",currentPage);
+  currentPage=-1;
   optionRequest=true;
 }

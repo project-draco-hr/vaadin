@@ -14,34 +14,24 @@
   }
   immediate=uidl.hasAttribute("immediate");
   nullSelectionAllowed=uidl.hasAttribute("nullselect");
+  currentPage=uidl.getIntVariable("page");
   if (uidl.hasAttribute(ATTR_EMPTYTEXT)) {
     emptyText=uidl.getStringAttribute(ATTR_EMPTYTEXT);
   }
-  if (true) {
-    suggestionPopup.setPagingEnabled(true);
-    clientSideFiltering=false;
-  }
- else {
-    suggestionPopup.setPagingEnabled(false);
-    clientSideFiltering=true;
-  }
+  suggestionPopup.setPagingEnabled(true);
   allowNewItem=uidl.hasAttribute("allownewitem");
   currentSuggestions.clear();
   final UIDL options=uidl.getChildUIDL(0);
   totalMatches=uidl.getIntAttribute("totalMatches");
   String captions=emptyText;
-  if (clientSideFiltering) {
-    allSuggestions=new ArrayList();
-  }
   for (final Iterator i=options.getChildIterator(); i.hasNext(); ) {
     final UIDL optionUidl=(UIDL)i.next();
     final FilterSelectSuggestion suggestion=new FilterSelectSuggestion(optionUidl);
     currentSuggestions.add(suggestion);
-    if (clientSideFiltering) {
-      allSuggestions.add(suggestion);
-    }
-    if (!filtering && optionUidl.hasAttribute("selected")) {
-      tb.setText(suggestion.getReplacementString());
+    if (optionUidl.hasAttribute("selected")) {
+      if (!filtering) {
+        tb.setText(suggestion.getReplacementString());
+      }
       currentSuggestion=suggestion;
     }
     if (captions.length() > 0) {

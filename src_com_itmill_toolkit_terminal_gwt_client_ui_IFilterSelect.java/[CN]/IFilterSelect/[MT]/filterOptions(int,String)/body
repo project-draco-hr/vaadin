@@ -6,26 +6,16 @@
     return;
   }
   if (!filter.equals(lastFilter)) {
-    page=0;
-  }
-  if (clientSideFiltering) {
-    currentSuggestions.clear();
-    for (final Iterator it=allSuggestions.iterator(); it.hasNext(); ) {
-      final FilterSelectSuggestion s=(FilterSelectSuggestion)it.next();
-      final String string=s.getDisplayString().toLowerCase();
-      if (string.startsWith(filter.toLowerCase())) {
-        currentSuggestions.add(s);
-      }
+    if ("".equals(filter)) {
+      page=-1;
     }
-    lastFilter=filter;
-    currentPage=page;
-    suggestionPopup.showSuggestions(currentSuggestions,page,currentSuggestions.size());
-  }
  else {
-    filtering=true;
-    client.updateVariable(paintableId,"filter",filter,false);
-    client.updateVariable(paintableId,"page",page,true);
-    lastFilter=filter;
-    currentPage=page;
+      page=0;
+    }
   }
+  filtering=true;
+  client.updateVariable(paintableId,"filter",filter,false);
+  client.updateVariable(paintableId,"page",page,true);
+  lastFilter=filter;
+  currentPage=page;
 }
