@@ -48,15 +48,18 @@
       }
     }
     application=getExistingApplication(request,response);
-    if (application == null || request.getParameter("restartApplication") != null) {
-      if (request.getParameter("restartApplication") != null && application != null) {
+    if (application == null || request.getParameter("restartApplication") != null || request.getParameter("closeApplication") != null) {
+      if (application != null) {
         application.close();
-        final HttpSession session=request.getSession();
+        final HttpSession session=request.getSession(false);
         if (session != null) {
           application.close();
           ApplicationServlet.applicationToAjaxAppMgrMap.remove(application);
           WebApplicationContext.getApplicationContext(session).removeApplication(application);
         }
+      }
+      if (request.getParameter("closeApplication") != null) {
+        return;
       }
       application=getNewApplication(request,response);
     }
@@ -91,7 +94,28 @@
     }
   }
  catch (  final SessionExpired e) {
-    criticalNotification(request,response,"Your session has expired.");
+    Application app=null;
+    try {
+      app=(Application)applicationClass.newInstance();
+      app.init();
+    }
+ catch (    InstantiationException e1) {
+      e1.printStackTrace();
+    }
+catch (    IllegalAccessException e1) {
+      e1.printStackTrace();
+    }
+    if (app != null && app.getSessionExpiredURL() != null) {
+      if (UIDLrequest) {
+        redirectUidlRequest(request,response,app.getSessionExpiredURL());
+      }
+ else {
+        response.sendRedirect(app.getSessionExpiredURL());
+      }
+    }
+ else {
+      criticalNotification(request,response,"Your session has expired.");
+    }
   }
 catch (  final Throwable e) {
     e.printStackTrace();
