@@ -1,0 +1,38 @@
+{
+  response.setContentType("text/html");
+  PrintWriter out=response.getWriter();
+  if (app == null) {
+    PortletURL submitUrl=response.createActionURL();
+    try {
+      submitUrl.setPortletMode(PortletMode.VIEW);
+    }
+ catch (    PortletModeException e) {
+    }
+    out.println("<form method='POST' action='" + submitUrl + "'>");
+    out.println("Application:");
+    out.println(request.getContextPath() + "/");
+    out.println("<input size='40' type='text' name='app' value='" + (app != null ? app : "") + "'>");
+    out.println(" Theme:<input type='text' name='theme' value='" + theme + "'><br/>");
+    out.println("Force height (optional, e.g \"200px\"): <input type='text' name='height' value='" + (height != null ? height : "") + "'><br/>");
+    out.println("<input type='submit' value='Save'>");
+    out.println("</form>");
+  }
+ else {
+    PortletSession sess=request.getPortletSession();
+    PortletApplicationContext ctx=PortletApplicationContext.getApplicationContext(sess);
+    PortletInfo pi=ctx.setPortletInfo(request.getContextPath() + "/" + app+ (app.endsWith("/") ? "" : "/"),request.getPortletMode(),request.getWindowState(),request.getUserPrincipal(),(Map)request.getAttribute(PortletRequest.USER_INFO),config);
+    PortletRequestDispatcher dispatcher=sess.getPortletContext().getRequestDispatcher("/" + app);
+    try {
+      dispatcher.include(request,response);
+    }
+ catch (    PortletException e) {
+      out.print("<h1>Servlet include failed!</h1>");
+      out.print("<div>" + e + "</div>");
+      return;
+    }
+    Object app=request.getAttribute(Application.class.getName());
+    if (app instanceof PortletInfoReceiver) {
+      ((PortletInfoReceiver)app).receivePortletInfo(pi);
+    }
+  }
+}
