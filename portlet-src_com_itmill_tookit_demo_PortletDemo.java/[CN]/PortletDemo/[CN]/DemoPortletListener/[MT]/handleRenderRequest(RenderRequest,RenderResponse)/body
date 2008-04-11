@@ -1,0 +1,19 @@
+{
+  getMainWindow().showNotification("Portlet status","mode: " + request.getPortletMode() + "<br/> state: "+ request.getWindowState(),Notification.TYPE_TRAY_NOTIFICATION);
+  PortletURL url=response.createActionURL();
+  try {
+    url.setPortletMode((request.getPortletMode() == PortletMode.VIEW ? PortletMode.EDIT : PortletMode.VIEW));
+    portletEdit.setResource(new ExternalResource(url.toString()));
+  }
+ catch (  Exception e) {
+    portletEdit.setEnabled(false);
+  }
+  url=response.createActionURL();
+  try {
+    url.setWindowState((request.getWindowState() == WindowState.NORMAL ? WindowState.MAXIMIZED : WindowState.NORMAL));
+    portletEdit.setResource(new ExternalResource(url.toString()));
+  }
+ catch (  Exception e) {
+    portletEdit.setEnabled(false);
+  }
+}
