@@ -29,13 +29,16 @@
     page.write("<html xmlns=\"http://www.w3.org/1999/xhtml\"" + ">\n<head>\n");
     page.write("<style type=\"text/css\">" + "html, body {height:100%;}</style>");
     page.write("<title>" + title + "</title>");
+    if (testingApplication) {
+      writeTestingToolsScripts(page,request);
+    }
     page.write("\n</head>\n<body class=\"i-generated-body\">\n");
   }
   String appId=appUrl;
   appId=appId.replaceAll("[^a-zA-Z0-9]","");
   page.write("<script type=\"text/javascript\">\n");
   page.write("//<![CDATA[\n");
-  page.write("if(!itmill) {\n var itmill = " + "{toolkitConfigurations:{}, themesLoaded:{}};\n");
+  page.write("if(!itmill || !itmill.toolkitConfigurations) {\n " + "if(!itmill) { var itmill = {}} \n" + "itmill.toolkitConfigurations = {};\n"+ "itmill.themesLoaded = {};\n");
   page.write("document.write('<iframe id=\"__gwt_historyFrame\" " + "style=\"width:0;height:0;border:0;overflow:" + "hidden\" src=\"javascript:false\"></iframe>');\n");
   page.write("document.write(\"<script language='javascript' src='" + staticFilePath + "/"+ WIDGETSET_DIRECTORY_PATH+ widgetset+ "/"+ widgetset+ ".nocache.js'><\\/script>\");\n}\n");
   if (themeName != null) {
@@ -52,7 +55,7 @@
   page.write("pathInfo: '" + pathInfo + "', ");
   page.write("themeUri:");
   page.write(themeUri != null ? "'" + themeUri + "'" : "null");
-  if (false && testingApplication) {
+  if (testingApplication) {
     page.write(", versionInfo : {toolkitVersion:\"");
     page.write(VERSION);
     page.write("\",applicationVersion:\"");
@@ -60,9 +63,6 @@
     page.write("\"}");
   }
   page.write("};\n//]]>\n</script>\n");
-  if (testingApplication) {
-    writeTestingToolsScripts(page,request);
-  }
   page.write("<div id=\"" + appId + "\" class=\"i-app\"></div>\n");
   if (!fragment) {
     page.write("</body>\n</html>\n");
