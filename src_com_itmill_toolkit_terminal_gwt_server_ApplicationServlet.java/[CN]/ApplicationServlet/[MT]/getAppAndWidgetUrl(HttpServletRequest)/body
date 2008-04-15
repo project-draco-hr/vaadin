@@ -13,9 +13,15 @@
     String[] urlParts;
     try {
       urlParts=getApplicationUrl(request).toString().split("\\/");
+      System.err.println(getApplicationUrl(request).toString() + " parts: " + urlParts.length);
+      System.err.println(request.getContextPath() + "(servlet ctx)");
       appUrl="";
       widgetsetUrl="";
-      if (urlParts.length > 3 && urlParts[3].equals(request.getContextPath().replaceAll("\\/",""))) {
+      String ctxPath=request.getContextPath();
+      if (ctxPath.length() == 0 && request.getAttribute("javax.servlet.include.context_path") != null) {
+        ctxPath=(String)request.getAttribute("javax.servlet.include.context_path");
+      }
+      if (urlParts.length > 3 && urlParts[3].equals(ctxPath.replaceAll("\\/",""))) {
         widgetsetUrl+="/" + urlParts[3];
       }
       for (int i=3; i < urlParts.length; i++) {
