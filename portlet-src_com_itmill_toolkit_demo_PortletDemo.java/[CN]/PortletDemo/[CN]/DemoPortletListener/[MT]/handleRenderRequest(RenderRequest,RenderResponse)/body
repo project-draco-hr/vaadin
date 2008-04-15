@@ -1,9 +1,13 @@
 {
-  getMainWindow().showNotification("Portlet status","mode: " + request.getPortletMode() + "<br/> state: "+ request.getWindowState(),Notification.TYPE_TRAY_NOTIFICATION);
+  portletEdit.setEnabled(true);
+  portletMax.setEnabled(true);
+  tf.setEnabled((request.getPortletMode() == PortletMode.EDIT));
+  getMainWindow().showNotification("Portlet status","Mode: " + request.getPortletMode() + " State: "+ request.getWindowState(),Notification.TYPE_WARNING_MESSAGE);
   PortletURL url=response.createActionURL();
   try {
     url.setPortletMode((request.getPortletMode() == PortletMode.VIEW ? PortletMode.EDIT : PortletMode.VIEW));
     portletEdit.setResource(new ExternalResource(url.toString()));
+    portletEdit.setCaption((request.getPortletMode() == PortletMode.VIEW ? "Edit" : "Done"));
   }
  catch (  Exception e) {
     portletEdit.setEnabled(false);
@@ -11,9 +15,10 @@
   url=response.createActionURL();
   try {
     url.setWindowState((request.getWindowState() == WindowState.NORMAL ? WindowState.MAXIMIZED : WindowState.NORMAL));
-    portletEdit.setResource(new ExternalResource(url.toString()));
+    portletMax.setResource(new ExternalResource(url.toString()));
+    portletMax.setCaption((request.getWindowState() == WindowState.NORMAL ? "Maximize" : "Back to normal"));
   }
  catch (  Exception e) {
-    portletEdit.setEnabled(false);
+    portletMax.setEnabled(false);
   }
 }
