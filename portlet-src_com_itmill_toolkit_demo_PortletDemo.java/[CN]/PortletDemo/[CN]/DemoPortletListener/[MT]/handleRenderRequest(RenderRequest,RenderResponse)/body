@@ -3,6 +3,22 @@
   portletMax.setEnabled(true);
   tf.setEnabled((request.getPortletMode() == PortletMode.EDIT));
   getMainWindow().showNotification("Portlet status","Mode: " + request.getPortletMode() + " State: "+ request.getWindowState(),Notification.TYPE_WARNING_MESSAGE);
+  Map uinfo=(Map)request.getAttribute(PortletRequest.USER_INFO);
+  if (uinfo != null) {
+    String s="";
+    for (Iterator it=uinfo.keySet().iterator(); it.hasNext(); ) {
+      Object key=it.next();
+      Object val=uinfo.get(key);
+      s+=key + ": " + val+ "\n";
+    }
+    if (request.isUserInRole("administrator")) {
+      s+="(administrator)";
+    }
+    userInfo.setValue(s);
+  }
+ else {
+    userInfo.setValue("-");
+  }
   PortletURL url=response.createActionURL();
   try {
     url.setPortletMode((request.getPortletMode() == PortletMode.VIEW ? PortletMode.EDIT : PortletMode.VIEW));
