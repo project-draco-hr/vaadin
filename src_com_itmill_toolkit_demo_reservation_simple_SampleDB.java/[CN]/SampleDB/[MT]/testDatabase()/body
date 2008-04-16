@@ -1,0 +1,14 @@
+{
+  String result=null;
+  try {
+    final Statement stmt=connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
+    final ResultSet rs=stmt.executeQuery("SELECT COUNT(*) FROM " + Resource.TABLE);
+    rs.next();
+    result="rowcount for table test is " + rs.getObject(1).toString();
+    stmt.close();
+  }
+ catch (  final SQLException e) {
+    throw new RuntimeException(e);
+  }
+  return result;
+}

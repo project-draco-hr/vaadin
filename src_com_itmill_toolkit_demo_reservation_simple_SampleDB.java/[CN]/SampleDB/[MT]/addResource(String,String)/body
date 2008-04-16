@@ -1,0 +1,23 @@
+{
+  final String q="INSERT INTO " + Resource.TABLE + " ("+ Resource.PROPERTY_ID_STYLENAME+ ","+ Resource.PROPERTY_ID_NAME+ ","+ Resource.PROPERTY_ID_DESCRIPTION+ ","+ Resource.PROPERTY_ID_CATEGORY+ ","+ Resource.PROPERTY_ID_LOCATIONX+ ","+ Resource.PROPERTY_ID_LOCATIONY+ ")"+ " VALUES (?,?,?,?,?,?)";
+synchronized (DB_URL) {
+    try {
+      PreparedStatement p=connection.prepareStatement(q);
+      p.setString(1,"");
+      p.setString(2,name);
+      p.setString(3,desc);
+      p.setString(4,"default");
+      p.setDouble(5,0);
+      p.setDouble(6,0);
+      p.execute();
+      Statement createStatement=connection.createStatement();
+      ResultSet executeQuery=createStatement.executeQuery("CALL IDENTITY()");
+      executeQuery.next();
+      return executeQuery.getInt(1);
+    }
+ catch (    SQLException e) {
+      e.printStackTrace();
+    }
+  }
+  return -1;
+}
