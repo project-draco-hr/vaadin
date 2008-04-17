@@ -1,0 +1,133 @@
+{
+  if (args.length < 1 || !new File(args[0]).isDirectory()) {
+    System.err.println("Usage: PortletConfigurationGenerator <directory>");
+    return;
+  }
+  File dir=new File(args[0]);
+  File webxmlFile=new File(dir.getAbsolutePath() + File.separatorChar + WEB_XML_FILE);
+  String webXml="";
+  BufferedReader in=null;
+  try {
+    in=new BufferedReader(new FileReader(webxmlFile));
+    String line=in.readLine();
+    while (line != null) {
+      webXml+=line;
+      line=in.readLine();
+    }
+  }
+ catch (  FileNotFoundException e1) {
+    System.out.println(webxmlFile + " not found!");
+    return;
+  }
+catch (  IOException e2) {
+    System.out.println("IOException while reading " + webxmlFile);
+    webXml=null;
+  }
+  try {
+    if (in != null) {
+      in.close();
+    }
+  }
+ catch (  IOException e1) {
+    System.out.println("IOException while closing " + webxmlFile);
+  }
+  if (webXml == null) {
+    System.out.println("Could not read web.xml!");
+    return;
+  }
+  File portletXmlFile=new File(args[0] + File.separatorChar + PORTLET_XML_FILE);
+  OutputStreamWriter pout=null;
+  try {
+    pout=new OutputStreamWriter(new FileOutputStream(portletXmlFile),Charset.forName("UTF-8"));
+  }
+ catch (  FileNotFoundException e) {
+    System.out.println(portletXmlFile + " not found!");
+  }
+  File liferayPortletXmlFile=new File(args[0] + File.separatorChar + LIFERAY_PORTLET_XML_FILE);
+  OutputStreamWriter lpout=null;
+  try {
+    lpout=new OutputStreamWriter(new FileOutputStream(liferayPortletXmlFile),Charset.forName("UTF-8"));
+  }
+ catch (  FileNotFoundException e) {
+    System.out.println(liferayPortletXmlFile + " not found!");
+  }
+  File liferayDisplayXmlFile=new File(args[0] + File.separatorChar + LIFERAY_DISPLAY_XML_FILE);
+  OutputStreamWriter ldout=null;
+  try {
+    ldout=new OutputStreamWriter(new FileOutputStream(liferayDisplayXmlFile),Charset.forName("UTF-8"));
+  }
+ catch (  FileNotFoundException e) {
+    System.out.println(liferayDisplayXmlFile + " not found!");
+  }
+  if (pout != null && lpout != null && ldout != null) {
+    String pstring=PORTLET_XML_HEAD;
+    String lpstring=LIFERAY_PORTLET_XML_HEAD;
+    String ldstring=LIFERAY_DISPLAY_XML_HEAD;
+    Pattern p=Pattern.compile("<servlet-mapping>.*?<servlet-name>(.*?)<\\/servlet-name>.*?<url-pattern>(.*?)<\\/url-pattern>.*?<\\/servlet-mapping>",Pattern.MULTILINE);
+    Matcher m=p.matcher(webXml);
+    while (m.find()) {
+      if (m.groupCount() != 2) {
+        System.out.println("Could not find servlet-name and url-pattern for: " + m.group());
+        continue;
+      }
+      String name=m.group(1);
+      name=name.replaceAll("^\\s*","");
+      name=name.replaceAll("\\s*$","");
+      String pname=name + "Portlet";
+      String url=m.group(2);
+      url=url.replaceAll("^\\s*","");
+      url=url.replaceAll("\\s*$","");
+      if (url.startsWith("/")) {
+        url=url.substring(1);
+      }
+      if (url.endsWith("*")) {
+        url=url.substring(0,url.length() - 1);
+      }
+      if (url.endsWith("/")) {
+        url=url.substring(0,url.length() - 1);
+      }
+      System.out.println("Mapping " + pname + " to "+ url);
+      String s=PORTLET_XML_SECTION;
+      s=s.replaceAll("%NAME%",name);
+      s=s.replaceAll("%PORTLETNAME%",pname);
+      s=s.replaceAll("%URL%",url);
+      pstring+=s;
+      s=LIFERAY_PORTLET_XML_SECTION;
+      s=s.replaceAll("%NAME%",name);
+      s=s.replaceAll("%PORTLETNAME%",pname);
+      s=s.replaceAll("%URL%",url);
+      lpstring+=s;
+      s=LIFERAY_DISPLAY_XML_SECTION;
+      s=s.replaceAll("%NAME%",name);
+      s=s.replaceAll("%PORTLETNAME%",pname);
+      s=s.replaceAll("%URL%",url);
+      ldstring+=s;
+    }
+    pstring+=PORTLET_XML_FOOT;
+    lpstring+=LIFERAY_PORTLET_XML_FOOT;
+    ldstring+=LIFERAY_DISPLAY_XML_FOOT;
+    try {
+      pout.write(pstring);
+      lpout.write(lpstring);
+      ldout.write(ldstring);
+    }
+ catch (    IOException e) {
+      System.out.println("Write FAILED:" + e);
+    }
+  }
+  try {
+    if (pout != null) {
+      pout.close();
+    }
+    if (lpout != null) {
+      lpout.close();
+    }
+    if (ldout != null) {
+      ldout.close();
+    }
+  }
+ catch (  IOException e) {
+    System.out.println("Close FAILED: " + e);
+  }
+  System.out.println("Done.");
+}
