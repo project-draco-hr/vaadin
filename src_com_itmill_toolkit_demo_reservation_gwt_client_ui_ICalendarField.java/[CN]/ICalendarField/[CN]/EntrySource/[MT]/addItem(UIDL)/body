@@ -1,14 +1,17 @@
 {
   final String styleName=item.getStringAttribute("styleName");
-  final long start=Long.parseLong(item.getStringAttribute("start"));
-  final Date startDate=new Date(start);
-  long end=-1;
-  try {
-    end=Long.parseLong(item.getStringAttribute("end"));
+  DateTimeFormat dtf=DateTimeFormat.getFormat("d MMM yyyy HH:mm:ss Z");
+  Date startDate=dtf.parse(item.getStringAttribute("start"));
+  int diff=(startDate.getTimezoneOffset() - item.getIntAttribute("Z")) * 60000;
+  startDate=new Date(startDate.getTime() + diff);
+  Date endDate;
+  if (item.hasAttribute("end")) {
+    endDate=dtf.parse(item.getStringAttribute("end"));
+    endDate=new Date(endDate.getTime() + diff);
   }
- catch (  final Exception IGNORED) {
+ else {
+    endDate=(Date)startDate.clone();
   }
-  final Date endDate=(end > 0 && end != start ? new Date(end) : new Date(start));
   final String title=item.getStringAttribute("title");
   final String desc=item.getStringAttribute("description");
   final boolean notime=item.getBooleanAttribute("notime");
