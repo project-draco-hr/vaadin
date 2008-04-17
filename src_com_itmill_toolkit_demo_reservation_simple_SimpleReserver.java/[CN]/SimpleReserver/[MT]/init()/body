@@ -1,21 +1,34 @@
 {
   final Window w=new Window("Simple Reserver");
-  w.setTheme("simplereserver");
-  setMainWindow(w);
-  w.addComponent(toggleMode);
-  w.addComponent(stdView);
-  toggleMode.addListener(new ClickListener(){
-    public void buttonClick(    ClickEvent event){
-      OrderedLayout main=(OrderedLayout)w.getLayout();
-      isAdminView=!isAdminView;
-      if (isAdminView) {
-        main.replaceComponent(stdView,adminView);
+  w.addStyleName("simplereserver");
+  if (getContext() instanceof PortletApplicationContext) {
+    isPortlet=true;
+    PortletApplicationContext context=(PortletApplicationContext)getContext();
+    context.addPortletListener(this,new PortletListener(){
+      public void handleActionRequest(      ActionRequest request,      ActionResponse response){
       }
- else {
-        main.replaceComponent(adminView,stdView);
-        stdView.refreshData();
+      public void handleRenderRequest(      RenderRequest request,      RenderResponse response){
+        if ((request.getPortletMode() == PortletMode.EDIT && !isAdminView) || (request.getPortletMode() == PortletMode.VIEW && isAdminView)) {
+          toggleMode();
+        }
       }
     }
-  }
 );
+    w.setTheme("liferay");
+    w.getLayout().setMargin(false);
+  }
+ else {
+    w.setTheme("reservr");
+  }
+  setMainWindow(w);
+  if (!isPortlet) {
+    w.addComponent(toggleMode);
+    toggleMode.addListener(new ClickListener(){
+      public void buttonClick(      ClickEvent event){
+        toggleMode();
+      }
+    }
+);
+  }
+  w.addComponent(stdView);
 }
