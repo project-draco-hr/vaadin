@@ -1,12 +1,22 @@
 {
-  boolean fragment=(request.getAttribute("javax.portlet.request") != null);
+  boolean fragment=(request.getAttribute(REQUEST_FRAGMENT) != null);
   if (fragment) {
     request.setAttribute(Application.class.getName(),application);
   }
   final BufferedWriter page=new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
   final String pathInfo=request.getPathInfo() == null ? "/" : request.getPathInfo();
   String title=((window == null || window.getCaption() == null) ? "IT Mill Toolkit 5" : window.getCaption());
-  String widgetset=applicationProperties.getProperty(PARAMETER_WIDGETSET);
+  String widgetset=null;
+  Object reqParam=request.getAttribute(REQUEST_WIDGETSET);
+  try {
+    widgetset=(String)reqParam;
+  }
+ catch (  Exception e) {
+    System.err.println("Warning: request param " + REQUEST_WIDGETSET + " could not be used (not a String?)"+ e);
+  }
+  if (widgetset == null) {
+    widgetset=applicationProperties.getProperty(PARAMETER_WIDGETSET);
+  }
   if (widgetset == null) {
     widgetset=DEFAULT_WIDGETSET;
   }
@@ -66,7 +76,12 @@
     page.write("itmill.themesLoaded['" + themeName + "'] = true;\n}\n");
     page.write("//]]>\n</script>\n");
   }
-  page.write("<div id=\"" + appId + "\" class=\"i-app\"></div>\n");
+  String style=null;
+  reqParam=request.getAttribute(REQUEST_APPSTYLE);
+  if (reqParam != null) {
+    style="style=\"" + reqParam + "\"";
+  }
+  page.write("<div id=\"" + appId + "\" class=\"i-app\" "+ (style != null ? style : "")+ "></div>\n");
   if (!fragment) {
     page.write("</body>\n</html>\n");
   }

@@ -1,14 +1,21 @@
 {
-  response.setContentType("text/html");
-  PrintWriter out=response.getWriter();
   if (app != null) {
     PortletSession sess=request.getPortletSession();
     PortletApplicationContext ctx=PortletApplicationContext.getApplicationContext(sess);
     PortletRequestDispatcher dispatcher=sess.getPortletContext().getRequestDispatcher("/" + app);
     try {
+      request.setAttribute(ApplicationServlet.REQUEST_FRAGMENT,"true");
+      if (widgetset != null) {
+        request.setAttribute(ApplicationServlet.REQUEST_WIDGETSET,widgetset);
+      }
+      if (style != null) {
+        request.setAttribute(ApplicationServlet.REQUEST_APPSTYLE,style);
+      }
       dispatcher.include(request,response);
     }
  catch (    PortletException e) {
+      response.setContentType("text/html");
+      PrintWriter out=response.getWriter();
       out.print("<h1>Servlet include failed!</h1>");
       out.print("<div>" + e + "</div>");
       ctx.setPortletApplication(this,null);
