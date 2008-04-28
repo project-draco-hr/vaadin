@@ -1,7 +1,11 @@
 {
   if (args.length < 1 || !new File(args[0]).isDirectory()) {
-    System.err.println("Usage: PortletConfigurationGenerator <directory>");
+    System.err.println("Usage: PortletConfigurationGenerator <directory> [widgetset]");
     return;
+  }
+  String widgetset="";
+  if (args.length > 1) {
+    widgetset="<context-param><name>widgetset</name><value>" + args[1] + "</value></context-param>";
   }
   File dir=new File(args[0]);
   File webxmlFile=new File(dir.getAbsolutePath() + File.separatorChar + WEB_XML_FILE);
@@ -63,12 +67,20 @@ catch (  IOException e2) {
     String pstring=PORTLET_XML_HEAD;
     String lpstring=LIFERAY_PORTLET_XML_HEAD;
     String ldstring=LIFERAY_DISPLAY_XML_HEAD;
-    Pattern p=Pattern.compile("<servlet-mapping>.*?<servlet-name>(.*?)<\\/servlet-name>.*?<url-pattern>(.*?)<\\/url-pattern>.*?<\\/servlet-mapping>",Pattern.MULTILINE);
-    Matcher m=p.matcher(webXml);
+    Pattern p1=Pattern.compile("<servlet-mapping>.*?<servlet-name>(.*?)<\\/servlet-name>.*?<url-pattern>(.*?)<\\/url-pattern>(.*?)<\\/servlet-mapping>");
+    Pattern p2=Pattern.compile(".*?<!--\\s+portlet\\s?(style=\\S+)?\\s+-->.*?");
+    Matcher m=p1.matcher(webXml);
     while (m.find()) {
-      if (m.groupCount() != 2) {
-        System.out.println("Could not find servlet-name and url-pattern for: " + m.group());
+      if (m.groupCount() < 3) {
         continue;
+      }
+      Matcher m2=p2.matcher(m.group(3));
+      if (!m2.find()) {
+        continue;
+      }
+      String style="";
+      if (m2.groupCount() == 1 && m2.group(1) != null) {
+        style="<init-param><name>style</name><value>" + m2.group(1) + "</value></init-param>";
       }
       String name=m.group(1);
       name=name.replaceAll("^\\s*","");
@@ -91,6 +103,7 @@ catch (  IOException e2) {
       s=s.replaceAll("%NAME%",name);
       s=s.replaceAll("%PORTLETNAME%",pname);
       s=s.replaceAll("%URL%",url);
+      s=s.replaceAll("%EXTRAPARAMS%",style);
       pstring+=s;
       s=LIFERAY_PORTLET_XML_SECTION;
       s=s.replaceAll("%NAME%",name);
@@ -103,7 +116,7 @@ catch (  IOException e2) {
       s=s.replaceAll("%URL%",url);
       ldstring+=s;
     }
-    pstring+=PORTLET_XML_FOOT;
+    pstring+=PORTLET_XML_FOOT.replaceAll("%CONTEXTPARAMS%",widgetset);
     lpstring+=LIFERAY_PORTLET_XML_FOOT;
     ldstring+=LIFERAY_DISPLAY_XML_FOOT;
     try {
