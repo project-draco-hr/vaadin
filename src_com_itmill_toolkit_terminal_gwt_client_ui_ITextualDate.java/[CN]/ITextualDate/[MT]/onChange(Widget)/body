@@ -1,34 +1,8 @@
 {
   if (sender == text) {
     if (!text.getText().equals("")) {
-      com.itmill.toolkit.terminal.gwt.client.util.DateLocale.SUPPORTED_DF_TOKENS=com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKENS_RESOLUTION_ALL;
-      if (currentResolution == IDateField.RESOLUTION_YEAR) {
-        com.itmill.toolkit.terminal.gwt.client.util.DateLocale.SUPPORTED_DF_TOKENS=com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKENS_RESOLUTION_YEAR;
-      }
- else       if (currentResolution == IDateField.RESOLUTION_MONTH) {
-        com.itmill.toolkit.terminal.gwt.client.util.DateLocale.SUPPORTED_DF_TOKENS=com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKENS_RESOLUTION_MONTH;
-      }
- else       if (currentResolution == IDateField.RESOLUTION_DAY) {
-        com.itmill.toolkit.terminal.gwt.client.util.DateLocale.SUPPORTED_DF_TOKENS=com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKENS_RESOLUTION_DAY;
-      }
-      String f=cleanFormat(dts.getDateFormat());
-      if (currentResolution >= IDateField.RESOLUTION_HOUR) {
-        f+=" " + (dts.isTwelveHourClock() ? com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKEN_HOUR_12 + com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKEN_HOUR_12 : com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKEN_HOUR_24 + com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKEN_HOUR_24) + dts.getClockDelimeter()+ com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKEN_MINUTE+ com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKEN_MINUTE;
-      }
-      if (currentResolution >= IDateField.RESOLUTION_SEC) {
-        f+=dts.getClockDelimeter() + com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKEN_SECOND + com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKEN_SECOND;
-      }
-      if (currentResolution == IDateField.RESOLUTION_MSEC) {
-        f+="." + com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKEN_MILLISECOND + com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKEN_MILLISECOND+ com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKEN_MILLISECOND;
-      }
-      if (currentResolution >= IDateField.RESOLUTION_HOUR && dts.isTwelveHourClock()) {
-        f+=" " + com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKEN_AM_PM;
-      }
-      format=new SimpleDateFormat(f);
-      DateLocale.setLocale(currentLocale);
-      format.setLocale(dl);
       try {
-        date=format.parse(text.getText());
+        date=DateTimeFormat.getFormat(getFormatString()).parse(text.getText());
       }
  catch (      final Exception e) {
         ApplicationConnection.getConsole().log(e.getMessage());
@@ -44,6 +18,7 @@
       }
     }
  else {
+      ApplicationConnection.getConsole().log("jep jep");
       date=null;
     }
     client.updateVariable(id,"year",date != null ? date.getYear() + 1900 : -1,currentResolution == IDateField.RESOLUTION_YEAR && immediate);

@@ -1,45 +1,10 @@
 {
-  dl=new DateLocale();
-  DateLocale.setLocale(currentLocale);
-  com.itmill.toolkit.terminal.gwt.client.util.DateLocale.SUPPORTED_DF_TOKENS=com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKENS_RESOLUTION_YEAR;
-  if (currentResolution == IDateField.RESOLUTION_MONTH) {
-    com.itmill.toolkit.terminal.gwt.client.util.DateLocale.SUPPORTED_DF_TOKENS=com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKENS_RESOLUTION_MONTH;
-  }
- else   if (currentResolution >= IDateField.RESOLUTION_DAY) {
-    com.itmill.toolkit.terminal.gwt.client.util.DateLocale.SUPPORTED_DF_TOKENS=com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKENS_RESOLUTION_DAY;
-  }
-  format=new SimpleDateFormat(cleanFormat(dts.getDateFormat()));
-  format.setLocale(dl);
-  String dateText="";
+  String dateText;
   if (date != null) {
-    dateText=format.format(date);
-    if (currentResolution >= IDateField.RESOLUTION_HOUR) {
-      com.itmill.toolkit.terminal.gwt.client.util.DateLocale.SUPPORTED_DF_TOKENS=com.itmill.toolkit.terminal.gwt.client.util.DateLocale.TOKENS_RESOLUTION_ALL;
-      int h=date.getHours();
-      if (h > 11 && dts.isTwelveHourClock()) {
-        h-=12;
-      }
-      final int m=currentResolution > IDateField.RESOLUTION_HOUR ? date.getMinutes() : 0;
-      dateText+=" " + (h < 10 ? "0" + h : "" + h) + dts.getClockDelimeter()+ (m < 10 ? "0" + m : "" + m);
-    }
-    if (currentResolution >= IDateField.RESOLUTION_SEC) {
-      final int s=date.getSeconds();
-      dateText+=dts.getClockDelimeter() + (s < 10 ? "0" + s : "" + s);
-    }
-    if (currentResolution == IDateField.RESOLUTION_MSEC) {
-      final int ms=getMilliseconds();
-      String text="" + ms;
-      if (ms < 10) {
-        text="00" + text;
-      }
- else       if (ms < 100) {
-        text="0" + text;
-      }
-      dateText+="." + text;
-    }
-    if (currentResolution >= IDateField.RESOLUTION_HOUR && dts.isTwelveHourClock()) {
-      dateText+=" " + (date.getHours() < 12 ? dts.getAmPmStrings()[0] : dts.getAmPmStrings()[1]);
-    }
+    dateText=DateTimeFormat.getFormat(getFormatString()).format(date);
+  }
+ else {
+    dateText="";
   }
   text.setText(dateText);
   text.setEnabled(enabled && !readonly);
