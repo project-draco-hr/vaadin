@@ -3,23 +3,18 @@
     if (!text.getText().equals("")) {
       try {
         date=DateTimeFormat.getFormat(getFormatString()).parse(text.getText());
+        text.removeStyleName(ITextField.CLASSNAME + "-error");
       }
  catch (      final Exception e) {
         ApplicationConnection.getConsole().log(e.getMessage());
         text.addStyleName(ITextField.CLASSNAME + "-error");
-        final Timer t=new Timer(){
-          public void run(){
-            text.removeStyleName(ITextField.CLASSNAME + "-error");
-          }
-        }
-;
-        t.schedule(2000);
-        return;
+        client.updateVariable(id,"lastInvalidDateString",text.getText(),false);
+        date=null;
       }
     }
  else {
-      ApplicationConnection.getConsole().log("jep jep");
       date=null;
+      text.removeStyleName(ITextField.CLASSNAME + "-error");
     }
     client.updateVariable(id,"year",date != null ? date.getYear() + 1900 : -1,currentResolution == IDateField.RESOLUTION_YEAR && immediate);
     if (currentResolution >= IDateField.RESOLUTION_MONTH) {
@@ -40,6 +35,5 @@
     if (currentResolution == IDateField.RESOLUTION_MSEC) {
       client.updateVariable(id,"msec",date != null ? getMilliseconds() : -1,immediate);
     }
-    buildDate();
   }
 }
