@@ -37,5 +37,31 @@
       lastRendered++;
     }
     fixSpacers();
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        int reactFirstRow=(int)(firstRowInViewPort - pageLength * CACHE_REACT_RATE);
+        int reactLastRow=(int)(firstRowInViewPort + pageLength + pageLength * CACHE_REACT_RATE);
+        if (reactFirstRow < 0) {
+          reactFirstRow=0;
+        }
+        if (reactLastRow > totalRows) {
+          reactLastRow=totalRows - 1;
+        }
+        if (reactFirstRow < firstRendered || reactLastRow > lastRendered) {
+          reactFirstRow=(int)(firstRowInViewPort - pageLength * CACHE_RATE);
+          reactLastRow=(int)(firstRowInViewPort + pageLength + pageLength * CACHE_RATE);
+          if (reactFirstRow < 0) {
+            reactFirstRow=0;
+          }
+          if (reactLastRow > totalRows) {
+            reactLastRow=totalRows - 1;
+          }
+          rowRequestHandler.setReqFirstRow(reactFirstRow);
+          rowRequestHandler.setReqRows((int)(2 * pageLength * CACHE_RATE + pageLength));
+          rowRequestHandler.deferRowFetch(1);
+        }
+      }
+    }
+);
   }
 }
