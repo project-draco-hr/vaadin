@@ -25,7 +25,11 @@ synchronized (application) {
           }
         }
       }
-      handleVariables(request,application);
+      if (!handleVariables(request,application)) {
+        SystemMessages ci=application.getSystemMessages();
+        applicationServlet.criticalNotification(request,response,ci.getOutOfSyncCaption(),ci.getOutOfSyncMessage(),ci.getOutOfSyncURL());
+        return;
+      }
       if (!application.isRunning()) {
         endApplication(request,response,application);
         return;

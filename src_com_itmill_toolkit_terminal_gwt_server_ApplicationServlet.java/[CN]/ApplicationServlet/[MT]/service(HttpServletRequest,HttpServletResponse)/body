@@ -96,33 +96,33 @@
     }
   }
  catch (  final SessionExpired e) {
-    Application app=null;
+    Application.SystemMessages ci=Application.getSystemMessages();
     try {
-      app=(Application)applicationClass.newInstance();
-      app.init();
+      Method m=applicationClass.getMethod("getSystemMessages",null);
+      ci=(Application.CustomizedSystemMessages)m.invoke(null,null);
     }
- catch (    InstantiationException e1) {
-      e1.printStackTrace();
+ catch (    Exception e2) {
+      e2.printStackTrace();
     }
-catch (    IllegalAccessException e1) {
-      e1.printStackTrace();
-    }
-    if (app != null && app.getSessionExpiredURL() != null) {
-      if (UIDLrequest) {
-        redirectUidlRequest(request,response,app.getSessionExpiredURL());
-      }
- else {
-        response.sendRedirect(app.getSessionExpiredURL());
-      }
+    if (!UIDLrequest) {
+      response.sendRedirect(ci.getSessionExpiredURL());
     }
  else {
-      criticalNotification(request,response,"Your session has expired.");
+      criticalNotification(request,response,ci.getSessionExpiredCaption(),ci.getSessionExpiredMessage(),ci.getSessionExpiredURL());
     }
   }
 catch (  final Throwable e) {
     e.printStackTrace();
     if (UIDLrequest) {
-      criticalNotification(request,response,"Internal error. Please notify administrator.");
+      Application.SystemMessages ci=Application.getSystemMessages();
+      try {
+        Method m=applicationClass.getMethod("getSystemMessages",null);
+        ci=(Application.CustomizedSystemMessages)m.invoke(null,null);
+      }
+ catch (      Exception e2) {
+        e2.printStackTrace();
+      }
+      criticalNotification(request,response,ci.getInternalErrorCaption(),ci.getInternalErrorMessage(),ci.getInternalErrorURL());
     }
  else {
       throw new ServletException(e);
