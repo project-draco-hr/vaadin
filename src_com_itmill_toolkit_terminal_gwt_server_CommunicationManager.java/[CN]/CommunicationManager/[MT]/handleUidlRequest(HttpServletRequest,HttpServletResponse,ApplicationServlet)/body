@@ -16,6 +16,26 @@ synchronized (application) {
         endApplication(request,response,application);
         return;
       }
+      if (!handleVariables(request,application)) {
+        SystemMessages ci=null;
+        try {
+          Method m=application.getClass().getMethod("getSystemMessages",null);
+          ci=(Application.SystemMessages)m.invoke(null,null);
+        }
+ catch (        Exception e2) {
+          e2.printStackTrace();
+        }
+        if (ci != null) {
+          String msg=ci.getOutOfSyncMessage();
+          String cap=ci.getOutOfSyncCaption();
+          if (msg != null || cap != null) {
+            applicationServlet.criticalNotification(request,response,cap,msg,ci.getOutOfSyncURL());
+            return;
+          }
+        }
+        System.err.println("Warning: variable inconsistency - client is probably out-of-sync, repainting all.");
+        repaintAll=true;
+      }
       if (repaintAll) {
         for (final Iterator it=idPaintableMap.keySet().iterator(); it.hasNext(); ) {
           final Component c=(Component)idPaintableMap.get(it.next());
@@ -24,11 +44,6 @@ synchronized (application) {
             paintableIdMap.remove(c);
           }
         }
-      }
-      if (!handleVariables(request,application)) {
-        SystemMessages ci=application.getSystemMessages();
-        applicationServlet.criticalNotification(request,response,ci.getOutOfSyncCaption(),ci.getOutOfSyncMessage(),ci.getOutOfSyncURL());
-        return;
       }
       if (!application.isRunning()) {
         endApplication(request,response,application);
