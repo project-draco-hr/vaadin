@@ -13,6 +13,13 @@
   up.addListener((SucceededListener)this);
   up.addListener((StartedListener)this);
   up.setProgressListener(this);
+  up.addListener(new Upload.ProgressListener(){
+    public void updateProgress(    long readBytes,    long contentLenght){
+      pi2.setValue(new Float(readBytes / (float)contentLenght));
+      refreshMemUsage();
+    }
+  }
+);
   final Button b=new Button("b",this,"readState");
   final Button c=new Button("b with gc",this,"gc");
   main.addComponent(b);
@@ -35,6 +42,9 @@
   pi.setVisible(false);
   pi.setPollingInterval(1000);
   main.addComponent(pi);
+  pi2.setVisible(false);
+  pi2.setPollingInterval(1000);
+  main.addComponent(pi2);
   memoryStatus=new Label();
   main.addComponent(memoryStatus);
   status.setVisible(false);
