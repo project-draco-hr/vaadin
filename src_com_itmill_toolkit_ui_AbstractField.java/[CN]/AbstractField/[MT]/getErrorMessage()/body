@@ -1,4 +1,12 @@
 {
+  ErrorMessage validationError=null;
+  try {
+    validate();
+  }
+ catch (  Validator.InvalidValueException e) {
+    validationError=e;
+  }
   final ErrorMessage superError=super.getErrorMessage();
-  return superError;
+  if (superError == null && validationError == null && currentBufferedSourceException == null)   return null;
+  return new CompositeErrorMessage(new ErrorMessage[]{superError,validationError,currentBufferedSourceException});
 }
