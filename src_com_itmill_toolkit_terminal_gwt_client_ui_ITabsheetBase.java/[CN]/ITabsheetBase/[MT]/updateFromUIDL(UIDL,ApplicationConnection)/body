@@ -23,10 +23,14 @@
     }
   }
  else {
+    ArrayList oldPaintables=new ArrayList();
+    for (Iterator iterator=getPaintableIterator(); iterator.hasNext(); ) {
+      oldPaintables.add(iterator.next());
+    }
     tabKeys.clear();
     captions.clear();
     disabledTabKeys.clear();
-    clear();
+    clearPaintables();
     int index=0;
     for (final Iterator it=tabs.getChildIterator(); it.hasNext(); ) {
       final UIDL tab=(UIDL)it.next();
@@ -44,8 +48,18 @@
       if (selected) {
         activeTabIndex=index;
       }
+      if (tab.getChildCount() > 0) {
+        Paintable p=client.getPaintable(tab.getChildUIDL(0));
+        oldPaintables.remove(p);
+      }
       renderTab(tab,index,selected);
       index++;
+    }
+    for (Iterator iterator=oldPaintables.iterator(); iterator.hasNext(); ) {
+      Object oldPaintable=iterator.next();
+      if (oldPaintable instanceof Paintable) {
+        client.unregisterPaintable((Paintable)oldPaintable);
+      }
     }
   }
 }
