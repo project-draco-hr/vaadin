@@ -1,19 +1,13 @@
 {
   if (applicationRunning) {
-    final StringBuffer req=new StringBuffer();
-    req.append("changes=");
-    for (int i=0; i < pendingVariables.size(); i++) {
-      if (i > 0) {
-        if (i % 2 == 0) {
-          req.append(VAR_RECORD_SEPARATOR);
-        }
- else {
-          req.append(VAR_FIELD_SEPARATOR);
-        }
+    if (hasActiveRequest()) {
+      if (pendingVariables.size() > 0 || pendingVariableBursts.size() == 0) {
+        Vector burst=(Vector)pendingVariables.clone();
+        pendingVariableBursts.add(burst);
       }
-      req.append(pendingVariables.get(i));
     }
-    pendingVariables.clear();
-    makeUidlRequest(req.toString());
+ else {
+      buildAndSendVariableBurst(pendingVariables);
+    }
   }
 }
