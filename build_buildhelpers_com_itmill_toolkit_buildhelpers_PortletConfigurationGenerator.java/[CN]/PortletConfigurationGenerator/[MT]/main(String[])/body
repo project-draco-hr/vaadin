@@ -5,7 +5,7 @@
   }
   String widgetset="";
   if (args.length > 1) {
-    widgetset="<context-param><name>widgetset</name><value>" + args[1] + "</value></context-param>";
+    widgetset="\n                " + "<init-param><name>widgetset</name><value>" + args[1] + "</value></init-param>";
   }
   File dir=new File(args[0]);
   File webxmlFile=new File(dir.getAbsolutePath() + File.separatorChar + WEB_XML_FILE);
@@ -82,6 +82,7 @@ catch (  IOException e2) {
       if (m2.groupCount() == 1 && m2.group(1) != null) {
         style="<init-param><name>style</name><value>" + m2.group(1) + "</value></init-param>";
       }
+      style+=widgetset;
       String name=m.group(1);
       name=name.replaceAll("^\\s*","");
       name=name.replaceAll("\\s*$","");
@@ -116,7 +117,7 @@ catch (  IOException e2) {
       s=s.replaceAll("%URL%",url);
       ldstring+=s;
     }
-    pstring+=PORTLET_XML_FOOT.replaceAll("%CONTEXTPARAMS%",widgetset);
+    pstring+=PORTLET_XML_FOOT;
     lpstring+=LIFERAY_PORTLET_XML_FOOT;
     ldstring+=LIFERAY_DISPLAY_XML_FOOT;
     try {
