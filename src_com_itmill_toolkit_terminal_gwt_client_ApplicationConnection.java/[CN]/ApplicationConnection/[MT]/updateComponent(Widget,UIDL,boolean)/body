@@ -24,32 +24,35 @@
     }
   }
   updateComponentSize(component,uidl);
-  component.setStyleName(component.getStylePrimaryName());
-  boolean enabled=true;
-  if (uidl.hasAttribute("disabled")) {
-    enabled=!uidl.getBooleanAttribute("disabled");
-  }
+  boolean enabled=!uidl.getBooleanAttribute("disabled");
   if (component instanceof FocusWidget) {
     ((FocusWidget)component).setEnabled(enabled);
   }
+  StringBuffer styleBuf=new StringBuffer();
+  String primaryName=component.getStylePrimaryName();
+  styleBuf.append(primaryName);
   if (!enabled) {
-    component.addStyleName("i-disabled");
-  }
- else {
-    component.removeStyleName("i-disabled");
+    styleBuf.append(" ");
+    styleBuf.append("i-disabled");
   }
   if (uidl.hasAttribute("style")) {
     final String[] styles=uidl.getStringAttribute("style").split(" ");
     for (int i=0; i < styles.length; i++) {
-      component.addStyleDependentName(styles[i]);
+      styleBuf.append(" ");
+      styleBuf.append(primaryName);
+      styleBuf.append("-");
+      styleBuf.append(styles[i]);
     }
   }
   if (component instanceof Field && uidl.hasAttribute("modified")) {
-    component.addStyleName(MODIFIED_CLASSNAME);
+    styleBuf.append(" ");
+    styleBuf.append(MODIFIED_CLASSNAME);
   }
   if (uidl.hasAttribute("error")) {
-    component.addStyleName(ERROR_CLASSNAME);
+    styleBuf.append(" ");
+    styleBuf.append(ERROR_CLASSNAME);
   }
+  component.setStyleName(styleBuf.toString());
   if (usePaintableIdsInDOM) {
     DOM.setElementProperty(component.getElement(),"id",uidl.getId());
   }
