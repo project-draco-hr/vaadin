@@ -3,18 +3,18 @@
     if (!text.getText().equals("")) {
       try {
         date=DateTimeFormat.getFormat(getFormatString()).parse(text.getText());
-        removeStyleName("i-error");
+        removeStyleName(ERROR_CLASSNAME);
       }
  catch (      final Exception e) {
         ApplicationConnection.getConsole().log(e.getMessage());
-        addStyleName("i-error");
+        addStyleName(ERROR_CLASSNAME);
         client.updateVariable(id,"lastInvalidDateString",text.getText(),false);
         date=null;
       }
     }
  else {
       date=null;
-      removeStyleName("i-error");
+      removeStyleName(ERROR_CLASSNAME);
     }
     client.updateVariable(id,"year",date != null ? date.getYear() + 1900 : -1,currentResolution == IDateField.RESOLUTION_YEAR && immediate);
     if (currentResolution >= IDateField.RESOLUTION_MONTH) {
