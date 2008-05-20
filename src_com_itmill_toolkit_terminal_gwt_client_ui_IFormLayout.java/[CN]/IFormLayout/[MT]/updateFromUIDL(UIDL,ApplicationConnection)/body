@@ -13,6 +13,11 @@
       c=new Caption(p,client);
       componentToCaption.put(p,c);
     }
+    ErrorFlag error=(ErrorFlag)componentToError.get(p);
+    if (error == null) {
+      error=new ErrorFlag();
+      componentToError.put(p,error);
+    }
     final Paintable oldComponent=(Paintable)getWidget(i,1);
     if (oldComponent == null) {
       setWidget(i,1,(Widget)p);
@@ -22,15 +27,10 @@
       setWidget(i,1,(Widget)p);
     }
     setWidget(i,0,c);
-    p.updateFromUIDL(childUidl,client);
     prepareCell(i,2);
     getCellFormatter().setStyleName(i,2,"i-formlayout-errorcell");
-    ErrorFlag error=(ErrorFlag)getWidget(i,2);
-    if (error == null) {
-      error=new ErrorFlag();
-      setWidget(i,2,error);
-    }
-    error.updateFromUIDL(childUidl);
+    setWidget(i,2,error);
+    p.updateFromUIDL(childUidl,client);
   }
   while (getRowCount() > i) {
     final Paintable p=(Paintable)getWidget(i,1);
