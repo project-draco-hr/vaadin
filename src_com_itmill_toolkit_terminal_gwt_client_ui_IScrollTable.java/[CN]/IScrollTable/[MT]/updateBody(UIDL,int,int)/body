@@ -10,12 +10,14 @@
   }
   tBody.renderRows(uidl,firstRow,reqRows);
   final int optimalFirstRow=(int)(firstRowInViewPort - pageLength * CACHE_RATE);
-  while (tBody.getLastRendered() > optimalFirstRow && tBody.getFirstRendered() < optimalFirstRow) {
-    tBody.unlinkRow(true);
+  boolean cont=true;
+  while (cont && tBody.getLastRendered() > optimalFirstRow && tBody.getFirstRendered() < optimalFirstRow) {
+    cont=tBody.unlinkRow(true);
   }
   final int optimalLastRow=(int)(firstRowInViewPort + pageLength + pageLength * CACHE_RATE);
-  while (tBody.getLastRendered() > optimalLastRow) {
-    tBody.unlinkRow(false);
+  cont=true;
+  while (cont && tBody.getLastRendered() > optimalLastRow) {
+    cont=tBody.unlinkRow(false);
   }
   tBody.fixSpacers();
 }
