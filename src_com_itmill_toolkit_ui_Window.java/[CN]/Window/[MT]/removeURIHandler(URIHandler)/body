@@ -1,11 +1,17 @@
 {
-  if (handler == null || uriHandlerList == null) {
-    return;
+  if (getParent() != null) {
+    Window mainWindow=(Window)getParent();
+    mainWindow.removeURIHandler(handler);
   }
+ else {
+    if (handler == null || uriHandlerList == null) {
+      return;
+    }
 synchronized (uriHandlerList) {
-    uriHandlerList.remove(handler);
-    if (uriHandlerList.isEmpty()) {
-      uriHandlerList=null;
+      uriHandlerList.remove(handler);
+      if (uriHandlerList.isEmpty()) {
+        uriHandlerList=null;
+      }
     }
   }
 }
