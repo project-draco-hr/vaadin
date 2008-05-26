@@ -2,8 +2,10 @@
   if (client.updateComponent(this,uidl,false)) {
     return;
   }
+  boolean legendEmpty=true;
   if (uidl.hasAttribute("caption")) {
     DOM.setInnerText(caption,uidl.getStringAttribute("caption"));
+    legendEmpty=false;
   }
  else {
     DOM.setInnerText(caption,"");
@@ -14,11 +16,18 @@
       DOM.insertChild(legend,icon.getElement(),0);
     }
     icon.setUri(uidl.getStringAttribute("icon"));
+    legendEmpty=false;
   }
  else {
     if (icon != null) {
       DOM.removeChild(legend,icon.getElement());
     }
+  }
+  if (legendEmpty) {
+    DOM.setStyleAttribute(legend,"display","none");
+  }
+ else {
+    DOM.setStyleAttribute(legend,"display","");
   }
   if (uidl.hasAttribute("error")) {
     final UIDL errorUidl=uidl.getErrors();
