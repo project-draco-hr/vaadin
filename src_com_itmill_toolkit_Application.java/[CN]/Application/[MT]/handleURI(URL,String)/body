@@ -15,7 +15,11 @@
     final String key=relativeUri.substring(index + 1,next);
     final ApplicationResource resource=(ApplicationResource)keyResourceMap.get(key);
     if (resource != null) {
-      return resource.getStream();
+      DownloadStream stream=resource.getStream();
+      if (stream != null) {
+        stream.setCacheTime(resource.getCacheTime());
+        return stream;
+      }
     }
     return null;
   }
