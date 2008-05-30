@@ -96,14 +96,7 @@
     }
   }
  catch (  final SessionExpired e) {
-    Application.SystemMessages ci=Application.getSystemMessages();
-    try {
-      Method m=applicationClass.getMethod("getSystemMessages",null);
-      ci=(Application.SystemMessages)m.invoke(null,null);
-    }
- catch (    Exception e2) {
-      e2.printStackTrace();
-    }
+    Application.SystemMessages ci=getSystemMessages();
     if (!UIDLrequest) {
       response.sendRedirect(ci.getSessionExpiredURL());
     }
@@ -114,14 +107,7 @@
 catch (  final Throwable e) {
     e.printStackTrace();
     if (UIDLrequest) {
-      Application.SystemMessages ci=Application.getSystemMessages();
-      try {
-        Method m=applicationClass.getMethod("getSystemMessages",null);
-        ci=(Application.SystemMessages)m.invoke(null,null);
-      }
- catch (      Exception e2) {
-        e2.printStackTrace();
-      }
+      Application.SystemMessages ci=getSystemMessages();
       criticalNotification(request,response,ci.getInternalErrorCaption(),ci.getInternalErrorMessage(),ci.getInternalErrorURL());
     }
  else {

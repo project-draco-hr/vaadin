@@ -1,0 +1,30 @@
+{
+  try {
+    Class appCls=applicationClass;
+    if (isApplicationRunnerServlet) {
+      appCls=getClass().getClassLoader().loadClass(applicationRunnerClassname);
+    }
+    Method m=appCls.getMethod("getSystemMessages",null);
+    return (Application.SystemMessages)m.invoke(null,null);
+  }
+ catch (  ClassNotFoundException e) {
+    e.printStackTrace();
+  }
+catch (  SecurityException e) {
+    e.printStackTrace();
+    System.out.print("Error: getSystemMessage() should be static public");
+  }
+catch (  NoSuchMethodException e) {
+  }
+catch (  IllegalArgumentException e) {
+    e.printStackTrace();
+  }
+catch (  IllegalAccessException e) {
+    e.printStackTrace();
+    System.out.print("Error: getSystemMessage() should be static public");
+  }
+catch (  InvocationTargetException e) {
+    e.printStackTrace();
+  }
+  return Application.getSystemMessages();
+}
