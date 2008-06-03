@@ -1,0 +1,33 @@
+{
+  final Form form=new Form();
+  final FormLayout layout=new FormLayout();
+  form.setLayout(layout);
+  form.setCaption("Contact Information");
+  form.setDescription("Please enter valid name and address. Fields marked with * are required.");
+  form.setFieldFactory(new MyFieldFactory());
+  ContactBean bean=new ContactBean();
+  BeanItem item=new BeanItem(bean);
+  form.setItemDataSource(item);
+  Vector order=new Vector();
+  order.add("name");
+  order.add("address");
+  order.add("postalCode");
+  order.add("city");
+  form.setVisibleItemProperties(order);
+  form.getField("name").setRequired(true);
+  form.setImmediate(true);
+  form.setWriteThrough(false);
+  form.setReadThrough(false);
+  ExpandLayout footer=new ExpandLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+  Button ok=new Button("Ok",form,"commit");
+  Button reset=new Button("Reset",form,"discard");
+  footer.addComponent(ok);
+  footer.setComponentAlignment(ok,ExpandLayout.ALIGNMENT_RIGHT,ExpandLayout.ALIGNMENT_TOP);
+  footer.setHeight("30px");
+  footer.addComponent(reset);
+  OrderedLayout root=new OrderedLayout();
+  root.setWidth(400,OrderedLayout.UNITS_PIXELS);
+  root.addComponent(form);
+  root.addComponent(footer);
+  this.setCompositionRoot(root);
+}
