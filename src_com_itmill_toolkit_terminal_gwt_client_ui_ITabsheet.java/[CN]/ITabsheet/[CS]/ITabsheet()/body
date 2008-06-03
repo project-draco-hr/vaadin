@@ -1,5 +1,15 @@
 {
   super(CLASSNAME);
+  DOM.setStyleAttribute(getElement(),"overflow","hidden");
+  scroller=DOM.createDiv();
+  DOM.setElementProperty(scroller,"className",SCROLLER_CLASSNAME);
+  scrollerPrev=DOM.createButton();
+  DOM.setElementProperty(scrollerPrev,"className",SCROLLER_CLASSNAME + "Prev");
+  DOM.sinkEvents(scrollerPrev,Event.ONCLICK);
+  scrollerNext=DOM.createButton();
+  DOM.setElementProperty(scrollerNext,"className",SCROLLER_CLASSNAME + "Next");
+  DOM.sinkEvents(scrollerNext,Event.ONCLICK);
+  DOM.appendChild(getElement(),scroller);
   tb=new TabBar();
   tp=new ITabsheetPanel();
   tp.setStyleName(CLASSNAME + "-tabsheetpanel");
@@ -9,7 +19,9 @@
   tb.setStyleName(CLASSNAME + "-tabs");
   DOM.setElementProperty(contentNode,"className",CLASSNAME + "-content");
   DOM.setElementProperty(deco,"className",CLASSNAME + "-deco");
-  add(tb,getElement());
+  add(tb,scroller);
+  DOM.appendChild(scroller,scrollerPrev);
+  DOM.appendChild(scroller,scrollerNext);
   DOM.appendChild(getElement(),contentNode);
   add(tp,contentNode);
   DOM.appendChild(getElement(),deco);
