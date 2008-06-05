@@ -22,6 +22,8 @@
   eval(scripts);
   scripts=null;
   iLayout();
+  Set oldWidgets=new HashSet();
+  oldWidgets.addAll(locationToWidget.values());
   for (final Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
     final UIDL uidlForChild=(UIDL)i.next();
     if (uidlForChild.getTag().equals("location")) {
@@ -33,6 +35,13 @@
       }
  catch (      final IllegalArgumentException e) {
       }
+      oldWidgets.remove(child);
+    }
+  }
+  for (Iterator iterator=oldWidgets.iterator(); iterator.hasNext(); ) {
+    Widget oldWidget=(Widget)iterator.next();
+    if (oldWidget.isAttached()) {
+      remove(oldWidget);
     }
   }
   iLayout();
