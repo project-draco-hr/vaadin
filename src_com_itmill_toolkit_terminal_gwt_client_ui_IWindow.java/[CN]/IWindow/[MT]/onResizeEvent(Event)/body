@@ -4,7 +4,8 @@ case Event.ONMOUSEDOWN:
     if (!isActive()) {
       bringToFront();
     }
-  resizing=true;
+  showDraggingCurtain(true);
+resizing=true;
 startX=DOM.eventGetScreenX(event);
 startY=DOM.eventGetScreenY(event);
 origW=getWidget().getOffsetWidth();
@@ -13,11 +14,13 @@ DOM.setCapture(getElement());
 DOM.eventPreventDefault(event);
 break;
 case Event.ONMOUSEUP:
+showDraggingCurtain(false);
 resizing=false;
 DOM.releaseCapture(getElement());
 setSize(event,true);
 break;
 case Event.ONLOSECAPTURE:
+showDraggingCurtain(false);
 resizing=false;
 case Event.ONMOUSEMOVE:
 if (resizing) {
