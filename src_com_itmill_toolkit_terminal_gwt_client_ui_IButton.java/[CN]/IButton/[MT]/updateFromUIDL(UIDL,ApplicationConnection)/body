@@ -6,18 +6,11 @@
   id=uidl.getId();
   setText(uidl.getStringAttribute("caption"));
   if (uidl.hasAttribute("error")) {
-    final UIDL errorUidl=uidl.getErrors();
     if (errorIndicatorElement == null) {
       errorIndicatorElement=DOM.createDiv();
       DOM.setElementProperty(errorIndicatorElement,"className","i-errorindicator");
-      DOM.sinkEvents(errorIndicatorElement,Event.MOUSEEVENTS);
-      sinkEvents(Event.MOUSEEVENTS);
     }
     DOM.insertChild(getElement(),errorIndicatorElement,0);
-    if (errorMessage == null) {
-      errorMessage=new ErrorMessage();
-    }
-    errorMessage.updateFromUIDL(errorUidl);
   }
  else   if (errorIndicatorElement != null) {
     DOM.removeChild(getElement(),errorIndicatorElement);
@@ -38,11 +31,5 @@
       DOM.removeChild(getElement(),icon.getElement());
       icon=null;
     }
-  }
-  if (uidl.hasAttribute("description")) {
-    setTitle(uidl.getStringAttribute("description"));
-  }
- else {
-    setTitle(null);
   }
 }

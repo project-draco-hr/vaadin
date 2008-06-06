@@ -48,10 +48,18 @@
     styleBuf.append(" ");
     styleBuf.append(MODIFIED_CLASSNAME);
   }
+  TooltipInfo tooltipInfo=getTitleInfo((Paintable)component);
+  if (uidl.hasAttribute("description")) {
+    tooltipInfo.setTitle(uidl.getStringAttribute("description"));
+  }
   if (uidl.hasAttribute("error")) {
     styleBuf.append(" ");
     styleBuf.append(primaryName);
     styleBuf.append(ERROR_CLASSNAME_EXT);
+    tooltipInfo.setErrorUidl(uidl.getErrors());
+  }
+ else {
+    tooltipInfo.setErrorUidl(null);
   }
   component.setStyleName(styleBuf.toString());
   if (usePaintableIdsInDOM) {

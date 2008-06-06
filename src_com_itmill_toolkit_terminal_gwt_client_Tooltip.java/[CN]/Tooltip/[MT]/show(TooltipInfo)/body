@@ -1,0 +1,41 @@
+{
+  boolean hasContent=false;
+  if (info.getErrorUidl() != null) {
+    em.setVisible(true);
+    em.updateFromUIDL(info.getErrorUidl());
+    hasContent=true;
+  }
+ else {
+    em.setVisible(false);
+  }
+  if (info.getTitle() != null && !"".equals(info.getTitle())) {
+    DOM.setInnerHTML(description,info.getTitle());
+    hasContent=true;
+  }
+ else {
+    DOM.setInnerHTML(description,"");
+  }
+  if (hasContent) {
+    setPopupPositionAndShow(new PositionCallback(){
+      public void setPosition(      int offsetWidth,      int offsetHeight){
+        if (offsetWidth > MAX_WIDTH) {
+          setWidth(MAX_WIDTH + "px");
+        }
+        offsetWidth=getOffsetWidth();
+        int x=tooltipEventMouseX + 10;
+        int y=tooltipEventMouseY + 10;
+        if (x + offsetWidth + MARGIN - Window.getScrollLeft() > Window.getClientWidth()) {
+          x=Window.getClientWidth() - offsetWidth - MARGIN;
+        }
+        if (y + offsetHeight + MARGIN - Window.getScrollTop() > Window.getClientHeight()) {
+          y=tooltipEventMouseY - 5 - offsetHeight;
+        }
+        setPopupPosition(x,y);
+      }
+    }
+);
+  }
+ else {
+    hide();
+  }
+}

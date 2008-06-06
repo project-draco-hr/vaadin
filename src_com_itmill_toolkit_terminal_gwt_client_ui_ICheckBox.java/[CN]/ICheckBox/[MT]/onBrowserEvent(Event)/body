@@ -1,18 +1,6 @@
 {
   super.onBrowserEvent(event);
-  final Element target=DOM.eventGetTarget(event);
-  if (errorIndicatorElement != null && DOM.compare(target,errorIndicatorElement)) {
-switch (DOM.eventGetType(event)) {
-case Event.ONMOUSEOVER:
-      errorMessage.showAt(errorIndicatorElement);
-    break;
-case Event.ONMOUSEOUT:
-  errorMessage.hide();
-break;
-case Event.ONCLICK:
-ApplicationConnection.getConsole().log(DOM.getInnerHTML(errorMessage.getElement()));
-default :
-break;
-}
-}
+  if (client != null) {
+    client.handleTooltipEvent(event,this);
+  }
 }
