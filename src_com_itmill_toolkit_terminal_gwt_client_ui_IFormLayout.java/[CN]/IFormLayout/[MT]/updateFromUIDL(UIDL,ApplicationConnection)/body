@@ -3,6 +3,13 @@
   if (client.updateComponent(this,uidl,false)) {
     return;
   }
+  final MarginInfo margins=new MarginInfo(uidl.getIntAttribute("margins"));
+  Element margin=getElement();
+  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_TOP,margins.hasTop());
+  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_RIGHT,margins.hasRight());
+  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_BOTTOM,margins.hasBottom());
+  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_LEFT,margins.hasLeft());
+  setStyleName(margin,CLASSNAME + "-" + "spacing",uidl.hasAttribute("spacing"));
   int i=0;
   for (final Iterator it=uidl.getChildIterator(); it.hasNext(); i++) {
     prepareCell(i,1);
@@ -27,11 +34,20 @@
       client.unregisterPaintable(oldComponent);
       setWidget(i,2,(Widget)p);
     }
-    getCellFormatter().setStyleName(i,0,"i-formlayout-captioncell");
+    getCellFormatter().setStyleName(i,2,CLASSNAME + "-contentcell");
+    getCellFormatter().setStyleName(i,0,CLASSNAME + "-captioncell");
     setWidget(i,0,caption);
-    getCellFormatter().setStyleName(i,1,"i-formlayout-errorcell");
+    getCellFormatter().setStyleName(i,1,CLASSNAME + "-errorcell");
     setWidget(i,1,error);
     p.updateFromUIDL(childUidl,client);
+    String rowstyles=CLASSNAME + "-row";
+    if (i == 0) {
+      rowstyles+=" " + CLASSNAME + "-firstrow";
+    }
+    if (!it.hasNext()) {
+      rowstyles+=" " + CLASSNAME + "-lastrow";
+    }
+    getRowFormatter().setStyleName(i,rowstyles);
   }
   while (getRowCount() > i) {
     final Paintable p=(Paintable)getWidget(i,1);
