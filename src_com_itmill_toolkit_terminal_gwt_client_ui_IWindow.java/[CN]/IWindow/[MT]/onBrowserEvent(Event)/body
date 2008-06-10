@@ -5,19 +5,21 @@
     return;
   }
   final Element target=DOM.eventGetTarget(event);
-  if (dragging || DOM.isOrHasChild(header,target)) {
-    onHeaderEvent(event);
-    DOM.eventCancelBubble(event,true);
-  }
- else   if (resizing || DOM.compare(resizeBox,target)) {
+  if (resizing || DOM.compare(resizeBox,target)) {
     onResizeEvent(event);
     DOM.eventCancelBubble(event,true);
   }
- else   if (DOM.compare(target,closeBox) && type == Event.ONCLICK) {
-    onCloseClick();
+ else   if (DOM.compare(target,closeBox)) {
+    if (type == Event.ONCLICK) {
+      onCloseClick();
+      DOM.eventCancelBubble(event,true);
+    }
+  }
+ else   if (dragging || !DOM.isOrHasChild(contents,target)) {
+    onDragEvent(event);
     DOM.eventCancelBubble(event,true);
   }
- else {
+ else   if (type == Event.ONCLICK) {
     if (!isActive()) {
       bringToFront();
     }
