@@ -1,36 +1,3 @@
 {
-  if (height != null && height != "") {
-    final boolean hasChildren=getWidget() != null;
-    Element contentEl=null;
-    String origPositioning=null;
-    int scrollTop=DOM.getElementPropertyInt(contentNode,"scrollTop");
-    int scrollLeft=DOM.getElementPropertyInt(contentNode,"scrollLeft");
-    if (hasChildren) {
-      contentEl=getWidget().getElement();
-      origPositioning=DOM.getStyleAttribute(contentEl,"position");
-      DOM.setStyleAttribute(contentEl,"position","absolute");
-    }
-    DOM.setStyleAttribute(contentNode,"overflow","hidden");
-    DOM.setStyleAttribute(contentNode,"height","");
-    super.setHeight(height);
-    final int targetHeight=getOffsetHeight();
-    super.setHeight("");
-    final int usedHeight=DOM.getElementPropertyInt(bottomDecoration,"offsetTop") + DOM.getElementPropertyInt(bottomDecoration,"offsetHeight") - DOM.getElementPropertyInt(getElement(),"offsetTop");
-    int h=targetHeight - usedHeight;
-    if (h < 0) {
-      h=0;
-    }
-    DOM.setStyleAttribute(contentNode,"height",h + "px");
-    DOM.setStyleAttribute(contentNode,"overflow","auto");
-    if (hasChildren) {
-      ApplicationConnection.getConsole().log("positioning:" + origPositioning);
-      DOM.setStyleAttribute(contentEl,"position",origPositioning);
-    }
-    DOM.setElementPropertyInt(contentNode,"scrollTop",scrollTop);
-    DOM.setElementPropertyInt(contentNode,"scrollLeft",scrollLeft);
-  }
- else {
-    DOM.setStyleAttribute(contentNode,"height","");
-  }
-  Util.runDescendentsLayout(this);
+  iLayout(true);
 }
