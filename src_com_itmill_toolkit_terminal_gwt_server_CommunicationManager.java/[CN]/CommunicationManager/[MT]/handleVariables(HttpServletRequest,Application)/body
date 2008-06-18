@@ -1,9 +1,14 @@
 {
   boolean success=true;
-  final Map params=new HashMap(request.getParameterMap());
-  final String changes=(String)((params.get("changes") instanceof String[]) ? ((String[])params.get("changes"))[0] : params.get("changes"));
-  params.remove("changes");
-  if (changes != null && changes.length() > 0) {
+  if (request.getContentLength() > 0) {
+    byte[] buffer=new byte[request.getContentLength()];
+    ServletInputStream inputStream=request.getInputStream();
+    int totalBytesRead=0;
+    int bytesRead;
+    while ((bytesRead=inputStream.read(buffer,totalBytesRead,MAX_BUFFER_SIZE)) != -1) {
+      totalBytesRead+=bytesRead;
+    }
+    String changes=new String(buffer,"utf-8");
     final String[] tmp=changes.split(VAR_RECORD_SEPARATOR);
     final String[][] variableRecords=new String[tmp.length][4];
     for (int i=0; i < tmp.length; i++) {

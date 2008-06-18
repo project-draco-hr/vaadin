@@ -1,9 +1,12 @@
 {
   startRequest();
   console.log("Making UIDL Request with params: " + requestData);
-  final String uri=getAppUri() + "UIDL" + configuration.getPathInfo();
+  String uri=getAppUri() + "UIDL" + configuration.getPathInfo();
+  if (repaintAll) {
+    uri+="?repaintAll=1";
+  }
   final RequestBuilder rb=new RequestBuilder(RequestBuilder.POST,uri);
-  rb.setHeader("Content-Type","application/x-www-form-urlencoded; charset=utf-8");
+  rb.setHeader("Content-Type","text/plain;charset=utf-8");
   try {
     rb.sendRequest(requestData,new RequestCallback(){
       public void onError(      Request request,      Throwable exception){
