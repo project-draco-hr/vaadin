@@ -13,7 +13,18 @@
   if (collapsedColumns != null) {
     collapsedColumns.clear();
   }
-  setVisibleColumns(getContainerPropertyIds().toArray());
+  Collection col=new LinkedList();
+  for (Iterator it=getContainerPropertyIds().iterator(); it.hasNext(); ) {
+    Object id=it.next();
+    if (columnGenerators == null || !columnGenerators.containsKey(id)) {
+      col.add(id);
+    }
+  }
+  if (columnGenerators != null && columnGenerators.size() > 0) {
+    col.addAll(columnGenerators.keySet());
+  }
+  setVisibleColumns(col.toArray());
   setValue(null);
+  resetPageBuffer();
   refreshRenderedCells();
 }

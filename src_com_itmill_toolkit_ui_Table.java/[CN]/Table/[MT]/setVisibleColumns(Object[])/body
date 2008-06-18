@@ -5,10 +5,10 @@
   final Collection properties=getContainerPropertyIds();
   for (int i=0; i < visibleColumns.length; i++) {
     if (visibleColumns[i] == null) {
-      throw new NullPointerException("Properties must be non-nulls");
+      throw new NullPointerException("Ids must be non-nulls");
     }
- else     if (!properties.contains(visibleColumns[i])) {
-      throw new IllegalArgumentException("Properties must exist in the Container, missing property: " + visibleColumns[i]);
+ else     if (!properties.contains(visibleColumns[i]) && !columnGenerators.containsKey(visibleColumns[i])) {
+      throw new IllegalArgumentException("Ids must exist in the Container or as a generated column , missing id: " + visibleColumns[i]);
     }
   }
   final LinkedList newVC=new LinkedList();
@@ -16,13 +16,19 @@
     newVC.add(visibleColumns[i]);
   }
   if (this.visibleColumns != null) {
-    for (final Iterator i=this.visibleColumns.iterator(); i.hasNext(); ) {
-      final Object col=i.next();
-      if (!newVC.contains(col)) {
-        setColumnHeader(col,null);
-        setColumnAlignment(col,null);
-        setColumnIcon(col,null);
+    disableContentRefreshing();
+    try {
+      for (final Iterator i=this.visibleColumns.iterator(); i.hasNext(); ) {
+        final Object col=i.next();
+        if (!newVC.contains(col)) {
+          setColumnHeader(col,null);
+          setColumnAlignment(col,null);
+          setColumnIcon(col,null);
+        }
       }
+    }
+  finally {
+      enableContentRefreshing(false);
     }
   }
   this.visibleColumns=newVC;

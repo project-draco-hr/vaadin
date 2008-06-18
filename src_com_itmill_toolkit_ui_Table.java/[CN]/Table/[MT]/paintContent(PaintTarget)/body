@@ -65,8 +65,13 @@
   int iscomponentIndex=0;
   for (final Iterator it=visibleColumns.iterator(); it.hasNext() && iscomponentIndex < iscomponent.length; ) {
     final Object columnId=it.next();
-    final Class colType=getType(columnId);
-    iscomponent[iscomponentIndex++]=colType != null && Component.class.isAssignableFrom(colType);
+    if (columnGenerators.containsKey(columnId)) {
+      iscomponent[iscomponentIndex++]=true;
+    }
+ else {
+      final Class colType=getType(columnId);
+      iscomponent[iscomponentIndex++]=colType != null && Component.class.isAssignableFrom(colType);
+    }
   }
   target.startTag("rows");
   int start=0;

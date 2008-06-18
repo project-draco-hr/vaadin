@@ -59,7 +59,7 @@
     final int headmode=getRowHeaderMode();
     final boolean[] iscomponent=new boolean[cols];
     for (int i=0; i < cols; i++) {
-      iscomponent[i]=Component.class.isAssignableFrom(getType(colids[i]));
+      iscomponent[i]=columnGenerators.containsKey(colids[i]) || Component.class.isAssignableFrom(getType(colids[i]));
     }
     int firstIndexNotInCache;
     if (pageBuffer != null && pageBuffer[CELL_ITEMID].length > 0) {
@@ -84,10 +84,14 @@ default :
 }
 if (cols > 0) {
   for (int j=0; j < cols; j++) {
-    final Property p=getContainerProperty(id,colids[j]);
-    Object value=null;
+    Property p=null;
+    Object value="";
+    boolean isGenerated=columnGenerators.containsKey(colids[j]);
+    if (!isGenerated) {
+      p=getContainerProperty(id,colids[j]);
+    }
     int index=firstIndex + i;
-    if (p != null) {
+    if (p != null || isGenerated) {
       if (p instanceof Property.ValueChangeNotifier) {
         if (oldListenedProperties == null || !oldListenedProperties.contains(p)) {
           ((Property.ValueChangeNotifier)p).addListener(this);
@@ -99,7 +103,11 @@ if (cols > 0) {
         value=pageBuffer[CELL_FIRSTCOL + j][indexInOldBuffer];
       }
  else {
-        if (iscomponent[j]) {
+        if (isGenerated) {
+          ColumnGenerator cg=(ColumnGenerator)columnGenerators.get(colids[j]);
+          value=cg.generateCell(this,id,colids[j]);
+        }
+ else         if (iscomponent[j]) {
           value=p.getValue();
         }
  else         if (p != null) {
@@ -109,9 +117,6 @@ if (cols > 0) {
           value=getPropertyValue(id,colids[j],null);
         }
       }
-    }
- else {
-      value="";
     }
     if (value instanceof Component) {
       if (oldVisibleComponents == null || !oldVisibleComponents.contains(value)) {
