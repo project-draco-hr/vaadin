@@ -91,4 +91,21 @@
     client.unregisterPaintable(w.getPaintable());
     widgetToCaptionWrapper.remove(w.getPaintable());
   }
+  if (needsFF2Hack) {
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        Element firstcell=getCellFormatter().getElement(0,0);
+        if (firstcell != null) {
+          String styleAttribute=DOM.getStyleAttribute(firstcell,"verticalAlign");
+          DOM.setStyleAttribute(firstcell,"verticalAlign","");
+          int elementPropertyInt=DOM.getElementPropertyInt(firstcell,"offsetWidth");
+          DOM.setStyleAttribute(firstcell,"verticalAlign",styleAttribute);
+          if (elementPropertyInt > 0) {
+            needsFF2Hack=false;
+          }
+        }
+      }
+    }
+);
+  }
 }
