@@ -1,0 +1,25 @@
+{
+  Stack items=new Stack();
+  boolean found=false;
+  if (variables.containsKey("clickedId")) {
+    Integer clickedId=(Integer)variables.get("clickedId");
+    Iterator itr=this.getItems().iterator();
+    while (itr.hasNext()) {
+      items.push((Item)itr.next());
+    }
+    Item tmpItem=null;
+    while (!found && !items.empty()) {
+      tmpItem=(Item)items.pop();
+      found=(clickedId.intValue() == tmpItem.getId());
+      if (tmpItem.hasChildren()) {
+        itr=tmpItem.getChildren().iterator();
+        while (itr.hasNext()) {
+          items.push(itr.next());
+        }
+      }
+    }
+    if (found) {
+      tmpItem.getCommand().menuSelected(tmpItem);
+    }
+  }
+}

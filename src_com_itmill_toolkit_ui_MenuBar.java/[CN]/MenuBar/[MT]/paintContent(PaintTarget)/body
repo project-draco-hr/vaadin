@@ -1,0 +1,38 @@
+{
+  super.paintContent(target);
+  Stack iteratorStack=new Stack();
+  target.startTag("options");
+  target.addAttribute("animationEnabled",animationEnabled);
+  target.endTag("options");
+  target.startTag("items");
+  Iterator itr=menuItems.iterator();
+  while (itr.hasNext()) {
+    Item item=(Item)itr.next();
+    target.startTag("item");
+    target.addAttribute("text",item.getText());
+    target.addAttribute("id",item.getId());
+    Command command=item.getCommand();
+    if (command != null) {
+      target.addAttribute("command",true);
+    }
+ else {
+      target.addAttribute("command",false);
+    }
+    Resource icon=item.getIcon();
+    if (icon != null) {
+      target.addAttribute("icon",icon);
+    }
+    if (item.hasChildren()) {
+      iteratorStack.push(itr);
+      itr=item.getChildren().iterator();
+    }
+ else {
+      target.endTag("item");
+    }
+    if (!itr.hasNext() && !iteratorStack.empty()) {
+      itr=(Iterator)iteratorStack.pop();
+      target.endTag("item");
+    }
+  }
+  target.endTag("items");
+}
