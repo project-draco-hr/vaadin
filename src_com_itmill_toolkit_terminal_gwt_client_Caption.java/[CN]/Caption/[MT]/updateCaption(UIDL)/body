@@ -2,21 +2,6 @@
   setVisible(!uidl.getBooleanAttribute("invisible"));
   setStyleName(getElement(),"i-disabled",uidl.hasAttribute("disabled"));
   boolean isEmpty=true;
-  if (uidl.hasAttribute("error")) {
-    isEmpty=false;
-    if (errorIndicatorElement == null) {
-      errorIndicatorElement=DOM.createDiv();
-      if (Util.isIE()) {
-        DOM.setInnerHTML(errorIndicatorElement,"&nbsp;");
-      }
-      DOM.setElementProperty(errorIndicatorElement,"className","i-errorindicator");
-      DOM.appendChild(getElement(),errorIndicatorElement);
-    }
-  }
- else   if (errorIndicatorElement != null) {
-    DOM.removeChild(getElement(),errorIndicatorElement);
-    errorIndicatorElement=null;
-  }
   if (uidl.hasAttribute("icon")) {
     if (icon == null) {
       icon=new Icon(client);
@@ -69,6 +54,21 @@
       DOM.removeChild(getElement(),requiredFieldIndicator);
       requiredFieldIndicator=null;
     }
+  }
+  if (uidl.hasAttribute("error")) {
+    isEmpty=false;
+    if (errorIndicatorElement == null) {
+      errorIndicatorElement=DOM.createDiv();
+      if (Util.isIE()) {
+        DOM.setInnerHTML(errorIndicatorElement,"&nbsp;");
+      }
+      DOM.setElementProperty(errorIndicatorElement,"className","i-errorindicator");
+      DOM.appendChild(getElement(),errorIndicatorElement);
+    }
+  }
+ else   if (errorIndicatorElement != null) {
+    DOM.removeChild(getElement(),errorIndicatorElement);
+    errorIndicatorElement=null;
   }
   if (Util.isIE()) {
     if (isEmpty) {
