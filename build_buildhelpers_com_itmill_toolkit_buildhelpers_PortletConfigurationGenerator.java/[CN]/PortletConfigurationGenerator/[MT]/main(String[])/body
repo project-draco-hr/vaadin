@@ -63,10 +63,28 @@ catch (  IOException e2) {
  catch (  FileNotFoundException e) {
     System.out.println(liferayDisplayXmlFile + " not found!");
   }
-  if (pout != null && lpout != null && ldout != null) {
+  File jbossObjectXmlFile=new File(args[0] + File.separatorChar + JBOSS_OBJECT_FILE);
+  OutputStreamWriter joout=null;
+  try {
+    joout=new OutputStreamWriter(new FileOutputStream(jbossObjectXmlFile),Charset.forName("UTF-8"));
+  }
+ catch (  FileNotFoundException e) {
+    System.out.println(jbossObjectXmlFile + " not found!");
+  }
+  File jbossInstanceXmlFile=new File(args[0] + File.separatorChar + JBOSS_INSTANCE_FILE);
+  OutputStreamWriter jiout=null;
+  try {
+    jiout=new OutputStreamWriter(new FileOutputStream(jbossInstanceXmlFile),Charset.forName("UTF-8"));
+  }
+ catch (  FileNotFoundException e) {
+    System.out.println(jbossInstanceXmlFile + " not found!");
+  }
+  if (pout != null && lpout != null && ldout != null && joout != null && jiout != null) {
     String pstring=PORTLET_XML_HEAD;
     String lpstring=LIFERAY_PORTLET_XML_HEAD;
     String ldstring=LIFERAY_DISPLAY_XML_HEAD;
+    String jostring=JBOSS_OBJECT_HEAD;
+    String jistring=JBOSS_INSTANCE_HEAD;
     Pattern p1=Pattern.compile("<servlet-mapping>.*?<servlet-name>(.*?)<\\/servlet-name>.*?<url-pattern>(.*?)<\\/url-pattern>(.*?)<\\/servlet-mapping>");
     Pattern p2=Pattern.compile(".*?<!--\\s+portlet\\s?(style=\\S+)?\\s+-->.*?");
     Matcher m=p1.matcher(webXml);
@@ -116,14 +134,28 @@ catch (  IOException e2) {
       s=s.replaceAll("%PORTLETNAME%",pname);
       s=s.replaceAll("%URL%",url);
       ldstring+=s;
+      s=JBOSS_OBJECT_SECTION;
+      s=s.replaceAll("%NAME%",name);
+      s=s.replaceAll("%PORTLETNAME%",pname);
+      s=s.replaceAll("%URL%",url);
+      jostring+=s;
+      s=JBOSS_INSTANCE_SECTION;
+      s=s.replaceAll("%NAME%",name);
+      s=s.replaceAll("%PORTLETNAME%",pname);
+      s=s.replaceAll("%URL%",url);
+      jistring+=s;
     }
     pstring+=PORTLET_XML_FOOT;
     lpstring+=LIFERAY_PORTLET_XML_FOOT;
     ldstring+=LIFERAY_DISPLAY_XML_FOOT;
+    jostring+=JBOSS_OBJECT_FOOT;
+    jistring+=JBOSS_INSTANCE_FOOT;
     try {
       pout.write(pstring);
       lpout.write(lpstring);
       ldout.write(ldstring);
+      joout.write(jostring);
+      jiout.write(jistring);
     }
  catch (    IOException e) {
       System.out.println("Write FAILED:" + e);
@@ -138,6 +170,12 @@ catch (  IOException e2) {
     }
     if (ldout != null) {
       ldout.close();
+    }
+    if (joout != null) {
+      joout.close();
+    }
+    if (jiout != null) {
+      jiout.close();
     }
   }
  catch (  IOException e) {
