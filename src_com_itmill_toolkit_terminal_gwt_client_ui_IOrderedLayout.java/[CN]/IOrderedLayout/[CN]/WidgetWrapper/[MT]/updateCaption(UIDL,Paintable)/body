@@ -1,0 +1,45 @@
+{
+  if (Caption.isNeeded(uidl)) {
+    boolean justAdded=false;
+    if (caption == null) {
+      justAdded=true;
+      caption=new Caption(paintable,client);
+    }
+    caption.updateCaption(uidl);
+    final boolean after=caption.shouldBePlacedAfterComponent();
+    final Element captionElement=caption.getElement();
+    final Element firstElement=DOM.getFirstChild(getElement());
+    final Element widgetElement=firstElement == captionElement ? DOM.getChild(getElement(),1) : firstElement;
+    String currentWidgetClass=DOM.getElementAttribute(widgetElement,"class");
+    if (null == currentWidgetClass) {
+      currentWidgetClass="";
+    }
+    if (justAdded) {
+      if (after) {
+        DOM.appendChild(getElement(),captionElement);
+        DOM.setElementAttribute(getElement(),"class","i-orderedlayout-wrap");
+        DOM.setElementAttribute(widgetElement,"class",currentWidgetClass + " i-orderedlayout-wrap-e");
+      }
+ else {
+        DOM.insertBefore(getElement(),captionElement,firstElement);
+      }
+    }
+ else     if (caption.shouldBePlacedAfterComponent() == (firstElement == captionElement)) {
+      DOM.removeChild(getElement(),firstElement);
+      DOM.appendChild(getElement(),firstElement);
+      DOM.setElementAttribute(getElement(),"class",after ? "i-orderedlayout-wrap" : "");
+      if (after) {
+        DOM.setElementAttribute(widgetElement,"class",currentWidgetClass + " i-orderedlayout-wrap-e");
+      }
+ else {
+      }
+    }
+  }
+ else {
+    if (caption != null) {
+      DOM.removeChild(getElement(),caption.getElement());
+      caption=null;
+      DOM.setElementAttribute(getElement(),"class","");
+    }
+  }
+}
