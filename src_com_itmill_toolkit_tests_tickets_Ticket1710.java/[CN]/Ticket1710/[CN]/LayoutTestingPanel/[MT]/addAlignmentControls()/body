@@ -1,0 +1,33 @@
+{
+  if (!(testedLayout instanceof Layout.AlignmentHandler)) {
+    return;
+  }
+  final Layout.AlignmentHandler ah=(AlignmentHandler)testedLayout;
+  final NativeSelect vAlign=new NativeSelect();
+  final NativeSelect hAlign=new NativeSelect();
+  controls.addComponent(new Label("alignment"));
+  controls.addComponent(hAlign);
+  controls.addComponent(vAlign);
+  vAlign.addItem(new Integer(Layout.AlignmentHandler.ALIGNMENT_TOP));
+  vAlign.setItemCaption(new Integer(Layout.AlignmentHandler.ALIGNMENT_TOP),"top");
+  vAlign.addItem(new Integer(Layout.AlignmentHandler.ALIGNMENT_VERTICAL_CENTER));
+  vAlign.setItemCaption(new Integer(Layout.AlignmentHandler.ALIGNMENT_VERTICAL_CENTER),"center");
+  vAlign.addItem(new Integer(Layout.AlignmentHandler.ALIGNMENT_BOTTOM));
+  vAlign.setItemCaption(new Integer(Layout.AlignmentHandler.ALIGNMENT_BOTTOM),"bottom");
+  hAlign.addItem(new Integer(Layout.AlignmentHandler.ALIGNMENT_LEFT));
+  hAlign.setItemCaption(new Integer(Layout.AlignmentHandler.ALIGNMENT_LEFT),"left");
+  hAlign.addItem(new Integer(Layout.AlignmentHandler.ALIGNMENT_HORIZONTAL_CENTER));
+  hAlign.setItemCaption(new Integer(Layout.AlignmentHandler.ALIGNMENT_HORIZONTAL_CENTER),"center");
+  hAlign.addItem(new Integer(Layout.AlignmentHandler.ALIGNMENT_RIGHT));
+  hAlign.setItemCaption(new Integer(Layout.AlignmentHandler.ALIGNMENT_RIGHT),"right");
+  Property.ValueChangeListener alignmentChangeListener=new Property.ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      updateAlignments(((Integer)hAlign.getValue()).intValue(),((Integer)vAlign.getValue()).intValue());
+    }
+  }
+;
+  hAlign.setValue(new Integer(Layout.AlignmentHandler.ALIGNMENT_LEFT));
+  vAlign.addListener(alignmentChangeListener);
+  hAlign.addListener(alignmentChangeListener);
+  vAlign.setValue(new Integer(Layout.AlignmentHandler.ALIGNMENT_TOP));
+}

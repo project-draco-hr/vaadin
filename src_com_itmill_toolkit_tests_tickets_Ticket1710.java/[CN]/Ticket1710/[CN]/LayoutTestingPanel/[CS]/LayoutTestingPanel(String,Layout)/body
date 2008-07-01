@@ -4,6 +4,9 @@
   testedLayout=layout;
   internalLayout.addComponent(controls);
   internalLayout.addComponent(testedLayout);
+  internalLayout.setMargin(true);
+  internalLayout.setSpacing(true);
+  internalLayout.setComponentAlignment(testedLayout,OrderedLayout.ALIGNMENT_HORIZONTAL_CENTER,OrderedLayout.ALIGNMENT_VERTICAL_CENTER);
   controls.setWidth(100,OrderedLayout.UNITS_PERCENTAGE);
   controls.setStyleName("controls");
   controls.setSpacing(true);
@@ -18,9 +21,8 @@
   controls.addComponent(marginRight);
   controls.addComponent(marginTop);
   controls.addComponent(marginBottom);
-  controls.addComponent(spacing);
-  for (Iterator i=controls.getComponentIterator(); i.hasNext(); ) {
-    ((AbstractComponent)i.next()).setImmediate(true);
+  if (testedLayout instanceof Layout.SpacingHandler) {
+    controls.addComponent(spacing);
   }
   Property.ValueChangeListener marginSpacingListener=new Property.ValueChangeListener(){
     public void valueChange(    ValueChangeEvent event){
@@ -34,6 +36,10 @@
   marginRight.addListener(marginSpacingListener);
   spacing.addListener(marginSpacingListener);
   updateMarginsAndSpacing();
+  addAlignmentControls();
   testedLayout.setStyleName("tested-layout");
   setStyleName("layout-testing-panel");
+  for (Iterator i=controls.getComponentIterator(); i.hasNext(); ) {
+    ((AbstractComponent)i.next()).setImmediate(true);
+  }
 }
