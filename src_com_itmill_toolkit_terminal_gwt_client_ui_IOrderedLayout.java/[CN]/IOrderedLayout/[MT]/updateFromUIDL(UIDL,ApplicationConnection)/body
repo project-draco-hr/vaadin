@@ -7,16 +7,16 @@
     handleMargins(uidl);
   }
   hasComponentSpacing=uidl.getBooleanAttribute("spacing");
-  final ArrayList newWidgets=new ArrayList();
+  final Vector newWidgets=new Vector();
   for (final Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
     final UIDL uidlForChild=(UIDL)it.next();
     final Paintable child=client.getPaintable(uidlForChild);
     newWidgets.add(child);
   }
-  final Iterator oldWidgetsIterator=getChildrenAsArraylist().iterator();
+  final Iterator oldWidgetsIterator=(new Vector(childWidgets)).iterator();
   final Iterator newWidgetsIterator=newWidgets.iterator();
   final Iterator newUIDLIterator=uidl.getChildIterator();
-  final ArrayList paintedWidgets=new ArrayList();
+  final Vector paintedWidgets=new Vector();
   Widget oldChild=null;
   while (newWidgetsIterator.hasNext()) {
     final Widget newChild=(Widget)newWidgetsIterator.next();
@@ -31,7 +31,7 @@
           break;
         }
  else {
-          removePaintable((Paintable)oldChild);
+          remove(oldChild);
           oldChild=null;
         }
       }
@@ -43,22 +43,18 @@
       oldChild=null;
     }
  else     if (hasChildComponent(newChild)) {
-      int index=getPaintableIndex(oldChild);
-      remove(newChild);
-      this.insert(newChild,index);
+      add(newChild,childWidgets.indexOf(oldChild));
     }
  else {
-      final int index=getPaintableIndex(oldChild);
-      insert(newChild,index);
+      add(newChild,childWidgets.indexOf(oldChild));
     }
     ((Paintable)newChild).updateFromUIDL(newChildUIDL,client);
     paintedWidgets.add(newChild);
   }
   while (oldWidgetsIterator.hasNext()) {
     oldChild=(Widget)oldWidgetsIterator.next();
-    final Paintable p=(Paintable)oldChild;
-    if (!newWidgets.contains(p)) {
-      removePaintable(p);
+    if (!newWidgets.contains(oldChild)) {
+      remove(oldChild);
     }
   }
   handleAlignments(uidl);

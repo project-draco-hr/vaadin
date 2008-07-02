@@ -1,18 +1,11 @@
 {
   final int[] alignments=uidl.getIntArrayAttribute("alignments");
   int alignmentIndex=0;
-  final Iterator it=getChildrenAsArraylist().iterator();
-  boolean first=true;
+  final Iterator it=childWidgetWrappers.iterator();
   while (it.hasNext()) {
     final AlignmentInfo ai=new AlignmentInfo(alignments[alignmentIndex++]);
-    final WidgetWrapper wr=((WidgetWrapper)widgetToWrapper.get(it.next()));
+    final WidgetWrapper wr=(WidgetWrapper)it.next();
     wr.setAlignment(ai.getVerticalAlignment(),ai.getHorizontalAlignment());
-    if (first) {
-      wr.setSpacingEnabled(false);
-      first=false;
-    }
- else {
-      wr.setSpacingEnabled(hasComponentSpacing);
-    }
+    wr.setSpacingEnabled(alignmentIndex == 1 ? false : hasComponentSpacing);
   }
 }

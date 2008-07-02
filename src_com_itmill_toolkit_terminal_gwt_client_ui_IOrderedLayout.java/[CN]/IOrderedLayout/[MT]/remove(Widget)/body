@@ -1,10 +1,12 @@
 {
-  final Element wrapper=((WidgetWrapper)widgetToWrapper.get(w)).getElement();
-  final boolean removed=super.remove(w);
-  if (removed) {
-    DOM.removeChild(childContainer,wrapper);
-    widgetToWrapper.remove(w);
-    return true;
+  if (!childWidgets.contains(child)) {
+    return false;
   }
-  return false;
+  orphan(child);
+  final int index=childWidgets.indexOf(child);
+  final WidgetWrapper wrapper=(WidgetWrapper)childWidgetWrappers.get(index);
+  DOM.removeChild(wrappedChildContainer,wrapper.getElement());
+  childWidgetWrappers.remove(index);
+  childWidgets.remove(index);
+  return true;
 }
