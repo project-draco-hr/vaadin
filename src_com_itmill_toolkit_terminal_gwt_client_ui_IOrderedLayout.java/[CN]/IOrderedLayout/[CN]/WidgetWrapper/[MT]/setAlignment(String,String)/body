@@ -15,18 +15,27 @@
         final Element tBody=DOM.createTBody();
         final Element tr=DOM.createTR();
         td=DOM.createTD();
+        final Element itable=DOM.createTable();
+        final Element itBody=DOM.createTBody();
+        final Element itr=DOM.createTR();
+        final Element itd=DOM.createTD();
         DOM.appendChild(table,tBody);
         DOM.appendChild(tBody,tr);
         DOM.appendChild(tr,td);
+        DOM.appendChild(td,itable);
+        DOM.appendChild(itable,itBody);
+        DOM.appendChild(itBody,itr);
+        DOM.appendChild(itr,itd);
         DOM.setElementAttribute(table,"cellpadding","0");
         DOM.setElementAttribute(table,"cellspacing","0");
         DOM.setStyleAttribute(table,"width","100%");
-        DOM.setElementProperty(td,"className","i_align");
+        DOM.setElementAttribute(itable,"cellpadding","0");
+        DOM.setElementAttribute(itable,"cellspacing","0");
         while (DOM.getChildCount(getElement()) > 0) {
           Element content=DOM.getFirstChild(getElement());
           if (content != null) {
             DOM.removeChild(getElement(),content);
-            DOM.appendChild(td,content);
+            DOM.appendChild(itd,content);
           }
         }
         DOM.appendChild(getElement(),table);
@@ -35,6 +44,7 @@
     }
  else     if (td != null) {
       while (DOM.getChildCount(td) > 0) {
+        Element itd=DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(td))));
         Element content=DOM.getFirstChild(td);
         if (content != null) {
           DOM.removeChild(td,content);
