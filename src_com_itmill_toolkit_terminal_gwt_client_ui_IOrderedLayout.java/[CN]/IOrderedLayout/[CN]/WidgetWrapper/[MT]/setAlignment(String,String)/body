@@ -5,54 +5,49 @@
  else {
     DOM.setStyleAttribute(getElement(),"verticalAlign",verticalAlignment);
   }
-  if (BrowserInfo.get().isIE()) {
-    DOM.setElementAttribute(getElement(),"align",horizontalAlignment);
-  }
- else {
-    if (!horizontalAlignment.equals("left")) {
-      if (td == null) {
-        final Element table=DOM.createTable();
-        final Element tBody=DOM.createTBody();
-        final Element tr=DOM.createTR();
-        td=DOM.createTD();
-        final Element itable=DOM.createTable();
-        final Element itBody=DOM.createTBody();
-        final Element itr=DOM.createTR();
-        final Element itd=DOM.createTD();
-        DOM.appendChild(table,tBody);
-        DOM.appendChild(tBody,tr);
-        DOM.appendChild(tr,td);
-        DOM.appendChild(td,itable);
-        DOM.appendChild(itable,itBody);
-        DOM.appendChild(itBody,itr);
-        DOM.appendChild(itr,itd);
-        DOM.setElementAttribute(table,"cellpadding","0");
-        DOM.setElementAttribute(table,"cellspacing","0");
-        DOM.setStyleAttribute(table,"width","100%");
-        DOM.setElementAttribute(itable,"cellpadding","0");
-        DOM.setElementAttribute(itable,"cellspacing","0");
-        while (DOM.getChildCount(getElement()) > 0) {
-          Element content=DOM.getFirstChild(getElement());
-          if (content != null) {
-            DOM.removeChild(getElement(),content);
-            DOM.appendChild(itd,content);
-          }
-        }
-        DOM.appendChild(getElement(),table);
-      }
-      DOM.setElementAttribute(td,"align",horizontalAlignment);
-    }
- else     if (td != null) {
-      Element itd=DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(td))));
-      while (DOM.getChildCount(itd) > 0) {
-        Element content=DOM.getFirstChild(itd);
+  if (!horizontalAlignment.equals("left")) {
+    if (td == null) {
+      final Element table=DOM.createTable();
+      final Element tBody=DOM.createTBody();
+      final Element tr=DOM.createTR();
+      td=DOM.createTD();
+      final Element itable=DOM.createTable();
+      final Element itBody=DOM.createTBody();
+      final Element itr=DOM.createTR();
+      final Element itd=DOM.createTD();
+      DOM.appendChild(table,tBody);
+      DOM.appendChild(tBody,tr);
+      DOM.appendChild(tr,td);
+      DOM.appendChild(td,itable);
+      DOM.appendChild(itable,itBody);
+      DOM.appendChild(itBody,itr);
+      DOM.appendChild(itr,itd);
+      DOM.setElementAttribute(table,"cellpadding","0");
+      DOM.setElementAttribute(table,"cellspacing","0");
+      DOM.setStyleAttribute(table,"width","100%");
+      DOM.setElementAttribute(itable,"cellpadding","0");
+      DOM.setElementAttribute(itable,"cellspacing","0");
+      while (DOM.getChildCount(getElement()) > 0) {
+        Element content=DOM.getFirstChild(getElement());
         if (content != null) {
-          DOM.removeChild(itd,content);
-          DOM.appendChild(getElement(),content);
+          DOM.removeChild(getElement(),content);
+          DOM.appendChild(itd,content);
         }
       }
-      DOM.removeChild(getElement(),DOM.getFirstChild(getElement()));
-      td=null;
+      DOM.appendChild(getElement(),table);
     }
+    DOM.setElementAttribute(td,"align",horizontalAlignment);
+  }
+ else   if (td != null) {
+    Element itd=DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(td))));
+    while (DOM.getChildCount(itd) > 0) {
+      Element content=DOM.getFirstChild(itd);
+      if (content != null) {
+        DOM.removeChild(itd,content);
+        DOM.appendChild(getElement(),content);
+      }
+    }
+    DOM.removeChild(getElement(),DOM.getFirstChild(getElement()));
+    td=null;
   }
 }
