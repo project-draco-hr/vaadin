@@ -1,4 +1,5 @@
 {
+  final Widget widget=(Widget)paintable;
   if (Caption.isNeeded(uidl)) {
     boolean justAdded=false;
     if (caption == null) {
@@ -8,16 +9,12 @@
     caption.updateCaption(uidl);
     final boolean after=caption.shouldBePlacedAfterComponent();
     final Element captionElement=caption.getElement();
-    final Element widgetElement=((Widget)paintable).getElement();
-    String currentWidgetClass=DOM.getElementAttribute(widgetElement,"class");
-    if (null == currentWidgetClass) {
-      currentWidgetClass="";
-    }
+    final Element widgetElement=widget.getElement();
     if (justAdded) {
       if (after) {
         DOM.appendChild(getElement(),captionElement);
         DOM.setElementAttribute(getElement(),"class","i-orderedlayout-wrap");
-        DOM.setElementAttribute(widgetElement,"class",currentWidgetClass + " i-orderedlayout-wrap-e");
+        widget.addStyleName("i-orderedlayout-wrap-e");
       }
  else {
         DOM.insertChild(getElement(),captionElement,0);
@@ -29,10 +26,10 @@
       DOM.appendChild(getElement(),firstElement);
       DOM.setElementAttribute(getElement(),"class",after ? "i-orderedlayout-wrap" : "");
       if (after) {
-        DOM.setElementAttribute(widgetElement,"class",currentWidgetClass + " i-orderedlayout-wrap-e");
+        widget.addStyleName("i-orderedlayout-wrap-e");
       }
  else {
-        removeClass(widgetElement,"i-orderedlayout-wrap-e");
+        widget.removeStyleName("i-orderedlayout-wrap-e");
       }
     }
   }
@@ -41,7 +38,7 @@
       DOM.removeChild(getElement(),caption.getElement());
       caption=null;
       DOM.setElementAttribute(getElement(),"class","");
-      removeClass(DOM.getFirstChild(getElement()),"i-orderedlayout-wrap-e");
+      widget.removeStyleName("i-orderedlayout-wrap-e");
     }
   }
 }

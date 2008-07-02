@@ -7,28 +7,27 @@
     handleMargins(uidl);
   }
   hasComponentSpacing=uidl.getBooleanAttribute("spacing");
-  final ArrayList uidlWidgets=new ArrayList();
+  final ArrayList newWidgets=new ArrayList();
   for (final Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
     final UIDL uidlForChild=(UIDL)it.next();
     final Paintable child=client.getPaintable(uidlForChild);
-    uidlWidgets.add(child);
+    newWidgets.add(child);
   }
-  final ArrayList oldWidgets=getChildrenAsArraylist();
-  final Iterator oldIt=oldWidgets.iterator();
-  final Iterator newIt=uidlWidgets.iterator();
-  final Iterator newUidl=uidl.getChildIterator();
+  final Iterator oldWidgetsIterator=getChildrenAsArraylist().iterator();
+  final Iterator newWidgetsIterator=newWidgets.iterator();
+  final Iterator newUIDLIterator=uidl.getChildIterator();
   final ArrayList paintedWidgets=new ArrayList();
   Widget oldChild=null;
-  while (newIt.hasNext()) {
-    final Widget child=(Widget)newIt.next();
-    final UIDL childUidl=(UIDL)newUidl.next();
-    if (oldChild == null && oldIt.hasNext()) {
-      while (oldIt.hasNext()) {
-        oldChild=(Widget)oldIt.next();
+  while (newWidgetsIterator.hasNext()) {
+    final Widget newChild=(Widget)newWidgetsIterator.next();
+    final UIDL newChildUIDL=(UIDL)newUIDLIterator.next();
+    if (oldChild == null && oldWidgetsIterator.hasNext()) {
+      while (oldWidgetsIterator.hasNext()) {
+        oldChild=(Widget)oldWidgetsIterator.next();
         if (paintedWidgets.contains(oldChild)) {
           continue;
         }
- else         if (uidlWidgets.contains(oldChild)) {
+ else         if (newWidgets.contains(oldChild)) {
           break;
         }
  else {
@@ -38,27 +37,27 @@
       }
     }
     if (oldChild == null) {
-      add(child);
+      add(newChild);
     }
- else     if (child == oldChild) {
+ else     if (newChild == oldChild) {
       oldChild=null;
     }
- else     if (hasChildComponent(child)) {
+ else     if (hasChildComponent(newChild)) {
       int index=getPaintableIndex(oldChild);
-      remove(child);
-      this.insert(child,index);
+      remove(newChild);
+      this.insert(newChild,index);
     }
  else {
       final int index=getPaintableIndex(oldChild);
-      insert(child,index);
+      insert(newChild,index);
     }
-    ((Paintable)child).updateFromUIDL(childUidl,client);
-    paintedWidgets.add(child);
+    ((Paintable)newChild).updateFromUIDL(newChildUIDL,client);
+    paintedWidgets.add(newChild);
   }
-  while (oldIt.hasNext()) {
-    oldChild=(Widget)oldIt.next();
+  while (oldWidgetsIterator.hasNext()) {
+    oldChild=(Widget)oldWidgetsIterator.next();
     final Paintable p=(Paintable)oldChild;
-    if (!uidlWidgets.contains(p)) {
+    if (!newWidgets.contains(p)) {
       removePaintable(p);
     }
   }
