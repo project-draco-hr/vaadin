@@ -1,0 +1,34 @@
+{
+  if (!fixedCellSize) {
+    return;
+  }
+  DOM.setStyleAttribute(margin,(orientationMode == ORIENTATION_HORIZONTAL) ? "overflowX" : "overflowY","hidden");
+  DOM.setStyleAttribute(margin,(orientationMode == ORIENTATION_HORIZONTAL) ? "width" : "height","100%");
+  int size=DOM.getElementPropertyInt(margin,(orientationMode == ORIENTATION_HORIZONTAL) ? "offsetWidth" : "offsetHeight");
+  if (orientationMode == ORIENTATION_HORIZONTAL) {
+    Element table=DOM.getParent(DOM.getParent(wrappedChildContainer));
+    DOM.setStyleAttribute(table,"tableLayout","fixed");
+    DOM.setStyleAttribute(table,"width","" + size + "px");
+  }
+  int numChild=childWidgets.size();
+  if (hasComponentSpacing) {
+    size-=SPACING_SIZE * (numChild - 1);
+  }
+  boolean firstTime=(previouslyAppliedFixedSize < 0);
+  if (size == previouslyAppliedFixedSize) {
+    return;
+  }
+  previouslyAppliedFixedSize=size;
+  String wh=(orientationMode == ORIENTATION_HORIZONTAL) ? "width" : "height";
+  String overflow=(orientationMode == ORIENTATION_HORIZONTAL) ? (BrowserInfo.get().isFF2() ? "overflow" : "overflowX") : "overflowY";
+  for (Iterator i=childWidgetWrappers.iterator(); i.hasNext(); ) {
+    Element we=((WidgetWrapper)i.next()).getElement();
+    final int ws=Math.round(((float)size) / (numChild--));
+    size-=ws;
+    DOM.setStyleAttribute(we,wh,"" + ws + "px");
+    if (firstTime) {
+      DOM.setStyleAttribute(we,overflow,"hidden");
+    }
+  }
+  fixedCellSize=true;
+}
