@@ -1,15 +1,19 @@
 {
   ErrorMessage validationError=null;
-  for (final Iterator i=propertyIds.iterator(); i.hasNext(); ) {
-    try {
-      AbstractComponent field=(AbstractComponent)fields.get(i.next());
-      validationError=field.getErrorMessage();
-      if (validationError != null) {
-        if (validationError.toString().isEmpty())         continue;
-        break;
+  if (isValidationVisible()) {
+    for (final Iterator i=propertyIds.iterator(); i.hasNext(); ) {
+      try {
+        AbstractComponent field=(AbstractComponent)fields.get(i.next());
+        validationError=field.getErrorMessage();
+        if (validationError != null) {
+          if ("".equals(validationError.toString())) {
+            continue;
+          }
+          break;
+        }
       }
-    }
- catch (    ClassCastException ignored) {
+ catch (      ClassCastException ignored) {
+      }
     }
   }
   final ErrorMessage superError=super.getErrorMessage();
