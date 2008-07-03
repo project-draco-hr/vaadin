@@ -1,17 +1,20 @@
 {
+  ErrorMessage validationError=null;
   for (final Iterator i=propertyIds.iterator(); i.hasNext(); ) {
     try {
       AbstractComponent field=(AbstractComponent)fields.get(i.next());
-      ErrorMessage e=field.getErrorMessage();
-      if (e != null) {
-        if ("".equals(e.toString())) {
-          continue;
-        }
-        return e;
+      validationError=field.getErrorMessage();
+      if (validationError != null) {
+        if (validationError.toString().isEmpty())         continue;
+        break;
       }
     }
  catch (    ClassCastException ignored) {
     }
   }
-  return null;
+  final ErrorMessage superError=super.getErrorMessage();
+  if (superError == null && validationError == null && currentBufferedSourceException == null) {
+    return null;
+  }
+  return new CompositeErrorMessage(new ErrorMessage[]{superError,validationError,currentBufferedSourceException});
 }
