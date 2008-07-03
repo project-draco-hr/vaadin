@@ -1,10 +1,13 @@
 {
-  if (name.equals("anotherpage")) {
-    if (anotherpage == null) {
-      anotherpage=new Window("Yet Another Page");
-      anotherpage.addComponent(new Label("This is a yet another window."));
+  if (name.startsWith("planet-")) {
+    String planetName=name.substring("planet-".length());
+    if (!windows.containsKey(planetName)) {
+      Window newWindow=new Window("Yet Another Page");
+      newWindow.addComponent(new Label("This window contains details about " + planetName + "."));
+      windows.put(planetName,newWindow);
+      addWindow(newWindow);
     }
-    return anotherpage;
+    return windows.get(planetName);
   }
   return super.getWindow(name);
 }
