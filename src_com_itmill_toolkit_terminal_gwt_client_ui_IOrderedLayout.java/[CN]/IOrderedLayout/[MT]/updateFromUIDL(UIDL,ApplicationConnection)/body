@@ -1,6 +1,6 @@
 {
   this.client=client;
-  updateOrientation("horizontal".equals(uidl.getStringAttribute("orientation")) ? ORIENTATION_HORIZONTAL : ORIENTATION_VERTICAL);
+  updateOrientation(uidl);
   if (client.updateComponent(this,uidl,false)) {
     return;
   }
@@ -60,4 +60,8 @@
   }
   handleAlignments(uidl);
   updateFixedSizes();
+  if (childLayoutsHaveChanged) {
+    Util.runDescendentsLayout(this);
+    childLayoutsHaveChanged=false;
+  }
 }
