@@ -3,10 +3,27 @@
   if (orientationMode == newOrientationMode) {
     return;
   }
+  removeFixedSizes();
   orientationMode=newOrientationMode;
   createAndEmptyWrappedChildContainer();
   for (int i=0; i < childWidgetWrappers.size(); i++) {
-    DOM.appendChild(wrappedChildContainer,((WidgetWrapper)childWidgetWrappers.get(i)).getElement());
+    WidgetWrapper wr=(WidgetWrapper)childWidgetWrappers.get(i);
+    Element oldWrElement=wr.resetRootElement();
+    Element newWrElement=wr.getElement();
+    String oldStyle=DOM.getElementAttribute(oldWrElement,"class");
+    if (oldStyle != null) {
+      DOM.setElementAttribute(newWrElement,"class",oldStyle);
+    }
+    while (DOM.getChildCount(oldWrElement) > 0) {
+      Element c=DOM.getFirstChild(oldWrElement);
+      DOM.removeChild(oldWrElement,c);
+      DOM.appendChild(newWrElement,c);
+    }
+    DOM.appendChild(wrappedChildContainer,newWrElement);
+  }
+  if ((orientationMode == ORIENTATION_HORIZONTAL && "100%".equals(DOM.getStyleAttribute(margin,"width"))) || (orientationMode == ORIENTATION_VERTICAL && "100%".equals(DOM.getStyleAttribute(margin,"height")))) {
+    fixedCellSize=true;
+    updateFixedSizes();
   }
   childLayoutsHaveChanged=true;
 }
