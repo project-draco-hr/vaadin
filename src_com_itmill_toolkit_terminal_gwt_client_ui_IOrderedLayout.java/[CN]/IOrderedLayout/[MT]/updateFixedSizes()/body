@@ -2,8 +2,15 @@
   if (!fixedCellSize) {
     return;
   }
-  DOM.setStyleAttribute(margin,(orientationMode == ORIENTATION_HORIZONTAL) ? "width" : "height","100%");
-  int size=DOM.getElementPropertyInt(margin,(orientationMode == ORIENTATION_HORIZONTAL) ? "offsetWidth" : "offsetHeight");
+  int size=DOM.getElementPropertyInt(root,(orientationMode == ORIENTATION_HORIZONTAL) ? "offsetWidth" : "offsetHeight");
+  if (orientationMode == ORIENTATION_HORIZONTAL) {
+    size-=margins.hasLeft() ? MARGIN_LEFT : 0;
+    size-=margins.hasRight() ? MARGIN_RIGHT : 0;
+  }
+ else {
+    size-=margins.hasTop() ? MARGIN_TOP : 0;
+    size-=margins.hasBottom() ? MARGIN_BOTTOM : 0;
+  }
   if (orientationMode == ORIENTATION_HORIZONTAL) {
     Element table=DOM.getParent(DOM.getParent(wrappedChildContainer));
     DOM.setStyleAttribute(table,"tableLayout","fixed");
@@ -11,7 +18,7 @@
   }
   int numChild=childWidgets.size();
   if (hasComponentSpacing) {
-    size-=SPACING_SIZE * (numChild - 1);
+    size-=((orientationMode == ORIENTATION_HORIZONTAL) ? HSPACING : VSPACING) * (numChild - 1);
   }
   boolean firstTime=(previouslyAppliedFixedSize < 0);
   if (size == previouslyAppliedFixedSize) {

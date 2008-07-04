@@ -4,9 +4,23 @@
     return;
   }
   margins=newMargins;
-  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_TOP,margins.hasTop());
-  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_RIGHT,margins.hasRight());
-  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_BOTTOM,margins.hasBottom());
-  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_LEFT,margins.hasLeft());
+  DOM.setStyleAttribute(margin,"paddingTop",margins.hasTop() ? MARGIN_TOP + "px" : "0");
+  DOM.setStyleAttribute(margin,"paddingLeft",margins.hasLeft() ? MARGIN_LEFT + "px" : "0");
+  DOM.setStyleAttribute(margin,"paddingBottom",margins.hasBottom() ? MARGIN_BOTTOM + "px" : "0");
+  DOM.setStyleAttribute(margin,"paddingRight",margins.hasRight() ? MARGIN_RIGHT + "px" : "0");
+  String currentMarginHeight=DOM.getStyleAttribute(margin,"height");
+  if (currentMarginHeight != null && !"".equals(currentMarginHeight)) {
+    int ch=DOM.getElementPropertyInt(root,"offsetHeight");
+    ch-=margins.hasTop() ? MARGIN_TOP : 0;
+    ch-=margins.hasBottom() ? MARGIN_BOTTOM : 0;
+    DOM.setStyleAttribute(margin,"height",ch + "px");
+  }
+  String currentMarginWidth=DOM.getStyleAttribute(margin,"width");
+  if (currentMarginWidth != null && !"".equals(currentMarginWidth)) {
+    int cw=DOM.getElementPropertyInt(root,"offsetWidth");
+    cw-=margins.hasLeft() ? MARGIN_LEFT : 0;
+    cw-=margins.hasRight() ? MARGIN_RIGHT : 0;
+    DOM.setStyleAttribute(margin,"width",cw + "px");
+  }
   childLayoutsHaveChanged=true;
 }
