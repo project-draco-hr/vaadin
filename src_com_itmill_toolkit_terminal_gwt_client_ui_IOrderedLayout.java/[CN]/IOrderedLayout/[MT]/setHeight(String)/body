@@ -1,18 +1,16 @@
 {
   super.setHeight(height);
+  if (orientationMode == ORIENTATION_HORIZONTAL) {
+    DOM.setStyleAttribute(DOM.getFirstChild(root),"height",height);
+  }
   if (height == null || "".equals(height)) {
-    DOM.setStyleAttribute(margin,"height","");
-    DOM.setStyleAttribute(margin,"overflowY","");
+    DOM.setStyleAttribute(root,"overflowY","");
     if (fixedCellSize && orientationMode == ORIENTATION_VERTICAL) {
       removeFixedSizes();
     }
   }
  else {
-    int ch=DOM.getElementPropertyInt(root,"offsetHeight");
-    ch-=margins.hasTop() ? marginTop : 0;
-    ch-=margins.hasBottom() ? marginBottom : 0;
-    DOM.setStyleAttribute(margin,"height",ch + "px");
-    DOM.setStyleAttribute(margin,"overflowY","hidden");
+    DOM.setStyleAttribute(root,"overflowY","hidden");
     if (orientationMode == ORIENTATION_VERTICAL) {
       fixedCellSize=true;
     }
