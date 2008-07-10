@@ -5,7 +5,18 @@
     shortcutHandler.handleKeyboardEvent(event);
     return;
   }
-  if (errorIndicatorElement != null && DOM.compare(target,errorIndicatorElement)) {
+  if (type == Event.ONSCROLL) {
+    int newscrollTop=DOM.getElementPropertyInt(contentNode,"scrollTop");
+    int newscrollLeft=DOM.getElementPropertyInt(contentNode,"scrollLeft");
+    if (client != null && (newscrollLeft != scrollLeft || newscrollTop != scrollTop)) {
+      ApplicationConnection.getConsole().log("scrollded panel");
+      scrollLeft=newscrollLeft;
+      scrollTop=newscrollTop;
+      client.updateVariable(id,"scrollTop",scrollTop,false);
+      client.updateVariable(id,"scrollLeft",scrollLeft,false);
+    }
+  }
+ else   if (errorIndicatorElement != null && DOM.compare(target,errorIndicatorElement)) {
 switch (type) {
 case Event.ONMOUSEOVER:
       if (errorMessage != null) {
