@@ -12,20 +12,22 @@
     final Element widgetElement=widget.getElement();
     if (justAdded) {
       if (after) {
-        DOM.appendChild(getElement(),captionElement);
-        DOM.setElementAttribute(getElement(),"class","i-orderedlayout-w");
+        DOM.appendChild(getWrappingElement(),captionElement);
+        DOM.setElementAttribute(getWrappingElement(),"class","i-orderedlayout-w");
         caption.addStyleName("i-orderedlayout-c");
         widget.addStyleName("i-orderedlayout-w-e");
       }
  else {
-        DOM.insertChild(getElement(),captionElement,0);
+        DOM.insertChild(getWrappingElement(),captionElement,0);
       }
     }
- else     if (after == (DOM.getChildIndex(getElement(),widgetElement) > DOM.getChildIndex(getElement(),captionElement))) {
-      Element firstElement=DOM.getChild(getElement(),DOM.getChildCount(getElement()) - 2);
-      DOM.removeChild(getElement(),firstElement);
-      DOM.appendChild(getElement(),firstElement);
-      DOM.setElementAttribute(getElement(),"class",after ? "i-orderedlayout-w" : "");
+ else     if (after == (DOM.getChildIndex(getWrappingElement(),widgetElement) > DOM.getChildIndex(getWrappingElement(),captionElement))) {
+      Element firstElement=DOM.getChild(getWrappingElement(),DOM.getChildCount(getWrappingElement()) - 2);
+      if (firstElement != null) {
+        DOM.removeChild(getWrappingElement(),firstElement);
+        DOM.appendChild(getWrappingElement(),firstElement);
+      }
+      DOM.setElementAttribute(getWrappingElement(),"class",after ? "i-orderedlayout-w" : "");
       if (after) {
         caption.addStyleName("i-orderedlayout-c");
         widget.addStyleName("i-orderedlayout-w-e");
@@ -38,9 +40,9 @@
   }
  else {
     if (caption != null) {
-      DOM.removeChild(getElement(),caption.getElement());
+      DOM.removeChild(getWrappingElement(),caption.getElement());
       caption=null;
-      DOM.setElementAttribute(getElement(),"class","");
+      DOM.setElementAttribute(getWrappingElement(),"class","");
       widget.removeStyleName("i-orderedlayout-w-e");
       caption.removeStyleName("i-orderedlayout-w-c");
     }

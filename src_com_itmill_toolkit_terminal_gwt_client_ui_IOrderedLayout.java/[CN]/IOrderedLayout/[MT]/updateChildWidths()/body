@@ -1,0 +1,28 @@
+{
+  if (width != null && orientationMode == ORIENTATION_HORIZONTAL) {
+    int size=rootOffsetMeasure("offsetWidth");
+    size-=margins.hasLeft() ? marginLeft : 0;
+    size-=margins.hasRight() ? marginRight : 0;
+    int numChild=childWidgets.size();
+    if (hasComponentSpacing) {
+      size-=hSpacing * (numChild - 1);
+    }
+    if (orientationMode == ORIENTATION_HORIZONTAL) {
+      for (Iterator i=childWidgetWrappers.iterator(); i.hasNext(); ) {
+        final int ws=Math.round(((float)size) / (numChild--));
+        size-=ws;
+        ((WidgetWrapper)i.next()).forceWidth(ws);
+      }
+    }
+ else {
+      for (Iterator i=childWidgetWrappers.iterator(); i.hasNext(); ) {
+        ((WidgetWrapper)i.next()).forceWidth(size);
+      }
+    }
+  }
+ else {
+    for (Iterator i=childWidgetWrappers.iterator(); i.hasNext(); ) {
+      ((WidgetWrapper)i.next()).forceWidth(-1);
+    }
+  }
+}

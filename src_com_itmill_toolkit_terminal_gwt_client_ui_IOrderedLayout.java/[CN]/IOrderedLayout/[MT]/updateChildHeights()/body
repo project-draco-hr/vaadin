@@ -1,0 +1,34 @@
+{
+  if (height != null) {
+    int size;
+    if (tableMode) {
+      size=rootOffsetMeasure("offsetHeight");
+    }
+ else {
+      size=DOM.getElementPropertyInt(root,"offsetHeight");
+    }
+    size-=margins.hasTop() ? marginTop : 0;
+    size-=margins.hasBottom() ? marginBottom : 0;
+    int numChild=childWidgets.size();
+    if (hasComponentSpacing) {
+      size-=((orientationMode == ORIENTATION_HORIZONTAL) ? hSpacing : vSpacing) * (numChild - 1);
+    }
+    if (orientationMode == ORIENTATION_HORIZONTAL) {
+      for (Iterator i=childWidgetWrappers.iterator(); i.hasNext(); ) {
+        ((WidgetWrapper)i.next()).forceHeight(size);
+      }
+    }
+ else {
+      for (Iterator i=childWidgetWrappers.iterator(); i.hasNext(); ) {
+        final int ws=Math.round(((float)size) / (numChild--));
+        size-=ws;
+        ((WidgetWrapper)i.next()).forceHeight(ws);
+      }
+    }
+  }
+ else {
+    for (Iterator i=childWidgetWrappers.iterator(); i.hasNext(); ) {
+      ((WidgetWrapper)i.next()).forceHeight(-1);
+    }
+  }
+}

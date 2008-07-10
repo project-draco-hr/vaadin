@@ -1,0 +1,40 @@
+{
+  boolean newTableMode=!(orientationMode == ORIENTATION_VERTICAL && width != null);
+  if (!forceUpdate && newTableMode == tableMode) {
+    return;
+  }
+  tableMode=newTableMode;
+  if (tableMode) {
+    Element tmp=DOM.createDiv();
+    final String structure="<table cellspacing=\"0\" cellpadding=\"0\"><tbody><tr></tr></tbody></table>";
+    DOM.setInnerHTML(tmp,structure);
+    root=DOM.getFirstChild(tmp);
+    DOM.removeChild(tmp,root);
+    wrappedChildContainer=DOM.getFirstChild(DOM.getFirstChild(root));
+  }
+ else {
+    wrappedChildContainer=root=DOM.createDiv();
+  }
+  if (width != null && !"".equals(width)) {
+    DOM.setStyleAttribute(root,"width",width);
+  }
+  if (height != null && !"".equals(height)) {
+    DOM.setStyleAttribute(root,"height",height);
+  }
+  String styles=getStyleName();
+  setElement(root);
+  setStyleName(styles);
+  for (int i=0; i < childWidgetWrappers.size(); i++) {
+    WidgetWrapper wr=(WidgetWrapper)childWidgetWrappers.get(i);
+    Element oldWrElement=wr.getWrappingElement();
+    wr.resetRootElement();
+    Element newWrElement=wr.getWrappingElement();
+    while (DOM.getChildCount(oldWrElement) > 0) {
+      Element c=DOM.getFirstChild(oldWrElement);
+      DOM.removeChild(oldWrElement,c);
+      DOM.appendChild(newWrElement,c);
+    }
+    DOM.appendChild(wrappedChildContainer,wr.getElement());
+  }
+  childLayoutsHaveChanged=true;
+}

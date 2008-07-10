@@ -1,16 +1,16 @@
 {
   this.client=client;
-  if (!uidl.getBooleanAttribute("cached")) {
-    updateMarginAndSpacingSizesFromCSS(uidl);
-    updateOrientation(uidl);
-    if (margins.getBitMask() != uidl.getIntAttribute("margins")) {
-      handleMargins(uidl);
-    }
-    hasComponentSpacing=uidl.getBooleanAttribute("spacing");
+  if (uidl.getBooleanAttribute("cached")) {
+    return;
   }
+  updateMarginAndSpacingSizesFromCSS(uidl);
   if (client.updateComponent(this,uidl,false)) {
     return;
   }
+  int oldO=orientationMode;
+  orientationMode="horizontal".equals(uidl.getStringAttribute("orientation")) ? ORIENTATION_HORIZONTAL : ORIENTATION_VERTICAL;
+  rebuildRootDomStructure(oldO != orientationMode);
+  hasComponentSpacing=uidl.getBooleanAttribute("spacing");
   final Vector newWidgets=new Vector();
   for (final Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
     final UIDL uidlForChild=(UIDL)it.next();
@@ -21,6 +21,7 @@
   final Iterator newWidgetsIterator=newWidgets.iterator();
   final Iterator newUIDLIterator=uidl.getChildIterator();
   final Vector paintedWidgets=new Vector();
+  final Vector childsToPaint=new Vector();
   Widget oldChild=null;
   while (newWidgetsIterator.hasNext()) {
     final Widget newChild=(Widget)newWidgetsIterator.next();
@@ -52,7 +53,7 @@
  else {
       add(newChild,childWidgets.indexOf(oldChild));
     }
-    ((Paintable)newChild).updateFromUIDL(newChildUIDL,client);
+    childsToPaint.add(new Object[]{newChild,newChildUIDL});
     paintedWidgets.add(newChild);
   }
   while (oldWidgetsIterator.hasNext()) {
@@ -61,8 +62,13 @@
       remove(oldChild);
     }
   }
-  handleAlignments(uidl);
-  updateFixedSizes();
+  handleAlignmentsSpacingAndMargins(uidl);
+  updateChildHeights();
+  updateChildWidths();
+  for (int i=0; i < childsToPaint.size(); i++) {
+    Object[] t=(Object[])childsToPaint.get(i);
+    ((Paintable)t[0]).updateFromUIDL((UIDL)t[1],client);
+  }
   if (childLayoutsHaveChanged) {
     Util.runDescendentsLayout(this);
     childLayoutsHaveChanged=false;

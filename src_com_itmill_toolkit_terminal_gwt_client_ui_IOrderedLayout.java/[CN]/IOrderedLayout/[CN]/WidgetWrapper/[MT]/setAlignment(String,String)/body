@@ -1,35 +1,39 @@
 {
   if (BrowserInfo.get().isIE()) {
-    DOM.setElementAttribute(getElement(),"vAlign",verticalAlignment);
+    DOM.setElementAttribute(getWrappingElement(),"vAlign",verticalAlignment);
   }
  else {
     if (orientationMode == ORIENTATION_VERTICAL) {
       if (verticalAlignment == null || verticalAlignment.equals("top")) {
-        DOM.setStyleAttribute(getElement(),"display","block");
-        DOM.setStyleAttribute(getElement(),"width","");
+        DOM.setStyleAttribute(getWrappingElement(),"display","block");
+        DOM.setStyleAttribute(getWrappingElement(),"width","");
       }
  else {
-        DOM.setStyleAttribute(getElement(),"display","table-cell");
-        DOM.setStyleAttribute(getElement(),"width","1000000px");
+        DOM.setStyleAttribute(getWrappingElement(),"display","table-cell");
+        DOM.setStyleAttribute(getWrappingElement(),"width","1000000px");
       }
     }
-    DOM.setStyleAttribute(getElement(),"verticalAlign",verticalAlignment);
+    DOM.setStyleAttribute(getWrappingElement(),"verticalAlign",verticalAlignment);
   }
   if (!horizontalAlignment.equals("left")) {
     if (td == null) {
-      Element c1=DOM.getFirstChild(getElement());
-      DOM.removeChild(getElement(),c1);
-      Element c2=DOM.getFirstChild(getElement());
+      Element c1=DOM.getFirstChild(getWrappingElement());
+      if (c1 != null) {
+        DOM.removeChild(getWrappingElement(),c1);
+      }
+      Element c2=DOM.getFirstChild(getWrappingElement());
       if (c2 != null) {
-        DOM.removeChild(getElement(),c2);
+        DOM.removeChild(getWrappingElement(),c2);
       }
       final String t="<table cellpadding='0' cellspacing='0' width='100%'><tbody><tr><td>" + "<table cellpadding='0' cellspacing='0' ><tbody><tr><td align='left'>" + "</td></tr></tbody></table></td></tr></tbody></table>";
-      DOM.setInnerHTML(getElement(),t);
-      td=DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(getElement()))));
+      DOM.setInnerHTML(getWrappingElement(),t);
+      td=DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(getWrappingElement()))));
       Element itd=DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(td))));
-      DOM.appendChild(itd,c1);
-      if (c2 != null) {
-        DOM.appendChild(itd,c2);
+      if (c1 != null) {
+        DOM.appendChild(itd,c1);
+        if (c2 != null) {
+          DOM.appendChild(itd,c2);
+        }
       }
     }
  else {
@@ -50,10 +54,10 @@
       Element content=DOM.getFirstChild(itd);
       if (content != null) {
         DOM.removeChild(itd,content);
-        DOM.appendChild(getElement(),content);
+        DOM.appendChild(getWrappingElement(),content);
       }
     }
-    DOM.removeChild(getElement(),DOM.getFirstChild(getElement()));
+    DOM.removeChild(getWrappingElement(),DOM.getFirstChild(getWrappingElement()));
     td=null;
   }
 }
