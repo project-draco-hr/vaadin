@@ -1,6 +1,20 @@
 {
   if (width != null && orientationMode == ORIENTATION_HORIZONTAL) {
-    int size=rootOffsetMeasure("offsetWidth");
+    int size;
+    if (width != null && width.endsWith("px")) {
+      try {
+        size=Integer.parseInt(width.substring(0,width.length() - 2));
+        if (size < 0) {
+          size=rootOffsetMeasure("offsetWidth");
+        }
+      }
+ catch (      NumberFormatException e) {
+        size=rootOffsetMeasure("offsetWidth");
+      }
+    }
+ else {
+      size=rootOffsetMeasure("offsetWidth");
+    }
     size-=margins.hasLeft() ? marginLeft : 0;
     size-=margins.hasRight() ? marginRight : 0;
     int numChild=childWidgets.size();

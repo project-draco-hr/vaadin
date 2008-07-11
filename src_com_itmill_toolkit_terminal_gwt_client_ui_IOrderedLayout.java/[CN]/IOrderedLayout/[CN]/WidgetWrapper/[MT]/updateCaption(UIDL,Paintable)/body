@@ -1,5 +1,6 @@
 {
   final Widget widget=(Widget)paintable;
+  final Element captionWrapper=getElementWrappingWidgetAndCaption();
   if (Caption.isNeeded(uidl)) {
     boolean justAdded=false;
     if (caption == null) {
@@ -12,22 +13,22 @@
     final Element widgetElement=widget.getElement();
     if (justAdded) {
       if (after) {
-        DOM.appendChild(getWrappingElement(),captionElement);
-        DOM.setElementAttribute(getWrappingElement(),"class","i-orderedlayout-w");
+        DOM.appendChild(captionWrapper,captionElement);
+        DOM.setElementAttribute(captionWrapper,"class","i-orderedlayout-w");
         caption.addStyleName("i-orderedlayout-c");
         widget.addStyleName("i-orderedlayout-w-e");
       }
  else {
-        DOM.insertChild(getWrappingElement(),captionElement,0);
+        DOM.insertChild(captionWrapper,captionElement,0);
       }
     }
- else     if (after == (DOM.getChildIndex(getWrappingElement(),widgetElement) > DOM.getChildIndex(getWrappingElement(),captionElement))) {
-      Element firstElement=DOM.getChild(getWrappingElement(),DOM.getChildCount(getWrappingElement()) - 2);
+ else     if (after == (DOM.getChildIndex(captionWrapper,widgetElement) > DOM.getChildIndex(captionWrapper,captionElement))) {
+      Element firstElement=DOM.getChild(captionWrapper,DOM.getChildCount(captionWrapper) - 2);
       if (firstElement != null) {
-        DOM.removeChild(getWrappingElement(),firstElement);
-        DOM.appendChild(getWrappingElement(),firstElement);
+        DOM.removeChild(captionWrapper,firstElement);
+        DOM.appendChild(captionWrapper,firstElement);
       }
-      DOM.setElementAttribute(getWrappingElement(),"class",after ? "i-orderedlayout-w" : "");
+      DOM.setElementAttribute(captionWrapper,"class",after ? "i-orderedlayout-w" : "");
       if (after) {
         caption.addStyleName("i-orderedlayout-c");
         widget.addStyleName("i-orderedlayout-w-e");
@@ -40,9 +41,9 @@
   }
  else {
     if (caption != null) {
-      DOM.removeChild(getWrappingElement(),caption.getElement());
+      DOM.removeChild(captionWrapper,caption.getElement());
       caption=null;
-      DOM.setElementAttribute(getWrappingElement(),"class","");
+      DOM.setElementAttribute(captionWrapper,"class","");
       widget.removeStyleName("i-orderedlayout-w-e");
       caption.removeStyleName("i-orderedlayout-w-c");
     }

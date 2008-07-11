@@ -2,7 +2,20 @@
   if (height != null) {
     int size;
     if (tableMode) {
-      size=rootOffsetMeasure("offsetHeight");
+      if (height != null && height.endsWith("px")) {
+        try {
+          size=Integer.parseInt(height.substring(0,height.length() - 2));
+          if (size < 0) {
+            size=rootOffsetMeasure("offsetHeight");
+          }
+        }
+ catch (        NumberFormatException e) {
+          size=rootOffsetMeasure("offsetHeight");
+        }
+      }
+ else {
+        size=rootOffsetMeasure("offsetHeight");
+      }
     }
  else {
       size=DOM.getElementPropertyInt(root,"offsetHeight");

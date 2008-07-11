@@ -1,16 +1,19 @@
 {
   boolean newTableMode=!(orientationMode == ORIENTATION_VERTICAL && width != null);
-  if (!forceUpdate && newTableMode == tableMode) {
+  if (oldOrientationMode == orientationMode && newTableMode == tableMode) {
     return;
   }
   tableMode=newTableMode;
   if (tableMode) {
     Element tmp=DOM.createDiv();
-    final String structure="<table cellspacing=\"0\" cellpadding=\"0\"><tbody><tr></tr></tbody></table>";
+    final String structure="<table cellspacing=\"0\" cellpadding=\"0\"><tbody>" + (orientationMode == ORIENTATION_HORIZONTAL ? "<tr></tr>" : "") + "</tbody></table>";
     DOM.setInnerHTML(tmp,structure);
     root=DOM.getFirstChild(tmp);
     DOM.removeChild(tmp,root);
-    wrappedChildContainer=DOM.getFirstChild(DOM.getFirstChild(root));
+    wrappedChildContainer=DOM.getFirstChild(root);
+    if (orientationMode == ORIENTATION_HORIZONTAL) {
+      wrappedChildContainer=DOM.getFirstChild(wrappedChildContainer);
+    }
   }
  else {
     wrappedChildContainer=root=DOM.createDiv();
@@ -24,11 +27,14 @@
   String styles=getStyleName();
   setElement(root);
   setStyleName(styles);
+  final int currentOrientationMode=orientationMode;
   for (int i=0; i < childWidgetWrappers.size(); i++) {
     WidgetWrapper wr=(WidgetWrapper)childWidgetWrappers.get(i);
-    Element oldWrElement=wr.getWrappingElement();
+    orientationMode=oldOrientationMode;
+    Element oldWrElement=wr.getElementWrappingWidgetAndCaption();
+    orientationMode=currentOrientationMode;
     wr.resetRootElement();
-    Element newWrElement=wr.getWrappingElement();
+    Element newWrElement=wr.getElementWrappingWidgetAndCaption();
     while (DOM.getChildCount(oldWrElement) > 0) {
       Element c=DOM.getFirstChild(oldWrElement);
       DOM.removeChild(oldWrElement,c);

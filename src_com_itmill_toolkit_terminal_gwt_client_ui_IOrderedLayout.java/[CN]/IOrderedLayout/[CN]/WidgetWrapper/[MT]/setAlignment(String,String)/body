@@ -1,63 +1,52 @@
 {
-  if (BrowserInfo.get().isIE()) {
-    DOM.setElementAttribute(getWrappingElement(),"vAlign",verticalAlignment);
-  }
- else {
-    if (orientationMode == ORIENTATION_VERTICAL) {
-      if (verticalAlignment == null || verticalAlignment.equals("top")) {
-        DOM.setStyleAttribute(getWrappingElement(),"display","block");
-        DOM.setStyleAttribute(getWrappingElement(),"width","");
-      }
- else {
-        DOM.setStyleAttribute(getWrappingElement(),"display","table-cell");
-        DOM.setStyleAttribute(getWrappingElement(),"width","1000000px");
-      }
-    }
-    DOM.setStyleAttribute(getWrappingElement(),"verticalAlign",verticalAlignment);
-  }
-  if (!horizontalAlignment.equals("left")) {
-    if (td == null) {
-      Element c1=DOM.getFirstChild(getWrappingElement());
+  if (!horizontalAlignment.equals("left") || !verticalAlignment.equals("top")) {
+    if (alignmentTD == null) {
+      Element c1=DOM.getFirstChild(getElementWrappingWidgetAndCaption());
       if (c1 != null) {
-        DOM.removeChild(getWrappingElement(),c1);
+        DOM.removeChild(getElementWrappingWidgetAndCaption(),c1);
       }
-      Element c2=DOM.getFirstChild(getWrappingElement());
+      Element c2=DOM.getFirstChild(getElementWrappingWidgetAndCaption());
       if (c2 != null) {
-        DOM.removeChild(getWrappingElement(),c2);
+        DOM.removeChild(getElementWrappingWidgetAndCaption(),c2);
       }
-      final String t="<table cellpadding='0' cellspacing='0' width='100%'><tbody><tr><td>" + "<table cellpadding='0' cellspacing='0' ><tbody><tr><td align='left'>" + "</td></tr></tbody></table></td></tr></tbody></table>";
-      DOM.setInnerHTML(getWrappingElement(),t);
-      td=DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(getWrappingElement()))));
-      Element itd=DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(td))));
+      final String t="<table cellpadding='0' cellspacing='0' width='100%' height='100%'><tbody><tr><td>" + "<table cellpadding='0' cellspacing='0' ><tbody><tr><td align='left'>" + "</td></tr></tbody></table></td></tr></tbody></table>";
+      DOM.setInnerHTML(getElementWrappingWidgetAndCaption(),t);
+      alignmentTD=DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(getElementWrappingWidgetAndCaption()))));
+      innermostTDinAlignmnetStructure=DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(alignmentTD))));
       if (c1 != null) {
-        DOM.appendChild(itd,c1);
+        DOM.appendChild(innermostTDinAlignmnetStructure,c1);
         if (c2 != null) {
-          DOM.appendChild(itd,c2);
+          DOM.appendChild(innermostTDinAlignmnetStructure,c2);
         }
       }
     }
  else {
       if (BrowserInfo.get().isSafari()) {
-        String prevValue=DOM.getElementAttribute(td,"align");
+        String prevValue=DOM.getElementAttribute(alignmentTD,"align");
         if (!horizontalAlignment.equals(prevValue)) {
-          Element parent=DOM.getParent(td);
-          DOM.removeChild(parent,td);
-          DOM.appendChild(parent,td);
+          Element parent=DOM.getParent(alignmentTD);
+          DOM.removeChild(parent,alignmentTD);
+          DOM.appendChild(parent,alignmentTD);
         }
       }
     }
-    DOM.setElementAttribute(td,"align",horizontalAlignment);
+    DOM.setElementAttribute(alignmentTD,"align",horizontalAlignment);
+    DOM.setElementAttribute(alignmentTD,"valign",verticalAlignment);
   }
- else   if (td != null) {
-    Element itd=DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(DOM.getFirstChild(td))));
-    while (DOM.getChildCount(itd) > 0) {
-      Element content=DOM.getFirstChild(itd);
-      if (content != null) {
-        DOM.removeChild(itd,content);
-        DOM.appendChild(getWrappingElement(),content);
+ else {
+    if (alignmentTD != null) {
+      final Element itd=innermostTDinAlignmnetStructure;
+      final Element alignmentTable=DOM.getParent(DOM.getParent(DOM.getParent(alignmentTD)));
+      final Element target=DOM.getParent(alignmentTable);
+      while (DOM.getChildCount(itd) > 0) {
+        Element content=DOM.getFirstChild(itd);
+        if (content != null) {
+          DOM.removeChild(itd,content);
+          DOM.appendChild(target,content);
+        }
       }
+      DOM.removeChild(target,alignmentTable);
+      alignmentTD=innermostTDinAlignmnetStructure=null;
     }
-    DOM.removeChild(getWrappingElement(),DOM.getFirstChild(getWrappingElement()));
-    td=null;
   }
 }
