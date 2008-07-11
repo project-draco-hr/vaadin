@@ -3,6 +3,7 @@
   if (oldOrientationMode == orientationMode && newTableMode == tableMode) {
     return;
   }
+  boolean oldTableMode=tableMode;
   tableMode=newTableMode;
   if (tableMode) {
     Element tmp=DOM.createDiv();
@@ -31,10 +32,16 @@
   for (int i=0; i < childWidgetWrappers.size(); i++) {
     WidgetWrapper wr=(WidgetWrapper)childWidgetWrappers.get(i);
     orientationMode=oldOrientationMode;
+    tableMode=oldTableMode;
     Element oldWrElement=wr.getElementWrappingWidgetAndCaption();
     orientationMode=currentOrientationMode;
+    tableMode=newTableMode;
+    String classe=DOM.getElementAttribute(oldWrElement,"class");
     wr.resetRootElement();
     Element newWrElement=wr.getElementWrappingWidgetAndCaption();
+    if (classe != null && classe.length() > 0) {
+      DOM.setElementAttribute(newWrElement,"class",classe);
+    }
     while (DOM.getChildCount(oldWrElement) > 0) {
       Element c=DOM.getFirstChild(oldWrElement);
       DOM.removeChild(oldWrElement,c);

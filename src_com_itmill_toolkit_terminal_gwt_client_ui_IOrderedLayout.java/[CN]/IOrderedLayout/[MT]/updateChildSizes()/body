@@ -1,0 +1,79 @@
+{
+  int numChild=childWidgets.size();
+  int childHeightTotal=-1;
+  int childHeightDivisor=1;
+  int childWidthTotal=-1;
+  int childWidthDivisor=1;
+  if (height != null) {
+    if (tableMode) {
+      if (height != null && height.endsWith("px")) {
+        try {
+          childHeightTotal=Integer.parseInt(height.substring(0,height.length() - 2));
+          if (childHeightTotal < 0) {
+            childHeightTotal=rootOffsetMeasure("offsetHeight");
+          }
+        }
+ catch (        NumberFormatException e) {
+          childHeightTotal=rootOffsetMeasure("offsetHeight");
+        }
+      }
+ else {
+        childHeightTotal=rootOffsetMeasure("offsetHeight");
+      }
+    }
+ else {
+      childHeightTotal=DOM.getElementPropertyInt(root,"offsetHeight");
+    }
+    childHeightTotal-=margins.hasTop() ? marginTop : 0;
+    childHeightTotal-=margins.hasBottom() ? marginBottom : 0;
+    if (hasComponentSpacing) {
+      childHeightTotal-=((orientationMode == ORIENTATION_HORIZONTAL) ? hSpacing : vSpacing) * (numChild - 1);
+    }
+    if (orientationMode == ORIENTATION_VERTICAL) {
+      childHeightDivisor=numChild;
+    }
+  }
+  if (width != null) {
+    if (width != null && width.endsWith("px")) {
+      try {
+        childWidthTotal=Integer.parseInt(width.substring(0,width.length() - 2));
+        if (childWidthTotal < 0) {
+          childWidthTotal=rootOffsetMeasure("offsetWidth");
+        }
+      }
+ catch (      NumberFormatException e) {
+        childWidthTotal=rootOffsetMeasure("offsetWidth");
+      }
+    }
+ else {
+      childWidthTotal=rootOffsetMeasure("offsetWidth");
+    }
+    childWidthTotal-=margins.hasLeft() ? marginLeft : 0;
+    childWidthTotal-=margins.hasRight() ? marginRight : 0;
+    if (hasComponentSpacing && orientationMode == ORIENTATION_HORIZONTAL) {
+      childWidthTotal-=hSpacing * (numChild - 1);
+    }
+    if (orientationMode == ORIENTATION_HORIZONTAL) {
+      childWidthDivisor=numChild;
+    }
+  }
+  for (Iterator i=childWidgetWrappers.iterator(); i.hasNext(); ) {
+    int w, h;
+    if (childHeightDivisor > 1) {
+      h=Math.round(((float)childHeightTotal) / (childHeightDivisor--));
+      childHeightTotal-=h;
+    }
+ else {
+      h=childHeightTotal;
+    }
+    if (childWidthDivisor > 1) {
+      w=Math.round(((float)childWidthTotal) / (childWidthDivisor--));
+      childWidthTotal-=h;
+    }
+ else {
+      w=childWidthTotal;
+    }
+    WidgetWrapper ww=(WidgetWrapper)i.next();
+    ww.forceSize(w,h);
+  }
+}

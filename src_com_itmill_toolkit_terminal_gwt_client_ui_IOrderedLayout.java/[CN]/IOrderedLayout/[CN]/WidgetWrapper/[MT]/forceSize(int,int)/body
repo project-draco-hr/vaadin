@@ -1,0 +1,20 @@
+{
+  if (lastForcedPixelHeight == pixelHeight && lastForcedPixelWidth == pixelWidth) {
+    return;
+  }
+  if (tableMode && (pixelHeight >= 0 || pixelWidth >= 0)) {
+    if (clipperDiv == null) {
+      createClipperDiv();
+    }
+  }
+ else   if (clipperDiv != null) {
+    removeClipperDiv();
+  }
+  Element e=clipperDiv != null ? clipperDiv : getElementWrappingAlignmentStructures();
+  DOM.setStyleAttribute(e,"overflowX",pixelWidth < 0 ? "" : "hidden");
+  DOM.setStyleAttribute(e,"overflowY",pixelHeight < 0 ? "" : "hidden");
+  DOM.setStyleAttribute(e,"width",pixelWidth < 0 ? "" : pixelWidth + "px");
+  DOM.setStyleAttribute(e,"height",pixelHeight < 0 ? (e == clipperDiv || !tableMode ? "100%" : "") : pixelHeight + "px");
+  lastForcedPixelWidth=pixelWidth;
+  lastForcedPixelHeight=pixelHeight;
+}
