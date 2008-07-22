@@ -7,50 +7,95 @@
   if (!this.getItems().isEmpty()) {
     this.clearItems();
   }
+  UIDL options=uidl.getChildUIDL(0);
+  if (options.hasAttribute("submenuIcon")) {
+    submenuIcon=client.translateToolkitUri(uidl.getChildUIDL(0).getStringAttribute("submenuIcon"));
+  }
+ else {
+    submenuIcon=null;
+  }
+  collapseItems=options.getBooleanAttribute("collapseItems");
+  if (collapseItems) {
+    UIDL moreItemUIDL=options.getChildUIDL(0);
+    StringBuffer itemHTML=new StringBuffer();
+    itemHTML.append("<p>");
+    if (moreItemUIDL.hasAttribute("icon")) {
+      itemHTML.append("<img src=\"" + client.translateToolkitUri(moreItemUIDL.getStringAttribute("icon")) + "\" align=\"left\" />");
+    }
+    itemHTML.append(moreItemUIDL.getStringAttribute("text"));
+    itemHTML.append("</p>");
+    moreItem=new MenuItem(itemHTML.toString(),true,emptyCommand);
+  }
   UIDL items=uidl.getChildUIDL(1);
   Iterator itr=items.getChildIterator();
   Stack iteratorStack=new Stack();
   Stack menuStack=new Stack();
   MenuBar currentMenu=this;
-  Command emptyCommand=new Command(){
-    public void execute(){
-    }
-  }
-;
   while (itr.hasNext()) {
     UIDL item=(UIDL)itr.next();
-    MenuItem menuItem=null;
+    MenuItem currentItem=null;
     String itemText=item.getStringAttribute("text");
     final int itemId=item.getIntAttribute("id");
     boolean itemHasCommand=item.getBooleanAttribute("command");
-    if (!item.hasAttribute("icon")) {
-      itemText="<p>" + itemText + "</p>";
+    StringBuffer itemHTML=new StringBuffer();
+    itemHTML.append("<p>");
+    if (item.hasAttribute("icon")) {
+      itemHTML.append("<img src=\"" + client.translateToolkitUri(item.getStringAttribute("icon")) + "\" align=\"left\" />");
     }
- else {
-      itemText="<p>" + "<img src=\"" + client.translateToolkitUri(item.getStringAttribute("icon")) + "\"</img>"+ itemText+ "</p>";
+    itemHTML.append(itemText);
+    if (currentMenu != this && item.getChildCount() > 0 && submenuIcon != null) {
+      itemHTML.append("<img src=\"" + submenuIcon + "\" align=\"right\" />");
     }
+    itemHTML.append("</p>");
+    Command cmd=null;
     if (itemHasCommand) {
-      Command normalCommand=new Command(){
+      cmd=new Command(){
         public void execute(){
           hostReference.onMenuClick(itemId);
         }
       }
 ;
-      menuItem=currentMenu.addItem(itemText,true,normalCommand);
     }
- else {
-      menuItem=currentMenu.addItem(itemText,true,emptyCommand);
-    }
+    currentItem=currentMenu.addItem(itemHTML.toString(),true,cmd);
     if (item.getChildCount() > 0) {
       menuStack.push(currentMenu);
       iteratorStack.push(itr);
       itr=item.getChildIterator();
-      currentMenu=new MenuBar(true);
-      menuItem.setSubMenu(currentMenu);
+      currentMenu=new IMenuBar(vertical);
+      currentItem.setSubMenu(currentMenu);
     }
-    if (!itr.hasNext() && !iteratorStack.empty()) {
+    while (!itr.hasNext() && !iteratorStack.empty()) {
       itr=(Iterator)iteratorStack.pop();
       currentMenu=(MenuBar)menuStack.pop();
+    }
+  }
+  if (collapseItems) {
+    int topLevelWidth=0;
+    int ourWidth=this.getOffsetWidth();
+    int i=0;
+    for (; i < getItems().size() && topLevelWidth < ourWidth; i++) {
+      MenuItem item=(MenuItem)getItems().get(i);
+      topLevelWidth+=item.getOffsetWidth();
+    }
+    if (topLevelWidth > this.getOffsetWidth()) {
+      ArrayList toBeCollapsed=new ArrayList();
+      MenuBar collapsed=new IMenuBar(vertical);
+      for (int j=i - 2; j < getItems().size(); j++) {
+        toBeCollapsed.add(getItems().get(j));
+      }
+      for (int j=0; j < toBeCollapsed.size(); j++) {
+        MenuItem item=(MenuItem)toBeCollapsed.get(j);
+        removeItem(item);
+        if (item.getSubMenu() != null && submenuIcon != null) {
+          String itemHTML=item.getHTML();
+          StringBuffer itemText=new StringBuffer(itemHTML.substring(0,itemHTML.length() - 4));
+          itemText.append("<img src=\"" + submenuIcon + "\" align=\"right\" /></p>");
+          item.setHTML(itemText.toString());
+        }
+        collapsed.addItem(item);
+      }
+      moreItem.setSubMenu(collapsed);
+      addItem(moreItem);
     }
   }
 }

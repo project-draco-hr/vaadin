@@ -3,6 +3,18 @@
   Stack iteratorStack=new Stack();
   target.startTag("options");
   target.addAttribute("animationEnabled",animationEnabled);
+  if (submenuIcon != null) {
+    target.addAttribute("submenuIcon",submenuIcon);
+  }
+  target.addAttribute("collapseItems",collapseItems);
+  if (collapseItems) {
+    target.startTag("moreItem");
+    target.addAttribute("text",moreItem.getText());
+    if (moreItem.getIcon() != null) {
+      target.addAttribute("icon",moreItem.getIcon());
+    }
+    target.endTag("moreItem");
+  }
   target.endTag("options");
   target.startTag("items");
   Iterator itr=menuItems.iterator();
@@ -29,7 +41,7 @@
  else {
       target.endTag("item");
     }
-    if (!itr.hasNext() && !iteratorStack.empty()) {
+    while (!itr.hasNext() && !iteratorStack.empty()) {
       itr=(Iterator)iteratorStack.pop();
       target.endTag("item");
     }
