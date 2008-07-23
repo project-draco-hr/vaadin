@@ -3,20 +3,18 @@
   setCompositionRoot(layout);
   final Table table=new Table();
   layout.addComponent(table);
-  table.addContainerProperty("selected1",Boolean.class,null);
-  table.addContainerProperty("selected2",Boolean.class,null);
-  for (int i=0; i < 100; i++) {
+  table.setPageLength(8);
+  table.addContainerProperty("selected",Boolean.class,null);
+  table.addContainerProperty("text",String.class,null);
+  for (int i=0; i < 5; i++) {
     MyBean item=new MyBean();
     BeanItem bitem=new BeanItem(item);
     table.addItem(new Object[]{bitem,bitem},new Integer(i));
   }
-  table.setWriteThrough(true);
-  table.setReadThrough(true);
-  table.setPageLength(8);
+  table.setFieldFactory(new MyFieldFactory());
   final CheckBox switchEditable=new CheckBox("Editable");
   switchEditable.addListener(new Property.ValueChangeListener(){
     public void valueChange(    ValueChangeEvent event){
-      table.commit();
       table.setEditable(((Boolean)event.getProperty().getValue()).booleanValue());
     }
   }
