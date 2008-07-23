@@ -28,10 +28,17 @@
   horlayout.expand(detailspanel);
   final OrderedLayout detailslayout=new OrderedLayout();
   detailspanel.setLayout(detailslayout);
+  tree.setNullSelectionAllowed(true);
   tree.setImmediate(true);
   tree.addListener(new ValueChangeListener(){
+    String lastselected=null;
     public void valueChange(    ValueChangeEvent event){
       String planet=(String)tree.getValue();
+      if (planet == null) {
+        planet=lastselected;
+        tree.setValue(planet);
+      }
+      lastselected=planet;
       detailspanel.setCaption("Details on " + planet);
       detailslayout.removeAllComponents();
       detailslayout.addComponent(new Label("Where is the cat?"));
