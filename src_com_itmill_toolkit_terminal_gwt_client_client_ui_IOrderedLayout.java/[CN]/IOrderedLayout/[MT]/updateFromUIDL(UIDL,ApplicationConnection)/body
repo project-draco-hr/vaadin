@@ -1,0 +1,75 @@
+{
+  this.client=client;
+  if (uidl.getBooleanAttribute("cached")) {
+    return;
+  }
+  updateMarginAndSpacingSizesFromCSS(uidl);
+  if (client.updateComponent(this,uidl,false)) {
+    return;
+  }
+  int oldO=orientationMode;
+  orientationMode="horizontal".equals(uidl.getStringAttribute("orientation")) ? ORIENTATION_HORIZONTAL : ORIENTATION_VERTICAL;
+  rebuildRootDomStructure(oldO);
+  hasComponentSpacing=uidl.getBooleanAttribute("spacing");
+  final Vector newWidgets=new Vector();
+  for (final Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
+    final UIDL uidlForChild=(UIDL)it.next();
+    final Paintable child=client.getPaintable(uidlForChild);
+    newWidgets.add(child);
+  }
+  final Iterator oldWidgetsIterator=(new Vector(childWidgets)).iterator();
+  final Iterator newWidgetsIterator=newWidgets.iterator();
+  final Iterator newUIDLIterator=uidl.getChildIterator();
+  final Vector paintedWidgets=new Vector();
+  final Vector childsToPaint=new Vector();
+  Widget oldChild=null;
+  while (newWidgetsIterator.hasNext()) {
+    final Widget newChild=(Widget)newWidgetsIterator.next();
+    final UIDL newChildUIDL=(UIDL)newUIDLIterator.next();
+    if (oldChild == null && oldWidgetsIterator.hasNext()) {
+      while (oldWidgetsIterator.hasNext()) {
+        oldChild=(Widget)oldWidgetsIterator.next();
+        if (paintedWidgets.contains(oldChild)) {
+          continue;
+        }
+ else         if (newWidgets.contains(oldChild)) {
+          break;
+        }
+ else {
+          remove(oldChild);
+          oldChild=null;
+        }
+      }
+    }
+    if (oldChild == null) {
+      add(newChild);
+    }
+ else     if (newChild == oldChild) {
+      oldChild=null;
+    }
+ else     if (hasChildComponent(newChild)) {
+      add(newChild,childWidgets.indexOf(oldChild));
+    }
+ else {
+      add(newChild,childWidgets.indexOf(oldChild));
+    }
+    childsToPaint.add(new Object[]{newChild,newChildUIDL});
+    paintedWidgets.add(newChild);
+  }
+  while (oldWidgetsIterator.hasNext()) {
+    oldChild=(Widget)oldWidgetsIterator.next();
+    if (!newWidgets.contains(oldChild)) {
+      remove(oldChild);
+    }
+  }
+  handleAlignmentsSpacingAndMargins(uidl);
+  updateChildSizes();
+  for (int i=0; i < childsToPaint.size(); i++) {
+    Object[] t=(Object[])childsToPaint.get(i);
+    ((Paintable)t[0]).updateFromUIDL((UIDL)t[1],client);
+  }
+  if (childLayoutsHaveChanged) {
+    Util.runDescendentsLayout(this);
+    childLayoutsHaveChanged=false;
+  }
+}

@@ -1,0 +1,17 @@
+{
+  if (client.updateComponent(this,uidl,false)) {
+    return;
+  }
+  final UIDL child=uidl.getChildUIDL(0);
+  if (child != null) {
+    final Paintable p=client.getPaintable(child);
+    if (p != getWidget()) {
+      if (getWidget() != null) {
+        client.unregisterPaintable((Paintable)getWidget());
+        clear();
+      }
+      setWidget((Widget)p);
+    }
+    p.updateFromUIDL(child,client);
+  }
+}

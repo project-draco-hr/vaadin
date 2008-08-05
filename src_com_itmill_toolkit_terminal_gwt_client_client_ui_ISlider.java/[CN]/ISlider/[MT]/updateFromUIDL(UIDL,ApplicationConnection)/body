@@ -1,0 +1,46 @@
+{
+  this.client=client;
+  id=uidl.getId();
+  if (client.updateComponent(this,uidl,true)) {
+    return;
+  }
+  immediate=uidl.getBooleanAttribute("immediate");
+  disabled=uidl.getBooleanAttribute("disabled");
+  readonly=uidl.getBooleanAttribute("readonly");
+  vertical=uidl.hasAttribute("vertical");
+  arrows=uidl.hasAttribute("arrows");
+  String style="";
+  if (uidl.hasAttribute("style")) {
+    style=uidl.getStringAttribute("style");
+  }
+  scrollbarStyle=style.indexOf("scrollbar") > -1;
+  if (arrows) {
+    DOM.setStyleAttribute(smaller,"display","block");
+    DOM.setStyleAttribute(bigger,"display","block");
+  }
+  if (vertical) {
+    addStyleName(CLASSNAME + "-vertical");
+  }
+ else {
+    removeStyleName(CLASSNAME + "-vertical");
+  }
+  min=uidl.getDoubleAttribute("min");
+  max=uidl.getDoubleAttribute("max");
+  resolution=uidl.getIntAttribute("resolution");
+  value=new Double(uidl.getDoubleVariable("value"));
+  handleSize=uidl.getIntAttribute("hsize");
+  buildBase();
+  if (!vertical) {
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        buildHandle();
+        setValue(value,false,false);
+      }
+    }
+);
+  }
+ else {
+    buildHandle();
+    setValue(value,false,false);
+  }
+}

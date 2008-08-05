@@ -1,0 +1,23 @@
+{
+  if (uidl == null || reqRows < 1) {
+    if (firstRow < 0) {
+      while (tBody.getLastRendered() > tBody.firstRendered) {
+        tBody.unlinkRow(false);
+      }
+      tBody.unlinkRow(false);
+    }
+    return;
+  }
+  tBody.renderRows(uidl,firstRow,reqRows);
+  final int optimalFirstRow=(int)(firstRowInViewPort - pageLength * CACHE_RATE);
+  boolean cont=true;
+  while (cont && tBody.getLastRendered() > optimalFirstRow && tBody.getFirstRendered() < optimalFirstRow) {
+    cont=tBody.unlinkRow(true);
+  }
+  final int optimalLastRow=(int)(firstRowInViewPort + pageLength + pageLength * CACHE_RATE);
+  cont=true;
+  while (cont && tBody.getLastRendered() > optimalLastRow) {
+    cont=tBody.unlinkRow(false);
+  }
+  tBody.fixSpacers();
+}

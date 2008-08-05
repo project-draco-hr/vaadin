@@ -1,0 +1,25 @@
+{
+  if (hasComponentSpacing) {
+    if (spacingSize < 0) {
+      final Element temp=DOM.createDiv();
+      final WidgetWrapper wr=createWidgetWrappper();
+      wr.setSpacingEnabled(true);
+      DOM.appendChild(temp,wr.getElement());
+      DOM.setStyleAttribute(temp,"position","absolute");
+      DOM.setStyleAttribute(temp,"top","0");
+      DOM.setStyleAttribute(temp,"visibility","hidden");
+      DOM.appendChild(RootPanel.getBodyElement(),temp);
+      if (orientationMode == ORIENTATION_HORIZONTAL) {
+        spacingSize=DOM.getElementPropertyInt(wr.getElement(),"offsetLeft");
+      }
+ else {
+        spacingSize=DOM.getElementPropertyInt(wr.getElement(),"offsetTop");
+      }
+      DOM.removeChild(RootPanel.getBodyElement(),temp);
+    }
+    return spacingSize;
+  }
+ else {
+    return 0;
+  }
+}

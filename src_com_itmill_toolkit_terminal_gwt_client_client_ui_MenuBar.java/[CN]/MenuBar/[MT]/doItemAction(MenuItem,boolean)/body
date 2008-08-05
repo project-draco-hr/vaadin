@@ -1,0 +1,49 @@
+{
+  if ((shownChildMenu != null) && (item.getSubMenu() == shownChildMenu)) {
+    return;
+  }
+  if (shownChildMenu != null) {
+    shownChildMenu.onHide();
+    popup.hide();
+  }
+  if (item.getSubMenu() == null) {
+    if (fireCommand) {
+      closeAllParents();
+      final Command cmd=item.getCommand();
+      if (cmd != null) {
+        DeferredCommand.addCommand(cmd);
+      }
+    }
+    return;
+  }
+  selectItem(item);
+  popup=new ToolkitOverlay(true){
+{
+      setWidget(item.getSubMenu());
+      item.getSubMenu().onShow();
+    }
+    public boolean onEventPreview(    Event event){
+switch (DOM.eventGetType(event)) {
+case Event.ONCLICK:
+        final Element target=DOM.eventGetTarget(event);
+      final Element parentMenuElement=item.getParentMenu().getElement();
+    if (DOM.isOrHasChild(parentMenuElement,target)) {
+      return false;
+    }
+  break;
+}
+return super.onEventPreview(event);
+}
+}
+;
+popup.addPopupListener(this);
+if (vertical) {
+popup.setPopupPosition(item.getAbsoluteLeft() + item.getOffsetWidth(),item.getAbsoluteTop());
+}
+ else {
+popup.setPopupPosition(item.getAbsoluteLeft(),item.getAbsoluteTop() + item.getOffsetHeight());
+}
+shownChildMenu=item.getSubMenu();
+item.getSubMenu().parentMenu=this;
+popup.show();
+}

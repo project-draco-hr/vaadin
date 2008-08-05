@@ -1,0 +1,24 @@
+{
+switch (DOM.eventGetType(event)) {
+case Event.ONMOUSEDOWN:
+    if (!disabled && !readonly) {
+      dragging=true;
+      DOM.setCapture(getElement());
+      DOM.eventPreventDefault(event);
+      DOM.eventCancelBubble(event,true);
+    }
+  break;
+case Event.ONMOUSEMOVE:
+if (dragging) {
+  setValueByEvent(event,false,false);
+}
+break;
+case Event.ONMOUSEUP:
+dragging=false;
+DOM.releaseCapture(getElement());
+setValueByEvent(event,true,true);
+break;
+default :
+break;
+}
+}

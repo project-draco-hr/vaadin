@@ -1,0 +1,30 @@
+{
+  if (ApplicationConnection.isTestingMode()) {
+    DOM.setElementProperty(getElement(),"id",paintableId + "_OPTIONLIST");
+  }
+  menu.setSuggestions(currentSuggestions);
+  final int x=IFilterSelect.this.getAbsoluteLeft();
+  int y=tb.getAbsoluteTop();
+  y+=tb.getOffsetHeight();
+  setPopupPosition(x,y);
+  final int first=currentPage * PAGELENTH + (nullSelectionAllowed && currentPage > 0 ? 0 : 1);
+  final int last=first + currentSuggestions.size() - 1;
+  final int matches=totalSuggestions - (nullSelectionAllowed ? 1 : 0);
+  if (last > 0) {
+    DOM.setInnerText(status,(matches == 0 ? 0 : first) + "-" + ("".equals(lastFilter) && nullSelectionAllowed && currentPage == 0 ? last - 1 : last)+ "/"+ matches);
+  }
+ else {
+    DOM.setInnerText(status,"");
+  }
+  if (matches <= PAGELENTH) {
+    setPagingEnabled(false);
+  }
+ else {
+    setPagingEnabled(true);
+  }
+  setPrevButtonActive(first > 1);
+  setNextButtonActive(last < matches);
+  menu.setWidth("");
+  DOM.setStyleAttribute(DOM.getFirstChild(menu.getElement()),"width","");
+  setPopupPositionAndShow(this);
+}

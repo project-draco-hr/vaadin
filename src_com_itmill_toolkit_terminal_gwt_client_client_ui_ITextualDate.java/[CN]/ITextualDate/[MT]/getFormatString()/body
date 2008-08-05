@@ -1,0 +1,39 @@
+{
+  if (formatStr == null) {
+    if (currentResolution == RESOLUTION_YEAR) {
+      formatStr="yyyy";
+    }
+ else {
+      try {
+        String frmString=LocaleService.getDateFormat(currentLocale);
+        frmString=cleanFormat(frmString);
+        String delim=LocaleService.getClockDelimiter(currentLocale);
+        if (currentResolution >= RESOLUTION_HOUR) {
+          if (dts.isTwelveHourClock()) {
+            frmString+=" hh";
+          }
+ else {
+            frmString+=" HH";
+          }
+          if (currentResolution >= RESOLUTION_MIN) {
+            frmString+=":mm";
+            if (currentResolution >= RESOLUTION_SEC) {
+              frmString+=":ss";
+              if (currentResolution >= RESOLUTION_MSEC) {
+                frmString+=".SSS";
+              }
+            }
+          }
+          if (dts.isTwelveHourClock()) {
+            frmString+=" aaa";
+          }
+        }
+        formatStr=frmString;
+      }
+ catch (      LocaleNotLoadedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+  return formatStr;
+}
