@@ -1,0 +1,37 @@
+{
+  if (Util.isIE()) {
+    if (resizeTimer == null) {
+      resizeTimer=new Timer(){
+        public void run(){
+          boolean changed=false;
+          if (IView.this.width != getOffsetWidth()) {
+            IView.this.width=getOffsetWidth();
+            changed=true;
+            ApplicationConnection.getConsole().log("window w" + IView.this.width);
+          }
+          if (IView.this.height != getOffsetHeight()) {
+            IView.this.height=getOffsetHeight();
+            changed=true;
+            ApplicationConnection.getConsole().log("window h" + IView.this.height);
+          }
+          if (changed) {
+            ApplicationConnection.getConsole().log("Running layout functions due window resize");
+            Util.runDescendentsLayout(IView.this);
+          }
+        }
+      }
+;
+    }
+ else {
+      resizeTimer.cancel();
+    }
+    resizeTimer.schedule(200);
+  }
+ else {
+    final String overflow=DOM.getStyleAttribute(getElement(),"overflow");
+    DOM.setStyleAttribute(getElement(),"overflow","hidden");
+    ApplicationConnection.getConsole().log("Running layout functions due window resize");
+    Util.runDescendentsLayout(this);
+    DOM.setStyleAttribute(getElement(),"overflow",overflow);
+  }
+}

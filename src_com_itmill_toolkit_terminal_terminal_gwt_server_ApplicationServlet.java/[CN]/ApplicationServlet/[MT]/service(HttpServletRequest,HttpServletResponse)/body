@@ -1,0 +1,122 @@
+{
+  if ((request.getPathInfo() != null) && (request.getPathInfo().length() > 10)) {
+    if ((request.getContextPath() != null) && (request.getRequestURI().startsWith("/ITMILL/"))) {
+      serveStaticResourcesInITMILL(request.getRequestURI(),response);
+      return;
+    }
+ else     if (request.getRequestURI().startsWith(request.getContextPath() + "/ITMILL/")) {
+      serveStaticResourcesInITMILL(request.getRequestURI().substring(request.getContextPath().length()),response);
+      return;
+    }
+  }
+  Application application=null;
+  boolean UIDLrequest=false;
+  try {
+    if (ServletFileUpload.isMultipartContent(request)) {
+      application=getExistingApplication(request,response);
+      if (application == null) {
+        throw new SessionExpired();
+      }
+      ((WebApplicationContext)application.getContext()).startTransaction(application,request);
+      getApplicationManager(application).handleFileUpload(request,response);
+      return;
+    }
+    final WebBrowser browser=WebApplicationContext.getApplicationContext(request.getSession()).getBrowser();
+    browser.updateBrowserProperties(request);
+    if (request.getPathInfo() != null) {
+      String compare=AJAX_UIDL_URI;
+      if (isApplicationRunnerServlet) {
+        final String[] URIparts=getApplicationRunnerURIs(request);
+        applicationRunnerClassname=URIparts[4];
+        compare="/" + applicationRunnerClassname + AJAX_UIDL_URI;
+      }
+      if (request.getPathInfo().startsWith(compare + "/") || request.getPathInfo().endsWith(compare)) {
+        UIDLrequest=true;
+        application=getExistingApplication(request,response);
+        if (application == null) {
+          final String repaintAll=request.getParameter("repaintAll");
+          if ((repaintAll != null) && (repaintAll.equals("1"))) {
+            application=getNewApplication(request,response);
+          }
+ else {
+            throw new SessionExpired();
+          }
+        }
+        ((WebApplicationContext)application.getContext()).startTransaction(application,request);
+        getApplicationManager(application).handleUidlRequest(request,response,this);
+        return;
+      }
+    }
+    application=getExistingApplication(request,response);
+    if (application == null || request.getParameter("restartApplication") != null || request.getParameter("closeApplication") != null) {
+      if (application != null) {
+        application.close();
+        final HttpSession session=request.getSession(false);
+        if (session != null) {
+          ApplicationServlet.applicationToAjaxAppMgrMap.remove(application);
+          WebApplicationContext.getApplicationContext(session).removeApplication(application);
+        }
+      }
+      if (request.getParameter("closeApplication") != null) {
+        return;
+      }
+      application=getNewApplication(request,response);
+    }
+    ((WebApplicationContext)application.getContext()).startTransaction(application,request);
+    if (!application.isRunning()) {
+      endApplication(request,response,application);
+      return;
+    }
+    Window window=null;
+    window=getApplicationWindow(request,application);
+    final Map parameters=request.getParameterMap();
+    if (window != null && parameters != null) {
+      window.handleParameters(parameters);
+    }
+    DownloadStream download=null;
+    download=handleURI(application,request,response);
+    if (download == null) {
+      if (window.getTerminal() == null) {
+        window.setTerminal(browser);
+      }
+      String themeName=window.getTheme();
+      if (request.getParameter("theme") != null) {
+        themeName=request.getParameter("theme");
+      }
+      if (themeName == null) {
+        themeName="default";
+      }
+      if (handleResourceRequest(request,response,themeName)) {
+        return;
+      }
+      writeAjaxPage(request,response,window,themeName,application);
+    }
+ else {
+      handleDownload(download,request,response);
+    }
+  }
+ catch (  final SessionExpired e) {
+    Application.SystemMessages ci=getSystemMessages();
+    if (!UIDLrequest) {
+      response.sendRedirect(ci.getSessionExpiredURL());
+    }
+ else {
+      criticalNotification(request,response,ci.getSessionExpiredCaption(),ci.getSessionExpiredMessage(),ci.getSessionExpiredURL());
+    }
+  }
+catch (  final Throwable e) {
+    e.printStackTrace();
+    if (UIDLrequest) {
+      Application.SystemMessages ci=getSystemMessages();
+      criticalNotification(request,response,ci.getInternalErrorCaption(),ci.getInternalErrorMessage(),ci.getInternalErrorURL());
+    }
+ else {
+      throw new ServletException(e);
+    }
+  }
+ finally {
+    if (application != null) {
+      ((WebApplicationContext)application.getContext()).endTransaction(application,request);
+    }
+  }
+}

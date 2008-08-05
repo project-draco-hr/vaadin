@@ -1,0 +1,57 @@
+{
+  final ServletFileUpload upload=new ServletFileUpload();
+  final UploadProgressListener pl=new UploadProgressListener();
+  upload.setProgressListener(pl);
+  FileItemIterator iter;
+  try {
+    iter=upload.getItemIterator(request);
+    while (iter.hasNext()) {
+      final FileItemStream item=iter.next();
+      final String name=item.getFieldName();
+      final String filename=item.getName();
+      final String mimeType=item.getContentType();
+      final InputStream stream=item.openStream();
+      if (item.isFormField()) {
+      }
+ else {
+        final String pid=name.split("_")[0];
+        final Upload uploadComponent=(Upload)idPaintableMap.get(pid);
+        if (uploadComponent.isReadOnly()) {
+          throw new FileUploadException("Warning: ignored file upload because upload component is set as read-only");
+        }
+        if (uploadComponent == null) {
+          throw new FileUploadException("Upload component not found");
+        }
+synchronized (application) {
+          uploadComponent.startUpload();
+        }
+        final UploadStream upstream=new UploadStream(){
+          public String getContentName(){
+            return filename;
+          }
+          public String getContentType(){
+            return mimeType;
+          }
+          public InputStream getStream(){
+            return stream;
+          }
+          public String getStreamName(){
+            return "stream";
+          }
+        }
+;
+        pl.setUpload(uploadComponent);
+        uploadComponent.receiveUpload(upstream);
+      }
+    }
+  }
+ catch (  final FileUploadException e) {
+    e.printStackTrace();
+  }
+  response.setContentType("text/html");
+  final OutputStream out=response.getOutputStream();
+  final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
+  outWriter.print("<html><body>download handled</body></html>");
+  outWriter.flush();
+  out.close();
+}

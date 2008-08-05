@@ -1,0 +1,27 @@
+{
+  final HttpSession session=request.getSession(true);
+  final Collection applications=WebApplicationContext.getApplicationContext(session).getApplications();
+  for (final Iterator i=applications.iterator(); i.hasNext(); ) {
+    final Application a=(Application)i.next();
+    final String aPath=a.getURL().getPath();
+    String servletPath="";
+    if (isApplicationRunnerServlet) {
+      final String[] URIparts=getApplicationRunnerURIs(request);
+      servletPath=URIparts[1] + "/";
+    }
+ else {
+      servletPath=request.getContextPath() + request.getServletPath();
+      if (servletPath.length() < aPath.length()) {
+        servletPath+="/";
+      }
+    }
+    if (servletPath.equals(aPath)) {
+      if (a.isRunning()) {
+        return a;
+      }
+      WebApplicationContext.getApplicationContext(session).removeApplication(a);
+      break;
+    }
+  }
+  return null;
+}

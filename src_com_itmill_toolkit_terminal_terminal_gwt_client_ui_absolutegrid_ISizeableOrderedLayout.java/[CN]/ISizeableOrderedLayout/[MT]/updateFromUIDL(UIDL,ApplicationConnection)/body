@@ -1,0 +1,74 @@
+{
+  this.client=client;
+  if (client.updateComponent(this,uidl,false)) {
+    return;
+  }
+  orientation=(uidl.hasAttribute("orientation") ? ORIENTETION_HORIZONTAL : 0);
+  if (uidl.hasAttribute("caption")) {
+    setTitle(uidl.getStringAttribute("caption"));
+  }
+  handleMargins(uidl);
+  spacing=uidl.getBooleanAttribute("spacing") ? detectSpacingSize() : 0;
+  final int[] alignments=uidl.getIntArrayAttribute("alignments");
+  int alignmentIndex=0;
+  final ArrayList uidlWidgets=new ArrayList();
+  for (final Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
+    final UIDL uidlForChild=(UIDL)it.next();
+    final Paintable child=client.getPaintable(uidlForChild);
+    uidlWidgets.add(child);
+  }
+  if (orientation == ORIENTETION_HORIZONTAL) {
+    setCols(uidlWidgets.size());
+    setRows(1);
+  }
+ else {
+    setCols(1);
+    setRows(uidlWidgets.size());
+  }
+  final ArrayList oldWidgets=getPaintables();
+  final HashMap oldCaptions=new HashMap();
+  final Iterator newIt=uidlWidgets.iterator();
+  final Iterator newUidl=uidl.getChildIterator();
+  int row=0, column=0;
+  while (newIt.hasNext()) {
+    final Widget child=(Widget)newIt.next();
+    final UIDL childUidl=(UIDL)newUidl.next();
+    AbsoluteGridCell cell=getCell(column,row);
+    Widget oldChild=cell.getWidget();
+    if (oldChild != null) {
+      if (oldChild != child) {
+        oldCaptions.put(oldChild,cell.getCaption());
+        cell.clear();
+        cell.setWidget(child);
+        paintableToCellMap.remove(oldChild);
+        Caption newCaption=(Caption)oldCaptions.get(child);
+        if (newCaption == null) {
+          newCaption=new Caption((Paintable)child,client);
+        }
+        cell.setCaption(newCaption);
+      }
+    }
+ else {
+      cell.setWidget(child);
+    }
+    paintableToCellMap.put(child,cell);
+    cell.setAlignment(alignments[alignmentIndex++]);
+    cell.render();
+    ((Paintable)child).updateFromUIDL(childUidl,client);
+    cell.vAling();
+    if (orientation == ORIENTETION_HORIZONTAL) {
+      column++;
+    }
+ else {
+      row++;
+    }
+    oldWidgets.remove(child);
+  }
+  Iterator oldIt=oldWidgets.iterator();
+  while (oldIt.hasNext()) {
+    final Paintable p=(Paintable)oldIt.next();
+    if (!uidlWidgets.contains(p)) {
+      removePaintable(p);
+    }
+  }
+}

@@ -1,0 +1,115 @@
+{
+  Iterator headCells=tHead.iterator();
+  int i=0;
+  int totalExplicitColumnsWidths=0;
+  int total=0;
+  final int[] widths=new int[tHead.visibleCells.size()];
+  if (width == null) {
+    bodyContainer.setWidth("");
+    tHead.setWidth("");
+    super.setWidth("");
+  }
+  tHead.enableBrowserIntelligence();
+  while (headCells.hasNext()) {
+    final HeaderCell hCell=(HeaderCell)headCells.next();
+    int w=hCell.getWidth();
+    if (w > 0) {
+      totalExplicitColumnsWidths+=w;
+    }
+ else {
+      final int hw=hCell.getOffsetWidth();
+      final int cw=tBody.getColWidth(i);
+      w=(hw > cw ? hw : cw) + IScrollTableBody.CELL_EXTRA_WIDTH;
+    }
+    widths[i]=w;
+    total+=w;
+    i++;
+  }
+  tHead.disableBrowserIntelligence();
+  if (height == null) {
+    bodyContainer.setHeight((tBody.getRowHeight() * pageLength) + "px");
+  }
+ else {
+    mySetHeight(height);
+    iLayout();
+  }
+  if (width == null) {
+    int w=total;
+    w+=getScrollbarWidth();
+    bodyContainer.setWidth(w + "px");
+    tHead.setWidth(w + "px");
+    super.setWidth(w + "px");
+  }
+ else {
+    if (width.indexOf("px") > 0) {
+      bodyContainer.setWidth(width);
+      tHead.setWidth(width);
+      super.setWidth(width);
+    }
+ else     if (width.indexOf("%") > 0) {
+      if (!width.equals("100%")) {
+        super.setWidth(width);
+      }
+      bodyContainer.setWidth("100%");
+      tHead.setWidth("100%");
+    }
+  }
+  int availW=tBody.getAvailableWidth();
+  availW=tBody.getAvailableWidth();
+  if (availW > total) {
+    final int extraSpace=availW - total;
+    final int totalWidthR=total - totalExplicitColumnsWidths;
+    if (totalWidthR > 0) {
+      headCells=tHead.iterator();
+      i=0;
+      HeaderCell hCell;
+      while (headCells.hasNext()) {
+        hCell=(HeaderCell)headCells.next();
+        if (hCell.getWidth() == -1) {
+          int w=widths[i];
+          final int newSpace=extraSpace * w / totalWidthR;
+          w+=newSpace;
+          widths[i]=w;
+        }
+        i++;
+      }
+    }
+  }
+ else {
+  }
+  i=0;
+  headCells=tHead.iterator();
+  while (headCells.hasNext()) {
+    final HeaderCell hCell=(HeaderCell)headCells.next();
+    if (isNewBody || hCell.getWidth() == -1) {
+      final int w=widths[i];
+      setColWidth(i,w);
+    }
+    i++;
+  }
+  isNewBody=false;
+  if (firstvisible > 0) {
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        bodyContainer.setScrollPosition(firstvisible * tBody.getRowHeight());
+        firstRowInViewPort=firstvisible;
+      }
+    }
+);
+  }
+  if (enabled) {
+    if (tBody.getLastRendered() + 1 < firstRowInViewPort + pageLength + CACHE_REACT_RATE * pageLength) {
+      DeferredCommand.addCommand(new Command(){
+        public void execute(){
+          if (totalRows - 1 > tBody.getLastRendered()) {
+            rowRequestHandler.setReqFirstRow(tBody.getLastRendered() + 1);
+            rowRequestHandler.setReqRows((int)(pageLength * CACHE_RATE));
+            rowRequestHandler.deferRowFetch(1);
+          }
+        }
+      }
+);
+    }
+  }
+  initializedAndAttached=true;
+}

@@ -1,0 +1,34 @@
+{
+  if (tagName == null) {
+    throw new NullPointerException();
+  }
+  if (closed) {
+    throw new PaintException("Attempted to write to a closed PaintTarget.");
+  }
+  if (openJsonTags.size() > 0) {
+    final JsonTag parent=(JsonTag)openJsonTags.pop();
+    String lastTag="";
+    lastTag=(String)mOpenTags.pop();
+    if (!tagName.equalsIgnoreCase(lastTag)) {
+      throw new PaintException("Invalid UIDL: wrong ending tag: '" + tagName + "' expected: '"+ lastTag+ "'.");
+    }
+    if ("error".equals(lastTag)) {
+      if (errorsOpen == 1) {
+        parent.addAttribute("\"error\":[\"error\",{}" + tag.getData() + "]");
+      }
+ else {
+        parent.addData(tag.getJSON());
+      }
+      errorsOpen--;
+    }
+ else {
+      parent.addData(tag.getJSON());
+    }
+    tag=parent;
+  }
+ else {
+    changes++;
+    uidlBuffer.print(((changes > 1) ? "," : "") + tag.getJSON());
+    tag=null;
+  }
+}

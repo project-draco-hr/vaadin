@@ -1,0 +1,48 @@
+{
+  this.client=client;
+  if (client.updateComponent(this,uidl,false)) {
+    return;
+  }
+  pid=uidl.getId();
+  if (!hasTemplate()) {
+    initializeHTML(uidl,client);
+  }
+  if (uidl.hasAttribute("width")) {
+    setWidth(uidl.getStringAttribute("width"));
+  }
+ else {
+    setWidth("100%");
+  }
+  if (uidl.hasAttribute("height")) {
+    setHeight(uidl.getStringAttribute("height"));
+  }
+ else {
+    setHeight("100%");
+  }
+  eval(scripts);
+  scripts=null;
+  iLayout();
+  Set oldWidgets=new HashSet();
+  oldWidgets.addAll(locationToWidget.values());
+  for (final Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
+    final UIDL uidlForChild=(UIDL)i.next();
+    if (uidlForChild.getTag().equals("location")) {
+      final String location=uidlForChild.getStringAttribute("name");
+      final Paintable child=client.getPaintable(uidlForChild.getChildUIDL(0));
+      try {
+        setWidget((Widget)child,location);
+        child.updateFromUIDL(uidlForChild.getChildUIDL(0),client);
+      }
+ catch (      final IllegalArgumentException e) {
+      }
+      oldWidgets.remove(child);
+    }
+  }
+  for (Iterator iterator=oldWidgets.iterator(); iterator.hasNext(); ) {
+    Widget oldWidget=(Widget)iterator.next();
+    if (oldWidget.isAttached()) {
+      remove(oldWidget);
+    }
+  }
+  iLayout();
+}

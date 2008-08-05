@@ -1,0 +1,31 @@
+{
+  if (listeners == null) {
+    return;
+  }
+  LinkedList exceptions=null;
+  for (final Iterator i=listeners.iterator(); i.hasNext(); ) {
+    try {
+      ((ApplicationContext.TransactionListener)i.next()).transactionEnd(application,request);
+    }
+ catch (    final RuntimeException t) {
+      if (exceptions == null) {
+        exceptions=new LinkedList();
+      }
+      exceptions.add(t);
+    }
+  }
+  if (exceptions != null) {
+    final StringBuffer msg=new StringBuffer();
+    for (final Iterator i=exceptions.iterator(); i.hasNext(); ) {
+      final RuntimeException e=(RuntimeException)i.next();
+      if (msg.length() == 0) {
+        msg.append("\n\n--------------------------\n\n");
+      }
+      msg.append(e.getMessage() + "\n");
+      final StringWriter trace=new StringWriter();
+      e.printStackTrace(new PrintWriter(trace,true));
+      msg.append(trace.toString());
+    }
+    throw new RuntimeException(msg.toString());
+  }
+}

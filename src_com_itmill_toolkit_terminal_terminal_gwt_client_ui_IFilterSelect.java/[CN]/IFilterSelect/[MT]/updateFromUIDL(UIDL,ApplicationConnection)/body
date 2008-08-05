@@ -1,0 +1,58 @@
+{
+  paintableId=uidl.getId();
+  this.client=client;
+  boolean readonly=uidl.hasAttribute("readonly");
+  boolean disabled=uidl.hasAttribute("disabled");
+  if (disabled || readonly) {
+    tb.setEnabled(false);
+    enabled=false;
+  }
+ else {
+    tb.setEnabled(true);
+    enabled=true;
+  }
+  if (client.updateComponent(this,uidl,true)) {
+    return;
+  }
+  immediate=uidl.hasAttribute("immediate");
+  nullSelectionAllowed=uidl.hasAttribute("nullselect");
+  currentPage=uidl.getIntVariable("page");
+  if (uidl.hasAttribute(ATTR_EMPTYTEXT)) {
+    emptyText=uidl.getStringAttribute(ATTR_EMPTYTEXT);
+  }
+  suggestionPopup.setPagingEnabled(true);
+  allowNewItem=uidl.hasAttribute("allownewitem");
+  currentSuggestions.clear();
+  final UIDL options=uidl.getChildUIDL(0);
+  totalMatches=uidl.getIntAttribute("totalMatches");
+  String captions=emptyText;
+  for (final Iterator i=options.getChildIterator(); i.hasNext(); ) {
+    final UIDL optionUidl=(UIDL)i.next();
+    final FilterSelectSuggestion suggestion=new FilterSelectSuggestion(optionUidl);
+    currentSuggestions.add(suggestion);
+    if (optionUidl.hasAttribute("selected")) {
+      if (!filtering) {
+        tb.setText(suggestion.getReplacementString());
+      }
+      currentSuggestion=suggestion;
+    }
+    if (captions.length() > 0) {
+      captions+="|";
+    }
+    captions+=suggestion.getReplacementString();
+  }
+  if (!filtering && uidl.hasVariable("selected") && uidl.getStringArrayVariable("selected").length == 0) {
+    tb.setText(emptyText);
+    selectedOptionKey=null;
+  }
+  if (filtering && lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) {
+    suggestionPopup.showSuggestions(currentSuggestions,currentPage,totalMatches);
+    filtering=false;
+  }
+  final int minw=minWidth(captions);
+  final Element spacer=DOM.createDiv();
+  DOM.setStyleAttribute(spacer,"width",minw + "px");
+  DOM.setStyleAttribute(spacer,"height","0");
+  DOM.setStyleAttribute(spacer,"overflow","hidden");
+  DOM.appendChild(panel.getElement(),spacer);
+}

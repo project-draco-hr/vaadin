@@ -1,0 +1,20 @@
+{
+  int size;
+  if (orientationMode == ORIENTATION_VERTICAL) {
+    if (Util.isIE6()) {
+      DOM.setStyleAttribute(getElement(),"overflow","hidden");
+    }
+    size=getOffsetHeight();
+    if (Util.isIE6()) {
+      DOM.setStyleAttribute(getElement(),"overflow","visible");
+    }
+    final int marginTop=DOM.getElementPropertyInt(DOM.getFirstChild(marginElement),"offsetTop") - DOM.getElementPropertyInt(element,"offsetTop");
+    final Element lastElement=DOM.getChild(marginElement,(DOM.getChildCount(marginElement) - 1));
+    final int marginBottom=DOM.getElementPropertyInt(marginElement,"offsetHeight") + DOM.getElementPropertyInt(marginElement,"offsetTop") - (DOM.getElementPropertyInt(lastElement,"offsetTop") + DOM.getElementPropertyInt(lastElement,"offsetHeight"));
+    size-=(marginTop + marginBottom);
+  }
+ else {
+    size=DOM.getElementPropertyInt(childContainer,"offsetWidth");
+  }
+  return size;
+}

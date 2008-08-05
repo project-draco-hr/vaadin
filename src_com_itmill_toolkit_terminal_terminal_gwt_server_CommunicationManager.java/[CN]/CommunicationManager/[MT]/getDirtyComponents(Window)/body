@@ -1,0 +1,23 @@
+{
+  final ArrayList resultset=new ArrayList(dirtyPaintabletSet);
+  for (final Iterator i=dirtyPaintabletSet.iterator(); i.hasNext(); ) {
+    final Paintable p=(Paintable)i.next();
+    if (p instanceof Component) {
+      final Component component=(Component)p;
+      if (component.getApplication() == null) {
+        resultset.remove(p);
+        i.remove();
+      }
+ else {
+        Window componentsRoot=component.getWindow();
+        if (componentsRoot.getParent() != null) {
+          componentsRoot=(Window)componentsRoot.getParent();
+        }
+        if (componentsRoot != w) {
+          resultset.remove(p);
+        }
+      }
+    }
+  }
+  return resultset;
+}

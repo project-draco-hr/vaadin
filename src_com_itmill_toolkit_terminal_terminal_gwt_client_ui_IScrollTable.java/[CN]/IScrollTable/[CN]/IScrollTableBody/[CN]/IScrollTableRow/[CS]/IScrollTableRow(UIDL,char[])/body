@@ -1,0 +1,34 @@
+{
+  this(uidl.getIntAttribute("key"));
+  tHead.getColumnAlignments();
+  int col=0;
+  if (showRowHeaders) {
+    addCell(uidl.getStringAttribute("caption"),aligns[col++],"");
+  }
+  if (uidl.hasAttribute("al")) {
+    actionKeys=uidl.getStringArrayAttribute("al");
+  }
+  final Iterator cells=uidl.getChildIterator();
+  while (cells.hasNext()) {
+    final Object cell=cells.next();
+    if (cell instanceof String) {
+      String style="";
+      if (uidl.hasAttribute("style-" + col)) {
+        style=uidl.getStringAttribute("style-" + col);
+      }
+      addCell(cell.toString(),aligns[col++],style);
+    }
+ else {
+      final Paintable cellContent=client.getPaintable((UIDL)cell);
+      (cellContent).updateFromUIDL((UIDL)cell,client);
+      String style="";
+      if (uidl.hasAttribute("style")) {
+        style=uidl.getStringAttribute("style");
+      }
+      addCell((Widget)cellContent,aligns[col++],style);
+    }
+  }
+  if (uidl.hasAttribute("selected") && !isSelected()) {
+    toggleSelection();
+  }
+}

@@ -1,0 +1,15 @@
+{
+  select.setClient(client);
+  select.setEnabled(!isDisabled() && !isReadonly());
+  select.clear();
+  if (isNullSelectionAllowed() && !isNullSelectionItemAvailable()) {
+    select.addItem("",null);
+  }
+  for (final Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
+    final UIDL optionUidl=(UIDL)i.next();
+    select.addItem(optionUidl.getStringAttribute("caption"),optionUidl.getStringAttribute("key"));
+    if (optionUidl.hasAttribute("selected")) {
+      select.setItemSelected(select.getItemCount() - 1,true);
+    }
+  }
+}

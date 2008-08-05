@@ -1,0 +1,27 @@
+{
+  final Element target=DOM.eventGetTarget(event);
+  final int type=DOM.eventGetType(event);
+  if (type == Event.ONKEYDOWN && shortcutHandler != null) {
+    shortcutHandler.handleKeyboardEvent(event);
+    return;
+  }
+  if (errorIndicatorElement != null && DOM.compare(target,errorIndicatorElement)) {
+switch (type) {
+case Event.ONMOUSEOVER:
+      if (errorMessage != null) {
+        errorMessage.showAt(errorIndicatorElement);
+      }
+    break;
+case Event.ONMOUSEOUT:
+  if (errorMessage != null) {
+    errorMessage.hide();
+  }
+break;
+case Event.ONCLICK:
+ApplicationConnection.getConsole().log(DOM.getInnerHTML(errorMessage.getElement()));
+return;
+default :
+break;
+}
+}
+}

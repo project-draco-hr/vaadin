@@ -1,0 +1,30 @@
+{
+  final int type=DOM.eventGetType(event);
+  if (type == Event.ONKEYDOWN && shortcutHandler != null) {
+    shortcutHandler.handleKeyboardEvent(event);
+    return;
+  }
+  final Element target=DOM.eventGetTarget(event);
+  if (client != null && !DOM.compare(target,header)) {
+    client.handleTooltipEvent(event,this);
+  }
+  if (resizing || DOM.compare(resizeBox,target)) {
+    onResizeEvent(event);
+    DOM.eventCancelBubble(event,true);
+  }
+ else   if (DOM.compare(target,closeBox)) {
+    if (type == Event.ONCLICK) {
+      onCloseClick();
+      DOM.eventCancelBubble(event,true);
+    }
+  }
+ else   if (dragging || !DOM.isOrHasChild(contents,target)) {
+    onDragEvent(event);
+    DOM.eventCancelBubble(event,true);
+  }
+ else   if (type == Event.ONCLICK) {
+    if (!isActive()) {
+      bringToFront();
+    }
+  }
+}
