@@ -1,0 +1,36 @@
+{
+  html=html.replaceAll("_UID_",pid + "__");
+  scripts="";
+  int endOfPrevScript=0;
+  int nextPosToCheck=0;
+  String lc=html.toLowerCase();
+  String res="";
+  int scriptStart=lc.indexOf("<script",nextPosToCheck);
+  while (scriptStart > 0) {
+    res+=html.substring(endOfPrevScript,scriptStart);
+    scriptStart=lc.indexOf(">",scriptStart);
+    final int j=lc.indexOf("</script>",scriptStart);
+    scripts+=html.substring(scriptStart + 1,j) + ";";
+    nextPosToCheck=endOfPrevScript=j + "</script>".length();
+    scriptStart=lc.indexOf("<script",nextPosToCheck);
+  }
+  res+=html.substring(endOfPrevScript);
+  html=res;
+  lc=html.toLowerCase();
+  int startOfBody=lc.indexOf("<body");
+  if (startOfBody < 0) {
+    res=html;
+  }
+ else {
+    res="";
+    startOfBody=lc.indexOf(">",startOfBody) + 1;
+    final int endOfBody=lc.indexOf("</body>",startOfBody);
+    if (endOfBody > startOfBody) {
+      res=html.substring(startOfBody,endOfBody);
+    }
+ else {
+      res=html.substring(startOfBody);
+    }
+  }
+  return res;
+}

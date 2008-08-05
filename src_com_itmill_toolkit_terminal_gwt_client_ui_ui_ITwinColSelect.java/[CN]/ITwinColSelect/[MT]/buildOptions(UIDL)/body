@@ -1,0 +1,34 @@
+{
+  final boolean enabled=!isDisabled() && !isReadonly();
+  options.setMultipleSelect(isMultiselect());
+  selections.setMultipleSelect(isMultiselect());
+  options.setEnabled(enabled);
+  selections.setEnabled(enabled);
+  add.setEnabled(enabled);
+  remove.setEnabled(enabled);
+  options.clear();
+  selections.clear();
+  for (final Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
+    final UIDL optionUidl=(UIDL)i.next();
+    if (optionUidl.hasAttribute("selected")) {
+      selections.addItem(optionUidl.getStringAttribute("caption"),optionUidl.getStringAttribute("key"));
+    }
+ else {
+      options.addItem(optionUidl.getStringAttribute("caption"),optionUidl.getStringAttribute("key"));
+    }
+  }
+  if (getColumns() > 0) {
+    options.setWidth(getColumns() + "em");
+    selections.setWidth(getColumns() + "em");
+    optionsContainer.setWidth((getColumns() * 2 + 3) + "em");
+  }
+ else   if (!widthSet) {
+    options.setWidth(DEFAULT_COLUMN_COUNT + "em");
+    selections.setWidth(DEFAULT_COLUMN_COUNT + "em");
+    optionsContainer.setWidth((DEFAULT_COLUMN_COUNT * 2 + 2) + "em");
+  }
+  if (getRows() > 0) {
+    options.setVisibleItemCount(getRows());
+    selections.setVisibleItemCount(getRows());
+  }
+}

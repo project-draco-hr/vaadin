@@ -1,0 +1,38 @@
+{
+  final Element target=DOM.eventGetTarget(event);
+  final int type=DOM.eventGetType(event);
+  if (type == Event.ONKEYDOWN && shortcutHandler != null) {
+    shortcutHandler.handleKeyboardEvent(event);
+    return;
+  }
+  if (type == Event.ONSCROLL) {
+    int newscrollTop=DOM.getElementPropertyInt(contentNode,"scrollTop");
+    int newscrollLeft=DOM.getElementPropertyInt(contentNode,"scrollLeft");
+    if (client != null && (newscrollLeft != scrollLeft || newscrollTop != scrollTop)) {
+      ApplicationConnection.getConsole().log("scrollded panel");
+      scrollLeft=newscrollLeft;
+      scrollTop=newscrollTop;
+      client.updateVariable(id,"scrollTop",scrollTop,false);
+      client.updateVariable(id,"scrollLeft",scrollLeft,false);
+    }
+  }
+ else   if (errorIndicatorElement != null && DOM.compare(target,errorIndicatorElement)) {
+switch (type) {
+case Event.ONMOUSEOVER:
+      if (errorMessage != null) {
+        errorMessage.showAt(errorIndicatorElement);
+      }
+    break;
+case Event.ONMOUSEOUT:
+  if (errorMessage != null) {
+    errorMessage.hide();
+  }
+break;
+case Event.ONCLICK:
+ApplicationConnection.getConsole().log(DOM.getInnerHTML(errorMessage.getElement()));
+return;
+default :
+break;
+}
+}
+}

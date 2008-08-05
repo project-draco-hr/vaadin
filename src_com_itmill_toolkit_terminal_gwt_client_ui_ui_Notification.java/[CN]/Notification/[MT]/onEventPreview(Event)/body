@@ -1,0 +1,27 @@
+{
+  int type=DOM.eventGetType(event);
+  if (delayMsec == -1) {
+    if (type == Event.ONCLICK && DOM.isOrHasChild(getElement(),DOM.eventGetTarget(event))) {
+      fade();
+    }
+    return false;
+  }
+switch (type) {
+case Event.ONMOUSEMOVE:
+    if (x < 0) {
+      x=DOM.eventGetClientX(event);
+      y=DOM.eventGetClientY(event);
+    }
+ else     if (Math.abs(DOM.eventGetClientX(event) - x) > mouseMoveThreshold || Math.abs(DOM.eventGetClientY(event) - y) > mouseMoveThreshold) {
+      startDelay();
+    }
+  break;
+case Event.ONCLICK:
+case Event.ONDBLCLICK:
+case Event.KEYEVENTS:
+case Event.ONSCROLL:
+default :
+startDelay();
+}
+return true;
+}

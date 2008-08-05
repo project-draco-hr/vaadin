@@ -1,0 +1,40 @@
+{
+  setText(uidl.getStringAttribute("caption"));
+  key=uidl.getStringAttribute("key");
+  keyToNode.put(key,this);
+  if (uidl.hasAttribute("al")) {
+    actionKeys=uidl.getStringArrayAttribute("al");
+  }
+  if (uidl.getTag().equals("node")) {
+    if (uidl.getChildCount() == 0) {
+      childNodeContainer.setVisible(false);
+    }
+ else {
+      renderChildNodes(uidl.getChildIterator());
+      childrenLoaded=true;
+    }
+  }
+ else {
+    addStyleName(CLASSNAME + "-leaf");
+  }
+  addStyleName(CLASSNAME);
+  if (uidl.getBooleanAttribute("expanded") && !getState()) {
+    setState(true,false);
+  }
+  if (uidl.getBooleanAttribute("selected")) {
+    setSelected(true);
+  }
+  if (uidl.hasAttribute("icon")) {
+    if (icon == null) {
+      icon=new Icon(client);
+      DOM.insertBefore(nodeCaptionDiv,icon.getElement(),nodeCaptionSpan);
+    }
+    icon.setUri(uidl.getStringAttribute("icon"));
+  }
+ else {
+    if (icon != null) {
+      DOM.removeChild(nodeCaptionDiv,icon.getElement());
+      icon=null;
+    }
+  }
+}

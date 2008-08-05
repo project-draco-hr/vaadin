@@ -1,0 +1,34 @@
+{
+  this.client=client;
+  id=uidl.getId();
+  if (client.updateComponent(this,uidl,false)) {
+    return;
+  }
+  if (uidl.hasAttribute("error")) {
+    if (errorIndicatorElement == null) {
+      errorIndicatorElement=DOM.createDiv();
+      DOM.setElementProperty(errorIndicatorElement,"className","i-errorindicator");
+      DOM.appendChild(getElement(),errorIndicatorElement);
+    }
+  }
+ else   if (errorIndicatorElement != null) {
+    DOM.setStyleAttribute(errorIndicatorElement,"display","none");
+  }
+  if (uidl.hasAttribute("readonly")) {
+    setEnabled(false);
+  }
+  if (uidl.hasAttribute("icon")) {
+    if (icon == null) {
+      icon=new Icon(client);
+      DOM.insertChild(getElement(),icon.getElement(),1);
+    }
+    icon.setUri(uidl.getStringAttribute("icon"));
+  }
+ else   if (icon != null) {
+    DOM.removeChild(getElement(),icon.getElement());
+    icon=null;
+  }
+  setText(uidl.getStringAttribute("caption"));
+  setChecked(uidl.getBooleanVariable("state"));
+  immediate=uidl.getBooleanAttribute("immediate");
+}
