@@ -1,0 +1,23 @@
+{
+  if (row >= rows) {
+    throw new IllegalArgumentException("Cannot delete row " + row + " from a gridlayout with height "+ rows);
+  }
+  for (int col=0; col < getColumns(); col++) {
+    removeComponent(col,row);
+  }
+  for (Iterator i=areas.iterator(); i.hasNext(); ) {
+    Area existingArea=(Area)i.next();
+    if (existingArea.row2 >= row) {
+      existingArea.row2--;
+      if (existingArea.row1 > row) {
+        existingArea.row1--;
+      }
+    }
+  }
+  setRows(rows - 1);
+  if (cursorY > row) {
+    cursorY--;
+  }
+  structuralChange=true;
+  requestRepaint();
+}
