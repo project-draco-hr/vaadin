@@ -1,16 +1,22 @@
 {
-  StackItem item=new StackItem(tabUidl);
-  if (stack.size() == 0) {
-    item.addStyleDependentName("first");
+  StackItem item;
+  if (stack.size() <= index) {
+    item=new StackItem(tabUidl);
+    if (stack.size() == 0) {
+      item.addStyleDependentName("first");
+    }
+    stack.add(item);
+    add(item,getElement());
   }
-  stack.add(item);
-  add(item,getElement());
+ else {
+    item=(StackItem)stack.get(index);
+    item.updateCaption(tabUidl);
+  }
   if (selected) {
     item.open();
     item.setContent(tabUidl.getChildUIDL(0));
   }
  else   if (tabUidl.getChildCount() > 0) {
-    Paintable paintable=client.getPaintable(tabUidl.getChildUIDL(0));
-    paintable.updateFromUIDL(tabUidl.getChildUIDL(0),client);
+    item.setContent(tabUidl.getChildUIDL(0));
   }
 }

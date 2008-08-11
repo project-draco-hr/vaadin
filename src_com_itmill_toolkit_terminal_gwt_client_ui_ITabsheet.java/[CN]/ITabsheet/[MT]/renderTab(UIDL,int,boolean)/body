@@ -1,14 +1,25 @@
 {
-  Caption c=new Caption(null,client);
+  Caption c=tb.getTab(index);
+  if (c == null) {
+    c=new Caption(null,client);
+    tb.addTab(c);
+  }
   c.updateCaption(tabUidl);
-  tb.addTab(c);
+  captions.put("" + index,c);
   if (selected) {
     renderContent(tabUidl.getChildUIDL(0));
     tb.selectTab(index);
   }
- else   if (tabUidl.getChildCount() > 0) {
-    Paintable paintable=client.getPaintable(tabUidl.getChildUIDL(0));
-    paintable.updateFromUIDL(tabUidl.getChildUIDL(0),client);
+ else {
+    if (tabUidl.getChildCount() > 0) {
+      Paintable paintable=client.getPaintable(tabUidl.getChildUIDL(0));
+      if (tp.getWidgetIndex((Widget)paintable) < 0) {
+        tp.insert((Widget)paintable,index);
+      }
+      paintable.updateFromUIDL(tabUidl.getChildUIDL(0),client);
+    }
+ else     if (tp.getWidgetCount() <= index) {
+      tp.add(new Label(""));
+    }
   }
-  tp.add(new Label(""));
 }

@@ -1,0 +1,21 @@
+{
+  if (disabled || waitingForResponse) {
+    return;
+  }
+  final Object tabKey=tabKeys.get(tabIndex);
+  if (disabledTabKeys.contains(tabKey)) {
+    return;
+  }
+  if (client != null && activeTabIndex != tabIndex) {
+    addStyleDependentName("loading");
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        previousVisibleWidget=tp.getWidget(tp.getVisibleWidget());
+        DOM.setStyleAttribute(previousVisibleWidget.getElement(),"visibility","hidden");
+        client.updateVariable(id,"selected",tabKeys.get(tabIndex).toString(),true);
+      }
+    }
+);
+    waitingForResponse=true;
+  }
+}
