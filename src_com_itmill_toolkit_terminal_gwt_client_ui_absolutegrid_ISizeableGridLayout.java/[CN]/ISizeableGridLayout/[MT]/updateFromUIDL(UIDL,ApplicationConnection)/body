@@ -3,6 +3,20 @@
   if (client.updateComponent(this,uidl,true)) {
     return;
   }
+  String newStyleString="";
+  if (uidl.hasAttribute("style")) {
+    newStyleString=uidl.getStringAttribute("style");
+  }
+  if (!newStyleString.equals(oldStyleString)) {
+    mp=null;
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        client.requestLayoutPhase();
+      }
+    }
+);
+  }
+  oldStyleString=newStyleString;
   if (uidl.hasAttribute("caption")) {
     setTitle(uidl.getStringAttribute("caption"));
   }
