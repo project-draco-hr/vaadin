@@ -2,6 +2,7 @@
   if (client.updateComponent(this,uidl,true)) {
     return;
   }
+  this.client=client;
   boolean clearBrowserElement=true;
   if (uidl.hasAttribute("type")) {
     final String type=uidl.getStringAttribute("type");
@@ -21,7 +22,9 @@
         h="";
       }
       setHTML("<img src=\"" + getSrc(uidl,client) + "\""+ w+ h+ "/>");
-      client.addPngFix(DOM.getFirstChild(getElement()));
+      Element el=DOM.getFirstChild(getElement());
+      DOM.sinkEvents(el,Event.ONLOAD);
+      client.addPngFix(el);
     }
  else     if (type.equals("browser")) {
       if (browserElement == null) {
