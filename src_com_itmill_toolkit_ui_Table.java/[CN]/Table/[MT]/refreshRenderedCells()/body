@@ -3,10 +3,10 @@
     return;
   }
   if (isContentRefreshesEnabled) {
-    LinkedList oldListenedProperties=listenedProperties;
-    LinkedList oldVisibleComponents=visibleComponents;
-    listenedProperties=new LinkedList();
-    visibleComponents=new LinkedList();
+    Map oldListenedProperties=listenedProperties;
+    HashSet oldVisibleComponents=visibleComponents;
+    listenedProperties=new IdentityHashMap();
+    visibleComponents=new HashSet();
     final Object[] colids=getVisibleColumns();
     final int cols=colids.length;
     final int pagelen=getPageLength();
@@ -93,10 +93,10 @@ if (cols > 0) {
     int index=firstIndex + i;
     if (p != null || isGenerated) {
       if (p instanceof Property.ValueChangeNotifier) {
-        if (oldListenedProperties == null || !oldListenedProperties.contains(p)) {
+        if (oldListenedProperties == null || !oldListenedProperties.containsKey(p)) {
           ((Property.ValueChangeNotifier)p).addListener(this);
         }
-        listenedProperties.add(p);
+        listenedProperties.put(p,null);
       }
       if (index < firstIndexNotInCache && index >= pageBufferFirstIndex) {
         int indexInOldBuffer=index - pageBufferFirstIndex;
@@ -150,9 +150,9 @@ for (final Iterator i=oldVisibleComponents.iterator(); i.hasNext(); ) {
 }
 }
 if (oldListenedProperties != null) {
-for (final Iterator i=oldListenedProperties.iterator(); i.hasNext(); ) {
+for (final Iterator i=oldListenedProperties.keySet().iterator(); i.hasNext(); ) {
   Property.ValueChangeNotifier o=(ValueChangeNotifier)i.next();
-  if (!listenedProperties.contains(o)) {
+  if (!listenedProperties.containsKey(o)) {
     o.removeListener(this);
   }
 }
