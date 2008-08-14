@@ -16,7 +16,7 @@
     newVC.add(visibleColumns[i]);
   }
   if (this.visibleColumns != null) {
-    disableContentRefreshing();
+    boolean disabledHere=disableContentRefreshing();
     try {
       for (final Iterator i=this.visibleColumns.iterator(); i.hasNext(); ) {
         final Object col=i.next();
@@ -28,7 +28,9 @@
       }
     }
   finally {
-      enableContentRefreshing(false);
+      if (disabledHere) {
+        enableContentRefreshing(false);
+      }
     }
   }
   this.visibleColumns=newVC;
