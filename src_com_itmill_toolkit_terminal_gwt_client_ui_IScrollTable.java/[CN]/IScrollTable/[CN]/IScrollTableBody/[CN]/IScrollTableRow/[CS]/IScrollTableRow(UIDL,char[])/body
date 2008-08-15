@@ -1,5 +1,9 @@
 {
   this(uidl.getIntAttribute("key"));
+  String rowStyle=uidl.getStringAttribute("rowstyle");
+  if (rowStyle != null) {
+    addStyleName(CLASSNAME + "-row-" + rowStyle);
+  }
   tHead.getColumnAlignments();
   int col=0;
   if (showRowHeaders) {
@@ -13,8 +17,8 @@
     final Object cell=cells.next();
     if (cell instanceof String) {
       String style="";
-      if (uidl.hasAttribute("style-" + col)) {
-        style=uidl.getStringAttribute("style-" + col);
+      if (uidl.hasAttribute("style-" + (showRowHeaders ? col - 1 : col))) {
+        style=uidl.getStringAttribute("style-" + (showRowHeaders ? col - 1 : col));
       }
       addCell(cell.toString(),aligns[col++],style);
     }
