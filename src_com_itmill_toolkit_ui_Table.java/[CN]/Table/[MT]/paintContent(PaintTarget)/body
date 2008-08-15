@@ -23,14 +23,26 @@
     total--;
     rows--;
   }
-  String[] selectedKeys;
+  LinkedList selectedKeys=new LinkedList();
   if (isMultiSelect()) {
-    selectedKeys=new String[((Set)getValue()).size()];
+    HashSet sel=new HashSet((Set)getValue());
+    Collection vids=getVisibleItemIds();
+    for (Iterator it=vids.iterator(); it.hasNext(); ) {
+      Object id=it.next();
+      if (sel.contains(id)) {
+        selectedKeys.add(itemIdMapper.key(id));
+      }
+    }
   }
  else {
-    selectedKeys=new String[(getValue() == null && getNullSelectionItemId() == null ? 0 : 1)];
+    Object value=getValue();
+    if (value == null) {
+      value=getNullSelectionItemId();
+    }
+    if (value != null) {
+      selectedKeys.add(itemIdMapper.key(value));
+    }
   }
-  int keyIndex=0;
   if (isSelectable()) {
     target.addAttribute("selectmode",(isMultiSelect() ? "multi" : "single"));
   }
@@ -104,9 +116,8 @@
     }
     target.addAttribute("key",Integer.parseInt(cells[CELL_KEY][i].toString()));
     if (actionHandlers != null || isSelectable()) {
-      if (isSelected(itemId) && keyIndex < selectedKeys.length) {
+      if (isSelected(itemId)) {
         target.addAttribute("selected",true);
-        selectedKeys[keyIndex++]=(String)cells[CELL_KEY][i];
       }
     }
     if (actionHandlers != null) {
@@ -152,8 +163,8 @@
     target.endTag("tr");
   }
   target.endTag("rows");
-  if (selectable) {
-    target.addVariable(this,"selected",selectedKeys);
+  if (selectable && selectedKeys.size() > 0) {
+    target.addVariable(this,"selected",(String[])selectedKeys.toArray(new String[selectedKeys.size()]));
   }
   if (first != 0 || getPageLength() > 0) {
     target.addVariable(this,"firstvisible",first);
