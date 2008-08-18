@@ -12,15 +12,6 @@
   if (uidl.getBooleanAttribute("modal") != modal) {
     setModal(!modal);
   }
-  if (uidl.hasVariable("width")) {
-    final String width=uidl.getStringVariable("width");
-    if (width.indexOf("px") < 0) {
-      DOM.setStyleAttribute(getElement(),"width",width);
-    }
- else {
-      setWidth(width);
-    }
-  }
   try {
     final int positionx=uidl.getIntVariable("positionx");
     final int positiony=uidl.getIntVariable("positiony");
@@ -32,6 +23,19 @@
   }
   if (!isAttached()) {
     show();
+  }
+  if (uidl.hasVariable("width")) {
+    final String width=uidl.getStringVariable("width");
+    if (width.indexOf("px") < 0) {
+      DOM.setStyleAttribute(getElement(),"width",width);
+      int elementPropertyInt=DOM.getElementPropertyInt(getElement(),"offsetWidth");
+      DOM.setStyleAttribute(getElement(),"width","");
+      elementPropertyInt-=(DOM.getElementPropertyInt(getElement(),"offsetWidth") - DOM.getElementPropertyInt(contents,"offsetWidth"));
+      setWidth(elementPropertyInt + "px");
+    }
+ else {
+      setWidth(width);
+    }
   }
   if (uidl.hasVariable("height")) {
     final String height=uidl.getStringVariable("height");
