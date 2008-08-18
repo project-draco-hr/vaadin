@@ -1,6 +1,12 @@
 {
-  final Object[] cols=getVisibleColumns();
-  if (cells.length != cols.length) {
+  final LinkedList availableCols=new LinkedList();
+  for (Iterator it=visibleColumns.iterator(); it.hasNext(); ) {
+    Object id=it.next();
+    if (!columnGenerators.containsKey(id)) {
+      availableCols.add(id);
+    }
+  }
+  if (cells.length != availableCols.size()) {
     return null;
   }
   Item item;
@@ -17,8 +23,8 @@
   if (item == null) {
     return null;
   }
-  for (int i=0; i < cols.length; i++) {
-    item.getItemProperty(cols[i]).setValue(cells[i]);
+  for (int i=0; i < availableCols.size(); i++) {
+    item.getItemProperty(availableCols.get(i)).setValue(cells[i]);
   }
   if (!(items instanceof Container.ItemSetChangeNotifier)) {
     resetPageBuffer();
