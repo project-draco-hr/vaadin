@@ -6,28 +6,18 @@
   boolean oldTableMode=tableMode;
   tableMode=newTableMode;
   if (tableMode) {
-    Element tmp=DOM.createDiv();
-    final String structure="<table cellspacing=\"0\" cellpadding=\"0\"><tbody>" + (orientationMode == ORIENTATION_HORIZONTAL ? "<tr></tr>" : "") + "</tbody></table>";
-    DOM.setInnerHTML(tmp,structure);
-    root=DOM.getFirstChild(tmp);
-    DOM.removeChild(tmp,root);
+    final String structure="<table cellspacing=\"0\" cellpadding=\"0\"><tbody>" + (orientationMode == ORIENTATION_HORIZONTAL ? "<tr valign=\"top\"></tr>" : "") + "</tbody></table>";
+    DOM.setInnerHTML(getElement(),structure);
+    root=DOM.getFirstChild(getElement());
     wrappedChildContainer=DOM.getFirstChild(root);
     if (orientationMode == ORIENTATION_HORIZONTAL) {
       wrappedChildContainer=DOM.getFirstChild(wrappedChildContainer);
     }
   }
  else {
-    wrappedChildContainer=root=DOM.createDiv();
+    root=wrappedChildContainer=getElement();
+    DOM.setInnerHTML(getElement(),"");
   }
-  if (width != null && !"".equals(width)) {
-    DOM.setStyleAttribute(root,"width",width);
-  }
-  if (height != null && !"".equals(height)) {
-    DOM.setStyleAttribute(root,"height",height);
-  }
-  String styles=getStyleName();
-  setElement(root);
-  setStyleName(styles);
   final int currentOrientationMode=orientationMode;
   for (int i=0; i < childWidgetWrappers.size(); i++) {
     WidgetWrapper wr=(WidgetWrapper)childWidgetWrappers.get(i);
