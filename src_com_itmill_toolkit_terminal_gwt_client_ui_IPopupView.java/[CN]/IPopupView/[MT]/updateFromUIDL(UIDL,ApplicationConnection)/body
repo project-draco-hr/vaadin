@@ -1,0 +1,21 @@
+{
+  if (client.updateComponent(this,uidl,false)) {
+    return;
+  }
+  this.client=client;
+  uidlId=uidl.getId();
+  updateWindowSize();
+  hostPopupVisible=uidl.getBooleanAttribute("popupVisible");
+  this.setHTML(uidl.getStringAttribute("html"));
+  if (uidl.hasAttribute("description")) {
+    this.setTitle(uidl.getStringAttribute("description"));
+  }
+  if (hostPopupVisible) {
+    UIDL popupUIDL=uidl.getChildUIDL(0);
+    popup.updateFromUIDL(popupUIDL,client);
+    showPopupOnTop(popup,hostReference);
+  }
+ else {
+    popup.setWidget(null);
+  }
+}
