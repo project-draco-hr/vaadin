@@ -1,22 +1,3 @@
 {
-  this.bean=bean;
-  try {
-    final BeanInfo info=Introspector.getBeanInfo(bean.getClass());
-    final PropertyDescriptor[] pd=info.getPropertyDescriptors();
-    for (int j=0; j < propertyIds.length; j++) {
-      final Object id=propertyIds[j];
-      for (int i=0; i < pd.length; i++) {
-        final String name=pd[i].getName();
-        if (name.equals(id)) {
-          final Method getMethod=pd[i].getReadMethod();
-          final Method setMethod=pd[i].getWriteMethod();
-          final Class type=pd[i].getPropertyType();
-          final Property p=new MethodProperty(type,bean,getMethod,setMethod);
-          addItemProperty(name,p);
-        }
-      }
-    }
-  }
- catch (  final java.beans.IntrospectionException ignored) {
-  }
+  this(bean,Arrays.asList(propertyIds));
 }
