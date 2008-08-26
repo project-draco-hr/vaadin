@@ -4,8 +4,10 @@
   }
   int wholeSize;
   int pixelPosition;
-  DOM.setStyleAttribute(firstContainer,"overflow","hidden");
-  DOM.setStyleAttribute(secondContainer,"overflow","hidden");
+  if (!(resizing && BrowserInfo.get().isGecko())) {
+    DOM.setStyleAttribute(firstContainer,"overflow","hidden");
+    DOM.setStyleAttribute(secondContainer,"overflow","hidden");
+  }
 switch (orientation) {
 case ORIENTATION_HORIZONTAL:
     wholeSize=DOM.getElementPropertyInt(wrapper,"clientWidth");
@@ -58,7 +60,9 @@ DOM.setStyleAttribute(secondContainer,"overflow","auto");
 }
  else {
 Util.runDescendentsLayout(this);
+if (!(resizing && BrowserInfo.get().isGecko())) {
 DOM.setStyleAttribute(firstContainer,"overflow","auto");
 DOM.setStyleAttribute(secondContainer,"overflow","auto");
+}
 }
 }
