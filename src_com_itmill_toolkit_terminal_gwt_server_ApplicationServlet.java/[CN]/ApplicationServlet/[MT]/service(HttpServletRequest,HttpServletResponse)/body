@@ -99,16 +99,20 @@
     }
   }
  catch (  final SessionExpired e) {
-    Application.SystemMessages ci=getSystemMessages();
-    if (!UIDLrequest) {
-      response.sendRedirect(ci.getSessionExpiredURL());
-    }
+    try {
+      Application.SystemMessages ci=getSystemMessages();
+      if (!UIDLrequest) {
+        response.sendRedirect(ci.getSessionExpiredURL());
+      }
  else {
-      criticalNotification(request,response,ci.getSessionExpiredCaption(),ci.getSessionExpiredMessage(),ci.getSessionExpiredURL());
+        criticalNotification(request,response,ci.getSessionExpiredCaption(),ci.getSessionExpiredMessage(),ci.getSessionExpiredURL());
+      }
+    }
+ catch (    SystemMessageException ee) {
+      throw new ServletException(ee);
     }
   }
 catch (  final Throwable e) {
-    e.printStackTrace();
     if (UIDLrequest) {
       Application.SystemMessages ci=getSystemMessages();
       criticalNotification(request,response,ci.getInternalErrorCaption(),ci.getInternalErrorMessage(),ci.getInternalErrorURL());

@@ -2,8 +2,9 @@
   ErrorMessage validationError=null;
   if (isValidationVisible()) {
     for (final Iterator i=propertyIds.iterator(); i.hasNext(); ) {
-      try {
-        AbstractComponent field=(AbstractComponent)fields.get(i.next());
+      Object f=fields.get(i.next());
+      if (f instanceof AbstractComponent) {
+        AbstractComponent field=(AbstractComponent)f;
         validationError=field.getErrorMessage();
         if (validationError != null) {
           if ("".equals(validationError.toString())) {
@@ -11,8 +12,6 @@
           }
           break;
         }
-      }
- catch (      ClassCastException ignored) {
       }
     }
   }

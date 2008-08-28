@@ -5,29 +5,21 @@
   getCaptionChangeListener().clear();
   if (items != newDataSource) {
     if (items != null) {
-      try {
+      if (items instanceof Container.ItemSetChangeListener) {
         ((Container.ItemSetChangeNotifier)items).removeListener(this);
       }
- catch (      final ClassCastException ignored) {
-      }
-      try {
+      if (items instanceof Container.PropertySetChangeNotifier) {
         ((Container.PropertySetChangeNotifier)items).removeListener(this);
-      }
- catch (      final ClassCastException ignored) {
       }
     }
     items=newDataSource;
     itemIdMapper.removeAll();
     if (items != null) {
-      try {
+      if (items instanceof Container.ItemSetChangeListener) {
         ((Container.ItemSetChangeNotifier)items).addListener(this);
       }
- catch (      final ClassCastException ignored) {
-      }
-      try {
+      if (items instanceof Container.PropertySetChangeNotifier) {
         ((Container.PropertySetChangeNotifier)items).addListener(this);
-      }
- catch (      final ClassCastException ignored) {
       }
     }
     fireValueChange(false);

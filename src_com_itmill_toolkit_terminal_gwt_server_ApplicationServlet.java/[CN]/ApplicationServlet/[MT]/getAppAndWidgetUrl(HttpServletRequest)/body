@@ -11,26 +11,21 @@
   }
  else {
     String[] urlParts;
-    try {
-      urlParts=getApplicationUrl(request).toString().split("\\/");
-      appUrl="";
-      widgetsetUrl="";
-      String ctxPath=request.getContextPath();
-      if (ctxPath.length() == 0 && request.getAttribute("javax.servlet.include.context_path") != null) {
-        ctxPath=(String)request.getAttribute("javax.servlet.include.context_path");
-      }
-      if (urlParts.length > 3 && urlParts[3].equals(ctxPath.replaceAll("\\/",""))) {
-        widgetsetUrl+="/" + urlParts[3];
-      }
-      for (int i=3; i < urlParts.length; i++) {
-        appUrl+="/" + urlParts[i];
-      }
-      if (appUrl.endsWith("/")) {
-        appUrl=appUrl.substring(0,appUrl.length() - 1);
-      }
+    urlParts=getApplicationUrl(request).toString().split("\\/");
+    appUrl="";
+    widgetsetUrl="";
+    String ctxPath=request.getContextPath();
+    if (ctxPath.length() == 0 && request.getAttribute("javax.servlet.include.context_path") != null) {
+      ctxPath=(String)request.getAttribute("javax.servlet.include.context_path");
     }
- catch (    final MalformedURLException e) {
-      e.printStackTrace();
+    if (urlParts.length > 3 && urlParts[3].equals(ctxPath.replaceAll("\\/",""))) {
+      widgetsetUrl+="/" + urlParts[3];
+    }
+    for (int i=3; i < urlParts.length; i++) {
+      appUrl+="/" + urlParts[i];
+    }
+    if (appUrl.endsWith("/")) {
+      appUrl=appUrl.substring(0,appUrl.length() - 1);
     }
   }
   return new String[]{appUrl,widgetsetUrl};
