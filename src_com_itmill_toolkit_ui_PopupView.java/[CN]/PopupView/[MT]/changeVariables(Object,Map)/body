@@ -2,9 +2,12 @@
   if (variables.containsKey("popupVisibility")) {
     popupVisible=((Boolean)variables.get("popupVisibility")).booleanValue();
     if (popupVisible) {
-      componentList.add(itsContent.getPopupComponent());
+      Component c=itsContent.getPopupComponent();
+      componentList.add(c);
+      super.addComponent(c);
     }
- else {
+ else     if (!componentList.isEmpty()) {
+      super.removeComponent((Component)componentList.get(0));
       componentList.clear();
     }
     requestRepaint();
