@@ -5,6 +5,17 @@
   }
   boolean oldTableMode=tableMode;
   tableMode=newTableMode;
+  if (BrowserInfo.get().isIE()) {
+    while (true) {
+      Element child=DOM.getFirstChild(getElement());
+      if (child != null) {
+        DOM.removeChild(getElement(),child);
+      }
+ else {
+        break;
+      }
+    }
+  }
   if (tableMode) {
     final String structure="<table cellspacing=\"0\" cellpadding=\"0\"><tbody>" + (orientationMode == ORIENTATION_HORIZONTAL ? "<tr valign=\"top\"></tr>" : "") + "</tbody></table>";
     DOM.setInnerHTML(getElement(),structure);
