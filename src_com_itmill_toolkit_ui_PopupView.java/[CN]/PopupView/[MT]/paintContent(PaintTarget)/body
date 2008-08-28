@@ -1,9 +1,16 @@
 {
   super.paintContent(target);
-  target.addAttribute("html",itsContent.getMinimizedValueAsHTML());
+  String html=content.getMinimizedValueAsHTML();
+  if (html == null) {
+    throw new PaintException("Recieved null when trying to paint minimized value.");
+  }
+  target.addAttribute("html",content.getMinimizedValueAsHTML());
   target.addAttribute("popupVisible",popupVisible);
   if (popupVisible) {
-    Component c=itsContent.getPopupComponent();
+    Component c=content.getPopupComponent();
+    if (c == null) {
+      throw new PaintException("Received null when trying to paint popup component");
+    }
     target.startTag("popupComponent");
     c.paint(target);
     target.endTag("popupComponent");
