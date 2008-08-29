@@ -1,0 +1,39 @@
+{
+  final Window main=new Window(getClass().getName().substring(getClass().getName().lastIndexOf(".") + 1));
+  setMainWindow(main);
+  OrderedLayout ol=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+  main.setLayout(ol);
+  ol.setSizeFull();
+  Panel p=new Panel("Tree test");
+  p.setSizeFull();
+  Tree t=new Tree();
+  t.addItem("Foo");
+  t.addItem("Bar");
+  final OrderedLayout events=new OrderedLayout();
+  t.addListener(new ItemClickEvent.ItemClickListener(){
+    public void itemClick(    ItemClickEvent event){
+      events.addComponent(new Label(new Label("Click:" + (event.isDoubleClick() ? "double" : "single") + " button:"+ event.getButton()+ " propertyId:"+ event.getPropertyId()+ " itemID:"+ event.getItemId()+ " item:"+ event.getItem())));
+    }
+  }
+);
+  main.addComponent(p);
+  p.addComponent(t);
+  p.addComponent(events);
+  Panel p2=new Panel("Table test (try dbl click also)");
+  p2.setSizeFull();
+  final OrderedLayout events2=new OrderedLayout();
+  Table table=TestForTablesInitialColumnWidthLogicRendering.getTestTable(5,100);
+  table.setRowHeaderMode(Table.ROW_HEADER_MODE_ID);
+  table.addListener(new ItemClickEvent.ItemClickListener(){
+    public void itemClick(    ItemClickEvent event){
+      events2.addComponent(new Label("Click:" + (event.isDoubleClick() ? "double" : "single") + " button:"+ event.getButton()+ " propertyId:"+ event.getPropertyId()+ " itemID:"+ event.getItemId()+ " item:"+ event.getItem()));
+      if (event.isDoubleClick()) {
+        new PropertyEditor(event);
+      }
+    }
+  }
+);
+  p2.addComponent(table);
+  p2.addComponent(events2);
+  main.addComponent(p2);
+}

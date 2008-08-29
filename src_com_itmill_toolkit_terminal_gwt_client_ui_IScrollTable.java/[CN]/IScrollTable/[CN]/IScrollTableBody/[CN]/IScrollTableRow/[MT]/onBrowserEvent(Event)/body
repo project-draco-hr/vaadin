@@ -1,16 +1,20 @@
 {
+  final Element tdOrTr=DOM.getParent(DOM.eventGetTarget(event));
+  if (DOM.compare(getElement(),tdOrTr) || DOM.compare(getElement(),DOM.getParent(tdOrTr))) {
 switch (DOM.eventGetType(event)) {
 case Event.ONCLICK:
-    final Element tdOrTr=DOM.getParent(DOM.eventGetTarget(event));
-  if (DOM.compare(getElement(),tdOrTr) || DOM.compare(getElement(),DOM.getParent(tdOrTr))) {
+      handleClickEvent(event);
     if (selectMode > Table.SELECT_MODE_NONE) {
       toggleSelection();
       client.updateVariable(paintableId,"selected",selectedRowKeys.toArray(),immediate);
     }
-  }
+  break;
+case Event.ONDBLCLICK:
+handleClickEvent(event);
 break;
 default :
 break;
+}
 }
 super.onBrowserEvent(event);
 }
