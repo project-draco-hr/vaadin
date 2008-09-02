@@ -1,0 +1,23 @@
+{
+  GridLayout layout=new GridLayout(1,5);
+  Form form;
+  Random r=new Random();
+  GridLayout l1=new GridLayout(1,3);
+  form=createForm(l1,"200","500");
+  BeanItem item=new BeanItem(new FormObject());
+  form.setItemDataSource(item);
+  for (Iterator i=item.getItemPropertyIds().iterator(); i.hasNext(); ) {
+    Object property=i.next();
+    Field f=form.getField(property);
+    f.setRequired(r.nextBoolean());
+    if (r.nextBoolean()) {
+      f.setIcon(new ThemeResource("icons/16/document-add.png"));
+    }
+    if (r.nextBoolean()) {
+      f.setCaption(null);
+    }
+    f.addValidator(new StringLengthValidator("Error",10,8,false));
+  }
+  layout.addComponent(l1);
+  return layout;
+}
