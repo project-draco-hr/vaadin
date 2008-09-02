@@ -5,12 +5,30 @@
   w.setLayout(mainLayout);
   orderedLayout=createOL();
   gridLayout=createGL();
-  switchButton=new Button("Switch to GridLayout",new ClickListener(){
+  expandLayout=createEL();
+  switchToGridButton=new Button("Switch to GridLayout",new ClickListener(){
     public void buttonClick(    ClickEvent event){
-      changeLayout();
+      changeLayout(switchToGridButton,gridLayout);
     }
   }
 );
-  mainLayout.addComponent(switchButton);
+  switchToOrderedButton=new Button("Switch to OrderedLayout",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      changeLayout(switchToOrderedButton,orderedLayout);
+    }
+  }
+);
+  switchToOrderedButton.setEnabled(false);
+  switchToExpandButton=new Button("Switch to ExpandLayout",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      changeLayout(switchToExpandButton,expandLayout);
+    }
+  }
+);
+  OrderedLayout buttonLayout=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+  buttonLayout.addComponent(switchToOrderedButton);
+  buttonLayout.addComponent(switchToGridButton);
+  buttonLayout.addComponent(switchToExpandButton);
+  mainLayout.addComponent(buttonLayout);
   mainLayout.addComponent(orderedLayout);
 }
