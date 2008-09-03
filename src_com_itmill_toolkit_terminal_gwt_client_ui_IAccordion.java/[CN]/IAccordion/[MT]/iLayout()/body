@@ -3,31 +3,24 @@
   if (item == null) {
     return;
   }
-  if (height != null && height != "") {
-    Widget w=item.getPaintable();
-    String originalPositioning="";
-    if (w != null) {
-      originalPositioning=DOM.getStyleAttribute(w.getElement(),"position");
-      DOM.setStyleAttribute(w.getElement(),"visibility","hidden");
-      DOM.setStyleAttribute(w.getElement(),"position","absolute");
+  if (height != null && !height.equals("")) {
+    int usedPixels=0;
+    for (Iterator iterator=stack.iterator(); iterator.hasNext(); ) {
+      StackItem si=(StackItem)iterator.next();
+      if (si != item) {
+        usedPixels+=si.getOffsetHeight();
+      }
     }
-    DOM.setStyleAttribute(item.getContainerElement(),"height","0");
     super.setHeight(height);
-    int targetHeight=DOM.getElementPropertyInt(DOM.getParent(getElement()),"offsetHeight");
-    super.setHeight("");
-    int usedHeight=getOffsetHeight();
-    int h=targetHeight - usedHeight;
-    if (h < 0) {
-      h=0;
-    }
-    DOM.setStyleAttribute(item.getContainerElement(),"height",h + "px");
-    if (w != null) {
-      DOM.setStyleAttribute(w.getElement(),"position",originalPositioning);
-      DOM.setStyleAttribute(w.getElement(),"visibility","");
+    int offsetHeight=getOffsetHeight();
+    int spaceForOpenItem=offsetHeight - usedPixels;
+    if (spaceForOpenItem > 0) {
+      item.setHeight(spaceForOpenItem + "px");
     }
   }
  else {
-    DOM.setStyleAttribute(item.getContainerElement(),"height","");
+    super.setHeight("");
+    item.setHeight("");
   }
-  Util.runDescendentsLayout(this);
+  Util.runDescendentsLayout(item);
 }
