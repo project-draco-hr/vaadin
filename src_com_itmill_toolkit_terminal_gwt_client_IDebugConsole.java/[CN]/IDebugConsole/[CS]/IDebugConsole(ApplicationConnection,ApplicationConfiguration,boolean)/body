@@ -1,0 +1,29 @@
+{
+  super();
+  this.client=client;
+  panel=new FlowPanel();
+  Element buttonDiv=DOM.createDiv();
+  getContainerElement().appendChild(buttonDiv);
+  final ScrollPanel p=new ScrollPanel(panel);
+  Button clearButton=new Button("Clear");
+  clearButtonElement=clearButton.getElement();
+  Button restartApplicationButton=new Button("Restart application");
+  restartApplicationElement=restartApplicationButton.getElement();
+  buttonDiv.appendChild(clearButtonElement);
+  buttonDiv.appendChild(restartApplicationElement);
+  DOM.sinkEvents(clearButton.getElement(),Event.ONCLICK);
+  setWidget(p);
+  setCaption("Debug window");
+  setPixelSize(400,300);
+  setPopupPosition(Window.getClientWidth() - 400 - 20,0);
+  if (showWindow) {
+    show();
+  }
+  ;
+  log("Toolkit application servlet version: " + cnf.getSerletVersion());
+  log("Widget set is built on version: " + VERSION);
+  log("Application version: " + cnf.getApplicationVersion());
+  if (!cnf.getSerletVersion().equals(VERSION)) {
+    error("Warning: your widget set seems to be built with different " + "version than the one used on server. Unexpected " + "behavior may occur.");
+  }
+}
