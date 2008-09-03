@@ -4,7 +4,10 @@
     request.setAttribute(Application.class.getName(),application);
   }
   final BufferedWriter page=new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
-  final String pathInfo=request.getPathInfo() == null ? "/" : request.getPathInfo();
+  String pathInfo=request.getPathInfo() == null ? "/" : request.getPathInfo();
+  if (isApplicationRunnerServlet) {
+    pathInfo=pathInfo.substring(applicationRunnerClassname.length() + 1);
+  }
   String title=((window == null || window.getCaption() == null) ? "IT Mill Toolkit 5" : window.getCaption());
   String widgetset=null;
   Object reqParam=request.getAttribute(REQUEST_WIDGETSET);
