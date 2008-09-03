@@ -1,6 +1,6 @@
 {
-  map.clearOverlays();
-  GLatLng pos=null;
+  widget.clearOverlays();
+  LatLng pos=null;
   for (final Iterator it=uidl.getChildIterator(); it.hasNext(); ) {
     final UIDL u=(UIDL)it.next();
     if (u.getTag().equals("markers")) {
@@ -9,9 +9,9 @@
         final String html="<span>" + umarker.getStringAttribute("html") + "</span>";
         final double x=umarker.getDoubleAttribute("x");
         final double y=umarker.getDoubleAttribute("y");
-        pos=new GLatLng(x,y);
-        final GMarker marker=new GMarker(pos);
-        map.addOverlay(marker);
+        pos=new LatLng(x,y);
+        final Marker marker=new Marker(pos);
+        widget.addOverlay(marker);
         if (html != null) {
           addMarkerPopup(marker,html);
         }
@@ -19,19 +19,19 @@
     }
   }
   if (uidl.hasAttribute("width")) {
-    setWidth("" + uidl.getIntAttribute("width"));
+    widget.setWidth(uidl.getStringAttribute("width"));
   }
   if (uidl.hasAttribute("height")) {
-    setHeight("" + uidl.getIntAttribute("height"));
+    widget.setHeight(uidl.getStringAttribute("height"));
   }
   if (uidl.hasAttribute("zoom")) {
-    map.setZoom(uidl.getIntAttribute("zoom"));
+    widget.setZoomLevel(uidl.getIntAttribute("zoom"));
   }
   if (uidl.hasAttribute("centerX") && uidl.hasAttribute("centerY")) {
-    final GLatLng center=new GLatLng(uidl.getDoubleAttribute("centerX"),uidl.getDoubleAttribute("centerY"));
-    map.setCenter(center);
+    final LatLng center=new LatLng(uidl.getDoubleAttribute("centerX"),uidl.getDoubleAttribute("centerY"));
+    widget.setCenter(center);
   }
  else   if (pos != null) {
-    map.setCenter(pos);
+    widget.setCenter(pos);
   }
 }
