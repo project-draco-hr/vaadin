@@ -1,0 +1,31 @@
+{
+  startRequest();
+  console.log("Making UIDL Request with params: " + requestData);
+  String uri=getAppUri() + "UIDL" + configuration.getPathInfo();
+  if (repaintAll) {
+    uri+="?repaintAll=1";
+  }
+  if (!forceSync) {
+    final RequestBuilder rb=new RequestBuilder(RequestBuilder.POST,uri);
+    rb.setHeader("Content-Type","text/plain;charset=utf-8");
+    try {
+      rb.sendRequest(requestData,new RequestCallback(){
+        public void onError(        Request request,        Throwable exception){
+          console.error("Got error");
+          endRequest();
+        }
+        public void onResponseReceived(        Request request,        Response response){
+          handleReceivedJSONMessage(response);
+        }
+      }
+);
+    }
+ catch (    final RequestException e) {
+      ClientExceptionHandler.displayError(e);
+      endRequest();
+    }
+  }
+ else {
+    syncSendForce(((HTTPRequestImpl)GWT.create(HTTPRequestImpl.class)).createXmlHTTPRequest(),uri,requestData);
+  }
+}
