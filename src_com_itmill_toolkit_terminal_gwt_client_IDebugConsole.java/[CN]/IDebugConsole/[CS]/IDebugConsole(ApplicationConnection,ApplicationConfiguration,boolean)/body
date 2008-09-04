@@ -1,25 +1,59 @@
 {
-  super();
-  this.client=client;
+  super(false,false);
   panel=new FlowPanel();
-  Element buttonDiv=DOM.createDiv();
-  getContainerElement().appendChild(buttonDiv);
-  final ScrollPanel p=new ScrollPanel(panel);
-  Button clearButton=new Button("Clear");
-  clearButtonElement=clearButton.getElement();
-  Button restartApplicationButton=new Button("Restart application");
-  restartApplicationElement=restartApplicationButton.getElement();
-  buttonDiv.appendChild(clearButtonElement);
-  buttonDiv.appendChild(restartApplicationElement);
-  DOM.sinkEvents(clearButton.getElement(),Event.ONCLICK);
-  setWidget(p);
-  setCaption("Debug window");
-  setPixelSize(400,300);
-  setPopupPosition(Window.getClientWidth() - 400 - 20,0);
   if (showWindow) {
+    DOM.appendChild(getContainerElement(),caption);
+    setWidget(panel);
+    caption.setClassName("i-debug-console-caption");
+    setStyleName("i-debug-console");
+    DOM.setStyleAttribute(getElement(),"zIndex",20000 + "");
+    DOM.setStyleAttribute(getElement(),"overflow","hidden");
+    sinkEvents(Event.ONDBLCLICK);
+    sinkEvents(Event.MOUSEEVENTS);
+    panel.setStyleName("i-debug-console-content");
+    caption.setInnerHTML("Debug window");
+    caption.setTitle("Move from caption, resize from content by " + "draggin with shift key. DblClick to " + "minimize. Use debug=quiet to log only"+ " to browser console");
+    setWidget(panel);
     show();
+    minimize();
+    actions=new HorizontalPanel();
+    actions.add(clear);
+    actions.add(restart);
+    panel.add(actions);
+    clear.addClickListener(new ClickListener(){
+      public void onClick(      Widget sender){
+        panel.clear();
+        panel.add(actions);
+      }
+    }
+);
+    restart.addClickListener(new ClickListener(){
+      public void onClick(      Widget sender){
+        String queryString=Window.Location.getQueryString();
+        if (queryString != null && queryString.contains("restartApplications")) {
+          Window.Location.reload();
+        }
+ else {
+          String url=Location.getHref();
+          if (!url.contains("?")) {
+            url+="?";
+          }
+ else {
+            url+="&";
+          }
+          if (!url.contains("restartApplication")) {
+            url+="restartApplication";
+          }
+          if (!"".equals(Location.getHash())) {
+            String hash=Location.getHash();
+            url=url.replace(hash,"") + hash;
+          }
+          Window.Location.replace(url);
+        }
+      }
+    }
+);
   }
-  ;
   log("Toolkit application servlet version: " + cnf.getSerletVersion());
   log("Widget set is built on version: " + VERSION);
   log("Application version: " + cnf.getApplicationVersion());

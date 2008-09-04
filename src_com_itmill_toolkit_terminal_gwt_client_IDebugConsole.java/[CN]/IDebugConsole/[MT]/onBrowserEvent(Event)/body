@@ -1,24 +1,84 @@
 {
   super.onBrowserEvent(event);
-  final int type=DOM.eventGetType(event);
-  if (type == Event.BUTTON_LEFT) {
-    if (event.getTarget() == restartApplicationElement) {
-      String href=Window.Location.getHref();
-      if (Window.Location.getParameter("restartApplication") == null) {
-        if (href.contains("?")) {
-          href+="&restartApplication";
-        }
- else {
-          href+="?restartApplication";
-        }
-        Window.Location.replace(href);
-      }
- else {
-        Window.Location.replace(href);
-      }
+switch (DOM.eventGetType(event)) {
+case Event.ONMOUSEDOWN:
+    if (DOM.eventGetShiftKey(event)) {
+      resizing=true;
+      DOM.setCapture(getElement());
+      startX=DOM.eventGetScreenX(event);
+      startY=DOM.eventGetScreenY(event);
+      initialW=IDebugConsole.this.getOffsetWidth();
+      initialH=IDebugConsole.this.getOffsetHeight();
+      DOM.eventCancelBubble(event,true);
+      DOM.eventPreventDefault(event);
     }
- else     if (event.getTarget() == clearButtonElement) {
-      panel.clear();
+ else     if (DOM.eventGetTarget(event) == caption) {
+      moving=true;
+      startX=DOM.eventGetScreenX(event);
+      startY=DOM.eventGetScreenY(event);
+      origTop=getAbsoluteTop();
+      origLeft=getAbsoluteLeft();
+      DOM.eventCancelBubble(event,true);
+      DOM.eventPreventDefault(event);
     }
+  break;
+case Event.ONMOUSEMOVE:
+if (resizing) {
+  int deltaX=startX - DOM.eventGetScreenX(event);
+  int detalY=startY - DOM.eventGetScreenY(event);
+  int w=initialW - deltaX;
+  if (w < 30) {
+    w=30;
   }
+  int h=initialH - detalY;
+  if (h < 40) {
+    h=40;
+  }
+  IDebugConsole.this.setPixelSize(w,h);
+  DOM.eventCancelBubble(event,true);
+  DOM.eventPreventDefault(event);
+}
+ else if (moving) {
+  int deltaX=startX - DOM.eventGetScreenX(event);
+  int detalY=startY - DOM.eventGetScreenY(event);
+  int left=origLeft - deltaX;
+  if (left < 0) {
+    left=0;
+  }
+  int top=origTop - detalY;
+  if (top < 0) {
+    top=0;
+  }
+  IDebugConsole.this.setPopupPosition(left,top);
+  DOM.eventCancelBubble(event,true);
+  DOM.eventPreventDefault(event);
+}
+break;
+case Event.ONLOSECAPTURE:
+case Event.ONMOUSEUP:
+if (resizing) {
+DOM.releaseCapture(getElement());
+resizing=false;
+}
+ else if (moving) {
+DOM.releaseCapture(getElement());
+moving=false;
+}
+break;
+case Event.ONDBLCLICK:
+if (DOM.eventGetTarget(event) == caption) {
+if (collapsed) {
+panel.setVisible(true);
+setPixelSize(220,300);
+}
+ else {
+panel.setVisible(false);
+setPixelSize(120,20);
+}
+collapsed=!collapsed;
+}
+break;
+default :
+break;
+}
 }
