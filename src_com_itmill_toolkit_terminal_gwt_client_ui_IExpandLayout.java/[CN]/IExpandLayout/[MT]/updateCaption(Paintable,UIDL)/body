@@ -1,11 +1,13 @@
 {
   ICaption c=(ICaption)componentToCaption.get(component);
+  boolean captionSizeMayHaveChanged=false;
   if (ICaption.isNeeded(uidl)) {
     if (c == null) {
       final int index=getWidgetIndex((Widget)component);
       c=new ICaption(component,client);
       insert(c,index);
       componentToCaption.put(component,c);
+      captionSizeMayHaveChanged=true;
     }
     c.updateCaption(uidl);
   }
@@ -13,6 +15,10 @@
     if (c != null) {
       remove(c);
       componentToCaption.remove(component);
+      captionSizeMayHaveChanged=true;
     }
+  }
+  if (!rendering && captionSizeMayHaveChanged) {
+    iLayout();
   }
 }

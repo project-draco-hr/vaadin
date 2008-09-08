@@ -1,7 +1,9 @@
 {
+  rendering=true;
   this.client=client;
   handleMargins(uidl);
   if (client.updateComponent(this,uidl,true)) {
+    rendering=false;
     return;
   }
   hasComponentSpacing=uidl.getBooleanAttribute("spacing");
@@ -72,6 +74,7 @@
   iLayout();
   if (expandedWidget != null) {
     ((Paintable)expandedWidget).updateFromUIDL(expandedWidgetUidl,client);
+    DOM.setStyleAttribute(DOM.getParent(expandedWidget.getElement()),"overflow","auto");
   }
   float wkv=BrowserInfo.get().getWebkitVersion();
   if (wkv > 0 && wkv < 526.9) {
@@ -82,4 +85,5 @@
     }
 );
   }
+  rendering=false;
 }

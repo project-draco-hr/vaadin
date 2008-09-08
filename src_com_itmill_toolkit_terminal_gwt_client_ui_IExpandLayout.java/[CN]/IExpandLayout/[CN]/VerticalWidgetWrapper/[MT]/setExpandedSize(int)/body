@@ -1,9 +1,12 @@
 {
-  final int spaceForMarginsAndSpacings=getOffsetHeight() - DOM.getElementPropertyInt(getElement(),"clientHeight");
-  int fixedInnerSize=pixels - spaceForMarginsAndSpacings;
+  Element firstChild=DOM.getFirstChild(getElement());
+  int captionHeight=0;
+  if (firstChild != getContainerElement()) {
+    captionHeight=firstChild.getOffsetHeight();
+  }
+  int fixedInnerSize=pixels - captionHeight;
   if (fixedInnerSize < 0) {
     fixedInnerSize=0;
   }
-  setHeight(fixedInnerSize + "px");
-  DOM.setStyleAttribute(getContainerElement(),"overflow","auto");
+  DOM.setStyleAttribute(getContainerElement(),"height",fixedInnerSize + "px");
 }
