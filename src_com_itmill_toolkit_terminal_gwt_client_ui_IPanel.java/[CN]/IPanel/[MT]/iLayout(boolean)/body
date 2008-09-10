@@ -3,10 +3,16 @@
     int captionOffsetWidth=DOM.getElementPropertyInt(captionNode,"offsetWidth");
     int borderWidthGuess=200;
     int widthGuess=captionOffsetWidth - borderWidthGuess;
+    if (widthGuess < 0) {
+      widthGuess=0;
+    }
     DOM.setStyleAttribute(contentNode,"width",widthGuess + "px");
     int actualBorder=DOM.getElementPropertyInt(contentNode,"offsetWidth") - widthGuess;
     if (actualBorder != borderWidthGuess) {
       int realWidthIncludingBorder=captionOffsetWidth - actualBorder;
+      if (realWidthIncludingBorder < 0) {
+        realWidthIncludingBorder=0;
+      }
       DOM.setStyleAttribute(contentNode,"width",realWidthIncludingBorder + "px");
     }
   }
