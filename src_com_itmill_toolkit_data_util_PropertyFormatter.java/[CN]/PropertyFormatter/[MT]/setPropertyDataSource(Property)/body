@@ -1,0 +1,30 @@
+{
+  boolean readOnly=false;
+  String prevValue=null;
+  if (dataSource != null) {
+    if (dataSource instanceof Property.ValueChangeNotifier) {
+      ((Property.ValueChangeNotifier)dataSource).removeListener(this);
+    }
+    if (dataSource instanceof Property.ReadOnlyStatusChangeListener) {
+      ((Property.ReadOnlyStatusChangeNotifier)dataSource).removeListener(this);
+    }
+    readOnly=isReadOnly();
+    prevValue=toString();
+  }
+  dataSource=newDataSource;
+  if (dataSource != null) {
+    if (dataSource instanceof Property.ValueChangeNotifier) {
+      ((Property.ValueChangeNotifier)dataSource).addListener(this);
+    }
+    if (dataSource instanceof Property.ReadOnlyStatusChangeListener) {
+      ((Property.ReadOnlyStatusChangeNotifier)dataSource).addListener(this);
+    }
+  }
+  if (isReadOnly() != readOnly) {
+    fireReadOnlyStatusChange();
+  }
+  String newVal=toString();
+  if ((prevValue == null && newVal != null) || !prevValue.equals(prevValue)) {
+    fireValueChange();
+  }
+}

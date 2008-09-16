@@ -1,0 +1,22 @@
+{
+  if (dataSource == null) {
+    return;
+  }
+  if (newValue == null) {
+    dataSource.setValue(null);
+  }
+  try {
+    dataSource.setValue(parse((String)newValue));
+    if (!newValue.equals(toString())) {
+      fireValueChange();
+    }
+  }
+ catch (  Exception e) {
+    if (e instanceof ConversionException) {
+      throw (ConversionException)e;
+    }
+ else {
+      throw new ConversionException(e);
+    }
+  }
+}
