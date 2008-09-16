@@ -1,21 +1,9 @@
 {
   final Element target=DOM.eventGetTarget(event);
-  if (errorIndicatorElement != null && DOM.compare(target,errorIndicatorElement)) {
-switch (DOM.eventGetType(event)) {
-case Event.ONMOUSEOVER:
-      showErrorMessage();
-    break;
-case Event.ONMOUSEOUT:
-  hideErrorMessage();
-break;
-case Event.ONCLICK:
-ApplicationConnection.getConsole().log(DOM.getInnerHTML(errorMessage.getElement()));
-return;
-default :
-break;
-}
-}
-if (DOM.compare(target,captionElement) || (icon != null && DOM.compare(target,icon.getElement()))) {
-super.onBrowserEvent(event);
-}
+  if (client != null) {
+    client.handleTooltipEvent(event,this);
+  }
+  if (DOM.compare(target,captionElement) || (icon != null && DOM.compare(target,icon.getElement()))) {
+    super.onBrowserEvent(event);
+  }
 }

@@ -2,6 +2,7 @@
   if (client.updateComponent(this,uidl,false)) {
     return;
   }
+  this.client=client;
   enabled=uidl.hasAttribute("disabled") ? false : true;
   readonly=uidl.hasAttribute("readonly") ? true : false;
   if (uidl.hasAttribute("name")) {
@@ -33,10 +34,6 @@
       sinkEvents(Event.MOUSEEVENTS);
     }
     DOM.insertChild(getElement(),errorIndicatorElement,0);
-    if (errorMessage == null) {
-      errorMessage=new IErrorMessage();
-    }
-    errorMessage.updateFromUIDL(errorUidl);
   }
  else   if (errorIndicatorElement != null) {
     DOM.setStyleAttribute(errorIndicatorElement,"display","none");
@@ -47,8 +44,5 @@
       DOM.insertChild(getElement(),icon.getElement(),0);
     }
     icon.setUri(uidl.getStringAttribute("icon"));
-  }
-  if (uidl.hasAttribute("description")) {
-    setTitle(uidl.getStringAttribute("description"));
   }
 }
