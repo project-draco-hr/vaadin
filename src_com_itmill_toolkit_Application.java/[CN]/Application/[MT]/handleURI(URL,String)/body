@@ -23,20 +23,22 @@
     }
     return null;
   }
-  Window window=getWindow(prefix);
-  if (window != null) {
-    URL windowContext;
-    try {
-      windowContext=new URL(context,prefix + "/");
-      final String windowUri=relativeUri.length() > prefix.length() + 1 ? relativeUri.substring(prefix.length() + 1) : "";
-      return window.handleURI(windowContext,windowUri);
-    }
- catch (    final MalformedURLException e) {
-      terminalError(new ApplicationError(e));
-      return null;
+  if (prefix != null && prefix.length() > 0) {
+    Window window=getWindow(prefix);
+    if (window != null) {
+      URL windowContext;
+      try {
+        windowContext=new URL(context,prefix + "/");
+        final String windowUri=relativeUri.length() > prefix.length() + 1 ? relativeUri.substring(prefix.length() + 1) : "";
+        return window.handleURI(windowContext,windowUri);
+      }
+ catch (      final MalformedURLException e) {
+        terminalError(new ApplicationError(e));
+        return null;
+      }
     }
   }
-  window=getMainWindow();
+  Window window=getMainWindow();
   if (window != null) {
     return window.handleURI(context,relativeUri);
   }

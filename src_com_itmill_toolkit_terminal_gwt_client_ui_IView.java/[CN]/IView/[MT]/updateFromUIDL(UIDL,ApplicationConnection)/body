@@ -1,5 +1,6 @@
 {
   id=uidl.getId();
+  boolean firstPaint=connection == null;
   connection=client;
   String newTheme=uidl.getStringAttribute("theme");
   if (theme != null && !newTheme.equals(theme)) {
@@ -10,6 +11,9 @@
   }
   if (uidl.hasAttribute("style")) {
     addStyleName(uidl.getStringAttribute("style"));
+  }
+  if (uidl.hasAttribute("name")) {
+    client.setWindowName(uidl.getStringAttribute("name"));
   }
   com.google.gwt.user.client.Window.setTitle(uidl.getStringAttribute("caption"));
   int childIndex=0;
@@ -83,6 +87,10 @@
     client.unregisterPaintable(w);
     subWindows.remove(w);
     w.hide();
+  }
+  if (firstPaint) {
+    Window.addWindowCloseListener(this);
+    Window.addWindowResizeListener(this);
   }
   onWindowResized(Window.getClientWidth(),Window.getClientHeight());
 }

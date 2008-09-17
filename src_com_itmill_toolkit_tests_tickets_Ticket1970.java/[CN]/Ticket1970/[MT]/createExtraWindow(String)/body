@@ -1,0 +1,24 @@
+{
+  final Window w=new Window("Extra window: " + name);
+  w.setName(name);
+  addWindow(w);
+  w.addComponent(new Label("This window has been created on fly for name: " + name));
+  w.addComponent(new Button("Show open windows",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      String openWindows="";
+      for (Iterator i=getWindows().iterator(); i.hasNext(); ) {
+        Window t=(Window)i.next();
+        openWindows+=(openWindows.length() > 0 ? "," : "") + t.getName();
+      }
+      w.showNotification(openWindows);
+    }
+  }
+));
+  w.addListener(new Window.CloseListener(){
+    public void windowClose(    CloseEvent e){
+      removeWindow(w);
+    }
+  }
+);
+  return w;
+}

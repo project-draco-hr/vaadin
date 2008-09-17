@@ -1,0 +1,50 @@
+{
+  Window window=null;
+  String windowClientRequestedName=request.getParameter("windowName");
+  if (assumedWindow != null && application.getWindows().contains(assumedWindow)) {
+    windowClientRequestedName=assumedWindow.getName();
+  }
+  if (windowClientRequestedName != null) {
+    window=application.getWindow(windowClientRequestedName);
+    if (window != null) {
+      return window;
+    }
+  }
+  if (window == null) {
+    String path=request.getPathInfo();
+    if (applicationServlet.isApplicationRunnerServlet) {
+      path=path.substring(1 + applicationServlet.applicationRunnerClassname.length());
+    }
+    path=path.substring("/UIDL".length());
+    if (path != null && path.length() > 0 && !path.equals("/")) {
+      String windowUrlName=null;
+      if (path.charAt(0) == '/') {
+        path=path.substring(1);
+      }
+      final int index=path.indexOf('/');
+      if (index < 0) {
+        windowUrlName=path;
+        path="";
+      }
+ else {
+        windowUrlName=path.substring(0,index);
+        path=path.substring(index + 1);
+      }
+      window=application.getWindow(windowUrlName);
+    }
+  }
+  if (window == null) {
+    window=application.getMainWindow();
+  }
+  if (currentlyOpenWindowsInClient.contains(window.getName())) {
+    String newWindowName=window.getName();
+    while (currentlyOpenWindowsInClient.contains(newWindowName)) {
+      newWindowName=window.getName() + "_" + ((int)(Math.random() * 100000000));
+    }
+    window=application.getWindow(newWindowName);
+    if (window == null) {
+      window=application.getMainWindow();
+    }
+  }
+  return window;
+}
