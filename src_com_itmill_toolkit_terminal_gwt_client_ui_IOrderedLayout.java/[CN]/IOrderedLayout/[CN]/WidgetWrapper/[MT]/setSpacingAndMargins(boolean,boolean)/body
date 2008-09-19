@@ -1,15 +1,50 @@
 {
   final Element e=getElementWrappingWidgetAndCaption();
+  int paddingLeft=0, paddingRight=0, paddingTop=0, paddingBottom=0;
   if (orientationMode == ORIENTATION_HORIZONTAL) {
-    DOM.setStyleAttribute(e,"paddingLeft",first ? (margins.hasLeft() ? marginLeft + "px" : "0") : (hasComponentSpacing ? hSpacing + "px" : "0"));
-    DOM.setStyleAttribute(e,"paddingRight",last ? (margins.hasRight() ? marginRight + "px" : "0") : "");
-    DOM.setStyleAttribute(e,"paddingTop",margins.hasTop() ? marginTop + "px" : "");
-    DOM.setStyleAttribute(e,"paddingBottom",margins.hasBottom() ? marginBottom + "px" : "");
+    if (first) {
+      if (margins.hasLeft()) {
+        paddingLeft=marginLeft;
+      }
+    }
+ else     if (hasComponentSpacing) {
+      paddingLeft=hSpacing;
+    }
+    if (last) {
+      if (margins.hasRight()) {
+        paddingRight=marginRight;
+      }
+    }
+    if (margins.hasTop()) {
+      paddingTop=marginTop;
+    }
+    if (margins.hasBottom()) {
+      paddingBottom=marginBottom;
+    }
   }
  else {
-    DOM.setStyleAttribute(e,"paddingLeft",margins.hasLeft() ? marginLeft + "px" : "0");
-    DOM.setStyleAttribute(e,"paddingRight",margins.hasRight() ? marginRight + "px" : "0");
-    DOM.setStyleAttribute(e,"paddingTop",first ? (margins.hasTop() ? marginTop + "px" : "") : (hasComponentSpacing ? vSpacing + "px" : "0"));
-    DOM.setStyleAttribute(e,"paddingBottom",last && margins.hasBottom() ? marginBottom + "px" : "");
+    if (margins.hasLeft()) {
+      paddingLeft=marginLeft;
+    }
+    if (margins.hasRight()) {
+      paddingRight=marginRight;
+    }
+    if (first) {
+      if (margins.hasTop()) {
+        paddingTop=marginTop;
+      }
+    }
+ else     if (hasComponentSpacing) {
+      paddingTop=vSpacing;
+    }
+    if (last && margins.hasBottom()) {
+      paddingBottom=marginBottom;
+    }
   }
+  horizontalPadding=paddingLeft + paddingRight;
+  verticalPadding=paddingTop + paddingBottom;
+  DOM.setStyleAttribute(e,"paddingLeft",paddingLeft + "px");
+  DOM.setStyleAttribute(e,"paddingRight",paddingRight + "px");
+  DOM.setStyleAttribute(e,"paddingTop",paddingTop + "px");
+  DOM.setStyleAttribute(e,"paddingBottom",paddingBottom + "px");
 }

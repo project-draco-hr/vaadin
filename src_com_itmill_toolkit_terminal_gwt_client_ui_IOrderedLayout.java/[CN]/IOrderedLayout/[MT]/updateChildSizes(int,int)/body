@@ -6,7 +6,7 @@
   int childWidthDivisor=1;
   if (height != null) {
     if (tableMode) {
-      if (height != null && height.endsWith("px")) {
+      if (height.endsWith("px")) {
         try {
           childHeightTotal=Integer.parseInt(height.substring(0,height.length() - 2));
           if (childHeightTotal < 0) {
@@ -16,6 +16,9 @@
  catch (        NumberFormatException e) {
           childHeightTotal=rootOffsetMeasure("offsetHeight");
         }
+      }
+ else       if (height.endsWith("%") && renderedHeight >= 0) {
+        childWidthTotal=renderedHeight;
       }
  else {
         childHeightTotal=rootOffsetMeasure("offsetHeight");
@@ -34,7 +37,7 @@
     }
   }
   if (width != null) {
-    if (width != null && width.endsWith("px")) {
+    if (width.endsWith("px")) {
       try {
         childWidthTotal=Integer.parseInt(width.substring(0,width.length() - 2));
         if (childWidthTotal < 0) {
@@ -44,6 +47,9 @@
  catch (      NumberFormatException e) {
         childWidthTotal=rootOffsetMeasure("offsetWidth");
       }
+    }
+ else     if (width.endsWith("%") && renderedWidth >= 0) {
+      childWidthTotal=renderedWidth;
     }
  else {
       childWidthTotal=rootOffsetMeasure("offsetWidth");

@@ -1,0 +1,22 @@
+{
+  if (widgets.isEmpty()) {
+    return;
+  }
+  Set<Container> parents=new HashSet<Container>();
+  for (  Widget widget : widgets) {
+    Widget parent=widget.getParent();
+    while (parent != null && !(parent instanceof Container)) {
+      parent=parent.getParent();
+    }
+    if (parent != null) {
+      parents.add((Container)parent);
+    }
+  }
+  Set<Widget> parentChanges=new HashSet<Widget>();
+  for (  Container parent : parents) {
+    if (!parent.childComponentSizesUpdated()) {
+      parentChanges.add((Widget)parent);
+    }
+  }
+  componentSizeUpdated(parentChanges);
+}
