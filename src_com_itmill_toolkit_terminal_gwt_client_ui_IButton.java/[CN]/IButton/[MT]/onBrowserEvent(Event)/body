@@ -1,5 +1,17 @@
 {
   super.onBrowserEvent(event);
+  if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
+    clickPending=true;
+  }
+  if (DOM.eventGetType(event) == Event.ONMOUSEMOVE) {
+    clickPending=false;
+  }
+  if (DOM.eventGetType(event) == Event.ONMOUSEOUT) {
+    if (clickPending) {
+      click();
+    }
+    clickPending=false;
+  }
   if (client != null) {
     client.handleTooltipEvent(event,this);
   }
