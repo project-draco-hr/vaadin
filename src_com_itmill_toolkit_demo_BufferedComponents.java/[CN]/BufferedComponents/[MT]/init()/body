@@ -27,12 +27,19 @@
     }
   }
 ));
-  w.addComponent(new Button("commit",new Button.ClickListener(){
+  Button commit=new Button("commit",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
-      text.commit();
+      try {
+        text.commit();
+        w.showNotification("Committed " + property + " to datasource.");
+      }
+ catch (      Throwable e) {
+        w.showNotification("Error committing an invalid value: " + text,Notification.TYPE_WARNING_MESSAGE);
+      }
     }
   }
-));
+);
+  w.addComponent(commit);
   final Button restart=new Button("restart",this,"close");
   restart.addStyleName(Button.STYLE_LINK);
   w.addComponent(restart);
