@@ -5,10 +5,15 @@
     throw new PaintException("Recieved null when trying to paint minimized value.");
   }
   target.addAttribute("html",content.getMinimizedValueAsHTML());
-  target.addAttribute("popupVisible",popupVisible);
-  target.addAttribute("animation",animationEnabled);
   if (popupVisible) {
-    Component c=content.getPopupComponent();
+    Component c=componentList.get(0);
+    if (c == null) {
+      c=content.getPopupComponent();
+      if (c != null) {
+        componentList.add(c);
+        super.addComponent(c);
+      }
+    }
     if (c == null) {
       throw new PaintException("Received null when trying to paint popup component");
     }
@@ -16,4 +21,5 @@
     c.paint(target);
     target.endTag("popupComponent");
   }
+  target.addVariable(this,"popupVisibility",popupVisible);
 }

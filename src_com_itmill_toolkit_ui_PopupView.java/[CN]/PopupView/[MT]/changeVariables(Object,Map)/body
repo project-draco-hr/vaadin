@@ -2,12 +2,19 @@
   if (variables.containsKey("popupVisibility")) {
     popupVisible=((Boolean)variables.get("popupVisibility")).booleanValue();
     if (popupVisible) {
-      Component c=content.getPopupComponent();
-      componentList.add(c);
-      super.addComponent(c);
+      if (componentList.isEmpty()) {
+        Component c=content.getPopupComponent();
+        if (c != null) {
+          componentList.add(c);
+          super.addComponent(c);
+        }
+ else {
+          popupVisible=false;
+        }
+      }
     }
  else     if (!componentList.isEmpty()) {
-      super.removeComponent((Component)componentList.get(0));
+      super.removeComponent(componentList.get(0));
       componentList.clear();
     }
     requestRepaint();
