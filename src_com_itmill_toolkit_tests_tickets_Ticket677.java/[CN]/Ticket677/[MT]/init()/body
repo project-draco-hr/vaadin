@@ -1,8 +1,82 @@
 {
-  Window w=new Window(getClass().getName());
-  setMainWindow(w);
-  GridLayout layout=new GridLayout(10,10);
-  w.setLayout(layout);
-  createUI(layout);
-  createMultiLevelHierarchy();
+  Window main=new Window();
+  setMainWindow(main);
+  main.addComponent(info);
+  OrderedLayout l=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+  main.addComponent(l);
+  l.addComponent(new Button("Toggle root",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      toggle(root);
+    }
+  }
+));
+  l.addComponent(new Button("Toggle one",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      toggle(one);
+    }
+  }
+));
+  l.addComponent(new Button("Toggle two",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      toggle(two);
+    }
+  }
+));
+  root.setLayout(new GridLayout(2,3));
+  main.addComponent(root);
+  TextField tf=new TextField("Enabled");
+  tf.setImmediate(true);
+  root.addComponent(tf);
+  tf=new TextField("Disabled");
+  tf.setImmediate(true);
+  tf.setEnabled(false);
+  root.addComponent(tf);
+  root.addComponent(one);
+  tf=new TextField("Enabled");
+  tf.setImmediate(true);
+  one.addComponent(tf);
+  tf=new TextField("Disabled");
+  tf.setImmediate(true);
+  tf.setEnabled(false);
+  one.addComponent(tf);
+  root.addComponent(two);
+  tf=new TextField("Enabled");
+  tf.setImmediate(true);
+  two.addComponent(tf);
+  tf=new TextField("Disabled");
+  tf.setImmediate(true);
+  tf.setEnabled(false);
+  two.addComponent(tf);
+  Form f=new Form();
+  f.setFieldFactory(new BaseFieldFactory(){
+    public Field createField(    Item item,    Object propertyId,    Component uiContext){
+      Field f=super.createField(item,propertyId,uiContext);
+      f.setEnabled(!"disabled".equals(propertyId));
+      return f;
+    }
+  }
+);
+  f.setItemDataSource(new BeanItem(new MyBean()));
+  root.addComponent(f);
+  Table t=new Table();
+  t.addContainerProperty("Text",String.class,null);
+  for (int i=0; i < 5; i++) {
+    Item item=t.addItem("Item" + i);
+    Property p=item.getItemProperty("Text");
+    p.setValue(i > 1 ? "enabled" : "disabled");
+  }
+  t.setFieldFactory(new BaseFieldFactory(){
+    public Field createField(    Container container,    Object itemId,    Object propertyId,    Component uiContext){
+      Field f=super.createField(container,itemId,propertyId,uiContext);
+      Item item=container.getItem(itemId);
+      Property p=item.getItemProperty(propertyId);
+      if ("disabled".equals(p.getValue())) {
+        f.setEnabled(false);
+      }
+      return f;
+    }
+  }
+);
+  t.setEditable(true);
+  root.addComponent(t);
 }
