@@ -1,0 +1,31 @@
+{
+  final Layout layout=new OrderedLayout();
+  final Label label=new Label("Instructions to reproduce:\n" + "  - Open this application in two browser windows\n" + "  - Click the Button in first Window\n"+ "  - Go to the second Window\n"+ "     - Click the arrow in the Select\n"+ "  --> The opened list correctly shows the new value but the old one is shown in the \"input\" part");
+  label.setContentMode(Label.CONTENT_PREFORMATTED);
+  layout.addComponent(label);
+  final Select select=new Select("Test Select");
+  select.setWidth("100px");
+  select.setImmediate(true);
+  select.setNullSelectionAllowed(false);
+  select.addItem("1");
+  select.addItem("2");
+  select.addItem("3");
+  final ObjectProperty valueProperty=new ObjectProperty("1",String.class);
+  select.setPropertyDataSource(valueProperty);
+  layout.addComponent(select);
+  globalValue.addListener(new Property.ValueChangeListener(){
+    public void valueChange(    Property.ValueChangeEvent event){
+      valueProperty.setValue(event.getProperty().getValue());
+    }
+  }
+);
+  final Button changeValueButton=new Button("Change Value to 2");
+  changeValueButton.addListener(new Button.ClickListener(){
+    public void buttonClick(    Button.ClickEvent event){
+      globalValue.setValue("2");
+    }
+  }
+);
+  layout.addComponent(changeValueButton);
+  return layout;
+}
