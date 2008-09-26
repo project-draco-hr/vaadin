@@ -34,7 +34,7 @@
     final FilterSelectSuggestion suggestion=new FilterSelectSuggestion(optionUidl);
     currentSuggestions.add(suggestion);
     if (optionUidl.hasAttribute("selected")) {
-      if (!filtering) {
+      if (!filtering || popupOpenerClicked) {
         tb.setText(suggestion.getReplacementString());
         selectedOptionKey="" + suggestion.getOptionKey();
       }
@@ -45,7 +45,7 @@
     }
     captions+=suggestion.getReplacementString();
   }
-  if (!filtering && uidl.hasVariable("selected") && uidl.getStringArrayVariable("selected").length == 0) {
+  if ((!filtering || popupOpenerClicked) && uidl.hasVariable("selected") && uidl.getStringArrayVariable("selected").length == 0) {
     tb.setText(emptyText);
     selectedOptionKey=null;
   }
@@ -59,4 +59,5 @@
   DOM.setStyleAttribute(spacer,"height","0");
   DOM.setStyleAttribute(spacer,"overflow","hidden");
   DOM.appendChild(panel.getElement(),spacer);
+  popupOpenerClicked=false;
 }
