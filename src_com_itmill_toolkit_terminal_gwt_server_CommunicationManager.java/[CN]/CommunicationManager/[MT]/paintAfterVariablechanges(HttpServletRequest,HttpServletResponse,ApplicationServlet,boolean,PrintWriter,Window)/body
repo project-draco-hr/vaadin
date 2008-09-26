@@ -93,6 +93,35 @@
       metaOpen=true;
       outWriter.write("\"repaintAll\":true");
     }
+    SystemMessages ci=null;
+    try {
+      Method m=application.getClass().getMethod("getSystemMessages",null);
+      ci=(Application.SystemMessages)m.invoke(null,null);
+    }
+ catch (    NoSuchMethodException e1) {
+      e1.printStackTrace();
+    }
+catch (    IllegalArgumentException e) {
+      e.printStackTrace();
+    }
+catch (    IllegalAccessException e) {
+      e.printStackTrace();
+    }
+catch (    InvocationTargetException e) {
+      e.printStackTrace();
+    }
+    if (ci != null && ci.getSessionExpiredMessage() == null && ci.getSessionExpiredCaption() == null && ci.isSessionExpiredNotificationEnabled()) {
+      int newTimeoutInterval=request.getSession().getMaxInactiveInterval();
+      if (repaintAll || (timeoutInterval != newTimeoutInterval)) {
+        String escapedURL=ci.getSessionExpiredURL() == null ? "" : ci.getSessionExpiredURL().replace("/","\\/");
+        if (metaOpen) {
+          outWriter.write(",");
+        }
+        outWriter.write("\"timedRedirect\":{\"interval\":" + (newTimeoutInterval + 15) + ",\"url\":\""+ escapedURL+ "\"}");
+        metaOpen=true;
+      }
+      timeoutInterval=newTimeoutInterval;
+    }
     final Paintable f=(Paintable)application.consumeFocus();
     if (f != null) {
       if (metaOpen) {

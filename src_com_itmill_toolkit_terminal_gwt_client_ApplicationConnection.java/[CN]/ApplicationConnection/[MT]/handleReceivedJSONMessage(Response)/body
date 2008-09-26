@@ -40,6 +40,19 @@
       idToPaintable.clear();
       paintableToId.clear();
     }
+    if (meta.containsKey("timedRedirect")) {
+      final JSONObject timedRedirect=meta.get("timedRedirect").isObject();
+      redirectTimer=new Timer(){
+        public void run(){
+          redirect(timedRedirect.get("url").isString().stringValue());
+        }
+      }
+;
+      sessionExpirationInterval=Integer.parseInt(timedRedirect.get("interval").toString());
+    }
+  }
+  if (redirectTimer != null) {
+    redirectTimer.schedule(1000 * sessionExpirationInterval);
   }
   final JSONArray changes=(JSONArray)((JSONObject)json).get("changes");
   Set<Widget> sizeUpdatedWidgets=new HashSet<Widget>();
