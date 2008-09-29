@@ -1,0 +1,54 @@
+{
+  CustomCaption header=componentToHeader.get(component);
+  CustomCaption marker=componentToMarker.get(component);
+  if (ICaption.isNeeded(uidl)) {
+    boolean headerNeeded=uidl.getStringAttribute("caption") != null || uidl.hasAttribute("icon");
+    boolean markerNeeded=uidl.hasAttribute("error") || uidl.hasAttribute("required");
+    if (headerNeeded && markerNeeded) {
+      if (header != null && !header.isMode(CustomCaption.COMBINED_MODE)) {
+        componentToHeader.remove(component);
+        remove(header);
+        header=null;
+      }
+      if (header == null) {
+        header=new CustomCaption(component,client,(CustomCaption.HEADER_MODE | CustomCaption.MARKER_MODE));
+        add(header);
+        componentToHeader.put(component,header);
+      }
+      header.updateCaption(uidl);
+      updateCaptionPosition(header,(Widget)component);
+      if (marker != null) {
+        componentToMarker.remove(component);
+        remove(marker);
+      }
+    }
+ else     if (headerNeeded) {
+      if (header == null) {
+        header=new CustomCaption(component,client,CustomCaption.HEADER_MODE);
+        add(header);
+        componentToHeader.put(component,header);
+      }
+      header.updateCaption(uidl);
+      updateCaptionPosition(header,(Widget)component);
+    }
+ else     if (markerNeeded) {
+      if (marker == null) {
+        marker=new CustomCaption(component,client,CustomCaption.MARKER_MODE);
+        add(marker);
+        componentToMarker.put(component,marker);
+      }
+      marker.updateCaption(uidl);
+      updateCaptionPosition(marker,(Widget)component);
+    }
+  }
+ else {
+    if (header != null) {
+      remove(header);
+      componentToHeader.remove(component);
+    }
+ else     if (marker != null) {
+      remove(marker);
+      componentToMarker.remove(component);
+    }
+  }
+}

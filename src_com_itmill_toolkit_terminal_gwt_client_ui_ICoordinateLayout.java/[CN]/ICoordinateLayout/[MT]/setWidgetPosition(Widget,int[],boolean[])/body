@@ -1,0 +1,43 @@
+{
+  resetPositionAttributes(w);
+  Element widgetElement=w.getElement();
+  Element areaElement;
+  CustomCaption componentHeader=componentToHeader.get((Paintable)w);
+  CustomCaption componentMarker=componentToMarker.get((Paintable)w);
+  if (sidesToAttach[TOP] || sidesToAttach[HEIGHT]) {
+    int margin=0;
+    if (componentHeader != null) {
+      margin+=componentHeader.getOffsetHeight();
+    }
+    DOM.setStyleAttribute(widgetElement,"top",Integer.toString(margin) + "px");
+  }
+  if (sidesToAttach[RIGHT] || sidesToAttach[WIDTH]) {
+    int margin=0;
+    if (componentMarker != null) {
+      margin+=componentMarker.getOffsetWidth();
+    }
+    DOM.setStyleAttribute(widgetElement,"right",Integer.toString(margin) + "px");
+  }
+  if (sidesToAttach[BOTTOM] || sidesToAttach[HEIGHT]) {
+    DOM.setStyleAttribute(widgetElement,"bottom","0px");
+  }
+  if (sidesToAttach[LEFT] || sidesToAttach[WIDTH]) {
+    DOM.setStyleAttribute(widgetElement,"left","0px");
+  }
+  if (componentToArea.get(w) == null) {
+    areaElement=DOM.createDiv();
+    DOM.appendChild(getElement(),areaElement);
+    DOM.removeChild(getElement(),widgetElement);
+    DOM.appendChild(areaElement,widgetElement);
+    DOM.setStyleAttribute(areaElement,"position","absolute");
+    DOM.setStyleAttribute(areaElement,"overflow","hidden");
+    DOM.setStyleAttribute(areaElement,"visibility","hidden");
+    componentToArea.put(w,areaElement);
+  }
+ else {
+    areaElement=componentToArea.get(w);
+  }
+  DOM.setStyleAttribute(areaElement,"margin",(newCoords[TOP] + "px " + newCoords[RIGHT]+ "px "+ newCoords[BOTTOM]+ "px "+ newCoords[LEFT]+ "px"));
+  DOM.setStyleAttribute(areaElement,"width",newCoords[WIDTH] + "px");
+  DOM.setStyleAttribute(areaElement,"height",newCoords[HEIGHT] + "px");
+}

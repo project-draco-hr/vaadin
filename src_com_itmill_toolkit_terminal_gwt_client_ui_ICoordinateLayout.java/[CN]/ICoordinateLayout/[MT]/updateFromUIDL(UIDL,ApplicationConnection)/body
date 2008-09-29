@@ -1,0 +1,49 @@
+{
+  if (client.updateComponent(this,uidl,false)) {
+    return;
+  }
+  this.client=client;
+  if (uidl.hasAttribute("margins")) {
+    marginInfo=new MarginInfo(uidl.getIntAttribute("margins"));
+  }
+ else {
+    marginInfo=new MarginInfo(0);
+  }
+  UIDL componentsFromUIDL=uidl;
+  ArrayList<Widget> newComponents=new ArrayList<Widget>();
+  ArrayList<Widget> removedComponents=new ArrayList<Widget>();
+  int zIndex=0;
+  for (Iterator<UIDL> componentIterator=componentsFromUIDL.getChildIterator(); componentIterator.hasNext(); ) {
+    final UIDL componentUIDL=componentIterator.next();
+    final UIDL componentDataUIDL=componentUIDL.getChildUIDL(0);
+    final Paintable componentDataPaintable=client.getPaintable(componentDataUIDL);
+    final Widget componentWidget=(Widget)componentDataPaintable;
+    final String coordString=componentUIDL.getStringAttribute("position");
+    if (!componentList.contains(componentWidget)) {
+      add(componentWidget);
+      componentDataPaintable.updateFromUIDL(componentDataUIDL,client);
+    }
+ else {
+      componentDataPaintable.updateFromUIDL(componentDataUIDL,client);
+    }
+    if (!coordString.equals(componentToCoords.get(componentWidget))) {
+      toUpdate.add(componentWidget);
+    }
+    componentToCoords.put(componentWidget,coordString);
+    updateZ(componentWidget,zIndex++);
+    newComponents.add(componentWidget);
+  }
+  for (Iterator<Widget> iterator=componentList.iterator(); iterator.hasNext(); ) {
+    Widget w=iterator.next();
+    if (!newComponents.contains(w) && !(w instanceof CustomCaption)) {
+      removedComponents.add(w);
+    }
+  }
+  while (!removedComponents.isEmpty()) {
+    removePaintable((Paintable)removedComponents.get(0));
+    removedComponents.remove(0);
+  }
+  componentList.clear();
+  componentList.addAll(newComponents);
+  iLayout(-1,-1);
+}

@@ -1,0 +1,33 @@
+{
+  int[] newProperties=new int[6];
+  boolean[] newPercent=new boolean[6];
+  resetContents(newProperties,newPercent);
+  String coordStringArray[]=coordinateString.split(",");
+  if (coordStringArray.length > 6) {
+    throw new IllegalArgumentException("Incorrect string syntax: too many arguments");
+  }
+  Pattern numberPattern=Pattern.compile("[-]??\\d+");
+  String percentRegex=".*%.*";
+  Matcher matcher=null;
+  try {
+    for (int i=0; i < coordStringArray.length; i++) {
+      matcher=numberPattern.matcher(coordStringArray[i].trim());
+      if (matcher.find()) {
+        newProperties[i]=Integer.parseInt(matcher.group());
+        newPercent[i]=coordStringArray[i].matches(percentRegex);
+      }
+ else {
+        throw new IllegalArgumentException("Error parsing number: " + coordStringArray[i]);
+      }
+    }
+  }
+ catch (  IllegalArgumentException e) {
+    throw e;
+  }
+catch (  Exception e) {
+    throw new IllegalArgumentException("Error parsing string: " + e.toString());
+  }
+  resetContents(properties,isUnitPercent);
+  System.arraycopy(newProperties,0,properties,0,NUMBEROFPROPERTIES);
+  System.arraycopy(newPercent,0,isUnitPercent,0,NUMBEROFPROPERTIES);
+}
