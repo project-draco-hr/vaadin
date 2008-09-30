@@ -89,6 +89,25 @@
     subWindows.remove(w);
     w.hide();
   }
+  if (uidl.hasAttribute("focused")) {
+    final String focusPid=uidl.getStringAttribute("focused");
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        final Paintable toBeFocused=connection.getPaintable(focusPid);
+        if (toBeFocused instanceof HasFocus) {
+          final HasFocus toBeFocusedWidget=(HasFocus)toBeFocused;
+          toBeFocusedWidget.setFocus(true);
+        }
+ else         if (toBeFocused instanceof Focusable) {
+          ((Focusable)toBeFocused).focus();
+        }
+ else {
+          ApplicationConnection.getConsole().log("Could not focus component");
+        }
+      }
+    }
+);
+  }
   if (firstPaint) {
     Window.addWindowCloseListener(this);
     Window.addWindowResizeListener(this);
