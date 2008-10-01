@@ -8,7 +8,7 @@
     return true;
   }
   if (!widgetSet.isCorrectImplementation(component,uidl)) {
-    final Container parent=Util.getParentLayout(component);
+    final Container parent=Util.getLayout(component);
     if (parent != null) {
       final Widget w=(Widget)widgetSet.createWidget(uidl);
       parent.replaceChildComponent(component,w);
@@ -17,7 +17,6 @@
       return true;
     }
   }
-  updateComponentSize(component,uidl);
   boolean enabled=!uidl.getBooleanAttribute("disabled");
   if (component instanceof FocusWidget) {
     FocusWidget fw=(FocusWidget)component;
@@ -73,7 +72,7 @@
   }
   component.setStyleName(styleBuf.toString());
   if (manageCaption) {
-    final Container parent=Util.getParentLayout(component);
+    final Container parent=Util.getLayout(component);
     if (parent != null) {
       parent.updateCaption((Paintable)component,uidl);
     }
@@ -81,5 +80,6 @@
   if (usePaintableIdsInDOM) {
     DOM.setElementProperty(component.getElement(),"id",uidl.getId());
   }
+  updateComponentSize(component,uidl);
   return false;
 }

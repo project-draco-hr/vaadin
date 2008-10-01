@@ -1,0 +1,34 @@
+{
+  Widget widget=child;
+  FloatSize relativeSize=componentRelativeSizes.get(widget);
+  if (relativeSize == null) {
+    return;
+  }
+  Size availPixels=Util.getLayout(widget).getAllocatedSpace(widget);
+  if (relativeSize.getWidth() >= 0) {
+    if (availPixels != null) {
+      int width=availPixels.getWidth();
+      width*=relativeSize.getWidth() / 100.0;
+      if (width >= 0) {
+        widget.setWidth(width + "px");
+      }
+    }
+ else {
+      widget.setWidth(relativeSize.getWidth() + "%");
+      ApplicationConnection.getConsole().error(Util.getLayout(widget).getClass().getName() + " did not produce allocatedSpace for " + widget.getClass().getName());
+    }
+  }
+  if (relativeSize.getHeight() >= 0) {
+    if (availPixels != null) {
+      int height=availPixels.getHeight();
+      height*=relativeSize.getHeight() / 100.0;
+      if (height >= 0) {
+        widget.setHeight(height + "px");
+      }
+    }
+ else {
+      widget.setHeight(relativeSize.getHeight() + "%");
+      ApplicationConnection.getConsole().error(Util.getLayout(widget).getClass().getName() + " did not produce allocatedSpace for " + widget.getClass().getName());
+    }
+  }
+}

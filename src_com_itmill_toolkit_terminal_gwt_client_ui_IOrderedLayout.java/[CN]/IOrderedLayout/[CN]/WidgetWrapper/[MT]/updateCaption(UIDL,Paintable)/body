@@ -1,6 +1,7 @@
 {
   final Widget widget=(Widget)paintable;
   final Element captionWrapper=getElementWrappingWidgetAndCaption();
+  boolean captionDimensionOrPositionUpdated=false;
   if (ICaption.isNeeded(uidl)) {
     boolean justAdded=false;
     if (caption == null) {
@@ -8,6 +9,13 @@
       caption=new ICaption(paintable,client);
     }
     caption.updateCaption(uidl);
+    caption.setAlignment(horizontalAlignment);
+    int captionHeight=caption.getElement().getOffsetHeight();
+    int captionWidth=caption.getElement().getOffsetWidth();
+    if (captionHeight != captionSize.getHeight() || captionWidth != captionSize.getWidth()) {
+      captionSize=new Size(captionWidth,captionHeight);
+      captionDimensionOrPositionUpdated=true;
+    }
     final boolean after=caption.shouldBePlacedAfterComponent();
     final Element captionElement=caption.getElement();
     final Element widgetElement=widget.getElement();
@@ -21,6 +29,7 @@
  else {
         DOM.insertChild(captionWrapper,captionElement,0);
       }
+      captionDimensionOrPositionUpdated=true;
     }
  else     if (after == (DOM.getChildIndex(captionWrapper,widgetElement) > DOM.getChildIndex(captionWrapper,captionElement))) {
       Element firstElement=DOM.getChild(captionWrapper,DOM.getChildCount(captionWrapper) - 2);
@@ -37,6 +46,7 @@
         widget.removeStyleName("i-orderedlayout-w-e");
         caption.removeStyleName("i-orderedlayout-w-c");
       }
+      captionDimensionOrPositionUpdated=true;
     }
   }
  else {
@@ -45,6 +55,10 @@
       caption=null;
       DOM.setElementAttribute(captionWrapper,"class","");
       widget.removeStyleName("i-orderedlayout-w-e");
+      captionDimensionOrPositionUpdated=true;
     }
+  }
+  if (captionDimensionOrPositionUpdated) {
+    client.handleComponentRelativeSize((Widget)paintable);
   }
 }

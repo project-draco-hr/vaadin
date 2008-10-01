@@ -1,4 +1,5 @@
 {
+  renderInformation.updateSize(getElement());
   if (BrowserInfo.get().isIE6() && width != null && !width.equals("")) {
     DOM.setStyleAttribute(captionNode,"width","1px");
     int parentPadding=Util.measureHorizontalPadding(getElement(),0);
@@ -22,12 +23,19 @@
     super.setHeight(height);
     final int targetHeight=getOffsetHeight();
     super.setHeight("");
-    final int usedHeight=DOM.getElementPropertyInt(bottomDecoration,"offsetTop") + DOM.getElementPropertyInt(bottomDecoration,"offsetHeight") - DOM.getElementPropertyInt(getElement(),"offsetTop");
-    int h=targetHeight - usedHeight;
-    if (h < 0) {
-      h=0;
+    if (BrowserInfo.get().isIE() && !hasChildren) {
+      DOM.setStyleAttribute(contentNode,"height","0px");
     }
-    DOM.setStyleAttribute(contentNode,"height",h + "px");
+    final int bottomTop=DOM.getElementPropertyInt(bottomDecoration,"offsetTop");
+    final int bottomHeight=DOM.getElementPropertyInt(bottomDecoration,"offsetHeight");
+    final int elementTop=DOM.getElementPropertyInt(getElement(),"offsetTop");
+    final int usedHeight=bottomTop + bottomHeight - elementTop;
+    int contentAreaHeight=targetHeight - usedHeight;
+    if (contentAreaHeight < 0) {
+      contentAreaHeight=0;
+    }
+    renderInformation.setContentAreaHeight(contentAreaHeight);
+    DOM.setStyleAttribute(contentNode,"height",contentAreaHeight + "px");
     DOM.setStyleAttribute(contentNode,"overflow","auto");
     if (hasChildren) {
       DOM.setStyleAttribute(contentEl,"position",origPositioning);
@@ -37,6 +45,9 @@
   }
  else {
     DOM.setStyleAttribute(contentNode,"height","");
+  }
+  if (width != null && !width.equals("")) {
+    renderInformation.setContentAreaWidth(renderInformation.getRenderedSize().getWidth() - borderPaddingHorizontal);
   }
   if (runGeckoFix && BrowserInfo.get().isGecko()) {
     if (width == null || width.equals("")) {
@@ -54,5 +65,5 @@
       }
     }
   }
-  Util.runDescendentsLayout(this);
+  client.runDescendentsLayout(this);
 }

@@ -1,4 +1,5 @@
 {
+  isRendering=true;
   this.client=client;
   if (uidl.getBooleanAttribute("cached")) {
     return;
@@ -63,15 +64,13 @@
     }
   }
   handleAlignmentsSpacingAndMargins(uidl);
-  updateChildSizes(-1,-1);
+  updateChildSizes();
   for (int i=0; i < childsToPaint.size(); i++) {
     Object[] t=(Object[])childsToPaint.get(i);
     ((Paintable)t[0]).updateFromUIDL((UIDL)t[1],client);
   }
-  if (childLayoutsHaveChanged) {
-    Util.runDescendentsLayout(this);
-    childLayoutsHaveChanged=false;
+  if (renderInformation.updateSize(root)) {
+    client.runDescendentsLayout(this);
   }
-  renderedWidth=root.getOffsetWidth();
-  renderedHeight=root.getOffsetHeight();
+  isRendering=false;
 }

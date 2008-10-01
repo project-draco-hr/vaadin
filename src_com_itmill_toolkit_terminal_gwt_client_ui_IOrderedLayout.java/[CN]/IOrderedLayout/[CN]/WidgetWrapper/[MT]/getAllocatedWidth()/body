@@ -1,6 +1,15 @@
 {
-  if (width == null) {
-    return getElementWrappingClipperDiv().getOffsetWidth() - horizontalPadding;
+  int reduce=horizontalPadding;
+  if (caption != null && caption.shouldBePlacedAfterComponent()) {
+    reduce+=caption.getWidth();
   }
-  return lastForcedPixelWidth;
+  if (width == null) {
+    return getElementWrappingClipperDiv().getOffsetWidth() - reduce;
+  }
+ else   if (lastForcedPixelWidth > -1) {
+    return lastForcedPixelWidth - reduce;
+  }
+ else {
+    return 0;
+  }
 }

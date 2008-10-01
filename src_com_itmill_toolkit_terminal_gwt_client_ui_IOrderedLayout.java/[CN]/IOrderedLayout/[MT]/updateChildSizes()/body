@@ -1,0 +1,59 @@
+{
+  int numChild=childWidgets.size();
+  int childHeightTotal=-1;
+  int childHeightDivisor=1;
+  int childWidthTotal=-1;
+  int childWidthDivisor=1;
+  if (height != null) {
+    if (height.endsWith("px")) {
+      childHeightTotal=Integer.parseInt(height.substring(0,height.length() - 2));
+    }
+ else {
+      childHeightTotal=getElement().getOffsetHeight();
+    }
+    childHeightTotal=getElement().getOffsetHeight();
+    childHeightTotal-=margins.hasTop() ? marginTop : 0;
+    childHeightTotal-=margins.hasBottom() ? marginBottom : 0;
+    if (hasComponentSpacing) {
+      childHeightTotal-=((orientationMode == ORIENTATION_HORIZONTAL) ? hSpacing : vSpacing) * (numChild - 1);
+    }
+    if (orientationMode == ORIENTATION_VERTICAL) {
+      childHeightDivisor=numChild;
+    }
+  }
+  if (width != null) {
+    if (width.endsWith("px")) {
+      childWidthTotal=Integer.parseInt(width.substring(0,width.length() - 2));
+    }
+ else {
+      childWidthTotal=getElement().getOffsetWidth();
+    }
+    childWidthTotal-=margins.hasLeft() ? marginLeft : 0;
+    childWidthTotal-=margins.hasRight() ? marginRight : 0;
+    if (hasComponentSpacing && orientationMode == ORIENTATION_HORIZONTAL) {
+      childWidthTotal-=hSpacing * (numChild - 1);
+    }
+    if (orientationMode == ORIENTATION_HORIZONTAL) {
+      childWidthDivisor=numChild;
+    }
+  }
+  for (Iterator i=childWidgetWrappers.iterator(); i.hasNext(); ) {
+    int w, h;
+    if (childHeightDivisor > 1) {
+      h=Math.round(((float)childHeightTotal) / (childHeightDivisor--));
+      childHeightTotal-=h;
+    }
+ else {
+      h=childHeightTotal;
+    }
+    if (childWidthDivisor > 1) {
+      w=Math.round(((float)childWidthTotal) / (childWidthDivisor--));
+      childWidthTotal-=w;
+    }
+ else {
+      w=childWidthTotal;
+    }
+    WidgetWrapper ww=(WidgetWrapper)i.next();
+    ww.forceSize(w,h);
+  }
+}

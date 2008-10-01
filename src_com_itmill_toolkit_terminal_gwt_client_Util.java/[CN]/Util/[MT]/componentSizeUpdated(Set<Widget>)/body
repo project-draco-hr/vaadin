@@ -2,19 +2,24 @@
   if (widgets.isEmpty()) {
     return;
   }
-  Set<Container> parents=new HashSet<Container>();
+  Map<Container,Set<Paintable>> childWidgets=new HashMap<Container,Set<Paintable>>();
   for (  Widget widget : widgets) {
     Widget parent=widget.getParent();
     while (parent != null && !(parent instanceof Container)) {
       parent=parent.getParent();
     }
     if (parent != null) {
-      parents.add((Container)parent);
+      Set<Paintable> set=childWidgets.get(parent);
+      if (set == null) {
+        set=new HashSet<Paintable>();
+        childWidgets.put((Container)parent,set);
+      }
+      set.add((Paintable)widget);
     }
   }
   Set<Widget> parentChanges=new HashSet<Widget>();
-  for (  Container parent : parents) {
-    if (!parent.childComponentSizesUpdated()) {
+  for (  Container parent : childWidgets.keySet()) {
+    if (!parent.requestLayout(childWidgets.get(parent))) {
       parentChanges.add((Widget)parent);
     }
   }

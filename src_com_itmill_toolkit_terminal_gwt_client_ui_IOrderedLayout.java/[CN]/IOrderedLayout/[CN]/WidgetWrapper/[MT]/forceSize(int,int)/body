@@ -13,7 +13,14 @@
   Element e=clipperDiv != null ? clipperDiv : getElementWrappingAlignmentStructures();
   DOM.setStyleAttribute(e,"overflow",pixelWidth < 0 && pixelHeight < 0 ? "" : "hidden");
   DOM.setStyleAttribute(e,"width",pixelWidth < 0 ? "" : pixelWidth + "px");
-  DOM.setStyleAttribute(e,"height",pixelHeight < 0 ? (e == clipperDiv ? "100%" : "") : pixelHeight + "px");
+  if (pixelHeight >= 0) {
+    DOM.setStyleAttribute(e,"height",pixelHeight + "px");
+  }
+ else {
+    if (e == clipperDiv && !BrowserInfo.get().isIE()) {
+      DOM.setStyleAttribute(e,"height","100%");
+    }
+  }
   lastForcedPixelWidth=pixelWidth;
   lastForcedPixelHeight=pixelHeight;
 }

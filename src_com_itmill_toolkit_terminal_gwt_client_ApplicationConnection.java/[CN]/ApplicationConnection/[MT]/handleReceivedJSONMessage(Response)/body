@@ -55,7 +55,7 @@
     redirectTimer.schedule(1000 * sessionExpirationInterval);
   }
   final JSONArray changes=(JSONArray)((JSONObject)json).get("changes");
-  Set<Widget> sizeUpdatedWidgets=new HashSet<Widget>();
+  Vector<Widget> updatedWidgets=new Vector<Widget>();
   for (int i=0; i < changes.size(); i++) {
     try {
       final UIDL change=new UIDL((JSONArray)changes.get(i));
@@ -69,12 +69,8 @@
       final Paintable paintable=getPaintable(uidl.getId());
       if (paintable != null) {
         Widget widget=(Widget)paintable;
-        int w=widget.getOffsetWidth();
-        int h=widget.getOffsetHeight();
         paintable.updateFromUIDL(uidl,this);
-        if (w != widget.getOffsetWidth() || h != widget.getOffsetHeight()) {
-          sizeUpdatedWidgets.add((Widget)paintable);
-        }
+        updatedWidgets.add(widget);
       }
  else {
         if (!uidl.getTag().equals("window")) {
@@ -87,6 +83,15 @@
     }
  catch (    final Throwable e) {
       ClientExceptionHandler.displayError(e);
+    }
+  }
+  Set<Widget> sizeUpdatedWidgets=new HashSet<Widget>();
+  for (  Widget widget : updatedWidgets) {
+    Size oldSize=componentOffsetSizes.get(widget);
+    Size newSize=new Size(widget.getOffsetWidth(),widget.getOffsetHeight());
+    if (oldSize == null || !oldSize.equals(newSize)) {
+      sizeUpdatedWidgets.add(widget);
+      componentOffsetSizes.put(widget,newSize);
     }
   }
   Util.componentSizeUpdated(sizeUpdatedWidgets);

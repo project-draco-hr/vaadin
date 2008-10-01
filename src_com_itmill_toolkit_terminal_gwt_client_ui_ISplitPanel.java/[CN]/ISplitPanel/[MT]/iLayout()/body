@@ -1,3 +1,80 @@
 {
-  iLayout(-1,-1);
+  if (!isAttached()) {
+    return;
+  }
+  renderInformationFirst.updateSize(getElement());
+  int wholeSize;
+  int pixelPosition;
+  if (!(resizing && BrowserInfo.get().isGecko())) {
+    DOM.setStyleAttribute(firstContainer,"overflow","hidden");
+    DOM.setStyleAttribute(secondContainer,"overflow","hidden");
+  }
+switch (orientation) {
+case ORIENTATION_HORIZONTAL:
+    wholeSize=DOM.getElementPropertyInt(wrapper,"clientWidth");
+  pixelPosition=DOM.getElementPropertyInt(splitter,"offsetLeft");
+if (pixelPosition > 0 && pixelPosition + getSplitterSize() > wholeSize) {
+  pixelPosition=wholeSize - getSplitterSize();
+  if (pixelPosition < 0) {
+    pixelPosition=0;
+  }
+  setSplitPosition(pixelPosition + "px");
+  return;
+}
+DOM.setStyleAttribute(firstContainer,"width",pixelPosition + "px");
+int secondContainerWidth=(wholeSize - pixelPosition - getSplitterSize());
+if (secondContainerWidth < 0) {
+secondContainerWidth=0;
+}
+DOM.setStyleAttribute(secondContainer,"width",secondContainerWidth + "px");
+DOM.setStyleAttribute(secondContainer,"left",(pixelPosition + getSplitterSize()) + "px");
+int contentHeight=renderInformationFirst.getRenderedSize().getHeight();
+renderInformationFirst.setContentAreaHeight(contentHeight);
+renderInformationFirst.setContentAreaWidth(getSplitterSize());
+renderInformationSecond.setContentAreaHeight(contentHeight);
+renderInformationSecond.setContentAreaWidth(secondContainerWidth);
+break;
+case ORIENTATION_VERTICAL:
+wholeSize=DOM.getElementPropertyInt(wrapper,"clientHeight");
+pixelPosition=DOM.getElementPropertyInt(splitter,"offsetTop");
+if (pixelPosition > 0 && pixelPosition + getSplitterSize() > wholeSize) {
+pixelPosition=wholeSize - getSplitterSize();
+if (pixelPosition < 0) {
+pixelPosition=0;
+}
+setSplitPosition(pixelPosition + "px");
+return;
+}
+DOM.setStyleAttribute(firstContainer,"height",pixelPosition + "px");
+int secondContainerHeight=(wholeSize - pixelPosition - getSplitterSize());
+if (secondContainerHeight < 0) {
+secondContainerHeight=0;
+}
+DOM.setStyleAttribute(secondContainer,"height",secondContainerHeight + "px");
+DOM.setStyleAttribute(secondContainer,"top",(pixelPosition + getSplitterSize()) + "px");
+int contentWidth=renderInformationFirst.getRenderedSize().getWidth();
+renderInformationFirst.setContentAreaHeight(getSplitterSize());
+renderInformationFirst.setContentAreaWidth(contentWidth);
+renderInformationSecond.setContentAreaHeight(secondContainerHeight);
+renderInformationSecond.setContentAreaWidth(contentWidth);
+break;
+}
+if (Util.isIE7()) {
+client.runDescendentsLayout(this);
+DeferredCommand.addCommand(new Command(){
+public void execute(){
+DOM.setStyleAttribute(firstContainer,"overflow","auto");
+DOM.setStyleAttribute(secondContainer,"overflow","auto");
+}
+}
+);
+}
+ else {
+client.runDescendentsLayout(this);
+if (!(resizing && BrowserInfo.get().isGecko())) {
+DOM.setStyleAttribute(firstContainer,"overflow","auto");
+DOM.setStyleAttribute(secondContainer,"overflow","auto");
+}
+}
+renderInformationFirst.updateSize(getElement());
 }
