@@ -30,6 +30,10 @@
     bodyContainer.setHeight((tBody.getRowHeight() * pageLength) + "px");
   }
  else {
+    if (BrowserInfo.get().isIE6()) {
+      super.setHeight("0px");
+      getBorderSpace();
+    }
     mySetHeight(height);
     iLayout();
   }
@@ -47,11 +51,7 @@
       super.setWidth(width);
     }
  else     if (width.indexOf("%") > 0) {
-      if (!width.equals("100%")) {
-        super.setWidth(width);
-      }
-      bodyContainer.setWidth("100%");
-      tHead.setWidth("100%");
+      setRelativeWidth(width);
     }
   }
   int availW=tBody.getAvailableWidth();
