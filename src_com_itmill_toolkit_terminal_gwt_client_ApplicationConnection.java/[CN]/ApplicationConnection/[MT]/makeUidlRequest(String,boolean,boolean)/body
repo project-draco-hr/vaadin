@@ -16,6 +16,9 @@
         public void onError(        Request request,        Throwable exception){
           console.error("Got error");
           endRequest();
+          if (!applicationRunning) {
+            configuration.startNextApplication();
+          }
         }
         public void onResponseReceived(        Request request,        Response response){
           if (applicationRunning) {
@@ -24,6 +27,7 @@
  else {
             applicationRunning=true;
             handleWhenCSSLoaded(response);
+            configuration.startNextApplication();
           }
         }
         int cssWaits=0;
