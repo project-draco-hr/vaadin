@@ -1,2 +1,91 @@
 {
+  getOffsetWidth();
+  getOffsetHeight();
+  int[] newSize=getDimensionsArray();
+  if ((newSize[WIDTH] != layout[WIDTH]) || (newSize[HEIGHT] != layout[HEIGHT])) {
+    toUpdate.clear();
+    toUpdate=getDrawableComponents();
+    layout=newSize;
+  }
+  if (!toUpdate.isEmpty()) {
+    for (Iterator<Widget> componentIterator=toUpdate.iterator(); componentIterator.hasNext(); ) {
+      Widget componentWidget=componentIterator.next();
+      CustomCaption componentHeader=componentToHeader.get(componentWidget);
+      CustomCaption componentMarker=componentToMarker.get(componentWidget);
+      resetPositionAttributes(componentWidget);
+      maximizeArea(componentWidget);
+      int[] coords=parseCoordString(componentToCoords.get(componentWidget));
+      boolean[] sidesToAttach=new boolean[6];
+      for (int i=0; i < coords.length; i++) {
+        sidesToAttach[i]=(coords[i] != -1);
+      }
+      if (!sidesToAttach[TOP] && !sidesToAttach[BOTTOM]) {
+        sidesToAttach[TOP]=true;
+      }
+      if (!sidesToAttach[LEFT] && !sidesToAttach[RIGHT]) {
+        sidesToAttach[LEFT]=true;
+      }
+      if (coords[WIDTH] == -1) {
+        coords[WIDTH]=layout[WIDTH];
+        if (coords[LEFT] != -1) {
+          coords[WIDTH]-=coords[LEFT];
+        }
+        if (coords[RIGHT] != -1) {
+          coords[WIDTH]-=coords[RIGHT];
+        }
+      }
+      if (coords[HEIGHT] == -1) {
+        coords[HEIGHT]=layout[HEIGHT];
+        if (coords[TOP] != -1) {
+          coords[HEIGHT]-=coords[TOP];
+        }
+        if (coords[BOTTOM] != -1) {
+          coords[HEIGHT]-=coords[BOTTOM];
+        }
+      }
+      if (coords[HEIGHT] > layout[HEIGHT]) {
+        coords[HEIGHT]=layout[HEIGHT];
+      }
+ else       if (coords[HEIGHT] < 0) {
+        coords[HEIGHT]=0;
+      }
+      if (coords[WIDTH] > layout[WIDTH]) {
+        coords[WIDTH]=layout[WIDTH];
+      }
+ else       if (coords[WIDTH] < 0) {
+        coords[WIDTH]=0;
+      }
+      calculateMargins(coords);
+      for (int i=0; i < coords.length; i++) {
+        if (coords[i] < 0) {
+          coords[i]=0;
+        }
+      }
+      if ((coords[TOP] + coords[BOTTOM]) > getOffsetHeight()) {
+        if (coords[TOP] > coords[BOTTOM]) {
+          coords[TOP]-=coords[TOP] - coords[BOTTOM];
+        }
+ else {
+          coords[BOTTOM]-=coords[BOTTOM] - coords[TOP];
+        }
+      }
+      if (coords[RIGHT] + coords[LEFT] > getOffsetWidth()) {
+        if (coords[RIGHT] > coords[LEFT]) {
+          coords[RIGHT]-=coords[RIGHT] - coords[LEFT];
+        }
+ else {
+          coords[LEFT]-=coords[LEFT] - coords[RIGHT];
+        }
+      }
+      setWidgetPosition(componentWidget,coords,sidesToAttach);
+      if (componentHeader != null) {
+        updateCaptionPosition(componentHeader,componentWidget);
+      }
+      if (componentMarker != null) {
+        updateCaptionPosition(componentMarker,componentWidget);
+      }
+    }
+    client.runDescendentsLayout(this);
+  }
+  toUpdate.clear();
 }
