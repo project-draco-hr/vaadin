@@ -4,11 +4,6 @@
   int totalExplicitColumnsWidths=0;
   int total=0;
   final int[] widths=new int[tHead.visibleCells.size()];
-  if (width == null) {
-    bodyContainer.setWidth("");
-    tHead.setWidth("");
-    super.setWidth("");
-  }
   tHead.enableBrowserIntelligence();
   while (headCells.hasNext()) {
     final HeaderCell hCell=(HeaderCell)headCells.next();
@@ -26,33 +21,13 @@
     i++;
   }
   tHead.disableBrowserIntelligence();
-  if (height == null) {
+  if (height == null || "".equals(height)) {
     bodyContainer.setHeight((tBody.getRowHeight() * pageLength) + "px");
   }
- else {
-    if (BrowserInfo.get().isIE6()) {
-      super.setHeight("0px");
-      getBorderSpace();
-    }
-    mySetHeight(height);
-    iLayout();
-  }
-  if (width == null) {
+  if (width == null || "".equals(width)) {
     int w=total;
     w+=getScrollbarWidth();
-    bodyContainer.setWidth(w + "px");
-    tHead.setWidth(w + "px");
-    super.setWidth(w + "px");
-  }
- else {
-    if (width.indexOf("px") > 0) {
-      bodyContainer.setWidth(width);
-      tHead.setWidth(width);
-      super.setWidth(width);
-    }
- else     if (width.indexOf("%") > 0) {
-      setRelativeWidth(width);
-    }
+    setContentWidth(w);
   }
   int availW=tBody.getAvailableWidth();
   availW=tBody.getAvailableWidth();
