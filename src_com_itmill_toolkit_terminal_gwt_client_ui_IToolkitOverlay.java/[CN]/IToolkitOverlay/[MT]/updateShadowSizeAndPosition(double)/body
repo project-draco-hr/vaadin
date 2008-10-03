@@ -1,0 +1,38 @@
+{
+  if (!isAttached()) {
+    return;
+  }
+  String zIndex=null;
+  try {
+    zIndex=DOM.getStyleAttribute(getElement(),"zIndex");
+  }
+ catch (  Exception ignore) {
+  }
+  if (zIndex == null) {
+    zIndex="" + Z_INDEX;
+  }
+  if (BrowserInfo.get().isIE()) {
+    getOffsetHeight();
+    getOffsetWidth();
+  }
+  int x=getAbsoluteLeft();
+  int y=getAbsoluteTop();
+  int width=getOffsetWidth();
+  int height=getOffsetHeight();
+  if (width < 0) {
+    width=0;
+  }
+  if (height < 0) {
+    height=0;
+  }
+  x+=(int)(width * (1.0 - progress) / 2.0);
+  y+=(int)(height * (1.0 - progress) / 2.0);
+  width=(int)(width * progress);
+  height=(int)(height * progress);
+  DOM.setStyleAttribute(shadow,"display",progress < 0.9 ? "none" : "");
+  DOM.setStyleAttribute(shadow,"zIndex",zIndex);
+  DOM.setStyleAttribute(shadow,"width",width + "px");
+  DOM.setStyleAttribute(shadow,"height",height + "px");
+  DOM.setStyleAttribute(shadow,"top",y + "px");
+  DOM.setStyleAttribute(shadow,"left",x + "px");
+}

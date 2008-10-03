@@ -1,5 +1,5 @@
 {
-  final int type=DOM.eventGetType(event);
+  final int type=event.getTypeInt();
   if (type == Event.ONKEYDOWN && shortcutHandler != null) {
     shortcutHandler.handleKeyboardEvent(event);
     return;
@@ -8,11 +8,11 @@
   if (client != null && DOM.isOrHasChild(header,target)) {
     client.handleTooltipEvent(event,this);
   }
-  if (resizing || DOM.compare(resizeBox,target)) {
+  if (resizing || resizeBox == target) {
     onResizeEvent(event);
     DOM.eventCancelBubble(event,true);
   }
- else   if (DOM.compare(target,closeBox)) {
+ else   if (target == closeBox) {
     if (type == Event.ONCLICK) {
       onCloseClick();
       DOM.eventCancelBubble(event,true);
