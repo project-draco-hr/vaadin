@@ -1,9 +1,17 @@
 {
   final OptionGroup context=new OptionGroup("Context");
   context.addItem("Main window");
+  context.addItem("ExpandLayout");
   context.addItem("Subwindow");
   context.addItem("Panel");
+  context.addItem("Split Panel");
+  context.addItem("TabSheet");
+  context.addItem("Accordion");
   context.setValue("Main window");
+  final OptionGroup testComponent=new OptionGroup("TestComponent 100%x100%");
+  testComponent.addItem("Label");
+  testComponent.addItem("Table");
+  testComponent.setValue("Label");
   width.addItem("100%");
   width.addItem("50%");
   width.addItem("150%");
@@ -18,6 +26,7 @@
   height.setValue("100%");
   final Button set=new Button("Set",new ClickListener(){
     public void buttonClick(    ClickEvent event){
+      getTable=testComponent.getValue().equals("Table");
       if (context.getValue() == "Main window") {
         drawInMainWindow();
       }
@@ -27,11 +36,24 @@
  else       if (context.getValue() == "Panel") {
         drawInPanel();
       }
+ else       if (context.getValue() == "Split Panel") {
+        drawInSplitPanel();
+      }
+ else       if (context.getValue() == "TabSheet") {
+        drawInTabSheet(false);
+      }
+ else       if (context.getValue() == "Accordion") {
+        drawInTabSheet(true);
+      }
+ else       if (context.getValue() == "ExpandLayout") {
+        drawInExpandLayout();
+      }
     }
   }
 );
   OrderedLayout ol=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
   ol.addComponent(context);
+  ol.addComponent(testComponent);
   ol.addComponent(width);
   ol.addComponent(height);
   ol.addComponent(set);
