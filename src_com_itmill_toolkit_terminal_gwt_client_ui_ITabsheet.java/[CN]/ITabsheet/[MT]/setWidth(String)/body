@@ -1,13 +1,14 @@
 {
-  String oldWidth=this.width;
+  super.setWidth(width);
   this.width=width;
-  if ("100%".equals(width)) {
-    super.setWidth("");
+  if ("".equals(width)) {
+    renderSpace.setWidth(0);
+    contentNode.getStyle().setProperty("width","");
   }
  else {
-    super.setWidth(width);
+    int contentWidth=getOffsetWidth() - getContentAreaBorderWidth();
+    contentNode.getStyle().setProperty("width",contentWidth + "px");
+    renderSpace.setWidth(contentWidth);
   }
-  if ((this.width != null && width == null) || (this.width == null && width != null) || !width.equals(oldWidth)) {
-    client.runDescendentsLayout(this);
-  }
+  iLayout();
 }

@@ -9,46 +9,6 @@
     int contentMarginLeft=contentNode.getAbsoluteLeft() - getElement().getAbsoluteLeft();
     Util.setWidthExcludingPadding(contentNode,parentWidthExcludingPadding - contentMarginLeft,2);
   }
-  if (height != null && height != "") {
-    final boolean hasChildren=getWidget() != null;
-    Element contentEl=null;
-    String origPositioning=null;
-    if (hasChildren) {
-      contentEl=getWidget().getElement();
-      origPositioning=DOM.getStyleAttribute(contentEl,"position");
-      DOM.setStyleAttribute(contentEl,"position","absolute");
-    }
-    DOM.setStyleAttribute(contentNode,"overflow","hidden");
-    DOM.setStyleAttribute(contentNode,"height","");
-    super.setHeight(height);
-    final int targetHeight=getOffsetHeight();
-    super.setHeight("");
-    if (BrowserInfo.get().isIE() && !hasChildren) {
-      DOM.setStyleAttribute(contentNode,"height","0px");
-    }
-    final int bottomTop=DOM.getElementPropertyInt(bottomDecoration,"offsetTop");
-    final int bottomHeight=DOM.getElementPropertyInt(bottomDecoration,"offsetHeight");
-    final int elementTop=DOM.getElementPropertyInt(getElement(),"offsetTop");
-    final int usedHeight=bottomTop + bottomHeight - elementTop;
-    int contentAreaHeight=targetHeight - usedHeight;
-    if (contentAreaHeight < 0) {
-      contentAreaHeight=0;
-    }
-    renderInformation.setContentAreaHeight(contentAreaHeight);
-    DOM.setStyleAttribute(contentNode,"height",contentAreaHeight + "px");
-    DOM.setStyleAttribute(contentNode,"overflow","auto");
-    if (hasChildren) {
-      DOM.setStyleAttribute(contentEl,"position",origPositioning);
-    }
-    DOM.setElementPropertyInt(contentNode,"scrollTop",scrollTop);
-    DOM.setElementPropertyInt(contentNode,"scrollLeft",scrollLeft);
-  }
- else {
-    DOM.setStyleAttribute(contentNode,"height","");
-  }
-  if (width != null && !width.equals("")) {
-    renderInformation.setContentAreaWidth(renderInformation.getRenderedSize().getWidth() - borderPaddingHorizontal);
-  }
   if (runGeckoFix && BrowserInfo.get().isGecko()) {
     if (width == null || width.equals("")) {
       if (geckoCaptionMeter == null) {
@@ -64,6 +24,20 @@
         DOM.setStyleAttribute(captionNode,"width","");
       }
     }
+  }
+  if (BrowserInfo.get().getWebkitVersion() > 0) {
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        contentNode.getStyle().setProperty("overflow","hidden");
+        (new Timer(){
+          @Override public void run(){
+            contentNode.getStyle().setProperty("overflow","auto");
+          }
+        }
+).schedule(1);
+      }
+    }
+);
   }
   client.runDescendentsLayout(this);
 }

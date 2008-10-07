@@ -1,23 +1,21 @@
 {
   renderInformation.updateSize(getElement());
-  if (height != null && height != "") {
-    super.setHeight(height);
-    int contentHeight=getOffsetHeight() - DOM.getElementPropertyInt(deco,"offsetHeight") - tb.getOffsetHeight();
-    if (contentHeight < 0) {
-      contentHeight=0;
-    }
-    DOM.setStyleAttribute(contentNode,"height",contentHeight + "px");
-    DOM.setStyleAttribute(contentNode,"overflow","auto");
-    tp.setHeight("100%");
-  }
- else {
-    DOM.setStyleAttribute(contentNode,"height","");
-    DOM.setStyleAttribute(contentNode,"overflow","");
-  }
   if (client != null) {
     client.runDescendentsLayout(this);
   }
-  renderInformation.setContentAreaWidth(tp.getElement().getOffsetWidth());
-  renderInformation.setContentAreaHeight(tp.getElement().getOffsetHeight());
   updateTabScroller();
+  if (BrowserInfo.get().getWebkitVersion() > 0) {
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        contentNode.getStyle().setProperty("overflow","hidden");
+        (new Timer(){
+          @Override public void run(){
+            contentNode.getStyle().setProperty("overflow","auto");
+          }
+        }
+).schedule(100);
+      }
+    }
+);
+  }
 }

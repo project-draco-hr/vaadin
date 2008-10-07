@@ -1,3 +1,17 @@
 {
-  return renderInformation.getContentAreaSize();
+  if (contentNodeSize == null) {
+    contentNodeSize=new RenderSpace(-1,-1){
+      @Override public int getHeight(){
+        return contentNode.getOffsetHeight() - getContainerBorderHeight();
+      }
+      @Override public int getWidth(){
+        return contentNode.getOffsetWidth() - getContainerBorderWidth();
+      }
+      @Override public int getScrollbarSize(){
+        return Util.getNativeScrollbarSize();
+      }
+    }
+;
+  }
+  return contentNodeSize;
 }

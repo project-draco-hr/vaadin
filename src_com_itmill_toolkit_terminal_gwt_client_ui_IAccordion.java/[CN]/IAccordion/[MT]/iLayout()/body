@@ -22,4 +22,19 @@
     item.setHeight("");
   }
   client.runDescendentsLayout(item);
+  if (BrowserInfo.get().getWebkitVersion() > 0) {
+    final Element selectedTabContent=getSelectedStack().getContainerElement();
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        selectedTabContent.getStyle().setProperty("overflow","hidden");
+        (new Timer(){
+          @Override public void run(){
+            selectedTabContent.getStyle().setProperty("overflow","auto");
+          }
+        }
+).schedule(1);
+      }
+    }
+);
+  }
 }

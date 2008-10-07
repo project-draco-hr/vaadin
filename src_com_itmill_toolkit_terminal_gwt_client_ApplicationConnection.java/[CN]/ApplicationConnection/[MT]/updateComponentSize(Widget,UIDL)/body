@@ -3,6 +3,12 @@
   String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : "";
   float relativeWidth=Util.parseRelativeSize(w);
   float relativeHeight=Util.parseRelativeSize(h);
+  if (relativeHeight < 0.0) {
+    component.setHeight(h);
+  }
+  if (relativeWidth < 0.0) {
+    component.setWidth(w);
+  }
   if (relativeHeight >= 0.0 || relativeWidth >= 0.0) {
     FloatSize relativeSize=new FloatSize(relativeWidth,relativeHeight);
     componentRelativeSizes.put(component,relativeSize);
@@ -10,11 +16,5 @@
   }
  else   if (relativeHeight < 0.0 && relativeWidth < 0.0) {
     componentRelativeSizes.remove(component);
-  }
-  if (relativeHeight < 0.0) {
-    component.setHeight(h);
-  }
-  if (relativeWidth < 0.0) {
-    component.setWidth(w);
   }
 }
