@@ -55,10 +55,14 @@
     filtering=false;
   }
   final int minw=minWidth(captions);
-  final Element spacer=DOM.createDiv();
-  DOM.setStyleAttribute(spacer,"width",minw + "px");
-  DOM.setStyleAttribute(spacer,"height","0");
-  DOM.setStyleAttribute(spacer,"overflow","hidden");
-  DOM.appendChild(panel.getElement(),spacer);
+  Element lastChild=DOM.getChild(panel.getElement(),DOM.getChildCount(panel.getElement()) - 1);
+  if (DOM.getElementProperty(lastChild,"className") != null && DOM.getElementProperty(lastChild,"className") != "") {
+    final Element spacer=DOM.createDiv();
+    DOM.setStyleAttribute(spacer,"height","0");
+    DOM.setStyleAttribute(spacer,"overflow","hidden");
+    DOM.appendChild(panel.getElement(),spacer);
+    lastChild=spacer;
+  }
+  DOM.setStyleAttribute(lastChild,"width",minw + "px");
   popupOpenerClicked=false;
 }
