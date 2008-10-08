@@ -25,19 +25,6 @@
       }
     }
   }
-  if (BrowserInfo.get().getWebkitVersion() > 0) {
-    DeferredCommand.addCommand(new Command(){
-      public void execute(){
-        contentNode.getStyle().setProperty("overflow","hidden");
-        (new Timer(){
-          @Override public void run(){
-            contentNode.getStyle().setProperty("overflow","auto");
-          }
-        }
-).schedule(1);
-      }
-    }
-);
-  }
   client.runDescendentsLayout(this);
+  Util.runWebkitOverflowAutoFix(contentNode);
 }

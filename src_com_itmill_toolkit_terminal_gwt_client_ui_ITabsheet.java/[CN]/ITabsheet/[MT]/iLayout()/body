@@ -4,18 +4,5 @@
     client.runDescendentsLayout(this);
   }
   updateTabScroller();
-  if (BrowserInfo.get().getWebkitVersion() > 0) {
-    DeferredCommand.addCommand(new Command(){
-      public void execute(){
-        contentNode.getStyle().setProperty("overflow","hidden");
-        (new Timer(){
-          @Override public void run(){
-            contentNode.getStyle().setProperty("overflow","auto");
-          }
-        }
-).schedule(100);
-      }
-    }
-);
-  }
+  Util.runWebkitOverflowAutoFix(contentNode);
 }
