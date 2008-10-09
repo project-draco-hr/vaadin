@@ -1,0 +1,19 @@
+{
+  Feature[] features=f.getFeatures();
+  for (int i=0; i < features.length; i++) {
+    Item item=c.addItem(features[i]);
+    Property property=item.getItemProperty(PROPERTY_NAME);
+    property.setValue(features[i].getName());
+    property=item.getItemProperty(PROPERTY_DESCRIPTION);
+    property.setValue(features[i].getDescription());
+    if (recurse) {
+      c.setParent(features[i],f);
+      if (features[i] instanceof FeatureSet) {
+        addFeatures((FeatureSet)features[i],c,recurse);
+      }
+    }
+    if (!(features[i] instanceof FeatureSet)) {
+      c.setChildrenAllowed(features[i],false);
+    }
+  }
+}

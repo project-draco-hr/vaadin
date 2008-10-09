@@ -1,0 +1,33 @@
+{
+  alwaysRecalculateColumnWidths=true;
+  setSelectable(false);
+  setSizeFull();
+  setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
+  addGeneratedColumn(Feature.PROPERTY_ICON,new Table.ColumnGenerator(){
+    public Component generateCell(    Table source,    Object itemId,    Object columnId){
+      Feature f=(Feature)itemId;
+      Resource res=new ClassResource(f.getClass(),f.getIconName(),SamplerApplication.this);
+      Embedded emb=new Embedded("",res);
+      emb.setWidth("48px");
+      emb.setHeight("48px");
+      emb.setType(Embedded.TYPE_IMAGE);
+      return emb;
+    }
+  }
+);
+  addGeneratedColumn("",new Table.ColumnGenerator(){
+    public Component generateCell(    Table source,    Object itemId,    Object columnId){
+      Button b=new Button(itemId instanceof FeatureSet ? "See samples ???" : "See sample ???");
+      b.setData(itemId);
+      b.addListener(new Button.ClickListener(){
+        public void buttonClick(        ClickEvent event){
+          currentFeature.setValue(event.getButton().getData());
+        }
+      }
+);
+      b.setStyleName(Button.STYLE_LINK);
+      return b;
+    }
+  }
+);
+}

@@ -1,0 +1,98 @@
+{
+  allFeatures=(Container.Ordered)features.getContainer(true);
+  ExpandLayout main=new ExpandLayout();
+  setLayout(main);
+  main.setSizeFull();
+  ExpandLayout nav=new ExpandLayout(ExpandLayout.ORIENTATION_HORIZONTAL);
+  main.addComponent(nav);
+  nav.setHeight("40px");
+  nav.setWidth("100%");
+  nav.setStyleName("topbar");
+  split=new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL);
+  split.setSizeFull();
+  split.setSplitPosition(0,SplitPanel.UNITS_PIXELS);
+  main.addComponent(split);
+  main.expand(split);
+  Button logo=new Button("",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      currentFeature.setValue(null);
+    }
+  }
+);
+  logo.setDescription("Home");
+  logo.setStyleName(Button.STYLE_LINK);
+  logo.setIcon(new ThemeResource("sampler/logo.png"));
+  logo.setWidth("160px");
+  nav.addComponent(logo);
+  nav.setComponentAlignment(logo,ExpandLayout.ALIGNMENT_LEFT,ExpandLayout.ALIGNMENT_VERTICAL_CENTER);
+  Button b=new Button("< Previous",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      Object curr=currentFeature.getValue();
+      Object prev=allFeatures.prevItemId(curr);
+      while (prev != null && prev instanceof FeatureSet) {
+        prev=allFeatures.prevItemId(prev);
+      }
+      currentFeature.setValue(prev);
+    }
+  }
+);
+  nav.addComponent(b);
+  nav.setComponentAlignment(b,ExpandLayout.ALIGNMENT_LEFT,ExpandLayout.ALIGNMENT_VERTICAL_CENTER);
+  b=new Button("Next >",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      Object curr=currentFeature.getValue();
+      Object next=allFeatures.nextItemId(curr);
+      while (next != null && next instanceof FeatureSet) {
+        next=allFeatures.nextItemId(next);
+      }
+      currentFeature.setValue(next);
+    }
+  }
+);
+  nav.addComponent(b);
+  nav.setComponentAlignment(b,ExpandLayout.ALIGNMENT_LEFT,ExpandLayout.ALIGNMENT_VERTICAL_CENTER);
+  b=new Button(":: | \\???/ | ???");
+  nav.addComponent(b);
+  nav.expand(b);
+  nav.setComponentAlignment(b,ExpandLayout.ALIGNMENT_RIGHT,ExpandLayout.ALIGNMENT_VERTICAL_CENTER);
+  Tree tree=new Tree();
+  tree.setImmediate(true);
+  split.addComponent(tree);
+  tree.setContainerDataSource(allFeatures);
+  tree.setPropertyDataSource(currentFeature);
+  for (int i=0; i < features.getFeatures().length; i++) {
+    tree.expandItemsRecursively(features.getFeatures()[i]);
+  }
+  tree.expandItemsRecursively(features);
+  tree.addListener(new Table.ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      Feature val=(Feature)event.getProperty().getValue();
+      if (val == null) {
+        currentList.setFeatureContainer(features.getContainer(true));
+        if (currentList.getParent() != split) {
+          split.replaceComponent(featureView,currentList);
+        }
+      }
+ else       if (val instanceof FeatureSet) {
+        currentList.setFeatureContainer(((FeatureSet)val).getContainer(false));
+        if (currentList.getParent() != split) {
+          split.replaceComponent(featureView,currentList);
+        }
+      }
+ else {
+        if (featureView.getParent() != split) {
+          split.replaceComponent(currentList,featureView);
+        }
+        featureView.setFeature(val);
+      }
+    }
+  }
+);
+  FeatureTable tbl=new FeatureTable();
+  tbl.setFeatureContainer(allFeatures);
+  currentList=tbl;
+  split.addComponent(tbl);
+  featureView=new FeatureView();
+  Feature f=features.getFeatureByPath("Components/c/DummyFeature");
+  tree.setValue(f);
+}
