@@ -17,11 +17,13 @@
   }
   com.google.gwt.user.client.Window.setTitle(uidl.getStringAttribute("caption"));
   int childIndex=0;
+  boolean isClosed=false;
   while (childIndex < uidl.getChildCount() && "open".equals(uidl.getChildUIDL(childIndex).getTag())) {
     final UIDL open=uidl.getChildUIDL(childIndex);
     final String url=open.getStringAttribute("src");
     final String target=open.getStringAttribute("name");
     if (target == null) {
+      isClosed=true;
       onWindowClosed();
       goTo(url);
     }
@@ -29,6 +31,9 @@
       Window.open(url,target != null ? target : null,"");
     }
     childIndex++;
+  }
+  if (isClosed) {
+    return;
   }
   UIDL childUidl=uidl.getChildUIDL(childIndex);
   final Paintable lo=client.getPaintable(childUidl);
