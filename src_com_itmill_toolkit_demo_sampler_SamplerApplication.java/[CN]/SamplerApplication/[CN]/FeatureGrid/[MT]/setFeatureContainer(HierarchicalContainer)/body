@@ -1,0 +1,30 @@
+{
+  removeAllComponents();
+  Collection features=c.getItemIds();
+  for (Iterator it=features.iterator(); it.hasNext(); ) {
+    final Feature f=(Feature)it.next();
+    if (f instanceof FeatureSet) {
+      newRow();
+      addComponent(new Label(f.getName()));
+      if (c.isRoot(f)) {
+        newRow();
+      }
+    }
+ else {
+      Button b=new Button();
+      b.setWidth("130px");
+      b.setHeight("130px");
+      b.setSizeFull();
+      b.setStyleName(Button.STYLE_LINK);
+      b.setIcon(new ClassResource(f.getClass(),f.getIconName(),SamplerApplication.this));
+      b.setDescription("<h3>" + f.getName() + "</h3>"+ f.getDescription());
+      b.addListener(new Button.ClickListener(){
+        public void buttonClick(        ClickEvent event){
+          ((SamplerWindow)getWindow()).setFeature(f);
+        }
+      }
+);
+      addComponent(b);
+    }
+  }
+}
