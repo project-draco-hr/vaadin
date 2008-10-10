@@ -2,13 +2,23 @@
   if (closing && tooltipOwner == owner) {
     closeTimer.cancel();
     closing=false;
+    justClosedTimer.cancel();
+    justClosed=false;
     return;
+  }
+  if (closing) {
+    closeNow();
   }
   updatePosition(event);
   if (opening) {
     showTimer.cancel();
   }
   tooltipOwner=owner;
-  showTimer.schedule(1000);
+  if (justClosed) {
+    showTimer.schedule(QUICK_OPEN_DELAY);
+  }
+ else {
+    showTimer.schedule(OPEN_DELAY);
+  }
   opening=true;
 }
