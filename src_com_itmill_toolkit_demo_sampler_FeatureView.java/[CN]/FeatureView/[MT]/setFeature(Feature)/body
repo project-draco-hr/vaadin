@@ -1,8 +1,53 @@
 {
   removeAllComponents();
+  addComponent(controls,"feature-controls");
+  addComponent(feature.getExample(),"feature-example");
   Label l=new Label(feature.getName());
   addComponent(l,"feature-name");
   l=new Label(feature.getDescription());
   l.setContentMode(Label.CONTENT_XHTML);
   addComponent(l,"feature-desc");
+  StringBuffer src=new StringBuffer();
+  BufferedReader srcbr=feature.getSource();
+  try {
+    for (String line=srcbr.readLine(); null != line; line=srcbr.readLine()) {
+      src.append(line);
+      src.append("\n");
+    }
+  }
+ catch (  Exception e) {
+    src=new StringBuffer("Sorry, no source available right now.");
+  }
+  sourceCode.setValue(src.toString());
+  NamedExternalResource[] resources=feature.getRelatedResources();
+  if (resources != null) {
+    OrderedLayout res=new OrderedLayout();
+    res.setCaption("Resources");
+    for (    NamedExternalResource r : resources) {
+      res.addComponent(new Link(r.getName(),r));
+    }
+    addComponent(res,"feature-res");
+  }
+  APIResource[] apis=feature.getRelatedAPI();
+  if (apis != null) {
+    OrderedLayout api=new OrderedLayout();
+    api.setCaption("Related Samples");
+    addComponent(api,"feature-api");
+    for (    APIResource r : apis) {
+      api.addComponent(new Link(r.getName(),r));
+    }
+  }
+  Class[] features=feature.getRelatedFeatures();
+  if (features != null) {
+    OrderedLayout rel=new OrderedLayout();
+    rel.setCaption("Related Samples");
+    for (    Class c : features) {
+      Feature f=SamplerApplication.getFeatureFor(c);
+      if (f != null) {
+        String path=SamplerApplication.getPathFor(f);
+        rel.addComponent(new Link(f.getName(),new ExternalResource(getApplication().getURL() + path)));
+      }
+    }
+    addComponent(rel,"feature-rel");
+  }
 }
