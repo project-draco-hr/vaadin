@@ -1,6 +1,18 @@
 {
   super.onAttach();
-  final int contentWidth=DOM.getElementPropertyInt(contentPanel.getElement(),"offsetWidth");
-  final int windowWidth=DOM.getElementPropertyInt(getElement(),"offsetWidth");
-  borderWidthHorizontal=windowWidth - contentWidth;
+  if (BrowserInfo.get().isIE()) {
+    DOM.setStyleAttribute(contents,"width","7000px");
+    DOM.setStyleAttribute(contentPanel.getElement(),"width","7000px");
+    int contentWidth=DOM.getElementPropertyInt(contentPanel.getElement(),"offsetWidth");
+    contentWidth=DOM.getElementPropertyInt(contentPanel.getElement(),"offsetWidth");
+    final int windowWidth=DOM.getElementPropertyInt(getElement(),"offsetWidth");
+    DOM.setStyleAttribute(contentPanel.getElement(),"width","");
+    DOM.setStyleAttribute(contents,"width","");
+    borderWidth=windowWidth - contentWidth;
+  }
+ else {
+    final int contentWidth=DOM.getElementPropertyInt(contentPanel.getElement(),"offsetWidth");
+    final int windowWidth=DOM.getElementPropertyInt(getElement(),"offsetWidth");
+    borderWidth=windowWidth - contentWidth;
+  }
 }

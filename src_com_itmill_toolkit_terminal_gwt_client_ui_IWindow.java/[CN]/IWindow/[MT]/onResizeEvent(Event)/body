@@ -1,36 +1,45 @@
 {
   if (resizable) {
-switch (DOM.eventGetType(event)) {
+switch (event.getTypeInt()) {
 case Event.ONMOUSEDOWN:
       if (!isActive()) {
         bringToFront();
       }
     showDraggingCurtain(true);
-  resizing=true;
-startX=DOM.eventGetScreenX(event);
-startY=DOM.eventGetScreenY(event);
-origW=getWidget().getOffsetWidth();
-origH=getWidget().getOffsetHeight();
+  if (BrowserInfo.get().isIE()) {
+    DOM.setStyleAttribute(resizeBox,"visibility","hidden");
+  }
+resizing=true;
+startX=event.getScreenX();
+startY=event.getScreenY();
+origW=getElement().getOffsetWidth();
+origH=getElement().getOffsetHeight();
 DOM.setCapture(getElement());
-DOM.eventPreventDefault(event);
+event.preventDefault();
 break;
 case Event.ONMOUSEUP:
 showDraggingCurtain(false);
+if (BrowserInfo.get().isIE()) {
+DOM.setStyleAttribute(resizeBox,"visibility","");
+}
 resizing=false;
 DOM.releaseCapture(getElement());
 setSize(event,true);
 break;
 case Event.ONLOSECAPTURE:
 showDraggingCurtain(false);
+if (BrowserInfo.get().isIE()) {
+DOM.setStyleAttribute(resizeBox,"visibility","");
+}
 resizing=false;
 case Event.ONMOUSEMOVE:
 if (resizing) {
 setSize(event,false);
-DOM.eventPreventDefault(event);
+event.preventDefault();
 }
 break;
 default :
-DOM.eventPreventDefault(event);
+event.preventDefault();
 break;
 }
 }

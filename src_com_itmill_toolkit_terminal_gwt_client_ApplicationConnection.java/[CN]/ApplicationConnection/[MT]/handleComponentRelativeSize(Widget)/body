@@ -6,7 +6,14 @@
   }
   boolean horizontalScrollBar=false;
   boolean verticalScrollBar=false;
-  RenderSpace renderSpace=Util.getLayout(widget).getAllocatedSpace(widget);
+  Container parent=Util.getLayout(widget);
+  RenderSpace renderSpace;
+  if (parent == null) {
+    renderSpace=new RenderSpace(Window.getClientWidth(),Window.getClientHeight());
+  }
+ else {
+    renderSpace=parent.getAllocatedSpace(widget);
+  }
   if (relativeSize.getHeight() >= 0) {
     if (renderSpace != null) {
       if (renderSpace.getScrollbarSize() > 0) {

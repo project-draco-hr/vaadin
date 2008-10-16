@@ -1,6 +1,20 @@
 {
-  if (!"".equals(width)) {
-    DOM.setStyleAttribute(getElement(),"width",(Integer.parseInt(width.substring(0,width.length() - 2)) + borderWidthHorizontal) + "px");
+  if (!isAttached()) {
+    return;
   }
-  updateShadowSizeAndPosition();
+  if (!"".equals(width)) {
+    if (width.indexOf("px") < 0) {
+      DOM.setStyleAttribute(getElement(),"width",width);
+      width=getElement().getOffsetWidth() + "px";
+    }
+    DOM.setStyleAttribute(getElement(),"width",width);
+    if (BrowserInfo.get().isIE6()) {
+      int contentWidth=(Integer.parseInt(width.substring(0,width.length() - 2)) - borderWidth);
+      if (contentWidth < 0) {
+        contentWidth=0;
+      }
+      DOM.setStyleAttribute(contentPanel.getElement(),"width",contentWidth + "px");
+    }
+    updateShadowSizeAndPosition();
+  }
 }

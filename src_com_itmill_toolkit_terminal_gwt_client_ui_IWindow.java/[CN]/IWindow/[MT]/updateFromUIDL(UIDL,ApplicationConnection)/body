@@ -3,14 +3,19 @@
   this.client=client;
   DOM.setElementProperty(closeBox,"id",id + "_window_close");
   if (uidl.hasAttribute("invisible")) {
-    this.hide();
+    hide();
     return;
+  }
+  if (!uidl.hasAttribute("cached")) {
+    if (uidl.getBooleanAttribute("modal") != modal) {
+      setModal(!modal);
+    }
+    if (!isAttached()) {
+      show();
+    }
   }
   if (client.updateComponent(this,uidl,false)) {
     return;
-  }
-  if (uidl.getBooleanAttribute("modal") != modal) {
-    setModal(!modal);
   }
   if (uidl.getBooleanAttribute("resizable") != resizable) {
     setResizable(!resizable);
@@ -26,36 +31,6 @@
     }
   }
  catch (  final IllegalArgumentException e) {
-  }
-  if (!isAttached()) {
-    show();
-  }
-  if (uidl.hasAttribute("width")) {
-    final String width=uidl.getStringAttribute("width");
-    if (width.indexOf("px") < 0) {
-      DOM.setStyleAttribute(getElement(),"width",width);
-      int elementPropertyInt=DOM.getElementPropertyInt(getElement(),"offsetWidth");
-      DOM.setStyleAttribute(getElement(),"width","");
-      elementPropertyInt-=(DOM.getElementPropertyInt(getElement(),"offsetWidth") - DOM.getElementPropertyInt(contents,"offsetWidth"));
-      setWidth(elementPropertyInt + "px");
-    }
- else {
-      setWidth(width);
-    }
-  }
-  if (uidl.hasAttribute("height")) {
-    final String height=uidl.getStringAttribute("height");
-    if (height.indexOf("%") > 0) {
-      int winHeight=Window.getClientHeight();
-      float percent=Float.parseFloat(height.substring(0,height.indexOf("%"))) / 100.0f;
-      int contentPixels=(int)(winHeight * percent);
-      contentPixels-=(DOM.getElementPropertyInt(getElement(),"offsetHeight") - DOM.getElementPropertyInt(contents,"offsetHeight"));
-      contentPixels-=1;
-      setHeight(contentPixels + "px");
-    }
- else {
-      setHeight(height);
-    }
   }
   if (uidl.hasAttribute("caption")) {
     setCaption(uidl.getStringAttribute("caption"),uidl.getStringAttribute("icon"));
@@ -96,6 +71,10 @@
     layout=lo;
   }
   lo.updateFromUIDL(childUidl,client);
+  if (!uidl.hasAttribute("width")) {
+    final int naturalWidth=getElement().getOffsetWidth();
+    setWidth(naturalWidth + "px");
+  }
   if (uidl.getChildCount() > 1) {
     final int cnt=uidl.getChildCount();
     for (int i=1; i < cnt; i++) {
