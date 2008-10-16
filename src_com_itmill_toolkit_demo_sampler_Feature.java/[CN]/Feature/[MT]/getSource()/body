@@ -1,10 +1,21 @@
 {
-  try {
-    InputStream is=getClass().getResourceAsStream(getClass().getSimpleName() + "Example.txt");
-    return new BufferedReader(new InputStreamReader(is));
+synchronized (this) {
+    if (javaSource == null) {
+      StringBuffer src=new StringBuffer();
+      try {
+        InputStream is=getClass().getResourceAsStream(getClass().getSimpleName() + "Example.txt");
+        BufferedReader bis=new BufferedReader(new InputStreamReader(is));
+        for (String line=bis.readLine(); null != line; line=bis.readLine()) {
+          src.append(line);
+          src.append("\n");
+        }
+        javaSource=src.toString();
+      }
+ catch (      Exception e) {
+        System.err.println("Could not read source for " + getPathName());
+        javaSource="Sorry, no source available right now.";
+      }
+    }
   }
- catch (  Exception e) {
-    System.err.println("Could not read source for " + getPathName());
-  }
-  return null;
+  return javaSource;
 }
