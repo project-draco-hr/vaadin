@@ -7,13 +7,29 @@
     target.addAttribute("spacing",spacing);
   }
   final String[] alignmentsArray=new String[components.size()];
+  final Float[] expandRatioArray=new Float[components.size()];
+  float sum=getExpandRatioSum();
+  boolean equallyDevided=false;
+  if (sum == 0) {
+    equallyDevided=true;
+    float equalSize=1 / components.size();
+    for (int i=0; i < expandRatioArray.length; i++) {
+      expandRatioArray[i]=equalSize;
+    }
+  }
   int index=0;
   for (final Iterator i=components.iterator(); i.hasNext(); ) {
     final Component c=(Component)i.next();
     if (c != null) {
       c.paint(target);
-      alignmentsArray[index++]=String.valueOf(getComponentAlignment(c));
+      alignmentsArray[index]=String.valueOf(getComponentAlignment(c));
+      if (!equallyDevided) {
+        float myRatio=getExpandRatio(c);
+        expandRatioArray[index]=myRatio / sum;
+      }
+      index++;
     }
   }
   target.addAttribute("alignments",alignmentsArray);
+  target.addAttribute("expandRatios",expandRatioArray);
 }
