@@ -2,10 +2,13 @@
   setVisible(!uidl.getBooleanAttribute("invisible"));
   setStyleName(getElement(),"i-disabled",uidl.hasAttribute("disabled"));
   boolean isEmpty=true;
+  boolean wasPlacedAfterComponent=placedAfterComponent;
   placedAfterComponent=true;
   if (uidl.hasAttribute("icon")) {
     if (icon == null) {
       icon=new Icon(client);
+      DOM.sinkEvents(icon.getElement(),Event.ONLOAD);
+      Util.setFloat(icon.getElement(),"left");
       placedAfterComponent=false;
       DOM.insertChild(getElement(),icon.getElement(),0);
     }
@@ -20,7 +23,9 @@
   }
   if (uidl.hasAttribute("caption")) {
     if (captionText == null) {
-      captionText=DOM.createSpan();
+      captionText=DOM.createDiv();
+      Util.setFloat(captionText,"left");
+      DOM.setStyleAttribute(captionText,"overflow","hidden");
       DOM.insertChild(getElement(),captionText,icon == null ? 0 : 1);
     }
     String c=uidl.getStringAttribute("caption");
@@ -46,7 +51,8 @@
   if (uidl.getBooleanAttribute("required")) {
     isEmpty=false;
     if (requiredFieldIndicator == null) {
-      requiredFieldIndicator=DOM.createSpan();
+      requiredFieldIndicator=DOM.createDiv();
+      Util.setFloat(requiredFieldIndicator,"left");
       DOM.setInnerText(requiredFieldIndicator,"*");
       DOM.setElementProperty(requiredFieldIndicator,"className","i-required-field-indicator");
       DOM.appendChild(getElement(),requiredFieldIndicator);
@@ -71,6 +77,14 @@
     DOM.removeChild(getElement(),errorIndicatorElement);
     errorIndicatorElement=null;
   }
+  if (clearElement == null) {
+    clearElement=DOM.createDiv();
+    DOM.setStyleAttribute(clearElement,"clear","both");
+    DOM.setStyleAttribute(clearElement,"width","0px");
+    DOM.setStyleAttribute(clearElement,"height","0px");
+    DOM.setStyleAttribute(clearElement,"overflow","hidden");
+    DOM.appendChild(getElement(),clearElement);
+  }
   if (Util.isIE()) {
     if (isEmpty) {
       setHeight("0px");
@@ -81,6 +95,5 @@
       DOM.setStyleAttribute(getElement(),"overflow","");
     }
   }
-  requiredSpace.setWidth(getOffsetWidth());
-  requiredSpace.setHeight(getOffsetHeight());
+  return (wasPlacedAfterComponent != placedAfterComponent);
 }

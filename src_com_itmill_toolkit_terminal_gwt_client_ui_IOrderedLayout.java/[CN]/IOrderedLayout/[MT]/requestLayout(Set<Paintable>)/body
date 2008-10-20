@@ -1,12 +1,10 @@
 {
-  if (height != null && width != null) {
-    return true;
+  for (  Paintable p : children) {
+    getComponentContainer((Widget)p).updateWidgetSize();
   }
-  if (renderInformation.updateSize(root)) {
-    iLayout();
-    return false;
+  boolean sameSize=recalculateLayoutAndComponentSizes();
+  if (!sameSize) {
+    client.runDescendentsLayout(this);
   }
- else {
-    return true;
-  }
+  return sameSize;
 }

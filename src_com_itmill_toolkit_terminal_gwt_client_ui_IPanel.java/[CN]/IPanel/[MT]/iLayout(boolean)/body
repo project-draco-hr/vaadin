@@ -9,6 +9,20 @@
     int contentMarginLeft=contentNode.getAbsoluteLeft() - getElement().getAbsoluteLeft();
     Util.setWidthExcludingPadding(contentNode,parentWidthExcludingPadding - contentMarginLeft,2);
   }
+  if (BrowserInfo.get().isIE7() && (width == null || width.equals(""))) {
+    int captionMarginLeft=captionNode.getAbsoluteLeft() - getElement().getAbsoluteLeft();
+    int captionWidth=captionNode.getOffsetWidth() + captionMarginLeft;
+    int contentWidth=contentNode.getOffsetWidth();
+    int layoutWidth=((Widget)layout).getOffsetWidth() + getContainerBorderWidth();
+    int width=contentWidth;
+    if (captionWidth > width) {
+      width=captionWidth;
+    }
+    if (layoutWidth > width) {
+      width=layoutWidth;
+    }
+    super.setWidth(width + "px");
+  }
   if (runGeckoFix && BrowserInfo.get().isGecko()) {
     if (width == null || width.equals("")) {
       if (geckoCaptionMeter == null) {

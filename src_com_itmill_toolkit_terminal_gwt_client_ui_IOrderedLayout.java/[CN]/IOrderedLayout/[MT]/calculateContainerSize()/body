@@ -1,0 +1,31 @@
+{
+  int height=0, width=0;
+  if (isHorizontal()) {
+    height=activeLayoutSize.getHeight();
+    for (    ChildComponentContainer childComponentContainer : widgetToComponentContainer.values()) {
+      if (!childComponentContainer.isComponentRelativeSized(ORIENTATION_HORIZONTAL)) {
+        width=childComponentContainer.getWidgetSize().getWidth() + childComponentContainer.getCaptionWidthAfterComponent();
+        int captionWidth=childComponentContainer.getCaptionWidth();
+        if (captionWidth > width) {
+          width=captionWidth;
+        }
+      }
+ else {
+        width=0;
+      }
+      childComponentContainer.setContainerSize(width,height);
+    }
+  }
+ else {
+    width=activeLayoutSize.getWidth();
+    for (    ChildComponentContainer childComponentContainer : widgetToComponentContainer.values()) {
+      if (!childComponentContainer.isComponentRelativeSized(ORIENTATION_VERTICAL)) {
+        height=childComponentContainer.getWidgetSize().getHeight() + childComponentContainer.getCaptionHeightAboveComponent();
+      }
+ else {
+        height=0;
+      }
+      childComponentContainer.setContainerSize(width,height);
+    }
+  }
+}

@@ -11,10 +11,14 @@
   }
   if (relativeHeight >= 0.0 || relativeWidth >= 0.0) {
     FloatSize relativeSize=new FloatSize(relativeWidth,relativeHeight);
-    componentRelativeSizes.put(component,relativeSize);
+    if (componentRelativeSizes.put(component,relativeSize) == null) {
+      relativeSizeChanges.add(component);
+    }
     handleComponentRelativeSize(component);
   }
  else   if (relativeHeight < 0.0 && relativeWidth < 0.0) {
-    componentRelativeSizes.remove(component);
+    if (componentRelativeSizes.remove(component) != null) {
+      relativeSizeChanges.add(component);
+    }
   }
 }

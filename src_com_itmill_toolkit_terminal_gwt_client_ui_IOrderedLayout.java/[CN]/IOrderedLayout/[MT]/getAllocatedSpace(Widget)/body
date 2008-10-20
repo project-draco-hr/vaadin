@@ -1,12 +1,23 @@
 {
-  final int index=childWidgets.indexOf(child);
-  if (index >= 0) {
-    WidgetWrapper wrapper=childWidgetWrappers.get(index);
-    int w=wrapper.getAllocatedWidth();
-    int h=wrapper.getAllocatedHeight();
-    return new RenderSpace(w,h);
+  int width=0;
+  int height=0;
+  ChildComponentContainer childComponentContainer=getComponentContainer(child);
+  if (isVertical()) {
+    width=activeLayoutSize.getWidth();
+    width-=childComponentContainer.getCaptionWidthAfterComponent();
   }
- else {
-    return new RenderSpace();
+ else   if (!isDynamicWidth()) {
+    width=childComponentContainer.getContSize().getWidth();
+    width-=childComponentContainer.getCaptionWidthAfterComponent();
   }
+  if (isHorizontal()) {
+    height=activeLayoutSize.getHeight();
+    height-=childComponentContainer.getCaptionHeightAboveComponent();
+  }
+ else   if (!isDynamicHeight()) {
+    height=childComponentContainer.getContSize().getHeight();
+    height-=childComponentContainer.getCaptionHeightAboveComponent();
+  }
+  RenderSpace space=new RenderSpace(width,height);
+  return space;
 }

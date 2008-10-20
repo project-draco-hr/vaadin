@@ -36,7 +36,6 @@
     DOM.setElementProperty(contentNode,"className",contentClass);
     DOM.setElementProperty(bottomDecoration,"className",decoClass);
   }
-  iLayout(false);
   final UIDL layoutUidl=uidl.getChildUIDL(0);
   final Paintable newLayout=client.getPaintable(layoutUidl);
   if (newLayout != layout) {
@@ -46,7 +45,10 @@
     setWidget((Widget)newLayout);
     layout=newLayout;
   }
-  (layout).updateFromUIDL(layoutUidl,client);
+  layout.updateFromUIDL(layoutUidl,client);
+  if (BrowserInfo.get().isIE7()) {
+    iLayout(false);
+  }
   if (uidl.getChildCount() > 1) {
     final int cnt=uidl.getChildCount();
     for (int i=1; i < cnt; i++) {

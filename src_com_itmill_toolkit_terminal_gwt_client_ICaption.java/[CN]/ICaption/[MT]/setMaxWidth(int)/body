@@ -1,0 +1,42 @@
+{
+  this.maxWidth=maxWidth;
+  DOM.setStyleAttribute(getElement(),"width","");
+  if (icon != null) {
+    DOM.setStyleAttribute(icon.getElement(),"width","");
+  }
+  if (captionText != null) {
+    DOM.setStyleAttribute(captionText,"width","");
+  }
+  if (maxWidth < 0) {
+    return;
+  }
+  int currentWidth=getWidth();
+  if (currentWidth > maxWidth) {
+    int availableWidth=maxWidth;
+    DOM.setStyleAttribute(getElement(),"width",maxWidth + "px");
+    if (requiredFieldIndicator != null) {
+      availableWidth-=requiredFieldIndicator.getOffsetWidth();
+    }
+    if (errorIndicatorElement != null) {
+      availableWidth-=errorIndicatorElement.getOffsetWidth();
+    }
+    if (icon != null) {
+      if (availableWidth > icon.getOffsetWidth()) {
+        availableWidth-=icon.getOffsetWidth();
+      }
+ else {
+        DOM.setStyleAttribute(icon.getElement(),"width",availableWidth + "px");
+        availableWidth=0;
+      }
+    }
+    if (captionText != null) {
+      if (availableWidth > captionText.getOffsetWidth()) {
+        availableWidth-=captionText.getOffsetWidth();
+      }
+ else {
+        DOM.setStyleAttribute(captionText,"width",availableWidth + "px");
+        availableWidth=0;
+      }
+    }
+  }
+}
