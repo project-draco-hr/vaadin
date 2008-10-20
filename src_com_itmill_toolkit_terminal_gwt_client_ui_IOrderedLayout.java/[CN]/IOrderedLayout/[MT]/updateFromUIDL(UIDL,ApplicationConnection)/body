@@ -19,9 +19,11 @@
       childComponentContainer=createChildContainer(widget);
     }
     addOrMoveChild(childComponentContainer,pos++);
-    FloatSize relativeSize=Util.parseRelativeSize(childUIDL);
-    childComponentContainer.setRelativeSize(relativeSize);
-    if (hasRelativeSize(relativeSize,orientation)) {
+    if (!Util.isCached(childUIDL)) {
+      FloatSize relativeSize=Util.parseRelativeSize(childUIDL);
+      childComponentContainer.setRelativeSize(relativeSize);
+    }
+    if (childComponentContainer.isComponentRelativeSized(orientation)) {
       relativeSizeComponents.add(childComponentContainer);
       relativeSizeComponentUIDL.add(childUIDL);
       relativeSizeWidgets.add(widget);

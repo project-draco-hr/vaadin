@@ -1,13 +1,20 @@
 {
-  String w=uidl.hasAttribute("width") ? uidl.getStringAttribute("width") : "";
-  String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : "";
-  float relativeWidth=Util.parseRelativeSize(w);
-  float relativeHeight=Util.parseRelativeSize(h);
-  if (relativeHeight >= 0.0 || relativeWidth >= 0.0) {
-    FloatSize relativeSize=new FloatSize(relativeWidth,relativeHeight);
-    return relativeSize;
+  boolean hasAttribute=false;
+  String w="";
+  String h="";
+  if (uidl.hasAttribute("width")) {
+    hasAttribute=true;
+    w=uidl.getStringAttribute("width");
   }
- else {
+  if (uidl.hasAttribute("height")) {
+    hasAttribute=true;
+    h=uidl.getStringAttribute("height");
+  }
+  if (!hasAttribute) {
     return null;
   }
+  float relativeWidth=Util.parseRelativeSize(w);
+  float relativeHeight=Util.parseRelativeSize(h);
+  FloatSize relativeSize=new FloatSize(relativeWidth,relativeHeight);
+  return relativeSize;
 }
