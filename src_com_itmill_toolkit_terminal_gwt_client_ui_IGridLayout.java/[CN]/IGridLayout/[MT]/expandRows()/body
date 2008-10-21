@@ -1,0 +1,25 @@
+{
+  if (!"".equals(height)) {
+    int usedSpace=minRowHeights[0];
+    for (int i=1; i < minRowHeights.length; i++) {
+      usedSpace+=spacingPixels + minRowHeights[i];
+    }
+    int availableSpace=getOffsetHeight() - marginTopAndBottom;
+    int excessSpace=availableSpace - usedSpace;
+    int distributed=0;
+    if (excessSpace > 0) {
+      for (int i=0; i < rowHeights.length; i++) {
+        int ew=excessSpace * rowExpandRatioArray[i] / 1000;
+        rowHeights[i]=minRowHeights[i] + ew;
+        distributed+=ew;
+      }
+      excessSpace-=distributed;
+      int c=0;
+      while (excessSpace > 0) {
+        rowHeights[c % rowHeights.length]++;
+        excessSpace--;
+        c++;
+      }
+    }
+  }
+}

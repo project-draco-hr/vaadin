@@ -1,14 +1,89 @@
 {
+  rendering=true;
   this.client=client;
   if (client.updateComponent(this,uidl,true)) {
+    rendering=false;
     return;
   }
-  final MarginInfo margins=new MarginInfo(uidl.getIntAttribute("margins"));
-  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_TOP,margins.hasTop());
-  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_RIGHT,margins.hasRight());
-  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_BOTTOM,margins.hasBottom());
-  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_LEFT,margins.hasLeft());
-  setStyleName(margin,CLASSNAME + "-" + "spacing",uidl.hasAttribute("spacing"));
-  iLayout();
-  grid.updateFromUIDL(uidl,client);
+  handleMargins(uidl);
+  detectSpacing(uidl);
+  int cols=uidl.getIntAttribute("w");
+  int rows=uidl.getIntAttribute("h");
+  columnWidths=new int[cols];
+  rowHeights=new int[rows];
+  if (cells == null) {
+    cells=new Cell[cols][rows];
+  }
+ else   if (cells.length != cols || cells[0].length != rows) {
+    LinkedList<Cell> orphaned=new LinkedList<Cell>();
+    Cell[][] newCells=new Cell[cols][rows];
+    for (int i=0; i < cells.length; i++) {
+      for (int j=0; j < cells[i].length; j++) {
+        if (i < cols && j < rows) {
+          newCells[i][j]=cells[i][j];
+        }
+      }
+    }
+    cells=newCells;
+    for (Iterator iterator=orphaned.iterator(); iterator.hasNext(); ) {
+      Cell cell=(Cell)iterator.next();
+    }
+  }
+  HashMap<Widget,ChildComponentContainer> nonRenderedWidgets=(HashMap<Widget,ChildComponentContainer>)widgetToComponentContainer.clone();
+  final int[] alignments=uidl.getIntArrayAttribute("alignments");
+  int alignmentIndex=0;
+  int column;
+  int row=0;
+  LinkedList<Cell> pendingCells=new LinkedList<Cell>();
+  LinkedList<Cell> relativeHeighted=new LinkedList<Cell>();
+  for (final Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
+    final UIDL r=(UIDL)i.next();
+    if ("gr".equals(r.getTag())) {
+      column=0;
+      for (final Iterator j=r.getChildIterator(); j.hasNext(); ) {
+        final UIDL c=(UIDL)j.next();
+        if ("gc".equals(c.getTag())) {
+          Cell cell=getCell(c);
+          if (cell.hasContent()) {
+            boolean rendered=cell.renderIfNoRelativeWidth();
+            cell.alignment=alignments[alignmentIndex++];
+            column+=cell.colspan;
+            if (!rendered) {
+              pendingCells.add(cell);
+            }
+            if (cell.colspan > 1) {
+              storeColSpannedCell(cell);
+            }
+ else             if (rendered) {
+              if (columnWidths[cell.col] < cell.getWidth()) {
+                columnWidths[cell.col]=cell.getWidth();
+              }
+            }
+            if (cell.hasRelativeHeight()) {
+              relativeHeighted.add(cell);
+            }
+          }
+        }
+      }
+      row++;
+    }
+  }
+  distributeColSpanWidths();
+  colExpandRatioArray=uidl.getIntArrayAttribute("colExpand");
+  rowExpandRatioArray=uidl.getIntArrayAttribute("rowExpand");
+  minColumnWidths=cloneArray(columnWidths);
+  expandColumns();
+  renderRemainingComponentsWithNoRelativeHeight(pendingCells);
+  detectRowHeights();
+  minRowHeights=cloneArray(rowHeights);
+  expandRows();
+  renderRemainingComponents(pendingCells);
+  for (  Cell cell : relativeHeighted) {
+    Widget widget2=cell.cc.getWidget();
+    client.handleComponentRelativeSize(widget2);
+  }
+  layoutCells();
+  for (  Entry cc : nonRenderedWidgets.entrySet()) {
+  }
+  rendering=false;
 }

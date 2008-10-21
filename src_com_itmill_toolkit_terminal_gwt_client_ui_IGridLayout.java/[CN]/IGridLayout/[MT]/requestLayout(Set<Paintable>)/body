@@ -1,3 +1,33 @@
 {
-  return false;
+  boolean mayNeedLayout=false;
+  int offsetHeight=canvas.getOffsetHeight();
+  int offsetWidth=canvas.getOffsetWidth();
+  if ("".equals(width) || "".equals(height)) {
+    mayNeedLayout=true;
+  }
+ else {
+    for (    Paintable paintable : child) {
+      Cell cell=paintableToCell.get(paintable);
+      if (!cell.hasRelativeHeight() || !cell.hasRelativeWidth()) {
+        mayNeedLayout=true;
+      }
+    }
+  }
+  if (mayNeedLayout) {
+    expandColumns();
+    expandRows();
+    layoutCells();
+    for (    Paintable paintable : child) {
+      Cell cell=paintableToCell.get(paintable);
+      if (cell.hasRelativeHeight() || cell.hasRelativeWidth()) {
+        client.handleComponentRelativeSize((Widget)paintable);
+      }
+    }
+  }
+  if (canvas.getOffsetHeight() != offsetHeight || canvas.getOffsetWidth() != offsetWidth) {
+    return false;
+  }
+ else {
+    return true;
+  }
 }
