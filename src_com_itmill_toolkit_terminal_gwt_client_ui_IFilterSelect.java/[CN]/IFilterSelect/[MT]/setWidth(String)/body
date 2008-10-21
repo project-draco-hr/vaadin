@@ -7,7 +7,18 @@
   }
   super.setWidth(width);
   if (this.width != null) {
-    int textboxWidth=getOffsetWidth() - getElementPadding() - popupOpener.getOffsetWidth();
+    int offsetWidth;
+    if (BrowserInfo.get().isIE6()) {
+      DOM.setStyleAttribute(getElement(),"overflow","hidden");
+      offsetWidth=getOffsetWidth();
+      DOM.setStyleAttribute(getElement(),"overflow","");
+    }
+ else {
+      offsetWidth=getOffsetWidth();
+    }
+    int padding=getElementPadding();
+    int popupOpenerWidth=popupOpener.getOffsetWidth();
+    int textboxWidth=offsetWidth - padding - popupOpenerWidth;
     if (textboxWidth < 0) {
       textboxWidth=0;
     }
