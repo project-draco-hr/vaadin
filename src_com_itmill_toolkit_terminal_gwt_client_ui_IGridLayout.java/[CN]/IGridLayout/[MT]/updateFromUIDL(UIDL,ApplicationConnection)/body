@@ -5,6 +5,14 @@
     rendering=false;
     return;
   }
+  boolean mightToggleVScrollBar="".equals(height) && !"".equals(width);
+  boolean mightToggleHScrollBar="".equals(width) && !"".equals(height);
+  int wBeforeRender=0;
+  int hBeforeRender=0;
+  if (mightToggleHScrollBar || mightToggleVScrollBar) {
+    wBeforeRender=canvas.getOffsetWidth();
+    hBeforeRender=getOffsetHeight();
+  }
   handleMargins(uidl);
   detectSpacing(uidl);
   int cols=uidl.getIntAttribute("w");
@@ -29,17 +37,14 @@
       Cell cell=(Cell)iterator.next();
     }
   }
-  HashMap<Widget,ChildComponentContainer> nonRenderedWidgets=(HashMap<Widget,ChildComponentContainer>)widgetToComponentContainer.clone();
+  nonRenderedWidgets=(HashMap<Widget,ChildComponentContainer>)widgetToComponentContainer.clone();
   final int[] alignments=uidl.getIntArrayAttribute("alignments");
   int alignmentIndex=0;
-  int column;
-  int row=0;
   LinkedList<Cell> pendingCells=new LinkedList<Cell>();
   LinkedList<Cell> relativeHeighted=new LinkedList<Cell>();
   for (final Iterator i=uidl.getChildIterator(); i.hasNext(); ) {
     final UIDL r=(UIDL)i.next();
     if ("gr".equals(r.getTag())) {
-      column=0;
       for (final Iterator j=r.getChildIterator(); j.hasNext(); ) {
         final UIDL c=(UIDL)j.next();
         if ("gc".equals(c.getTag())) {
@@ -47,7 +52,6 @@
           if (cell.hasContent()) {
             boolean rendered=cell.renderIfNoRelativeWidth();
             cell.alignment=alignments[alignmentIndex++];
-            column+=cell.colspan;
             if (!rendered) {
               pendingCells.add(cell);
             }
@@ -65,7 +69,6 @@
           }
         }
       }
-      row++;
     }
   }
   distributeColSpanWidths();
@@ -83,7 +86,23 @@
     client.handleComponentRelativeSize(widget2);
   }
   layoutCells();
-  for (  Entry cc : nonRenderedWidgets.entrySet()) {
+  for (  Widget w : nonRenderedWidgets.keySet()) {
+    ChildComponentContainer childComponentContainer=widgetToComponentContainer.get(w);
+    paintableToCell.remove(w);
+    widgetToComponentContainer.remove(w);
+    childComponentContainer.removeFromParent();
+    client.unregisterPaintable((Paintable)w);
   }
+  nonRenderedWidgets=null;
   rendering=false;
+  boolean needsRelativeSizeCheck=false;
+  if (mightToggleHScrollBar && wBeforeRender != canvas.getOffsetWidth()) {
+    needsRelativeSizeCheck=true;
+  }
+  if (mightToggleVScrollBar && hBeforeRender != getOffsetHeight()) {
+    needsRelativeSizeCheck=true;
+  }
+  if (needsRelativeSizeCheck) {
+    client.handleComponentRelativeSize(this);
+  }
 }
