@@ -8,8 +8,12 @@
         validationError=field.getErrorMessage();
         if (validationError != null) {
           if ("".equals(validationError.toString())) {
-            continue;
+            validationError=new Validator.InvalidValueException(field.getCaption());
           }
+          break;
+        }
+ else         if (f instanceof Field && !((Field)f).isValid()) {
+          validationError=new Validator.InvalidValueException(field.getCaption());
           break;
         }
       }
