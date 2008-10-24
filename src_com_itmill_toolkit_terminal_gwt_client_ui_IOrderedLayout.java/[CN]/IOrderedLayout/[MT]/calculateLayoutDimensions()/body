@@ -4,18 +4,20 @@
   int maxWidgetWidth=0;
   int maxWidgetHeight=0;
   for (  ChildComponentContainer childComponentContainer : widgetToComponentContainer.values()) {
+    int widgetHeight=0;
+    int widgetWidth=0;
     if (childComponentContainer.isComponentRelativeSized(orientation)) {
-      continue;
-    }
-    Size s=childComponentContainer.getWidgetSize();
-    int widgetWidth=s.getWidth() + childComponentContainer.getCaptionWidthAfterComponent();
-    if (!childComponentContainer.widgetHasSizeSpecified(orientation)) {
-      int captionWidth=childComponentContainer.getCaptionWidth();
-      if (captionWidth > widgetWidth) {
-        widgetWidth=captionWidth;
+      if (orientation == ORIENTATION_HORIZONTAL) {
+        widgetHeight=getWidgetHeight(childComponentContainer);
+      }
+ else {
+        widgetWidth=getWidgetWidth(childComponentContainer);
       }
     }
-    int widgetHeight=s.getHeight() + childComponentContainer.getCaptionHeightAboveComponent();
+ else {
+      widgetWidth=getWidgetWidth(childComponentContainer);
+      widgetHeight=getWidgetHeight(childComponentContainer);
+    }
     summedWidgetWidth+=widgetWidth;
     summedWidgetHeight+=widgetHeight;
     maxWidgetHeight=Math.max(maxWidgetHeight,widgetHeight);
