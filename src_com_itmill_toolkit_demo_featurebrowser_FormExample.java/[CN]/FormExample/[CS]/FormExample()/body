@@ -1,42 +1,16 @@
 {
-  OrderedLayout root=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
-  root.addStyleName("formroot");
-  setCompositionRoot(root);
-  final Form form=new Form();
-  root.addComponent(form);
-  form.setWidth("400px");
-  form.setCaption("Contact Information");
-  form.setDescription("Please enter valid name and address. Fields marked with * are required. " + "If you try to commit with invalid values, a form error message is displayed. " + "(Address is required but failing to give it a value does not display an error.)");
-  form.setFieldFactory(new MyFieldFactory());
-  ContactBean bean=new ContactBean();
-  BeanItem item=new BeanItem(bean);
-  form.setItemDataSource(item);
-  Vector order=new Vector();
-  order.add("name");
-  order.add("address");
-  order.add("postalCode");
-  order.add("city");
-  form.setVisibleItemProperties(order);
-  form.getField("name").setRequired(true);
-  form.getField("name").setRequiredError("Name is missing");
-  form.getField("address").setRequired(true);
-  form.setImmediate(true);
-  form.setWriteThrough(false);
-  form.setReadThrough(true);
-  final ContactDisplay display=new ContactDisplay(bean);
-  root.addComponent(display);
-  ExpandLayout footer=new ExpandLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
-  Button commit=new Button("Commit",new Button.ClickListener(){
+  final Address dataModel=new Address();
+  Button peekDataModelState=new Button("Show the data model state",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
-      form.commit();
-      display.refresh();
+      getWindow().showNotification(dataModel.getAddressAsText());
     }
   }
 );
-  Button discard=new Button("Discard",form,"discard");
-  footer.addComponent(commit);
-  footer.setComponentAlignment(commit,ExpandLayout.ALIGNMENT_RIGHT,ExpandLayout.ALIGNMENT_TOP);
-  footer.setHeight("25px");
-  footer.addComponent(discard);
-  form.setFooter(footer);
+  final AddressForm form=new AddressForm("Contact Information");
+  form.setDataSource(dataModel);
+  form.setDescription("Please enter valid name and address. Fields marked with * are required. " + "If you try to commit with invalid values, a form error message is displayed. " + "(Address is required but failing to give it a value does not display an error.)");
+  OrderedLayout root=new OrderedLayout();
+  root.addComponent(form);
+  root.addComponent(peekDataModelState);
+  setCompositionRoot(root);
 }
