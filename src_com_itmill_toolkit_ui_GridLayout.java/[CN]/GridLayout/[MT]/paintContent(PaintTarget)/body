@@ -12,9 +12,47 @@
   final HashMap cellUsed=new HashMap();
   int emptyCells=0;
   final String[] alignmentsArray=new String[components.size()];
+  final Integer[] columnExpandRatioArray=new Integer[cols];
+  final Integer[] rowExpandRatioArray=new Integer[rows];
+  boolean equallyDividedCols=false;
+  int realColExpandRatioSum=0;
+  float colSum=getExpandRatioSum(columnExpandRatio);
+  if (colSum == 0 && components.size() > 0) {
+    equallyDividedCols=true;
+    float equalSize=1 / (float)cols;
+    int myRatio=Math.round(equalSize * 1000);
+    for (int i=0; i < cols; i++) {
+      columnExpandRatioArray[i]=myRatio;
+    }
+    realColExpandRatioSum=myRatio * cols;
+  }
+ else {
+    for (int i=0; i < cols; i++) {
+      int myRatio=Math.round((getColumnExpandRatio(i) / colSum) * 1000);
+      columnExpandRatioArray[i]=myRatio;
+      realColExpandRatioSum+=myRatio;
+    }
+  }
+  boolean equallyDividedRows=false;
+  int realRowExpandRatioSum=0;
+  float rowSum=getExpandRatioSum(rowExpandRatio);
+  if (rowSum == 0 && components.size() > 0) {
+    equallyDividedRows=true;
+    float equalSize=1 / (float)rows;
+    int myRatio=Math.round(equalSize * 1000);
+    for (int i=0; i < rows; i++) {
+      rowExpandRatioArray[i]=myRatio;
+    }
+    realRowExpandRatioSum=myRatio * rows;
+  }
   int index=0;
   for (int cury=0; cury < rows; cury++) {
     target.startTag("gr");
+    if (!equallyDividedRows) {
+      int myRatio=Math.round((getRowExpandRatio(cury) / rowSum) * 1000);
+      rowExpandRatioArray[index]=myRatio;
+      realRowExpandRatioSum+=myRatio;
+    }
     for (int curx=0; curx < cols; curx++) {
       if (area != null && (area.row1 == cury) && (area.column1 == curx)) {
         if (emptyCells > 0) {
@@ -95,5 +133,13 @@
     }
     target.endTag("gr");
   }
+  if (rowExpandRatioArray.length > 0) {
+    rowExpandRatioArray[0]-=realRowExpandRatioSum - 1000;
+  }
+  if (columnExpandRatioArray.length > 0) {
+    columnExpandRatioArray[0]-=realColExpandRatioSum - 1000;
+  }
+  target.addAttribute("colExpand",columnExpandRatioArray);
+  target.addAttribute("rowExpand",rowExpandRatioArray);
   target.addAttribute("alignments",alignmentsArray);
 }
