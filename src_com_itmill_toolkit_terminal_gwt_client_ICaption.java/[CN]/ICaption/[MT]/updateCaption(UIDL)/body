@@ -4,31 +4,28 @@
   boolean isEmpty=true;
   boolean wasPlacedAfterComponent=placedAfterComponent;
   placedAfterComponent=true;
-  if (uidl.hasAttribute("icon")) {
+  if (uidl.hasAttribute(ATTRIBUTE_ICON)) {
     if (icon == null) {
       icon=new Icon(client);
       DOM.sinkEvents(icon.getElement(),Event.ONLOAD);
-      Util.setFloat(icon.getElement(),"left");
-      placedAfterComponent=false;
-      DOM.insertChild(getElement(),icon.getElement(),0);
+      DOM.insertChild(getElement(),icon.getElement(),getInsertPosition(ATTRIBUTE_ICON));
     }
-    icon.setUri(uidl.getStringAttribute("icon"));
+    placedAfterComponent=false;
+    icon.setUri(uidl.getStringAttribute(ATTRIBUTE_ICON));
+    iconOnloadHandled=false;
     isEmpty=false;
   }
- else {
-    if (icon != null) {
-      DOM.removeChild(getElement(),icon.getElement());
-      icon=null;
-    }
+ else   if (icon != null) {
+    DOM.removeChild(getElement(),icon.getElement());
+    icon=null;
   }
-  if (uidl.hasAttribute("caption")) {
+  if (uidl.hasAttribute(ATTRIBUTE_CAPTION)) {
     if (captionText == null) {
       captionText=DOM.createDiv();
-      Util.setFloat(captionText,"left");
-      DOM.setStyleAttribute(captionText,"overflow","hidden");
-      DOM.insertChild(getElement(),captionText,icon == null ? 0 : 1);
+      captionText.setClassName("i-captiontext");
+      DOM.insertChild(getElement(),captionText,getInsertPosition(ATTRIBUTE_CAPTION));
     }
-    String c=uidl.getStringAttribute("caption");
+    String c=uidl.getStringAttribute(ATTRIBUTE_CAPTION);
     if (c == null) {
       c="";
     }
@@ -38,9 +35,11 @@
     }
     DOM.setInnerText(captionText,c);
   }
- else {
+ else   if (captionText != null) {
+    DOM.removeChild(getElement(),captionText);
+    captionText=null;
   }
-  if (uidl.hasAttribute("description")) {
+  if (uidl.hasAttribute(ATTRIBUTE_DESCRIPTION)) {
     if (captionText != null) {
       addStyleDependentName("hasdescription");
     }
@@ -48,29 +47,26 @@
       removeStyleDependentName("hasdescription");
     }
   }
-  if (uidl.getBooleanAttribute("required")) {
+  if (uidl.getBooleanAttribute(ATTRIBUTE_REQUIRED)) {
     isEmpty=false;
     if (requiredFieldIndicator == null) {
       requiredFieldIndicator=DOM.createDiv();
-      Util.setFloat(requiredFieldIndicator,"left");
+      requiredFieldIndicator.setClassName("i-required-field-indicator");
       DOM.setInnerText(requiredFieldIndicator,"*");
-      DOM.setElementProperty(requiredFieldIndicator,"className","i-required-field-indicator");
-      DOM.appendChild(getElement(),requiredFieldIndicator);
+      DOM.insertChild(getElement(),requiredFieldIndicator,getInsertPosition(ATTRIBUTE_REQUIRED));
     }
   }
- else {
-    if (requiredFieldIndicator != null) {
-      DOM.removeChild(getElement(),requiredFieldIndicator);
-      requiredFieldIndicator=null;
-    }
+ else   if (requiredFieldIndicator != null) {
+    DOM.removeChild(getElement(),requiredFieldIndicator);
+    requiredFieldIndicator=null;
   }
-  if (uidl.hasAttribute("error") && !uidl.getBooleanAttribute("hideErrors")) {
+  if (uidl.hasAttribute(ATTRIBUTE_ERROR) && !uidl.getBooleanAttribute(ATTRIBUTE_HIDEERRORS)) {
     isEmpty=false;
     if (errorIndicatorElement == null) {
       errorIndicatorElement=DOM.createDiv();
       DOM.setInnerHTML(errorIndicatorElement,"&nbsp;");
       DOM.setElementProperty(errorIndicatorElement,"className","i-errorindicator");
-      DOM.appendChild(getElement(),errorIndicatorElement);
+      DOM.insertChild(getElement(),errorIndicatorElement,getInsertPosition(ATTRIBUTE_ERROR));
     }
   }
  else   if (errorIndicatorElement != null) {
@@ -84,16 +80,6 @@
     DOM.setStyleAttribute(clearElement,"height","0px");
     DOM.setStyleAttribute(clearElement,"overflow","hidden");
     DOM.appendChild(getElement(),clearElement);
-  }
-  if (Util.isIE()) {
-    if (isEmpty) {
-      setHeight("0px");
-      DOM.setStyleAttribute(getElement(),"overflow","hidden");
-    }
- else {
-      setHeight("");
-      DOM.setStyleAttribute(getElement(),"overflow","");
-    }
   }
   return (wasPlacedAfterComponent != placedAfterComponent);
 }
