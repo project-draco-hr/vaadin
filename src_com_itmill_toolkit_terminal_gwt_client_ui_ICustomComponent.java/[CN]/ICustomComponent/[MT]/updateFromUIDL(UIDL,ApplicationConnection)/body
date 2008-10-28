@@ -1,7 +1,10 @@
 {
+  rendering=true;
   if (client.updateComponent(this,uidl,true)) {
+    rendering=false;
     return;
   }
+  this.client=client;
   final UIDL child=uidl.getChildUIDL(0);
   if (child != null) {
     final Paintable p=client.getPaintable(child);
@@ -11,7 +14,9 @@
         clear();
       }
       setWidget((Widget)p);
+      component=p;
     }
     p.updateFromUIDL(child,client);
   }
+  rendering=false;
 }
