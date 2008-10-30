@@ -5,15 +5,24 @@
     final Feature f=(Feature)it.next();
     if (f instanceof FeatureSet) {
       newRow();
-      addComponent(new Label(f.getName()));
+      Label title=new Label(f.getName());
+      title.setWidth("100%");
+      title.setStyleName((c.isRoot(f) ? "section" : "subsection"));
       if (c.isRoot(f)) {
-        newRow();
+        addComponent(title,0,getCursorY(),getColumns() - 1,getCursorY());
       }
+ else {
+        addComponent(title);
+      }
+      setComponentAlignment(title,ALIGNMENT_LEFT,ALIGNMENT_VERTICAL_CENTER);
     }
  else {
       Button b=new Button();
       b.setStyleName(Button.STYLE_LINK);
+      b.addStyleName("screenshot");
       b.setIcon(new ClassResource(f.getClass(),f.getIconName(),SamplerApplication.this));
+      b.setWidth("120px");
+      b.setHeight("120px");
       b.setDescription("<h3>" + f.getName() + "</h3>"+ f.getDescription());
       b.addListener(new Button.ClickListener(){
         public void buttonClick(        ClickEvent event){
