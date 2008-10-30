@@ -1,0 +1,24 @@
+{
+  int tabsWidth=0;
+  int count=tb.getTabCount();
+  for (int i=0; i < count; i++) {
+    Element tabTd=tb.getTab(i).getElement().getParentElement().cast();
+    tabsWidth+=tabTd.getOffsetWidth();
+  }
+  Style style=tp.getElement().getStyle();
+  String overflow=style.getProperty("overflow");
+  style.setProperty("overflow","hidden");
+  String width=style.getProperty("width");
+  style.setProperty("width",tabsWidth + "px");
+  int contentWidth=tp.getWidget(tp.getVisibleWidget()).getOffsetWidth();
+  style.setProperty("width",width);
+  style.setProperty("overflow",overflow);
+  if (tabsWidth < contentWidth) {
+    tabsWidth=contentWidth;
+  }
+  tabs.getStyle().setPropertyPx("width",tabsWidth);
+  int realWidth=tb.getOffsetWidth();
+  contentWidth=realWidth - getContentAreaBorderWidth();
+  contentNode.getStyle().setPropertyPx("width",contentWidth);
+  super.setWidth(realWidth + "px");
+}
