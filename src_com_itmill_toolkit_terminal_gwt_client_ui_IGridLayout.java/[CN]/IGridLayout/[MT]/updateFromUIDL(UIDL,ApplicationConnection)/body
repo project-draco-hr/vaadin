@@ -23,7 +23,6 @@
     cells=new Cell[cols][rows];
   }
  else   if (cells.length != cols || cells[0].length != rows) {
-    LinkedList<Cell> orphaned=new LinkedList<Cell>();
     Cell[][] newCells=new Cell[cols][rows];
     for (int i=0; i < cells.length; i++) {
       for (int j=0; j < cells[i].length; j++) {
@@ -33,9 +32,6 @@
       }
     }
     cells=newCells;
-    for (Iterator iterator=orphaned.iterator(); iterator.hasNext(); ) {
-      Cell cell=(Cell)iterator.next();
-    }
   }
   nonRenderedWidgets=(HashMap<Widget,ChildComponentContainer>)widgetToComponentContainer.clone();
   final int[] alignments=uidl.getIntArrayAttribute("alignments");
@@ -78,7 +74,6 @@
   expandColumns();
   renderRemainingComponentsWithNoRelativeHeight(pendingCells);
   detectRowHeights();
-  minRowHeights=cloneArray(rowHeights);
   expandRows();
   renderRemainingComponents(pendingCells);
   for (  Cell cell : relativeHeighted) {
