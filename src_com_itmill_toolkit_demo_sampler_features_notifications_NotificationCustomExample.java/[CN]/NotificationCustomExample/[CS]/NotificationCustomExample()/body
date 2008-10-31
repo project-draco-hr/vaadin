@@ -1,0 +1,42 @@
+{
+  setSpacing(true);
+  final TextField caption=new TextField("Caption");
+  caption.setDescription("Main info; a short caption-only notification is often most effective.");
+  caption.setWidth("200px");
+  addComponent(caption);
+  final RichTextArea description=new RichTextArea();
+  description.setCaption("Description");
+  description.setWidth("400px");
+  description.setDescription("Additional information; try to keep it short.");
+  addComponent(description);
+  OrderedLayout horiz=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+  horiz.setSpacing(true);
+  addComponent(horiz);
+  final NativeSelect position=new NativeSelect("Position");
+  position.setNullSelectionAllowed(false);
+  horiz.addComponent(position);
+  initPositionItems(position);
+  final NativeSelect style=new NativeSelect("Style");
+  position.setNullSelectionAllowed(false);
+  horiz.addComponent(style);
+  initTypeItems(style);
+  final Slider delay=new Slider("Delay (msec), -1 means click to hide");
+  delay.setDescription("Delay before fading<br/>Pull all the way to the left to get -1, which means forever (click to hide).");
+  delay.setWidth("400px");
+  delay.setHeight("20px");
+  delay.setMin(Notification.DELAY_FOREVER);
+  delay.setMax(10000);
+  addComponent(delay);
+  Button show=new Button("Show notification",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      Notification n=new Notification((String)caption.getValue(),(String)description.getValue(),(Integer)style.getValue());
+      n.setPosition((Integer)position.getValue());
+      Double d=(Double)delay.getValue();
+      n.setDelayMsec(d.intValue());
+      getWindow().showNotification(n);
+    }
+  }
+);
+  addComponent(show);
+  setComponentAlignment(show,ALIGNMENT_RIGHT,ALIGNMENT_VERTICAL_CENTER);
+}
