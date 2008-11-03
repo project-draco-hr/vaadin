@@ -1,8 +1,23 @@
 {
+  if (isDynamicHeight()) {
+    if (tp.getVisibleWidget() >= 0) {
+      Widget widget=tp.getWidget(tp.getVisibleWidget());
+      int widgetHeight=widget.getOffsetHeight();
+      DOM.setStyleAttribute(tp.getElement(),"height",widgetHeight + "px");
+      if (BrowserInfo.get().isIE6()) {
+        tp.setVisibleWidgetHeight(widgetHeight);
+      }
+    }
+  }
+ else {
+    DOM.setStyleAttribute(tp.getElement(),"height","");
+  }
   renderInformation.updateSize(getElement());
   if (client != null) {
     client.runDescendentsLayout(this);
   }
   updateTabScroller();
-  Util.runWebkitOverflowAutoFix(contentNode);
+  if (tp.getVisibleWidget() >= 0) {
+    Util.runWebkitOverflowAutoFix(DOM.getParent(tp.getWidget(tp.getVisibleWidget()).getElement()));
+  }
 }
