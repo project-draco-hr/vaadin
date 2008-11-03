@@ -5,10 +5,6 @@
   renderInformation.updateSize(getElement());
   int wholeSize;
   int pixelPosition;
-  if (!(resizing && BrowserInfo.get().isGecko())) {
-    DOM.setStyleAttribute(firstContainer,"overflow","hidden");
-    DOM.setStyleAttribute(secondContainer,"overflow","hidden");
-  }
 switch (orientation) {
 case ORIENTATION_HORIZONTAL:
     wholeSize=DOM.getElementPropertyInt(wrapper,"clientWidth");
@@ -59,23 +55,7 @@ secondRenderSpace.setHeight(secondContainerHeight);
 secondRenderSpace.setWidth(contentWidth);
 break;
 }
-if (Util.isIE7()) {
 client.runDescendentsLayout(this);
-DeferredCommand.addCommand(new Command(){
-public void execute(){
-DOM.setStyleAttribute(firstContainer,"overflow","auto");
-DOM.setStyleAttribute(secondContainer,"overflow","auto");
-}
-}
-);
-}
- else {
-client.runDescendentsLayout(this);
-if (!(resizing && BrowserInfo.get().isGecko())) {
-DOM.setStyleAttribute(firstContainer,"overflow","auto");
-DOM.setStyleAttribute(secondContainer,"overflow","auto");
-}
-}
 renderInformation.updateSize(getElement());
 Util.runWebkitOverflowAutoFix(secondContainer);
 }
