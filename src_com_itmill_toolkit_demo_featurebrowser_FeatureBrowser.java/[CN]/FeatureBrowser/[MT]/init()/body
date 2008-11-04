@@ -43,7 +43,9 @@
   tree.expandItemsRecursively(rootId);
   for (Iterator i=container.getItemIds().iterator(); i.hasNext(); ) {
     Object id=i.next();
-    if (container.getChildren(id) == null)     tree.setChildrenAllowed(id,false);
+    if (container.getChildren(id) == null) {
+      tree.setChildrenAllowed(id,false);
+    }
   }
   split.addComponent(tree);
   final SplitPanel split2=new SplitPanel();
@@ -67,7 +69,8 @@
   table.addListener(this);
   table.setImmediate(true);
   split2.addComponent(table);
-  final ExpandLayout exp=new ExpandLayout();
+  final OrderedLayout exp=new OrderedLayout();
+  exp.setSizeFull();
   exp.setMargin(true);
   split2.addComponent(exp);
   final OrderedLayout wbLayout=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
@@ -76,13 +79,13 @@
       Component component=(Component)ts.getComponentIterator().next();
       String caption=ts.getTabCaption(component);
       try {
-        component=(Component)component.getClass().newInstance();
+        component=component.getClass().newInstance();
       }
  catch (      Exception e) {
         return;
       }
       Window w=new Window(caption);
-      w.setWidth(640);
+      w.setWidth("640px");
       if (Layout.class.isAssignableFrom(component.getClass())) {
         w.setLayout((Layout)component);
       }
@@ -102,7 +105,7 @@
       Window w=getWindow(caption);
       if (w == null) {
         try {
-          component=(Component)component.getClass().newInstance();
+          component=component.getClass().newInstance();
         }
  catch (        final Exception e) {
           return;
@@ -129,7 +132,7 @@
   ts.setSizeFull();
   ts.addTab(new Label(""),"Choose example",null);
   exp.addComponent(ts);
-  exp.expand(ts);
+  exp.setExpandRatio(ts,1);
   final Label status=new Label("<a href=\"http://www.itmill.com/developers/\">Developer Area</a>" + " | <a href=\"http://www.itmill.com/documentation/\">Documentation</a>");
   status.setContentMode(Label.CONTENT_XHTML);
   exp.addComponent(status);
