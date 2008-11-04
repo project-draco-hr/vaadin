@@ -1,30 +1,32 @@
 {
-  final int type=event.getTypeInt();
-  if (type == Event.ONKEYDOWN && shortcutHandler != null) {
-    shortcutHandler.handleKeyboardEvent(event);
-    return;
-  }
-  final Element target=DOM.eventGetTarget(event);
-  if (client != null && DOM.isOrHasChild(header,target)) {
-    client.handleTooltipEvent(event,this);
-  }
-  if (resizing || resizeBox == target) {
-    onResizeEvent(event);
-    event.cancelBubble(true);
-  }
- else   if (target == closeBox) {
-    if (type == Event.ONCLICK) {
-      onCloseClick();
+  if (event != null) {
+    final int type=event.getTypeInt();
+    if (type == Event.ONKEYDOWN && shortcutHandler != null) {
+      shortcutHandler.handleKeyboardEvent(event);
+      return;
+    }
+    final Element target=DOM.eventGetTarget(event);
+    if (client != null && DOM.isOrHasChild(header,target)) {
+      client.handleTooltipEvent(event,this);
+    }
+    if (resizing || resizeBox == target) {
+      onResizeEvent(event);
       event.cancelBubble(true);
     }
-  }
- else   if (dragging || !DOM.isOrHasChild(contents,target)) {
-    onDragEvent(event);
-    event.cancelBubble(true);
-  }
- else   if (type == Event.ONCLICK) {
-    if (!isActive()) {
-      bringToFront();
+ else     if (target == closeBox) {
+      if (type == Event.ONCLICK) {
+        onCloseClick();
+        event.cancelBubble(true);
+      }
+    }
+ else     if (dragging || !DOM.isOrHasChild(contents,target)) {
+      onDragEvent(event);
+      event.cancelBubble(true);
+    }
+ else     if (type == Event.ONCLICK) {
+      if (!isActive()) {
+        bringToFront();
+      }
     }
   }
 }
