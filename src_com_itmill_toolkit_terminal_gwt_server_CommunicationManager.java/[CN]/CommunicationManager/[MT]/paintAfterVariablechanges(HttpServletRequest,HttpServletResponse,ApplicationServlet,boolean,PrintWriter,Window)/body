@@ -15,6 +15,7 @@
   response.setContentType("application/json; charset=UTF-8");
   outWriter.print("for(;;);[{");
   outWriter.print("\"changes\":[");
+  ArrayList<Paintable> paintables=null;
   if (!window.getName().equals(closingWindowName)) {
     Window newWindow=getApplicationWindow(request,application,window);
     if (newWindow != window) {
@@ -22,9 +23,8 @@
       repaintAll=true;
     }
     JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
-    ArrayList paintables;
     if (repaintAll) {
-      paintables=new ArrayList();
+      paintables=new ArrayList<Paintable>();
       paintables.add(window);
       locales=null;
       requireLocale(application.getLocale().toString());
@@ -167,4 +167,11 @@ catch (    InvocationTargetException e) {
   }
   outWriter.flush();
   outWriter.close();
+  if (applicationServlet.isDebugMode()) {
+    if (paintables != null) {
+      for (      Paintable paintable : paintables) {
+        DebugUtilities.validateComponentRelativeSizes((Component)paintable);
+      }
+    }
+  }
 }

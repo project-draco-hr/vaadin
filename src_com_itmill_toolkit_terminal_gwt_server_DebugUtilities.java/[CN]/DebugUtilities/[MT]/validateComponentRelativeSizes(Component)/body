@@ -1,0 +1,71 @@
+{
+  String msg=null;
+  Component parent=component.getParent();
+  if (!(component instanceof Window)) {
+    if (hasRelativeWidth(component) && hasUndefinedWidth(parent)) {
+      if (parent instanceof OrderedLayout) {
+        OrderedLayout ol=(OrderedLayout)parent;
+        if (ol.getOrientation() == OrderedLayout.ORIENTATION_HORIZONTAL) {
+          msg="Relative width for component inside non sized horizontal ordered layout.";
+        }
+ else         if (!hasNonRelativeWidthComponent(ol)) {
+          msg="At least one of vertical orderedlayout's components must have non relative width if layout has no width defined";
+        }
+ else {
+        }
+      }
+ else       if (!(parent instanceof GridLayout)) {
+        msg="Relative width component's parent should not have undefined width.";
+      }
+    }
+    if (msg == null) {
+      if (hasRelativeHeight(component) && hasUndefinedHeight(parent)) {
+        if (parent instanceof OrderedLayout) {
+          OrderedLayout ol=(OrderedLayout)parent;
+          if (ol.getOrientation() == OrderedLayout.ORIENTATION_VERTICAL) {
+            msg="Relative height for component inside non sized vertical ordered layout.";
+          }
+ else           if (!hasNonRelativeHeightComponent(ol)) {
+            msg="At least one of horizontal orderedlayout's components must have non relative height if layout has no height defined";
+          }
+ else {
+          }
+        }
+ else         if (!(parent instanceof GridLayout)) {
+          msg="Relative height component's parent should not have undefined height.";
+        }
+      }
+    }
+  }
+  if (msg != null) {
+    StringBuffer err=new StringBuffer();
+    err.append("IT MILL Toolkit DEBUG: Invalid layout detected. Components may be invisible or not render as expected.\n");
+    err.append("\t Component : ");
+    err.append(component);
+    err.append(", Caption: ");
+    err.append(component.getCaption());
+    err.append(" DebugId : ");
+    err.append(component.getDebugId());
+    err.append("\n\t Parent    : ");
+    err.append(parent);
+    err.append(", Caption: ");
+    err.append(parent.getCaption());
+    err.append(" DebugId : ");
+    err.append(parent.getDebugId());
+    err.append("\n\t Error     : ");
+    err.append(msg);
+    System.err.println(err);
+    return;
+  }
+  if (component instanceof Panel) {
+    Panel panel=(Panel)component;
+    validateComponentRelativeSizes(panel.getLayout());
+  }
+ else   if (component instanceof ComponentContainer) {
+    ComponentContainer lo=(ComponentContainer)component;
+    Iterator it=lo.getComponentIterator();
+    while (it.hasNext()) {
+      validateComponentRelativeSizes((Component)it.next());
+    }
+  }
+}
