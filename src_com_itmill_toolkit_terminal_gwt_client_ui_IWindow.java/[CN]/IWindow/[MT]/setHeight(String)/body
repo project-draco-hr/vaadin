@@ -1,17 +1,17 @@
 {
+  this.height=height;
   if (!isAttached()) {
     return;
   }
-  if (!"".equals(height)) {
-    if (height.indexOf("px") < 0) {
-      DOM.setStyleAttribute(getElement(),"height",height);
-      height=getElement().getOffsetHeight() + "px";
+  if (height != null && !"".equals(height)) {
+    DOM.setStyleAttribute(getElement(),"height",height);
+    int pixels=getElement().getOffsetHeight() - getExtraHeight();
+    if (pixels < 0) {
+      pixels=0;
     }
-    DOM.setStyleAttribute(contentPanel.getElement(),"position","absolute");
-    final int usedHeight=getElement().getOffsetHeight();
-    DOM.setStyleAttribute(contentPanel.getElement(),"position","relative");
-    height=(Integer.parseInt(height.substring(0,height.length() - 2)) - usedHeight) + "px";
-    DOM.setStyleAttribute(contentPanel.getElement(),"height",height);
+    renderSpace.setHeight(pixels);
+    height=pixels + "px";
+    contentPanel.getElement().getStyle().setProperty("height",height);
     updateShadowSizeAndPosition();
   }
 }

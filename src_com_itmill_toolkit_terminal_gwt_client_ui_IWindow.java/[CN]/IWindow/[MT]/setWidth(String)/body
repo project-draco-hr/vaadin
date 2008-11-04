@@ -1,19 +1,23 @@
 {
+  this.width=width;
   if (!isAttached()) {
     return;
   }
-  if (!"".equals(width)) {
+  if (width != null && !"".equals(width)) {
+    int pixelWidth;
     if (width.indexOf("px") < 0) {
       DOM.setStyleAttribute(getElement(),"width",width);
-      width=getElement().getOffsetWidth() + "px";
+      pixelWidth=getElement().getOffsetWidth();
+      width=pixelWidth + "px";
     }
-    DOM.setStyleAttribute(getElement(),"width",width);
     if (BrowserInfo.get().isIE6()) {
-      int contentWidth=(Integer.parseInt(width.substring(0,width.length() - 2)) - borderWidth);
-      if (contentWidth < 0) {
-        contentWidth=0;
-      }
-      DOM.setStyleAttribute(contentPanel.getElement(),"width",contentWidth + "px");
+      getElement().getStyle().setProperty("overflow","hidden");
+    }
+    getElement().getStyle().setProperty("width",width);
+    pixelWidth=getElement().getOffsetWidth() - borderWidth;
+    renderSpace.setWidth(pixelWidth);
+    if (BrowserInfo.get().isIE6()) {
+      DOM.setStyleAttribute(contentPanel.getElement(),"width",pixelWidth + "px");
     }
     updateShadowSizeAndPosition();
   }
