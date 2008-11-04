@@ -22,11 +22,9 @@
     final String name=(String)e.nextElement();
     applicationProperties.setProperty(name,context.getInitParameter(name));
   }
-  final String debug=getApplicationOrSystemProperty(PARAMETER_DEBUG,"").toLowerCase();
-  if (!"".equals(debug) && !"true".equals(debug) && !"false".equals(debug)) {
-    throw new ServletException("If debug parameter is given for an application, it must be 'true' or 'false'");
+  if (getApplicationOrSystemProperty(PARAMETER_DEBUG,"false").equals("true")) {
+    debugMode=true;
   }
-  debugMode=debug;
   if (getApplicationOrSystemProperty("testingToolsActive","false").equals("true")) {
     testingToolsActive=true;
     testingToolsServerUri=getApplicationOrSystemProperty("testingToolsServerUri",null);
