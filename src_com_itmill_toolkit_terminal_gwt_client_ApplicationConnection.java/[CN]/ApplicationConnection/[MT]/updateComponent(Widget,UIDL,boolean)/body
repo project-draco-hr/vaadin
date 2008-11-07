@@ -3,7 +3,16 @@
     return true;
   }
   boolean visible=!uidl.getBooleanAttribute("invisible");
+  boolean wasVisible=component.isVisible();
   component.setVisible(visible);
+  if (wasVisible != visible) {
+    if (wasVisible && manageCaption) {
+      final Container parent=Util.getLayout(component);
+      if (parent != null) {
+        parent.updateCaption((Paintable)component,uidl);
+      }
+    }
+  }
   if (!visible) {
     return true;
   }
