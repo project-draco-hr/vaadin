@@ -113,6 +113,21 @@
       throw new ServletException(ee);
     }
   }
+catch (  final GeneralSecurityException e) {
+    try {
+      Application.SystemMessages ci=getSystemMessages();
+      if (!UIDLrequest) {
+        response.sendRedirect(ci.getSessionExpiredURL());
+      }
+ else {
+        criticalNotification(request,response,ci.getSessionExpiredCaption(),ci.getSessionExpiredMessage(),ci.getSessionExpiredURL());
+      }
+      request.getSession().invalidate();
+    }
+ catch (    SystemMessageException ee) {
+      throw new ServletException(ee);
+    }
+  }
 catch (  final Throwable e) {
     if (UIDLrequest) {
       Application.SystemMessages ci=getSystemMessages();

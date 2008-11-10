@@ -10,7 +10,10 @@
     }
     String changes=new String(buffer,"utf-8");
     final String[] bursts=changes.split(VAR_BURST_SEPARATOR);
-    for (int bi=0; bi < bursts.length; bi++) {
+    if (!request.getSession().getId().equals(bursts[0])) {
+      throw new InvalidUIDLSecurityKeyException("Invalid UIDL security key");
+    }
+    for (int bi=1; bi < bursts.length; bi++) {
       final String[] tmp=bursts[bi].split(VAR_RECORD_SEPARATOR);
       final String[][] variableRecords=new String[tmp.length][4];
       for (int i=0; i < tmp.length; i++) {
