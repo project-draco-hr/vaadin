@@ -1,6 +1,8 @@
 {
   ApplicationConnection.getConsole().log("IGridLayout.requestLayout()");
   boolean needsLayout=false;
+  boolean reDistributeColSpanWidths=false;
+  boolean reDistributeRowSpanHeights=false;
   int offsetHeight=canvas.getOffsetHeight();
   int offsetWidth=canvas.getOffsetWidth();
   if ("".equals(width) || "".equals(height)) {
@@ -21,22 +23,11 @@
       }
       if (allocated < width) {
         needsLayout=true;
-        int neededExtraSpace=width - allocated;
-        int spaceForColunms=neededExtraSpace / cell.colspan;
-        for (int i=0; i < cell.colspan; i++) {
-          int col=cell.col + i;
-          columnWidths[col]+=spaceForColunms;
-          neededExtraSpace-=spaceForColunms;
+        if (cell.colspan == 1) {
+          columnWidths[cell.col]=minColumnWidths[cell.col]=width;
         }
-        if (neededExtraSpace > 0) {
-          for (int i=0; i < cell.colspan; i++) {
-            int col=cell.col + i;
-            columnWidths[col]+=1;
-            neededExtraSpace-=1;
-            if (neededExtraSpace == 0) {
-              break;
-            }
-          }
+ else {
+          reDistributeColSpanWidths=true;
         }
       }
  else       if (allocated != width) {
@@ -49,22 +40,11 @@
       }
       if (allocated < height) {
         needsLayout=true;
-        int neededExtraSpace=height - allocated;
-        int spaceForColunms=neededExtraSpace / cell.rowspan;
-        for (int i=0; i < cell.rowspan; i++) {
-          int row=cell.row + i;
-          rowHeights[row]+=spaceForColunms;
-          neededExtraSpace-=spaceForColunms;
+        if (cell.rowspan == 1) {
+          rowHeights[cell.row]=minRowHeights[cell.row]=height;
         }
-        if (neededExtraSpace > 0) {
-          for (int i=0; i < cell.rowspan; i++) {
-            int row=cell.row + i;
-            rowHeights[row]+=1;
-            neededExtraSpace-=1;
-            if (neededExtraSpace == 0) {
-              break;
-            }
-          }
+ else {
+          reDistributeRowSpanHeights=true;
         }
       }
  else       if (allocated != height) {
@@ -89,6 +69,10 @@
     needsLayout=true;
     columnWidths=cloneArray(minColumnWidths);
     distributeColSpanWidths();
+    reDistributeColSpanWidths=false;
+  }
+  if (reDistributeColSpanWidths) {
+    distributeColSpanWidths();
   }
   if (dirtyRows.size() > 0) {
     needsLayout=true;
@@ -106,6 +90,10 @@
       minRowHeights[rowIndex]=rowH;
     }
     rowHeights=cloneArray(minRowHeights);
+    distributeRowSpanHeights();
+    reDistributeRowSpanHeights=false;
+  }
+  if (reDistributeRowSpanHeights) {
     distributeRowSpanHeights();
   }
   if (needsLayout) {
