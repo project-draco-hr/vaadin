@@ -10,7 +10,11 @@
     }
     String changes=new String(buffer,"utf-8");
     final String[] bursts=changes.split(VAR_BURST_SEPARATOR);
-    if (!request.getSession().getId().equals(bursts[0])) {
+    boolean nocheck="true".equals(application2.getProperty("disable-xsrf-protection"));
+    if (!nocheck && bursts.length == 1 && "undefined".equals(bursts[0])) {
+      return true;
+    }
+ else     if (!nocheck && !request.getSession().getId().equals(bursts[0])) {
       throw new InvalidUIDLSecurityKeyException("Invalid UIDL security key");
     }
     for (int bi=1; bi < bursts.length; bi++) {
