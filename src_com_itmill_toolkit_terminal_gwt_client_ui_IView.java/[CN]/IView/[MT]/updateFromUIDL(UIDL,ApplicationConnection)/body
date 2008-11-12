@@ -1,4 +1,5 @@
 {
+  rendering=true;
   id=uidl.getId();
   boolean firstPaint=connection == null;
   connection=client;
@@ -33,6 +34,7 @@
     childIndex++;
   }
   if (isClosed) {
+    rendering=false;
     return;
   }
   UIDL childUidl=uidl.getChildUIDL(childIndex);
@@ -121,4 +123,15 @@
   if (BrowserInfo.get().isSafari()) {
     Util.runWebkitOverflowAutoFix(getElement());
   }
+  if (uidl.hasVariable("scrollTop")) {
+    scrollable=true;
+    scrollTop=uidl.getIntVariable("scrollTop");
+    DOM.setElementPropertyInt(getElement(),"scrollTop",scrollTop);
+    scrollLeft=uidl.getIntVariable("scrollLeft");
+    DOM.setElementPropertyInt(getElement(),"scrollLeft",scrollLeft);
+  }
+ else {
+    scrollable=false;
+  }
+  rendering=false;
 }
