@@ -11,11 +11,18 @@
     String changes=new String(buffer,"utf-8");
     final String[] bursts=changes.split(VAR_BURST_SEPARATOR);
     boolean nocheck="true".equals(application2.getProperty("disable-xsrf-protection"));
-    if (!nocheck && bursts.length == 1 && "undefined".equals(bursts[0])) {
+    if (bursts.length == 1 && "init".equals(bursts[0])) {
+      String uuid=UUID.randomUUID().toString();
+      Cookie c=new Cookie(ApplicationConnection.UIDL_SECURITY_COOKIE_NAME,uuid);
+      response.addCookie(c);
+      request.getSession().setAttribute(ApplicationConnection.UIDL_SECURITY_COOKIE_NAME,uuid);
       return true;
     }
- else     if (!nocheck && !request.getSession().getId().equals(bursts[0])) {
-      throw new InvalidUIDLSecurityKeyException("Invalid UIDL security key");
+ else     if (!nocheck) {
+      String sessId=(String)request.getSession().getAttribute(ApplicationConnection.UIDL_SECURITY_COOKIE_NAME);
+      if (!sessId.equals(bursts[0])) {
+        throw new InvalidUIDLSecurityKeyException("Security key mismatch");
+      }
     }
     for (int bi=1; bi < bursts.length; bi++) {
       final String[] tmp=bursts[bi].split(VAR_RECORD_SEPARATOR);

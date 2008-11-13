@@ -1,6 +1,6 @@
 {
   startRequest();
-  requestData=Cookies.getCookie(UIDL_SECURITY_COOKIE_NAME) + VAR_BURST_SEPARATOR + requestData;
+  requestData=uidl_security_key + VAR_BURST_SEPARATOR + requestData;
   console.log("Making UIDL Request with params: " + requestData);
   String uri=getAppUri() + "UIDL" + configuration.getPathInfo();
   if (repaintAll) {
@@ -22,6 +22,31 @@
           }
         }
         public void onResponseReceived(        Request request,        Response response){
+          if ("init".equals(uidl_security_key)) {
+            Header[] headers=response.getHeaders();
+            if (null != headers) {
+              String tmp=response.getHeader("Set-Cookie");
+              if (null != tmp) {
+                int start=tmp.indexOf(UIDL_SECURITY_COOKIE_NAME);
+                if (start > -1) {
+                  start+=UIDL_SECURITY_COOKIE_NAME.length() + 1;
+                  int end=tmp.indexOf(";",start);
+                  if (end == -1) {
+                    end=tmp.indexOf(" ",start);
+                  }
+                  if (end == -1) {
+                    tmp=tmp.substring(start);
+                  }
+ else {
+                    tmp=tmp.substring(start,end);
+                  }
+                  if (tmp != null && tmp.length() > 0) {
+                    uidl_security_key=tmp;
+                  }
+                }
+              }
+            }
+          }
           if (applicationRunning) {
             handleReceivedJSONMessage(response);
           }
