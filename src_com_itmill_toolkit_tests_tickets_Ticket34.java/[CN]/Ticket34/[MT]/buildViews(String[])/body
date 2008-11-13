@@ -1,0 +1,28 @@
+{
+  for (  String string : strings) {
+    Panel p=new Panel(string);
+    p.setSizeFull();
+    ((OrderedLayout)p.getLayout()).setSpacing(true);
+    p.addComponent(new Label("This is a simple test case for " + "UriFragmentReader that can be used for" + " adding linking, back/forward button "+ "and history support for ajax application. "));
+    StringBuffer sb=new StringBuffer();
+    sb.append("Available views : ");
+    for (    String key : strings) {
+      sb.append(key);
+      sb.append(" ");
+    }
+    sb.append("Application will change to them from uri " + "fragment or server initiated via textfield below.");
+    p.addComponent(new Label(sb.toString()));
+    final TextField tf=new TextField("Type view name (will change to that " + "view and change the uri fragment)");
+    p.addComponent(tf);
+    Button b=new Button("Go!");
+    p.addComponent(b);
+    b.addListener(new Button.ClickListener(){
+      public void buttonClick(      ClickEvent event){
+        String viewName=tf.getValue().toString();
+        reader.setFragment(viewName);
+      }
+    }
+);
+    views.put(string,p);
+  }
+}
