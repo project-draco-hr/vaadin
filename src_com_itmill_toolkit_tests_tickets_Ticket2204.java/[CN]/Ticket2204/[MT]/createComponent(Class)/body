@@ -1,0 +1,36 @@
+{
+  RichTextArea textArea=new RichTextArea();
+  textArea.setVisible(false);
+  textArea.setCaption("This is the textArea");
+  textArea.setWidth("200px");
+  textArea.setHeight("100px");
+  textAreas.add(textArea);
+  ComponentContainer cc=null;
+  try {
+    cc=(ComponentContainer)c.newInstance();
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+    return null;
+  }
+  if (c == Accordion.class) {
+  }
+  if (c == CoordinateLayout.class) {
+    ((Sizeable)cc).setHeight("100px");
+  }
+  containerToComponent.put(cc,textArea);
+  cc.addComponent(textArea);
+  if (c == SplitPanel.class) {
+    ((Sizeable)cc).setWidth("300px");
+    ((Sizeable)cc).setHeight("300px");
+    cc.addComponent(new Label("Label"));
+  }
+  if (c == Panel.class) {
+    Layout layout=((Panel)cc).getLayout();
+    containerToComponent.put(cc,layout);
+    layout.setVisible(false);
+    textArea.setVisible(true);
+    return cc;
+  }
+  return cc;
+}
