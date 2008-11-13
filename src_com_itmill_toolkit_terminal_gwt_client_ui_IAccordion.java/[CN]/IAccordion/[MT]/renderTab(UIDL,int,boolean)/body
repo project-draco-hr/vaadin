@@ -1,23 +1,24 @@
 {
   StackItem item;
+  int itemIndex;
   if (stack.size() <= index) {
     item=new StackItem(tabUidl);
     if (stack.size() == 0) {
       item.addStyleDependentName("first");
     }
     stack.add(item);
+    itemIndex=stack.size() - 1;
     add(item,getElement());
   }
  else {
-    item=(StackItem)stack.get(index);
+    item=stack.get(index);
+    itemIndex=index;
     item.updateCaption(tabUidl);
   }
   if (selected) {
-    item.open();
-    iLayout();
-    item.setContent(tabUidl.getChildUIDL(0));
+    selectedUIDLItemIndex=itemIndex;
   }
- else   if (tabUidl.getChildCount() > 0) {
+  if (tabUidl.getChildCount() > 0) {
     lazyUpdateMap.put(item,tabUidl.getChildUIDL(0));
   }
 }

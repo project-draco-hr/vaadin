@@ -1,0 +1,37 @@
+{
+  if (openTab == null) {
+    renderSpace.setHeight(0);
+    renderSpace.setWidth(0);
+    return;
+  }
+  if (!isDynamicWidth()) {
+    int w=getOffsetWidth();
+    openTab.setWidth(w);
+    renderSpace.setWidth(w);
+  }
+ else {
+    renderSpace.setWidth(0);
+  }
+  if (!isDynamicHeight()) {
+    int usedPixels=0;
+    for (Iterator iterator=stack.iterator(); iterator.hasNext(); ) {
+      StackItem item=(StackItem)iterator.next();
+      if (item == openTab) {
+        usedPixels+=item.getCaptionHeight();
+      }
+ else {
+        usedPixels+=item.getHeight();
+      }
+    }
+    int offsetHeight=getOffsetHeight();
+    int spaceForOpenItem=offsetHeight - usedPixels;
+    if (spaceForOpenItem < 0) {
+      spaceForOpenItem=0;
+    }
+    renderSpace.setHeight(spaceForOpenItem);
+    openTab.setHeight(spaceForOpenItem);
+  }
+ else {
+    renderSpace.setHeight(0);
+  }
+}

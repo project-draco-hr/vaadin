@@ -1,26 +1,22 @@
 {
-  StackItem item=getSelectedStack();
-  if (item == null) {
+  if (openTab == null) {
     return;
   }
-  if (height != null && !height.equals("")) {
-    int usedPixels=0;
-    for (Iterator iterator=stack.iterator(); iterator.hasNext(); ) {
-      StackItem si=(StackItem)iterator.next();
-      if (si != item) {
-        usedPixels+=si.getOffsetHeight();
+  if (isDynamicWidth()) {
+    int maxWidth=40;
+    for (    StackItem si : stack) {
+      int captionWidth=si.getCaptionWidth();
+      if (captionWidth > maxWidth) {
+        maxWidth=captionWidth;
       }
     }
-    int offsetHeight=getOffsetHeight();
-    int spaceForOpenItem=offsetHeight - usedPixels;
-    if (spaceForOpenItem > 0) {
-      item.setHeight(spaceForOpenItem + "px");
+    int widgetWidth=openTab.getWidgetWidth();
+    if (widgetWidth > maxWidth) {
+      maxWidth=widgetWidth;
     }
+    super.setWidth(maxWidth + "px");
+    openTab.setWidth(maxWidth);
   }
- else {
-    super.setHeight("");
-    item.setHeight("");
-  }
-  client.runDescendentsLayout(item);
-  Util.runWebkitOverflowAutoFix(getSelectedStack().getContainerElement());
+  client.runDescendentsLayout(openTab);
+  Util.runWebkitOverflowAutoFix(openTab.getContainerElement());
 }

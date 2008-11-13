@@ -1,9 +1,4 @@
 {
-  if (!isOpen()) {
-    StackItem openItem=getSelectedStack();
-    int availableH=openItem.getOffsetHeight() - DOM.getElementPropertyInt(captionNode,"offsetHeight");
-    fixContentNodeSize(availableH);
-  }
   final Paintable newPntbl=client.getPaintable(contentUidl);
   if (getPaintable() == null) {
     add((Widget)newPntbl,content);
@@ -18,4 +13,9 @@
   }
   paintable=newPntbl;
   paintable.updateFromUIDL(contentUidl,client);
+  if (isOpen()) {
+    if (isDynamicHeight()) {
+      setHeight(((Widget)paintable).getOffsetHeight());
+    }
+  }
 }
