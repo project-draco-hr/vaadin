@@ -12,15 +12,17 @@
     final String[] bursts=changes.split(VAR_BURST_SEPARATOR);
     boolean nocheck="true".equals(application2.getProperty("disable-xsrf-protection"));
     if (bursts.length == 1 && "init".equals(bursts[0])) {
-      String uuid=UUID.randomUUID().toString();
-      Cookie c=new Cookie(ApplicationConnection.UIDL_SECURITY_COOKIE_NAME,uuid);
-      response.addCookie(c);
-      request.getSession().setAttribute(ApplicationConnection.UIDL_SECURITY_COOKIE_NAME,uuid);
+      String uuid=(String)request.getSession().getAttribute(ApplicationConnection.UIDL_SECURITY_HEADER);
+      if (uuid == null) {
+        uuid=UUID.randomUUID().toString();
+      }
+      response.setHeader(ApplicationConnection.UIDL_SECURITY_HEADER,uuid);
+      request.getSession().setAttribute(ApplicationConnection.UIDL_SECURITY_HEADER,uuid);
       return true;
     }
  else     if (!nocheck) {
-      String sessId=(String)request.getSession().getAttribute(ApplicationConnection.UIDL_SECURITY_COOKIE_NAME);
-      if (!sessId.equals(bursts[0])) {
+      String sessId=(String)request.getSession().getAttribute(ApplicationConnection.UIDL_SECURITY_HEADER);
+      if (sessId == null || !sessId.equals(bursts[0])) {
         throw new InvalidUIDLSecurityKeyException("Security key mismatch");
       }
     }
