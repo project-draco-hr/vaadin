@@ -1,11 +1,16 @@
 {
   if (!target.startTag(this,getTag()) || repaintRequestListenersNotified) {
     if (isVisible()) {
-      if (getHeight() >= 0) {
-        target.addAttribute("height","" + getCSSHeight());
+      if (getApplication().isDebugMode() && !DebugUtilities.validateComponentRelativeSizes(this,false)) {
+        addStyleName("invalidlayout");
       }
-      if (getWidth() >= 0) {
-        target.addAttribute("width","" + getCSSWidth());
+ else {
+        if (getHeight() >= 0) {
+          target.addAttribute("height","" + getCSSHeight());
+        }
+        if (getWidth() >= 0) {
+          target.addAttribute("width","" + getCSSWidth());
+        }
       }
       if (styles != null && styles.size() > 0) {
         target.addAttribute("style",getStyle());

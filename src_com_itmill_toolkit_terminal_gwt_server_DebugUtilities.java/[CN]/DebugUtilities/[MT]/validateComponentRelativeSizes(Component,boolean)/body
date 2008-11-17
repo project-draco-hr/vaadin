@@ -1,5 +1,6 @@
 {
   String msg=null;
+  boolean valid=true;
   Component parent=component.getParent();
   if (!(component instanceof Window)) {
     if (hasRelativeWidth(component) && hasUndefinedWidth(parent)) {
@@ -55,17 +56,27 @@
     err.append("\n\t Error     : ");
     err.append(msg);
     System.err.println(err);
-    return;
+    valid=false;
   }
-  if (component instanceof Panel) {
-    Panel panel=(Panel)component;
-    validateComponentRelativeSizes(panel.getLayout());
-  }
- else   if (component instanceof ComponentContainer) {
-    ComponentContainer lo=(ComponentContainer)component;
-    Iterator it=lo.getComponentIterator();
-    while (it.hasNext()) {
-      validateComponentRelativeSizes((Component)it.next());
+  if (recursive) {
+    if (component instanceof Panel) {
+      Panel panel=(Panel)component;
+      if (!validateComponentRelativeSizes(panel.getLayout(),false)) {
+        valid=false;
+      }
     }
+ else     if (component instanceof ComponentContainer) {
+      ComponentContainer lo=(ComponentContainer)component;
+      Iterator it=lo.getComponentIterator();
+      while (it.hasNext()) {
+        if (!validateComponentRelativeSizes((Component)it.next(),false)) {
+          valid=false;
+        }
+      }
+    }
+    return valid;
+  }
+ else {
+    return valid;
   }
 }

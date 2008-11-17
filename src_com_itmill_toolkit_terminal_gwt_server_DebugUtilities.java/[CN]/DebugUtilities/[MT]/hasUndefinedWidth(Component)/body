@@ -1,9 +1,19 @@
 {
-  if (parent instanceof Window) {
-    Window w=(Window)parent;
+  if (component instanceof Window) {
+    Window w=(Window)component;
     if (w.getParent() == null) {
       return false;
     }
   }
-  return parent.getWidth() < 0;
+  if (component.getWidth() < 0) {
+    return true;
+  }
+ else {
+    if (hasRelativeWidth(component) && component.getParent() != null) {
+      return hasUndefinedWidth(component.getParent());
+    }
+ else {
+      return false;
+    }
+  }
 }
