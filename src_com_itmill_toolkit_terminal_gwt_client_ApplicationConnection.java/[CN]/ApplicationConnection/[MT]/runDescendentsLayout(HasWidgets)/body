@@ -1,20 +1,8 @@
 {
-  final Iterator childWidgets=container.iterator();
-  while (childWidgets.hasNext()) {
-    final Widget child=(Widget)childWidgets.next();
-    if (child instanceof Paintable) {
-      if (handleComponentRelativeSize(child)) {
-        if (child instanceof ContainerResizedListener) {
-          ((ContainerResizedListener)child).iLayout();
-        }
- else         if (child instanceof HasWidgets) {
-          final HasWidgets childContainer=(HasWidgets)child;
-          runDescendentsLayout(childContainer);
-        }
-      }
-    }
- else     if (child instanceof HasWidgets) {
-      runDescendentsLayout((HasWidgets)child);
-    }
+  if (runningLayout) {
+    return;
   }
+  runningLayout=true;
+  internalRunDescendentsLayout(container);
+  runningLayout=false;
 }
