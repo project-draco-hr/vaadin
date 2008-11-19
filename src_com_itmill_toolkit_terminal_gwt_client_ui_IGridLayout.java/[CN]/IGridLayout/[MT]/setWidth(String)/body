@@ -3,10 +3,67 @@
   if (!width.equals(this.width)) {
     this.width=width;
     if (!rendering) {
+      int[] oldWidths=cloneArray(columnWidths);
       expandColumns();
+      boolean heightChanged=false;
+      HashSet<Integer> dirtyRows=null;
+      for (int i=0; i < oldWidths.length; i++) {
+        if (columnWidths[i] != oldWidths[i]) {
+          Cell[] column=cells[i];
+          for (int j=0; j < column.length; j++) {
+            Cell c=column[j];
+            if (c.widthCanAffectHeight()) {
+              int oldheight=c.getHeight();
+              c.cc.setContainerSize(c.getAvailableWidth(),c.getAvailableHeight());
+              c.cc.updateWidgetSize();
+              int newHeight=c.getHeight();
+              if (columnWidths[i] < oldWidths[i] && newHeight > minRowHeights[j]) {
+                minRowHeights[j]=newHeight;
+                if (newHeight > rowHeights[j]) {
+                  rowHeights[j]=newHeight;
+                  heightChanged=true;
+                }
+              }
+ else               if (newHeight < minRowHeights[j]) {
+                if (dirtyRows == null) {
+                  dirtyRows=new HashSet<Integer>();
+                }
+                dirtyRows.add(j);
+              }
+            }
+          }
+        }
+      }
+      if (dirtyRows != null) {
+        boolean rowMayShrink=false;
+        for (        Integer rowIndex : dirtyRows) {
+          int oldMinimum=minRowHeights[rowIndex];
+          int newMinimum=0;
+          for (int colIndex=0; colIndex < columnWidths.length; colIndex++) {
+            Cell cell=cells[colIndex][rowIndex];
+            if (cell != null && !cell.hasRelativeHeight() && cell.getHeight() > newMinimum) {
+              newMinimum=cell.getHeight();
+            }
+          }
+          if (newMinimum < oldMinimum) {
+            minRowHeights[rowIndex]=rowHeights[rowIndex]=newMinimum;
+            rowMayShrink=true;
+          }
+        }
+        if (rowMayShrink) {
+          distributeRowSpanHeights();
+          minRowHeights=cloneArray(rowHeights);
+          heightChanged=true;
+        }
+      }
       layoutCells();
       for (      Paintable c : paintableToCell.keySet()) {
         client.handleComponentRelativeSize((Widget)c);
+      }
+      if (heightChanged && "".equals(height)) {
+        Set<Widget> s=new HashSet<Widget>();
+        s.add(this);
+        Util.componentSizeUpdated(s);
       }
     }
   }
