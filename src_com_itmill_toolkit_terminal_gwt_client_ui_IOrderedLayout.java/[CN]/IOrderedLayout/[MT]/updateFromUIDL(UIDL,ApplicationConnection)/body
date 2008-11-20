@@ -49,12 +49,13 @@
     childComponentContainer.updateWidgetSize();
   }
   if ((isHorizontal() && isDynamicHeight()) || (isVertical() && isDynamicWidth())) {
+    Size oldSize=new Size(activeLayoutSize.getWidth(),activeLayoutSize.getHeight());
     calculateLayoutDimensions();
+    if (!oldSize.equals(activeLayoutSize)) {
+      calculateContainerSize();
+    }
   }
   updateContainerMargins();
   recalculateComponentSizesAndAlignments();
-  if (isDynamicHeight() || isDynamicWidth()) {
-    client.runDescendentsLayout(this);
-  }
   isRendering=false;
 }
