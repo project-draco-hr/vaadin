@@ -15,7 +15,23 @@
  else {
         }
       }
- else       if (!(parent instanceof GridLayout) && !(parent instanceof CustomLayout)) {
+ else       if (parent instanceof GridLayout) {
+        GridLayout gl=(GridLayout)parent;
+        Area componentArea=gl.getComponentArea(component);
+        boolean columnHasWidth=false;
+        for (int col=componentArea.getColumn1(); !columnHasWidth && col <= componentArea.getColumn2(); col++) {
+          for (int row=0; !columnHasWidth && row < gl.getRows(); row++) {
+            Component c=gl.getComponent(col,row);
+            if (c != null) {
+              columnHasWidth=!hasRelativeWidth(c);
+            }
+          }
+        }
+        if (!columnHasWidth) {
+          msg="At least one component in each column should have non relative width in GridLayout with undefined width.";
+        }
+      }
+ else       if (!(parent instanceof CustomLayout)) {
         msg="Relative width component's parent should not have undefined width.";
       }
     }
@@ -32,7 +48,21 @@
  else {
           }
         }
- else         if (!(parent instanceof GridLayout)) {
+ else         if (parent instanceof GridLayout) {
+          GridLayout gl=(GridLayout)parent;
+          Area componentArea=gl.getComponentArea(component);
+          boolean rowHasHeight=false;
+          for (int row=componentArea.getRow1(); !rowHasHeight && row <= componentArea.getRow2(); row++) {
+            for (int column=0; !rowHasHeight && column < gl.getColumns(); column++) {
+              Component c=gl.getComponent(column,row);
+              if (c != null) {
+                rowHasHeight=!hasRelativeHeight(c);
+              }
+            }
+          }
+          if (!rowHasHeight) {
+            msg="At least one component in each row should have non relative height in GridLayout with undefined height.";
+          }
           msg="Relative height component's parent should not have undefined height.";
         }
       }
@@ -42,6 +72,8 @@
     StringBuffer err=new StringBuffer();
     err.append("IT MILL Toolkit DEBUG: Invalid layout detected. Components may be invisible or not render as expected.\n");
     err.append("\t Component : ");
+    err.append(component.getClass().getSimpleName());
+    err.append(" ");
     err.append(component);
     err.append(", Caption: ");
     err.append(component.getCaption());
