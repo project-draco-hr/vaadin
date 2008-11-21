@@ -30,7 +30,12 @@
       relativeSizeWidgets.add(widget);
     }
  else {
-      childComponentContainer.renderChild(childUIDL,client);
+      if (isDynamicWidth()) {
+        childComponentContainer.renderChild(childUIDL,client,0);
+      }
+ else {
+        childComponentContainer.renderChild(childUIDL,client,activeLayoutSize.getWidth());
+      }
     }
     uidlWidgets.add(widget);
   }
@@ -43,7 +48,12 @@
   for (int i=0; i < relativeSizeComponents.size(); i++) {
     ChildComponentContainer childComponentContainer=relativeSizeComponents.get(i);
     UIDL childUIDL=relativeSizeComponentUIDL.get(i);
-    childComponentContainer.renderChild(childUIDL,client);
+    if (isDynamicWidth()) {
+      childComponentContainer.renderChild(childUIDL,client,0);
+    }
+ else {
+      childComponentContainer.renderChild(childUIDL,client,activeLayoutSize.getWidth());
+    }
   }
   for (  ChildComponentContainer childComponentContainer : widgetToComponentContainer.values()) {
     childComponentContainer.updateWidgetSize();
