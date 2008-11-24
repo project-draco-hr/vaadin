@@ -1,0 +1,45 @@
+{
+  Component parent=component.getParent();
+  String msg=null;
+  Stack<ComponentInfo> attributes=null;
+  if (hasRelativeHeight(component) && hasUndefinedHeight(parent)) {
+    if (parent instanceof OrderedLayout) {
+      OrderedLayout ol=(OrderedLayout)parent;
+      if (ol.getOrientation() == OrderedLayout.ORIENTATION_VERTICAL) {
+        msg="Relative height for component inside non sized vertical ordered layout.";
+        attributes=getHeightAttributes(component);
+      }
+ else       if (!hasNonRelativeHeightComponent(ol)) {
+        msg="At least one of horizontal orderedlayout's components must have non relative height if layout has no height defined";
+        attributes=getHeightAttributes(component);
+      }
+ else {
+      }
+    }
+ else     if (parent instanceof GridLayout) {
+      GridLayout gl=(GridLayout)parent;
+      Area componentArea=gl.getComponentArea(component);
+      boolean rowHasHeight=false;
+      for (int row=componentArea.getRow1(); !rowHasHeight && row <= componentArea.getRow2(); row++) {
+        for (int column=0; !rowHasHeight && column < gl.getColumns(); column++) {
+          Component c=gl.getComponent(column,row);
+          if (c != null) {
+            rowHasHeight=!hasRelativeHeight(c);
+          }
+        }
+      }
+      if (!rowHasHeight) {
+        msg="At least one component in each row should have non relative height in GridLayout with undefined height.";
+        attributes=getHeightAttributes(component);
+      }
+    }
+ else {
+      msg="Relative height component's parent should not have undefined height.";
+      attributes=getHeightAttributes(component);
+    }
+  }
+  if (msg != null) {
+    showError(msg,attributes);
+  }
+  return (msg == null);
+}
