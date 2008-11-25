@@ -3,9 +3,11 @@
   setStyleName(CLASSNAME);
   DOM.sinkEvents(getElement(),Event.ONKEYDOWN | Event.ONSCROLL);
   DOM.setElementProperty(getElement(),"tabIndex","1");
-  RootPanel.get(elementId).add(this);
-  RootPanel.get(elementId).removeStyleName("i-app-loading");
-  if (BrowserInfo.get().isOpera() || BrowserInfo.get().isSafari() && BrowserInfo.get().getWebkitVersion() < 526) {
+  RootPanel root=RootPanel.get(elementId);
+  root.add(this);
+  root.removeStyleName("i-app-loading");
+  BrowserInfo browser=BrowserInfo.get();
+  if (browser.isOpera() || browser.isSafari() && browser.getWebkitVersion() < 526) {
     Element fElem=DOM.createInputCheck();
     DOM.setStyleAttribute(fElem,"margin","0");
     DOM.setStyleAttribute(fElem,"padding","0");
@@ -21,4 +23,7 @@
  else {
     focus(getElement());
   }
+  String browserClassnames=browser.getCSSClass();
+  ApplicationConnection.getConsole().log("Browser classnames: " + browserClassnames);
+  root.addStyleName(browserClassnames);
 }
