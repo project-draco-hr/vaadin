@@ -1,0 +1,56 @@
+{
+  if (!isAttached()) {
+    return false;
+  }
+  DivElement measurement=Document.get().createDivElement();
+  Style style=measurement.getStyle();
+  style.setProperty("position","absolute");
+  style.setProperty("top","0");
+  style.setProperty("left","0");
+  style.setProperty("width","0");
+  style.setProperty("height","0");
+  style.setProperty("visibility","hidden");
+  style.setProperty("overflow","hidden");
+  root.appendChild(measurement);
+  if (spacingEnabled) {
+    measurement.setClassName(STYLENAME_SPACING);
+    activeSpacing.vSpacing=measurement.getOffsetHeight() - 1;
+    activeSpacing.hSpacing=measurement.getOffsetWidth() - 1;
+  }
+ else {
+    activeSpacing.hSpacing=0;
+    activeSpacing.vSpacing=0;
+  }
+  DivElement measurement2=Document.get().createDivElement();
+  style=measurement2.getStyle();
+  style.setProperty("width","0px");
+  style.setProperty("height","0px");
+  style.setProperty("visibility","hidden");
+  style.setProperty("overflow","hidden");
+  measurement.appendChild(measurement2);
+  String sn=getStylePrimaryName() + "-margin";
+  if (activeMarginsInfo.hasTop()) {
+    sn+=" " + STYLENAME_MARGIN_TOP;
+  }
+  if (activeMarginsInfo.hasBottom()) {
+    sn+=" " + STYLENAME_MARGIN_BOTTOM;
+  }
+  if (activeMarginsInfo.hasLeft()) {
+    sn+=" " + STYLENAME_MARGIN_LEFT;
+  }
+  if (activeMarginsInfo.hasRight()) {
+    sn+=" " + STYLENAME_MARGIN_RIGHT;
+  }
+  measurement.setClassName(sn);
+  activeMargins.setMarginTop(measurement2.getOffsetTop() - measurement.getOffsetTop());
+  activeMargins.setMarginLeft(measurement2.getOffsetLeft() - measurement.getOffsetLeft());
+  activeMargins.setMarginRight(measurement.getOffsetWidth() - activeMargins.getMarginLeft());
+  activeMargins.setMarginBottom(measurement.getOffsetHeight() - activeMargins.getMarginTop());
+  root.removeChild(measurement);
+  style=root.getStyle();
+  style.setPropertyPx("marginLeft",activeMargins.getMarginLeft());
+  style.setPropertyPx("marginRight",activeMargins.getMarginRight());
+  style.setPropertyPx("marginTop",activeMargins.getMarginTop());
+  style.setPropertyPx("marginBottom",activeMargins.getMarginBottom());
+  return true;
+}
