@@ -1,8 +1,12 @@
 {
   int height=0, width=0;
+  Iterator<Widget> widgetIterator=iterator();
   if (isHorizontal()) {
     height=activeLayoutSize.getHeight();
-    for (    ChildComponentContainer childComponentContainer : widgetToComponentContainer.values()) {
+    int availableWidth=activeLayoutSize.getWidth();
+    boolean first=true;
+    while (widgetIterator.hasNext()) {
+      ChildComponentContainer childComponentContainer=(ChildComponentContainer)widgetIterator.next();
       if (!childComponentContainer.isComponentRelativeSized(ORIENTATION_HORIZONTAL)) {
         width=childComponentContainer.getWidgetSize().getWidth() + childComponentContainer.getCaptionWidthAfterComponent();
         if (!childComponentContainer.widgetHasSizeSpecified(orientation)) {
@@ -15,12 +19,31 @@
  else {
         width=0;
       }
+      if (!isDynamicWidth()) {
+        if (availableWidth == 0) {
+        }
+ else         if (width > availableWidth) {
+          width=availableWidth;
+          if (!first) {
+            width-=activeSpacing.hSpacing;
+          }
+          availableWidth=0;
+        }
+ else {
+          availableWidth-=width;
+          if (!first) {
+            availableWidth-=activeSpacing.hSpacing;
+          }
+        }
+        first=false;
+      }
       childComponentContainer.setContainerSize(width,height);
     }
   }
  else {
     width=activeLayoutSize.getWidth();
-    for (    ChildComponentContainer childComponentContainer : widgetToComponentContainer.values()) {
+    while (widgetIterator.hasNext()) {
+      ChildComponentContainer childComponentContainer=(ChildComponentContainer)widgetIterator.next();
       if (!childComponentContainer.isComponentRelativeSized(ORIENTATION_VERTICAL)) {
         height=childComponentContainer.getWidgetSize().getHeight() + childComponentContainer.getCaptionHeightAboveComponent();
       }
