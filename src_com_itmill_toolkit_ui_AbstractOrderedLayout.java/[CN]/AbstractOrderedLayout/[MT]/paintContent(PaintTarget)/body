@@ -1,0 +1,39 @@
+{
+  super.paintContent(target);
+  if (spacing) {
+    target.addAttribute("spacing",spacing);
+  }
+  final String[] alignmentsArray=new String[components.size()];
+  final Integer[] expandRatioArray=new Integer[components.size()];
+  float sum=getExpandRatioSum();
+  boolean equallyDivided=false;
+  int realSum=0;
+  if (sum == 0 && components.size() > 0) {
+    equallyDivided=true;
+    float equalSize=1 / (float)components.size();
+    int myRatio=Math.round(equalSize * 1000);
+    for (int i=0; i < expandRatioArray.length; i++) {
+      expandRatioArray[i]=myRatio;
+    }
+    realSum=myRatio * components.size();
+  }
+  int index=0;
+  for (final Iterator i=components.iterator(); i.hasNext(); ) {
+    final Component c=(Component)i.next();
+    if (c != null) {
+      c.paint(target);
+      alignmentsArray[index]=String.valueOf(getComponentAlignment(c));
+      if (!equallyDivided) {
+        int myRatio=Math.round((getExpandRatio(c) / sum) * 1000);
+        expandRatioArray[index]=myRatio;
+        realSum+=myRatio;
+      }
+      index++;
+    }
+  }
+  if (expandRatioArray.length > 0) {
+    expandRatioArray[0]-=realSum - 1000;
+  }
+  target.addAttribute("alignments",alignmentsArray);
+  target.addAttribute("expandRatios",expandRatioArray);
+}
