@@ -1,7 +1,18 @@
 {
+  if (this.width.equals(width)) {
+    return;
+  }
   super.setWidth(width);
   this.width=width;
   if (!rendering) {
     updateOpenTabSize();
+    if (isDynamicHeight()) {
+      Util.updateRelativeChildrenAndSendSizeUpdateEvent(client,openTab,this);
+      updateOpenTabSize();
+    }
+    if (isDynamicHeight()) {
+      openTab.setHeightFromWidget();
+    }
+    iLayout();
   }
 }
