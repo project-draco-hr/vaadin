@@ -3,6 +3,17 @@
   String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : "";
   float relativeWidth=Util.parseRelativeSize(w);
   float relativeHeight=Util.parseRelativeSize(h);
+  if (relativeHeight >= 0.0 || relativeWidth >= 0.0) {
+    FloatSize relativeSize=new FloatSize(relativeWidth,relativeHeight);
+    if (componentRelativeSizes.put(component,relativeSize) == null && componentOffsetSizes.containsKey(component)) {
+      relativeSizeChanges.add(component);
+    }
+  }
+ else   if (relativeHeight < 0.0 && relativeWidth < 0.0) {
+    if (componentRelativeSizes.remove(component) != null) {
+      relativeSizeChanges.add(component);
+    }
+  }
   if (relativeHeight < 0.0) {
     component.setHeight(h);
   }
@@ -10,15 +21,6 @@
     component.setWidth(w);
   }
   if (relativeHeight >= 0.0 || relativeWidth >= 0.0) {
-    FloatSize relativeSize=new FloatSize(relativeWidth,relativeHeight);
-    if (componentRelativeSizes.put(component,relativeSize) == null && componentOffsetSizes.containsKey(component)) {
-      relativeSizeChanges.add(component);
-    }
     handleComponentRelativeSize(component);
-  }
- else   if (relativeHeight < 0.0 && relativeWidth < 0.0) {
-    if (componentRelativeSizes.remove(component) != null) {
-      relativeSizeChanges.add(component);
-    }
   }
 }
