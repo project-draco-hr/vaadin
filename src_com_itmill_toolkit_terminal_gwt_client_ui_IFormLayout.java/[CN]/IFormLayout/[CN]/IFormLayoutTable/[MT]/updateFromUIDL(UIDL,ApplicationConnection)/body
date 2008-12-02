@@ -11,12 +11,12 @@
     prepareCell(i,1);
     final UIDL childUidl=(UIDL)it.next();
     final Paintable p=client.getPaintable(childUidl);
-    Caption caption=(Caption)componentToCaption.get(p);
+    Caption caption=componentToCaption.get(p);
     if (caption == null) {
       caption=new Caption(p,client);
       componentToCaption.put(p,caption);
     }
-    ErrorFlag error=(ErrorFlag)componentToError.get(p);
+    ErrorFlag error=componentToError.get(p);
     if (error == null) {
       error=new ErrorFlag();
       componentToError.put(p,error);
@@ -50,5 +50,8 @@
     client.unregisterPaintable(p);
     componentToCaption.remove(p);
     removeRow(i);
+  }
+  for (  Paintable p : componentToCaption.keySet()) {
+    client.handleComponentRelativeSize((Widget)p);
   }
 }
