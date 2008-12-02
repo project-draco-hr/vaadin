@@ -1,4 +1,7 @@
 {
+  if ((this.width == null && width.equals("")) || (this.width != null && this.width.equals(width))) {
+    return;
+  }
   super.setWidth(width);
   if (width.equals("")) {
     width=null;
@@ -17,6 +20,9 @@
     renderSpace.setWidth(contentWidth);
   }
   if (!rendering) {
+    if (isDynamicHeight()) {
+      Util.updateRelativeChildrenAndSendSizeUpdateEvent(client,tp,this);
+    }
     updateOpenTabSize();
     iLayout();
     client.runDescendentsLayout(this);
