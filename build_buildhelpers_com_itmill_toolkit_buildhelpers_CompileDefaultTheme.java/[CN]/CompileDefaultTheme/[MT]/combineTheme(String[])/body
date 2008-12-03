@@ -1,0 +1,48 @@
+{
+  StringBuffer combinedCss=new StringBuffer();
+  for (int j=0; j < themeNames.length; j++) {
+    File f=new File(THEME_DIR + themeNames[j]);
+    combinedCss.append("/* Automatically compiled css file from subdirectories. */\n");
+    File[] subdir=f.listFiles();
+    Arrays.sort(subdir,new Comparator(){
+      public int compare(      Object arg0,      Object arg1){
+        return ((File)arg0).compareTo((File)arg1);
+      }
+    }
+);
+    for (int i=0; i < subdir.length; i++) {
+      File dir=subdir[i];
+      String name=dir.getName();
+      String filename=dir.getPath() + "/" + name+ ".css";
+      File cssFile=new File(filename);
+      if (cssFile.isFile()) {
+        combinedCss.append("\n");
+        combinedCss.append("/*" + filename + "*/");
+        combinedCss.append("\n");
+        FileInputStream fstream=new FileInputStream(cssFile);
+        DataInputStream in=new DataInputStream(fstream);
+        BufferedReader br=new BufferedReader(new InputStreamReader(in));
+        String strLine;
+        while ((strLine=br.readLine()) != null) {
+          String urlPrefix="";
+          if (j < themeNames.length - 1) {
+            urlPrefix="../" + themeNames[j] + "/";
+          }
+          if (strLine.indexOf("url(../") > 0) {
+            strLine=strLine.replaceAll("url\\(../",("url\\(" + urlPrefix));
+          }
+ else {
+            strLine=strLine.replaceAll("url\\(",("url\\(" + urlPrefix + name+ "/"));
+          }
+          combinedCss.append(strLine);
+          combinedCss.append("\n");
+        }
+        in.close();
+      }
+    }
+  }
+  BufferedWriter out=new BufferedWriter(new FileWriter(THEME_DIR + themeNames[themeNames.length - 1] + "/styles.css"));
+  out.write(combinedCss.toString());
+  out.close();
+  System.out.println("Compiled CSS to " + THEME_DIR + themeNames[themeNames.length - 1]+ "/styles.css ("+ combinedCss.toString().length()+ " bytes)");
+}
