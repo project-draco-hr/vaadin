@@ -1,12 +1,17 @@
 {
   super.onBrowserEvent(event);
-  if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
+  if (DOM.eventGetType(event) == Event.ONLOAD) {
+    HashSet<Widget> set=new HashSet<Widget>();
+    set.add(this);
+    Util.componentSizeUpdated(set);
+  }
+ else   if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
     clickPending=true;
   }
-  if (DOM.eventGetType(event) == Event.ONMOUSEMOVE) {
+ else   if (DOM.eventGetType(event) == Event.ONMOUSEMOVE) {
     clickPending=false;
   }
-  if (DOM.eventGetType(event) == Event.ONMOUSEOUT) {
+ else   if (DOM.eventGetType(event) == Event.ONMOUSEOUT) {
     if (clickPending) {
       click();
     }
