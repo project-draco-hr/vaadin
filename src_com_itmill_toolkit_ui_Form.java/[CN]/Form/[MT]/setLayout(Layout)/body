@@ -2,8 +2,20 @@
   if (newLayout == null) {
     newLayout=new FormLayout();
   }
+  gridlayoutCursorX=-1;
+  gridlayoutCursorY=-1;
   if (layout != null) {
-    newLayout.moveComponentsFrom(layout);
+    final Object[] properties=propertyIds.toArray();
+    for (int i=0; i < properties.length; i++) {
+      Field f=getField(properties[i]);
+      layout.removeComponent(f);
+      if (newLayout instanceof CustomLayout) {
+        ((CustomLayout)newLayout).addComponent(f,properties[i].toString());
+      }
+ else {
+        newLayout.addComponent(f);
+      }
+    }
     layout.setParent(null);
   }
   newLayout.setParent(this);
