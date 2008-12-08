@@ -18,10 +18,14 @@
     template=newTemplateContents;
   }
   template=extractBodyAndScriptsFromTemplate(template);
-  DOM.setInnerHTML(getElement(),template);
+  getElement().setInnerHTML(template);
   locationToElement.clear();
   scanForLocations(getElement());
   String themeUri=client.getThemeUri();
-  prefixImgSrcs(getElement(),themeUri + "/layouts/");
-  publishResizedFunction(DOM.getFirstChild(getElement()));
+  initImgElements(getElement(),themeUri + "/layouts/");
+  elementWithNativeResizeFunction=DOM.getFirstChild(getElement());
+  if (elementWithNativeResizeFunction == null) {
+    elementWithNativeResizeFunction=getElement();
+  }
+  publishResizedFunction(elementWithNativeResizeFunction);
 }
