@@ -1,21 +1,38 @@
 {
   Window w=new Window();
   setMainWindow(w);
-  OrderedLayout ol=new OrderedLayout();
+  VerticalLayout ol=new VerticalLayout();
   w.setLayout(ol);
-  w.addComponent(new Label("When one tab is removed by clicking 'close a tab', client side get's mixed up."));
-  Button b=new Button("close a tab");
-  b.addListener(new ClickListener(){
-    @Override public void buttonClick(    ClickEvent event){
+  Button b=new Button("close current tab");
+  b.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
       closeCurrentTab();
     }
   }
 );
   ol.addComponent(b);
+  b=new Button("close first tab");
+  b.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      closeFirstTab();
+    }
+  }
+);
+  ol.addComponent(b);
   ts=new TabSheet();
+  ts.setSizeUndefined();
+  ts.setWidth("300px");
   ts.addTab(new MyTab("tab one"),"Caption1",null);
   ts.addTab(new MyTab("tab two"),"Caption2",null);
   ts.addTab(new MyTab("tab three"),"Caption3",null);
   ts.addTab(new MyTab("tab four"),"Caption4",null);
-  ol.addComponent(ts);
+  ts.addTab(new MyTab("tab five"),"Caption5",null);
+  acc=new Accordion();
+  acc.setSizeUndefined();
+  acc.addTab(new MyTab("tab one"),"Caption1",null);
+  acc.addTab(new MyTab("tab two"),"Caption2",null);
+  acc.addTab(new MyTab("tab three"),"Caption3",null);
+  acc.addTab(new MyTab("tab four"),"Caption4",null);
+  ol.addComponent(acc);
+  ts=null;
 }
