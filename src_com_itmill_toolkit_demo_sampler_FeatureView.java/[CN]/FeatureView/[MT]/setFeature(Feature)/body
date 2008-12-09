@@ -33,10 +33,18 @@
       OrderedLayout rel=new OrderedLayout();
       rel.setCaption("Related Samples");
       for (      Class c : features) {
-        Feature f=SamplerApplication.getFeatureFor(c);
+        final Feature f=SamplerApplication.getFeatureFor(c);
         if (f != null) {
           String path=SamplerApplication.getPathFor(f);
-          rel.addComponent(new Link(f.getName(),new ExternalResource(getApplication().getURL() + path)));
+          ActiveLink al=new ActiveLink(f.getName(),new ExternalResource(getApplication().getURL() + path));
+          al.addListener(new LinkActivatedListener(){
+            public void linkActivated(            LinkActivatedEvent event){
+              SamplerWindow w=(SamplerWindow)getWindow();
+              w.setFeature(f);
+            }
+          }
+);
+          rel.addComponent(al);
         }
       }
       addComponent(rel,"feature-rel");
