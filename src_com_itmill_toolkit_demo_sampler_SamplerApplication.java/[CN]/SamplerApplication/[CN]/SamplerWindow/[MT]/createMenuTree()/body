@@ -1,15 +1,25 @@
 {
-  Tree tree=new Tree();
+  final Tree tree=new Tree();
   tree.setImmediate(true);
   tree.setContainerDataSource(allFeatures);
-  tree.setPropertyDataSource(currentFeature);
+  currentFeature.addListener(new Property.ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      Feature f=(Feature)event.getProperty().getValue();
+      Feature v=(Feature)tree.getValue();
+      if ((f != null && !f.equals(v)) || (f == null && v != null)) {
+        tree.setValue(f);
+      }
+    }
+  }
+);
   for (int i=0; i < features.getFeatures().length; i++) {
     tree.expandItemsRecursively(features.getFeatures()[i]);
   }
   tree.expandItemsRecursively(features);
-  tree.addListener(new Table.ValueChangeListener(){
+  tree.addListener(new Tree.ValueChangeListener(){
     public void valueChange(    ValueChangeEvent event){
-      updateFeatureList(currentList);
+      Feature f=(Feature)event.getProperty().getValue();
+      setFeature(f);
     }
   }
 );
