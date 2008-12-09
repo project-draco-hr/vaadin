@@ -18,11 +18,14 @@
     template=newTemplateContents;
   }
   template=extractBodyAndScriptsFromTemplate(template);
+  String themeUri=client.getThemeUri();
+  String relImgPrefix=themeUri + "/layouts/";
+  template=template.replaceAll("<((?:img)|(?:IMG)) ([^>]*)src=\"((?![a-z]+:)[^/][^\"]+)\"","<$1 $2src=\"" + relImgPrefix + "$3\"");
+  template=template.replaceAll("<((?:img)|(?:IMG)) ([^>]*)src=[^\"]((?![a-z]+:)[^/][^ />]+)[ />]","<$1 $2src=\"" + relImgPrefix + "$3\"");
   getElement().setInnerHTML(template);
   locationToElement.clear();
   scanForLocations(getElement());
-  String themeUri=client.getThemeUri();
-  initImgElements(getElement(),themeUri + "/layouts/");
+  initImgElements();
   elementWithNativeResizeFunction=DOM.getFirstChild(getElement());
   if (elementWithNativeResizeFunction == null) {
     elementWithNativeResizeFunction=getElement();
