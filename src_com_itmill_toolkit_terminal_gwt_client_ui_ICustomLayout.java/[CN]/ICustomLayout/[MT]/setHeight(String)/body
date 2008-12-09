@@ -1,0 +1,25 @@
+{
+  if (this.height.equals(height)) {
+    return;
+  }
+  boolean shrinking=true;
+  if (isLarger(height,this.height)) {
+    shrinking=false;
+  }
+  this.height=height;
+  super.setHeight(height);
+  if (shrinking) {
+    Set<Widget> relativeSizeWidgets=new HashSet<Widget>();
+    for (    Widget widget : locationToWidget.values()) {
+      FloatSize relativeSize=client.getRelativeSize(widget);
+      if (relativeSize.getHeight() >= 0.0f) {
+        relativeSizeWidgets.add(widget);
+        widget.getElement().getStyle().setProperty("position","absolute");
+      }
+    }
+    for (    Widget widget : relativeSizeWidgets) {
+      client.handleComponentRelativeSize(widget);
+      widget.getElement().getStyle().setProperty("position","");
+    }
+  }
+}
