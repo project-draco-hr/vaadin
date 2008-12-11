@@ -1,16 +1,20 @@
 {
   if (!target.startTag(this,getTag()) || repaintRequestListenersNotified) {
     if (isVisible()) {
-      if (getApplication() != null && getApplication().isDebugMode() && !DebugUtilities.validateComponentRelativeSizes(this,false)) {
+      boolean validHeight=true;
+      boolean validWidth=true;
+      if (getApplication() != null && getApplication().isDebugMode()) {
+        validHeight=DebugUtilities.checkHeights(this);
+        validWidth=DebugUtilities.checkWidths(this);
+      }
+      if (!validHeight || !validWidth) {
         addStyleName("invalidlayout");
       }
- else {
-        if (getHeight() >= 0) {
-          target.addAttribute("height","" + getCSSHeight());
-        }
-        if (getWidth() >= 0) {
-          target.addAttribute("width","" + getCSSWidth());
-        }
+      if (validHeight && getHeight() >= 0) {
+        target.addAttribute("height","" + getCSSHeight());
+      }
+      if (validWidth && getWidth() >= 0) {
+        target.addAttribute("width","" + getCSSWidth());
       }
       if (styles != null && styles.size() > 0) {
         target.addAttribute("style",getStyle());
