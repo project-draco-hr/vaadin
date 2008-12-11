@@ -5,14 +5,16 @@
   if (hasRelativeHeight(component) && hasUndefinedHeight(parent)) {
     if (parent instanceof AbstractOrderedLayout) {
       AbstractOrderedLayout ol=(AbstractOrderedLayout)parent;
-      int orientation=OrderedLayout.ORIENTATION_HORIZONTAL;
+      boolean vertical=false;
       if (ol instanceof OrderedLayout) {
-        orientation=((OrderedLayout)ol).getOrientation();
+        if (((OrderedLayout)ol).getOrientation() == OrderedLayout.ORIENTATION_VERTICAL) {
+          vertical=true;
+        }
       }
  else       if (ol instanceof VerticalLayout) {
-        orientation=OrderedLayout.ORIENTATION_VERTICAL;
+        vertical=true;
       }
-      if (orientation == OrderedLayout.ORIENTATION_VERTICAL) {
+      if (vertical) {
         msg="Relative height for component inside non sized vertical ordered layout.";
         attributes=getHeightAttributes(component);
       }
