@@ -1,0 +1,25 @@
+{
+  StackTraceElement[] traceLines=Thread.currentThread().getStackTrace();
+  for (  StackTraceElement traceElement : traceLines) {
+    Class cls;
+    try {
+      String className=traceElement.getClassName();
+      if (className.startsWith("java.") || className.startsWith("sun.")) {
+        continue;
+      }
+      cls=Class.forName(className);
+      if (cls == DebugUtilities.class || cls == Thread.class) {
+        continue;
+      }
+      if (Component.class.isAssignableFrom(cls) && !CustomComponent.class.isAssignableFrom(cls)) {
+        continue;
+      }
+      FileLocation cl=new FileLocation(traceElement);
+      map.put(object,cl);
+      return;
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
+  }
+}

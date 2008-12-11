@@ -3,9 +3,16 @@
   String msg=null;
   Stack<ComponentInfo> attributes=null;
   if (hasRelativeWidth(component) && hasUndefinedWidth(parent)) {
-    if (parent instanceof OrderedLayout) {
-      OrderedLayout ol=(OrderedLayout)parent;
-      if (ol.getOrientation() == OrderedLayout.ORIENTATION_HORIZONTAL) {
+    if (parent instanceof AbstractOrderedLayout) {
+      AbstractOrderedLayout ol=(AbstractOrderedLayout)parent;
+      int orientation=OrderedLayout.ORIENTATION_HORIZONTAL;
+      if (ol instanceof OrderedLayout) {
+        orientation=((OrderedLayout)ol).getOrientation();
+      }
+ else       if (ol instanceof VerticalLayout) {
+        orientation=OrderedLayout.ORIENTATION_VERTICAL;
+      }
+      if (orientation == OrderedLayout.ORIENTATION_HORIZONTAL) {
         msg="Relative width for component inside non sized horizontal ordered layout.";
         attributes=getWidthAttributes(component);
       }
@@ -39,7 +46,7 @@
     }
   }
   if (msg != null) {
-    showError(msg,attributes);
+    showError(msg,attributes,true);
   }
   return (msg == null);
 }
