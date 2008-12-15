@@ -70,10 +70,19 @@
     contentPanel.setWidget((Widget)lo);
     layout=lo;
   }
+  boolean dynamicWidth=!uidl.hasAttribute("width");
+  boolean widthHasBeenFixed=false;
+  String layoutWidth=childUidl.getStringAttribute("width");
+  if (dynamicWidth) {
+    if (layoutWidth != null && layoutWidth.contains("%")) {
+      widthHasBeenFixed=true;
+      setNaturalWidth();
+    }
+  }
   lo.updateFromUIDL(childUidl,client);
-  if (!uidl.hasAttribute("width")) {
-    final int naturalWidth=getElement().getOffsetWidth();
-    setWidth(naturalWidth + "px");
+  if (dynamicWidth && !widthHasBeenFixed) {
+    setNaturalWidth();
+    widthHasBeenFixed=true;
   }
   if (uidl.getChildCount() > 1) {
     final int cnt=uidl.getChildCount();
