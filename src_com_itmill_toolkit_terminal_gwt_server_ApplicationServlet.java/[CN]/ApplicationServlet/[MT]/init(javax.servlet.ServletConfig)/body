@@ -22,8 +22,14 @@
     final String name=(String)e.nextElement();
     applicationProperties.setProperty(name,context.getInitParameter(name));
   }
-  if (getApplicationOrSystemProperty(PARAMETER_DEBUG,"false").equals("true")) {
-    debugMode=true;
+  if (getApplicationOrSystemProperty(PARAMETER_DEBUG,"true").equals("false")) {
+    productionMode=true;
+  }
+ else   if (getApplicationOrSystemProperty(PARAMETER_PRODUCTION_MODE,"false").equals("true")) {
+    productionMode=true;
+  }
+  if (!productionMode) {
+    System.out.println(NOT_PRODUCTION_MODE_INFO);
   }
   if (getApplicationOrSystemProperty("testingToolsActive","false").equals("true")) {
     testingToolsActive=true;
