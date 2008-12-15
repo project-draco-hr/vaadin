@@ -1,59 +1,64 @@
 {
-  if (component instanceof Window) {
-    return true;
-  }
-  Component parent=component.getParent();
   String msg=null;
-  Stack<ComponentInfo> attributes=null;
-  if (hasRelativeWidth(component) && hasUndefinedWidth(parent)) {
-    if (parent instanceof AbstractOrderedLayout) {
-      AbstractOrderedLayout ol=(AbstractOrderedLayout)parent;
-      boolean horizontal=true;
-      if (ol instanceof OrderedLayout) {
-        if (((OrderedLayout)ol).getOrientation() == OrderedLayout.ORIENTATION_VERTICAL) {
-          horizontal=false;
-        }
-      }
- else       if (ol instanceof VerticalLayout) {
-        horizontal=false;
-      }
-      if (horizontal) {
-        msg="Relative width for component inside non sized horizontal ordered layout.";
-        attributes=getWidthAttributes(component);
-      }
- else       if (!hasNonRelativeWidthComponent(ol)) {
-        msg="At least one of vertical orderedlayout's components must have non relative width if layout has no width defined";
-        attributes=getWidthAttributes(component);
-      }
- else {
-      }
+  try {
+    if (component instanceof Window) {
+      return true;
     }
- else     if (parent instanceof GridLayout) {
-      GridLayout gl=(GridLayout)parent;
-      Area componentArea=gl.getComponentArea(component);
-      boolean columnHasWidth=false;
-      for (int col=componentArea.getColumn1(); !columnHasWidth && col <= componentArea.getColumn2(); col++) {
-        for (int row=0; !columnHasWidth && row < gl.getRows(); row++) {
-          Component c=gl.getComponent(col,row);
-          if (c != null) {
-            columnHasWidth=!hasRelativeWidth(c);
+    Component parent=component.getParent();
+    Stack<ComponentInfo> attributes=null;
+    if (hasRelativeWidth(component) && hasUndefinedWidth(parent)) {
+      if (parent instanceof AbstractOrderedLayout) {
+        AbstractOrderedLayout ol=(AbstractOrderedLayout)parent;
+        boolean horizontal=true;
+        if (ol instanceof OrderedLayout) {
+          if (((OrderedLayout)ol).getOrientation() == OrderedLayout.ORIENTATION_VERTICAL) {
+            horizontal=false;
           }
         }
+ else         if (ol instanceof VerticalLayout) {
+          horizontal=false;
+        }
+        if (horizontal) {
+          msg="Relative width for component inside non sized horizontal ordered layout.";
+          attributes=getWidthAttributes(component);
+        }
+ else         if (!hasNonRelativeWidthComponent(ol)) {
+          msg="At least one of vertical orderedlayout's components must have non relative width if layout has no width defined";
+          attributes=getWidthAttributes(component);
+        }
+ else {
+        }
       }
-      if (!columnHasWidth) {
-        msg="At least one component in each column should have non relative width in GridLayout with undefined width.";
-        attributes=getWidthAttributes(component);
+ else       if (parent instanceof GridLayout) {
+        GridLayout gl=(GridLayout)parent;
+        Area componentArea=gl.getComponentArea(component);
+        boolean columnHasWidth=false;
+        for (int col=componentArea.getColumn1(); !columnHasWidth && col <= componentArea.getColumn2(); col++) {
+          for (int row=0; !columnHasWidth && row < gl.getRows(); row++) {
+            Component c=gl.getComponent(col,row);
+            if (c != null) {
+              columnHasWidth=!hasRelativeWidth(c);
+            }
+          }
+        }
+        if (!columnHasWidth) {
+          msg="At least one component in each column should have non relative width in GridLayout with undefined width.";
+          attributes=getWidthAttributes(component);
+        }
+      }
+ else       if (!(parent instanceof CustomLayout)) {
+        if (!(parent instanceof Panel && parent.getCaption() != null && !parent.getCaption().equals(""))) {
+          msg="Relative width component's parent should not have undefined width.";
+          attributes=getWidthAttributes(component);
+        }
       }
     }
- else     if (!(parent instanceof CustomLayout)) {
-      if (!(parent instanceof Panel && parent.getCaption() != null && !parent.getCaption().equals(""))) {
-        msg="Relative width component's parent should not have undefined width.";
-        attributes=getWidthAttributes(component);
-      }
+    if (msg != null) {
+      showError(msg,attributes,true);
     }
   }
-  if (msg != null) {
-    showError(msg,attributes,true);
+ catch (  Exception e) {
+    e.printStackTrace();
   }
   return (msg == null);
 }

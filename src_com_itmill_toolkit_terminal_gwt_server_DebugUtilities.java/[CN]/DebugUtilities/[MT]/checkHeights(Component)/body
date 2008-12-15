@@ -1,57 +1,62 @@
 {
-  if (component instanceof Window) {
-    return true;
-  }
-  Component parent=component.getParent();
   String msg=null;
-  Stack<ComponentInfo> attributes=null;
-  if (hasRelativeHeight(component) && hasUndefinedHeight(parent)) {
-    if (parent instanceof AbstractOrderedLayout) {
-      AbstractOrderedLayout ol=(AbstractOrderedLayout)parent;
-      boolean vertical=false;
-      if (ol instanceof OrderedLayout) {
-        if (((OrderedLayout)ol).getOrientation() == OrderedLayout.ORIENTATION_VERTICAL) {
-          vertical=true;
-        }
-      }
- else       if (ol instanceof VerticalLayout) {
-        vertical=true;
-      }
-      if (vertical) {
-        msg="Relative height for component inside non sized vertical ordered layout.";
-        attributes=getHeightAttributes(component);
-      }
- else       if (!hasNonRelativeHeightComponent(ol)) {
-        msg="At least one of horizontal orderedlayout's components must have non relative height if layout has no height defined";
-        attributes=getHeightAttributes(component);
-      }
- else {
-      }
+  try {
+    if (component instanceof Window) {
+      return true;
     }
- else     if (parent instanceof GridLayout) {
-      GridLayout gl=(GridLayout)parent;
-      Area componentArea=gl.getComponentArea(component);
-      boolean rowHasHeight=false;
-      for (int row=componentArea.getRow1(); !rowHasHeight && row <= componentArea.getRow2(); row++) {
-        for (int column=0; !rowHasHeight && column < gl.getColumns(); column++) {
-          Component c=gl.getComponent(column,row);
-          if (c != null) {
-            rowHasHeight=!hasRelativeHeight(c);
+    Component parent=component.getParent();
+    Stack<ComponentInfo> attributes=null;
+    if (hasRelativeHeight(component) && hasUndefinedHeight(parent)) {
+      if (parent instanceof AbstractOrderedLayout) {
+        AbstractOrderedLayout ol=(AbstractOrderedLayout)parent;
+        boolean vertical=false;
+        if (ol instanceof OrderedLayout) {
+          if (((OrderedLayout)ol).getOrientation() == OrderedLayout.ORIENTATION_VERTICAL) {
+            vertical=true;
           }
         }
+ else         if (ol instanceof VerticalLayout) {
+          vertical=true;
+        }
+        if (vertical) {
+          msg="Relative height for component inside non sized vertical ordered layout.";
+          attributes=getHeightAttributes(component);
+        }
+ else         if (!hasNonRelativeHeightComponent(ol)) {
+          msg="At least one of horizontal orderedlayout's components must have non relative height if layout has no height defined";
+          attributes=getHeightAttributes(component);
+        }
+ else {
+        }
       }
-      if (!rowHasHeight) {
-        msg="At least one component in each row should have non relative height in GridLayout with undefined height.";
+ else       if (parent instanceof GridLayout) {
+        GridLayout gl=(GridLayout)parent;
+        Area componentArea=gl.getComponentArea(component);
+        boolean rowHasHeight=false;
+        for (int row=componentArea.getRow1(); !rowHasHeight && row <= componentArea.getRow2(); row++) {
+          for (int column=0; !rowHasHeight && column < gl.getColumns(); column++) {
+            Component c=gl.getComponent(column,row);
+            if (c != null) {
+              rowHasHeight=!hasRelativeHeight(c);
+            }
+          }
+        }
+        if (!rowHasHeight) {
+          msg="At least one component in each row should have non relative height in GridLayout with undefined height.";
+          attributes=getHeightAttributes(component);
+        }
+      }
+ else       if (!(parent instanceof CustomLayout)) {
+        msg="Relative height component's parent should not have undefined height.";
         attributes=getHeightAttributes(component);
       }
     }
- else     if (!(parent instanceof CustomLayout)) {
-      msg="Relative height component's parent should not have undefined height.";
-      attributes=getHeightAttributes(component);
+    if (msg != null) {
+      showError(msg,attributes,false);
     }
   }
-  if (msg != null) {
-    showError(msg,attributes,false);
+ catch (  Exception e) {
+    e.printStackTrace();
   }
   return (msg == null);
 }
