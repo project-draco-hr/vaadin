@@ -71,15 +71,18 @@
     layout=lo;
   }
   boolean dynamicWidth=!uidl.hasAttribute("width");
+  boolean dynamicHeight=!uidl.hasAttribute("height");
   boolean widthHasBeenFixed=false;
   String layoutWidth=childUidl.getStringAttribute("width");
-  if (dynamicWidth) {
-    if (layoutWidth != null && layoutWidth.contains("%")) {
-      widthHasBeenFixed=true;
-      setNaturalWidth();
-    }
+  boolean layoutRelativeWidth=(layoutWidth != null && layoutWidth.endsWith("%"));
+  if (dynamicWidth && layoutRelativeWidth) {
+    widthHasBeenFixed=true;
+    setNaturalWidth();
   }
-  lo.updateFromUIDL(childUidl,client);
+  layout.updateFromUIDL(childUidl,client);
+  if (!dynamicHeight && layoutRelativeWidth) {
+    client.handleComponentRelativeSize((Widget)layout);
+  }
   if (dynamicWidth && !widthHasBeenFixed) {
     setNaturalWidth();
     widthHasBeenFixed=true;
