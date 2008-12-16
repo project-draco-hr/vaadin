@@ -1,0 +1,55 @@
+{
+  if (parent.getHeight() < 0) {
+    if (parent instanceof Window) {
+      Window w=(Window)parent;
+      if (w.getParent() == null) {
+        return false;
+      }
+    }
+    if (parent instanceof VerticalLayout) {
+      return true;
+    }
+ else     if (parent instanceof AbstractOrderedLayout) {
+      boolean horizontal=true;
+      if (parent instanceof OrderedLayout) {
+        horizontal=((OrderedLayout)parent).getOrientation() == OrderedLayout.ORIENTATION_HORIZONTAL;
+      }
+      if (horizontal && hasNonRelativeHeightComponent((AbstractOrderedLayout)parent)) {
+        return false;
+      }
+ else {
+        return true;
+      }
+    }
+ else     if (parent instanceof GridLayout) {
+      GridLayout gl=(GridLayout)parent;
+      Area componentArea=gl.getComponentArea(component);
+      boolean rowHasHeight=false;
+      for (int row=componentArea.getRow1(); !rowHasHeight && row <= componentArea.getRow2(); row++) {
+        for (int column=0; !rowHasHeight && column < gl.getColumns(); column++) {
+          Component c=gl.getComponent(column,row);
+          if (c != null) {
+            rowHasHeight=!hasRelativeHeight(c);
+          }
+        }
+      }
+      if (!rowHasHeight) {
+        return true;
+      }
+    }
+    if (parent instanceof Panel || parent instanceof SplitPanel || parent instanceof TabSheet|| parent instanceof CustomComponent) {
+      return true;
+    }
+ else {
+      return false;
+    }
+  }
+ else {
+    if (hasRelativeHeight(parent) && parent.getParent() != null) {
+      return parentCannotDefineHeight(parent.getParent(),parent);
+    }
+ else {
+      return false;
+    }
+  }
+}

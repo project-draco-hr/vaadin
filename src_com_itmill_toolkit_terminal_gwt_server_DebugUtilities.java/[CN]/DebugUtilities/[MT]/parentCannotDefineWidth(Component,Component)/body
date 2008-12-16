@@ -1,0 +1,72 @@
+{
+  if (parent instanceof Window) {
+    Window w=(Window)parent;
+    if (w.getParent() == null) {
+      return false;
+    }
+  }
+  if (parent.getWidth() < 0) {
+    if (parent instanceof Panel) {
+      if (parent.getCaption() != null && !parent.getCaption().equals("")) {
+        return false;
+      }
+ else {
+        return true;
+      }
+    }
+ else     if (parent instanceof AbstractOrderedLayout) {
+      AbstractOrderedLayout ol=(AbstractOrderedLayout)parent;
+      boolean horizontal=true;
+      if (ol instanceof OrderedLayout) {
+        if (((OrderedLayout)ol).getOrientation() == OrderedLayout.ORIENTATION_VERTICAL) {
+          horizontal=false;
+        }
+      }
+ else       if (ol instanceof VerticalLayout) {
+        horizontal=false;
+      }
+      if (horizontal) {
+        return true;
+      }
+ else       if (!hasNonRelativeWidthComponent(ol)) {
+        return true;
+      }
+ else {
+        return false;
+      }
+    }
+ else     if (parent instanceof GridLayout) {
+      GridLayout gl=(GridLayout)parent;
+      Area componentArea=gl.getComponentArea(component);
+      boolean columnHasWidth=false;
+      for (int col=componentArea.getColumn1(); !columnHasWidth && col <= componentArea.getColumn2(); col++) {
+        for (int row=0; !columnHasWidth && row < gl.getRows(); row++) {
+          Component c=gl.getComponent(col,row);
+          if (c != null) {
+            columnHasWidth=!hasRelativeWidth(c);
+          }
+        }
+      }
+      if (!columnHasWidth) {
+        return true;
+      }
+ else {
+        return false;
+      }
+    }
+ else     if (parent instanceof SplitPanel || parent instanceof TabSheet || parent instanceof CustomComponent) {
+      return true;
+    }
+ else {
+      return false;
+    }
+  }
+ else {
+    if (hasRelativeWidth(parent) && parent.getParent() != null) {
+      return parentCannotDefineWidth(parent.getParent(),parent);
+    }
+ else {
+      return false;
+    }
+  }
+}
