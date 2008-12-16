@@ -33,7 +33,7 @@
       e.printStackTrace();
     }
   }
-  menu=new Tree("Testables",testables);
+  menu=new Tree("Testafdsfsbles",testables);
   for (final Iterator i=itemCaptions.keySet().iterator(); i.hasNext(); ) {
     final Class testable=(Class)i.next();
     final String name=testable.getName().substring(testable.getName().lastIndexOf('.') + 1);
@@ -45,7 +45,72 @@
   menu.addListener(this);
   menu.setImmediate(true);
   menu.setNullSelectionAllowed(false);
-  mainLayout.addComponent(menu);
+  VerticalLayout lo=new VerticalLayout();
+  lo.addComponent(menu);
+  UriFragmentUtility uri=new UriFragmentUtility();
+  lo.addComponent(uri);
+  uri.addListener(new UriFragmentUtility.FragmentChangedListener(){
+    public void fragmentChanged(    FragmentChangedEvent source){
+      String fragment=source.getUriFragmentUtility().getFragment();
+      if (fragment != null && !"".equals(fragment)) {
+        Iterator iterator=menu.getItemIds().iterator();
+        while (iterator.hasNext()) {
+          Object next=iterator.next();
+          if (next instanceof Class) {
+            Class c=(Class)next;
+            String string=c.getName();
+            if (string.equals(fragment)) {
+              menu.setValue(c);
+              mainLayout.setSplitPosition(0);
+              return;
+            }
+          }
+        }
+        iterator=menu.getItemIds().iterator();
+        while (iterator.hasNext()) {
+          Object next=iterator.next();
+          if (next instanceof Class) {
+            Class c=(Class)next;
+            String string=c.getSimpleName();
+            if (string.equals(fragment)) {
+              menu.setValue(c);
+              mainLayout.setSplitPosition(0);
+              return;
+            }
+          }
+        }
+        iterator=menu.getItemIds().iterator();
+        while (iterator.hasNext()) {
+          Object next=iterator.next();
+          if (next instanceof Class) {
+            Class c=(Class)next;
+            String string=c.getSimpleName();
+            if (string.startsWith("Ticket" + fragment)) {
+              menu.setValue(c);
+              mainLayout.setSplitPosition(0);
+              return;
+            }
+          }
+        }
+        iterator=menu.getItemIds().iterator();
+        while (iterator.hasNext()) {
+          Object next=iterator.next();
+          if (next instanceof Class) {
+            Class c=(Class)next;
+            String string=c.getSimpleName();
+            if (string.toLowerCase().contains(fragment.toLowerCase())) {
+              menu.setValue(c);
+              mainLayout.setSplitPosition(0);
+              return;
+            }
+          }
+        }
+        getMainWindow().showNotification("No potential matc for #" + fragment);
+      }
+    }
+  }
+);
+  mainLayout.addComponent(lo);
   bodyLayout.addStyleName("light");
   bodyLayout.setSizeFull();
   bodyLayout.setLayout(new ExpandLayout());
