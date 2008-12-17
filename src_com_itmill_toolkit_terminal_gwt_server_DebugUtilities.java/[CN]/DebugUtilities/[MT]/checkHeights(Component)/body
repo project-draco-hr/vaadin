@@ -1,47 +1,15 @@
 {
-  String msg=null;
   try {
+    if (!hasRelativeHeight(component)) {
+      return true;
+    }
     if (component instanceof Window) {
       return true;
     }
-    Component parent=component.getParent();
-    Stack<ComponentInfo> attributes=null;
-    if (hasRelativeHeight(component) && parent != null && parentCannotDefineHeight(parent,component)) {
-      if (parent instanceof AbstractOrderedLayout) {
-        AbstractOrderedLayout ol=(AbstractOrderedLayout)parent;
-        boolean vertical=false;
-        if (ol instanceof OrderedLayout) {
-          if (((OrderedLayout)ol).getOrientation() == OrderedLayout.ORIENTATION_VERTICAL) {
-            vertical=true;
-          }
-        }
- else         if (ol instanceof VerticalLayout) {
-          vertical=true;
-        }
-        if (vertical) {
-          msg="Relative height for component inside non sized vertical ordered layout.";
-          attributes=getHeightAttributes(component);
-        }
- else {
-          msg="At least one of horizontal orderedlayout's components must have non relative height if layout has no height defined";
-          attributes=getHeightAttributes(component);
-        }
-      }
- else       if (parent instanceof GridLayout) {
-        msg="At least one component in each row should have non relative height in GridLayout with undefined height.";
-        attributes=getHeightAttributes(component);
-      }
- else {
-        msg="Relative height component's parent should not have undefined height.";
-        attributes=getHeightAttributes(component);
-      }
-    }
-    if (msg != null) {
-      showError(msg,attributes,false);
-    }
+    return !(component.getParent() != null && parentCannotDefineHeight(component));
   }
  catch (  Exception e) {
     e.printStackTrace();
+    return true;
   }
-  return (msg == null);
 }

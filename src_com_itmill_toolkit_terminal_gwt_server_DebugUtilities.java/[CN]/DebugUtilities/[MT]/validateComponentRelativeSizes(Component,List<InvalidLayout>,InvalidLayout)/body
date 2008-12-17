@@ -1,0 +1,29 @@
+{
+  boolean invalidHeight=!checkHeights(component);
+  boolean invalidWidth=!checkWidths(component);
+  if (invalidHeight || invalidWidth) {
+    InvalidLayout error=new InvalidLayout(component,invalidHeight,invalidWidth);
+    if (parent != null) {
+      parent.addError(error);
+    }
+ else {
+      if (errors == null) {
+        errors=new LinkedList<InvalidLayout>();
+      }
+      errors.add(error);
+    }
+    parent=error;
+  }
+  if (component instanceof Panel) {
+    Panel panel=(Panel)component;
+    errors=validateComponentRelativeSizes(panel.getLayout(),errors,parent);
+  }
+ else   if (component instanceof ComponentContainer) {
+    ComponentContainer lo=(ComponentContainer)component;
+    Iterator it=lo.getComponentIterator();
+    while (it.hasNext()) {
+      errors=validateComponentRelativeSizes((Component)it.next(),errors,parent);
+    }
+  }
+  return errors;
+}

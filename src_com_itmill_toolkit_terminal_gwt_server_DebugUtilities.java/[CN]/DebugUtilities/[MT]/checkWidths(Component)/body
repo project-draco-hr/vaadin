@@ -1,47 +1,15 @@
 {
-  String msg=null;
   try {
+    if (!hasRelativeWidth(component)) {
+      return true;
+    }
     if (component instanceof Window) {
       return true;
     }
-    Component parent=component.getParent();
-    Stack<ComponentInfo> attributes=null;
-    if (hasRelativeWidth(component) && parent != null && parentCannotDefineWidth(parent,component)) {
-      if (parent instanceof AbstractOrderedLayout) {
-        AbstractOrderedLayout ol=(AbstractOrderedLayout)parent;
-        boolean horizontal=true;
-        if (ol instanceof OrderedLayout) {
-          if (((OrderedLayout)ol).getOrientation() == OrderedLayout.ORIENTATION_VERTICAL) {
-            horizontal=false;
-          }
-        }
- else         if (ol instanceof VerticalLayout) {
-          horizontal=false;
-        }
-        if (horizontal) {
-          msg="Relative width for component inside non sized horizontal ordered layout.";
-          attributes=getWidthAttributes(component);
-        }
- else {
-          msg="At least one of vertical orderedlayout's components must have non relative width if layout has no width defined";
-          attributes=getWidthAttributes(component);
-        }
-      }
- else       if (parent instanceof GridLayout) {
-        msg="At least one component in each column should have non relative width in GridLayout with undefined width.";
-        attributes=getWidthAttributes(component);
-      }
- else {
-        msg="Relative width component's parent should not have undefined width.";
-        attributes=getWidthAttributes(component);
-      }
-    }
-    if (msg != null) {
-      showError(msg,attributes,true);
-    }
+    return !(component.getParent() != null && parentCannotDefineWidth(component));
   }
  catch (  Exception e) {
     e.printStackTrace();
+    return true;
   }
-  return (msg == null);
 }

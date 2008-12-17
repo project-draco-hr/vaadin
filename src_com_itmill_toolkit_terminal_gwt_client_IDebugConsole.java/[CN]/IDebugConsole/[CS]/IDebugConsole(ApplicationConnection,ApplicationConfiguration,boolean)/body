@@ -21,6 +21,7 @@
     actions.add(clear);
     actions.add(restart);
     actions.add(forceLayout);
+    actions.add(analyzeLayout);
     panel.add(actions);
     panel.add(new HTML("<i>" + help + "</i>"));
     clear.addClickListener(new ClickListener(){
@@ -61,6 +62,16 @@
       }
     }
 );
+    analyzeLayout.addClickListener(new ClickListener(){
+      public void onClick(      Widget sender){
+        List<ApplicationConnection> runningApplications=ApplicationConfiguration.getRunningApplications();
+        for (        ApplicationConnection applicationConnection : runningApplications) {
+          applicationConnection.analyzeLayouts();
+        }
+      }
+    }
+);
+    analyzeLayout.setTitle("Repaints everything with analyze flag, giving information " + "about most likely invalid layouts.");
   }
   log("Toolkit application servlet version: " + cnf.getSerletVersion());
   log("Widget set is built on version: " + VERSION);

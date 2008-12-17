@@ -1,0 +1,91 @@
+{
+  clientJSON.write("{");
+  Component parent=component.getParent();
+  String paintableId=communicationManager.getPaintableId(component);
+  clientJSON.print("id:\"" + paintableId + "\"");
+  if (invalidHeight) {
+    Stack<ComponentInfo> attributes=null;
+    String msg="";
+    if (parent instanceof AbstractOrderedLayout) {
+      AbstractOrderedLayout ol=(AbstractOrderedLayout)parent;
+      boolean vertical=false;
+      if (ol instanceof OrderedLayout) {
+        if (((OrderedLayout)ol).getOrientation() == OrderedLayout.ORIENTATION_VERTICAL) {
+          vertical=true;
+        }
+      }
+ else       if (ol instanceof VerticalLayout) {
+        vertical=true;
+      }
+      if (vertical) {
+        msg="Relative height for component inside non sized vertical ordered layout.";
+        attributes=getHeightAttributes(component);
+      }
+ else {
+        msg="At least one of horizontal orderedlayout's components must have non relative height if layout has no height defined";
+        attributes=getHeightAttributes(component);
+      }
+    }
+ else     if (parent instanceof GridLayout) {
+      msg="At least one component in each row should have non relative height in GridLayout with undefined height.";
+      attributes=getHeightAttributes(component);
+    }
+ else {
+      msg="Relative height component's parent should not have undefined height.";
+      attributes=getHeightAttributes(component);
+    }
+    printServerError(msg,attributes,false,serverErrorStream);
+    clientJSON.print(",\"heightMsg\":\"" + msg + "\"");
+  }
+  if (invalidWidth) {
+    Stack<ComponentInfo> attributes=null;
+    String msg="";
+    if (parent instanceof AbstractOrderedLayout) {
+      AbstractOrderedLayout ol=(AbstractOrderedLayout)parent;
+      boolean horizontal=true;
+      if (ol instanceof OrderedLayout) {
+        if (((OrderedLayout)ol).getOrientation() == OrderedLayout.ORIENTATION_VERTICAL) {
+          horizontal=false;
+        }
+      }
+ else       if (ol instanceof VerticalLayout) {
+        horizontal=false;
+      }
+      if (horizontal) {
+        msg="Relative width for component inside non sized horizontal ordered layout.";
+        attributes=getWidthAttributes(component);
+      }
+ else {
+        msg="At least one of vertical orderedlayout's components must have non relative width if layout has no width defined";
+        attributes=getWidthAttributes(component);
+      }
+    }
+ else     if (parent instanceof GridLayout) {
+      msg="At least one component in each column should have non relative width in GridLayout with undefined width.";
+      attributes=getWidthAttributes(component);
+    }
+ else {
+      msg="Relative width component's parent should not have undefined width.";
+      attributes=getWidthAttributes(component);
+    }
+    clientJSON.print(",\"widthMsg\":\"" + msg + "\"");
+    printServerError(msg,attributes,true,serverErrorStream);
+  }
+  if (subErrors.size() > 0) {
+    serverErrorStream.println("Sub erros >>");
+    clientJSON.write(", \"subErrors\" : [");
+    boolean first=true;
+    for (    InvalidLayout subError : subErrors) {
+      if (first) {
+        clientJSON.print(",");
+      }
+ else {
+        first=false;
+      }
+      subError.reportErrors(clientJSON,communicationManager,serverErrorStream);
+    }
+    clientJSON.write("]");
+    serverErrorStream.println("<< Sub erros");
+  }
+  clientJSON.write("}");
+}

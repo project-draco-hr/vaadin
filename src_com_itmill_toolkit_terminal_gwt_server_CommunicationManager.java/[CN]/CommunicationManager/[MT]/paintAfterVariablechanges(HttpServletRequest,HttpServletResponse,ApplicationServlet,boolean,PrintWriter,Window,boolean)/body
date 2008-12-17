@@ -17,6 +17,7 @@
   outWriter.print("\"changes\":[");
   ArrayList<Paintable> paintables=null;
   if (!window.getName().equals(closingWindowName)) {
+    List<InvalidLayout> invalidComponentRelativeSizes=null;
     Window newWindow=getApplicationWindow(request,application,window);
     if (newWindow != window) {
       window=newWindow;
@@ -83,6 +84,9 @@
           paintTarget.endTag("change");
         }
         paintablePainted(p);
+        if (analyzeLayouts) {
+          invalidComponentRelativeSizes=DebugUtilities.validateComponentRelativeSizes(((Window)p).getLayout(),null,null);
+        }
       }
     }
     paintTarget.close();
@@ -92,6 +96,23 @@
     if (repaintAll) {
       metaOpen=true;
       outWriter.write("\"repaintAll\":true");
+      if (analyzeLayouts) {
+        outWriter.write(", \"invalidLayouts\":");
+        outWriter.write("[");
+        if (invalidComponentRelativeSizes != null) {
+          boolean first=true;
+          for (          InvalidLayout invalidLayout : invalidComponentRelativeSizes) {
+            if (!first) {
+              outWriter.write(",");
+            }
+ else {
+              first=false;
+            }
+            invalidLayout.reportErrors(outWriter,this,System.err);
+          }
+        }
+        outWriter.write("]");
+      }
     }
     SystemMessages ci=null;
     try {
