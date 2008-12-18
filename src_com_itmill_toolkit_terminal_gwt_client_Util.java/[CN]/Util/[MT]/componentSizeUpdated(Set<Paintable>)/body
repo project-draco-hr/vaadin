@@ -3,9 +3,9 @@
     return;
   }
   Map<Container,Set<Paintable>> childWidgets=new HashMap<Container,Set<Paintable>>();
-  for (  Widget widget : widgets) {
+  for (  Paintable widget : widgets) {
     ApplicationConnection.getConsole().log("Widget " + Util.getSimpleName(widget) + " size updated");
-    Widget parent=widget.getParent();
+    Widget parent=((Widget)widget).getParent();
     while (parent != null && !(parent instanceof Container)) {
       parent=parent.getParent();
     }
@@ -15,13 +15,13 @@
         set=new HashSet<Paintable>();
         childWidgets.put((Container)parent,set);
       }
-      set.add((Paintable)widget);
+      set.add(widget);
     }
   }
-  Set<Widget> parentChanges=new HashSet<Widget>();
+  Set<Paintable> parentChanges=new HashSet<Paintable>();
   for (  Container parent : childWidgets.keySet()) {
     if (!parent.requestLayout(childWidgets.get(parent))) {
-      parentChanges.add((Widget)parent);
+      parentChanges.add(parent);
     }
   }
   componentSizeUpdated(parentChanges);
