@@ -39,6 +39,11 @@
       view.clear();
       idToPaintable.clear();
       paintableToId.clear();
+      if (meta.containsKey("invalidLayouts")) {
+        validatingLayouts=true;
+        zeroWidthComponents=new HashSet<Paintable>();
+        zeroHeightComponents=new HashSet<Paintable>();
+      }
     }
     if (meta.containsKey("timedRedirect")) {
       final JSONObject timedRedirect=meta.get("timedRedirect").isObject();
@@ -126,8 +131,11 @@
       }
       applicationRunning=false;
     }
-    if (meta.containsKey("invalidLayouts")) {
-      getConsole().printLayoutProblems(meta.get("invalidLayouts").isArray(),this);
+    if (validatingLayouts) {
+      getConsole().printLayoutProblems(meta.get("invalidLayouts").isArray(),this,zeroHeightComponents,zeroWidthComponents);
+      zeroHeightComponents=null;
+      zeroWidthComponents=null;
+      validatingLayouts=false;
     }
   }
   final long prosessingTime=(new Date().getTime()) - start.getTime();
