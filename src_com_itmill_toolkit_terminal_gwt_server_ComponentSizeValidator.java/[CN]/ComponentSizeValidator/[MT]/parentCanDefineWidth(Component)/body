@@ -1,24 +1,16 @@
 {
   Component parent=component.getParent();
   if (parent == null) {
-    return false;
+    return true;
   }
   if (parent instanceof Window) {
     Window w=(Window)parent;
     if (w.getParent() == null) {
-      return false;
+      return true;
     }
   }
   if (parent.getWidth() < 0) {
-    if (parent instanceof Panel) {
-      if (parent.getCaption() != null && !parent.getCaption().equals("")) {
-        return false;
-      }
- else {
-        return true;
-      }
-    }
- else     if (parent instanceof AbstractOrderedLayout) {
+    if (parent instanceof AbstractOrderedLayout) {
       AbstractOrderedLayout ol=(AbstractOrderedLayout)parent;
       boolean horizontal=true;
       if (ol instanceof OrderedLayout) {
@@ -29,10 +21,7 @@
  else       if (ol instanceof VerticalLayout) {
         horizontal=false;
       }
-      if (horizontal) {
-        return true;
-      }
- else       if (!hasNonRelativeWidthComponent(ol)) {
+      if (!horizontal && hasNonRelativeWidthComponent(ol)) {
         return true;
       }
  else {
@@ -52,25 +41,29 @@
         }
       }
       if (!columnHasWidth) {
-        return true;
+        return false;
       }
  else {
-        return false;
+        return true;
       }
     }
  else     if (parent instanceof SplitPanel || parent instanceof TabSheet || parent instanceof CustomComponent) {
+      return false;
+    }
+ else     if (parent instanceof Panel) {
+      return false;
+    }
+ else {
       return true;
     }
- else {
-      return false;
+  }
+ else   if (hasRelativeWidth(parent)) {
+    if (parent.getParent() == null) {
+      return true;
     }
+    return parentCanDefineWidth(parent);
   }
  else {
-    if (hasRelativeWidth(parent) && parent.getParent() != null) {
-      return parentCannotDefineWidth(parent);
-    }
- else {
-      return false;
-    }
+    return true;
   }
 }
