@@ -33,10 +33,18 @@
   availW=tBody.getAvailableWidth();
   boolean needsReLayout=false;
   if (availW > total) {
-    final int extraSpace=availW - total;
-    final int totalWidthR=total - totalExplicitColumnsWidths;
+    int extraSpace=availW - total;
+    int totalWidthR=total - totalExplicitColumnsWidths;
     if (totalWidthR > 0) {
       needsReLayout=true;
+      int scrollbarWidth=getScrollbarWidth();
+      if (relativeWidth && totalWidthR >= scrollbarWidth) {
+        scrollbarWidthReserved=scrollbarWidth + 1;
+        widths[tHead.getVisibleCellCount() - 1]+=scrollbarWidthReserved;
+        totalWidthR+=scrollbarWidthReserved;
+        extraSpace-=scrollbarWidthReserved;
+        scrollbarWidthReservedInColumn=tHead.getVisibleCellCount() - 1;
+      }
       headCells=tHead.iterator();
       i=0;
       HeaderCell hCell;

@@ -1,7 +1,18 @@
 {
+  if (this.width.equals(width)) {
+    return;
+  }
   this.width=width;
   if (width != null && !"".equals(width)) {
+    int oldWidth=getOffsetWidth();
     super.setWidth(width);
+    int newWidth=getOffsetWidth();
+    if (scrollbarWidthReservedInColumn != -1 && oldWidth > newWidth && (oldWidth - newWidth) < scrollbarWidthReserved) {
+      int col=scrollbarWidthReservedInColumn;
+      String colKey=getColKeyByIndex(col);
+      setColWidth(scrollbarWidthReservedInColumn,getColWidth(colKey) - (oldWidth - newWidth));
+      scrollbarWidthReservedInColumn=-1;
+    }
     int innerPixels=getOffsetWidth() - getBorderWidth();
     if (innerPixels < 0) {
       innerPixels=0;
