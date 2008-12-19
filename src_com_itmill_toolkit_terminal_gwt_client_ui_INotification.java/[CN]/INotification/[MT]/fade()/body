@@ -1,10 +1,13 @@
 {
   DOM.removeEventPreview(this);
   cancelDelay();
+  final int msec=fadeMsec / (startOpacity / 5);
   fader=new Timer(){
+    long timestamp=0;
     int opacity=startOpacity;
     public void run(){
-      opacity-=5;
+      double adjust=(timestamp == 0 ? 1 : (new Date().getTime() - timestamp) / msec);
+      opacity-=adjust * 5d;
       setOpacity(getElement(),opacity);
       if (opacity <= 0) {
         cancel();
@@ -14,9 +17,9 @@
           DOM.setStyleAttribute(getElement(),"height","");
         }
       }
+      timestamp=new Date().getTime();
     }
   }
 ;
-  final int msec=fadeMsec / (startOpacity / 5);
   fader.scheduleRepeating(msec);
 }
