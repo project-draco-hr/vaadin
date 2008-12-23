@@ -1,6 +1,12 @@
 {
   final String url=(String)event.getProperty().getValue();
   if (url != null) {
-    emb.setSource(new ExternalResource(url));
+    try {
+      @SuppressWarnings("unused") URL u=new URL(url);
+      emb.setSource(new ExternalResource(url));
+    }
+ catch (    MalformedURLException e) {
+      getWindow().showNotification("Invalid address",e.getMessage() + " (example: http://www.itmill.com)",Notification.TYPE_WARNING_MESSAGE);
+    }
   }
 }

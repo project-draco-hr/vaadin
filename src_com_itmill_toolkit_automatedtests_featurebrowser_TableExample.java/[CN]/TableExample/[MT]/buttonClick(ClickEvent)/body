@@ -6,9 +6,7 @@
  else   if (b == saveSelected) {
     final Set selected=(Set)source.getValue();
     int s=0;
-    List ordered=new LinkedList(selected);
-    java.util.Collections.sort(ordered);
-    for (final Iterator it=ordered.iterator(); it.hasNext(); ) {
+    for (final Iterator it=selected.iterator(); it.hasNext(); ) {
       final Object id=it.next();
       if (!saved.containsId(id)) {
         final Item item=source.getItem(id);
@@ -25,7 +23,6 @@
       }
     }
     getWindow().showNotification("Saved " + s);
-    saved.requestRepaint();
   }
  else   if (b == hireSelected) {
     int s=0;
@@ -36,13 +33,11 @@
       final Property p=item.getItemProperty(PROPERTY_HIRED);
       if (p.getValue() == Boolean.FALSE) {
         p.setValue(Boolean.TRUE);
-        source.requestRepaint();
         s++;
       }
       if (saved.containsId(id)) {
         item=saved.getItem(id);
         item.getItemProperty(PROPERTY_HIRED).setValue(Boolean.TRUE);
-        saved.requestRepaint();
       }
     }
     getWindow().showNotification("Hired " + s);
@@ -55,7 +50,6 @@
       if (source.containsId(id)) {
         s++;
         source.removeItem(id);
-        source.requestRepaint();
       }
     }
     getWindow().showNotification("Deleted " + s);
