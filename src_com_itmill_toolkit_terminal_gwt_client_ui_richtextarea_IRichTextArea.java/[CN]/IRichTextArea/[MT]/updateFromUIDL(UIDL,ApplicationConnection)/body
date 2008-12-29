@@ -13,4 +13,16 @@
     return;
   }
   immediate=uidl.getBooleanAttribute("immediate");
+  int newMaxLength=uidl.hasAttribute("maxLength") ? uidl.getIntAttribute("maxLength") : -1;
+  if (newMaxLength >= 0) {
+    if (maxLength == -1) {
+      rta.addKeyboardListener(this);
+    }
+    maxLength=newMaxLength;
+  }
+ else   if (maxLength != -1) {
+    getElement().setAttribute("maxlength","");
+    maxLength=-1;
+    rta.removeKeyboardListener(this);
+  }
 }

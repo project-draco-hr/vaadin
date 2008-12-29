@@ -2,6 +2,9 @@
   super.changeVariables(source,variables);
   if (variables.containsKey("text") && !isReadOnly()) {
     String newValue=(String)variables.get("text");
+    if (getMaxLength() != -1 && newValue.length() > getMaxLength()) {
+      newValue=newValue.substring(0,getMaxLength());
+    }
     final String oldValue=getFormattedValue();
     if (newValue != null && (oldValue == null || isNullSettingAllowed()) && newValue.equals(getNullRepresentation())) {
       newValue=null;
