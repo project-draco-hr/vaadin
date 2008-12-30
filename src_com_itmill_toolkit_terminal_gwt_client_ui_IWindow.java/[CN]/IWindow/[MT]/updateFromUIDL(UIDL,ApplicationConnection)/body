@@ -73,19 +73,26 @@
   boolean dynamicWidth=!uidl.hasAttribute("width");
   boolean dynamicHeight=!uidl.hasAttribute("height");
   boolean widthHasBeenFixed=false;
-  String layoutWidth=childUidl.getStringAttribute("width");
-  boolean layoutRelativeWidth=(layoutWidth != null && layoutWidth.endsWith("%"));
+  boolean layoutRelativeWidth=uidl.hasAttribute("layoutRelativeWidth");
+  boolean layoutRelativeHeight=uidl.hasAttribute("layoutRelativeHeight");
   if (dynamicWidth && layoutRelativeWidth) {
     widthHasBeenFixed=true;
     setNaturalWidth();
   }
   layout.updateFromUIDL(childUidl,client);
   if (!dynamicHeight && layoutRelativeWidth) {
-    client.handleComponentRelativeSize((Widget)layout);
+    client.runDescendentsLayout(this);
   }
   if (dynamicWidth && !widthHasBeenFixed) {
     setNaturalWidth();
     widthHasBeenFixed=true;
+  }
+  if (dynamicHeight && layoutRelativeHeight) {
+    int h=contents.getOffsetHeight() + getExtraHeight();
+    int w=contents.getOffsetWidth();
+    resizable=false;
+    client.updateVariable(id,"height",h,false);
+    client.updateVariable(id,"width",w,true);
   }
   if (uidl.getChildCount() > 1) {
     final int cnt=uidl.getChildCount();
