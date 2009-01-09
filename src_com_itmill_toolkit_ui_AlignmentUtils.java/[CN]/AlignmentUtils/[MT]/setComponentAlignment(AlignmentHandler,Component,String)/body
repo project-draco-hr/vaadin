@@ -2,7 +2,7 @@
   if (alignment == null || alignment.length() == 0) {
     throw new IllegalArgumentException("alignment for setComponentAlignment() cannot be null or empty");
   }
-  Integer currentAlignment=parent.getComponentAlignment(component);
+  Integer currentAlignment=parent.getComponentAlignment(component).getBitMask();
   if (alignment.length() == 1) {
     currentAlignment=parseAlignment(alignment.substring(0,1),currentAlignment);
   }
@@ -21,5 +21,5 @@
   }
   int horizontalAlignment=currentAlignment & horizontalMask;
   int verticalAlignment=currentAlignment & verticalMask;
-  parent.setComponentAlignment(component,horizontalAlignment,verticalAlignment);
+  parent.setComponentAlignment(component,new Alignment(horizontalAlignment + verticalAlignment));
 }
