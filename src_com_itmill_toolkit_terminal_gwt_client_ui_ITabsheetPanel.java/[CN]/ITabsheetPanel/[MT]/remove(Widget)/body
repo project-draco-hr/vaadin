@@ -1,12 +1,17 @@
 {
-  final int index=getWidgetIndex(w);
+  Element child=w.getElement();
+  Element parent=null;
+  if (child != null) {
+    parent=DOM.getParent(child);
+  }
   final boolean removed=super.remove(w);
   if (removed) {
     if (visibleWidget == w) {
       visibleWidget=null;
     }
-    Element child=DOM.getChild(getElement(),index);
-    DOM.removeChild(getElement(),child);
+    if (parent != null) {
+      DOM.removeChild(getElement(),parent);
+    }
   }
   return removed;
 }

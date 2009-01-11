@@ -8,20 +8,39 @@
   tb.setVisible(index,!hidden);
   c.setWidth(c.getRequiredWidth() + "px");
   captions.put("" + index,c);
+  UIDL tabContentUIDL=null;
+  Paintable tabContent=null;
+  if (tabUidl.getChildCount() > 0) {
+    tabContentUIDL=tabUidl.getChildUIDL(0);
+    tabContent=client.getPaintable(tabContentUIDL);
+  }
+  if (tabContent != null) {
+    int oldIndex=tp.getWidgetIndex((Widget)tabContent);
+    if (oldIndex != -1 && oldIndex != index) {
+      tp.insert((Widget)tabContent,index);
+    }
+  }
+ else {
+    if (index < tp.getWidgetCount()) {
+      Widget oldWidget=tp.getWidget(index);
+      if (!(oldWidget instanceof PlaceHolder)) {
+        tp.insert(new PlaceHolder(),index);
+      }
+    }
+  }
   if (selected) {
-    renderContent(tabUidl.getChildUIDL(0));
+    renderContent(tabContentUIDL);
     tb.selectTab(index);
   }
  else {
-    if (tabUidl.getChildCount() > 0) {
-      Paintable paintable=client.getPaintable(tabUidl.getChildUIDL(0));
-      if (tp.getWidgetIndex((Widget)paintable) < 0) {
-        tp.insert((Widget)paintable,index);
+    if (tabContentUIDL != null) {
+      if (tp.getWidgetIndex((Widget)tabContent) < 0) {
+        tp.insert((Widget)tabContent,index);
       }
-      paintable.updateFromUIDL(tabUidl.getChildUIDL(0),client);
+      tabContent.updateFromUIDL(tabContentUIDL,client);
     }
  else     if (tp.getWidgetCount() <= index) {
-      tp.add(new Label(""));
+      tp.add(new PlaceHolder());
     }
   }
 }
