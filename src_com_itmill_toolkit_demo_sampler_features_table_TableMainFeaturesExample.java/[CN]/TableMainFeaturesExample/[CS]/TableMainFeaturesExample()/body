@@ -1,9 +1,13 @@
 {
   addComponent(table);
+  final Label selected=new Label("No selection");
+  addComponent(selected);
   table.setStyleName("iso3166");
   table.setWidth("100%");
   table.setPageLength(7);
+  table.setSelectable(true);
   table.setMultiSelect(true);
+  table.setImmediate(true);
   table.setContainerDataSource(ExampleUtil.getISO3166Container());
   table.setColumnReorderingAllowed(true);
   table.setColumnCollapsingAllowed(true);
@@ -11,6 +15,8 @@
   table.setColumnIcon(ExampleUtil.iso3166_PROPERTY_FLAG,new ThemeResource("icons/action_save.gif"));
   table.setColumnIcon(ExampleUtil.iso3166_PROPERTY_NAME,new ThemeResource("icons/icon_get_world.gif"));
   table.setColumnIcon(ExampleUtil.iso3166_PROPERTY_SHORT,new ThemeResource("icons/page_code.gif"));
+  table.setColumnAlignment(ExampleUtil.iso3166_PROPERTY_SHORT,Table.ALIGN_CENTER);
+  table.setColumnWidth(ExampleUtil.iso3166_PROPERTY_SHORT,70);
   try {
     table.setColumnCollapsed(ExampleUtil.iso3166_PROPERTY_FLAG,true);
   }
@@ -39,7 +45,7 @@
       }
  else       if (ACTION_LOG.equals(action)) {
         Item item=table.getItem(target);
-        addComponent(new Label(target + ", " + item.getItemProperty(ExampleUtil.iso3166_PROPERTY_NAME).getValue()));
+        addComponent(new Label("Saved: " + target + ", "+ item.getItemProperty(ExampleUtil.iso3166_PROPERTY_NAME).getValue()));
       }
     }
   }
@@ -54,6 +60,18 @@
       }
  else {
         return null;
+      }
+    }
+  }
+);
+  table.addListener(new Table.ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      Set value=(Set)event.getProperty().getValue();
+      if (null == value || value.size() == 0) {
+        selected.setValue("No selection");
+      }
+ else {
+        selected.setValue("Selected: " + table.getValue());
       }
     }
   }
