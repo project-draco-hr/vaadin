@@ -1,0 +1,26 @@
+{
+switch (event.getButton()) {
+case ItemClickEvent.BUTTON_LEFT:
+    l.setValue("Selected item: " + event.getItem());
+  break;
+case ItemClickEvent.BUTTON_MIDDLE:
+Object parent=t.getParent(event.getItemId());
+l.setValue("Removed item: " + event.getItem());
+t.removeItem(event.getItemId());
+if (parent != null && t.getChildren(parent).size() == 0) {
+t.setChildrenAllowed(parent,false);
+}
+break;
+case ItemClickEvent.BUTTON_RIGHT:
+l.setValue("Added item: New Item # " + itemId);
+t.setChildrenAllowed(event.getItemId(),true);
+Item i=t.addItem(itemId);
+t.setChildrenAllowed(itemId,false);
+String newItemName="New Item # " + itemId;
+i.getItemProperty(ExampleUtil.hw_PROPERTY_NAME).setValue(newItemName);
+t.setParent(itemId,event.getItemId());
+t.expandItem(event.getItemId());
+itemId++;
+break;
+}
+}
