@@ -6,22 +6,10 @@
   mywindow.setName("mywindow");
   mywindow.addComponent(new Label("This is a second window."));
   addWindow(mywindow);
-  main.addComponent(new Button("Click to open new window",new Button.ClickListener(){
-    public void buttonClick(    ClickEvent event){
-      main.open(new ExternalResource(mywindow.getURL()),"_new");
-    }
-  }
-));
-  Link link=new Link("Click to open second window",new ExternalResource(mywindow.getURL()));
-  link.setTargetName("_new");
-  main.addComponent(link);
-  main.addComponent(new Label("Second window: <a href='" + mywindow.getURL() + "' target='_new'>click to open</a>",Label.CONTENT_XHTML));
-  main.addComponent(new Label("The second window can be accessed through URL: " + mywindow.getURL()));
-  main.addComponent(new Label("URLs to open item windows:"));
+  main.addComponent(new Label("Click a link to open a new window:"));
   final String[] items=new String[]{"mercury","venus","earth","mars","jupiter","saturn","uranus","neptune"};
-  for (int inx=0; inx < items.length; inx++) {
-    String item=items[inx];
-    String windowUrl=getURL() + "planet-" + item;
-    main.addComponent(new Label("A window about '" + item + "': <a href='"+ windowUrl+ "' target='_new'>"+ windowUrl+ "</a>",Label.CONTENT_XHTML));
+  for (int i=0; i < items.length; i++) {
+    String windowUrl=getURL() + "planet-" + items[i];
+    main.addComponent(new Link("Open window about " + items[i],new ExternalResource(windowUrl),items[i],-1,-1,Window.BORDER_DEFAULT));
   }
 }
