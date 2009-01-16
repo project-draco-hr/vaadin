@@ -1,0 +1,86 @@
+{
+  setSpacing(true);
+  addComponent(table);
+  table.setStyleName("contacts");
+  table.setWidth("100%");
+  table.setPageLength(7);
+  table.setContainerDataSource(ExampleUtil.getPersonContainer());
+  table.addGeneratedColumn("Email",new Table.ColumnGenerator(){
+    public Component generateCell(    Table source,    Object itemId,    Object columnId){
+      Item item=table.getItem(itemId);
+      String fn=(String)item.getItemProperty(ExampleUtil.PERSON_PROPERTY_FIRSTNAME).getValue();
+      String ln=(String)item.getItemProperty(ExampleUtil.PERSON_PROPERTY_LASTNAME).getValue();
+      String email=fn.toLowerCase() + "." + ln.toLowerCase()+ "@example.com";
+      Link emailLink=new Link(email,new ExternalResource("mailto:" + email));
+      return emailLink;
+    }
+  }
+);
+  table.setColumnReorderingAllowed(true);
+  table.setColumnCollapsingAllowed(true);
+  table.addActionHandler(new Action.Handler(){
+    public Action[] getActions(    Object target,    Object sender){
+      return ACTIONS;
+    }
+    public void handleAction(    Action action,    Object sender,    Object target){
+      markedRows.remove(target);
+      if (!ACTION_NONE.equals(action)) {
+        markedRows.put(target,action.getCaption());
+      }
+      table.requestRepaint();
+    }
+  }
+);
+  table.setCellStyleGenerator(new CellStyleGenerator(){
+    public String getStyle(    Object itemId,    Object propertyId){
+      if (propertyId == null) {
+        return (markedRows.get(itemId));
+      }
+ else       if (propertyId.equals("Email")) {
+        return "email";
+      }
+ else {
+        HashSet<Object> cells=markedCells.get(itemId);
+        if (cells != null && cells.contains(propertyId)) {
+          return "marked";
+        }
+ else {
+          return null;
+        }
+      }
+    }
+  }
+);
+  table.addListener(new ItemClickListener(){
+    public void itemClick(    ItemClickEvent event){
+      if (event.isDoubleClick()) {
+        Object itemId=event.getItemId();
+        Object propertyId=event.getPropertyId();
+        HashSet<Object> cells=markedCells.get(itemId);
+        if (cells == null) {
+          cells=new HashSet<Object>();
+          markedCells.put(itemId,cells);
+        }
+        if (cells.contains(propertyId)) {
+          cells.remove(propertyId);
+        }
+ else {
+          cells.add(propertyId);
+        }
+        table.requestRepaint();
+      }
+    }
+  }
+);
+  table.setWriteThrough(false);
+  final Button editButton=new Button("Edit");
+  addComponent(editButton);
+  editButton.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      table.setEditable(!table.isEditable());
+      editButton.setCaption((table.isEditable() ? "Save" : "Edit"));
+    }
+  }
+);
+  setComponentAlignment(editButton,"right");
+}
