@@ -24,10 +24,10 @@
     itemHTML.append(moreItemUIDL.getStringAttribute("text"));
     moreItem=new CustomMenuItem(itemHTML.toString(),emptyCommand);
   }
-  UIDL items=uidl.getChildUIDL(1);
-  Iterator itr=items.getChildIterator();
-  Stack iteratorStack=new Stack();
-  Stack menuStack=new Stack();
+  UIDL uidlItems=uidl.getChildUIDL(1);
+  Iterator<UIDL> itr=uidlItems.getChildIterator();
+  Stack<Iterator<UIDL>> iteratorStack=new Stack<Iterator<UIDL>>();
+  Stack<IMenuBar> menuStack=new Stack<IMenuBar>();
   IMenuBar currentMenu=this;
   while (itr.hasNext()) {
     UIDL item=(UIDL)itr.next();
@@ -61,7 +61,7 @@
       currentItem.setSubMenu(currentMenu);
     }
     while (!itr.hasNext() && !iteratorStack.empty()) {
-      itr=(Iterator)iteratorStack.pop();
+      itr=iteratorStack.pop();
       currentMenu=(IMenuBar)menuStack.pop();
     }
   }
@@ -74,7 +74,7 @@
       topLevelWidth+=item.getOffsetWidth();
     }
     if (topLevelWidth > getOffsetWidth()) {
-      ArrayList toBeCollapsed=new ArrayList();
+      ArrayList<CustomMenuItem> toBeCollapsed=new ArrayList<CustomMenuItem>();
       IMenuBar collapsed=new IMenuBar(true);
       for (int j=i - 2; j < getItems().size(); j++) {
         toBeCollapsed.add(getItems().get(j));
@@ -84,7 +84,9 @@
         removeItem(item);
         if (item.getSubMenu() != null && submenuIcon != null) {
           StringBuffer itemText=new StringBuffer(item.getHTML());
-          itemText.append("<img src=\"" + submenuIcon + "\" align=\"right\" />");
+          itemText.append("<img src=\"");
+          itemText.append(submenuIcon);
+          itemText.append("\" align=\"right\" />");
           item.setHTML(itemText.toString());
         }
         collapsed.addItem(item);
