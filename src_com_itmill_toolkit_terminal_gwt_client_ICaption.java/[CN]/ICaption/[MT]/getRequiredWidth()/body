@@ -1,16 +1,23 @@
 {
   int width=0;
   if (icon != null) {
-    width+=icon.getOffsetWidth();
+    width+=Util.getRequiredWidth(icon.getElement());
   }
   if (captionText != null) {
-    width+=captionText.getScrollWidth();
+    int textWidth=captionText.getScrollWidth();
+    if (BrowserInfo.get().isFF3()) {
+      int requiredWidth=Util.getRequiredWidth(captionText);
+      if (requiredWidth > textWidth) {
+        textWidth=requiredWidth;
+      }
+    }
+    width+=textWidth;
   }
   if (requiredFieldIndicator != null) {
-    width+=requiredFieldIndicator.getScrollWidth();
+    width+=Util.getRequiredWidth(requiredFieldIndicator);
   }
   if (errorIndicatorElement != null) {
-    width+=errorIndicatorElement.getScrollWidth();
+    width+=Util.getRequiredWidth(errorIndicatorElement);
   }
   return width;
 }

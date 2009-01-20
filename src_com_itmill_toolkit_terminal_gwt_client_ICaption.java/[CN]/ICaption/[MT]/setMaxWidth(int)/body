@@ -11,17 +11,18 @@
   if (requiredWidth > maxWidth) {
     int availableWidth=maxWidth;
     if (requiredFieldIndicator != null) {
-      availableWidth-=requiredFieldIndicator.getOffsetWidth();
+      availableWidth-=Util.getRequiredWidth(requiredFieldIndicator);
     }
     if (errorIndicatorElement != null) {
-      availableWidth-=errorIndicatorElement.getOffsetWidth();
+      availableWidth-=Util.getRequiredWidth(errorIndicatorElement);
     }
     if (availableWidth < 0) {
       availableWidth=0;
     }
     if (icon != null) {
-      if (availableWidth > icon.getOffsetWidth()) {
-        availableWidth-=icon.getOffsetWidth();
+      int iconRequiredWidth=Util.getRequiredWidth(icon.getElement());
+      if (availableWidth > iconRequiredWidth) {
+        availableWidth-=iconRequiredWidth;
       }
  else {
         DOM.setStyleAttribute(icon.getElement(),"width",availableWidth + "px");
@@ -29,8 +30,9 @@
       }
     }
     if (captionText != null) {
-      if (availableWidth > captionText.getOffsetWidth()) {
-        availableWidth-=captionText.getOffsetWidth();
+      int captionWidth=Util.getRequiredWidth(captionText);
+      if (availableWidth > captionWidth) {
+        availableWidth-=captionWidth;
       }
  else {
         DOM.setStyleAttribute(captionText,"width",availableWidth + "px");
