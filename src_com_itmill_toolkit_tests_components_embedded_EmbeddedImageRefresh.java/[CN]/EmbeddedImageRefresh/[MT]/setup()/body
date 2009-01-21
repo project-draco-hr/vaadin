@@ -1,19 +1,26 @@
 {
-  final Window main=new Window();
-  setMainWindow(main);
   final Embedded embedded=new Embedded();
   embedded.setDescription("Click on the grid cells to switch them.");
+  addComponent(embedded);
   final MyImageSource imageSource=new MyImageSource();
   final StreamResource imageResource=new StreamResource(imageSource,"testimage.png",this);
   imageResource.setCacheTime(0);
   embedded.setSource(imageResource);
-  main.addComponent(embedded);
   Button button=new Button("Click to Update");
   button.addListener(new Button.ClickListener(){
-    @Override public void buttonClick(    ClickEvent event){
+    public void buttonClick(    ClickEvent event){
       embedded.requestRepaint();
     }
   }
 );
-  main.addComponent(button);
+  addComponent(button);
+  Button button2=new Button("Click to Replace");
+  button2.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      final StreamResource imageResource=new StreamResource(imageSource,"testimage.png",getMainWindow().getApplication());
+      embedded.setSource(imageResource);
+    }
+  }
+);
+  addComponent(button2);
 }
