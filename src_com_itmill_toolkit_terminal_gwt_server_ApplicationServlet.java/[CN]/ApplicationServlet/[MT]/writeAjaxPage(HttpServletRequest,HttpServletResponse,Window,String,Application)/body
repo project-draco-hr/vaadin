@@ -55,6 +55,13 @@
   }
   appId=appId.replaceAll("[^a-zA-Z0-9]","");
   appId=appId + appId.hashCode();
+  Application.SystemMessages systemMessages=null;
+  try {
+    systemMessages=getSystemMessages();
+  }
+ catch (  SystemMessageException e) {
+    throw new ServletException("CommunicationError!",e);
+  }
   if (isGecko17(request)) {
     page.write("<iframe tabIndex=\"-1\" id=\"__gwt_historyFrame\" " + "style=\"width:0;height:0;border:0;overflow:" + "hidden\" src=\"javascript:false\"></iframe>\n");
     page.write("<script language='javascript' src='" + staticFilePath + "/"+ WIDGETSET_DIRECTORY_PATH+ widgetset+ "/"+ widgetset+ ".nocache.js?"+ new Date().getTime()+ "'></script>\n");
@@ -76,7 +83,22 @@
     page.write(VERSION);
     page.write("\",applicationVersion:\"");
     page.write(application.getVersion());
-    page.write("\"}");
+    page.write("\"},");
+    if (systemMessages != null) {
+      String caption=systemMessages.getCommunicationErrorCaption();
+      if (caption != null) {
+        caption="\"" + caption + "\"";
+      }
+      String message=systemMessages.getCommunicationErrorMessage();
+      if (message != null) {
+        message="\"" + message + "\"";
+      }
+      String url=systemMessages.getCommunicationErrorURL();
+      if (url != null) {
+        url="\"" + url + "\"";
+      }
+      page.write("\"comErrMsg\": {" + "\"caption\":" + caption + ","+ "\"message\" : "+ message+ ","+ "\"url\" : "+ url+ "}");
+    }
     page.write("};\n//]]>\n</script>\n");
     if (themeName != null) {
       page.write("<script type=\"text/javascript\">\n");
@@ -112,7 +134,22 @@
     page.write(VERSION);
     page.write("\",applicationVersion:\"");
     page.write(application.getVersion());
-    page.write("\"}");
+    page.write("\"},");
+    if (systemMessages != null) {
+      String caption=systemMessages.getCommunicationErrorCaption();
+      if (caption != null) {
+        caption="\"" + caption + "\"";
+      }
+      String message=systemMessages.getCommunicationErrorMessage();
+      if (message != null) {
+        message="\"" + message + "\"";
+      }
+      String url=systemMessages.getCommunicationErrorURL();
+      if (url != null) {
+        url="\"" + url + "\"";
+      }
+      page.write("\"comErrMsg\": {" + "\"caption\":" + caption + ","+ "\"message\" : "+ message+ ","+ "\"url\" : "+ url+ "}");
+    }
     page.write("};\n//]]>\n</script>\n");
     if (themeName != null) {
       page.write("<script type=\"text/javascript\">\n");

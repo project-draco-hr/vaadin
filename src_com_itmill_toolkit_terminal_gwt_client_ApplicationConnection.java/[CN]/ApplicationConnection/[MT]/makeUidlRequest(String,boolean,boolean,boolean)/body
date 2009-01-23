@@ -18,59 +18,64 @@
     try {
       rb.sendRequest(requestData,new RequestCallback(){
         public void onError(        Request request,        Throwable exception){
-          console.error("Got error");
+          showCommunicationError(exception.getMessage());
           endRequest();
           if (!applicationRunning) {
             ApplicationConfiguration.startNextApplication();
           }
         }
         public void onResponseReceived(        Request request,        Response response){
-          if ("init".equals(uidl_security_key)) {
-            String key=response.getHeader(UIDL_SECURITY_HEADER);
-            if (null != key) {
-              uidl_security_key=key;
-            }
-          }
           console.log("Server visit took " + String.valueOf((new Date()).getTime() - requestStartTime.getTime()) + "ms");
-          if (applicationRunning) {
-            handleReceivedJSONMessage(response);
-          }
- else {
-            applicationRunning=true;
-            handleWhenCSSLoaded(response);
-            ApplicationConfiguration.startNextApplication();
-          }
-        }
-        int cssWaits=0;
-        static final int MAX_CSS_WAITS=20;
-        private void handleWhenCSSLoaded(        final Response response){
-          int heightOfLoadElement=DOM.getElementPropertyInt(loadElement,"offsetHeight");
-          if (heightOfLoadElement == 0 && cssWaits < MAX_CSS_WAITS) {
-            (new Timer(){
-              @Override public void run(){
-                handleWhenCSSLoaded(response);
-              }
-            }
-).schedule(50);
-            console.log("Assuming CSS loading is not complete, " + "postponing render phase. " + "(.i-loading-indicator height == 0)");
-            cssWaits++;
-          }
- else {
-            handleReceivedJSONMessage(response);
-            if (cssWaits >= MAX_CSS_WAITS) {
-              console.error("CSS files may have not loaded properly.");
-            }
-          }
+switch (response.getStatusCode()) {
+case 0:
+            showCommunicationError("Invalid status code 0 (server down?)");
+          return;
+      }
+      if ("init".equals(uidl_security_key)) {
+        String key=response.getHeader(UIDL_SECURITY_HEADER);
+        if (null != key) {
+          uidl_security_key=key;
         }
       }
-);
-    }
- catch (    final RequestException e) {
-      ClientExceptionHandler.displayError(e);
-      endRequest();
-    }
-  }
+      if (applicationRunning) {
+        handleReceivedJSONMessage(response);
+      }
  else {
-    syncSendForce(((HTTPRequestImpl)GWT.create(HTTPRequestImpl.class)).createXmlHTTPRequest(),uri,requestData);
+        applicationRunning=true;
+        handleWhenCSSLoaded(response);
+        ApplicationConfiguration.startNextApplication();
+      }
+    }
+    int cssWaits=0;
+    static final int MAX_CSS_WAITS=20;
+    private void handleWhenCSSLoaded(    final Response response){
+      int heightOfLoadElement=DOM.getElementPropertyInt(loadElement,"offsetHeight");
+      if (heightOfLoadElement == 0 && cssWaits < MAX_CSS_WAITS) {
+        (new Timer(){
+          @Override public void run(){
+            handleWhenCSSLoaded(response);
+          }
+        }
+).schedule(50);
+        console.log("Assuming CSS loading is not complete, " + "postponing render phase. " + "(.i-loading-indicator height == 0)");
+        cssWaits++;
+      }
+ else {
+        handleReceivedJSONMessage(response);
+        if (cssWaits >= MAX_CSS_WAITS) {
+          console.error("CSS files may have not loaded properly.");
+        }
+      }
+    }
   }
+);
+}
+ catch (final RequestException e) {
+  ClientExceptionHandler.displayError(e);
+  endRequest();
+}
+}
+ else {
+syncSendForce(((HTTPRequestImpl)GWT.create(HTTPRequestImpl.class)).createXmlHTTPRequest(),uri,requestData);
+}
 }
