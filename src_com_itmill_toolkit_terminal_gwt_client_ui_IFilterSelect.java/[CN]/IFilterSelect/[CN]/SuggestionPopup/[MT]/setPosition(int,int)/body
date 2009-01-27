@@ -8,18 +8,16 @@
   offsetHeight=getOffsetHeight();
   final int desiredWidth=getMainWidth();
   int naturalMenuWidth=DOM.getElementPropertyInt(DOM.getFirstChild(menu.getElement()),"offsetWidth");
+  if (popupOuterPadding == -1) {
+    popupOuterPadding=Util.measureHorizontalPaddingAndBorder(getElement(),2);
+  }
   if (naturalMenuWidth < desiredWidth) {
-    menu.setWidth(desiredWidth + "px");
+    menu.setWidth((desiredWidth - popupOuterPadding) + "px");
     DOM.setStyleAttribute(DOM.getFirstChild(menu.getElement()),"width","100%");
     naturalMenuWidth=desiredWidth;
   }
   if (BrowserInfo.get().isIE()) {
-    if (menuLeftMargin == -1) {
-      int menuOffsetLeft=menu.getElement().getOffsetLeft();
-      int menuParentOffsetLeft=getContainerElement().getOffsetLeft();
-      menuLeftMargin=menuOffsetLeft - menuParentOffsetLeft;
-    }
-    int rootWidth=naturalMenuWidth + menuLeftMargin;
+    int rootWidth=naturalMenuWidth - popupOuterPadding;
     DOM.setStyleAttribute(getContainerElement(),"width",rootWidth + "px");
   }
   if (offsetHeight + getPopupTop() > Window.getClientHeight() + Window.getScrollTop()) {
