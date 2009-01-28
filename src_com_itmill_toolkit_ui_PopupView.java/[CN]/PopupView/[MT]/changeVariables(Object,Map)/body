@@ -1,5 +1,6 @@
 {
   if (variables.containsKey("popupVisibility")) {
+    boolean oldVisibility=popupVisible;
     popupVisible=((Boolean)variables.get("popupVisibility")).booleanValue();
     if (popupVisible) {
       if (componentList.isEmpty()) {
@@ -16,6 +17,9 @@
  else     if (!componentList.isEmpty()) {
       super.removeComponent(componentList.get(0));
       componentList.clear();
+    }
+    if (oldVisibility != popupVisible) {
+      fireEvent(new PopupVisibilityEvent(this));
     }
     requestRepaint();
   }
