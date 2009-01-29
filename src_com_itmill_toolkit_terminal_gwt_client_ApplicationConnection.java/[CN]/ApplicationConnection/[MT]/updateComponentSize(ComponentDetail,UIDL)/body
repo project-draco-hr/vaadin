@@ -5,15 +5,18 @@
   float relativeHeight=Util.parseRelativeSize(h);
   if (relativeHeight >= 0.0 || relativeWidth >= 0.0) {
     FloatSize relativeSize=new FloatSize(relativeWidth,relativeHeight);
-    if (componentRelativeSizes.put(component,relativeSize) == null && componentOffsetSizes.containsKey(component)) {
-      relativeSizeChanges.add((Paintable)component);
+    if (cd.getRelativeSize() == null && cd.getOffsetSize() != null) {
+      relativeSizeChanges.add(cd.getComponent());
     }
+    cd.setRelativeSize(relativeSize);
   }
  else   if (relativeHeight < 0.0 && relativeWidth < 0.0) {
-    if (componentRelativeSizes.remove(component) != null) {
-      relativeSizeChanges.add((Paintable)component);
+    if (cd.getRelativeSize() != null) {
+      relativeSizeChanges.add(cd.getComponent());
     }
+    cd.setRelativeSize(null);
   }
+  Widget component=(Widget)cd.getComponent();
   if (relativeHeight < 0.0) {
     component.setHeight(h);
   }
@@ -21,6 +24,6 @@
     component.setWidth(w);
   }
   if (relativeHeight >= 0.0 || relativeWidth >= 0.0) {
-    handleComponentRelativeSize(component);
+    handleComponentRelativeSize(cd);
   }
 }

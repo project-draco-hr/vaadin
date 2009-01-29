@@ -1,4 +1,5 @@
 {
+  ComponentDetail componentDetail=idToPaintableDetail.get(getPid(component.getElement()));
   if (uidl.getBooleanAttribute("cached")) {
     return true;
   }
@@ -14,7 +15,7 @@
     }
   }
   if (!visible) {
-    componentOffsetSizes.remove(component);
+    componentDetail.setOffsetSize(null);
     return true;
   }
   if (!widgetSet.isCorrectImplementation(component,uidl)) {
@@ -62,7 +63,7 @@
     styleBuf.append(" ");
     styleBuf.append(MODIFIED_CLASSNAME);
   }
-  TooltipInfo tooltipInfo=getTitleInfo((Paintable)component);
+  TooltipInfo tooltipInfo=componentDetail.getTooltipInfo();
   if (uidl.hasAttribute("description")) {
     tooltipInfo.setTitle(uidl.getStringAttribute("description"));
   }
@@ -93,6 +94,6 @@
   if (usePaintableIdsInDOM) {
     DOM.setElementProperty(component.getElement(),"id",uidl.getId());
   }
-  updateComponentSize(component,uidl);
+  updateComponentSize(componentDetail,uidl);
   return false;
 }

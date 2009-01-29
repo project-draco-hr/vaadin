@@ -37,8 +37,7 @@
     meta=((JSONObject)json).get("meta").isObject();
     if (meta.containsKey("repaintAll")) {
       view.clear();
-      idToPaintable.clear();
-      paintableToId.clear();
+      idToPaintableDetail.clear();
       if (meta.containsKey("invalidLayouts")) {
         validatingLayouts=true;
         zeroWidthComponents=new HashSet<Paintable>();
@@ -76,7 +75,7 @@
       final Paintable paintable=getPaintable(uidl.getId());
       if (paintable != null) {
         paintable.updateFromUIDL(uidl,this);
-        updatedWidgets.add(idToPaintable.get(uidl.getId()));
+        updatedWidgets.add(idToPaintableDetail.get(uidl.getId()).getComponent());
       }
  else {
         if (!uidl.getTag().equals("window")) {
@@ -95,12 +94,13 @@
   updatedWidgets.addAll(relativeSizeChanges);
   sizeUpdatedWidgets.addAll(componentCaptionSizeChanges);
   for (  Paintable paintable : updatedWidgets) {
+    ComponentDetail detail=idToPaintableDetail.get(getPid(paintable));
     Widget widget=(Widget)paintable;
-    Size oldSize=componentOffsetSizes.get(widget);
+    Size oldSize=detail.getOffsetSize();
     Size newSize=new Size(widget.getOffsetWidth(),widget.getOffsetHeight());
     if (oldSize == null || !oldSize.equals(newSize)) {
       sizeUpdatedWidgets.add(paintable);
-      componentOffsetSizes.put(widget,newSize);
+      detail.setOffsetSize(newSize);
     }
   }
   Util.componentSizeUpdated(sizeUpdatedWidgets);
@@ -140,6 +140,6 @@
   }
   final long prosessingTime=(new Date().getTime()) - start.getTime();
   console.log(" Processing time was " + String.valueOf(prosessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
-  console.log("Referenced paintables: " + idToPaintable.size());
+  console.log("Referenced paintables: " + idToPaintableDetail.size());
   endRequest();
 }
