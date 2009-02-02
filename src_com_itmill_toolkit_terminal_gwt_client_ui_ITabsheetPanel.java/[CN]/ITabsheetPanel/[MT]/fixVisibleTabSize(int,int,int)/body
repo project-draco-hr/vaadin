@@ -2,8 +2,10 @@
   if (visibleWidget == null) {
     return;
   }
+  boolean dynamicHeight=false;
   if (height < 0) {
     height=visibleWidget.getOffsetHeight();
+    dynamicHeight=true;
   }
   if (width < 0) {
     width=visibleWidget.getOffsetWidth();
@@ -11,9 +13,12 @@
   if (width < minWidth) {
     width=minWidth;
   }
-  getElement().getStyle().setPropertyPx("height",height);
+  Element wrapperDiv=(Element)visibleWidget.getElement().getParentElement();
   getElement().getStyle().setPropertyPx("width",width);
-  Element wrapperDiv=DOM.getParent(visibleWidget.getElement());
-  wrapperDiv.getStyle().setPropertyPx("height",height);
   wrapperDiv.getStyle().setPropertyPx("width",width);
+  if (dynamicHeight) {
+    height=visibleWidget.getOffsetHeight();
+  }
+  getElement().getStyle().setPropertyPx("height",height);
+  wrapperDiv.getStyle().setPropertyPx("height",height);
 }
