@@ -5,11 +5,11 @@
   mainExpand.setSizeFull();
   HorizontalLayout nav=new HorizontalLayout();
   mainExpand.addComponent(nav);
-  nav.setHeight("50px");
+  nav.setHeight("44px");
   nav.setWidth("100%");
   nav.setStyleName("topbar");
   nav.setSpacing(true);
-  nav.setMargin(false,true,false,true);
+  nav.setMargin(false,true,false,false);
   Component logo=createLogo();
   nav.addComponent(logo);
   nav.setComponentAlignment(logo,Alignment.MIDDLE_LEFT);
@@ -25,15 +25,20 @@
     }
   }
 );
+  HorizontalLayout quicknav=new HorizontalLayout();
+  HorizontalLayout arrows=new HorizontalLayout();
+  nav.addComponent(quicknav);
+  nav.addComponent(arrows);
+  quicknav.setStyleName("segment");
+  arrows.setStyleName("segment");
+  nav.setComponentAlignment(quicknav,"middle");
+  nav.setComponentAlignment(arrows,"middle");
   previousSample=createPrevButton();
-  nav.addComponent(previousSample);
-  nav.setComponentAlignment(previousSample,Alignment.MIDDLE_RIGHT);
+  arrows.addComponent(previousSample);
   nextSample=createNextButton();
-  nav.addComponent(nextSample);
-  nav.setComponentAlignment(nextSample,Alignment.MIDDLE_LEFT);
+  arrows.addComponent(nextSample);
   Component search=createSearch();
-  nav.addComponent(search);
-  nav.setComponentAlignment(search,Alignment.MIDDLE_LEFT);
+  quicknav.addComponent(search);
   toggleBar.setHeight("40px");
   toggleBar.setWidth("100%");
   toggleBar.setStyleName("togglebar");
@@ -41,6 +46,7 @@
   toggleBar.setMargin(false,true,false,true);
   mainSplit=new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL);
   mainSplit.setSizeFull();
+  mainSplit.setStyleName("main-split");
   mainExpand.addComponent(mainSplit);
   mainExpand.setExpandRatio(mainSplit,1);
   VerticalLayout rightLayout=new VerticalLayout();
@@ -55,8 +61,7 @@
   toggleBar.addComponent(mode);
   toggleBar.setComponentAlignment(mode,Alignment.MIDDLE_RIGHT);
   Component treeSwitch=createTreeSwitch();
-  nav.addComponent(treeSwitch);
-  nav.setComponentAlignment(treeSwitch,Alignment.MIDDLE_RIGHT);
+  quicknav.addComponent(treeSwitch);
   addListener(new CloseListener(){
     public void windowClose(    CloseEvent e){
       if (getMainWindow() != SamplerWindow.this) {

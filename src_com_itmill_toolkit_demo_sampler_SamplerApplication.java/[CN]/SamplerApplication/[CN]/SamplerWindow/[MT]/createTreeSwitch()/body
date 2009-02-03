@@ -1,24 +1,25 @@
 {
-  ModeSwitch m=new ModeSwitch();
-  m.addMode(1,"","Hide navigation",new ThemeResource("sampler/hidetree.gif"));
-  m.addMode(2,"","Show navigation",new ThemeResource("sampler/showtree.gif"));
-  m.addListener(new ModeSwitch.ModeSwitchListener(){
-    public void componentEvent(    Event event){
-      if (event instanceof ModeSwitchEvent) {
-        if (((ModeSwitchEvent)event).getMode().equals(1)) {
-          mainSplit.setSplitPosition(0);
-          navigationTree.setVisible(false);
-          mainSplit.setLocked(true);
-        }
+  final Button b=new Button();
+  b.setStyleName("tree-switch");
+  b.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      if (b.getStyleName().contains("down")) {
+        b.removeStyleName("down");
+        mainSplit.setSplitPosition(0);
+        navigationTree.setVisible(false);
+        mainSplit.setLocked(true);
+      }
  else {
-          mainSplit.setSplitPosition(20);
-          mainSplit.setLocked(false);
-          navigationTree.setVisible(true);
-        }
+        b.addStyleName("down");
+        mainSplit.setSplitPosition(20);
+        mainSplit.setLocked(false);
+        navigationTree.setVisible(true);
       }
     }
   }
 );
-  m.setMode(1);
-  return m;
+  mainSplit.setSplitPosition(0);
+  navigationTree.setVisible(false);
+  mainSplit.setLocked(true);
+  return b;
 }
