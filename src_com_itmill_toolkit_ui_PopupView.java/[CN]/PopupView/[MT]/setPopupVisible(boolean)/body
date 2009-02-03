@@ -1,3 +1,17 @@
 {
-  setPopupVisible(visible);
+  if (isPopupVisible() != visible) {
+    if (visible) {
+      visibleComponent=content.getPopupComponent();
+      if (visibleComponent == null) {
+        throw new java.lang.IllegalStateException("PopupView.Content did not return Component to set visible");
+      }
+      super.addComponent(visibleComponent);
+    }
+ else {
+      super.removeComponent(visibleComponent);
+      visibleComponent=null;
+    }
+    fireEvent(new PopupVisibilityEvent(this));
+    requestRepaint();
+  }
 }

@@ -6,21 +6,10 @@
   }
   target.addAttribute("html",content.getMinimizedValueAsHTML());
   target.addAttribute("hideOnMouseOut",hideOnMouseOut);
-  if (popupVisible) {
-    Component c=componentList.get(0);
-    if (c == null) {
-      c=content.getPopupComponent();
-      if (c != null) {
-        componentList.add(c);
-        super.addComponent(c);
-      }
-    }
-    if (c == null) {
-      throw new PaintException("Received null when trying to paint popup component");
-    }
+  if (isPopupVisible()) {
     target.startTag("popupComponent");
-    c.paint(target);
+    visibleComponent.paint(target);
     target.endTag("popupComponent");
   }
-  target.addVariable(this,"popupVisibility",popupVisible);
+  target.addVariable(this,"popupVisibility",isPopupVisible());
 }
