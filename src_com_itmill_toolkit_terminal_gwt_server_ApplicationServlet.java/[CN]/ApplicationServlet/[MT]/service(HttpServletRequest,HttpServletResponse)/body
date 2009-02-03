@@ -100,13 +100,15 @@
   }
  catch (  final SessionExpired e) {
     try {
-      Application.SystemMessages ci=getSystemMessages();
-      if (!UIDLrequest) {
-        response.sendRedirect(ci.getSessionExpiredURL());
-      }
+      if (!isOnUnloadRequest(request)) {
+        Application.SystemMessages ci=getSystemMessages();
+        if (!UIDLrequest) {
+          response.sendRedirect(ci.getSessionExpiredURL());
+        }
  else {
-        criticalNotification(request,response,ci.getSessionExpiredCaption(),ci.getSessionExpiredMessage(),ci.getSessionExpiredURL());
-        request.getSession().invalidate();
+          criticalNotification(request,response,ci.getSessionExpiredCaption(),ci.getSessionExpiredMessage(),ci.getSessionExpiredURL());
+          request.getSession().invalidate();
+        }
       }
     }
  catch (    SystemMessageException ee) {
@@ -114,18 +116,20 @@
     }
   }
 catch (  final GeneralSecurityException e) {
-    try {
-      Application.SystemMessages ci=getSystemMessages();
-      if (!UIDLrequest) {
-        response.sendRedirect(ci.getSessionExpiredURL());
-      }
+    if (!isOnUnloadRequest(request)) {
+      try {
+        Application.SystemMessages ci=getSystemMessages();
+        if (!UIDLrequest) {
+          response.sendRedirect(ci.getSessionExpiredURL());
+        }
  else {
-        criticalNotification(request,response,ci.getSessionExpiredCaption(),ci.getSessionExpiredMessage(),ci.getSessionExpiredURL());
+          criticalNotification(request,response,ci.getSessionExpiredCaption(),ci.getSessionExpiredMessage(),ci.getSessionExpiredURL());
+        }
+        request.getSession().invalidate();
       }
-      request.getSession().invalidate();
-    }
- catch (    SystemMessageException ee) {
-      throw new ServletException(ee);
+ catch (      SystemMessageException ee) {
+        throw new ServletException(ee);
+      }
     }
   }
 catch (  final Throwable e) {
