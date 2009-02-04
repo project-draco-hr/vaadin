@@ -4,6 +4,13 @@
   while (it.hasNext()) {
     final FilterSelectSuggestion s=it.next();
     final MenuItem mi=new MenuItem(s.getDisplayString(),true,s);
+    com.google.gwt.dom.client.Element child=mi.getElement().getFirstChildElement();
+    while (child != null) {
+      if (child.getNodeName().toLowerCase().equals("img")) {
+        DOM.sinkEvents((Element)child.cast(),(DOM.getEventsSunk((Element)child.cast()) | Event.ONLOAD));
+      }
+      child=child.getNextSiblingElement();
+    }
     this.addItem(mi);
     if (s == currentSuggestion) {
       selectItem(mi);
