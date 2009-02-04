@@ -11,7 +11,6 @@
   ArrayList<Widget> uidlWidgets=new ArrayList<Widget>(uidl.getChildCount());
   ArrayList<ChildComponentContainer> relativeSizeComponents=new ArrayList<ChildComponentContainer>();
   ArrayList<UIDL> relativeSizeComponentUIDL=new ArrayList<UIDL>();
-  ArrayList<Widget> relativeSizeWidgets=new ArrayList<Widget>();
   int pos=0;
   for (final Iterator<UIDL> it=uidl.getChildIterator(); it.hasNext(); ) {
     final UIDL childUIDL=it.next();
@@ -29,7 +28,6 @@
     if (childComponentContainer.isComponentRelativeSized(orientation)) {
       relativeSizeComponents.add(childComponentContainer);
       relativeSizeComponentUIDL.add(childUIDL);
-      relativeSizeWidgets.add(widget);
     }
  else {
       if (isDynamicWidth()) {
@@ -37,6 +35,9 @@
       }
  else {
         childComponentContainer.renderChild(childUIDL,client,activeLayoutSize.getWidth());
+      }
+      if (sizeHasChangedDuringRendering && Util.isCached(childUIDL)) {
+        client.handleComponentRelativeSize(childComponentContainer.getWidget());
       }
     }
     uidlWidgets.add(widget);
@@ -51,11 +52,11 @@
     if (isDynamicWidth()) {
       childComponentContainer.renderChild(childUIDL,client,0);
     }
- else     if (Util.isCached(childUIDL)) {
-      client.handleComponentRelativeSize(childComponentContainer.getWidget());
-    }
  else {
       childComponentContainer.renderChild(childUIDL,client,activeLayoutSize.getWidth());
+    }
+    if (Util.isCached(childUIDL)) {
+      client.handleComponentRelativeSize(childComponentContainer.getWidget());
     }
   }
   for (  ChildComponentContainer childComponentContainer : widgetToComponentContainer.values()) {
@@ -75,4 +76,5 @@
     root.getStyle().setProperty("zoom","1");
   }
   isRendering=false;
+  sizeHasChangedDuringRendering=false;
 }
