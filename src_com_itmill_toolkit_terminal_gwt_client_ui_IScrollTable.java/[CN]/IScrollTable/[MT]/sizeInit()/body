@@ -1,5 +1,5 @@
 {
-  Iterator headCells=tHead.iterator();
+  Iterator<Widget> headCells=tHead.iterator();
   int i=0;
   int totalExplicitColumnsWidths=0;
   int total=0;
@@ -41,10 +41,14 @@
       scrollbarWidth=Util.getNativeScrollbarSize();
       if (relativeWidth && totalWidthR >= scrollbarWidth) {
         scrollbarWidthReserved=scrollbarWidth + 1;
-        widths[tHead.getVisibleCellCount() - 1]+=scrollbarWidthReserved;
-        totalWidthR+=scrollbarWidthReserved;
+        int columnindex=tHead.getVisibleCellCount() - 1;
+        widths[columnindex]+=scrollbarWidthReserved;
+        HeaderCell headerCell=tHead.getHeaderCell(columnindex);
+        if (headerCell.getWidth() == -1) {
+          totalWidthR+=scrollbarWidthReserved;
+        }
         extraSpace-=scrollbarWidthReserved;
-        scrollbarWidthReservedInColumn=tHead.getVisibleCellCount() - 1;
+        scrollbarWidthReservedInColumn=columnindex;
       }
       headCells=tHead.iterator();
       i=0;
