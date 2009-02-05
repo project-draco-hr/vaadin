@@ -8,21 +8,22 @@
   Style style=tp.getElement().getStyle();
   String overflow=style.getProperty("overflow");
   style.setProperty("overflow","hidden");
-  String width=style.getProperty("width");
-  style.setProperty("width",tabsWidth + "px");
+  style.setPropertyPx("width",tabsWidth);
+  Style wrapperstyle=tp.getWidget(tp.getVisibleWidget()).getElement().getParentElement().getStyle();
+  wrapperstyle.setPropertyPx("width",tabsWidth);
   int contentWidth=0;
   if (tp.getWidgetCount() > 0) {
     contentWidth=tp.getWidget(tp.getVisibleWidget()).getOffsetWidth();
   }
-  style.setProperty("width",width);
   style.setProperty("overflow",overflow);
   if (tabsWidth < contentWidth) {
     tabsWidth=contentWidth;
   }
-  tabs.getStyle().setPropertyPx("width",tabsWidth);
-  int realWidth=tb.getOffsetWidth();
-  contentWidth=realWidth - getContentAreaBorderWidth();
-  contentNode.getStyle().setPropertyPx("width",contentWidth);
-  super.setWidth(realWidth + "px");
+  int outerWidth=tabsWidth + getContentAreaBorderWidth();
+  tabs.getStyle().setPropertyPx("width",outerWidth);
+  style.setPropertyPx("width",tabsWidth);
+  wrapperstyle.setPropertyPx("width",tabsWidth);
+  contentNode.getStyle().setPropertyPx("width",tabsWidth);
+  super.setWidth(outerWidth + "px");
   updateOpenTabSize();
 }
