@@ -26,7 +26,13 @@
       Button b=new Button();
       b.setStyleName(Button.STYLE_LINK);
       b.addStyleName("screenshot");
-      b.setIcon(new ClassResource(f.getClass(),"75-" + f.getIconName(),SamplerApplication.this));
+      String resId="75-" + f.getIconName();
+      Resource res=iconCache.get(resId);
+      if (res == null) {
+        res=new ClassResource(f.getClass(),resId,SamplerApplication.this);
+        iconCache.put(resId,res);
+      }
+      b.setIcon(res);
       b.setWidth("75px");
       b.setHeight("75px");
       b.setDescription("<h3>" + f.getName() + "</h3>"+ f.getDescription());

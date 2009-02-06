@@ -10,7 +10,12 @@
       if (f instanceof FeatureSet) {
         return null;
       }
-      Resource res=new ClassResource(f.getClass(),f.getIconName(),SamplerApplication.this);
+      String resId="75-" + f.getIconName();
+      Resource res=iconCache.get(resId);
+      if (res == null) {
+        res=new ClassResource(f.getClass(),resId,SamplerApplication.this);
+        iconCache.put(resId,res);
+      }
       Embedded emb=new Embedded("",res);
       emb.setWidth("48px");
       emb.setHeight("48px");
