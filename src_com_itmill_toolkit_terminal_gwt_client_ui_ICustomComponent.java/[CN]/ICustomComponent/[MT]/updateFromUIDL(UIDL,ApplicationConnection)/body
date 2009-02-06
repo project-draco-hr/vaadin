@@ -17,8 +17,16 @@
     }
     p.updateFromUIDL(child,client);
   }
+  boolean updateDynamicSize=updateDynamicSize();
+  if (updateDynamicSize && width != null && width.contains("%")) {
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        client.handleComponentRelativeSize(ICustomComponent.this);
+      }
+    }
+);
+  }
   renderSpace.setWidth(getElement().getOffsetWidth());
   renderSpace.setHeight(getElement().getOffsetHeight());
-  updateDynamicSize();
   rendering=false;
 }
