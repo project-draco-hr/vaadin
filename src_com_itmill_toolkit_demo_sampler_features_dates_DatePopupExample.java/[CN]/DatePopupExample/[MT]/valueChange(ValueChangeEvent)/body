@@ -1,5 +1,11 @@
 {
   DateFormat dateFormatter=DateFormat.getDateInstance(DateFormat.SHORT);
-  String dateOut=dateFormatter.format(event.getProperty().getValue());
-  getWindow().showNotification("Starting date: " + dateOut);
+  Object value=event.getProperty().getValue();
+  if (value == null || !(value instanceof Date)) {
+    getWindow().showNotification("Invalid date entered");
+  }
+ else {
+    String dateOut=dateFormatter.format(value);
+    getWindow().showNotification("Starting date: " + dateOut);
+  }
 }
