@@ -1,16 +1,31 @@
 {
   setSpacing(true);
-  t=new Tree("Hardware Inventory",ExampleUtil.getHardwareContainer());
-  t.addActionHandler(this);
-  t.setImmediate(true);
-  t.setItemCaptionPropertyId(ExampleUtil.hw_PROPERTY_NAME);
-  t.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
-  itemId=t.getContainerDataSource().size();
-  for (int i=0; i < itemId; i++) {
-    t.expandItemsRecursively(i);
+  tree=new Tree("Hardware Inventory",ExampleUtil.getHardwareContainer());
+  tree.setMultiSelect(true);
+  tree.setImmediate(true);
+  tree.addListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      Tree t=(Tree)event.getProperty();
+      deleteButton.setEnabled(t.getValue() != null && ((Set)t.getValue()).size() > 0);
+    }
   }
-  delete=new Button("Delete",this,"buttonClick");
-  addComponent(delete);
-  addComponent(t);
-  t.setMultiSelect(true);
+);
+  tree.addActionHandler(this);
+  tree.setItemCaptionPropertyId(ExampleUtil.hw_PROPERTY_NAME);
+  tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
+  for (Iterator it=tree.rootItemIds().iterator(); it.hasNext(); ) {
+    tree.expandItemsRecursively(it.next());
+  }
+  deleteButton=new Button("Delete",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      Object[] toDelete=((Set<Object>)tree.getValue()).toArray();
+      for (int i=0; i < toDelete.length; i++) {
+        handleAction(ACTION_DELETE,tree,toDelete[i]);
+      }
+    }
+  }
+);
+  deleteButton.setEnabled(false);
+  addComponent(deleteButton);
+  addComponent(tree);
 }

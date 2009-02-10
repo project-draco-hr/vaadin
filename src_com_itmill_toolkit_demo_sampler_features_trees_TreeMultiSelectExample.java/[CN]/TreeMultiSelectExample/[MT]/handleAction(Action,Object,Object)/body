@@ -1,19 +1,19 @@
 {
   if (action == ACTION_ADD) {
-    t.setChildrenAllowed(target,true);
-    Item i=t.addItem(itemId);
-    t.setChildrenAllowed(itemId,false);
+    tree.setChildrenAllowed(target,true);
+    Object itemId=tree.addItem();
+    tree.setChildrenAllowed(itemId,false);
     String newItemName="New Item # " + itemId;
-    i.getItemProperty(ExampleUtil.hw_PROPERTY_NAME).setValue(newItemName);
-    t.setParent(itemId,target);
-    t.expandItem(target);
-    itemId++;
+    Item item=tree.getItem(itemId);
+    item.getItemProperty(ExampleUtil.hw_PROPERTY_NAME).setValue(newItemName);
+    tree.setParent(itemId,target);
+    tree.expandItem(target);
   }
  else   if (action == ACTION_DELETE) {
-    Object parent=t.getParent(target);
-    t.removeItem(target);
-    if (parent != null && t.getChildren(parent).size() == 0) {
-      t.setChildrenAllowed(parent,false);
+    Object parent=tree.getParent(target);
+    tree.removeItem(target);
+    if (parent != null && tree.getChildren(parent).size() == 0) {
+      tree.setChildrenAllowed(parent,false);
     }
   }
 }
