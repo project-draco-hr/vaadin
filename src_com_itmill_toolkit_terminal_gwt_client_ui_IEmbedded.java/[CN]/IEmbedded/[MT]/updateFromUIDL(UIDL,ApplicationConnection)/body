@@ -65,6 +65,26 @@
     if (mime.equals("application/x-shockwave-flash")) {
       setHTML("<object width=\"" + width + "\" height=\""+ height+ "\"><param name=\"movie\" value=\""+ getSrc(uidl,client)+ "\"><embed src=\""+ getSrc(uidl,client)+ "\" width=\""+ width+ "\" height=\""+ height+ "\"></embed></object>");
     }
+ else     if (mime.equals("image/svg+xml")) {
+      String data;
+      if (getParameter("data",uidl) == null) {
+        data=getSrc(uidl,client);
+      }
+ else {
+        data="data:image/svg+xml," + getParameter("data",uidl);
+      }
+      setHTML("");
+      ObjectElement obj=Document.get().createObjectElement();
+      obj.setType(mime);
+      obj.setData(data);
+      if (width != null) {
+        obj.getStyle().setProperty("width","100%");
+      }
+      if (height != null) {
+        obj.getStyle().setProperty("height","100%");
+      }
+      getElement().appendChild(obj);
+    }
  else {
       ApplicationConnection.getConsole().log("Unknown Embedded mimetype '" + mime + "'");
     }
