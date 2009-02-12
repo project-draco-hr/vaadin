@@ -3,7 +3,6 @@
     currentFeature=feature;
     right.removeAllComponents();
     left.removeAllComponents();
-    showSource(false);
     left.addComponent(controls);
     controls.setCaption(feature.getName());
     left.addComponent(getExampleFor(feature));
@@ -25,7 +24,11 @@
         l.setStyleName("sample-description");
       }
     }
-    sourceCode.setValue(feature.getSource());
+{
+      String path=SamplerApplication.getPathFor(currentFeature);
+      srcWin.setTargetName(path);
+      srcWin.setResource(new ExternalResource(getApplication().getURL() + "src/" + path));
+    }
     NamedExternalResource[] resources=feature.getRelatedResources();
     if (resources != null) {
       VerticalLayout res=new VerticalLayout();

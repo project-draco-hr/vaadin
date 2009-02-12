@@ -1,0 +1,21 @@
+{
+  addURIHandler(new URIHandler(){
+    public DownloadStream handleURI(    URL context,    String relativeUri){
+      Feature f=FeatureSet.FEATURES.getFeatureByPath(relativeUri);
+      if (f != null) {
+        addComponent(new CodeLabel(f.getSource()));
+      }
+ else {
+        addComponent(new Label("Sorry, no source found for " + relativeUri));
+      }
+      return null;
+    }
+  }
+);
+  addListener(new CloseListener(){
+    public void windowClose(    CloseEvent e){
+      SamplerApplication.this.removeWindow(SourceWindow.this);
+    }
+  }
+);
+}

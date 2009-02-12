@@ -30,23 +30,25 @@
   resetExample.addStyleName("showcode");
   controlButtons.addComponent(resetExample);
   controlButtons.addComponent(new Label("|"));
-  showCode=new Button(MSG_SHOW_SRC,new Button.ClickListener(){
-    public void buttonClick(    ClickEvent event){
-      toggleSource();
+  srcWin=new ActiveLink();
+  srcWin.setDescription("Right / middle / ctrl / shift -click for browser window/tab");
+  srcWin.addListener(new LinkActivatedListener(){
+    public void linkActivated(    LinkActivatedEvent event){
+      if (!event.isLinkOpened()) {
+        Window w=new Window("Java??? source");
+        ((VerticalLayout)w.getLayout()).setSizeUndefined();
+        w.setWidth("70%");
+        w.setHeight("60%");
+        w.setPositionX(100);
+        w.setPositionY(100);
+        w.addComponent(new CodeLabel(currentFeature.getSource()));
+        getWindow().addWindow(w);
+      }
     }
   }
 );
-  showCode.setStyleName(Button.STYLE_LINK);
-  showCode.addStyleName("showcode");
-  controlButtons.addComponent(showCode);
-  sourceCode=new CodeLabel();
-  sourcePanel=new Panel();
-  sourcePanel.getLayout().setSizeUndefined();
-  sourcePanel.addStyleName(Panel.STYLE_LIGHT);
-  sourcePanel.addStyleName("source");
-  sourcePanel.addComponent(sourceCode);
-  sourcePanel.setVisible(false);
-  sourcePanel.setWidth("100%");
-  sourcePanel.setHeight("250px");
-  controls.addComponent(sourcePanel);
+  srcWin.setCaption(MSG_SHOW_SRC);
+  srcWin.addStyleName("showcode");
+  srcWin.setTargetBorder(Link.TARGET_BORDER_NONE);
+  controlButtons.addComponent(srcWin);
 }
