@@ -63,14 +63,14 @@
     childComponentContainer.updateWidgetSize();
   }
   if ((isHorizontal() && isDynamicHeight()) || (isVertical() && isDynamicWidth())) {
-    Size oldSize=new Size(activeLayoutSize.getWidth(),activeLayoutSize.getHeight());
-    calculateLayoutDimensions();
-    if (!oldSize.equals(activeLayoutSize)) {
-      calculateContainerSize();
-    }
+    layoutSizeMightHaveChanged();
   }
   updateContainerMargins();
-  recalculateComponentSizesAndAlignments();
+  if (updateRelativeSizesInNonMainDirection()) {
+    updateWidgetSizes();
+    layoutSizeMightHaveChanged();
+  }
+  calculateAlignments();
   setRootSize();
   if (BrowserInfo.get().isIE()) {
     root.getStyle().setProperty("zoom","1");
