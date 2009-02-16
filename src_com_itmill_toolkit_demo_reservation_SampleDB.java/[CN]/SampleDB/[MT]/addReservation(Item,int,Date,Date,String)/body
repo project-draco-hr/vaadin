@@ -6,7 +6,7 @@
   }
   final int resourceId=((Integer)resource.getItemProperty(Resource.PROPERTY_ID_ID).getValue()).intValue();
   final String q="INSERT INTO " + Reservation.TABLE + " ("+ Reservation.PROPERTY_ID_RESOURCE_ID+ ","+ Reservation.PROPERTY_ID_RESERVED_BY_ID+ ","+ Reservation.PROPERTY_ID_RESERVED_FROM+ ","+ Reservation.PROPERTY_ID_RESERVED_TO+ ","+ Reservation.PROPERTY_ID_DESCRIPTION+ ")"+ "VALUES (?,?,?,?,?)";
-synchronized (DB_URL) {
+synchronized (dbMutex) {
     try {
       if (!isAvailableResource(resourceId,reservedFrom,reservedTo)) {
         throw new ResourceNotAvailableException("The resource is not available at that time.");
