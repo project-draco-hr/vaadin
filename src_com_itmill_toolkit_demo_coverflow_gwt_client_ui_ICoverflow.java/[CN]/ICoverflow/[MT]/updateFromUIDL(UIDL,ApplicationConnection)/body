@@ -1,0 +1,79 @@
+{
+  uidlId=uidl.getId();
+  this.client=client;
+  String tempColor;
+  if (client.updateComponent(this,uidl,true)) {
+    return;
+  }
+  if (uidl.hasAttribute("scrollbarVisibility")) {
+    boolean tempVis=uidl.getBooleanAttribute("scrollbarVisibility");
+    if (scrollbarVisibility != tempVis) {
+      scrollbarVisibility=tempVis;
+      sbVisibilityChanged=true;
+    }
+  }
+  if (uidl.hasAttribute("backgroundGradientStart")) {
+    tempColor=uidl.getStringAttribute("backgroundGradientStart").toString();
+    if (tempColor != backgroundGradientStart) {
+      backgroundGradientStart=tempColor;
+      colorChanged=true;
+    }
+  }
+  if (uidl.hasAttribute("backgroundGradientEnd")) {
+    tempColor=uidl.getStringAttribute("backgroundGradientEnd").toString();
+    if (tempColor != backgroundGradientEnd) {
+      backgroundGradientEnd=tempColor;
+      colorChanged=true;
+    }
+  }
+  final UIDL images=uidl.getChildUIDL(0);
+  ArrayList newList=new ArrayList();
+  for (final Iterator i=images.getChildIterator(); i.hasNext(); ) {
+    final UIDL imgUidl=(UIDL)i.next();
+    if (imgUidl.hasAttribute("caption") && imgUidl.hasAttribute("key") && imgUidl.hasAttribute("icon")) {
+      HashMap set=new HashMap();
+      keyMap.put(imgUidl.getStringAttribute("caption"),imgUidl.getStringAttribute("key"));
+      set.put("icon",client.translateToolkitUri(imgUidl.getStringAttribute("icon")));
+      set.put("caption",imgUidl.getStringAttribute("caption"));
+      newList.add(set);
+      if (imgUidl.hasAttribute("selected")) {
+        _selected=imgUidl.getStringAttribute("caption");
+      }
+    }
+  }
+  ArrayList intersectList=new ArrayList();
+  intersectList.addAll(coverList);
+  intersectList.removeAll(newList);
+  if (flashInited) {
+    for (int i=0; i < intersectList.size(); i++) {
+      HashMap cover=(HashMap)intersectList.get(i);
+      removeCover(uidlId,cover.get("caption").toString());
+    }
+  }
+  intersectList=new ArrayList();
+  intersectList.addAll(newList);
+  intersectList.removeAll(coverList);
+  if (flashInited) {
+    for (int i=0; i < intersectList.size(); i++) {
+      HashMap cover=(HashMap)intersectList.get(i);
+      addCover(uidlId,cover.get("caption").toString(),cover.get("icon").toString());
+    }
+  }
+  coverList=newList;
+  if (!flashInited) {
+    colorChanged=false;
+    setFlash();
+    initializeMethods(uidlId);
+  }
+  if (_selected != null && flashInited) {
+    selectCover(uidlId,_selected.toString());
+  }
+  if (colorChanged && flashInited) {
+    setBackgroundColor(uidlId,backgroundGradientStart,backgroundGradientEnd);
+    colorChanged=false;
+  }
+  if (sbVisibilityChanged && flashInited) {
+    toggleScrollbarVisibility(uidlId,scrollbarVisibility);
+    sbVisibilityChanged=false;
+  }
+}

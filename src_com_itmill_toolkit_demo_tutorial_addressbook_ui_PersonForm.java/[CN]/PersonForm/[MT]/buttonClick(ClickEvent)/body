@@ -1,0 +1,28 @@
+{
+  Button source=event.getButton();
+  if (source == save) {
+    if (!isValid()) {
+      return;
+    }
+    commit();
+    if (newContactMode) {
+      Item addedItem=app.getDataSource().addItem(newPerson);
+      setItemDataSource(addedItem);
+      newContactMode=false;
+    }
+    setReadOnly(true);
+  }
+ else   if (source == cancel) {
+    if (newContactMode) {
+      newContactMode=false;
+      setItemDataSource(null);
+    }
+ else {
+      discard();
+    }
+    setReadOnly(true);
+  }
+ else   if (source == edit) {
+    setReadOnly(false);
+  }
+}

@@ -1,14 +1,11 @@
 {
   final Window root=new Window("ToolkitTunes");
-  root.setWidth("90%");
-  root.setHeight("90%");
-  root.center();
   setMainWindow(root);
   root.getLayout().setSizeFull();
   root.getLayout().setMargin(false);
   HorizontalLayout top=new HorizontalLayout();
   top.setWidth("100%");
-  top.setMargin(true);
+  top.setMargin(false,true,false,true);
   top.setSpacing(true);
   root.addComponent(top);
   HorizontalLayout playback=new HorizontalLayout();
@@ -23,6 +20,7 @@
   top.addComponent(search);
   top.setComponentAlignment(playback,"middle");
   top.setComponentAlignment(volume,"middle");
+  top.setComponentAlignment(status,"middle");
   top.setComponentAlignment(viewmodes,"middle");
   top.setComponentAlignment(search,"middle");
   top.setExpandRatio(status,1.0F);
@@ -43,7 +41,7 @@
   volume.addComponent(max);
   status.setWidth("80%");
   status.setSpacing(true);
-  top.setComponentAlignment(status,"center");
+  top.setComponentAlignment(status,"middle center");
   Button toggleVisualization=new Button("Mode");
   Label timeFromStart=new Label("0:00");
   VerticalLayout trackDetails=new VerticalLayout();
@@ -78,7 +76,6 @@
   viewmodes.addComponent(coverflow);
   SplitPanel bottom=new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL);
   root.addComponent(bottom);
-  root.getLayout().setHeight("100%");
   ((VerticalLayout)root.getLayout()).setExpandRatio(bottom,1.0F);
   bottom.setSplitPosition(200,SplitPanel.UNITS_PIXELS);
   VerticalLayout sidebar=new VerticalLayout();
@@ -87,12 +84,17 @@
   VerticalLayout selections=new VerticalLayout();
   Label library=new Label("Library");
   Button music=new Button("Music");
+  music.setWidth("100%");
   Label store=new Label("Store");
   Button toolkitTunesStore=new Button("ToolkitTunes Store");
+  toolkitTunesStore.setWidth("100%");
   Button purchased=new Button("Purchased");
+  purchased.setWidth("100%");
   Label playlists=new Label("Playlists");
   Button genius=new Button("Geniues");
+  genius.setWidth("100%");
   Button recent=new Button("Recently Added");
+  recent.setWidth("100%");
   selections.addComponent(library);
   selections.addComponent(music);
   selections.addComponent(store);
@@ -103,13 +105,11 @@
   selections.addComponent(recent);
   sidebar.addComponent(selections);
   sidebar.setExpandRatio(selections,1.0F);
-  Embedded cover=new Embedded();
-  cover.setWidth("200px");
-  cover.setHeight("200px");
+  Embedded cover=new Embedded("Currently Playing");
   sidebar.addComponent(cover);
-  sidebar.setComponentAlignment(cover,"center");
   Table listing=new Table();
   listing.setSizeFull();
+  listing.setSelectable(true);
   bottom.setSecondComponent(listing);
   listing.addContainerProperty("Name",String.class,"");
   listing.addContainerProperty("Time",String.class,"0:00");
@@ -132,4 +132,32 @@
     s.select(new Random().nextInt(5) + " stars");
     listing.addItem(new Object[]{tracks[new Random().nextInt(tracks.length - 1)],times[new Random().nextInt(times.length - 1)],artists[new Random().nextInt(artists.length - 1)],albums[new Random().nextInt(albums.length - 1)],genres[new Random().nextInt(genres.length - 1)],s},i);
   }
+  listing.setColumnAlignment("Time",Table.ALIGN_RIGHT);
+  setTheme("toolkittunes");
+  root.setStyleName("tTunes");
+  top.setStyleName("top");
+  top.setHeight("75px");
+  playback.setStyleName("playback");
+  playback.setMargin(false,true,false,false);
+  play.setStyleName("play");
+  next.setStyleName("next");
+  prev.setStyleName("prev");
+  playback.setComponentAlignment(prev,"middle");
+  playback.setComponentAlignment(next,"middle");
+  volume.setStyleName("volume");
+  mute.setStyleName("mute");
+  max.setStyleName("max");
+  vol.setWidth("78px");
+  status.setStyleName("status");
+  status.setMargin(true);
+  status.setHeight("46px");
+  toggleVisualization.setStyleName("toggle-vis");
+  jumpToTrack.setStyleName("jump");
+  viewAsTable.setStyleName("viewmode-table");
+  viewAsGrid.setStyleName("viewmode-grid");
+  coverflow.setStyleName("viewmode-coverflow");
+  sidebar.setStyleName("sidebar");
+  music.setStyleName("selected");
+  cover.setSource(new ThemeResource("images/album-cover.jpg"));
+  cover.setWidth("100%");
 }
