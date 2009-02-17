@@ -5,7 +5,7 @@
   }
   String widgetset="";
   if (args.length > 1) {
-    widgetset="\n                " + "<init-param><name>widgetset</name><value>" + args[1] + "</value></init-param>";
+    widgetset=args[1];
   }
   File dir=new File(args[0]);
   File webxmlFile=new File(dir.getAbsolutePath() + File.separatorChar + WEB_XML_FILE);
@@ -86,24 +86,41 @@ catch (  IOException e2) {
     String jostring=JBOSS_OBJECT_HEAD;
     String jistring=JBOSS_INSTANCE_HEAD;
     Pattern p1=Pattern.compile("<servlet-mapping>.*?<servlet-name>(.*?)<\\/servlet-name>.*?<url-pattern>(.*?)<\\/url-pattern>(.*?)<\\/servlet-mapping>");
-    Pattern p2=Pattern.compile(".*?<!--\\s+portlet\\s?style=(\\S+)?\\s+-->.*?");
+    Pattern p2=Pattern.compile(".*?<!--\\s+portlet\\s?style=([^ ]*)?\\s+-->.*?");
+    Pattern findWidgetset=Pattern.compile("<init-param>.*?<param-name>widgetset<\\/param-name>.*?<param-value>(.*?)<\\/param-value>");
     Matcher m=p1.matcher(webXml);
     while (m.find()) {
       if (m.groupCount() < 3) {
         continue;
       }
-      Matcher m2=p2.matcher(m.group(3));
+      String name=m.group(1);
+      name=name.replaceAll("^\\s*","");
+      name=name.replaceAll("\\s*$","");
+      String comment=m.group(3);
+      Matcher m2=p2.matcher(comment);
       if (!m2.find()) {
         continue;
       }
       String style="";
-      if (m2.groupCount() == 1 && m2.group(1) != null) {
+      if (m2.groupCount() == 1 && m2.group(1) != null && !m2.group(1).equals("")) {
         style="<init-param><name>style</name><value>" + m2.group(1) + "</value></init-param>";
       }
-      style+=widgetset;
-      String name=m.group(1);
-      name=name.replaceAll("^\\s*","");
-      name=name.replaceAll("\\s*$","");
+      Pattern findServlet=Pattern.compile("<servlet>.*?<servlet-name>" + name + "<\\/servlet-name>(.*?)<\\/servlet>");
+      Matcher servletMatcher=findServlet.matcher(webXml);
+      if (servletMatcher.find()) {
+        String servletXml=servletMatcher.group(1);
+        Matcher widgetsetMatcher=findWidgetset.matcher(servletXml);
+        if (widgetsetMatcher.find()) {
+          String definedWidgetSet=widgetsetMatcher.group(1);
+          if (!definedWidgetSet.equals(widgetset)) {
+            System.err.println("WARNING: Widgetset in web.xml (" + definedWidgetSet + ") does not match used ("+ widgetset+ ")");
+          }
+        }
+      }
+      if (widgetset != null && !widgetset.equals("")) {
+        System.err.println("Using widgetset: " + widgetset);
+        style+="\n                " + "<init-param><name>widgetset</name><value>" + widgetset + "</value></init-param>";
+      }
       String pname=name + "Portlet";
       String url=m.group(2);
       url=url.replaceAll("^\\s*","");
