@@ -1,0 +1,28 @@
+{
+  subwindow=new Window("A subwindow");
+  VerticalLayout layout=(VerticalLayout)subwindow.getLayout();
+  layout.setMargin(true);
+  layout.setSpacing(true);
+  Label message=new Label("This is a subwindow");
+  subwindow.addComponent(message);
+  Button close=new Button("Close",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      getApplication().getMainWindow().removeWindow(subwindow);
+    }
+  }
+);
+  layout.addComponent(close);
+  layout.setComponentAlignment(close,"right");
+  Button open=new Button("Open subwindow",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      if (subwindow.getParent() != null) {
+        getWindow().showNotification("Window is already open");
+      }
+ else {
+        getApplication().getMainWindow().addWindow(subwindow);
+      }
+    }
+  }
+);
+  addComponent(open);
+}

@@ -1,0 +1,22 @@
+{
+  window=new Window("Automatically sized subwindow");
+  window.addListener(new Window.CloseListener(){
+    public void windowClose(    CloseEvent e){
+      getApplication().removeWindow(window);
+    }
+  }
+);
+  VerticalLayout layout=(VerticalLayout)window.getLayout();
+  layout.setMargin(true);
+  layout.setSpacing(true);
+  layout.setSizeUndefined();
+  window.addComponent(new Label("This is is native (browser) window."));
+  Button open=new Button("Open native window",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      getApplication().addWindow(window);
+      getApplication().getMainWindow().open(new ExternalResource(window.getURL()),"NativeWindowExample",500,500,Window.BORDER_NONE);
+    }
+  }
+);
+  addComponent(open);
+}
