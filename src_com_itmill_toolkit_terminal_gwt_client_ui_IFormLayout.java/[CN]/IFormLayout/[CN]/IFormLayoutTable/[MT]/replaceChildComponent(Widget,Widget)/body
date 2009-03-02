@@ -1,10 +1,18 @@
 {
   int i;
   for (i=0; i < getRowCount(); i++) {
-    if (oldComponent == getWidget(i,1)) {
+    Widget candidate=getWidget(i,COLUMN_WIDGET);
+    if (oldComponent == candidate) {
       final Caption newCap=new Caption((Paintable)newComponent,client);
-      setWidget(i,0,newCap);
-      setWidget(i,1,newComponent);
+      componentToCaption.put((Paintable)newComponent,newCap);
+      ErrorFlag error=componentToError.get(newComponent);
+      if (error == null) {
+        error=new ErrorFlag();
+        componentToError.put((Paintable)newComponent,error);
+      }
+      setWidget(i,COLUMN_CAPTION,newCap);
+      setWidget(i,COLUMN_ERRORFLAG,error);
+      setWidget(i,COLUMN_WIDGET,newComponent);
       break;
     }
   }

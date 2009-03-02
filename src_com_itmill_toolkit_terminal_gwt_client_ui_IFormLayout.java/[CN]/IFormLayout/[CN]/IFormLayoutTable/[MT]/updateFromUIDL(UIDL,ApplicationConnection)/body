@@ -21,21 +21,21 @@
       error=new ErrorFlag();
       componentToError.put(p,error);
     }
-    prepareCell(i,2);
-    final Paintable oldComponent=(Paintable)getWidget(i,2);
+    prepareCell(i,COLUMN_WIDGET);
+    final Paintable oldComponent=(Paintable)getWidget(i,COLUMN_WIDGET);
     if (oldComponent == null) {
-      setWidget(i,2,(Widget)p);
+      setWidget(i,COLUMN_WIDGET,(Widget)p);
     }
  else     if (oldComponent != p) {
       client.unregisterPaintable(oldComponent);
-      setWidget(i,2,(Widget)p);
+      setWidget(i,COLUMN_WIDGET,(Widget)p);
     }
-    getCellFormatter().setStyleName(i,2,CLASSNAME + "-contentcell");
-    getCellFormatter().setStyleName(i,0,CLASSNAME + "-captioncell");
-    setWidget(i,0,caption);
+    getCellFormatter().setStyleName(i,COLUMN_WIDGET,CLASSNAME + "-contentcell");
+    getCellFormatter().setStyleName(i,COLUMN_CAPTION,CLASSNAME + "-captioncell");
+    setWidget(i,COLUMN_CAPTION,caption);
     setContentWidth(i);
-    getCellFormatter().setStyleName(i,1,CLASSNAME + "-errorcell");
-    setWidget(i,1,error);
+    getCellFormatter().setStyleName(i,COLUMN_ERRORFLAG,CLASSNAME + "-errorcell");
+    setWidget(i,COLUMN_ERRORFLAG,error);
     p.updateFromUIDL(childUidl,client);
     String rowstyles=CLASSNAME + "-row";
     if (i == 0) {
@@ -47,7 +47,7 @@
     getRowFormatter().setStyleName(i,rowstyles);
   }
   while (getRowCount() > i) {
-    final Paintable p=(Paintable)getWidget(i,2);
+    final Paintable p=(Paintable)getWidget(i,COLUMN_WIDGET);
     client.unregisterPaintable(p);
     componentToCaption.remove(p);
     removeRow(i);
