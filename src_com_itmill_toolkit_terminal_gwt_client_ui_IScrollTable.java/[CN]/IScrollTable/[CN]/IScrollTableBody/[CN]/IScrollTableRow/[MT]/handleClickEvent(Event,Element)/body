@@ -1,0 +1,14 @@
+{
+  if (emitClickEvents) {
+    boolean doubleClick=(DOM.eventGetType(event) == Event.ONDBLCLICK);
+    client.updateVariable(paintableId,"clickedKey","" + rowKey,false);
+    if (getElement() == targetTdOrTr.getParentElement()) {
+      int childIndex=DOM.getChildIndex(getElement(),targetTdOrTr);
+      String colKey=null;
+      colKey=tHead.getHeaderCell(childIndex).getColKey();
+      client.updateVariable(paintableId,"clickedColKey",colKey,false);
+    }
+    MouseEventDetails details=new MouseEventDetails(event);
+    client.updateVariable(paintableId,"clickEvent",details.toString(),!(!doubleClick && selectMode > Table.SELECT_MODE_NONE && immediate));
+  }
+}
