@@ -1,17 +1,25 @@
 {
   super();
   containerDIV=Document.get().createDivElement();
-  setElement(containerDIV);
-  containerDIV.getStyle().setProperty("height","0");
-  containerDIV.getStyle().setProperty("width","0px");
-  containerDIV.getStyle().setProperty("overflow","hidden");
   widgetDIV=Document.get().createDivElement();
   if (BrowserInfo.get().isFF2()) {
     Style style=widgetDIV.getStyle();
-    style.setProperty("display","table-cell");
+    TableElement tableEl=Document.get().createTableElement();
+    tableEl.setInnerHTML("<tbody><tr><td><div></div></td></tr></tbody>");
+    DivElement div=(DivElement)tableEl.getFirstChildElement().getFirstChildElement().getFirstChildElement().getFirstChildElement();
+    tableEl.setCellPadding(0);
+    tableEl.setCellSpacing(0);
+    tableEl.setBorder(0);
+    div.getStyle().setProperty("padding","0");
+    setElement(tableEl);
+    containerDIV=div;
   }
  else {
     setFloat(widgetDIV,"left");
+    setElement(containerDIV);
+    containerDIV.getStyle().setProperty("height","0");
+    containerDIV.getStyle().setProperty("width","0px");
+    containerDIV.getStyle().setProperty("overflow","hidden");
   }
   if (BrowserInfo.get().isIE()) {
     containerDIV.getStyle().setProperty("position","relative");
