@@ -1,0 +1,41 @@
+{
+  Layout main=getLayout();
+  main.setSizeUndefined();
+  getMainWindow().getLayout().setHeight(null);
+  Label l=new Label("This is a nice game to guess how many Layouts your FF2 (or any other browser) can deal with. Due to the worldwide attempt to decrease energy consumption, playing this game is only allowed above 60?? longitude betwheen August and May (as excess energy consumed by you CPU is used to heat your room). It is considered wise to save all your work before starting the game.");
+  root=new Panel("Test box");
+  root.setWidth("600px");
+  root.setHeight("200px");
+  final Button b=new Button("Go try your luck with " + i + " layouts!");
+  b.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      FF2KILLER(i++);
+      b.setCaption("Go try your luck with " + i + " layouts!");
+    }
+  }
+);
+  final ComboBox s=new ComboBox("Restart game with select:");
+  s.setNullSelectionAllowed(false);
+  s.addItem("-- Choose value --");
+  s.setValue("-- Choose value --");
+  s.addItem(VerticalLayout.class);
+  s.addItem(HorizontalLayout.class);
+  s.addItem(GridLayout.class);
+  s.addListener(new ComboBox.ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      Object value=s.getValue();
+      if (!value.equals("-- Choose value --")) {
+        currentValue=(Class<?>)value;
+        i=0;
+        s.setValue("-- Choose value --");
+        b.setCaption("Go try your luck with " + i + " layouts!");
+      }
+    }
+  }
+);
+  s.setImmediate(true);
+  main.addComponent(l);
+  main.addComponent(b);
+  main.addComponent(s);
+  main.addComponent(root);
+}
