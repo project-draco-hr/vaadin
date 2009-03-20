@@ -21,9 +21,6 @@
     i++;
   }
   tHead.disableBrowserIntelligence();
-  if (height == null || "".equals(height)) {
-    bodyContainer.setHeight((tBody.getRowHeight(true) * pageLength) + "px");
-  }
   if (width == null || "".equals(width)) {
     int w=total;
     w+=getScrollbarWidth();
@@ -31,6 +28,10 @@
   }
   int availW=tBody.getAvailableWidth();
   availW=tBody.getAvailableWidth();
+  boolean verticalScrollbarVisible=(pageLength < totalRows);
+  if (verticalScrollbarVisible) {
+    availW-=Util.getNativeScrollbarSize();
+  }
   boolean needsReLayout=false;
   if (availW > total) {
     int extraSpace=availW - total;
@@ -39,7 +40,7 @@
       needsReLayout=true;
       int scrollbarWidth=getScrollbarWidth();
       scrollbarWidth=Util.getNativeScrollbarSize();
-      if (relativeWidth && totalWidthR >= scrollbarWidth) {
+      if (!verticalScrollbarVisible && relativeWidth && totalWidthR >= scrollbarWidth) {
         scrollbarWidthReserved=scrollbarWidth + 1;
         int columnindex=tHead.getVisibleCellCount() - 1;
         widths[columnindex]+=scrollbarWidthReserved;
@@ -79,6 +80,10 @@
   }
   if (needsReLayout) {
     tBody.reLayoutComponents();
+  }
+  if (height == null || "".equals(height)) {
+    int bodyHeight=(tBody.getRowHeight(true) * pageLength);
+    bodyContainer.setHeight(bodyHeight + "px");
   }
   isNewBody=false;
   if (firstvisible > 0) {
