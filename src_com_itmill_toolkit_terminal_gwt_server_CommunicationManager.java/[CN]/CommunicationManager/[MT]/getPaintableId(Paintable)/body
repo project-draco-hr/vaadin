@@ -8,8 +8,13 @@
  else {
       id="PID_S" + id;
     }
+    Paintable old=idPaintableMap.put(id,paintable);
+    if (old != null && old != paintable) {
+      if (old instanceof Component && ((Component)old).getApplication() != null) {
+        throw new IllegalStateException("Two paintables (" + paintable.getClass().getSimpleName() + ","+ old.getClass().getSimpleName()+ ") have been assigned the same id: "+ paintable.getDebugId());
+      }
+    }
     paintableIdMap.put(paintable,id);
-    idPaintableMap.put(id,paintable);
   }
   return id;
 }
