@@ -10,6 +10,7 @@ html_author = 0
 html_milestone = None
 onlymerge = 0
 onlycommit = 0
+all = 0
 while ((len(sys.argv) > 1) and (sys.argv[1][0] == '-')):
     if (sys.argv[1] == '-d'):
         dryrun = 1
@@ -29,6 +30,9 @@ while ((len(sys.argv) > 1) and (sys.argv[1][0] == '-')):
     elif (sys.argv[1] == '-c'):
         onlycommit = 1
         del sys.argv[1:2]
+    elif (sys.argv[1] == '-all'):
+        all = 1
+        del sys.argv[1:2]
     else:
         print ("Invalid option '%s'." % sys.argv[1])
         sys.exit(1)
@@ -42,7 +46,7 @@ elif (((len(sys.argv) == 4) or (len(sys.argv) == 5)) and (sys.argv[1] == 'massme
     startfrom = None
     if (len(sys.argv) > 4):
         startfrom = int(sys.argv[4])
-    commandMassmerge(cfgfilename, sourceuri=(REPOSITORY + sourcebranch), startfrom=startfrom, dryrun=dryrun)
+    commandMassmerge(cfgfilename, sourceuri=(REPOSITORY + sourcebranch), startfrom=startfrom, dryrun=dryrun, allatonce=all)
 elif ((len(sys.argv) == 5) and (sys.argv[1] == 'single')):
     changeset = int(sys.argv[2])
     sourcebranch = sys.argv[3]

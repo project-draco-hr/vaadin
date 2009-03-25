@@ -1,5 +1,5 @@
 {
-  Throwable t=event.getThrowable();
+  final Throwable t=event.getThrowable();
   if (t instanceof SocketException) {
     System.err.println("Warning: SocketException in CommunicationManager." + " Most likely client (browser) closed socket.");
     return;
@@ -18,15 +18,12 @@
     owner=((ChangeVariablesErrorEvent)event).getComponent();
   }
   if (owner instanceof AbstractComponent) {
-    final Throwable e=event.getThrowable();
-    if (e instanceof ErrorMessage) {
-      ((AbstractComponent)owner).setComponentError((ErrorMessage)e);
+    if (t instanceof ErrorMessage) {
+      ((AbstractComponent)owner).setComponentError((ErrorMessage)t);
     }
  else {
-      ((AbstractComponent)owner).setComponentError(new SystemError(e));
+      ((AbstractComponent)owner).setComponentError(new SystemError(t));
     }
   }
- else {
-    t.printStackTrace();
-  }
+  t.printStackTrace();
 }
