@@ -15,6 +15,7 @@
       final int hw=hCell.getOffsetWidth();
       final int cw=tBody.getColWidth(i);
       w=(hw > cw ? hw : cw) + IScrollTableBody.CELL_EXTRA_WIDTH;
+      hCell.setNaturalMinimumColumnWidth(w);
     }
     widths[i]=w;
     total+=w;
@@ -47,6 +48,7 @@
         HeaderCell headerCell=tHead.getHeaderCell(columnindex);
         if (headerCell.getWidth() == -1) {
           totalWidthR+=scrollbarWidthReserved;
+          headerCell.setNaturalMinimumColumnWidth(headerCell.getNaturalColumnWidth() + scrollbarWidthReserved);
         }
         extraSpace-=scrollbarWidthReserved;
         scrollbarWidthReservedInColumn=columnindex;
@@ -74,7 +76,7 @@
     final HeaderCell hCell=(HeaderCell)headCells.next();
     if (isNewBody || hCell.getWidth() == -1) {
       final int w=widths[i];
-      setColWidth(i,w);
+      setColWidth(i,w,false);
     }
     i++;
   }

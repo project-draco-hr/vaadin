@@ -10,7 +10,7 @@
     if (scrollbarWidthReservedInColumn != -1 && oldWidth > newWidth && (oldWidth - newWidth) < scrollbarWidthReserved) {
       int col=scrollbarWidthReservedInColumn;
       String colKey=getColKeyByIndex(col);
-      setColWidth(scrollbarWidthReservedInColumn,getColWidth(colKey) - (oldWidth - newWidth));
+      setColWidth(scrollbarWidthReservedInColumn,getColWidth(colKey) - (oldWidth - newWidth),false);
       scrollbarWidthReservedInColumn=-1;
     }
     int innerPixels=getOffsetWidth() - getBorderWidth();
@@ -18,6 +18,10 @@
       innerPixels=0;
     }
     setContentWidth(innerPixels);
+    if (!rendering) {
+      lazyAdjustColumnWidths.cancel();
+      lazyAdjustColumnWidths.schedule(LAZY_COLUMN_ADJUST_TIMEOUT);
+    }
   }
  else {
     super.setWidth("");
