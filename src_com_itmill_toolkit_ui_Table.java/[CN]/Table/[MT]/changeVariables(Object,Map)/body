@@ -42,8 +42,8 @@
       final Object itemId=itemIdMapper.get(st.nextToken());
       final Action action=(Action)actionMapper.get(st.nextToken());
       if (action != null && containsId(itemId) && actionHandlers != null) {
-        for (final Iterator i=actionHandlers.iterator(); i.hasNext(); ) {
-          ((Action.Handler)i.next()).handleAction(action,this,itemId);
+        for (final Iterator<Handler> i=actionHandlers.iterator(); i.hasNext(); ) {
+          (i.next()).handleAction(action,this,itemId);
         }
       }
     }
@@ -74,7 +74,7 @@
     if (variables.containsKey("collapsedcolumns")) {
       try {
         final Object[] ids=(Object[])variables.get("collapsedcolumns");
-        for (final Iterator it=visibleColumns.iterator(); it.hasNext(); ) {
+        for (final Iterator<Object> it=visibleColumns.iterator(); it.hasNext(); ) {
           setColumnCollapsed(it.next(),false);
         }
         for (int i=0; i < ids.length; i++) {
