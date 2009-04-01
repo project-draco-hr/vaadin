@@ -1,0 +1,24 @@
+{
+  for (Iterator<BT> iterator=list.iterator(); iterator.hasNext(); ) {
+    BT bean=iterator.next();
+    try {
+      String value=getContainerProperty(bean,f.propertyId).getValue().toString();
+      if (f.ignoreCase) {
+        value=value.toLowerCase();
+      }
+      if (f.onlyMatchPrefix) {
+        if (!value.startsWith(f.filterString)) {
+          iterator.remove();
+        }
+      }
+ else {
+        if (!value.contains(f.filterString)) {
+          iterator.remove();
+        }
+      }
+    }
+ catch (    Exception e) {
+      iterator.remove();
+    }
+  }
+}
