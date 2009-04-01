@@ -1,11 +1,10 @@
 {
-  if (list.contains(itemId)) {
-    beanToItem.remove(itemId);
-    list.remove(itemId);
-    fireItemSetChange();
-    return true;
-  }
- else {
+  if (!allItems.remove(itemId)) {
     return false;
   }
+  removeAllValueChangeListeners(beanToItem.get(itemId));
+  beanToItem.remove(itemId);
+  list.remove(itemId);
+  fireItemSetChange();
+  return true;
 }

@@ -1,0 +1,19 @@
+{
+  if (allItems.contains(newItemId)) {
+    return null;
+  }
+  if (newItemId.getClass().isAssignableFrom(type)) {
+    BT pojo=(BT)newItemId;
+    allItems.add(index,pojo);
+    BeanItem beanItem=new BeanItem(pojo);
+    beanToItem.put(pojo,beanItem);
+    for (    Filter filter : filters) {
+      addValueChangeListener(beanItem,filter.propertyId);
+    }
+    filterAll();
+    return beanItem;
+  }
+ else {
+    return null;
+  }
+}
