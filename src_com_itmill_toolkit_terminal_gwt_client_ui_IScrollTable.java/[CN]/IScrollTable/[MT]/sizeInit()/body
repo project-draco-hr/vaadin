@@ -3,6 +3,7 @@
   int i=0;
   int totalExplicitColumnsWidths=0;
   int total=0;
+  float expandRatioDivider=0;
   final int[] widths=new int[tHead.visibleCells.size()];
   tHead.enableBrowserIntelligence();
   while (headCells.hasNext()) {
@@ -12,9 +13,15 @@
       totalExplicitColumnsWidths+=w;
     }
  else {
-      final int hw=hCell.getOffsetWidth();
-      final int cw=tBody.getColWidth(i);
-      w=(hw > cw ? hw : cw) + IScrollTableBody.CELL_EXTRA_WIDTH;
+      if (hCell.getExpandRatio() > 0) {
+        expandRatioDivider+=hCell.getExpandRatio();
+        w=IScrollTableBody.CELL_EXTRA_WIDTH + IScrollTableBody.CELL_CONTENT_PADDING;
+      }
+ else {
+        final int hw=hCell.getOffsetWidth();
+        final int cw=tBody.getColWidth(i);
+        w=(hw > cw ? hw : cw) + IScrollTableBody.CELL_EXTRA_WIDTH;
+      }
       hCell.setNaturalMinimumColumnWidth(w);
     }
     widths[i]=w;
@@ -53,18 +60,33 @@
         extraSpace-=scrollbarWidthReserved;
         scrollbarWidthReservedInColumn=columnindex;
       }
-      headCells=tHead.iterator();
-      i=0;
-      HeaderCell hCell;
-      while (headCells.hasNext()) {
-        hCell=(HeaderCell)headCells.next();
-        if (hCell.getWidth() == -1) {
-          int w=widths[i];
-          final int newSpace=extraSpace * w / totalWidthR;
-          w+=newSpace;
-          widths[i]=w;
+      if (expandRatioDivider > 0) {
+        headCells=tHead.iterator();
+        i=0;
+        while (headCells.hasNext()) {
+          HeaderCell hCell=(HeaderCell)headCells.next();
+          if (hCell.getExpandRatio() > 0) {
+            int w=widths[i];
+            final int newSpace=(int)(extraSpace * (hCell.getExpandRatio() / expandRatioDivider));
+            w+=newSpace;
+            widths[i]=w;
+          }
+          i++;
         }
-        i++;
+      }
+ else {
+        headCells=tHead.iterator();
+        i=0;
+        while (headCells.hasNext()) {
+          HeaderCell hCell=(HeaderCell)headCells.next();
+          if (hCell.getWidth() == -1) {
+            int w=widths[i];
+            final int newSpace=extraSpace * w / totalWidthR;
+            w+=newSpace;
+            widths[i]=w;
+          }
+          i++;
+        }
       }
     }
   }
