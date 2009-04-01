@@ -2,23 +2,7 @@
   Iterator<BT> iterator=list.iterator();
   while (iterator.hasNext()) {
     BT bean=iterator.next();
-    try {
-      String value=getContainerProperty(bean,f.propertyId).getValue().toString();
-      if (f.ignoreCase) {
-        value=value.toLowerCase();
-      }
-      if (f.onlyMatchPrefix) {
-        if (!value.startsWith(f.filterString)) {
-          iterator.remove();
-        }
-      }
- else {
-        if (!value.contains(f.filterString)) {
-          iterator.remove();
-        }
-      }
-    }
- catch (    Exception e) {
+    if (!f.passesFilter(getItem(bean))) {
       iterator.remove();
     }
   }
