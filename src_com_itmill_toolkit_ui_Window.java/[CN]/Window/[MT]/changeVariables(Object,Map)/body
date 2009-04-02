@@ -1,4 +1,11 @@
 {
+  boolean sizeHasChanged=false;
+  if (variables.containsKey("height") && (getHeightUnits() != UNITS_PIXELS || (Integer)variables.get("height") != getHeight())) {
+    sizeHasChanged=true;
+  }
+  if (variables.containsKey("width") && (getWidthUnits() != UNITS_PIXELS || (Integer)variables.get("width") != getWidth())) {
+    sizeHasChanged=true;
+  }
   super.changeVariables(source,variables);
   final Integer positionx=(Integer)variables.get("positionx");
   if (positionx != null) {
@@ -15,5 +22,8 @@
     if (close != null && close.booleanValue()) {
       close();
     }
+  }
+  if (sizeHasChanged) {
+    fireResize();
   }
 }
