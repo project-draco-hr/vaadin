@@ -1,25 +1,15 @@
 {
   this.bean=bean;
-  try {
-    final BeanInfo info=Introspector.getBeanInfo(bean.getClass());
-    final PropertyDescriptor[] pd=info.getPropertyDescriptors();
-    final Iterator iter=propertyIds.iterator();
-    while (iter.hasNext()) {
-      final Object id=iter.next();
-      for (int i=0; i < pd.length; i++) {
-        final String name=pd[i].getName();
-        if (name.equals(id)) {
-          final Method getMethod=pd[i].getReadMethod();
-          final Method setMethod=pd[i].getWriteMethod();
-          final Class<?> type=pd[i].getPropertyType();
-          if ((getMethod != null)) {
-            final Property p=new MethodProperty(type,bean,getMethod,setMethod);
-            addItemProperty(name,p);
-          }
-        }
-      }
+  LinkedHashMap<String,PropertyDescriptor> pds=getPropertyDescriptors(bean.getClass());
+  for (  Object id : propertyIds) {
+    PropertyDescriptor pd=pds.get(id);
+    if (pd != null) {
+      final String name=pd.getName();
+      final Method getMethod=pd.getReadMethod();
+      final Method setMethod=pd.getWriteMethod();
+      final Class<?> type=pd.getPropertyType();
+      final Property p=new MethodProperty(type,bean,getMethod,setMethod);
+      addItemProperty(name,p);
     }
-  }
- catch (  final java.beans.IntrospectionException ignored) {
   }
 }
