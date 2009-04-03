@@ -1,0 +1,32 @@
+{
+  String pid=null;
+  Element e=targetElement;
+  while (true) {
+    pid=client.getPid(e);
+    if (pid != null) {
+      break;
+    }
+    e=DOM.getParent(e);
+    if (e == null) {
+      break;
+    }
+  }
+  if (e == null || pid == null) {
+    return null;
+  }
+  Widget w=(Widget)client.getPaintable(pid);
+  if (w == null) {
+    return null;
+  }
+  String path=getPathForWidget(w);
+  if (w.getElement() == targetElement) {
+    return path;
+  }
+ else   if (w instanceof SubPartAware) {
+    return path + SUBPART_SEPARATOR + ((SubPartAware)w).getSubPartName(targetElement);
+  }
+ else {
+    path=path + getDOMPathForElement(targetElement,w.getElement());
+    return path;
+  }
+}

@@ -31,7 +31,6 @@
   if (themeName != null) {
     themeUri=staticFilePath + "/" + THEME_DIRECTORY_PATH+ themeName;
   }
-  boolean testingApplication=testingToolsActive && request.getParameter("TT") != null;
   if (!fragment) {
     response.setHeader("Cache-Control","no-cache");
     response.setHeader("Pragma","no-cache");
@@ -45,9 +44,6 @@
     page.write("<link rel=\"shortcut icon\" type=\"image/vnd.microsoft.icon\" href=\"" + themeUri + "/favicon.ico\" />");
     page.write("<link rel=\"icon\" type=\"image/vnd.microsoft.icon\" href=\"" + themeUri + "/favicon.ico\" />");
     page.write("<title>" + title + "</title>");
-    if (testingApplication) {
-      writeTestingToolsScripts(page,request);
-    }
     page.write("\n</head>\n<body scroll=\"auto\" class=\"i-generated-body\">\n");
   }
   String appId=appUrl;
@@ -55,7 +51,11 @@
     appId="ROOT";
   }
   appId=appId.replaceAll("[^a-zA-Z0-9]","");
-  appId=appId + appId.hashCode();
+  int hashCode=appId.hashCode();
+  if (hashCode < 0) {
+    hashCode=-hashCode;
+  }
+  appId=appId + "-" + hashCode;
   Application.SystemMessages systemMessages=null;
   try {
     systemMessages=getSystemMessages();

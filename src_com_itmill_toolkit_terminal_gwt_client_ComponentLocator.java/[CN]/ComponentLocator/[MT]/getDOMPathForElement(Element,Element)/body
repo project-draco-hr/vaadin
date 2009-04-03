@@ -1,0 +1,27 @@
+{
+  Element e=element;
+  String path="";
+  while (true) {
+    Element parent=DOM.getParent(e);
+    if (parent == null) {
+      return "ERROR, baseElement is not a parent to element";
+    }
+    int childIndex=-1;
+    int childCount=DOM.getChildCount(parent);
+    for (int i=0; i < childCount; i++) {
+      if (e == DOM.getChild(parent,i)) {
+        childIndex=i;
+        break;
+      }
+    }
+    if (childIndex == -1) {
+      return "ERROR, baseElement is not a parent to element.";
+    }
+    path=PARENTCHILD_SEPARATOR + "domChild[" + childIndex+ "]"+ path;
+    if (parent == baseElement) {
+      break;
+    }
+    e=parent;
+  }
+  return path;
+}
