@@ -96,12 +96,6 @@ if (cols > 0) {
     }
     int index=firstIndex + i;
     if (p != null || isGenerated) {
-      if (p instanceof Property.ValueChangeNotifier) {
-        if (oldListenedProperties == null || !oldListenedProperties.contains(p)) {
-          ((Property.ValueChangeNotifier)p).addListener(this);
-        }
-        listenedProperties.add(p);
-      }
       if (index < firstIndexNotInCache && index >= pageBufferFirstIndex) {
         int indexInOldBuffer=index - pageBufferFirstIndex;
         value=pageBuffer[CELL_FIRSTCOL + j][indexInOldBuffer];
@@ -116,6 +110,12 @@ if (cols > 0) {
         }
  else         if (p != null) {
           value=getPropertyValue(id,colids[j],p);
+          if (!(value instanceof Component) && p instanceof Property.ValueChangeNotifier) {
+            if (oldListenedProperties == null || !oldListenedProperties.contains(p)) {
+              ((Property.ValueChangeNotifier)p).addListener(this);
+            }
+            listenedProperties.add(p);
+          }
         }
  else {
           value=getPropertyValue(id,colids[j],null);
