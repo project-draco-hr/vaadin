@@ -1,0 +1,34 @@
+{
+  container=new IndexedContainer();
+  container.addContainerProperty("text",String.class,"sampletext");
+  container.addContainerProperty("integer",Integer.class,5);
+  container.addItem();
+  container.addItem();
+  Table t1=new Table("Editable table with bells and wistles. See description.");
+  t1.setDescription("Opening combobox should never fire table" + " refresh (for this table). Update from textfield " + "(integer) may be sent to server however. The readonly table"+ " my refresh, but not this one.");
+  t1.setPageLength(0);
+  t1.setContainerDataSource(container);
+  t1.addGeneratedColumn("integer x 3",multiplier);
+  t1.setFieldFactory(ff);
+  t1.setEditable(true);
+  t1.setDebugId("editortable");
+  Table t2=new Table("A clone of table1, but disabled. Properties are in components.");
+  t2.setDescription("This table is in editable mode." + " Updates to common datasource should not affect redraw for this " + "table. Only the components inside table should get updated.");
+  t2.setFieldFactory(ff);
+  t2.setEditable(true);
+  t2.setEnabled(false);
+  t2.setContainerDataSource(container);
+  t2.addGeneratedColumn("integer x 3",multiplier);
+  t2.setPageLength(0);
+  t2.setDebugId("disabled table");
+  Table reader=new Table("Reader table");
+  reader.setDescription("This table should be redrawn on container changes as container data is " + "displayed directly in cells.");
+  reader.setContainerDataSource(container);
+  reader.addGeneratedColumn("integer x 3",multiplier);
+  reader.setPageLength(0);
+  reader.setDebugId("reader table");
+  getLayout().addComponent(t1);
+  getLayout().addComponent(t2);
+  getLayout().addComponent(reader);
+  getLayout().addComponent(new Button("Sync!"));
+}
