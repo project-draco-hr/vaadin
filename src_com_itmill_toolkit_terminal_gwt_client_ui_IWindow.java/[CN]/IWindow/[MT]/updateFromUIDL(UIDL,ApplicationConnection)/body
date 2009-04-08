@@ -17,6 +17,7 @@
   if (client.updateComponent(this,uidl,false)) {
     return;
   }
+  immediate=uidl.hasAttribute("immediate");
   if (uidl.getBooleanAttribute("resizable") != resizable) {
     setResizable(!resizable);
   }
@@ -70,22 +71,19 @@
     contentPanel.setWidget((Widget)lo);
     layout=lo;
   }
-  boolean dynamicWidth=!uidl.hasAttribute("width");
-  boolean dynamicHeight=!uidl.hasAttribute("height");
-  boolean widthHasBeenFixed=false;
-  boolean layoutRelativeWidth=uidl.hasAttribute("layoutRelativeWidth");
-  boolean layoutRelativeHeight=uidl.hasAttribute("layoutRelativeHeight");
+  dynamicWidth=!uidl.hasAttribute("width");
+  dynamicHeight=!uidl.hasAttribute("height");
+  layoutRelativeWidth=uidl.hasAttribute("layoutRelativeWidth");
+  layoutRelativeHeight=uidl.hasAttribute("layoutRelativeHeight");
   if (dynamicWidth && layoutRelativeWidth) {
-    widthHasBeenFixed=true;
     setNaturalWidth();
   }
   layout.updateFromUIDL(childUidl,client);
   if (!dynamicHeight && layoutRelativeWidth) {
     client.runDescendentsLayout(this);
   }
-  if (dynamicWidth && !widthHasBeenFixed) {
+  if (dynamicWidth && !layoutRelativeWidth) {
     setNaturalWidth();
-    widthHasBeenFixed=true;
   }
   if (dynamicHeight && layoutRelativeHeight) {
     resizable=false;
@@ -125,7 +123,11 @@
   contentPanel.setScrollPosition(uidl.getIntVariable("scrollTop"));
   contentPanel.setHorizontalScrollPosition(uidl.getIntVariable("scrollLeft"));
   if (uidl.getBooleanAttribute("center")) {
+    centered=true;
     center();
+  }
+ else {
+    centered=false;
   }
   updateShadowSizeAndPosition();
   if (getOffsetWidth() > Window.getClientWidth()) {

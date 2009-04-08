@@ -3,10 +3,10 @@
     return;
   }
   if (isContentRefreshesEnabled) {
-    HashSet oldListenedProperties=listenedProperties;
-    HashSet oldVisibleComponents=visibleComponents;
-    listenedProperties=new HashSet();
-    visibleComponents=new HashSet();
+    HashSet<Property> oldListenedProperties=listenedProperties;
+    HashSet<Component> oldVisibleComponents=visibleComponents;
+    listenedProperties=new HashSet<Property>();
+    visibleComponents=new HashSet<Component>();
     final Object[] colids=getVisibleColumns();
     final int cols=colids.length;
     final int pagelen=getPageLength();
@@ -96,19 +96,13 @@ if (cols > 0) {
     }
     int index=firstIndex + i;
     if (p != null || isGenerated) {
-      if (p instanceof Property.ValueChangeNotifier) {
-        if (oldListenedProperties == null || !oldListenedProperties.contains(p)) {
-          ((Property.ValueChangeNotifier)p).addListener(this);
-        }
-        listenedProperties.add(p);
-      }
       if (index < firstIndexNotInCache && index >= pageBufferFirstIndex) {
         int indexInOldBuffer=index - pageBufferFirstIndex;
         value=pageBuffer[CELL_FIRSTCOL + j][indexInOldBuffer];
       }
  else {
         if (isGenerated) {
-          ColumnGenerator cg=(ColumnGenerator)columnGenerators.get(colids[j]);
+          ColumnGenerator cg=columnGenerators.get(colids[j]);
           value=cg.generateCell(this,id,colids[j]);
         }
  else         if (iscomponent[j]) {
@@ -116,6 +110,12 @@ if (cols > 0) {
         }
  else         if (p != null) {
           value=getPropertyValue(id,colids[j],p);
+          if (!(value instanceof Component) && p instanceof Property.ValueChangeNotifier) {
+            if (oldListenedProperties == null || !oldListenedProperties.contains(p)) {
+              ((Property.ValueChangeNotifier)p).addListener(this);
+            }
+            listenedProperties.add(p);
+          }
         }
  else {
           value=getPropertyValue(id,colids[j],null);
@@ -126,7 +126,7 @@ if (cols > 0) {
       if (oldVisibleComponents == null || !oldVisibleComponents.contains(value)) {
         ((Component)value).setParent(this);
       }
-      visibleComponents.add(value);
+      visibleComponents.add((Component)value);
     }
     cells[CELL_FIRSTCOL + j][i]=value;
   }

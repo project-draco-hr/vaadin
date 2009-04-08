@@ -20,8 +20,11 @@
   immediate=uidl.hasAttribute("immediate");
   nullSelectionAllowed=uidl.hasAttribute("nullselect");
   currentPage=uidl.getIntVariable("page");
-  if (uidl.hasAttribute(ATTR_EMPTYTEXT)) {
-    emptyText=uidl.getStringAttribute(ATTR_EMPTYTEXT);
+  if (uidl.hasAttribute(ATTR_INPUTPROMPT)) {
+    inputPrompt=uidl.getStringAttribute(ATTR_INPUTPROMPT);
+  }
+ else {
+    inputPrompt="";
   }
   suggestionPopup.setPagingEnabled(true);
   suggestionPopup.updateStyleNames(uidl);
@@ -30,7 +33,7 @@
   currentSuggestions.clear();
   final UIDL options=uidl.getChildUIDL(0);
   totalMatches=uidl.getIntAttribute("totalMatches");
-  String captions=emptyText;
+  String captions=inputPrompt;
   for (final Iterator i=options.getChildIterator(); i.hasNext(); ) {
     final UIDL optionUidl=(UIDL)i.next();
     final FilterSelectSuggestion suggestion=new FilterSelectSuggestion(optionUidl);
@@ -49,7 +52,9 @@
     captions+=suggestion.getReplacementString();
   }
   if ((!filtering || popupOpenerClicked) && uidl.hasVariable("selected") && uidl.getStringArrayVariable("selected").length == 0) {
-    tb.setText(emptyText);
+    if (!filtering || !popupOpenerClicked) {
+      setPromptingOn();
+    }
     selectedOptionKey=null;
   }
   if (filtering && lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) {

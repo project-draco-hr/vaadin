@@ -1,22 +1,24 @@
 {
-  Element targetTdOrTr=getEventTargetTdOrTr(event);
-  if (targetTdOrTr != null) {
+  if (enabled) {
+    Element targetTdOrTr=getEventTargetTdOrTr(event);
+    if (targetTdOrTr != null) {
 switch (DOM.eventGetType(event)) {
 case Event.ONCLICK:
-      handleClickEvent(event,targetTdOrTr);
-    if (selectMode > Table.SELECT_MODE_NONE) {
-      toggleSelection();
-      client.updateVariable(paintableId,"selected",selectedRowKeys.toArray(),immediate);
-    }
-  break;
+        handleClickEvent(event,targetTdOrTr);
+      if (selectMode > Table.SELECT_MODE_NONE) {
+        toggleSelection();
+        client.updateVariable(paintableId,"selected",selectedRowKeys.toArray(),immediate);
+      }
+    break;
 case Event.ONDBLCLICK:
-handleClickEvent(event,targetTdOrTr);
+  handleClickEvent(event,targetTdOrTr);
 break;
 case Event.ONCONTEXTMENU:
 showContextMenu(event);
 break;
 default :
 break;
+}
 }
 }
 super.onBrowserEvent(event);

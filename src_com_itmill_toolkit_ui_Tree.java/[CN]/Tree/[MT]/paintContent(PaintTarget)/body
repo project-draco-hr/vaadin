@@ -25,7 +25,7 @@
       target.addAttribute("listenClicks",true);
     }
   }
-  final Set actionSet=new LinkedHashSet();
+  final Set<Action> actionSet=new LinkedHashSet<Action>();
   String[] selectedKeys;
   if (isMultiSelect()) {
     selectedKeys=new String[((Set)getValue()).size()];
@@ -35,7 +35,7 @@
   }
   int keyIndex=0;
   final LinkedList expandedKeys=new LinkedList();
-  final Stack iteratorStack=new Stack();
+  final Stack<Iterator> iteratorStack=new Stack<Iterator>();
   Collection ids;
   if (partialUpdate) {
     ids=getChildren(expandedItemId);
@@ -47,7 +47,7 @@
     iteratorStack.push(ids.iterator());
   }
   while (!iteratorStack.isEmpty()) {
-    final Iterator i=(Iterator)iteratorStack.peek();
+    final Iterator i=iteratorStack.peek();
     if (!i.hasNext()) {
       iteratorStack.pop();
       if (!iteratorStack.isEmpty()) {
@@ -85,9 +85,10 @@
       }
       getCaptionChangeListener().addNotifierForItem(itemId);
       if (actionHandlers != null) {
-        final ArrayList keys=new ArrayList();
-        for (final Iterator ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
-          final Action[] aa=((Action.Handler)ahi.next()).getActions(itemId,this);
+        final ArrayList<String> keys=new ArrayList<String>();
+        final Iterator<Action.Handler> ahi=actionHandlers.iterator();
+        while (ahi.hasNext()) {
+          final Action[] aa=ahi.next().getActions(itemId,this);
           if (aa != null) {
             for (int ai=0; ai < aa.length; ai++) {
               final String akey=actionMapper.key(aa[ai]);
@@ -114,8 +115,9 @@
   if (!actionSet.isEmpty()) {
     target.addVariable(this,"action","");
     target.startTag("actions");
-    for (final Iterator i=actionSet.iterator(); i.hasNext(); ) {
-      final Action a=(Action)i.next();
+    final Iterator<Action> i=actionSet.iterator();
+    while (i.hasNext()) {
+      final Action a=i.next();
       target.startTag("action");
       if (a.getCaption() != null) {
         target.addAttribute("caption",a.getCaption());
@@ -129,6 +131,7 @@
     target.endTag("actions");
   }
   if (partialUpdate) {
+    target.addVariable(this,"selected",selectedKeys);
     partialUpdate=false;
   }
  else {

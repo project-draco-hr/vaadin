@@ -3,7 +3,10 @@
     String key=(String)variables.get("clickedKey");
     Object id=itemIdMapper.get(key);
     MouseEventDetails details=MouseEventDetails.deSerialize((String)variables.get("clickEvent"));
-    fireEvent(new ItemClickEvent(this,getItem(id),id,null,details));
+    Item item=getItem(id);
+    if (item != null) {
+      fireEvent(new ItemClickEvent(this,item,id,null,details));
+    }
   }
   if (!isSelectable() && variables.containsKey("selected")) {
     variables=new HashMap(variables);
@@ -39,8 +42,8 @@
       final Object itemId=itemIdMapper.get(st.nextToken());
       final Action action=(Action)actionMapper.get(st.nextToken());
       if (action != null && containsId(itemId) && actionHandlers != null) {
-        for (final Iterator i=actionHandlers.iterator(); i.hasNext(); ) {
-          ((Action.Handler)i.next()).handleAction(action,this,itemId);
+        for (final Iterator<Action.Handler> i=actionHandlers.iterator(); i.hasNext(); ) {
+          i.next().handleAction(action,this,itemId);
         }
       }
     }

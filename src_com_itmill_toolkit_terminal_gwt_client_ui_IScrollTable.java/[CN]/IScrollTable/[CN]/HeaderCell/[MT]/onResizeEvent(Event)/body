@@ -11,7 +11,8 @@ break;
 case Event.ONMOUSEUP:
 isResizing=false;
 DOM.releaseCapture(getElement());
-tBody.reLayoutComponents();
+lazyAdjustColumnWidths.cancel();
+lazyAdjustColumnWidths.schedule(1);
 break;
 case Event.ONMOUSEMOVE:
 if (isResizing) {
@@ -23,7 +24,7 @@ int newWidth=originalWidth + deltaX;
 if (newWidth < MINIMUM_COL_WIDTH) {
 newWidth=MINIMUM_COL_WIDTH;
 }
-setColWidth(colIndex,newWidth);
+setColWidth(colIndex,newWidth,true);
 }
 break;
 default :

@@ -5,23 +5,11 @@
   if (item == null) {
     return false;
   }
-  for (final Iterator i=filters.iterator(); i.hasNext(); ) {
-    final Filter f=(Filter)i.next();
-    final String s1=f.ignoreCase ? f.filterString.toLowerCase() : f.filterString;
-    final Property p=item.getItemProperty(f.propertyId);
-    if (p == null || p.toString() == null) {
+  final Iterator<Filter> i=filters.iterator();
+  while (i.hasNext()) {
+    final Filter f=i.next();
+    if (!f.passesFilter(item)) {
       return false;
-    }
-    final String s2=f.ignoreCase ? p.toString().toLowerCase() : p.toString();
-    if (f.onlyMatchPrefix) {
-      if (s2.indexOf(s1) != 0) {
-        return false;
-      }
-    }
- else {
-      if (s2.indexOf(s1) < 0) {
-        return false;
-      }
     }
   }
   return true;
