@@ -1,13 +1,19 @@
 {
   rendering=true;
+  boolean measure=false;
   if (this.client == null) {
     this.client=client;
-    borderPaddingVertical=getOffsetHeight();
-    borderPaddingHorizontal=getOffsetWidth() - desc.getOffsetWidth();
+    measure=true;
   }
   if (client.updateComponent(this,uidl,false)) {
     rendering=false;
     return;
+  }
+  if (measure) {
+    borderPaddingVertical=getOffsetHeight();
+    int ow=getOffsetWidth();
+    int dow=desc.getOffsetWidth();
+    borderPaddingHorizontal=ow - dow;
   }
   boolean legendEmpty=true;
   if (uidl.hasAttribute("caption")) {
