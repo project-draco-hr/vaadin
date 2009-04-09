@@ -1,0 +1,21 @@
+{
+  rendering=true;
+  this.client=client;
+  if (client.updateComponent(this,uidl,true)) {
+    rendering=false;
+    return;
+  }
+  HashSet<String> unrenderedPids=new HashSet<String>(pidToComponentWrappper.keySet());
+  for (Iterator<UIDL> childIterator=uidl.getChildIterator(); childIterator.hasNext(); ) {
+    UIDL cc=childIterator.next();
+    UIDL componentUIDL=cc.getChildUIDL(0);
+    unrenderedPids.remove(componentUIDL.getId());
+    getWrapper(client,componentUIDL).updateFromUIDL(cc);
+  }
+  for (  String pid : unrenderedPids) {
+    AbsoluteWrapper absoluteWrapper=pidToComponentWrappper.get(pid);
+    pidToComponentWrappper.remove(pid);
+    absoluteWrapper.destroy();
+  }
+  rendering=false;
+}
