@@ -1,0 +1,60 @@
+{
+  super("AbsoluteLayout editor aka k??yh??n miehen wysiwyg");
+  l=lo;
+  setHeight("600px");
+  Button componentChooser=new Button("choose component to edit");
+  componentChooser.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      final Window chooser=new Window("Choose component");
+      chooser.getLayout().setSizeUndefined();
+      chooser.setModal(true);
+      NativeSelect select=new NativeSelect("Choose component to edit");
+      select.setNullSelectionAllowed(false);
+      IndexedContainer container=new IndexedContainer();
+      container.addContainerProperty("caption",String.class,"");
+      Iterator<Component> componentIterator=l.getComponentIterator();
+      while (componentIterator.hasNext()) {
+        AbstractComponent next=(AbstractComponent)componentIterator.next();
+        Item item=container.addItem(next);
+        String caption=next.getTag();
+        caption+="; cap: " + next.getCaption() + "; debugid"+ getDebugId();
+        if (next instanceof Property) {
+          caption+=" value:" + ((Property)next).getValue();
+        }
+        item.getItemProperty("caption").setValue(caption);
+      }
+      select.setContainerDataSource(container);
+      select.setItemCaptionPropertyId("caption");
+      select.setImmediate(true);
+      select.addListener(new ValueChangeListener(){
+        public void valueChange(        ValueChangeEvent event){
+          editcomponent((Component)event.getProperty().getValue());
+          getMainWindow().removeWindow(chooser);
+        }
+      }
+);
+      chooser.addComponent(select);
+      getMainWindow().addWindow(chooser);
+    }
+  }
+);
+  addComponent(componentChooser);
+  componentEditor=new Form();
+  componentEditor.setWriteThrough(false);
+  componentEditor.setCaption("Component properties:");
+  componentEditor.setFieldFactory(MFieldFactory.get());
+  addComponent(componentEditor);
+  positionEditor=new Form();
+  positionEditor.setCaption("Component position");
+  positionEditor.setWriteThrough(false);
+  positionEditor.setFieldFactory(MFieldFactory.get());
+  addComponent(positionEditor);
+  Button b=new Button("Commit changes",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      positionEditor.commit();
+      componentEditor.commit();
+    }
+  }
+);
+  addComponent(b);
+}
