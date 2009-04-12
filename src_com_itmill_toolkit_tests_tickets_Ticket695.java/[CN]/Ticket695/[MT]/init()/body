@@ -1,0 +1,21 @@
+{
+  final Window w=new Window("Serialization test #695");
+  setMainWindow(w);
+  Button b=new Button("Serialize ApplicationContext");
+  w.addComponent(b);
+  b.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      ByteArrayOutputStream buffer=new ByteArrayOutputStream();
+      try {
+        ObjectOutputStream oos=new ObjectOutputStream(buffer);
+        oos.writeObject(getContext());
+        w.showNotification("ApplicationContext serialized (" + buffer.size() + "bytes)");
+      }
+ catch (      IOException e) {
+        e.printStackTrace();
+        w.showNotification("ApplicationContext serialization failed - see console for stacktrace");
+      }
+    }
+  }
+);
+}

@@ -18,7 +18,7 @@
         throw new SessionExpired();
       }
       ((WebApplicationContext)application.getContext()).startTransaction(application,request);
-      getApplicationManager(application).handleFileUpload(request,response);
+      ((WebApplicationContext)application.getContext()).getApplicationManager(application,this).handleFileUpload(request,response);
       return;
     }
     final WebBrowser browser=WebApplicationContext.getApplicationContext(request.getSession()).getBrowser();
@@ -43,7 +43,7 @@
           }
         }
         ((WebApplicationContext)application.getContext()).startTransaction(application,request);
-        getApplicationManager(application).handleUidlRequest(request,response,this);
+        ((WebApplicationContext)application.getContext()).getApplicationManager(application,this).handleUidlRequest(request,response,this);
         return;
       }
     }
@@ -53,7 +53,7 @@
         application.close();
         final HttpSession session=request.getSession(false);
         if (session != null) {
-          ApplicationServlet.applicationToAjaxAppMgrMap.remove(application);
+          WebApplicationContext.getApplicationContext(session).applicationToAjaxAppMgrMap.remove(application);
           WebApplicationContext.getApplicationContext(session).removeApplication(application);
         }
       }
@@ -77,7 +77,7 @@
       window.handleParameters(parameters);
     }
     DownloadStream download=null;
-    download=getApplicationManager(application).handleURI(window,request,response);
+    download=((WebApplicationContext)application.getContext()).getApplicationManager(application,this).handleURI(window,request,response);
     if (download == null) {
       if (window.getTerminal() == null) {
         window.setTerminal(browser);

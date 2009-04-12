@@ -1,0 +1,22 @@
+{
+  Class<?>[] ifaces=cls.getInterfaces();
+  for (int i=0; i < ifaces.length; i++) {
+    Method ifaceMethod=findHighestMethod(ifaces[i],method,paramTypes);
+    if (ifaceMethod != null) {
+      return ifaceMethod;
+    }
+  }
+  if (cls.getSuperclass() != null) {
+    Method parentMethod=findHighestMethod(cls.getSuperclass(),method,paramTypes);
+    if (parentMethod != null) {
+      return parentMethod;
+    }
+  }
+  Method[] methods=cls.getMethods();
+  for (int i=0; i < methods.length; i++) {
+    if (methods[i].getName().equals(method)) {
+      return methods[i];
+    }
+  }
+  return null;
+}
