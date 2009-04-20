@@ -4,10 +4,8 @@ def listChangedFiles():
     pin.close()
     changed = []
     for line in lines:
-        line = line.rstrip()
-        print line
-        filestate = line[0:2].strip()
-        filename = line[7:].strip()
+        line = line[:(-1)]
+        (filestate, filename) = re.split('[ \\+]+', line)
         if ((filename.startswith('build/merge/') or filename.startswith('build/bin/mergetool.py') or filename.startswith('build/testing')) and (filestate == 'M')):
             continue
         if (filestate != '?'):
