@@ -27,19 +27,32 @@
     i++;
   }
   tHead.disableBrowserIntelligence();
+  boolean willHaveScrollbarz=false;
+  if (!(height != null && !height.equals(""))) {
+    if (pageLength < totalRows) {
+      willHaveScrollbarz=true;
+    }
+  }
+ else {
+    int fakeheight=tBody.getRowHeight() * totalRows;
+    int availableHeight=bodyContainer.getElement().getPropertyInt("clientHeight");
+    if (fakeheight > availableHeight) {
+      willHaveScrollbarz=true;
+    }
+  }
   if (width == null || "".equals(width)) {
     int w=total;
     w+=tBody.getCellExtraWidth() * visibleColOrder.length;
-    w+=getScrollbarWidth();
+    if (willHaveScrollbarz) {
+      w+=Util.getNativeScrollbarSize();
+    }
     setContentWidth(w);
   }
   int availW=tBody.getAvailableWidth();
   availW=tBody.getAvailableWidth();
   availW-=tBody.getCellExtraWidth() * visibleColOrder.length;
-  if (!(height != null && !height.equals(""))) {
-    if (pageLength < totalRows) {
-      availW-=Util.getNativeScrollbarSize();
-    }
+  if (willHaveScrollbarz) {
+    availW-=Util.getNativeScrollbarSize();
   }
   boolean needsReLayout=false;
   if (availW > total) {
