@@ -7,7 +7,15 @@
       rowHeight=getTableHeight() / tBodyElement.getRows().getLength();
     }
  else {
-      return DEFAULT_ROW_HEIGHT;
+      if (isAttached()) {
+        IScrollTableRow scrollTableRow=new IScrollTableRow();
+        tBodyElement.appendChild(scrollTableRow.getElement());
+        getRowHeight(forceUpdate);
+        tBodyElement.removeChild(scrollTableRow.getElement());
+      }
+ else {
+        return DEFAULT_ROW_HEIGHT;
+      }
     }
     tBodyMeasurementsDone=true;
     return rowHeight;
