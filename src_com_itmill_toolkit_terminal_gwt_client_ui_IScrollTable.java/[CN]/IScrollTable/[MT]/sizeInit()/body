@@ -9,18 +9,16 @@
   while (headCells.hasNext()) {
     final HeaderCell hCell=(HeaderCell)headCells.next();
     int w=hCell.getWidth();
-    if (w > 0) {
+    if (hCell.isDefinedWidth()) {
       totalExplicitColumnsWidths+=w;
     }
  else {
       if (hCell.getExpandRatio() > 0) {
         expandRatioDivider+=hCell.getExpandRatio();
-        w=IScrollTableBody.CELL_EXTRA_WIDTH + IScrollTableBody.CELL_CONTENT_PADDING;
+        w=0;
       }
  else {
-        final int hw=hCell.getOffsetWidth();
-        final int cw=tBody.getColWidth(i);
-        w=(hw > cw ? hw : cw) + IScrollTableBody.CELL_EXTRA_WIDTH;
+        w=hCell.getNaturalColumnWidth(i);
       }
       hCell.setNaturalMinimumColumnWidth(w);
     }
@@ -31,35 +29,24 @@
   tHead.disableBrowserIntelligence();
   if (width == null || "".equals(width)) {
     int w=total;
+    w+=tBody.getCellExtraWidth() * visibleColOrder.length;
     w+=getScrollbarWidth();
     setContentWidth(w);
   }
   int availW=tBody.getAvailableWidth();
   availW=tBody.getAvailableWidth();
-  boolean verticalScrollbarVisible=(pageLength < totalRows);
-  if (verticalScrollbarVisible) {
-    availW-=Util.getNativeScrollbarSize();
+  availW-=tBody.getCellExtraWidth() * visibleColOrder.length;
+  if (!(height != null && !height.equals(""))) {
+    if (pageLength < totalRows) {
+      availW-=Util.getNativeScrollbarSize();
+    }
   }
   boolean needsReLayout=false;
   if (availW > total) {
-    int extraSpace=availW - total;
-    int totalWidthR=total - totalExplicitColumnsWidths;
+    final int extraSpace=availW - total;
+    final int totalWidthR=total - totalExplicitColumnsWidths;
     if (totalWidthR > 0) {
       needsReLayout=true;
-      int scrollbarWidth=getScrollbarWidth();
-      scrollbarWidth=Util.getNativeScrollbarSize();
-      if (!verticalScrollbarVisible && relativeWidth && totalWidthR >= scrollbarWidth) {
-        scrollbarWidthReserved=scrollbarWidth + 1;
-        int columnindex=tHead.getVisibleCellCount() - 1;
-        widths[columnindex]+=scrollbarWidthReserved;
-        HeaderCell headerCell=tHead.getHeaderCell(columnindex);
-        if (headerCell.getWidth() == -1) {
-          totalWidthR+=scrollbarWidthReserved;
-          headerCell.setNaturalMinimumColumnWidth(headerCell.getNaturalColumnWidth() + scrollbarWidthReserved);
-        }
-        extraSpace-=scrollbarWidthReserved;
-        scrollbarWidthReservedInColumn=columnindex;
-      }
       if (expandRatioDivider > 0) {
         headCells=tHead.iterator();
         i=0;
@@ -79,7 +66,7 @@
         i=0;
         while (headCells.hasNext()) {
           HeaderCell hCell=(HeaderCell)headCells.next();
-          if (hCell.getWidth() == -1) {
+          if (!hCell.isDefinedWidth()) {
             int w=widths[i];
             final int newSpace=extraSpace * w / totalWidthR;
             w+=newSpace;
