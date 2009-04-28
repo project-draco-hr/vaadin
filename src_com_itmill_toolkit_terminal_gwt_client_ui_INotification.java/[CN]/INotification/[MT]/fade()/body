@@ -1,14 +1,13 @@
 {
   DOM.removeEventPreview(this);
   cancelDelay();
-  final int msec=fadeMsec / (startOpacity / 5);
   fader=new Timer(){
-    long timestamp=0;
-    int opacity=startOpacity;
+    private final long start=new Date().getTime();
     @Override public void run(){
-      double adjust=(timestamp == 0 ? 1 : (new Date().getTime() - timestamp) / msec);
-      opacity-=adjust * 5d;
-      setOpacity(getElement(),opacity);
+      long now=new Date().getTime();
+      long timeEplaced=now - start;
+      float remainingFraction=1 - timeEplaced / (float)fadeMsec;
+      int opacity=(int)(startOpacity * remainingFraction);
       if (opacity <= 0) {
         cancel();
         hide();
@@ -17,9 +16,11 @@
           DOM.setStyleAttribute(getElement(),"height","");
         }
       }
-      timestamp=new Date().getTime();
+ else {
+        setOpacity(getElement(),opacity);
+      }
     }
   }
 ;
-  fader.scheduleRepeating(msec);
+  fader.scheduleRepeating(FADE_ANIMATION_INTERVAL);
 }
