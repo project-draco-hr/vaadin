@@ -4,9 +4,6 @@
     rendering=false;
     return;
   }
-  if (uidl.hasAttribute("width")) {
-    relativeWidth=uidl.getStringAttribute("width").endsWith("%");
-  }
   rowRequestHandler.cancel();
   enabled=!uidl.hasAttribute("disabled");
   this.client=client;
@@ -42,10 +39,10 @@
     sortColumn=uidl.getStringVariable("sortcolumn");
   }
   if (uidl.hasVariable("selected")) {
-    final Set selectedKeys=uidl.getStringArrayVariableAsSet("selected");
+    final Set<String> selectedKeys=uidl.getStringArrayVariableAsSet("selected");
     selectedRowKeys.clear();
-    for (final Iterator it=selectedKeys.iterator(); it.hasNext(); ) {
-      selectedRowKeys.add(it.next());
+    for (    String string : selectedKeys) {
+      selectedRowKeys.add(string);
     }
   }
   if (uidl.hasAttribute("selectmode")) {
@@ -89,6 +86,9 @@
   updateHeader(uidl.getStringArrayAttribute("vcolorder"));
   if (!recalcWidths && initializedAndAttached) {
     updateBody(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
+    if (headerChangedDuringUpdate) {
+      lazyAdjustColumnWidths.schedule(1);
+    }
   }
  else {
     if (tBody != null) {
@@ -106,4 +106,5 @@
   hideScrollPositionAnnotation();
   purgeUnregistryBag();
   rendering=false;
+  headerChangedDuringUpdate=false;
 }

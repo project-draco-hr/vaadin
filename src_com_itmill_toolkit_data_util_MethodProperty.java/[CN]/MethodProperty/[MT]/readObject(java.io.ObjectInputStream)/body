@@ -1,0 +1,32 @@
+{
+  in.defaultReadObject();
+  try {
+    instance=in.readObject();
+    setArgs=(Object[])in.readObject();
+    getArgs=(Object[])in.readObject();
+    String name=(String)in.readObject();
+    Class<?>[] paramTypes=(Class<?>[])in.readObject();
+    if (name != null && !name.equals("")) {
+      setMethod=instance.getClass().getMethod(name,paramTypes);
+    }
+ else {
+      setMethod=null;
+    }
+    name=(String)in.readObject();
+    paramTypes=(Class<?>[])in.readObject();
+    if (name != null && !name.equals("")) {
+      getMethod=instance.getClass().getMethod(name,paramTypes);
+    }
+ else {
+      getMethod=null;
+    }
+  }
+ catch (  SecurityException e) {
+    System.err.println("Internal deserialization error");
+    e.printStackTrace();
+  }
+catch (  NoSuchMethodException e) {
+    System.err.println("Internal deserialization error");
+    e.printStackTrace();
+  }
+}

@@ -15,7 +15,19 @@
     setWidth("");
   }
  else {
-    DOM.setStyleAttribute(captionContainer,"width",(w - DRAG_WIDGET_WIDTH - 4) + "px");
-    setWidth(w + "px");
+    captionContainer.getStyle().setPropertyPx("width",w);
+    if (tBody != null) {
+      int tdWidth=width + tBody.getCellExtraWidth();
+      setWidth(tdWidth + "px");
+    }
+ else {
+      DeferredCommand.addCommand(new Command(){
+        public void execute(){
+          int tdWidth=width + tBody.getCellExtraWidth();
+          setWidth(tdWidth + "px");
+        }
+      }
+);
+    }
   }
 }

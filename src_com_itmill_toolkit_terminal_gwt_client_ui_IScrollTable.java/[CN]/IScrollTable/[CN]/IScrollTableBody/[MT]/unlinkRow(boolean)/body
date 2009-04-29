@@ -11,11 +11,16 @@
     index=renderedRows.size() - 1;
     lastRendered--;
   }
-  final IScrollTableRow toBeRemoved=(IScrollTableRow)renderedRows.get(index);
-  lazyUnregistryBag.add(toBeRemoved);
-  DOM.removeChild(tBody,toBeRemoved.getElement());
-  orphan(toBeRemoved);
-  renderedRows.remove(index);
-  fixSpacers();
-  return true;
+  if (index >= 0) {
+    final IScrollTableRow toBeRemoved=(IScrollTableRow)renderedRows.get(index);
+    lazyUnregistryBag.add(toBeRemoved);
+    tBodyElement.removeChild(toBeRemoved.getElement());
+    orphan(toBeRemoved);
+    renderedRows.remove(index);
+    fixSpacers();
+    return true;
+  }
+ else {
+    return false;
+  }
 }
