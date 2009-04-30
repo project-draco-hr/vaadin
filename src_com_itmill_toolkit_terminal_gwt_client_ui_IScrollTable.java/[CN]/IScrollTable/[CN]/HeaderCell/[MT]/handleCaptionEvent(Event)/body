@@ -1,56 +1,51 @@
 {
 switch (DOM.eventGetType(event)) {
 case Event.ONMOUSEDOWN:
-    ApplicationConnection.getConsole().log("HeaderCaption: mouse down");
-  if (columnReordering) {
-    dragging=true;
-    moved=false;
-    colIndex=getColIndexByKey(cid);
-    DOM.setCapture(getElement());
-    headerX=tHead.getAbsoluteLeft();
-    ApplicationConnection.getConsole().log("HeaderCaption: Caption set to capture mouse events");
-    DOM.eventPreventDefault(event);
-  }
-break;
+    if (columnReordering) {
+      dragging=true;
+      moved=false;
+      colIndex=getColIndexByKey(cid);
+      DOM.setCapture(getElement());
+      headerX=tHead.getAbsoluteLeft();
+      DOM.eventPreventDefault(event);
+    }
+  break;
 case Event.ONMOUSEUP:
-ApplicationConnection.getConsole().log("HeaderCaption: mouseUP");
 if (columnReordering) {
-dragging=false;
-DOM.releaseCapture(getElement());
-ApplicationConnection.getConsole().log("HeaderCaption: Stopped column reordering");
-if (moved) {
-hideFloatingCopy();
-tHead.removeSlotFocus();
-if (closestSlot != colIndex && closestSlot != (colIndex + 1)) {
-  if (closestSlot > colIndex) {
-    reOrderColumn(cid,closestSlot - 1);
-  }
+  dragging=false;
+  DOM.releaseCapture(getElement());
+  if (moved) {
+    hideFloatingCopy();
+    tHead.removeSlotFocus();
+    if (closestSlot != colIndex && closestSlot != (colIndex + 1)) {
+      if (closestSlot > colIndex) {
+        reOrderColumn(cid,closestSlot - 1);
+      }
  else {
-    reOrderColumn(cid,closestSlot);
+        reOrderColumn(cid,closestSlot);
+      }
+    }
   }
-}
-}
 }
 if (!moved) {
 if (sortable) {
-if (sortColumn.equals(cid)) {
-client.updateVariable(paintableId,"sortascending",!sortAscending,false);
-}
+  if (sortColumn.equals(cid)) {
+    client.updateVariable(paintableId,"sortascending",!sortAscending,false);
+  }
  else {
-client.updateVariable(paintableId,"sortcolumn",cid,false);
-}
-bodyContainer.setScrollPosition(0);
-firstvisible=0;
-rowRequestHandler.setReqFirstRow(0);
-rowRequestHandler.setReqRows((int)(2 * pageLength * CACHE_RATE + pageLength));
-rowRequestHandler.deferRowFetch();
+    client.updateVariable(paintableId,"sortcolumn",cid,false);
+  }
+  bodyContainer.setScrollPosition(0);
+  firstvisible=0;
+  rowRequestHandler.setReqFirstRow(0);
+  rowRequestHandler.setReqRows((int)(2 * pageLength * CACHE_RATE + pageLength));
+  rowRequestHandler.deferRowFetch();
 }
 break;
 }
 break;
 case Event.ONMOUSEMOVE:
 if (dragging) {
-ApplicationConnection.getConsole().log("HeaderCaption: Dragging column, optimal index...");
 if (!moved) {
 createFloatingCopy();
 moved=true;
@@ -77,7 +72,6 @@ closestSlot=i;
 }
 tHead.focusSlot(closestSlot);
 updateFloatingCopysPosition(DOM.eventGetClientX(event),-1);
-ApplicationConnection.getConsole().log("" + closestSlot);
 }
 break;
 default :
