@@ -1,48 +1,13 @@
 {
   super.init(servletConfig);
-  final String applicationRunner=servletConfig.getInitParameter("applicationRunner");
-  if (applicationRunner != null) {
-    if ("true".equals(applicationRunner)) {
-      isApplicationRunnerServlet=true;
-    }
- else     if ("false".equals(applicationRunner)) {
-      isApplicationRunnerServlet=false;
-    }
- else {
-      throw new ServletException("If applicationRunner parameter is given for an application, it must be 'true' or 'false'");
-    }
+  final String applicationClassName=servletConfig.getInitParameter("application");
+  if (applicationClassName == null) {
+    throw new ServletException("Application not specified in servlet parameters");
   }
-  applicationProperties=new Properties();
-  for (final Enumeration e=servletConfig.getInitParameterNames(); e.hasMoreElements(); ) {
-    final String name=(String)e.nextElement();
-    applicationProperties.setProperty(name,servletConfig.getInitParameter(name));
+  try {
+    applicationClass=(Class<? extends Application>)getClassLoader().loadClass(applicationClassName);
   }
-  final ServletContext context=servletConfig.getServletContext();
-  for (final Enumeration e=context.getInitParameterNames(); e.hasMoreElements(); ) {
-    final String name=(String)e.nextElement();
-    applicationProperties.setProperty(name,context.getInitParameter(name));
-  }
-  if (getApplicationOrSystemProperty(PARAMETER_DEBUG,"true").equals("false")) {
-    productionMode=true;
-  }
- else   if (getApplicationOrSystemProperty(PARAMETER_PRODUCTION_MODE,"false").equals("true")) {
-    productionMode=true;
-  }
-  if (!productionMode) {
-    System.err.println(NOT_PRODUCTION_MODE_INFO);
-  }
-  if (!isApplicationRunnerServlet) {
-    final String applicationClassName=servletConfig.getInitParameter("application");
-    if (applicationClassName == null) {
-      throw new ServletException("Application not specified in servlet parameters");
-    }
-    try {
-      applicationClass=getClassLoader().loadClass(applicationClassName);
-    }
- catch (    final ClassNotFoundException e) {
-      throw new ServletException("Failed to load application class: " + applicationClassName);
-    }
-  }
- else {
+ catch (  final ClassNotFoundException e) {
+    throw new ServletException("Failed to load application class: " + applicationClassName);
   }
 }

@@ -1,0 +1,18 @@
+{
+  if (isOnUnloadRequest(request)) {
+    return;
+  }
+  try {
+    Application.SystemMessages ci=getSystemMessages();
+    if (getRequestType(request) != RequestType.UIDL) {
+      response.sendRedirect(ci.getSessionExpiredURL());
+    }
+ else {
+      criticalNotification(request,response,ci.getSessionExpiredCaption(),ci.getSessionExpiredMessage(),ci.getSessionExpiredURL());
+      request.getSession().invalidate();
+    }
+  }
+ catch (  SystemMessageException ee) {
+    throw new ServletException(ee);
+  }
+}

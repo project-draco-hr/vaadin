@@ -1,0 +1,15 @@
+{
+  String pathInfo=request.getPathInfo();
+  if (pathInfo == null || pathInfo.length() <= 10) {
+    return false;
+  }
+  if ((request.getContextPath() != null) && (request.getRequestURI().startsWith("/ITMILL/"))) {
+    serveStaticResourcesInITMILL(request.getRequestURI(),response);
+    return true;
+  }
+ else   if (request.getRequestURI().startsWith(request.getContextPath() + "/ITMILL/")) {
+    serveStaticResourcesInITMILL(request.getRequestURI().substring(request.getContextPath().length()),response);
+    return true;
+  }
+  return false;
+}

@@ -1,0 +1,27 @@
+{
+  final boolean restartApplication=(request.getParameter(URL_PARAMETER_RESTART_APPLICATION) != null);
+  final boolean closeApplication=(request.getParameter(URL_PARAMETER_CLOSE_APPLICATION) != null);
+  Application application=getExistingApplication(request);
+  if (application != null) {
+    if (restartApplication) {
+      closeApplication(application,request.getSession(false));
+      return createApplication(request);
+    }
+ else     if (closeApplication) {
+      closeApplication(application,request.getSession(false));
+      return null;
+    }
+ else {
+      return application;
+    }
+  }
+  if (requestType == RequestType.UIDL && isRepaintAll(request)) {
+    return createApplication(request);
+  }
+ else   if (requestType == RequestType.OTHER) {
+    return createApplication(request);
+  }
+ else {
+    throw new SessionExpired();
+  }
+}

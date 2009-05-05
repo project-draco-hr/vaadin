@@ -1,0 +1,20 @@
+{
+  final HttpSession session=request.getSession(true);
+  WebApplicationContext context=WebApplicationContext.getApplicationContext(session);
+  final Collection applications=context.getApplications();
+  for (final Iterator i=applications.iterator(); i.hasNext(); ) {
+    final Application sessionApplication=(Application)i.next();
+    final String sessionApplicationPath=sessionApplication.getURL().getPath();
+    String requestApplicationPath=getApplicationUrl(request).getPath();
+    System.out.println("Comparing " + requestApplicationPath + " and "+ sessionApplicationPath);
+    if (requestApplicationPath.equals(sessionApplicationPath)) {
+      System.out.println("- OK");
+      if (sessionApplication.isRunning()) {
+        return sessionApplication;
+      }
+      WebApplicationContext.getApplicationContext(session).removeApplication(sessionApplication);
+      break;
+    }
+  }
+  return null;
+}

@@ -1,0 +1,66 @@
+{
+  if (serveStaticResources(request,response)) {
+    return;
+  }
+  Application application=null;
+  RequestType requestType=getRequestType(request);
+  try {
+    application=findApplicationInstance(request,requestType);
+    if (application == null) {
+      return;
+    }
+    WebApplicationContext webApplicationContext=WebApplicationContext.getApplicationContext(request.getSession());
+    CommunicationManager applicationManager=webApplicationContext.getApplicationManager(application,this);
+    webApplicationContext.getBrowser().updateBrowserProperties(request);
+    webApplicationContext.startTransaction(application,request);
+    if (requestType == RequestType.FILE_UPLOAD) {
+      applicationManager.handleFileUpload(request,response);
+      return;
+    }
+ else     if (requestType == RequestType.UIDL) {
+      applicationManager.handleUidlRequest(request,response,this);
+      return;
+    }
+    if (!application.isRunning()) {
+      endApplication(request,response,application);
+      return;
+    }
+    Window window=getApplicationWindow(request,application);
+    if (window == null) {
+      throw new ServletException(ERROR_NO_WINDOW_FOUND);
+    }
+    if (window.getTerminal() == null) {
+      window.setTerminal(webApplicationContext.getBrowser());
+    }
+    final Map parameters=request.getParameterMap();
+    if (window != null && parameters != null) {
+      window.handleParameters(parameters);
+    }
+    if (handleURI(applicationManager,window,request,response)) {
+      return;
+    }
+    String themeName=getThemeForWindow(request,window);
+    if (handleResourceRequest(request,response,themeName)) {
+      return;
+    }
+    writeAjaxPage(request,response,window,themeName,application);
+  }
+ catch (  final SessionExpired e) {
+    handleServiceSessionExpired(request,response);
+  }
+catch (  final GeneralSecurityException e) {
+    handleServiceSecurityException(request,response);
+  }
+catch (  final Throwable e) {
+    handleServiceException(request,response,application,e);
+  }
+ finally {
+    if (application != null) {
+      ((WebApplicationContext)application.getContext()).endTransaction(application,request);
+    }
+    HttpSession session=request.getSession(false);
+    if (session != null) {
+      session.setAttribute("sessionUpdated",new Date().getTime());
+    }
+  }
+}
