@@ -1,6 +1,5 @@
 {
   String prefix="i-";
-  boolean ie8=false;
   if (cssClass == null) {
     String bs=getBrowserString().toLowerCase();
     String b="";
@@ -23,10 +22,10 @@
       b="ie";
       int i=bs.indexOf(" msie ") + 6;
       String ieVersion=bs.substring(i,i + 1);
-      v=b + ieVersion;
-      if (ieVersion != null && ieVersion.equals("8")) {
-        ie8=true;
+      if (ieVersion != null && ieVersion.equals("8") && isIE8InIE7CompatibilityMode()) {
+        ieVersion="7";
       }
+      v=b + ieVersion;
     }
  else     if (bs.indexOf("opera/") != -1) {
       b="op";
@@ -34,9 +33,6 @@
       v=b + bs.substring(i,i + 3).replace(".","");
     }
     cssClass=prefix + b + " "+ prefix+ v;
-    if (ie8) {
-      cssClass+=" " + prefix + "ie7";
-    }
   }
   return cssClass;
 }
