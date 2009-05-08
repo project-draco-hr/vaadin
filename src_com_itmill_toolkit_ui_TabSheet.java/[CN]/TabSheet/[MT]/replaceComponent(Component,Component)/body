@@ -2,14 +2,28 @@
   if (selected == oldComponent) {
     selected=newComponent;
   }
-  final String oldCaption=getTabCaption(oldComponent);
-  final Resource oldIcon=getTabIcon(oldComponent);
-  final String newCaption=getTabCaption(newComponent);
-  final Resource newIcon=getTabIcon(newComponent);
+  Tab newTab=tabs.get(newComponent);
+  Tab oldTab=tabs.get(oldComponent);
+  String oldCaption=null;
+  Resource oldIcon=null;
+  String newCaption=null;
+  Resource newIcon=null;
+  if (oldTab != null) {
+    oldCaption=oldTab.getCaption();
+    oldIcon=oldTab.getIcon();
+  }
+  if (newTab != null) {
+    newCaption=newTab.getCaption();
+    newIcon=newTab.getIcon();
+  }
+ else {
+    newCaption=newComponent.getCaption();
+    newIcon=newComponent.getIcon();
+  }
   int oldLocation=-1;
   int newLocation=-1;
   int location=0;
-  for (final Iterator i=tabs.iterator(); i.hasNext(); ) {
+  for (final Iterator i=components.iterator(); i.hasNext(); ) {
     final Component component=(Component)i.next();
     if (component == oldComponent) {
       oldLocation=location;
@@ -25,29 +39,33 @@
  else   if (newLocation == -1) {
     removeComponent(oldComponent);
     keyMapper.remove(oldComponent);
-    addComponent(newComponent);
-    tabs.remove(newComponent);
-    tabs.add(oldLocation,newComponent);
-    setTabCaption(newComponent,oldCaption);
-    setTabIcon(newComponent,oldIcon);
+    newTab=addTab(newComponent);
+    components.remove(newComponent);
+    components.add(oldLocation,newComponent);
+    newTab.setCaption(oldCaption);
+    newTab.setIcon(oldIcon);
   }
  else {
     if (oldLocation > newLocation) {
-      tabs.remove(oldComponent);
-      tabs.add(newLocation,oldComponent);
-      tabs.remove(newComponent);
-      tabs.add(oldLocation,newComponent);
+      components.remove(oldComponent);
+      components.add(newLocation,oldComponent);
+      components.remove(newComponent);
+      components.add(oldLocation,newComponent);
     }
  else {
-      tabs.remove(newComponent);
-      tabs.add(oldLocation,newComponent);
-      tabs.remove(oldComponent);
-      tabs.add(newLocation,oldComponent);
+      components.remove(newComponent);
+      components.add(oldLocation,newComponent);
+      components.remove(oldComponent);
+      components.add(newLocation,oldComponent);
     }
-    setTabCaption(newComponent,oldCaption);
-    setTabIcon(newComponent,oldIcon);
-    setTabCaption(oldComponent,newCaption);
-    setTabIcon(oldComponent,newIcon);
+    if (newTab != null) {
+      newTab.setCaption(oldCaption);
+      newTab.setIcon(oldIcon);
+    }
+    if (oldTab != null) {
+      oldTab.setCaption(newCaption);
+      oldTab.setIcon(newIcon);
+    }
     requestRepaint();
   }
 }

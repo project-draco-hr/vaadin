@@ -9,10 +9,16 @@
   if (w instanceof IView) {
     return "";
   }
+ else   if (w instanceof IWindow) {
+    IWindow win=(IWindow)w;
+    ArrayList<IWindow> subWindowList=client.getView().getSubWindowList();
+    int indexOfSubWindow=subWindowList.indexOf(win);
+    return PARENTCHILD_SEPARATOR + "IWindow[" + indexOfSubWindow+ "]";
+  }
   Widget parent=w.getParent();
   String basePath=getPathForWidget(parent);
   String simpleName=Util.getSimpleName(w);
-  Iterator i=((HasWidgets)parent).iterator();
+  Iterator<Widget> i=((HasWidgets)parent).iterator();
   int pos=0;
   while (i.hasNext()) {
     Object child=i.next();

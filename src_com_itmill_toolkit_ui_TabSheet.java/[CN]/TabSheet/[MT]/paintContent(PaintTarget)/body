@@ -4,45 +4,54 @@
   }
   target.startTag("tabs");
   for (final Iterator i=getComponentIterator(); i.hasNext(); ) {
-    final Component c=(Component)i.next();
-    if (selected == null || !selected.isVisible() || (!selected.isEnabled() && isEnabled())) {
-      selected=c;
+    final Component component=(Component)i.next();
+    Tab tab=tabs.get(component);
+    Tab selectedTabInfo=null;
+    if (selected != null) {
+      selectedTabInfo=tabs.get(selected);
+    }
+    if (selected == null || selectedTabInfo == null || !selectedTabInfo.isVisible() || !selectedTabInfo.isEnabled()) {
+      if (tab.isEnabled() && tab.isVisible()) {
+        selected=component;
+      }
+ else {
+        selected=null;
+      }
     }
     target.startTag("tab");
-    if (!c.isEnabled() && c.isVisible()) {
+    if (!tab.isEnabled() && tab.isVisible()) {
       target.addAttribute("disabled",true);
     }
-    if (!c.isVisible()) {
+    if (!tab.isVisible()) {
       target.addAttribute("hidden",true);
     }
-    final Resource icon=getTabIcon(c);
+    final Resource icon=tab.getIcon();
     if (icon != null) {
       target.addAttribute("icon",icon);
     }
-    final String caption=getTabCaption(c);
+    final String caption=tab.getCaption();
     if (caption != null && caption.length() > 0) {
       target.addAttribute("caption",caption);
     }
-    if (c instanceof AbstractComponent) {
-      AbstractComponent ac=(AbstractComponent)c;
-      if (ac.getDescription() != null) {
-        target.addAttribute("description",ac.getDescription());
-      }
-      if (ac.getComponentError() != null) {
-        ac.getComponentError().paint(target);
-      }
+    final String description=tab.getDescription();
+    if (description != null) {
+      target.addAttribute("description",description);
     }
-    target.addAttribute("key",keyMapper.key(c));
-    if (c.equals(selected)) {
+    final ErrorMessage componentError=tab.getComponentError();
+    if (componentError != null) {
+      componentError.paint(target);
+    }
+    target.addAttribute("key",keyMapper.key(component));
+    if (component.equals(selected)) {
       target.addAttribute("selected",true);
-      c.paint(target);
-      paintedTabs.add(c);
+      component.paint(target);
+      paintedTabs.add(component);
     }
- else     if (paintedTabs.contains(c)) {
-      c.paint(target);
+ else     if (paintedTabs.contains(component)) {
+      component.paint(target);
     }
  else {
-      c.requestRepaintRequests();
+      component.requestRepaintRequests();
     }
     target.endTag("tab");
   }

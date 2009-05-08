@@ -13,15 +13,24 @@
     }
  else     if (w instanceof HasWidgets) {
       HasWidgets parent=(HasWidgets)w;
-      String simpleName=Util.getSimpleName(parent);
-      Iterator i=parent.iterator();
-      boolean ok=false;
       String[] split=part.split("\\[");
+      Iterator<? extends Widget> i;
+      String widgetClassName=split[0];
+      if (widgetClassName.equals("IWindow")) {
+        i=client.getView().getSubWindowList().iterator();
+      }
+ else       if (widgetClassName.equals("IContextMenu")) {
+        return client.getContextMenu();
+      }
+ else {
+        i=parent.iterator();
+      }
+      boolean ok=false;
       int pos=Integer.parseInt(split[1].substring(0,split[1].length() - 1));
       while (i.hasNext()) {
-        Widget child=(Widget)i.next();
+        Widget child=i.next();
         String simpleName2=Util.getSimpleName(child);
-        if (split[0].equals(simpleName2)) {
+        if (widgetClassName.equals(simpleName2)) {
           if (pos == 0) {
             w=child;
             ok=true;
