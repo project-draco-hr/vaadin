@@ -5,6 +5,9 @@
   }
  else   if (DOM.eventGetType(event) == Event.ONMOUSEDOWN && event.getButton() == Event.BUTTON_LEFT) {
     clickPending=true;
+    if (BrowserInfo.get().isIE()) {
+      addStyleName(CLASSNAME_DOWN);
+    }
   }
  else   if (DOM.eventGetType(event) == Event.ONMOUSEMOVE) {
     clickPending=false;
@@ -13,7 +16,15 @@
     if (clickPending) {
       click();
     }
+    if (BrowserInfo.get().isIE()) {
+      removeStyleName(CLASSNAME_DOWN);
+    }
     clickPending=false;
+  }
+ else   if (DOM.eventGetType(event) == Event.ONMOUSEUP) {
+    if (BrowserInfo.get().isIE()) {
+      removeStyleName(CLASSNAME_DOWN);
+    }
   }
   if (client != null) {
     client.handleTooltipEvent(event,this);
