@@ -1,0 +1,158 @@
+{
+  rendering=true;
+  id=uidl.getId();
+  boolean firstPaint=connection == null;
+  connection=client;
+  immediate=uidl.hasAttribute("immediate");
+  String newTheme=uidl.getStringAttribute("theme");
+  if (theme != null && !newTheme.equals(theme)) {
+    reloadHostPage();
+  }
+ else {
+    theme=newTheme;
+  }
+  if (uidl.hasAttribute("style")) {
+    addStyleName(uidl.getStringAttribute("style"));
+  }
+  if (uidl.hasAttribute("name")) {
+    client.setWindowName(uidl.getStringAttribute("name"));
+  }
+  com.google.gwt.user.client.Window.setTitle(uidl.getStringAttribute("caption"));
+  int childIndex=0;
+  boolean isClosed=false;
+  while (childIndex < uidl.getChildCount() && "open".equals(uidl.getChildUIDL(childIndex).getTag())) {
+    final UIDL open=uidl.getChildUIDL(childIndex);
+    final String url=open.getStringAttribute("src");
+    final String target=open.getStringAttribute("name");
+    if (target == null) {
+      isClosed=true;
+      onWindowClosed();
+      goTo(url);
+    }
+ else {
+      String options;
+      if (open.hasAttribute("border")) {
+        if (open.getStringAttribute("border").equals("minimal")) {
+          options="menubar=yes,location=no,status=no";
+        }
+ else {
+          options="menubar=no,location=no,status=no";
+        }
+      }
+ else {
+        options="resizable=yes,menubar=yes,toolbar=yes,directories=yes,location=yes,scrollbars=yes,status=yes";
+      }
+      if (open.hasAttribute("width")) {
+        int w=open.getIntAttribute("width");
+        options+=",width=" + w;
+      }
+      if (open.hasAttribute("height")) {
+        int h=open.getIntAttribute("height");
+        options+=",height=" + h;
+      }
+      Window.open(url,target,options);
+    }
+    childIndex++;
+  }
+  if (isClosed) {
+    rendering=false;
+    return;
+  }
+  UIDL childUidl=uidl.getChildUIDL(childIndex);
+  final Paintable lo=client.getPaintable(childUidl);
+  if (layout != null) {
+    if (layout != lo) {
+      client.unregisterPaintable(layout);
+      setWidget((Widget)lo);
+      layout=lo;
+    }
+  }
+ else {
+    setWidget((Widget)lo);
+    layout=lo;
+  }
+  layout.updateFromUIDL(childUidl,client);
+  final HashSet<VWindow> removedSubWindows=new HashSet<VWindow>(subWindows);
+  while ((childUidl=uidl.getChildUIDL(childIndex++)) != null) {
+    if ("window".equals(childUidl.getTag())) {
+      final Paintable w=client.getPaintable(childUidl);
+      if (subWindows.contains(w)) {
+        removedSubWindows.remove(w);
+      }
+ else {
+        subWindows.add((VWindow)w);
+      }
+      w.updateFromUIDL(childUidl,client);
+    }
+ else     if ("actions".equals(childUidl.getTag())) {
+      if (actionHandler == null) {
+        actionHandler=new ShortcutActionHandler(id,client);
+      }
+      actionHandler.updateActionMap(childUidl);
+    }
+ else     if (childUidl.getTag().equals("notifications")) {
+      for (final Iterator it=childUidl.getChildIterator(); it.hasNext(); ) {
+        final UIDL notification=(UIDL)it.next();
+        String html="";
+        if (notification.hasAttribute("icon")) {
+          final String parsedUri=client.translateToolkitUri(notification.getStringAttribute("icon"));
+          html+="<IMG src=\"" + parsedUri + "\" />";
+        }
+        if (notification.hasAttribute("caption")) {
+          html+="<H1>" + notification.getStringAttribute("caption") + "</H1>";
+        }
+        if (notification.hasAttribute("message")) {
+          html+="<p>" + notification.getStringAttribute("message") + "</p>";
+        }
+        final String style=notification.hasAttribute("style") ? notification.getStringAttribute("style") : null;
+        final int position=notification.getIntAttribute("position");
+        final int delay=notification.getIntAttribute("delay");
+        new VNotification(delay).show(html,position,style);
+      }
+    }
+  }
+  for (final Iterator<VWindow> rem=removedSubWindows.iterator(); rem.hasNext(); ) {
+    final VWindow w=rem.next();
+    client.unregisterPaintable(w);
+    subWindows.remove(w);
+    w.hide();
+  }
+  if (uidl.hasAttribute("focused")) {
+    final String focusPid=uidl.getStringAttribute("focused");
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        final Paintable toBeFocused=connection.getPaintable(focusPid);
+        if (toBeFocused instanceof HasFocus) {
+          final HasFocus toBeFocusedWidget=(HasFocus)toBeFocused;
+          toBeFocusedWidget.setFocus(true);
+        }
+ else         if (toBeFocused instanceof Focusable) {
+          ((Focusable)toBeFocused).focus();
+        }
+ else {
+          ApplicationConnection.getConsole().log("Could not focus component");
+        }
+      }
+    }
+);
+  }
+  if (firstPaint) {
+    Window.addWindowCloseListener(this);
+    Window.addWindowResizeListener(this);
+  }
+  onWindowResized(Window.getClientWidth(),Window.getClientHeight());
+  if (BrowserInfo.get().isSafari()) {
+    Util.runWebkitOverflowAutoFix(getElement());
+  }
+  if (uidl.hasVariable("scrollTop")) {
+    scrollable=true;
+    scrollTop=uidl.getIntVariable("scrollTop");
+    DOM.setElementPropertyInt(getElement(),"scrollTop",scrollTop);
+    scrollLeft=uidl.getIntVariable("scrollLeft");
+    DOM.setElementPropertyInt(getElement(),"scrollLeft",scrollLeft);
+  }
+ else {
+    scrollable=false;
+  }
+  rendering=false;
+}

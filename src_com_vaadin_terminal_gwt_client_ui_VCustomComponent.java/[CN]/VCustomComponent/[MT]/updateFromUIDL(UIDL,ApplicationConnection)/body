@@ -1,0 +1,32 @@
+{
+  rendering=true;
+  if (client.updateComponent(this,uidl,true)) {
+    rendering=false;
+    return;
+  }
+  this.client=client;
+  final UIDL child=uidl.getChildUIDL(0);
+  if (child != null) {
+    final Paintable p=client.getPaintable(child);
+    if (p != getWidget()) {
+      if (getWidget() != null) {
+        client.unregisterPaintable((Paintable)getWidget());
+        clear();
+      }
+      setWidget((Widget)p);
+    }
+    p.updateFromUIDL(child,client);
+  }
+  boolean updateDynamicSize=updateDynamicSize();
+  if (updateDynamicSize) {
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        client.handleComponentRelativeSize(VCustomComponent.this);
+      }
+    }
+);
+  }
+  renderSpace.setWidth(getElement().getOffsetWidth());
+  renderSpace.setHeight(getElement().getOffsetHeight());
+  rendering=false;
+}

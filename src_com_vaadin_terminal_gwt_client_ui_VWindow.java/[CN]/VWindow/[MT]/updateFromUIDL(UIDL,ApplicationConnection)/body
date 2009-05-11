@@ -1,0 +1,145 @@
+{
+  id=uidl.getId();
+  this.client=client;
+  DOM.setElementProperty(closeBox,"id",id + "_window_close");
+  if (uidl.hasAttribute("invisible")) {
+    hide();
+    return;
+  }
+  if (!uidl.hasAttribute("cached")) {
+    if (uidl.getBooleanAttribute("modal") != vaadinModality) {
+      setVaadinModality(!vaadinModality);
+    }
+    if (!isAttached()) {
+      show();
+    }
+  }
+  if (client.updateComponent(this,uidl,false)) {
+    return;
+  }
+  immediate=uidl.hasAttribute("immediate");
+  if (uidl.getBooleanAttribute("resizable") != resizable) {
+    setResizable(!resizable);
+  }
+  if (isReadOnly() != uidl.getBooleanAttribute("readonly")) {
+    setReadOnly(!isReadOnly());
+  }
+  try {
+    final int positionx=uidl.getIntVariable("positionx");
+    final int positiony=uidl.getIntVariable("positiony");
+    if (positionx >= 0 && positiony >= 0) {
+      setPopupPosition(positionx,positiony);
+    }
+  }
+ catch (  final IllegalArgumentException e) {
+  }
+  if (uidl.hasAttribute("caption")) {
+    setCaption(uidl.getStringAttribute("caption"),uidl.getStringAttribute("icon"));
+  }
+  boolean showingUrl=false;
+  int childIndex=0;
+  UIDL childUidl=uidl.getChildUIDL(childIndex++);
+  while ("open".equals(childUidl.getTag())) {
+    final String parsedUri=client.translateToolkitUri(childUidl.getStringAttribute("src"));
+    if (!childUidl.hasAttribute("name")) {
+      final Frame frame=new Frame();
+      DOM.setStyleAttribute(frame.getElement(),"width","100%");
+      DOM.setStyleAttribute(frame.getElement(),"height","100%");
+      DOM.setStyleAttribute(frame.getElement(),"border","0px");
+      frame.setUrl(parsedUri);
+      contentPanel.setWidget(frame);
+      showingUrl=true;
+    }
+ else {
+      final String target=childUidl.getStringAttribute("name");
+      Window.open(parsedUri,target,"");
+    }
+    childUidl=uidl.getChildUIDL(childIndex++);
+  }
+  final Paintable lo=client.getPaintable(childUidl);
+  if (layout != null) {
+    if (layout != lo) {
+      client.unregisterPaintable(layout);
+      contentPanel.remove((Widget)layout);
+      if (!showingUrl) {
+        contentPanel.setWidget((Widget)lo);
+      }
+      layout=lo;
+    }
+  }
+ else   if (!showingUrl) {
+    contentPanel.setWidget((Widget)lo);
+    layout=lo;
+  }
+  dynamicWidth=!uidl.hasAttribute("width");
+  dynamicHeight=!uidl.hasAttribute("height");
+  layoutRelativeWidth=uidl.hasAttribute("layoutRelativeWidth");
+  layoutRelativeHeight=uidl.hasAttribute("layoutRelativeHeight");
+  if (dynamicWidth && layoutRelativeWidth) {
+    setNaturalWidth();
+  }
+  layout.updateFromUIDL(childUidl,client);
+  if (!dynamicHeight && layoutRelativeWidth) {
+    client.runDescendentsLayout(this);
+  }
+  if (dynamicWidth && !layoutRelativeWidth) {
+    setNaturalWidth();
+  }
+  if (dynamicHeight && layoutRelativeHeight) {
+    resizable=false;
+  }
+  if (uidl.getChildCount() > 1) {
+    final int cnt=uidl.getChildCount();
+    for (int i=1; i < cnt; i++) {
+      childUidl=uidl.getChildUIDL(i);
+      if (childUidl.getTag().equals("actions")) {
+        if (shortcutHandler == null) {
+          shortcutHandler=new ShortcutActionHandler(id,client);
+        }
+        shortcutHandler.updateActionMap(childUidl);
+      }
+ else       if (childUidl.getTag().equals("notifications")) {
+        for (final Iterator it=childUidl.getChildIterator(); it.hasNext(); ) {
+          final UIDL notification=(UIDL)it.next();
+          String html="";
+          if (notification.hasAttribute("icon")) {
+            final String parsedUri=client.translateToolkitUri(notification.getStringAttribute("icon"));
+            html+="<img src=\"" + parsedUri + "\" />";
+          }
+          if (notification.hasAttribute("caption")) {
+            html+="<h1>" + notification.getStringAttribute("caption") + "</h1>";
+          }
+          if (notification.hasAttribute("message")) {
+            html+="<p>" + notification.getStringAttribute("message") + "</p>";
+          }
+          final String style=notification.hasAttribute("style") ? notification.getStringAttribute("style") : null;
+          final int position=notification.getIntAttribute("position");
+          final int delay=notification.getIntAttribute("delay");
+          new VNotification(delay).show(html,position,style);
+        }
+      }
+    }
+  }
+  contentPanel.setScrollPosition(uidl.getIntVariable("scrollTop"));
+  contentPanel.setHorizontalScrollPosition(uidl.getIntVariable("scrollLeft"));
+  if (uidl.getBooleanAttribute("center")) {
+    centered=true;
+    center();
+  }
+ else {
+    centered=false;
+  }
+  updateShadowSizeAndPosition();
+  if (getOffsetWidth() > Window.getClientWidth()) {
+    setWidth(Window.getClientWidth() + "px");
+  }
+  if (getOffsetHeight() > Window.getClientHeight()) {
+    setHeight(Window.getClientHeight() + "px");
+  }
+  if (dynamicHeight && layoutRelativeHeight) {
+    int h=contents.getOffsetHeight() + getExtraHeight();
+    int w=contents.getOffsetWidth();
+    client.updateVariable(id,"height",h,false);
+    client.updateVariable(id,"width",w,true);
+  }
+}

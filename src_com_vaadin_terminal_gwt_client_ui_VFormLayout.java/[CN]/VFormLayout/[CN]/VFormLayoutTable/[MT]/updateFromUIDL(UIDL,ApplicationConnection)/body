@@ -1,0 +1,58 @@
+{
+  final VMarginInfo margins=new VMarginInfo(uidl.getIntAttribute("margins"));
+  Element margin=getElement();
+  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_TOP,margins.hasTop());
+  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_RIGHT,margins.hasRight());
+  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_BOTTOM,margins.hasBottom());
+  setStyleName(margin,CLASSNAME + "-" + StyleConstants.MARGIN_LEFT,margins.hasLeft());
+  setStyleName(margin,CLASSNAME + "-" + "spacing",uidl.hasAttribute("spacing"));
+  int i=0;
+  for (final Iterator it=uidl.getChildIterator(); it.hasNext(); i++) {
+    prepareCell(i,1);
+    final UIDL childUidl=(UIDL)it.next();
+    final Paintable p=client.getPaintable(childUidl);
+    Caption caption=componentToCaption.get(p);
+    if (caption == null) {
+      caption=new Caption(p,client);
+      componentToCaption.put(p,caption);
+    }
+    ErrorFlag error=componentToError.get(p);
+    if (error == null) {
+      error=new ErrorFlag();
+      componentToError.put(p,error);
+    }
+    prepareCell(i,COLUMN_WIDGET);
+    final Paintable oldComponent=(Paintable)getWidget(i,COLUMN_WIDGET);
+    if (oldComponent == null) {
+      setWidget(i,COLUMN_WIDGET,(Widget)p);
+    }
+ else     if (oldComponent != p) {
+      client.unregisterPaintable(oldComponent);
+      setWidget(i,COLUMN_WIDGET,(Widget)p);
+    }
+    getCellFormatter().setStyleName(i,COLUMN_WIDGET,CLASSNAME + "-contentcell");
+    getCellFormatter().setStyleName(i,COLUMN_CAPTION,CLASSNAME + "-captioncell");
+    setWidget(i,COLUMN_CAPTION,caption);
+    setContentWidth(i);
+    getCellFormatter().setStyleName(i,COLUMN_ERRORFLAG,CLASSNAME + "-errorcell");
+    setWidget(i,COLUMN_ERRORFLAG,error);
+    p.updateFromUIDL(childUidl,client);
+    String rowstyles=CLASSNAME + "-row";
+    if (i == 0) {
+      rowstyles+=" " + CLASSNAME + "-firstrow";
+    }
+    if (!it.hasNext()) {
+      rowstyles+=" " + CLASSNAME + "-lastrow";
+    }
+    getRowFormatter().setStyleName(i,rowstyles);
+  }
+  while (getRowCount() > i) {
+    final Paintable p=(Paintable)getWidget(i,COLUMN_WIDGET);
+    client.unregisterPaintable(p);
+    componentToCaption.remove(p);
+    removeRow(i);
+  }
+  for (  Paintable p : componentToCaption.keySet()) {
+    client.handleComponentRelativeSize((Widget)p);
+  }
+}
