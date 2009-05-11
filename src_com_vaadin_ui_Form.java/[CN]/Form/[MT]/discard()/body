@@ -1,12 +1,12 @@
 {
-  LinkedList problems=null;
-  for (final Iterator i=propertyIds.iterator(); i.hasNext(); ) {
+  LinkedList<SourceException> problems=null;
+  for (final Iterator<Object> i=propertyIds.iterator(); i.hasNext(); ) {
     try {
-      ((Field)fields.get(i.next())).discard();
+      (fields.get(i.next())).discard();
     }
  catch (    final Buffered.SourceException e) {
       if (problems == null) {
-        problems=new LinkedList();
+        problems=new LinkedList<SourceException>();
       }
       problems.add(e);
     }
@@ -20,8 +20,8 @@
   }
   final Throwable[] causes=new Throwable[problems.size()];
   int index=0;
-  for (final Iterator i=problems.iterator(); i.hasNext(); ) {
-    causes[index++]=(Throwable)i.next();
+  for (final Iterator<SourceException> i=problems.iterator(); i.hasNext(); ) {
+    causes[index++]=i.next();
   }
   final Buffered.SourceException e=new Buffered.SourceException(this,causes);
   currentBufferedSourceException=e;

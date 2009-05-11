@@ -1,21 +1,21 @@
 {
-  LinkedList problems=null;
+  LinkedList<SourceException> problems=null;
   if (!isInvalidCommitted() && !isValid()) {
     if (validationVisibleOnCommit) {
       setValidationVisible(true);
     }
     validate();
   }
-  for (final Iterator i=propertyIds.iterator(); i.hasNext(); ) {
+  for (final Iterator<Object> i=propertyIds.iterator(); i.hasNext(); ) {
     try {
-      final Field f=((Field)fields.get(i.next()));
+      final Field f=(fields.get(i.next()));
       if (!f.isReadOnly()) {
         f.commit();
       }
     }
  catch (    final Buffered.SourceException e) {
       if (problems == null) {
-        problems=new LinkedList();
+        problems=new LinkedList<SourceException>();
       }
       problems.add(e);
     }
@@ -29,8 +29,8 @@
   }
   final Throwable[] causes=new Throwable[problems.size()];
   int index=0;
-  for (final Iterator i=problems.iterator(); i.hasNext(); ) {
-    causes[index++]=(Throwable)i.next();
+  for (final Iterator<SourceException> i=problems.iterator(); i.hasNext(); ) {
+    causes[index++]=i.next();
   }
   final Buffered.SourceException e=new Buffered.SourceException(this,causes);
   currentBufferedSourceException=e;
