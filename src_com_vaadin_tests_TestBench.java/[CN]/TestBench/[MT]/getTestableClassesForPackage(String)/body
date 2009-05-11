@@ -1,0 +1,43 @@
+{
+  final ArrayList directories=new ArrayList();
+  try {
+    final ClassLoader cld=Thread.currentThread().getContextClassLoader();
+    if (cld == null) {
+      throw new ClassNotFoundException("Can't get class loader.");
+    }
+    final String path=packageName.replace('.','/');
+    final Enumeration resources=cld.getResources(path);
+    while (resources.hasMoreElements()) {
+      final URL url=(URL)resources.nextElement();
+      directories.add(new File(url.getFile()));
+    }
+  }
+ catch (  final Exception x) {
+    throw new Exception(packageName + " does not appear to be a valid package.");
+  }
+  final ArrayList classes=new ArrayList();
+  for (final Iterator it=directories.iterator(); it.hasNext(); ) {
+    final File directory=(File)it.next();
+    if (directory.exists()) {
+      final String[] files=directory.list();
+      for (int j=0; j < files.length; j++) {
+        if (files[j].endsWith(".class")) {
+          final String p=packageName + '.' + files[j].substring(0,files[j].length() - 6);
+          final Class c=Class.forName(p);
+          if (c.getSuperclass() != null) {
+            if ((c.getSuperclass().equals(com.vaadin.Application.class))) {
+              classes.add(c);
+            }
+ else             if ((c.getSuperclass().equals(com.vaadin.ui.CustomComponent.class))) {
+              classes.add(c);
+            }
+          }
+        }
+      }
+    }
+ else {
+      throw new ClassNotFoundException(packageName + " (" + directory.getPath()+ ") does not appear to be a valid package");
+    }
+  }
+  return classes;
+}
