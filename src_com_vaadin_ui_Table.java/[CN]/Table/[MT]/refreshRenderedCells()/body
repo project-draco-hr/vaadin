@@ -107,6 +107,12 @@ if (cols > 0) {
         }
  else         if (iscomponent[j]) {
           value=p.getValue();
+          if (p instanceof Property.ValueChangeNotifier) {
+            if (oldListenedProperties == null || !oldListenedProperties.contains(p)) {
+              ((Property.ValueChangeNotifier)p).addListener(this);
+            }
+            listenedProperties.add(p);
+          }
         }
  else         if (p != null) {
           value=getPropertyValue(id,colids[j],p);
