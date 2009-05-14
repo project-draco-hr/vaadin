@@ -2,7 +2,14 @@
   try {
     Runnable runCompiler=new Runnable(){
       public void run(){
-        GWTCompiler.main(args);
+        try {
+          Class<?> compilerClass=Class.forName("com.google.gwt.dev.GWTCompiler");
+          Method method=compilerClass.getDeclaredMethod("main",String[].class);
+          method.invoke(null,new Object[]{args});
+        }
+ catch (        Throwable thr) {
+          thr.printStackTrace();
+        }
       }
     }
 ;
