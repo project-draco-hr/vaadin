@@ -41,8 +41,21 @@
       }
     }
   }
-  BufferedWriter out=new BufferedWriter(new FileWriter(THEME_DIR + themeNames[themeNames.length - 1] + "/styles.css"));
+  String stylesCssDir=THEME_DIR + themeNames[themeNames.length - 1] + "/";
+  String stylesCssName=stylesCssDir + "styles.css";
+  BufferedWriter out=new BufferedWriter(new FileWriter(stylesCssName));
   out.write(combinedCss.toString());
   out.close();
   System.out.println("Compiled CSS to " + THEME_DIR + themeNames[themeNames.length - 1]+ "/styles.css ("+ combinedCss.toString().length()+ " bytes)");
+  if (useSmartSprites) {
+    createSprites(combinedCss);
+    System.out.println("Used SmartSprites to create sprites");
+    File oldCss=new File(stylesCssName);
+    oldCss.delete();
+    File newCss=new File(stylesCssDir + "styles-sprite.css");
+    boolean ok=newCss.renameTo(oldCss);
+    if (!ok) {
+      System.out.println("Rename " + newCss + " -> "+ oldCss+ " failed");
+    }
+  }
 }
