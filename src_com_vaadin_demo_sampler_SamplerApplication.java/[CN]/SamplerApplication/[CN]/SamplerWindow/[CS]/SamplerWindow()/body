@@ -26,6 +26,31 @@
     }
   }
 );
+{
+    final ComboBox themeSelect=new ComboBox();
+    themeSelect.setWidth("120px");
+    themeSelect.setStyleName("theme");
+    themeSelect.setImmediate(true);
+    themeSelect.setNullSelectionAllowed(false);
+    themeSelect.addContainerProperty("name",String.class,null);
+    themeSelect.setItemCaptionPropertyId("name");
+    Item item=themeSelect.addItem("sampler-reindeer");
+    item.getItemProperty("name").setValue("Reindeer theme");
+    item=themeSelect.addItem("sampler-runo");
+    item.getItemProperty("name").setValue("Runo theme");
+    themeSelect.setValue(SamplerApplication.this.getTheme());
+    themeSelect.addListener(new ValueChangeListener(){
+      public void valueChange(      ValueChangeEvent event){
+        Object theme=themeSelect.getValue();
+        if (theme != null && !theme.equals(SamplerApplication.this.getTheme())) {
+          SamplerApplication.this.setTheme((String)theme);
+        }
+      }
+    }
+);
+    nav.addComponent(themeSelect);
+    nav.setComponentAlignment(themeSelect,Alignment.MIDDLE_LEFT);
+  }
   mainSplit=new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL);
   mainSplit.setSizeFull();
   mainSplit.setStyleName("main-split");
