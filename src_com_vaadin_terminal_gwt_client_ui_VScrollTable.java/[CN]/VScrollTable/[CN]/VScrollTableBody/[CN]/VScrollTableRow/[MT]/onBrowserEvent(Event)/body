@@ -3,15 +3,15 @@
     Element targetTdOrTr=getEventTargetTdOrTr(event);
     if (targetTdOrTr != null) {
 switch (DOM.eventGetType(event)) {
-case Event.ONCLICK:
-        handleClickEvent(event,targetTdOrTr);
-      if (selectMode > Table.SELECT_MODE_NONE) {
-        toggleSelection();
-        client.updateVariable(paintableId,"selected",selectedRowKeys.toArray(),immediate);
-      }
-    break;
 case Event.ONDBLCLICK:
-  handleClickEvent(event,targetTdOrTr);
+        handleClickEvent(event,targetTdOrTr);
+      break;
+case Event.ONMOUSEUP:
+    handleClickEvent(event,targetTdOrTr);
+  if (event.getButton() == Event.BUTTON_LEFT && selectMode > Table.SELECT_MODE_NONE) {
+    toggleSelection();
+    client.updateVariable(paintableId,"selected",selectedRowKeys.toArray(),immediate);
+  }
 break;
 case Event.ONCONTEXTMENU:
 showContextMenu(event);
