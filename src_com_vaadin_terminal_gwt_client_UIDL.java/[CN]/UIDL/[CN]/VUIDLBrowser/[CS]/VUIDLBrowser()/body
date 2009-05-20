@@ -3,19 +3,19 @@
   final TreeItem root=new TreeItem(getTag());
   addItem(root);
   root.addItem("");
-  addTreeListener(new TreeListener(){
-    public void onTreeItemStateChanged(    TreeItem item){
-      if (item == root) {
+  addOpenHandler(new OpenHandler<TreeItem>(){
+    boolean isLoaded;
+    public void onOpen(    OpenEvent<TreeItem> event){
+      TreeItem item=event.getTarget();
+      if (item == root && !isLoaded) {
         removeItem(root);
-        VUIDLBrowser.this.removeTreeListener(this);
         addItem(dir());
-        final Iterator it=treeItemIterator();
+        final Iterator<TreeItem> it=treeItemIterator();
         while (it.hasNext()) {
-          ((TreeItem)it.next()).setState(true);
+          it.next().setState(true);
         }
+        isLoaded=true;
       }
-    }
-    public void onTreeItemSelected(    TreeItem item){
     }
   }
 );
