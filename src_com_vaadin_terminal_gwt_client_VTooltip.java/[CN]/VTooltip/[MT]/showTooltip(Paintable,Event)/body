@@ -1,10 +1,14 @@
 {
+  Element targetElement=event.getEventTarget().cast();
   if (closing && tooltipOwner == owner) {
-    closeTimer.cancel();
-    closing=false;
-    justClosedTimer.cancel();
-    justClosed=false;
-    return;
+    TooltipInfo newToolTip=getTooltip(owner,targetElement);
+    if (newToolTip == visibleTooltip) {
+      closeTimer.cancel();
+      closing=false;
+      justClosedTimer.cancel();
+      justClosed=false;
+      return;
+    }
   }
   if (closing) {
     closeNow();
@@ -14,6 +18,7 @@
     showTimer.cancel();
   }
   tooltipOwner=owner;
+  tooltipTargetElement=targetElement;
   if (justClosed) {
     showTimer.schedule(QUICK_OPEN_DELAY);
   }

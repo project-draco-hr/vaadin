@@ -72,21 +72,23 @@
     styleBuf.append(" ");
     styleBuf.append(MODIFIED_CLASSNAME);
   }
-  TooltipInfo tooltipInfo=componentDetail.getTooltipInfo();
-  if (uidl.hasAttribute("description")) {
-    tooltipInfo.setTitle(uidl.getStringAttribute("description"));
+  if (uidl.hasAttribute(ATTRIBUTE_DESCRIPTION) || uidl.hasAttribute(ATTRIBUTE_ERROR)) {
+    TooltipInfo tooltipInfo=new TooltipInfo();
+    if (uidl.hasAttribute(ATTRIBUTE_DESCRIPTION)) {
+      tooltipInfo.setTitle(uidl.getStringAttribute(ATTRIBUTE_DESCRIPTION));
+    }
+    if (uidl.hasAttribute(ATTRIBUTE_ERROR)) {
+      tooltipInfo.setErrorUidl(uidl.getErrors());
+    }
+    registerTooltip(component.getElement(),tooltipInfo);
   }
  else {
-    tooltipInfo.setTitle(null);
+    registerTooltip(component.getElement(),(TooltipInfo)null);
   }
-  if (uidl.hasAttribute("error")) {
+  if (uidl.hasAttribute(ATTRIBUTE_ERROR)) {
     styleBuf.append(" ");
     styleBuf.append(primaryName);
     styleBuf.append(ERROR_CLASSNAME_EXT);
-    tooltipInfo.setErrorUidl(uidl.getErrors());
-  }
- else {
-    tooltipInfo.setErrorUidl(null);
   }
   if (uidl.hasAttribute("required")) {
     styleBuf.append(" ");
