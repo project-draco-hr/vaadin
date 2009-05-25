@@ -5,7 +5,7 @@
   final SplitPanel split=new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL);
   split.setSplitPosition(200,SplitPanel.UNITS_PIXELS);
   main.setContent(split);
-  final HashMap sectionIds=new HashMap();
+  final HashMap<String,Object> sectionIds=new HashMap<String,Object>();
   final HierarchicalContainer container=createContainer();
   final Object rootId=container.addItem();
   Item item=container.getItem(rootId);
@@ -41,7 +41,7 @@
   tree.addListener(this);
   tree.setImmediate(true);
   tree.expandItemsRecursively(rootId);
-  for (Iterator i=container.getItemIds().iterator(); i.hasNext(); ) {
+  for (Iterator<?> i=container.getItemIds().iterator(); i.hasNext(); ) {
     Object id=i.next();
     if (container.getChildren(id) == null) {
       tree.setChildrenAllowed(id,false);
@@ -77,7 +77,7 @@
   Button b=new Button("Open in sub-window",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
       Component component=(Component)ts.getComponentIterator().next();
-      String caption=ts.getTabCaption(component);
+      String caption=ts.getTab(component).getCaption();
       try {
         component=component.getClass().newInstance();
       }
@@ -101,7 +101,7 @@
   b=new Button("Open in native window",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
       Component component=(Component)ts.getComponentIterator().next();
-      final String caption=ts.getTabCaption(component);
+      final String caption=ts.getTab(component).getCaption();
       Window w=getWindow(caption);
       if (w == null) {
         try {

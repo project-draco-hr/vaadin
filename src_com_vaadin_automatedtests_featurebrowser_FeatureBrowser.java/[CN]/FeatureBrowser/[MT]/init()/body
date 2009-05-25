@@ -5,8 +5,8 @@
   setMainWindow(main);
   final SplitPanel split=new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL);
   split.setSplitPosition(200,SplitPanel.UNITS_PIXELS);
-  main.setLayout(split);
-  final HashMap sectionIds=new HashMap();
+  main.setContent(split);
+  final HashMap<String,Object> sectionIds=new HashMap<String,Object>();
   final HierarchicalContainer container=createContainer();
   final Object rootId=container.addItem();
   Item item=container.getItem(rootId);
@@ -78,7 +78,7 @@
   Button b=new Button("Open in sub-window",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
       Component component=(Component)ts.getComponentIterator().next();
-      String caption=ts.getTabCaption(component);
+      String caption=ts.getTab(component).getCaption();
       try {
         component=component.getClass().newInstance();
       }
@@ -88,7 +88,7 @@
       Window w=new Window(caption);
       w.setWidth("640px");
       if (Layout.class.isAssignableFrom(component.getClass())) {
-        w.setLayout((Layout)component);
+        w.setContent((Layout)component);
       }
  else {
         w.addComponent(component);
@@ -102,7 +102,7 @@
   b=new Button("Open in native window",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
       Component component=(Component)ts.getComponentIterator().next();
-      final String caption=ts.getTabCaption(component);
+      final String caption=ts.getTab(component).getCaption();
       Window w=getWindow(caption);
       if (w == null) {
         try {
@@ -114,7 +114,7 @@
         w=new Window(caption);
         w.setName(caption);
         if (Layout.class.isAssignableFrom(component.getClass())) {
-          w.setLayout((Layout)component);
+          w.setContent((Layout)component);
         }
  else {
           w.addComponent(component);

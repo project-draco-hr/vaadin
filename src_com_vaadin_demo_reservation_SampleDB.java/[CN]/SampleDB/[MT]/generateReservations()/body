@@ -2,13 +2,13 @@
   final int days=30;
   final String descriptions[]={"Picking up guests from airport","Sightseeing with the guests","Moving new servers from A to B","Shopping","Customer meeting","Guests arriving at harbour","Moving furniture","Taking guests to see town"};
   final Container cat=getCategories();
-  final Collection cIds=cat.getItemIds();
-  for (final Iterator it=cIds.iterator(); it.hasNext(); ) {
+  final Collection<?> cIds=cat.getItemIds();
+  for (final Iterator<?> it=cIds.iterator(); it.hasNext(); ) {
     final Object id=it.next();
     final Item ci=cat.getItem(id);
     final String c=(String)ci.getItemProperty(Resource.PROPERTY_ID_CATEGORY).getValue();
     final Container resources=getResources(c);
-    final Collection rIds=resources.getItemIds();
+    final Collection<?> rIds=resources.getItemIds();
     final Calendar cal=Calendar.getInstance();
     cal.set(Calendar.MINUTE,0);
     cal.set(Calendar.SECOND,0);
@@ -16,7 +16,7 @@
     final int hourNow=new Date().getHours();
     for (int i=0; i < days; i++) {
       int r=3;
-      for (final Iterator rit=rIds.iterator(); rit.hasNext() && r > 0; r--) {
+      for (final Iterator<?> rit=rIds.iterator(); rit.hasNext() && r > 0; r--) {
         final Object rid=rit.next();
         final Item resource=resources.getItem(rid);
         final int s=hourNow - 6 + (int)Math.round(Math.random() * 6.0);
