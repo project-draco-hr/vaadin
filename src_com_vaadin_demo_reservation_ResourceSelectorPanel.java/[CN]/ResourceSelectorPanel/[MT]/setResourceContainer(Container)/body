@@ -3,7 +3,7 @@
   categoryLayouts.clear();
   categoryResources.clear();
   if (resources != null && resources.size() > 0) {
-    for (final Iterator it=resources.getItemIds().iterator(); it.hasNext(); ) {
+    for (final Iterator<?> it=resources.getItemIds().iterator(); it.hasNext(); ) {
       final Item resource=resources.getItem(it.next());
       final String category=(String)resource.getItemProperty(SampleDB.Resource.PROPERTY_ID_CATEGORY).getValue();
       final String name=(String)resource.getItemProperty(SampleDB.Resource.PROPERTY_ID_NAME).getValue();
@@ -12,15 +12,15 @@
       rButton.setStyleName("link");
       rButton.setDescription(description);
       rButton.setData(resource);
-      Layout resourceLayout=(Layout)categoryLayouts.get(category);
-      LinkedList resourceList=(LinkedList)categoryResources.get(category);
+      Layout resourceLayout=categoryLayouts.get(category);
+      LinkedList<Item> resourceList=categoryResources.get(category);
       if (resourceLayout == null) {
         resourceLayout=new VerticalLayout();
         resourceLayout.setSizeUndefined();
         resourceLayout.setMargin(true);
         addComponent(resourceLayout);
         categoryLayouts.put(category,resourceLayout);
-        resourceList=new LinkedList();
+        resourceList=new LinkedList<Item>();
         categoryResources.put(category,resourceList);
         final Button cButton=new Button(category + " (any)",this);
         cButton.setStyleName("important-link");

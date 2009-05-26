@@ -27,11 +27,11 @@
     }
   }
   final UIDL images=uidl.getChildUIDL(0);
-  ArrayList newList=new ArrayList();
-  for (final Iterator i=images.getChildIterator(); i.hasNext(); ) {
+  ArrayList<HashMap<String,String>> newList=new ArrayList<HashMap<String,String>>();
+  for (final Iterator<Object> i=images.getChildIterator(); i.hasNext(); ) {
     final UIDL imgUidl=(UIDL)i.next();
     if (imgUidl.hasAttribute("caption") && imgUidl.hasAttribute("key") && imgUidl.hasAttribute("icon")) {
-      HashMap set=new HashMap();
+      HashMap<String,String> set=new HashMap<String,String>();
       keyMap.put(imgUidl.getStringAttribute("caption"),imgUidl.getStringAttribute("key"));
       set.put("icon",client.translateVaadinUri(imgUidl.getStringAttribute("icon")));
       set.put("caption",imgUidl.getStringAttribute("caption"));
@@ -41,22 +41,22 @@
       }
     }
   }
-  ArrayList intersectList=new ArrayList();
+  ArrayList<HashMap<String,String>> intersectList=new ArrayList<HashMap<String,String>>();
   intersectList.addAll(coverList);
   intersectList.removeAll(newList);
   if (flashInited) {
     for (int i=0; i < intersectList.size(); i++) {
-      HashMap cover=(HashMap)intersectList.get(i);
-      removeCover(uidlId,cover.get("caption").toString());
+      HashMap<String,String> cover=intersectList.get(i);
+      removeCover(uidlId,cover.get("caption"));
     }
   }
-  intersectList=new ArrayList();
+  intersectList=new ArrayList<HashMap<String,String>>();
   intersectList.addAll(newList);
   intersectList.removeAll(coverList);
   if (flashInited) {
     for (int i=0; i < intersectList.size(); i++) {
-      HashMap cover=(HashMap)intersectList.get(i);
-      addCover(uidlId,cover.get("caption").toString(),cover.get("icon").toString());
+      HashMap<String,String> cover=intersectList.get(i);
+      addCover(uidlId,cover.get("caption"),cover.get("icon"));
     }
   }
   coverList=newList;
