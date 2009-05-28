@@ -1,6 +1,17 @@
 {
   final MenuItem item=getSelectedItem();
   final String enteredItemValue=tb.getText();
+  if (nullSelectionAllowed && "".equals(enteredItemValue)) {
+    if (nullSelectItem) {
+      reset();
+      return;
+    }
+    client.updateVariable(paintableId,"filter","",false);
+    client.updateVariable(paintableId,"page",0,false);
+    client.updateVariable(paintableId,"selected",new String[]{},immediate);
+    suggestionPopup.hide();
+    return;
+  }
   int p=getItems().size();
   if (p > 0) {
     for (int i=0; i < p; i++) {
