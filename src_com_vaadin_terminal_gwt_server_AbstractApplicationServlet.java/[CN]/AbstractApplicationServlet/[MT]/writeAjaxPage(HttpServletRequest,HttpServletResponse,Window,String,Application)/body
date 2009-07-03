@@ -29,6 +29,8 @@
   }
   final String staticFilesLocation=getStaticFilesLocation(request);
   final String staticFilePath=getApplicationOrSystemProperty(PARAMETER_VAADIN_RESOURCES,staticFilesLocation);
+  reqParam=request.getAttribute(REQUEST_VAADIN_WIDGETSET_PATH);
+  final String widgetsetFilePath=reqParam instanceof String ? (String)reqParam : staticFilePath;
   String themeUri=null;
   if (themeName != null) {
     themeUri=staticFilePath + "/" + THEME_DIRECTORY_PATH+ themeName;
@@ -67,7 +69,7 @@
   }
   if (isGecko17(request)) {
     page.write("<iframe tabIndex=\"-1\" id=\"__gwt_historyFrame\" " + "style=\"width:0;height:0;border:0;overflow:" + "hidden\" src=\"javascript:false\"></iframe>\n");
-    page.write("<script language='javascript' src='" + staticFilePath + "/"+ WIDGETSET_DIRECTORY_PATH+ widgetset+ "/"+ widgetset+ ".nocache.js?"+ new Date().getTime()+ "'></script>\n");
+    page.write("<script language='javascript' src='" + widgetsetFilePath + "/"+ WIDGETSET_DIRECTORY_PATH+ widgetset+ "/"+ widgetset+ ".nocache.js?"+ new Date().getTime()+ "'></script>\n");
     page.write("<script type=\"text/javascript\">\n");
     page.write("//<![CDATA[\n");
     page.write("if(!vaadin || !vaadin.vaadinConfigurations) {\n " + "if(!vaadin) { var vaadin = {}} \n" + "vaadin.vaadinConfigurations = {};\n"+ "vaadin.themesLoaded = {}};\n");
@@ -124,7 +126,7 @@
       page.write("vaadin.debug = true;\n");
     }
     page.write("document.write('<iframe tabIndex=\"-1\" id=\"__gwt_historyFrame\" " + "style=\"width:0;height:0;border:0;overflow:" + "hidden\" src=\"javascript:false\"></iframe>');\n");
-    page.write("document.write(\"<script language='javascript' src='" + staticFilePath + "/"+ WIDGETSET_DIRECTORY_PATH+ widgetset+ "/"+ widgetset+ ".nocache.js?"+ new Date().getTime()+ "'><\\/script>\");\n}\n");
+    page.write("document.write(\"<script language='javascript' src='" + widgetsetFilePath + "/"+ WIDGETSET_DIRECTORY_PATH+ widgetset+ "/"+ widgetset+ ".nocache.js?"+ new Date().getTime()+ "'><\\/script>\");\n}\n");
     page.write("vaadin.vaadinConfigurations[\"" + appId + "\"] = {");
     page.write("appUri:'" + appUrl + "', ");
     page.write("pathInfo: '" + pathInfo + "', ");
@@ -169,7 +171,7 @@
   }
   page.write("<script type=\"text/javascript\">\n");
   page.write("//<![CDATA[\n");
-  page.write("setTimeout('if (typeof " + widgetset.replace('.','_') + " == \"undefined\") {alert(\"Failed to load the widgetset: "+ staticFilePath+ "/"+ WIDGETSET_DIRECTORY_PATH+ widgetset+ "/"+ widgetset+ ".nocache.js\")};',15000);\n"+ "//]]>\n</script>\n");
+  page.write("setTimeout('if (typeof " + widgetset.replace('.','_') + " == \"undefined\") {alert(\"Failed to load the widgetset: "+ widgetsetFilePath+ "/"+ WIDGETSET_DIRECTORY_PATH+ widgetset+ "/"+ widgetset+ ".nocache.js\")};',15000);\n"+ "//]]>\n</script>\n");
   String style=null;
   reqParam=request.getAttribute(REQUEST_APPSTYLE);
   if (reqParam != null) {

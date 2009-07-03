@@ -5,15 +5,28 @@
     PortletApplicationContext ctx=PortletApplicationContext.getApplicationContext(sess);
     PortletRequestDispatcher dispatcher=sess.getPortletContext().getRequestDispatcher("/" + app);
     try {
+      PortalContext portalCtx=request.getPortalContext();
+      boolean isLifeRay=portalCtx.getPortalInfo().toLowerCase().contains("liferay");
       request.setAttribute(ApplicationServlet.REQUEST_FRAGMENT,"true");
-      if (widgetset != null) {
-        request.setAttribute(ApplicationServlet.REQUEST_WIDGETSET,widgetset);
+      String portalTheme=getPortalProperty(PORTAL_PARAMETER_VAADIN_THEME,portalCtx);
+      String portalWidgetset=getPortalProperty(PORTAL_PARAMETER_VAADIN_WIDGETSET,portalCtx);
+      if (portalWidgetset != null) {
+        String portalWidgetsetPath=getPortalProperty(PORTAL_PARAMETER_VAADIN_WIDGETSET_PATH,portalCtx);
+        if (isLifeRay && portalWidgetsetPath == null) {
+          portalWidgetsetPath="/html";
+        }
+        if (portalWidgetsetPath != null) {
+          request.setAttribute(ApplicationServlet.REQUEST_VAADIN_WIDGETSET_PATH,portalWidgetsetPath);
+        }
+        request.setAttribute(ApplicationServlet.REQUEST_WIDGETSET,portalWidgetset);
+      }
+ else       if (portletWidgetset != null) {
+        request.setAttribute(ApplicationServlet.REQUEST_WIDGETSET,portletWidgetset);
       }
       if (style != null) {
         request.setAttribute(ApplicationServlet.REQUEST_APPSTYLE,style);
       }
       dispatcher.include(request,response);
-      boolean isLifeRay=request.getPortalContext().getPortalInfo().toLowerCase().contains("liferay");
       if (isLifeRay) {
         OutputStream out=response.getPortletOutputStream();
         String lifeRaySessionHearbeatHack=("<script type=\"text/javascript\">" + "if(!vaadin.postRequestHooks) {" + "    vaadin.postRequestHooks = {};"+ "}"+ "vaadin.postRequestHooks.liferaySessionHeartBeat = function() {"+ "    if (Liferay && Liferay.Session) {"+ "        Liferay.Session.setCookie();"+ "    }"+ "};"+ "</script>");
