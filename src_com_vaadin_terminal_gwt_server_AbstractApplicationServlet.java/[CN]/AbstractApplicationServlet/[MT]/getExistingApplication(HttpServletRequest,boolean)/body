@@ -1,9 +1,12 @@
 {
-  final HttpSession session=request.getSession(true);
+  final HttpSession session=request.getSession(allowSessionCreation);
+  if (session == null) {
+    throw new SessionExpired();
+  }
   WebApplicationContext context=WebApplicationContext.getApplicationContext(session);
-  final Collection applications=context.getApplications();
-  for (final Iterator i=applications.iterator(); i.hasNext(); ) {
-    final Application sessionApplication=(Application)i.next();
+  final Collection<Application> applications=context.getApplications();
+  for (final Iterator<Application> i=applications.iterator(); i.hasNext(); ) {
+    final Application sessionApplication=i.next();
     final String sessionApplicationPath=sessionApplication.getURL().getPath();
     String requestApplicationPath=getApplicationUrl(request).getPath();
     if (requestApplicationPath.equals(sessionApplicationPath)) {
