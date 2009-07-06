@@ -31,9 +31,15 @@
   final String staticFilePath=getApplicationOrSystemProperty(PARAMETER_VAADIN_RESOURCES,staticFilesLocation);
   reqParam=request.getAttribute(REQUEST_VAADIN_WIDGETSET_PATH);
   final String widgetsetFilePath=reqParam instanceof String ? (String)reqParam : staticFilePath;
-  String themeUri=null;
+  String themeBaseUri;
+  String themeUri;
   if (themeName != null) {
-    themeUri=staticFilePath + "/" + THEME_DIRECTORY_PATH+ themeName;
+    themeBaseUri=staticFilePath;
+    themeUri=themeBaseUri + "/" + THEME_DIRECTORY_PATH+ themeName;
+  }
+ else {
+    themeBaseUri=defaultThemeUri;
+    themeUri=themeBaseUri + "/" + THEME_DIRECTORY_PATH+ getDefaultTheme();
   }
   if (!fragment) {
     response.setHeader("Cache-Control","no-cache");
@@ -83,7 +89,7 @@
       page.write("windowName: '" + window.getName() + "', ");
     }
     page.write("themeUri:");
-    page.write(themeUri != null ? "'" + themeUri + "'" : "null");
+    page.write(themeBaseUri != null ? "'" + themeBaseUri + "'" : "null");
     page.write(", versionInfo : {vaadinVersion:\"");
     page.write(VERSION);
     page.write("\",applicationVersion:\"");
@@ -134,7 +140,7 @@
       page.write("windowName: '" + window.getName() + "', ");
     }
     page.write("themeUri:");
-    page.write(themeUri != null ? "'" + themeUri + "'" : "null");
+    page.write(themeBaseUri != null ? "'" + themeBaseUri + "'" : "null");
     page.write(", versionInfo : {vaadinVersion:\"");
     page.write(VERSION);
     page.write("\",applicationVersion:\"");
@@ -188,6 +194,9 @@
   String themeClass="";
   if (themeName != null) {
     themeClass="v-theme-" + themeName.replaceAll("[^a-zA-Z0-9]","");
+  }
+ else {
+    themeClass="v-theme-" + getDefaultTheme().replaceAll("[^a-zA-Z0-9]","");
   }
   page.write("<div id=\"" + appId + "\" class=\"v-app v-app-loading "+ themeClass+ " "+ appClass+ "\" "+ (style != null ? style : "")+ "></div>\n");
   if (!fragment) {
