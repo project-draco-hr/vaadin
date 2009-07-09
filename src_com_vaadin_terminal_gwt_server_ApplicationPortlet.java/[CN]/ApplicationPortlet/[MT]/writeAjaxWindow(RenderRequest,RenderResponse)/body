@@ -36,10 +36,11 @@
         OutputStream out=response.getPortletOutputStream();
         String lifeRaySessionHearbeatHack=("<script type=\"text/javascript\">" + "if(!vaadin.postRequestHooks) {" + "    vaadin.postRequestHooks = {};"+ "}"+ "vaadin.postRequestHooks.liferaySessionHeartBeat = function() {"+ "    if (Liferay && Liferay.Session) {"+ "        Liferay.Session.extend();"+ "    }"+ "};"+ "</script>");
         out.write(lifeRaySessionHearbeatHack.getBytes());
-        if (portalTheme != null) {
-          String loadDefaultTheme=("<script type=\"text/javascript\">\n" + "if(!vaadin.themesLoaded['" + portalTheme + "']) {\n"+ "var stylesheet = document.createElement('link');\n"+ "stylesheet.setAttribute('rel', 'stylesheet');\n"+ "stylesheet.setAttribute('type', 'text/css');\n"+ "stylesheet.setAttribute('href', '"+ themeUri+ "/styles.css');\n"+ "document.getElementsByTagName('head')[0].appendChild(stylesheet);\n"+ "vaadin.themesLoaded['"+ portalTheme+ "'] = true;\n}\n"+ "</script>\n");
-          out.write(loadDefaultTheme.getBytes());
-        }
+      }
+      if (portalTheme != null) {
+        OutputStream out=response.getPortletOutputStream();
+        String loadDefaultTheme=("<script type=\"text/javascript\">\n" + "if(!vaadin.themesLoaded['" + portalTheme + "']) {\n"+ "var stylesheet = document.createElement('link');\n"+ "stylesheet.setAttribute('rel', 'stylesheet');\n"+ "stylesheet.setAttribute('type', 'text/css');\n"+ "stylesheet.setAttribute('href', '"+ themeUri+ "/styles.css');\n"+ "document.getElementsByTagName('head')[0].appendChild(stylesheet);\n"+ "vaadin.themesLoaded['"+ portalTheme+ "'] = true;\n}\n"+ "</script>\n");
+        out.write(loadDefaultTheme.getBytes());
       }
     }
  catch (    PortletException e) {
