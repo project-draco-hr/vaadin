@@ -9,7 +9,7 @@
 synchronized (application) {
     Window window=null;
     if (application.isRunning()) {
-      window=getApplicationWindow(request,application,null);
+      window=getApplicationWindow(request,applicationServlet,application,null);
       if (window == null) {
         System.err.println("Warning, could not get window for application with request URI " + request.getRequestURI());
         return;
@@ -19,7 +19,7 @@ synchronized (application) {
       endApplication(request,response,application);
       return;
     }
-    if (!handleVariables(request,response,application,window)) {
+    if (!handleVariables(request,response,applicationServlet,application,window)) {
       SystemMessages ci=null;
       try {
         Method m=application.getClass().getMethod("getSystemMessages",(Class[])null);
