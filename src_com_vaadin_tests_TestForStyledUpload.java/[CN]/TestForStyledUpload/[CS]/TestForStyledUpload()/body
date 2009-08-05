@@ -1,0 +1,49 @@
+{
+  main.addComponent(new Label("Clicking on button b updates information about upload components status or same with garbage collector."));
+  up=new Upload(null,buffer);
+  up.setButtonCaption("Select file");
+  up.setImmediate(true);
+  up.addListener((FinishedListener)this);
+  up.addListener((FailedListener)this);
+  up.addListener((SucceededListener)this);
+  up.addListener((StartedListener)this);
+  up.addListener(new Upload.ProgressListener(){
+    public void updateProgress(    long readBytes,    long contentLenght){
+      pi.setValue(new Float(readBytes / (float)contentLenght));
+      refreshMemUsage();
+      transferred.setValue("Transferred " + readBytes + " of "+ contentLenght);
+    }
+  }
+);
+  final Button b=new Button("Update status",this,"readState");
+  final Button c=new Button("Update status with gc",this,"gc");
+  main.addComponent(up);
+  l=new Label("Idle");
+  main.addComponent(l);
+  pi.setVisible(false);
+  pi.setPollingInterval(300);
+  main.addComponent(pi);
+  main.addComponent(transferred);
+  memoryStatus=new Label();
+  main.addComponent(memoryStatus);
+  status.setVisible(false);
+  main.addComponent(status);
+  Button cancel=new Button("Cancel current upload");
+  cancel.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      buffer.cancel();
+    }
+  }
+);
+  main.addComponent(cancel);
+  final Button restart=new Button("Restart demo application");
+  restart.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      TestForStyledUpload.this.close();
+    }
+  }
+);
+  main.addComponent(restart);
+  main.addComponent(b);
+  main.addComponent(c);
+}

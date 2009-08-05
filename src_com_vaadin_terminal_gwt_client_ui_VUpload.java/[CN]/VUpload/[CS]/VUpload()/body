@@ -3,10 +3,23 @@
   setEncoding(FormPanel.ENCODING_MULTIPART);
   setMethod(FormPanel.METHOD_POST);
   setWidget(panel);
+  panel.add(maxfilesize);
   panel.add(fu);
   submitButton=new Button();
-  submitButton.addClickListener(this);
+  submitButton.setStyleName("v-button");
+  submitButton.addClickHandler(new ClickHandler(){
+    public void onClick(    ClickEvent event){
+      if (immediate) {
+        fireNativeClick(fu.getElement());
+      }
+ else {
+        submit();
+      }
+    }
+  }
+);
   panel.add(submitButton);
-  addFormHandler(this);
+  addSubmitCompleteHandler(this);
+  addSubmitHandler(this);
   setStyleName(CLASSNAME);
 }

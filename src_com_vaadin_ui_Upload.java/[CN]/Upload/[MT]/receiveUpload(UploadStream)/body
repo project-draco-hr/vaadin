@@ -36,6 +36,9 @@ synchronized (application) {
           fireUpdateProgress(totalBytes,contentLength);
         }
       }
+      if (interrupted) {
+        throw new Exception("Upload interrupted by other thread");
+      }
     }
     out.close();
 synchronized (application) {
@@ -46,8 +49,14 @@ synchronized (application) {
   }
  catch (  final Exception e) {
 synchronized (application) {
+      try {
+        out.close();
+      }
+ catch (      IOException e1) {
+      }
       fireUploadInterrupted(filename,type,totalBytes,e);
       endUpload();
+      interrupted=false;
     }
   }
 }
