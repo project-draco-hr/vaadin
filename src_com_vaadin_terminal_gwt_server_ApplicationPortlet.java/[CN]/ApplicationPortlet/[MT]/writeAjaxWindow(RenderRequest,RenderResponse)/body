@@ -14,10 +14,10 @@
       if (isLifeRay && portalResourcePath == null) {
         portalResourcePath="/html";
       }
+      if (portalResourcePath != null) {
+        request.setAttribute(ApplicationServlet.REQUEST_VAADIN_STATIC_FILE_PATH,portalResourcePath);
+      }
       if (portalWidgetset != null) {
-        if (portalResourcePath != null) {
-          request.setAttribute(ApplicationServlet.REQUEST_VAADIN_WIDGETSET_PATH,portalResourcePath);
-        }
         request.setAttribute(ApplicationServlet.REQUEST_WIDGETSET,portalWidgetset);
       }
  else       if (portletWidgetset != null) {
@@ -26,14 +26,12 @@
       if (style != null) {
         request.setAttribute(ApplicationServlet.REQUEST_APPSTYLE,style);
       }
-      String themeUri=null;
       if (portalTheme != null) {
-        themeUri=portalResourcePath + "/" + AbstractApplicationServlet.THEME_DIRECTORY_PATH+ portalTheme;
-        request.setAttribute(ApplicationServlet.REQUEST_DEFAULT_THEME_URI,portalTheme);
-      }
-      if (portalTheme != null) {
+        request.setAttribute(ApplicationServlet.REQUEST_DEFAULT_THEME,portalTheme);
+        String defaultThemeUri=null;
+        defaultThemeUri=portalResourcePath + "/" + AbstractApplicationServlet.THEME_DIRECTORY_PATH+ portalTheme;
         OutputStream out=response.getPortletOutputStream();
-        String loadDefaultTheme=("<script type=\"text/javascript\">\n" + "if(!vaadin) { var vaadin = {} } \n" + "if(!vaadin.themesLoaded) { vaadin.themesLoaded = {} } \n"+ "if(!vaadin.themesLoaded['" + portalTheme + "']) {\n"+ "var stylesheet = document.createElement('link');\n"+ "stylesheet.setAttribute('rel', 'stylesheet');\n"+ "stylesheet.setAttribute('type', 'text/css');\n"+ "stylesheet.setAttribute('href', '"+ themeUri+ "/styles.css');\n"+ "document.getElementsByTagName('head')[0].appendChild(stylesheet);\n"+ "vaadin.themesLoaded['"+ portalTheme+ "'] = true;\n}\n"+ "</script>\n");
+        String loadDefaultTheme=("<script type=\"text/javascript\">\n" + "if(!vaadin) { var vaadin = {} } \n" + "if(!vaadin.themesLoaded) { vaadin.themesLoaded = {} } \n"+ "if(!vaadin.themesLoaded['" + portalTheme + "']) {\n"+ "var stylesheet = document.createElement('link');\n"+ "stylesheet.setAttribute('rel', 'stylesheet');\n"+ "stylesheet.setAttribute('type', 'text/css');\n"+ "stylesheet.setAttribute('href', '"+ defaultThemeUri+ "/styles.css');\n"+ "document.getElementsByTagName('head')[0].appendChild(stylesheet);\n"+ "vaadin.themesLoaded['"+ portalTheme+ "'] = true;\n}\n"+ "</script>\n");
         out.write(loadDefaultTheme.getBytes());
       }
       dispatcher.include(request,response);

@@ -43,16 +43,10 @@
     if (handleURI(applicationManager,window,request,response)) {
       return;
     }
-    String defaultThemeUri=null;
-    Object reqObj=request.getAttribute(REQUEST_DEFAULT_THEME_URI);
-    if (reqObj instanceof String) {
-      defaultThemeUri=(String)reqObj;
-    }
-    String themeName=getThemeForWindow(request,window,defaultThemeUri != null);
-    if (handleResourceRequest(request,response,themeName)) {
+    if (handleResourceRequest(request,response,window)) {
       return;
     }
-    writeAjaxPage(request,response,window,themeName,defaultThemeUri,application);
+    writeAjaxPage(request,response,window,application);
   }
  catch (  final SessionExpired e) {
     handleServiceSessionExpired(request,response);
