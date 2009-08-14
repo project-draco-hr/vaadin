@@ -65,17 +65,22 @@
     suggestionPopup.showSuggestions(currentSuggestions,currentPage,totalMatches);
     filtering=false;
     if (!popupOpenerClicked && lastIndex != -1) {
+      MenuItem activeMenuItem;
       if (lastIndex == 0) {
         int lastItem=pageLength - 1;
         List items=suggestionPopup.menu.getItems();
         if (lastItem >= items.size()) {
           lastItem=items.size() - 1;
         }
-        suggestionPopup.menu.selectItem((MenuItem)items.get(lastItem));
+        activeMenuItem=(MenuItem)items.get(lastItem);
+        suggestionPopup.menu.selectItem(activeMenuItem);
       }
  else {
-        suggestionPopup.menu.selectItem((MenuItem)suggestionPopup.menu.getItems().get(0));
+        activeMenuItem=(MenuItem)suggestionPopup.menu.getItems().get(0);
+        suggestionPopup.menu.selectItem(activeMenuItem);
       }
+      tb.setText(activeMenuItem.getText());
+      tb.setSelectionRange(lastFilter.length(),activeMenuItem.getText().length() - lastFilter.length());
       lastIndex=-1;
     }
   }
