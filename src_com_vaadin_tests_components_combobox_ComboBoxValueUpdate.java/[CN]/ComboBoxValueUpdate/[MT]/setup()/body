@@ -1,17 +1,17 @@
 {
-  ComboBox combobox=new ComboBox();
-  combobox.setImmediate(true);
-  combobox.addItem("Item 1");
-  combobox.addItem("Item 2");
-  combobox.addItem("Item 3");
-  combobox.addListener(new ValueChangeListener(){
+  ComboBox select=new ComboBox("");
+  select.setImmediate(true);
+  for (int i=0; i < 100; i++) {
+    select.addItem("item " + i);
+  }
+  final Label value=new Label();
+  select.addListener(new ComboBox.ValueChangeListener(){
     public void valueChange(    ValueChangeEvent event){
-      Object p=event.getProperty().getValue();
-      selectedLabel.setValue("Server side value: " + p);
+      System.err.println("Selected " + event.getProperty().getValue());
+      value.setValue("Selected " + event.getProperty().getValue());
     }
   }
 );
-  selectedLabel=new Label("Server side value: " + combobox.getValue());
-  getLayout().addComponent(selectedLabel);
-  getLayout().addComponent(combobox);
+  getLayout().addComponent(select);
+  getLayout().addComponent(value);
 }
