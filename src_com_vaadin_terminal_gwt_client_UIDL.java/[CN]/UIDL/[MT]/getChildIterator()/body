@@ -1,30 +1,30 @@
 {
   return new Iterator<Object>(){
-    int index=2;
+    int index=-1;
     public void remove(){
       throw new UnsupportedOperationException();
     }
     public Object next(){
-      if (json.size() > index) {
-        final JSONValue c=json.get(index++);
-        if (c.isString() != null) {
-          return c.isString().stringValue();
-        }
- else         if (c.isArray() != null) {
-          return new UIDL(c.isArray());
-        }
- else         if (c.isObject() != null) {
-          return new XML(c.isObject());
-        }
- else {
-          throw new IllegalStateException("Illegal child " + c + " in tag "+ getTag()+ " at index "+ index);
-        }
-      }
-      return null;
-    }
-    public boolean hasNext(){
-      return json.size() > index;
-    }
-  }
+      if (hasNext()) {
+        int typeOfChild=typeOfChild(index++);
+switch (typeOfChild) {
+case CHILD_TYPE_UIDL:
+          UIDL childUIDL=getChildUIDL(index);
+        return childUIDL;
+case CHILD_TYPE_STRING:
+      return getChildString(index);
+case CHILD_TYPE_XML:
+    return getChildXML(index);
+default :
+  throw new IllegalStateException("Illegal child  in tag " + getTag() + " at index "+ index);
+}
+}
+return null;
+}
+public boolean hasNext(){
+int count=getChildCount();
+return count > index + 1;
+}
+}
 ;
 }

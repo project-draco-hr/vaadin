@@ -2,9 +2,9 @@
   final Date start=new Date();
   String jsonText=response.getText();
   jsonText=jsonText.substring(9,jsonText.length() - 1);
-  JSONValue json;
+  ValueMap json;
   try {
-    json=JSONParser.parse(jsonText);
+    json=parseJSONResponse(jsonText);
   }
  catch (  final com.google.gwt.json.client.JSONException e) {
     endRequest();
@@ -12,29 +12,28 @@
     console.log(jsonText);
     return;
   }
-  final JSONObject redirect=(JSONObject)((JSONObject)json).get("redirect");
-  if (redirect != null) {
-    final JSONString url=(JSONString)redirect.get("url");
-    if (url != null) {
-      console.log("redirecting to " + url.stringValue());
-      redirect(url.stringValue());
-      return;
+  if (json.containsKey("redirect")) {
+    String url=json.getValueMap("redirect").getString("url");
+    console.log("redirecting to " + url);
+    redirect(url);
+    return;
+  }
+  if (json.containsKey("resources")) {
+    ValueMap resources=json.getValueMap("resources");
+    JsArrayString keyArray=resources.getKeyArray();
+    int l=keyArray.length();
+    for (int i=0; i < l; i++) {
+      String key=keyArray.get(i);
+      resourcesMap.put(key,resources.getAsString(key));
     }
   }
-  final JSONObject resources=(JSONObject)((JSONObject)json).get("resources");
-  for (final Iterator<String> i=resources.keySet().iterator(); i.hasNext(); ) {
-    final String key=i.next();
-    resourcesMap.put(key,((JSONString)resources.get(key)).stringValue());
+  if (json.containsKey("locales")) {
+    JsArray<ValueMap> valueMapArray=json.getJSValueMapArray("locales");
+    LocaleService.addLocales(valueMapArray);
   }
-  if (((JSONObject)json).containsKey("locales")) {
-    final JSONArray l=(JSONArray)((JSONObject)json).get("locales");
-    for (int i=0; i < l.size(); i++) {
-      LocaleService.addLocale((JSONObject)l.get(i));
-    }
-  }
-  JSONObject meta=null;
-  if (((JSONObject)json).containsKey("meta")) {
-    meta=((JSONObject)json).get("meta").isObject();
+  ValueMap meta=null;
+  if (json.containsKey("meta")) {
+    meta=json.getValueMap("meta");
     if (meta.containsKey("repaintAll")) {
       view.clear();
       idToPaintableDetail.clear();
@@ -45,26 +44,27 @@
       }
     }
     if (meta.containsKey("timedRedirect")) {
-      final JSONObject timedRedirect=meta.get("timedRedirect").isObject();
+      final ValueMap timedRedirect=meta.getValueMap("timedRedirect");
       redirectTimer=new Timer(){
         @Override public void run(){
-          redirect(timedRedirect.get("url").isString().stringValue());
+          redirect(timedRedirect.getString("url"));
         }
       }
 ;
-      sessionExpirationInterval=Integer.parseInt(timedRedirect.get("interval").toString());
+      sessionExpirationInterval=timedRedirect.getInt("interval");
     }
   }
   if (redirectTimer != null) {
     redirectTimer.schedule(1000 * sessionExpirationInterval);
   }
-  final JSONArray changes=(JSONArray)((JSONObject)json).get("changes");
-  Vector<Paintable> updatedWidgets=new Vector<Paintable>();
+  JsArray<ValueMap> changes=json.getJSValueMapArray("changes");
+  ArrayList<Paintable> updatedWidgets=new ArrayList<Paintable>();
   relativeSizeChanges.clear();
   componentCaptionSizeChanges.clear();
-  for (int i=0; i < changes.size(); i++) {
+  int length=changes.length();
+  for (int i=0; i < length; i++) {
     try {
-      final UIDL change=new UIDL((JSONArray)changes.get(i));
+      final UIDL change=changes.get(i).cast();
       try {
         console.dirUIDL(change);
       }
@@ -106,20 +106,17 @@
   Util.componentSizeUpdated(sizeUpdatedWidgets);
   if (meta != null) {
     if (meta.containsKey("appError")) {
-      JSONObject error=meta.get("appError").isObject();
-      JSONValue val=error.get("caption");
+      ValueMap error=meta.getValueMap("appError");
       String html="";
-      if (val.isString() != null) {
-        html+="<h1>" + val.isString().stringValue() + "</h1>";
+      if (error.containsKey("caption")) {
+        html+="<h1>" + error.getAsString("caption") + "</h1>";
       }
-      val=error.get("message");
-      if (val.isString() != null) {
-        html+="<p>" + val.isString().stringValue() + "</p>";
+      if (error.containsKey("message")) {
+        html+="<p>" + error.getAsString("message") + "</p>";
       }
-      val=error.get("url");
       String url=null;
-      if (val.isString() != null) {
-        url=val.isString().stringValue();
+      if (error.containsKey("url")) {
+        url=error.getAsString("url");
       }
       if (html.length() != 0) {
         VNotification n=new VNotification(1000 * 60 * 45);
@@ -132,7 +129,7 @@
       applicationRunning=false;
     }
     if (validatingLayouts) {
-      getConsole().printLayoutProblems(meta.get("invalidLayouts").isArray(),this,zeroHeightComponents,zeroWidthComponents);
+      getConsole().printLayoutProblems(meta,this,zeroHeightComponents,zeroWidthComponents);
       zeroHeightComponents=null;
       zeroWidthComponents=null;
       validatingLayouts=false;
