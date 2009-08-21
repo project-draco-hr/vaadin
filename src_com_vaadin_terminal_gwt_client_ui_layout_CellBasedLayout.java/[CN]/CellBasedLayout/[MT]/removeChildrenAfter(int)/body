@@ -1,10 +1,28 @@
 {
   int toRemove=getChildren().size() - pos;
   while (toRemove-- > 0) {
+    boolean relocated=false;
     ChildComponentContainer child=(ChildComponentContainer)getChildren().get(pos);
-    widgetToComponentContainer.remove(child.getWidget());
+    Widget widget=child.getWidget();
+    if (widget == null) {
+      Iterator<Widget> iterator=widgetToComponentContainer.keySet().iterator();
+      while (iterator.hasNext()) {
+        Widget key=iterator.next();
+        if (widgetToComponentContainer.get(key) == child) {
+          widget=key;
+          relocated=true;
+          break;
+        }
+      }
+      if (widget == null) {
+        throw new NullPointerException();
+      }
+    }
+    ChildComponentContainer remove=widgetToComponentContainer.remove(widget);
     remove(child);
-    Paintable p=(Paintable)child.getWidget();
-    client.unregisterPaintable(p);
+    if (!relocated) {
+      Paintable p=(Paintable)widget;
+      client.unregisterPaintable(p);
+    }
   }
 }
