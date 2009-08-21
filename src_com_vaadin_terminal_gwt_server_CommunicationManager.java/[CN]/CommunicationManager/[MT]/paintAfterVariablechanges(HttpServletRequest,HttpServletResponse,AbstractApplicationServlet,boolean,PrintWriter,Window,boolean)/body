@@ -85,7 +85,13 @@
         }
         paintablePainted(p);
         if (analyzeLayouts) {
-          invalidComponentRelativeSizes=ComponentSizeValidator.validateComponentRelativeSizes(((Window)p).getContent(),null,null);
+          Window w=(Window)p;
+          invalidComponentRelativeSizes=ComponentSizeValidator.validateComponentRelativeSizes(w.getContent(),null,null);
+          if (w.getChildWindows() != null) {
+            for (            Window subWindow : (Set<Window>)w.getChildWindows()) {
+              invalidComponentRelativeSizes=ComponentSizeValidator.validateComponentRelativeSizes(subWindow.getContent(),invalidComponentRelativeSizes,null);
+            }
+          }
         }
       }
     }
