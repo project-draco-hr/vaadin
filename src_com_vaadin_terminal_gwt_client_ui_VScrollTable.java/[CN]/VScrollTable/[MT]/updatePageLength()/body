@@ -12,6 +12,15 @@
   if (anotherPartlyVisible) {
     rowsAtOnce++;
   }
-  pageLength=rowsAtOnce;
-  client.updateVariable(paintableId,"pagelength",pageLength,false);
+  if (pageLength != rowsAtOnce) {
+    pageLength=rowsAtOnce;
+    client.updateVariable(paintableId,"pagelength",pageLength,false);
+    if (!rendering) {
+      int currentlyVisible=tBody.lastRendered - tBody.firstRendered;
+      if (currentlyVisible < pageLength && currentlyVisible < totalRows) {
+        bodyContainer.setScrollPosition(bodyContainer.getScrollPosition() + 1);
+        bodyContainer.setScrollPosition(bodyContainer.getScrollPosition() - 1);
+      }
+    }
+  }
 }

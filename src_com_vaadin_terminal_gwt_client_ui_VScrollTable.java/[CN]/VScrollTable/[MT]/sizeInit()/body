@@ -95,6 +95,7 @@
   if (needsReLayout) {
     tBody.reLayoutComponents();
   }
+  updatePageLength();
   if (height == null || "".equals(height)) {
     if (pageLength == totalRows) {
       int bodyHeight=tBody.getOffsetHeight();
@@ -117,10 +118,15 @@
 );
   }
   if (enabled) {
-    if (tBody.getLastRendered() + 1 < firstRowInViewPort + pageLength + CACHE_REACT_RATE * pageLength) {
+    if (tBody.getLastRendered() + 1 < firstRowInViewPort + pageLength + (int)cache_react_rate * pageLength) {
       if (totalRows - 1 > tBody.getLastRendered()) {
-        rowRequestHandler.setReqFirstRow(tBody.getLastRendered() + 1);
-        rowRequestHandler.setReqRows((int)(pageLength * CACHE_RATE));
+        int firstInNewSet=tBody.getLastRendered() + 1;
+        rowRequestHandler.setReqFirstRow(firstInNewSet);
+        int lastInNewSet=(int)(firstRowInViewPort + pageLength + cache_rate * pageLength);
+        if (lastInNewSet > totalRows - 1) {
+          lastInNewSet=totalRows - 1;
+        }
+        rowRequestHandler.setReqRows(lastInNewSet - firstInNewSet);
         rowRequestHandler.deferRowFetch(1);
       }
     }

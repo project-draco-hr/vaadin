@@ -1,4 +1,6 @@
 {
+  int scrollLeft=bodyContainer.getElement().getScrollLeft();
+  int scrollTop=bodyContainer.getScrollPosition();
   if (!initializedAndAttached) {
     return;
   }
@@ -9,11 +11,14 @@
   rowRequestHandler.cancel();
   tHead.setHorizontalScrollPosition(scrollLeft);
   firstRowInViewPort=(int)Math.ceil(scrollTop / (double)tBody.getRowHeight());
-  int postLimit=(int)(firstRowInViewPort + pageLength + pageLength * CACHE_REACT_RATE);
+  if (firstRowInViewPort > totalRows - pageLength) {
+    firstRowInViewPort=totalRows - pageLength;
+  }
+  int postLimit=(int)(firstRowInViewPort + (pageLength - 1) + pageLength * cache_react_rate);
   if (postLimit > totalRows - 1) {
     postLimit=totalRows - 1;
   }
-  int preLimit=(int)(firstRowInViewPort - pageLength * CACHE_REACT_RATE);
+  int preLimit=(int)(firstRowInViewPort - pageLength * cache_react_rate);
   if (preLimit < 0) {
     preLimit=0;
   }
@@ -24,10 +29,10 @@
     client.updateVariable(paintableId,"firstvisible",firstRowInViewPort,false);
     return;
   }
-  if (firstRowInViewPort - pageLength * CACHE_RATE > lastRendered || firstRowInViewPort + pageLength + pageLength * CACHE_RATE < firstRendered) {
-    rowRequestHandler.setReqFirstRow((int)(firstRowInViewPort - pageLength * CACHE_RATE));
-    int last=firstRowInViewPort + (int)CACHE_RATE * pageLength + pageLength;
-    if (last > totalRows) {
+  if (firstRowInViewPort - pageLength * cache_rate > lastRendered || firstRowInViewPort + pageLength + pageLength * cache_rate < firstRendered) {
+    rowRequestHandler.setReqFirstRow((firstRowInViewPort - (int)(pageLength * cache_rate)));
+    int last=firstRowInViewPort + (int)(cache_rate * pageLength) + pageLength - 1;
+    if (last >= totalRows) {
       last=totalRows - 1;
     }
     rowRequestHandler.setReqRows(last - rowRequestHandler.getReqFirstRow() + 1);
@@ -35,14 +40,14 @@
     return;
   }
   if (preLimit < firstRendered) {
-    rowRequestHandler.setReqFirstRow((int)(firstRowInViewPort - pageLength * CACHE_RATE));
+    rowRequestHandler.setReqFirstRow((int)(firstRowInViewPort - pageLength * cache_rate));
     rowRequestHandler.setReqRows(firstRendered - rowRequestHandler.getReqFirstRow());
     rowRequestHandler.deferRowFetch();
     return;
   }
   if (postLimit > lastRendered) {
     rowRequestHandler.setReqFirstRow(lastRendered + 1);
-    rowRequestHandler.setReqRows((int)((firstRowInViewPort + pageLength + pageLength * CACHE_RATE) - lastRendered));
+    rowRequestHandler.setReqRows((int)((firstRowInViewPort + pageLength + pageLength * cache_rate) - lastRendered));
     rowRequestHandler.deferRowFetch();
   }
 }
