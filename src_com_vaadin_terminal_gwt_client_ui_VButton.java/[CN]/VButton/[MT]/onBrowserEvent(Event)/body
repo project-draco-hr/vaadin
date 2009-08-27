@@ -1,32 +1,107 @@
 {
-  super.onBrowserEvent(event);
-  if (DOM.eventGetType(event) == Event.ONLOAD) {
-    Util.notifyParentOfSizeChange(this,true);
-  }
- else   if (DOM.eventGetType(event) == Event.ONMOUSEDOWN && event.getButton() == Event.BUTTON_LEFT) {
-    clickPending=true;
-    if (BrowserInfo.get().isIE()) {
-      addStyleName(CLASSNAME_DOWN);
-    }
-  }
- else   if (DOM.eventGetType(event) == Event.ONMOUSEMOVE) {
-    clickPending=false;
-  }
- else   if (DOM.eventGetType(event) == Event.ONMOUSEOUT) {
-    if (clickPending) {
-      click();
-    }
-    if (BrowserInfo.get().isIE()) {
-      removeStyleName(CLASSNAME_DOWN);
-    }
-    clickPending=false;
-  }
- else   if (DOM.eventGetType(event) == Event.ONMOUSEUP) {
-    if (BrowserInfo.get().isIE()) {
-      removeStyleName(CLASSNAME_DOWN);
-    }
-  }
   if (client != null) {
     client.handleTooltipEvent(event,this);
   }
+  if (DOM.eventGetType(event) == Event.ONLOAD) {
+    Util.notifyParentOfSizeChange(this,true);
+  }
+  if (!isEnabled()) {
+    return;
+  }
+  int type=DOM.eventGetType(event);
+switch (type) {
+case Event.ONCLICK:
+    if (!allowClick) {
+      event.stopPropagation();
+      return;
+    }
+  break;
+case Event.ONMOUSEDOWN:
+if (event.getButton() == Event.BUTTON_LEFT) {
+  clickPending=true;
+  setFocus(true);
+  DOM.setCapture(getElement());
+  isCapturing=true;
+  if (BrowserInfo.get().isIE() || BrowserInfo.get().isOpera()) {
+    addStyleName(CLASSNAME_PRESSED);
+  }
+}
+break;
+case Event.ONMOUSEUP:
+if (isCapturing) {
+isCapturing=false;
+DOM.releaseCapture(getElement());
+if (isHovering() && event.getButton() == Event.BUTTON_LEFT) {
+onClick();
+}
+if (BrowserInfo.get().isIE() || BrowserInfo.get().isOpera()) {
+removeStyleName(CLASSNAME_PRESSED);
+}
+}
+break;
+case Event.ONMOUSEMOVE:
+clickPending=false;
+if (isCapturing) {
+DOM.eventPreventDefault(event);
+}
+break;
+case Event.ONMOUSEOUT:
+Element to=event.getRelatedTarget();
+if (getElement().isOrHasChild(DOM.eventGetTarget(event)) && (to == null || !getElement().isOrHasChild(to))) {
+if (clickPending) {
+onClick();
+break;
+}
+clickPending=false;
+if (isCapturing) {
+}
+setHovering(false);
+if (BrowserInfo.get().isIE() || BrowserInfo.get().isOpera()) {
+removeStyleName(CLASSNAME_PRESSED);
+}
+}
+break;
+case Event.ONMOUSEOVER:
+if (DOM.isOrHasChild(getElement(),DOM.eventGetTarget(event))) {
+setHovering(true);
+if (isCapturing) {
+}
+}
+break;
+case Event.ONBLUR:
+if (isFocusing) {
+isFocusing=false;
+}
+break;
+case Event.ONLOSECAPTURE:
+if (isCapturing) {
+isCapturing=false;
+}
+break;
+}
+super.onBrowserEvent(event);
+if ((event.getTypeInt() & Event.KEYEVENTS) != 0) {
+char keyCode=(char)DOM.eventGetKeyCode(event);
+switch (type) {
+case Event.ONKEYDOWN:
+if (keyCode == ' ') {
+isFocusing=true;
+event.preventDefault();
+}
+break;
+case Event.ONKEYUP:
+if (isFocusing && keyCode == ' ') {
+isFocusing=false;
+onClick();
+event.preventDefault();
+}
+break;
+case Event.ONKEYPRESS:
+if (keyCode == '\n' || keyCode == '\r') {
+onClick();
+event.preventDefault();
+}
+break;
+}
+}
 }

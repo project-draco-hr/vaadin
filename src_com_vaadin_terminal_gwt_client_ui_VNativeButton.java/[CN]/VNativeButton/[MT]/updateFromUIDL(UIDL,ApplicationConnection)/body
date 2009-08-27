@@ -1,0 +1,46 @@
+{
+  if (client.updateComponent(this,uidl,false)) {
+    return;
+  }
+  this.client=client;
+  id=uidl.getId();
+  setText(uidl.getStringAttribute("caption"));
+  if (uidl.hasAttribute("error")) {
+    if (errorIndicatorElement == null) {
+      errorIndicatorElement=DOM.createSpan();
+      errorIndicatorElement.setClassName("v-errorindicator");
+    }
+    getElement().insertBefore(errorIndicatorElement,captionElement);
+    if (BrowserInfo.get().isIE()) {
+      errorIndicatorElement.setInnerText(" ");
+    }
+  }
+ else   if (errorIndicatorElement != null) {
+    getElement().removeChild(errorIndicatorElement);
+    errorIndicatorElement=null;
+  }
+  if (uidl.hasAttribute("icon")) {
+    if (icon == null) {
+      icon=new Icon(client);
+      getElement().insertBefore(icon.getElement(),captionElement);
+    }
+    icon.setUri(uidl.getStringAttribute("icon"));
+  }
+ else {
+    if (icon != null) {
+      getElement().removeChild(icon.getElement());
+      icon=null;
+    }
+  }
+  if (BrowserInfo.get().isIE7()) {
+    if (width.equals("")) {
+      DeferredCommand.addCommand(new Command(){
+        public void execute(){
+          setWidth("");
+          setWidth(getOffsetWidth() + "px");
+        }
+      }
+);
+    }
+  }
+}

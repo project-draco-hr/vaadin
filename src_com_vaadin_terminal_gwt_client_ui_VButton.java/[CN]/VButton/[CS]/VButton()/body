@@ -1,19 +1,25 @@
 {
+  super(DOM.createDiv());
+  setTabIndex(0);
+  sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS | Event.FOCUSEVENTS| Event.KEYEVENTS);
+  sinkEvents(VTooltip.TOOLTIP_EVENTS);
   setStyleName(CLASSNAME);
-  DOM.appendChild(getElement(),captionElement);
-  captionElement.setPropertyString("className",CLASSNAME + "-caption");
-  addClickListener(new ClickListener(){
-    public void onClick(    Widget sender){
+  Accessibility.setRole(getElement(),Accessibility.ROLE_BUTTON);
+  wrapper.setClassName(CLASSNAME + "-wrap");
+  getElement().appendChild(wrapper);
+  captionElement.setClassName(CLASSNAME + "-caption");
+  wrapper.appendChild(captionElement);
+  addClickHandler(new ClickHandler(){
+    public void onClick(    ClickEvent event){
       if (id == null || client == null) {
         return;
       }
-      VButton.this.setFocus(true);
+      if (BrowserInfo.get().isSafari()) {
+        VButton.this.setFocus(true);
+      }
       client.updateVariable(id,"state",true,true);
       clickPending=false;
     }
   }
 );
-  sinkEvents(VTooltip.TOOLTIP_EVENTS);
-  sinkEvents(Event.ONMOUSEDOWN);
-  sinkEvents(Event.ONMOUSEUP);
 }

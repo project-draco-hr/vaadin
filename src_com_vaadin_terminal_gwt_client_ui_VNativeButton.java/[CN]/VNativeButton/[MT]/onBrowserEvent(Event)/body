@@ -1,0 +1,21 @@
+{
+  super.onBrowserEvent(event);
+  if (DOM.eventGetType(event) == Event.ONLOAD) {
+    Util.notifyParentOfSizeChange(this,true);
+  }
+ else   if (DOM.eventGetType(event) == Event.ONMOUSEDOWN && event.getButton() == Event.BUTTON_LEFT) {
+    clickPending=true;
+  }
+ else   if (DOM.eventGetType(event) == Event.ONMOUSEMOVE) {
+    clickPending=false;
+  }
+ else   if (DOM.eventGetType(event) == Event.ONMOUSEOUT) {
+    if (clickPending) {
+      click();
+    }
+    clickPending=false;
+  }
+  if (client != null) {
+    client.handleTooltipEvent(event,this);
+  }
+}

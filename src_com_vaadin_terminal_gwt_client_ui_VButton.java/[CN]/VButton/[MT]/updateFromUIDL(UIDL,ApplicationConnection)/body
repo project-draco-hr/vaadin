@@ -1,9 +1,4 @@
 {
-  if (uidl.hasAttribute("primarystyle") && primaryStyleName != uidl.getStringAttribute("primarystyle")) {
-    primaryStyleName=uidl.getStringAttribute("primarystyle");
-    setStyleName(primaryStyleName);
-    captionElement.setPropertyString("className",getStylePrimaryName() + "-caption");
-  }
   if (client.updateComponent(this,uidl,false)) {
     return;
   }
@@ -13,42 +8,28 @@
   if (uidl.hasAttribute("error")) {
     if (errorIndicatorElement == null) {
       errorIndicatorElement=DOM.createSpan();
-      DOM.setElementProperty(errorIndicatorElement,"className","v-errorindicator");
+      errorIndicatorElement.setClassName("v-errorindicator");
     }
-    DOM.insertChild(getElement(),errorIndicatorElement,0);
-    if (BrowserInfo.get().isIE()) {
-      DOM.setInnerText(errorIndicatorElement," ");
+    wrapper.insertBefore(errorIndicatorElement,captionElement);
+    if (BrowserInfo.get().isIE6() || BrowserInfo.get().isIE7()) {
+      errorIndicatorElement.setInnerText(" ");
     }
   }
  else   if (errorIndicatorElement != null) {
-    DOM.removeChild(getElement(),errorIndicatorElement);
+    wrapper.removeChild(errorIndicatorElement);
     errorIndicatorElement=null;
-  }
-  if (uidl.hasAttribute("readonly")) {
-    setEnabled(false);
   }
   if (uidl.hasAttribute("icon")) {
     if (icon == null) {
       icon=new Icon(client);
-      DOM.insertChild(getElement(),icon.getElement(),0);
+      wrapper.insertBefore(icon.getElement(),captionElement);
     }
     icon.setUri(uidl.getStringAttribute("icon"));
   }
  else {
     if (icon != null) {
-      DOM.removeChild(getElement(),icon.getElement());
+      wrapper.removeChild(icon.getElement());
       icon=null;
-    }
-  }
-  if (BrowserInfo.get().isIE7()) {
-    if (width.equals("")) {
-      DeferredCommand.addCommand(new Command(){
-        public void execute(){
-          setWidth("");
-          setWidth(getOffsetWidth() + "px");
-        }
-      }
-);
     }
   }
 }

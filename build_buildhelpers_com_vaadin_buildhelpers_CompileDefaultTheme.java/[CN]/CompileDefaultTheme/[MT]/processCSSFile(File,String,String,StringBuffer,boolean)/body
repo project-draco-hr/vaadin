@@ -1,0 +1,36 @@
+{
+  if (cssFile.isFile()) {
+    combinedCss.append("\n");
+    FileInputStream fstream=new FileInputStream(cssFile);
+    DataInputStream in=new DataInputStream(fstream);
+    BufferedReader br=new BufferedReader(new InputStreamReader(in));
+    String strLine;
+    while ((strLine=br.readLine()) != null) {
+      if (strLine.startsWith("@import")) {
+        String importFilename=strLine.split("\"")[1];
+        File importFile=new File(THEME_DIR + themeName + "/"+ folder+ "/"+ importFilename);
+        if (importFile.isFile()) {
+          processCSSFile(importFile,folder,themeName,combinedCss,inheritedFile);
+        }
+ else {
+          System.out.println("File not found for @import statement " + THEME_DIR + themeName+ "/"+ folder+ "/"+ importFilename);
+        }
+      }
+      String urlPrefix="";
+      if (inheritedFile) {
+        urlPrefix="../" + themeName + "/";
+      }
+      if (strLine.indexOf("url(../") > 0) {
+        strLine=strLine.replaceAll("url\\(../",("url\\(" + urlPrefix));
+      }
+ else {
+        strLine=strLine.replaceAll("url\\(",("url\\(" + urlPrefix + folder+ "/"));
+      }
+      if (!strLine.startsWith("@import")) {
+        combinedCss.append(strLine);
+        combinedCss.append("\n");
+      }
+    }
+    in.close();
+  }
+}
