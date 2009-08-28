@@ -1,0 +1,28 @@
+{
+  if (event.getSource() == calendarToggle && !open) {
+    open=true;
+    calendar.updateCalendar();
+    popup.setWidth("");
+    popup.setHeight("");
+    popup.setPopupPositionAndShow(new PositionCallback(){
+      public void setPosition(      int offsetWidth,      int offsetHeight){
+        final int w=offsetWidth;
+        final int h=offsetHeight;
+        int t=calendarToggle.getAbsoluteTop();
+        int l=calendarToggle.getAbsoluteLeft();
+        if (l + w > Window.getClientWidth() + Window.getScrollLeft()) {
+          l=Window.getClientWidth() + Window.getScrollLeft() - w;
+        }
+        if (t + h + calendarToggle.getOffsetHeight()+ 30 > Window.getClientHeight() + Window.getScrollTop()) {
+          t=Window.getClientHeight() + Window.getScrollTop() - h - calendarToggle.getOffsetHeight() - 30;
+          l+=calendarToggle.getOffsetWidth();
+        }
+        popup.setWidth(w + "px");
+        popup.setHeight(h + "px");
+        popup.setPopupPosition(l,t + calendarToggle.getOffsetHeight() + 2);
+        setFocus(true);
+      }
+    }
+);
+  }
+}
