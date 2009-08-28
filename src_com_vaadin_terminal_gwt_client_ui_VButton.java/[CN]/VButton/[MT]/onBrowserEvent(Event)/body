@@ -9,15 +9,18 @@
     return;
   }
   int type=DOM.eventGetType(event);
+  System.out.println(DOM.eventGetTypeString(event));
 switch (type) {
 case Event.ONCLICK:
-    if (!allowClick) {
+    if (disallowNextClick) {
       event.stopPropagation();
+      disallowNextClick=false;
       return;
     }
   break;
 case Event.ONMOUSEDOWN:
 if (event.getButton() == Event.BUTTON_LEFT) {
+  disallowNextClick=true;
   clickPending=true;
   setFocus(true);
   DOM.setCapture(getElement());
@@ -32,7 +35,7 @@ if (isCapturing) {
 isCapturing=false;
 DOM.releaseCapture(getElement());
 if (isHovering() && event.getButton() == Event.BUTTON_LEFT) {
-onClick();
+disallowNextClick=false;
 }
 if (BrowserInfo.get().isIE() || BrowserInfo.get().isOpera()) {
 removeStyleName(CLASSNAME_PRESSED);
