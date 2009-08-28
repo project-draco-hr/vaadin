@@ -1,0 +1,19 @@
+{
+  VCaption caption=widgetToCaption.get(component);
+  if (VCaption.isNeeded(uidl)) {
+    Widget widget=(Widget)component;
+    if (caption == null) {
+      caption=new VCaption(component,client);
+      widgetToCaption.put(widget,caption);
+      insert(caption,getWidgetIndex(widget));
+    }
+ else     if (!caption.isAttached()) {
+      insert(caption,getWidgetIndex(widget));
+    }
+    caption.updateCaption(uidl);
+  }
+ else   if (caption != null) {
+    remove(caption);
+    widgetToCaption.remove(component);
+  }
+}

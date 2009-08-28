@@ -1,0 +1,48 @@
+{
+  this.client=client;
+  final ArrayList<Widget> oldWidgets=new ArrayList<Widget>();
+  for (final Iterator<Widget> iterator=iterator(); iterator.hasNext(); ) {
+    oldWidgets.add(iterator.next());
+  }
+  clear();
+  ValueMap mapAttribute=null;
+  if (uidl.hasAttribute("css")) {
+    mapAttribute=uidl.getMapAttribute("css");
+  }
+  for (final Iterator<Object> i=uidl.getChildIterator(); i.hasNext(); ) {
+    final UIDL r=(UIDL)i.next();
+    final Paintable child=client.getPaintable(r);
+    if (oldWidgets.contains(child)) {
+      oldWidgets.remove(child);
+    }
+    add((Widget)child);
+    if (mapAttribute != null && mapAttribute.containsKey(r.getId())) {
+      String css=null;
+      try {
+        Style style=((Widget)child).getElement().getStyle();
+        css=mapAttribute.getString(r.getId());
+        String[] cssRules=css.split(";");
+        for (int j=0; j < cssRules.length; j++) {
+          String[] rule=cssRules[j].split(":");
+          if (rule.length == 0) {
+            continue;
+          }
+ else {
+            style.setProperty(makeCamelCase(rule[0].trim()),rule[1].trim());
+          }
+        }
+      }
+ catch (      Exception e) {
+        ApplicationConnection.getConsole().log("CssLayout encounterd invalid css string: " + css);
+      }
+    }
+    if (!r.getBooleanAttribute("cached")) {
+      child.updateFromUIDL(r,client);
+    }
+  }
+  for (final Iterator<Widget> it=oldWidgets.iterator(); it.hasNext(); ) {
+    final Paintable w=(Paintable)it.next();
+    client.unregisterPaintable(w);
+    widgetToCaption.remove(w);
+  }
+}

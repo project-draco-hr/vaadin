@@ -1,0 +1,33 @@
+{
+  setMargin(true);
+  Label demostyle=new Label("<style>" + ".floatedpanel {float:right;} " + ".footer {width: 3in; padding: 3px;margin-left:auto;margin-right:auto;"+ "clear:both; height:40px; background-color: grey; white-space:normal;} "+ ".brick {text-align:center;width: 100px; height: 100px; margin: 10px;padding:10px;"+ "background-color:#1E2123; color:white;float:left; border: 3px solid black;} "+ "</style>",Label.CONTENT_XHTML);
+  addComponent(demostyle);
+  final Panel panel=new Panel("Panel");
+  panel.setStyleName("floatedpanel");
+  panel.setWidth("30%");
+  panel.setHeight("370px");
+  panel.addComponent(new Label("This panel is 30% width " + "and 370px height(defined on server side) " + "and floated right (with custom css). "+ "Try resizesing browser window to see "+ "how black boxes (floated to left) "+ "behave. Every third of them has red "+ "color to demonstrate dynamic css injection. "));
+  final Label bottomCenter=new Label("I'm 3 inches wide footer at the bottom " + "of the layout (and centered unless I'm in IE6)");
+  bottomCenter.setSizeUndefined();
+  bottomCenter.setStyleName("footer");
+  CssLayout cssLayout=new CssLayout(){
+    int brickCounter=0;
+    @Override protected String getCss(    Component c){
+      if (c instanceof Brick) {
+        brickCounter++;
+        if (brickCounter % 3 == 0) {
+          return "color: #ff6611; font-weight:bold;";
+        }
+      }
+      return null;
+    }
+  }
+;
+  cssLayout.setWidth("100%");
+  cssLayout.addComponent(panel);
+  for (int i=0; i < 15; i++) {
+    cssLayout.addComponent(new Brick());
+  }
+  cssLayout.addComponent(bottomCenter);
+  addComponent(cssLayout);
+}
