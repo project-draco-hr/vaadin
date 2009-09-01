@@ -1,0 +1,43 @@
+{
+  Label label=new Label("<h1>CssLayout performance test.</h1>",Label.CONTENT_XHTML);
+  getLayout().addComponent(label);
+  label=new Label("<em>Hint</em>. Use debug dialog to measure rendering times TODO: extend with size settings (to both layout and content).",Label.CONTENT_XHTML);
+  getLayout().addComponent(label);
+  ns=new NativeSelect("Select component to test");
+  ns.addItem(CssLayout.class);
+  ns.addItem(GridLayout.class);
+  ns.addItem(VerticalLayout.class);
+  ns.setNullSelectionAllowed(false);
+  ns.setValue(CssLayout.class);
+  ns2=new NativeSelect("Select component to render inside layout.");
+  ns2.addItem(Label.class);
+  ns2.addItem(Button.class);
+  ns2.setNullSelectionAllowed(false);
+  ns2.setValue(Label.class);
+  final TextField n=new TextField("Number of components");
+  n.setValue("1000");
+  final CheckBox cb=new CheckBox("Generate captions",false);
+  Button b=new Button("Render component");
+  b.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      int components=Integer.parseInt((String)n.getValue());
+      Layout layout=getCurrentLayout();
+      for (int i=0; i < components; i++) {
+        Component component=newTestComponent();
+        if (cb.booleanValue()) {
+          component.setCaption("caption " + i);
+        }
+        layout.addComponent(component);
+      }
+      testarea.removeAllComponents();
+      testarea.addComponent(layout);
+    }
+  }
+);
+  getLayout().addComponent(ns);
+  getLayout().addComponent(ns2);
+  getLayout().addComponent(n);
+  getLayout().addComponent(cb);
+  getLayout().addComponent(b);
+  getLayout().addComponent(testarea);
+}
