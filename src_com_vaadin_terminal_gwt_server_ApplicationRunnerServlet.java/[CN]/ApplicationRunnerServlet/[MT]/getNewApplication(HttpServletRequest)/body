@@ -1,7 +1,6 @@
 {
   try {
-    Class<?> applicationClass=getClassLoader().loadClass(applicationClassName);
-    final Application application=(Application)applicationClass.newInstance();
+    final Application application=(Application)getApplicationClass().newInstance();
     return application;
   }
  catch (  final IllegalAccessException e) {
@@ -11,6 +10,6 @@ catch (  final InstantiationException e) {
     throw new ServletException(e);
   }
 catch (  final ClassNotFoundException e) {
-    throw new ServletException(new InstantiationException("Failed to load application class: " + applicationClassName));
+    throw new ServletException(new InstantiationException("Failed to load application class: " + getApplicationRunnerApplicationClassName(request)));
   }
 }
