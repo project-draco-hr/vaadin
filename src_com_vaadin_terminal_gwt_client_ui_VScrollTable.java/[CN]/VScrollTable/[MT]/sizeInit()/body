@@ -48,35 +48,33 @@
   if (availW > total) {
     final int extraSpace=availW - total;
     final int totalWidthR=total - totalExplicitColumnsWidths;
-    if (totalWidthR > 0) {
-      needsReLayout=true;
-      if (expandRatioDivider > 0) {
-        headCells=tHead.iterator();
-        i=0;
-        while (headCells.hasNext()) {
-          HeaderCell hCell=(HeaderCell)headCells.next();
-          if (hCell.getExpandRatio() > 0) {
-            int w=widths[i];
-            final int newSpace=(int)(extraSpace * (hCell.getExpandRatio() / expandRatioDivider));
-            w+=newSpace;
-            widths[i]=w;
-          }
-          i++;
+    needsReLayout=true;
+    if (expandRatioDivider > 0) {
+      headCells=tHead.iterator();
+      i=0;
+      while (headCells.hasNext()) {
+        HeaderCell hCell=(HeaderCell)headCells.next();
+        if (hCell.getExpandRatio() > 0) {
+          int w=widths[i];
+          final int newSpace=(int)(extraSpace * (hCell.getExpandRatio() / expandRatioDivider));
+          w+=newSpace;
+          widths[i]=w;
         }
+        i++;
       }
- else {
-        headCells=tHead.iterator();
-        i=0;
-        while (headCells.hasNext()) {
-          HeaderCell hCell=(HeaderCell)headCells.next();
-          if (!hCell.isDefinedWidth()) {
-            int w=widths[i];
-            final int newSpace=extraSpace * w / totalWidthR;
-            w+=newSpace;
-            widths[i]=w;
-          }
-          i++;
+    }
+ else     if (totalWidthR > 0) {
+      headCells=tHead.iterator();
+      i=0;
+      while (headCells.hasNext()) {
+        HeaderCell hCell=(HeaderCell)headCells.next();
+        if (!hCell.isDefinedWidth()) {
+          int w=widths[i];
+          final int newSpace=extraSpace * w / totalWidthR;
+          w+=newSpace;
+          widths[i]=w;
         }
+        i++;
       }
     }
   }
