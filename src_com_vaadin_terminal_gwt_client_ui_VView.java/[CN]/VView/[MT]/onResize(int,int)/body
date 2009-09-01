@@ -1,0 +1,42 @@
+{
+  if (BrowserInfo.get().isIE()) {
+    if (resizeTimer == null) {
+      resizeTimer=new Timer(){
+        @Override public void run(){
+          boolean changed=false;
+          if (width != getOffsetWidth()) {
+            width=getOffsetWidth();
+            changed=true;
+            ApplicationConnection.getConsole().log("window w" + width);
+          }
+          if (height != getOffsetHeight()) {
+            height=getOffsetHeight();
+            changed=true;
+            ApplicationConnection.getConsole().log("window h" + height);
+          }
+          if (changed) {
+            ApplicationConnection.getConsole().log("Running layout functions due window resize");
+            connection.runDescendentsLayout(VView.this);
+            sendClientResized();
+          }
+        }
+      }
+;
+    }
+ else {
+      resizeTimer.cancel();
+    }
+    resizeTimer.schedule(200);
+  }
+ else {
+    if (wwidth == width && wheight == height) {
+      return;
+    }
+    width=Window.getClientWidth();
+    height=Window.getClientHeight();
+    ApplicationConnection.getConsole().log("Running layout functions due window resize");
+    connection.runDescendentsLayout(this);
+    Util.runWebkitOverflowAutoFix(getElement());
+    sendClientResized();
+  }
+}
