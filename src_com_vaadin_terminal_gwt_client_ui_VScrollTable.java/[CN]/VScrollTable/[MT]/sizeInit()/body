@@ -30,17 +30,17 @@
   boolean willHaveScrollbarz=willHaveScrollbars();
   if (width == null || "".equals(width)) {
     int w=total;
-    w+=tBody.getCellExtraWidth() * visibleColOrder.length;
+    w+=scrollBody.getCellExtraWidth() * visibleColOrder.length;
     if (willHaveScrollbarz) {
       w+=Util.getNativeScrollbarSize();
     }
     setContentWidth(w);
   }
-  int availW=tBody.getAvailableWidth();
+  int availW=scrollBody.getAvailableWidth();
   if (BrowserInfo.get().isIE()) {
-    availW=tBody.getAvailableWidth();
+    availW=scrollBody.getAvailableWidth();
   }
-  availW-=tBody.getCellExtraWidth() * visibleColOrder.length;
+  availW-=scrollBody.getCellExtraWidth() * visibleColOrder.length;
   if (willHaveScrollbarz) {
     availW-=Util.getNativeScrollbarSize();
   }
@@ -93,17 +93,17 @@
     i++;
   }
   if (needsReLayout) {
-    tBody.reLayoutComponents();
+    scrollBody.reLayoutComponents();
   }
   updatePageLength();
   if (height == null || "".equals(height)) {
     if (pageLength == totalRows) {
-      int bodyHeight=tBody.getOffsetHeight();
+      int bodyHeight=scrollBody.getRequiredHeight();
       bodyContainer.setHeight(bodyHeight + "px");
       Util.runWebkitOverflowAutoFix(bodyContainer.getElement());
     }
  else {
-      int bodyHeight=(tBody.getRowHeight(true) * pageLength);
+      int bodyHeight=(scrollBody.getRowHeight(true) * pageLength);
       bodyContainer.setHeight(bodyHeight + "px");
     }
   }
@@ -111,16 +111,16 @@
   if (firstvisible > 0) {
     DeferredCommand.addCommand(new Command(){
       public void execute(){
-        bodyContainer.setScrollPosition(firstvisible * tBody.getRowHeight());
+        bodyContainer.setScrollPosition(firstvisible * scrollBody.getRowHeight());
         firstRowInViewPort=firstvisible;
       }
     }
 );
   }
   if (enabled) {
-    if (tBody.getLastRendered() + 1 < firstRowInViewPort + pageLength + (int)cache_react_rate * pageLength) {
-      if (totalRows - 1 > tBody.getLastRendered()) {
-        int firstInNewSet=tBody.getLastRendered() + 1;
+    if (scrollBody.getLastRendered() + 1 < firstRowInViewPort + pageLength + (int)cache_react_rate * pageLength) {
+      if (totalRows - 1 > scrollBody.getLastRendered()) {
+        int firstInNewSet=scrollBody.getLastRendered() + 1;
         rowRequestHandler.setReqFirstRow(firstInNewSet);
         int lastInNewSet=(int)(firstRowInViewPort + pageLength + cache_rate * pageLength);
         if (lastInNewSet > totalRows - 1) {

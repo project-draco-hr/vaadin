@@ -12,7 +12,7 @@
   emitClickEvents=uidl.getBooleanAttribute("listenClicks");
   final int newTotalRows=uidl.getIntAttribute("totalrows");
   if (newTotalRows != totalRows) {
-    if (tBody != null) {
+    if (scrollBody != null) {
       if (totalRows == 0) {
         tHead.clear();
       }
@@ -31,9 +31,9 @@
     pageLength=totalRows;
   }
   firstvisible=uidl.hasVariable("firstvisible") ? uidl.getIntVariable("firstvisible") : 0;
-  if (firstvisible != lastRequestedFirstvisible && tBody != null) {
+  if (firstvisible != lastRequestedFirstvisible && scrollBody != null) {
     firstRowInViewPort=firstvisible;
-    bodyContainer.setScrollPosition(firstvisible * tBody.getRowHeight());
+    bodyContainer.setScrollPosition(firstvisible * scrollBody.getRowHeight());
   }
   showRowHeaders=uidl.getBooleanAttribute("rowheaders");
   showColHeaders=uidl.getBooleanAttribute("colheaders");
@@ -94,23 +94,23 @@
     }
   }
  else {
-    if (tBody != null) {
-      tBody.removeFromParent();
-      lazyUnregistryBag.add(tBody);
+    if (scrollBody != null) {
+      scrollBody.removeFromParent();
+      lazyUnregistryBag.add(scrollBody);
     }
-    tBody=new VScrollTableBody();
-    tBody.renderInitialRows(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
-    bodyContainer.add(tBody);
+    scrollBody=new VScrollTableBody();
+    scrollBody.renderInitialRows(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
+    bodyContainer.add(scrollBody);
     initialContentReceived=true;
     if (isAttached()) {
       sizeInit();
     }
   }
   if (selectMode == Table.SELECT_MODE_NONE) {
-    tBody.addStyleName(CLASSNAME + "-body-noselection");
+    scrollBody.addStyleName(CLASSNAME + "-body-noselection");
   }
  else {
-    tBody.removeStyleName(CLASSNAME + "-body-noselection");
+    scrollBody.removeStyleName(CLASSNAME + "-body-noselection");
   }
   hideScrollPositionAnnotation();
   purgeUnregistryBag();

@@ -5,12 +5,12 @@
     return;
   }
   if (!enabled) {
-    bodyContainer.setScrollPosition(firstRowInViewPort * tBody.getRowHeight());
+    bodyContainer.setScrollPosition(firstRowInViewPort * scrollBody.getRowHeight());
     return;
   }
   rowRequestHandler.cancel();
   tHead.setHorizontalScrollPosition(scrollLeft);
-  firstRowInViewPort=(int)Math.ceil(scrollTop / (double)tBody.getRowHeight());
+  firstRowInViewPort=(int)Math.ceil(scrollTop / (double)scrollBody.getRowHeight());
   if (firstRowInViewPort > totalRows - pageLength) {
     firstRowInViewPort=totalRows - pageLength;
   }
@@ -22,8 +22,8 @@
   if (preLimit < 0) {
     preLimit=0;
   }
-  final int lastRendered=tBody.getLastRendered();
-  final int firstRendered=tBody.getFirstRendered();
+  final int lastRendered=scrollBody.getLastRendered();
+  final int firstRendered=scrollBody.getFirstRendered();
   if (postLimit <= lastRendered && preLimit >= firstRendered) {
     lastRequestedFirstvisible=firstRowInViewPort;
     client.updateVariable(paintableId,"firstvisible",firstRowInViewPort,false);

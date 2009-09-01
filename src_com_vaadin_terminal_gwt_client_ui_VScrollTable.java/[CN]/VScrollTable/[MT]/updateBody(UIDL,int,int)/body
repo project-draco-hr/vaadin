@@ -1,23 +1,23 @@
 {
   if (uidl == null || reqRows < 1) {
     if (firstRow < 0) {
-      while (tBody.getLastRendered() > tBody.firstRendered) {
-        tBody.unlinkRow(false);
+      while (scrollBody.getLastRendered() > scrollBody.firstRendered) {
+        scrollBody.unlinkRow(false);
       }
-      tBody.unlinkRow(false);
+      scrollBody.unlinkRow(false);
     }
     return;
   }
-  tBody.renderRows(uidl,firstRow,reqRows);
+  scrollBody.renderRows(uidl,firstRow,reqRows);
   final int optimalFirstRow=(int)(firstRowInViewPort - pageLength * cache_rate);
   boolean cont=true;
-  while (cont && tBody.getLastRendered() > optimalFirstRow && tBody.getFirstRendered() < optimalFirstRow) {
-    cont=tBody.unlinkRow(true);
+  while (cont && scrollBody.getLastRendered() > optimalFirstRow && scrollBody.getFirstRendered() < optimalFirstRow) {
+    cont=scrollBody.unlinkRow(true);
   }
   final int optimalLastRow=(int)(firstRowInViewPort + pageLength + pageLength * cache_rate);
   cont=true;
-  while (cont && tBody.getLastRendered() > optimalLastRow) {
-    cont=tBody.unlinkRow(false);
+  while (cont && scrollBody.getLastRendered() > optimalLastRow) {
+    cont=scrollBody.unlinkRow(false);
   }
-  tBody.fixSpacers();
+  scrollBody.fixSpacers();
 }
