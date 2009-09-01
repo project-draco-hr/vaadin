@@ -1,0 +1,35 @@
+{
+  boolean locked=false;
+  MemcacheService memcache=null;
+  String mutex=null;
+  try {
+    RequestType requestType=getRequestType(request);
+    if (requestType == RequestType.UIDL) {
+      memcache=MemcacheServiceFactory.getMemcacheService();
+      mutex=MUTEX_BASE + request.getSession().getId();
+      locked=memcache.put(mutex,1,Expiration.byDeltaSeconds(40),MemcacheService.SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
+      if (!locked) {
+        request.setAttribute("noSerialize",new Object());
+        response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+        response.setHeader("Retry-After","" + RETRY_AFTER_MILLISECONDS);
+        return;
+      }
+    }
+    super.service(request,response);
+    if (request.getAttribute("noSerialize") == null) {
+      HttpSession session=request.getSession(false);
+      if (session != null) {
+        session.setAttribute("sessionUpdated",new Date().getTime());
+      }
+    }
+  }
+ catch (  DeadlineExceededException e) {
+    System.err.println("DeadlineExceeded for " + request.getSession().getId());
+    criticalNotification(request,response,"Deadline Exceeded","I'm sorry, but the operation took too long to complete. We'll try reloading to see where we're at, please take note of any unsaved data...","",null);
+  }
+ finally {
+    if (locked) {
+      memcache.delete(mutex,KEEP_MUTEX_MILLISECONDS);
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   startRequest();
-  requestData=uidl_security_key + VAR_BURST_SEPARATOR + requestData;
-  console.log("Making UIDL Request with params: " + requestData);
+  final String rd=uidl_security_key + VAR_BURST_SEPARATOR + requestData;
+  console.log("Making UIDL Request with params: " + rd);
   String uri=getAppUri() + "UIDL" + configuration.getPathInfo();
   if (repaintAll) {
     int clientHeight=Window.getClientHeight();
@@ -21,10 +21,11 @@
     uri+=(repaintAll ? "&" : "?") + "windowName=" + windowName;
   }
   if (!forceSync) {
+    boolean success=false;
     final RequestBuilder rb=new RequestBuilder(RequestBuilder.POST,uri);
     rb.setHeader("Content-Type","text/plain;charset=utf-8");
     try {
-      rb.sendRequest(requestData,new RequestCallback(){
+      rb.sendRequest(rd,new RequestCallback(){
         public void onError(        Request request,        Throwable exception){
           showCommunicationError(exception.getMessage());
           endRequest();
@@ -38,52 +39,63 @@ switch (response.getStatusCode()) {
 case 0:
             showCommunicationError("Invalid status code 0 (server down?)");
           return;
-      }
-      if ("init".equals(uidl_security_key)) {
-        String key=response.getHeader(UIDL_SECURITY_HEADER);
-        if (null != key) {
-          uidl_security_key=key;
-        }
-      }
-      if (applicationRunning) {
-        handleReceivedJSONMessage(response);
-      }
- else {
-        applicationRunning=true;
-        handleWhenCSSLoaded(response);
-        ApplicationConfiguration.startNextApplication();
+case 503:
+        int delay=Integer.parseInt(response.getHeader("Retry-After"));
+      console.log("503, retrying in " + delay + "msec");
+    (new Timer(){
+      @Override public void run(){
+        activeRequests--;
+        makeUidlRequest(requestData,repaintAll,forceSync,analyzeLayouts);
       }
     }
-    int cssWaits=0;
-    static final int MAX_CSS_WAITS=20;
-    private void handleWhenCSSLoaded(    final Response response){
-      int heightOfLoadElement=DOM.getElementPropertyInt(loadElement,"offsetHeight");
-      if (heightOfLoadElement == 0 && cssWaits < MAX_CSS_WAITS) {
-        (new Timer(){
-          @Override public void run(){
-            handleWhenCSSLoaded(response);
-          }
-        }
-).schedule(50);
-        console.log("Assuming CSS loading is not complete, " + "postponing render phase. " + "(.v-loading-indicator height == 0)");
-        cssWaits++;
-      }
+).schedule(delay);
+  return;
+}
+if ("init".equals(uidl_security_key)) {
+String key=response.getHeader(UIDL_SECURITY_HEADER);
+if (null != key) {
+  uidl_security_key=key;
+}
+}
+if (applicationRunning) {
+handleReceivedJSONMessage(response);
+}
  else {
-        handleReceivedJSONMessage(response);
-        if (cssWaits >= MAX_CSS_WAITS) {
-          console.error("CSS files may have not loaded properly.");
-        }
-      }
-    }
+applicationRunning=true;
+handleWhenCSSLoaded(response);
+ApplicationConfiguration.startNextApplication();
+}
+}
+int cssWaits=0;
+static final int MAX_CSS_WAITS=20;
+private void handleWhenCSSLoaded(final Response response){
+int heightOfLoadElement=DOM.getElementPropertyInt(loadElement,"offsetHeight");
+if (heightOfLoadElement == 0 && cssWaits < MAX_CSS_WAITS) {
+(new Timer(){
+  @Override public void run(){
+    handleWhenCSSLoaded(response);
   }
+}
+).schedule(50);
+console.log("Assuming CSS loading is not complete, " + "postponing render phase. " + "(.v-loading-indicator height == 0)");
+cssWaits++;
+}
+ else {
+handleReceivedJSONMessage(response);
+if (cssWaits >= MAX_CSS_WAITS) {
+  console.error("CSS files may have not loaded properly.");
+}
+}
+}
+}
 );
 }
  catch (final RequestException e) {
-  ClientExceptionHandler.displayError(e);
-  endRequest();
+ClientExceptionHandler.displayError(e);
+endRequest();
 }
 }
  else {
-syncSendForce(((HTTPRequestImpl)GWT.create(HTTPRequestImpl.class)).createXmlHTTPRequest(),uri + "&" + PARAM_UNLOADBURST+ "=1",requestData);
+syncSendForce(((HTTPRequestImpl)GWT.create(HTTPRequestImpl.class)).createXmlHTTPRequest(),uri + "&" + PARAM_UNLOADBURST+ "=1",rd);
 }
 }
