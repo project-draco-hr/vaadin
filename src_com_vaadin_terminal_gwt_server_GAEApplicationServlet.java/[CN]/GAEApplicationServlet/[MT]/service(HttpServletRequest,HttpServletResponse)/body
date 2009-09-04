@@ -1,35 +1,73 @@
 {
+  RequestType requestType=getRequestType(request);
+  if (requestType == RequestType.STATIC_FILE) {
+    super.service(request,response);
+    cleanSession(request);
+    return;
+  }
+  if (requestType == RequestType.APPLICATION_RESOURCE) {
+    getApplicationContext(request,MemcacheServiceFactory.getMemcacheService());
+    super.service(request,response);
+    cleanSession(request);
+    return;
+  }
+  final HttpSession session=request.getSession(requestCanCreateApplication(request,requestType));
+  if (session == null) {
+    handleServiceSessionExpired(request,response);
+    cleanSession(request);
+    return;
+  }
   boolean locked=false;
   MemcacheService memcache=null;
-  String mutex=null;
+  String mutex=MUTEX_BASE + session.getId();
+  memcache=MemcacheServiceFactory.getMemcacheService();
   try {
-    RequestType requestType=getRequestType(request);
-    if (requestType == RequestType.UIDL) {
-      memcache=MemcacheServiceFactory.getMemcacheService();
-      mutex=MUTEX_BASE + request.getSession().getId();
+    long started=new Date().getTime();
+    while (requestType != RequestType.UIDL || new Date().getTime() - started < MAX_UIDL_WAIT_MILLISECONDS) {
       locked=memcache.put(mutex,1,Expiration.byDeltaSeconds(40),MemcacheService.SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
-      if (!locked) {
-        request.setAttribute("noSerialize",new Object());
-        response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-        response.setHeader("Retry-After","" + RETRY_AFTER_MILLISECONDS);
-        return;
+      if (locked) {
+        break;
+      }
+      try {
+        Thread.sleep(RETRY_AFTER_MILLISECONDS);
+      }
+ catch (      InterruptedException e) {
+        System.err.println("Thread.sleep() interrupted while waiting for lock. Trying again.");
+        e.printStackTrace(System.err);
       }
     }
+    if (!locked) {
+      response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+      response.setHeader("Retry-After","" + RETRY_AFTER_MILLISECONDS);
+      return;
+    }
+    ApplicationContext ctx=getApplicationContext(request,memcache);
     super.service(request,response);
-    if (request.getAttribute("noSerialize") == null) {
-      HttpSession session=request.getSession(false);
-      if (session != null) {
-        session.setAttribute("sessionUpdated",new Date().getTime());
-      }
-    }
+    started=new Date().getTime();
+    ByteArrayOutputStream baos=new ByteArrayOutputStream();
+    ObjectOutputStream oos=new ObjectOutputStream(baos);
+    oos.writeObject(ctx);
+    oos.flush();
+    byte[] bytes=baos.toByteArray();
+    started=new Date().getTime();
+    String id=AC_BASE + session.getId();
+    Date expire=new Date(started + (session.getMaxInactiveInterval() * 1000));
+    Expiration expires=Expiration.onDate(expire);
+    memcache.put(id,bytes,expires);
+    DatastoreService ds=DatastoreServiceFactory.getDatastoreService();
+    Entity entity=new Entity(AC_BASE,id);
+    entity.setProperty(PROPERTY_EXPIRES,expire.getTime());
+    entity.setProperty(PROPERTY_DATA,new Blob(bytes));
+    ds.put(entity);
   }
  catch (  DeadlineExceededException e) {
-    System.err.println("DeadlineExceeded for " + request.getSession().getId());
+    System.err.println("DeadlineExceeded for " + session.getId());
     criticalNotification(request,response,"Deadline Exceeded","I'm sorry, but the operation took too long to complete. We'll try reloading to see where we're at, please take note of any unsaved data...","",null);
   }
  finally {
     if (locked) {
-      memcache.delete(mutex,KEEP_MUTEX_MILLISECONDS);
+      memcache.delete(mutex);
     }
+    cleanSession(request);
   }
 }

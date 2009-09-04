@@ -1,9 +1,10 @@
 {
-  if (serveStaticResources(request,response)) {
+  RequestType requestType=getRequestType(request);
+  if (requestType == RequestType.STATIC_FILE) {
+    serveStaticResources(request,response);
     return;
   }
   Application application=null;
-  RequestType requestType=getRequestType(request);
   try {
     if (requestType == RequestType.UIDL && request.getParameterMap().containsKey(ApplicationConnection.PARAM_UNLOADBURST) && request.getContentLength() < 1 && getExistingApplication(request,false) == null) {
       redirectToApplication(request,response);
