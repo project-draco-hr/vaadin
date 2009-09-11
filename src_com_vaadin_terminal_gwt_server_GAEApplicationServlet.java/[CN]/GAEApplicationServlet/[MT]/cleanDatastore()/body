@@ -1,0 +1,39 @@
+{
+  long expire=new Date().getTime();
+  try {
+    DatastoreService ds=DatastoreServiceFactory.getDatastoreService();
+{
+      Query q=new Query(AC_BASE);
+      q.setKeysOnly();
+      q.addFilter(PROPERTY_EXPIRES,FilterOperator.LESS_THAN_OR_EQUAL,expire);
+      PreparedQuery pq=ds.prepare(q);
+      List<Entity> entities=pq.asList(Builder.withLimit(CLEANUP_LIMIT));
+      if (entities != null) {
+        log.info("Vaadin cleanup deleting " + entities.size() + " expired Vaadin sessions.");
+        List<Key> keys=new ArrayList<Key>();
+        for (        Entity e : entities) {
+          keys.add(e.getKey());
+        }
+        ds.delete(keys);
+      }
+    }
+{
+      Query q=new Query(APPENGINE_SESSION_KIND);
+      q.setKeysOnly();
+      q.addFilter(PROPERTY_APPENGINE_EXPIRES,FilterOperator.LESS_THAN_OR_EQUAL,expire);
+      PreparedQuery pq=ds.prepare(q);
+      List<Entity> entities=pq.asList(Builder.withLimit(CLEANUP_LIMIT));
+      if (entities != null) {
+        log.info("Vaadin cleanup deleting " + entities.size() + " expired appengine sessions.");
+        List<Key> keys=new ArrayList<Key>();
+        for (        Entity e : entities) {
+          keys.add(e.getKey());
+        }
+        ds.delete(keys);
+      }
+    }
+  }
+ catch (  Exception e) {
+    log.warning("Exception while cleaning: " + getStackTraceAsString(e));
+  }
+}

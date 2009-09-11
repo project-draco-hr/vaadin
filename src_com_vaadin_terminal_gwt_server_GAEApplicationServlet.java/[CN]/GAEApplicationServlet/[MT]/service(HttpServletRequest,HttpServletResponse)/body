@@ -1,4 +1,8 @@
 {
+  if (isCleanupRequest(request)) {
+    cleanDatastore();
+    return;
+  }
   RequestType requestType=getRequestType(request);
   if (requestType == RequestType.STATIC_FILE) {
     super.service(request,response);
@@ -32,8 +36,7 @@
         Thread.sleep(RETRY_AFTER_MILLISECONDS);
       }
  catch (      InterruptedException e) {
-        System.err.println("Thread.sleep() interrupted while waiting for lock. Trying again.");
-        e.printStackTrace(System.err);
+        log.info("Thread.sleep() interrupted while waiting for lock. Trying again. " + e);
       }
     }
     if (!locked) {
@@ -61,12 +64,16 @@
     ds.put(entity);
   }
  catch (  DeadlineExceededException e) {
-    System.err.println("DeadlineExceeded for " + session.getId());
+    log.severe("DeadlineExceeded for " + session.getId());
     sendDeadlineExceededNotification(request,response);
   }
 catch (  NotSerializableException e) {
     sendNotSerializableNotification(request,response);
-    e.printStackTrace(System.err);
+    log.severe("NotSerializableException: " + getStackTraceAsString(e));
+  }
+catch (  Exception e) {
+    sendCriticalErrorNotification(request,response);
+    log.severe(e + ": " + getStackTraceAsString(e));
   }
  finally {
     if (locked) {
