@@ -26,8 +26,8 @@
   }
 synchronized (openList) {
     if (!openList.isEmpty()) {
-      for (final Iterator i=openList.iterator(); i.hasNext(); ) {
-        ((OpenResource)i.next()).paintContent(target);
+      for (final Iterator<OpenResource> i=openList.iterator(); i.hasNext(); ) {
+        (i.next()).paintContent(target);
       }
       openList.clear();
     }
@@ -36,14 +36,14 @@ synchronized (openList) {
   target.addVariable(this,"positionx",getPositionX());
   target.addVariable(this,"positiony",getPositionY());
   target.addVariable(this,"close",false);
-  for (final Iterator i=subwindows.iterator(); i.hasNext(); ) {
-    final Window w=(Window)i.next();
+  for (final Iterator<Window> i=subwindows.iterator(); i.hasNext(); ) {
+    final Window w=i.next();
     w.paint(target);
   }
   if (notifications != null) {
     target.startTag("notifications");
-    for (final Iterator it=notifications.iterator(); it.hasNext(); ) {
-      final Notification n=(Notification)it.next();
+    for (final Iterator<Notification> it=notifications.iterator(); it.hasNext(); ) {
+      final Notification n=it.next();
       target.startTag("notification");
       if (n.getCaption() != null) {
         target.addAttribute("caption",n.getCaption());

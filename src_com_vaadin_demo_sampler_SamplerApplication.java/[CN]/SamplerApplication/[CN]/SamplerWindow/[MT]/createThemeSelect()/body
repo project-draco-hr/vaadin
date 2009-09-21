@@ -6,15 +6,24 @@
   theme.setImmediate(true);
   theme.setNullSelectionAllowed(false);
   for (  String themeName : THEMES) {
-    theme.addItem(SAMPLER_THEME_NAME + "-" + themeName);
-    theme.setItemCaption(SAMPLER_THEME_NAME + "-" + themeName,themeName.substring(0,1).toUpperCase() + themeName.substring(1) + " theme");
+    String id=SAMPLER_THEME_NAME + "-" + themeName;
+    theme.addItem(id);
+    theme.setItemCaption(id,themeName.substring(0,1).toUpperCase() + themeName.substring(1) + " theme");
+    theme.setItemIcon(id,EMPTY_THEME_ICON);
   }
-  theme.setValue(currentTheme);
+  final String currentWindowTheme=getTheme();
+  theme.setValue(currentWindowTheme);
+  theme.setItemIcon(currentWindowTheme,SELECTED_THEME_ICON);
   theme.addListener(new ComboBox.ValueChangeListener(){
     public void valueChange(    ValueChangeEvent event){
       final String newTheme=event.getProperty().getValue().toString();
       setTheme(newTheme);
-      currentTheme=newTheme;
+      for (      String themeName : THEMES) {
+        String id=SAMPLER_THEME_NAME + "-" + themeName;
+        theme.setItemIcon(id,EMPTY_THEME_ICON);
+      }
+      theme.setItemIcon(newTheme,SELECTED_THEME_ICON);
+      currentApplicationTheme=newTheme;
     }
   }
 );
