@@ -14,6 +14,16 @@
   }
   response.setContentType("application/json; charset=UTF-8");
   outWriter.print("for(;;);[{");
+  if (request.getAttribute(WRITE_SECURITY_TOKEN_FLAG) != null) {
+    String seckey=(String)request.getSession().getAttribute(ApplicationConnection.UIDL_SECURITY_TOKEN_ID);
+    if (seckey == null) {
+      seckey="" + (int)(Math.random() * 1000000);
+      request.getSession().setAttribute(ApplicationConnection.UIDL_SECURITY_TOKEN_ID,seckey);
+    }
+    outWriter.print("\"" + ApplicationConnection.UIDL_SECURITY_TOKEN_ID + "\":\"");
+    outWriter.print(seckey);
+    outWriter.print("\",");
+  }
   outWriter.print("\"changes\":[");
   ArrayList<Paintable> paintables=null;
   if (!window.getName().equals(closingWindowName)) {
