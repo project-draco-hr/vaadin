@@ -2,6 +2,13 @@
   TreeItem temp=getChild(0);
   removeItem(temp);
   String nodeName=uidl.getTag();
+  try {
+    Integer.parseInt(nodeName);
+    Class<? extends Paintable> widgetClassByDecodedTag=conf.getWidgetClassByEncodedTag(nodeName);
+    nodeName=widgetClassByDecodedTag.getName();
+  }
+ catch (  Exception e) {
+  }
   Set<String> attributeNames=uidl.getAttributeNames();
   for (  String name : attributeNames) {
     if (uidl.isMapAttribute(name)) {
@@ -62,7 +69,7 @@
     final Object child=i.next();
     try {
       final UIDL c=(UIDL)child;
-      final TreeItem childItem=new UIDLItem(c);
+      final TreeItem childItem=new UIDLItem(c,conf);
       addItem(childItem);
     }
  catch (    final Exception e) {

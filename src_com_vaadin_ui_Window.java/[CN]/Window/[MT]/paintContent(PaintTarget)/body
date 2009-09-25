@@ -36,9 +36,14 @@ synchronized (openList) {
   target.addVariable(this,"positionx",getPositionX());
   target.addVariable(this,"positiony",getPositionY());
   target.addVariable(this,"close",false);
-  for (final Iterator<Window> i=subwindows.iterator(); i.hasNext(); ) {
-    final Window w=i.next();
-    w.paint(target);
+  if (getParent() == null) {
+    for (final Iterator<Window> i=subwindows.iterator(); i.hasNext(); ) {
+      final Window w=i.next();
+      w.paint(target);
+    }
+  }
+ else {
+    target.addAttribute("sub",true);
   }
   if (notifications != null) {
     target.startTag("notifications");

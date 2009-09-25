@@ -52,11 +52,12 @@ synchronized (application) {
       try {
         out.close();
       }
- catch (      IOException e1) {
+ catch (      IOException ignored) {
       }
       fireUploadInterrupted(filename,type,totalBytes,e);
       endUpload();
       interrupted=false;
+      throw new IllegalStateException("Uploading failed",e);
     }
   }
 }

@@ -1,0 +1,29 @@
+{
+  PrintWriter printWriter=null;
+  printWriter=context.tryCreate(logger,packageName,className);
+  if (printWriter == null) {
+    return;
+  }
+  logger.log(Type.INFO,"Detecting vaading components in classpath to generate WidgetMapImpl.java ...");
+  Date date=new Date();
+  ClassSourceFileComposerFactory composer=null;
+  composer=new ClassSourceFileComposerFactory(packageName,className);
+  composer.setSuperclass("com.vaadin.terminal.gwt.client.WidgetMap");
+  SourceWriter sourceWriter=composer.createSourceWriter(context,printWriter);
+  Collection<Class<? extends Paintable>> paintablesHavingWidgetAnnotation=getUsedPaintables();
+  TypeOracle typeOracle=context.getTypeOracle();
+  for (Iterator iterator=paintablesHavingWidgetAnnotation.iterator(); iterator.hasNext(); ) {
+    Class<? extends Paintable> class1=(Class<? extends Paintable>)iterator.next();
+    ClientWidget annotation=class1.getAnnotation(ClientWidget.class);
+    if (typeOracle.findType(annotation.value().getName()) == null) {
+      logger.log(Type.WARN,"Widget implementation for " + class1.getName() + " not available for GWT compiler. If this is not "+ "intentional, check your gwt module definition file.");
+      iterator.remove();
+    }
+  }
+  generateImplementationDetector(sourceWriter,paintablesHavingWidgetAnnotation);
+  generateInstantiatorMethod(sourceWriter,paintablesHavingWidgetAnnotation);
+  sourceWriter.outdent();
+  sourceWriter.println("}");
+  context.commit(logger,printWriter);
+  logger.log(Type.INFO,"Done. (" + (new Date().getTime() - date.getTime()) / 1000 + "seconds)");
+}

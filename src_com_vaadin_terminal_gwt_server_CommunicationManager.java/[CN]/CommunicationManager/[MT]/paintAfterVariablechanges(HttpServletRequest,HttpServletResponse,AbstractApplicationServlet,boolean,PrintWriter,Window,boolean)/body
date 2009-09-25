@@ -1,6 +1,6 @@
 {
   if (repaintAll) {
-    for (final Iterator it=idPaintableMap.keySet().iterator(); it.hasNext(); ) {
+    for (final Iterator<String> it=idPaintableMap.keySet().iterator(); it.hasNext(); ) {
       final Component c=(Component)idPaintableMap.get(it.next());
       if (isChildOf(window,c)) {
         it.remove();
@@ -24,6 +24,11 @@
       repaintAll=true;
     }
     JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
+    OpenWindowCache windowCache=currentlyOpenWindowsInClient.get(window.getName());
+    if (windowCache == null) {
+      windowCache=new OpenWindowCache();
+      currentlyOpenWindowsInClient.put(window.getName(),windowCache);
+    }
     if (repaintAll) {
       paintables=new ArrayList<Paintable>();
       paintables.add(window);
@@ -31,7 +36,7 @@
       requireLocale(application.getLocale().toString());
     }
  else {
-      for (Iterator it=paintableIdMap.keySet().iterator(); it.hasNext(); ) {
+      for (Iterator<Paintable> it=paintableIdMap.keySet().iterator(); it.hasNext(); ) {
         Component p=(Component)it.next();
         if (p.getApplication() == null) {
           idPaintableMap.remove(paintableIdMap.get(p));
@@ -158,7 +163,7 @@ catch (    InvocationTargetException e) {
       themeName=AbstractApplicationServlet.getDefaultTheme();
     }
     int resourceIndex=0;
-    for (final Iterator i=paintTarget.getPreCachedResources().iterator(); i.hasNext(); ) {
+    for (final Iterator i=paintTarget.getUsedResources().iterator(); i.hasNext(); ) {
       final String resource=(String)i.next();
       InputStream is=null;
       try {
@@ -189,6 +194,27 @@ catch (    InvocationTargetException e) {
       }
     }
     outWriter.print("}");
+    Collection<Class<? extends Paintable>> usedPaintableTypes=paintTarget.getUsedPaintableTypes();
+    boolean typeMappingsOpen=false;
+    for (    Class<? extends Paintable> class1 : usedPaintableTypes) {
+      if (windowCache.cache(class1)) {
+        if (!typeMappingsOpen) {
+          typeMappingsOpen=true;
+          outWriter.print(", \"typeMappings\" : { ");
+        }
+ else {
+          outWriter.print(" , ");
+        }
+        String canonicalName=class1.getCanonicalName();
+        outWriter.print("\"");
+        outWriter.print(canonicalName);
+        outWriter.print("\" : ");
+        outWriter.print(getTagForType(class1));
+      }
+    }
+    if (typeMappingsOpen) {
+      outWriter.print(" }");
+    }
     printLocaleDeclarations(outWriter);
     outWriter.print("}]");
   }
