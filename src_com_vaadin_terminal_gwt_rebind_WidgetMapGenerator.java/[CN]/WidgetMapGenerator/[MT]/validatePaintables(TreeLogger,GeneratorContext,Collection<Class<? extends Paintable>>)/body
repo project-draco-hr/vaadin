@@ -1,0 +1,11 @@
+{
+  TypeOracle typeOracle=context.getTypeOracle();
+  for (Iterator<Class<? extends Paintable>> iterator=paintablesHavingWidgetAnnotation.iterator(); iterator.hasNext(); ) {
+    Class<? extends Paintable> class1=iterator.next();
+    ClientWidget annotation=class1.getAnnotation(ClientWidget.class);
+    if (typeOracle.findType(annotation.value().getName()) == null) {
+      logger.log(Type.WARN,"Widget implementation for " + class1.getName() + " not available for GWT compiler (but mapped "+ "for component found in classpath). If this is not "+ "intentional, check your gwt module definition file.");
+      iterator.remove();
+    }
+  }
+}
