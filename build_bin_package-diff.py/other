@@ -1,0 +1,37 @@
+import sys, os
+from sets import Set
+downloadsite = 'http://vaadin.com/download'
+latestfile = '/LATEST'
+wgetcmd = ('wget -q -O - %s' % (downloadsite + latestfile))
+pin = os.popen(wgetcmd, 'r')
+latestdata = pin.readlines()
+pin.close()
+latestversion = latestdata[0].strip()
+latestpath = latestdata[1].strip()
+latestURL = (((downloadsite + '/') + latestpath) + '/')
+linuxfilename = ('vaadin-linux-%s.tar.gz' % latestversion)
+linuxpackage = (latestURL + linuxfilename)
+locallinuxpackage = ('/tmp/%s' % linuxfilename)
+print ('Latest version:      %s' % latestversion)
+print ('Latest version path: %s' % latestpath)
+print ('Latest version URL:  %s' % latestURL)
+try:
+    os.stat(locallinuxpackage)
+    print ('Latest package already exists in %s' % locallinuxpackage)
+except OSError:
+    print ('Downloading Linux package %s to %s' % (linuxpackage, locallinuxpackage))
+    wgetcmd = ('wget -q -O %s %s' % (locallinuxpackage, linuxpackage))
+    command(wgetcmd)
+latestfiles = listfiles(locallinuxpackage)
+builtversion = sys.argv[1]
+builtpackage = ('build/result/vaadin-linux-%s.tar.gz' % builtversion)
+builtfiles = listfiles(builtpackage)
+newfiles = diffFiles(builtfiles, latestfiles)
+print ('\n%d new files:' % len(newfiles))
+for item in newfiles:
+    print item
+removed = diffFiles(latestfiles, builtfiles)
+print ('\n%d removed files:' % len(removed))
+for item in removed:
+    print item
+command(('rm %s' % locallinuxpackage))
