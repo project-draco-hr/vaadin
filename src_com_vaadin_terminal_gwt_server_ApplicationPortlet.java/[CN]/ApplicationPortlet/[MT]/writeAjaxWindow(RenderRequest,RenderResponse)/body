@@ -11,22 +11,19 @@
       String portalTheme=getPortalProperty(PORTAL_PARAMETER_VAADIN_THEME,portalCtx);
       String portalWidgetset=getPortalProperty(PORTAL_PARAMETER_VAADIN_WIDGETSET,portalCtx);
       String portalResourcePath=getPortalProperty(PORTAL_PARAMETER_VAADIN_RESOURCE_PATH,portalCtx);
-      if (isLifeRay && portalResourcePath == null) {
-        portalResourcePath="/html";
-      }
       if (portalResourcePath != null) {
         request.setAttribute(ApplicationServlet.REQUEST_VAADIN_STATIC_FILE_PATH,portalResourcePath);
       }
-      if (portalWidgetset != null) {
-        request.setAttribute(ApplicationServlet.REQUEST_WIDGETSET,portalWidgetset);
-      }
- else       if (portletWidgetset != null) {
+      if (portletWidgetset != null) {
         request.setAttribute(ApplicationServlet.REQUEST_WIDGETSET,portletWidgetset);
+      }
+      if (portalWidgetset != null) {
+        request.setAttribute(ApplicationServlet.REQUEST_SHARED_WIDGETSET,portalWidgetset);
       }
       if (style != null) {
         request.setAttribute(ApplicationServlet.REQUEST_APPSTYLE,style);
       }
-      if (portalTheme != null) {
+      if (portalTheme != null && portalResourcePath != null) {
         request.setAttribute(ApplicationServlet.REQUEST_DEFAULT_THEME,portalTheme);
         String defaultThemeUri=null;
         defaultThemeUri=portalResourcePath + "/" + AbstractApplicationServlet.THEME_DIRECTORY_PATH+ portalTheme;
