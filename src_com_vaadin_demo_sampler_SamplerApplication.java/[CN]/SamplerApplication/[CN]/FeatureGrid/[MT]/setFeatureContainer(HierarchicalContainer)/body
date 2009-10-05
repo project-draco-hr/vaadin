@@ -4,26 +4,24 @@
   for (Iterator<Feature> it=features.iterator(); it.hasNext(); ) {
     final Feature f=it.next();
     if (f instanceof FeatureSet) {
-      grid.newLine();
       Label title=new Label(f.getName());
       if (c.isRoot(f)) {
-        title.setWidth("100%");
         title.setStyleName("section");
-        grid.setRows(grid.getCursorY() + 1);
-        grid.addComponent(title,0,grid.getCursorY(),grid.getColumns() - 1,grid.getCursorY());
-        grid.setComponentAlignment(title,Alignment.MIDDLE_LEFT);
+        grid.addComponent(title);
       }
  else {
+        String text="<h3>" + f.getName() + "</h3>";
+        if (f.getDescription() != null && f.getDescription() != "") {
+          text+=f.getDescription().substring(0,f.getDescription().indexOf(".") + 1);
+        }
+        title=new Label(text,Label.CONTENT_XHTML);
         title.setStyleName("subsection");
+        title.setSizeUndefined();
         grid.addComponent(title);
-        grid.setComponentAlignment(title,Alignment.MIDDLE_LEFT);
       }
     }
  else {
-      if (grid.getCursorX() == 0) {
-        grid.space();
-      }
-      Button b=new NativeButton();
+      Button b=new Button(f.getName());
       b.setStyleName(Button.STYLE_LINK);
       b.addStyleName("screenshot");
       String resId="75-" + f.getIconName();
@@ -33,9 +31,6 @@
         iconCache.put(resId,res);
       }
       b.setIcon(res);
-      b.setWidth("75px");
-      b.setHeight("75px");
-      b.setDescription("<h3>" + f.getName() + "</h3>");
       b.addListener(new Button.ClickListener(){
         public void buttonClick(        ClickEvent event){
           ((SamplerWindow)getWindow()).setFeature(f);
