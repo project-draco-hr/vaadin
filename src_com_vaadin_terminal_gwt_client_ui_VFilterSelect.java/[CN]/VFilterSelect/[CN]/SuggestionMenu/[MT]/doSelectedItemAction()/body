@@ -12,37 +12,8 @@
     suggestionPopup.hide();
     return;
   }
-  int p=getItems().size();
-  if (p > 0) {
-    for (int i=0; i < p; i++) {
-      final MenuItem potentialExactMatch=(MenuItem)getItems().get(i);
-      if (potentialExactMatch.getText().equals(enteredItemValue)) {
-        selectItem(potentialExactMatch);
-        doItemAction(potentialExactMatch,true);
-        suggestionPopup.hide();
-        return;
-      }
-    }
+  selecting=filtering;
+  if (!filtering) {
+    doPostFilterSelectedItemAction();
   }
-  if (allowNewItem) {
-    if (!prompting && !enteredItemValue.equals(lastNewItemString)) {
-      lastNewItemString=enteredItemValue;
-      client.updateVariable(paintableId,"newitem",enteredItemValue,immediate);
-    }
-  }
- else   if (item != null && !"".equals(lastFilter) && item.getText().toLowerCase().startsWith(lastFilter.toLowerCase())) {
-    doItemAction(item,true);
-  }
- else {
-    if (currentSuggestion != null && !currentSuggestion.key.equals("")) {
-      String text=currentSuggestion.getReplacementString();
-      tb.setText(text);
-      selectedOptionKey=currentSuggestion.key;
-    }
- else {
-      tb.setText("");
-      selectedOptionKey=null;
-    }
-  }
-  suggestionPopup.hide();
 }
