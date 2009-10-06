@@ -6,12 +6,13 @@
   try {
     json=parseJSONResponse(jsonText);
   }
- catch (  final com.google.gwt.json.client.JSONException e) {
+ catch (  final Exception e) {
     endRequest();
     showCommunicationError(e.getMessage() + " - Original JSON-text:");
     console.log(jsonText);
     return;
   }
+  ApplicationConnection.getConsole().log("JSON parsing took " + (new Date().getTime() - start.getTime()));
   if (json.containsKey("redirect")) {
     String url=json.getValueMap("redirect").getString("url");
     console.log("redirecting to " + url);
@@ -29,6 +30,9 @@
       String key=keyArray.get(i);
       resourcesMap.put(key,resources.getAsString(key));
     }
+  }
+  if (json.containsKey("typeMappings")) {
+    configuration.addComponentMappings(json.getValueMap("typeMappings"),widgetSet);
   }
   if (json.containsKey("locales")) {
     JsArray<ValueMap> valueMapArray=json.getJSValueMapArray("locales");
@@ -81,7 +85,7 @@
         updatedWidgets.add(idToPaintableDetail.get(uidl.getId()).getComponent());
       }
  else {
-        if (!uidl.getTag().equals("window")) {
+        if (!uidl.getTag().equals("0")) {
           ClientExceptionHandler.displayError("Received update for " + uidl.getTag() + ", but there is no such paintable ("+ uidl.getId()+ ") rendered.");
         }
  else {

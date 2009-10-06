@@ -1,0 +1,28 @@
+{
+  if (!file.exists()) {
+    return;
+  }
+  if (!file.isDirectory()) {
+    includeJar(file,locations);
+    return;
+  }
+  if (file.isHidden() || file.getPath().contains(File.separator + ".")) {
+    return;
+  }
+  if (name == null) {
+    name="";
+  }
+ else {
+    name+=".";
+  }
+  File[] dirs=file.listFiles(DIRECTORIES_ONLY);
+  for (int i=0; i < dirs.length; i++) {
+    try {
+      locations.put(new URL("file://" + dirs[i].getCanonicalPath()),name + dirs[i].getName());
+    }
+ catch (    Exception ioe) {
+      return;
+    }
+    include(name + dirs[i].getName(),dirs[i],locations);
+  }
+}

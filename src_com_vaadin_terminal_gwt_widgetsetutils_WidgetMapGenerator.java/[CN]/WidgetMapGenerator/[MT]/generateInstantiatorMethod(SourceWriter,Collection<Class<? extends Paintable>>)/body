@@ -1,0 +1,21 @@
+{
+  sourceWriter.println("public Paintable instantiate(Class<? extends Paintable> classType) {");
+  sourceWriter.indent();
+  sourceWriter.println("Paintable p = super.instantiate(classType); if(p!= null) return p;");
+  for (  Class<? extends Paintable> class1 : paintablesHavingWidgetAnnotation) {
+    ClientWidget annotation=class1.getAnnotation(ClientWidget.class);
+    Class<? extends com.vaadin.terminal.gwt.client.Paintable> clientClass=annotation.value();
+    if (clientClass == VView.class) {
+      continue;
+    }
+    sourceWriter.print("if (");
+    sourceWriter.print(clientClass.getName());
+    sourceWriter.print(".class == classType) return GWT.create(");
+    sourceWriter.print(clientClass.getName());
+    sourceWriter.println(".class );");
+    sourceWriter.print("else ");
+  }
+  sourceWriter.println("return GWT.create( com.vaadin.terminal.gwt.client.ui.VUnknownComponent.class );");
+  sourceWriter.outdent();
+  sourceWriter.println("}");
+}

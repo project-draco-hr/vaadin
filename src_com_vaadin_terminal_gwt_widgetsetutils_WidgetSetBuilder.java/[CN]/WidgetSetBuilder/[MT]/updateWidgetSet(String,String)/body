@@ -1,0 +1,27 @@
+{
+  String widgetsetfilename=sourcepath + "/" + widgetset.replace(".","/")+ ".gwt.xml";
+  File widgetsetFile=new File(widgetsetfilename);
+  if (!widgetsetFile.exists()) {
+    widgetsetFile.createNewFile();
+    PrintStream printStream=new PrintStream(new FileOutputStream(widgetsetFile));
+    printStream.print("<module>\n\n</module>\n");
+    printStream.close();
+  }
+  String content=readFile(widgetsetFile);
+  Collection<String> oldInheritedWidgetsets=getCurrentWidgetSets(content);
+  Collection<String> availableWidgetSets=ClassPathExplorer.getAvailableWidgetSets();
+  for (  String ws : availableWidgetSets) {
+    if (ws.equals(widgetset)) {
+      continue;
+    }
+    if (!oldInheritedWidgetsets.contains(ws)) {
+      content=addWidgetSet(ws,content);
+    }
+  }
+  for (  String ws : oldInheritedWidgetsets) {
+    if (!availableWidgetSets.contains(ws)) {
+      content=removeWidgetSet(ws,content);
+    }
+  }
+  commitChanges(widgetsetfilename,content);
+}
