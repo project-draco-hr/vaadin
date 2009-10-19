@@ -1,12 +1,43 @@
 {
-  Table t=new Table();
-  t.addContainerProperty("Col1",String.class,null);
-  t.addContainerProperty("Col2",String.class,null);
-  t.addContainerProperty("Col3",String.class,null);
-  t.setColumnCollapsingAllowed(true);
-  t.setSizeFull();
+  table=new Table();
+  table.addContainerProperty("Col1",String.class,null);
+  table.addContainerProperty("Col2",String.class,null);
+  table.addContainerProperty("Col3",String.class,null);
+  table.setColumnCollapsingAllowed(true);
+  table.setSizeFull();
   for (int y=1; y < 5; y++) {
-    t.addItem(new Object[]{"cell " + 1 + "-"+ y,"cell " + 2 + "-"+ y,"cell " + 3 + "-"+ y},new Object());
+    table.addItem(new Object[]{"cell " + 1 + "-"+ y,"cell " + 2 + "-"+ y,"cell " + 3 + "-"+ y},new Object());
   }
-  addComponent(t);
+  addComponent(table);
+  HorizontalLayout hl=new HorizontalLayout();
+  final TextField tf=new TextField("Column name");
+  Button hide=new Button("Collapse",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      try {
+        table.setColumnCollapsed(tf.getValue(),true);
+      }
+ catch (      IllegalAccessException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+);
+  Button show=new Button("Show",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      try {
+        table.setColumnCollapsed(tf.getValue(),false);
+      }
+ catch (      IllegalAccessException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+);
+  hl.addComponent(tf);
+  hl.addComponent(hide);
+  hl.addComponent(show);
+  hl.setComponentAlignment(tf,Alignment.BOTTOM_LEFT);
+  hl.setComponentAlignment(hide,Alignment.BOTTOM_LEFT);
+  hl.setComponentAlignment(show,Alignment.BOTTOM_LEFT);
+  addComponent(hl);
 }
