@@ -75,33 +75,24 @@
     updateParentFrameSize();
   }
   final HashSet<VWindow> removedSubWindows=new HashSet<VWindow>(subWindows);
-  while ((childUidl=uidl.getChildUIDL(childIndex++)) != null) {
-    if ("window".equals(childUidl.getTag())) {
-      final Paintable w=client.getPaintable(childUidl);
-      if (subWindows.contains(w)) {
-        removedSubWindows.remove(w);
-      }
- else {
-        subWindows.add((VWindow)w);
-      }
-      w.updateFromUIDL(childUidl,client);
-    }
- else     if ("actions".equals(childUidl.getTag())) {
+  while ((childUidl=uidl.getChildUIDL(++childIndex)) != null) {
+    String tag=childUidl.getTag().intern();
+    if (tag == "actions") {
       if (actionHandler == null) {
         actionHandler=new ShortcutActionHandler(id,client);
       }
       actionHandler.updateActionMap(childUidl);
     }
- else     if (childUidl.getTag().equals("notifications")) {
+ else     if (tag == "notifications") {
       for (final Iterator it=childUidl.getChildIterator(); it.hasNext(); ) {
         final UIDL notification=(UIDL)it.next();
         String html="";
         if (notification.hasAttribute("icon")) {
           final String parsedUri=client.translateVaadinUri(notification.getStringAttribute("icon"));
-          html+="<IMG src=\"" + parsedUri + "\" />";
+          html+="<img src=\"" + parsedUri + "\" />";
         }
         if (notification.hasAttribute("caption")) {
-          html+="<H1>" + notification.getStringAttribute("caption") + "</H1>";
+          html+="<h1>" + notification.getStringAttribute("caption") + "</h1>";
         }
         if (notification.hasAttribute("message")) {
           html+="<p>" + notification.getStringAttribute("message") + "</p>";
@@ -111,6 +102,16 @@
         final int delay=notification.getIntAttribute("delay");
         new VNotification(delay).show(html,position,style);
       }
+    }
+ else {
+      final Paintable w=client.getPaintable(childUidl);
+      if (subWindows.contains(w)) {
+        removedSubWindows.remove(w);
+      }
+ else {
+        subWindows.add((VWindow)w);
+      }
+      w.updateFromUIDL(childUidl,client);
     }
   }
   for (final Iterator<VWindow> rem=removedSubWindows.iterator(); rem.hasNext(); ) {
