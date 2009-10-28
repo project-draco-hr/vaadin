@@ -1,0 +1,35 @@
+{
+  boolean changed=false;
+  Map<String,URL> availableWidgetSets=ClassPathExplorer.getAvailableWidgetSets();
+  URL sourceUrl=availableWidgetSets.get(widgetset);
+  String widgetsetfilename=sourceUrl.getFile() + "/" + widgetset.replace(".","/")+ ".gwt.xml";
+  File widgetsetFile=new File(widgetsetfilename);
+  if (!widgetsetFile.exists()) {
+    widgetsetFile.createNewFile();
+    PrintStream printStream=new PrintStream(new FileOutputStream(widgetsetFile));
+    printStream.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<!DOCTYPE module PUBLIC \"-//Google Inc.//DTD " + "Google Web Toolkit 1.7.0//EN\" \"http://google"+ "-web-toolkit.googlecode.com/svn/tags/1.7.0/dis"+ "tro-source/core/src/gwt-module.dtd\">\n");
+    printStream.print("<module>\n\n</module>\n");
+    printStream.close();
+    changed=true;
+  }
+  String content=readFile(widgetsetFile);
+  String originalContent=content;
+  Collection<String> oldInheritedWidgetsets=getCurrentWidgetSets(content);
+  for (  String ws : availableWidgetSets.keySet()) {
+    if (ws.equals(widgetset)) {
+      continue;
+    }
+    if (!oldInheritedWidgetsets.contains(ws)) {
+      content=addWidgetSet(ws,content);
+    }
+  }
+  for (  String ws : oldInheritedWidgetsets) {
+    if (!availableWidgetSets.containsKey(ws)) {
+      content=removeWidgetSet(ws,content);
+    }
+  }
+  changed=changed ? true : content.equals(originalContent);
+  if (changed) {
+    commitChanges(widgetsetfilename,content);
+  }
+}
