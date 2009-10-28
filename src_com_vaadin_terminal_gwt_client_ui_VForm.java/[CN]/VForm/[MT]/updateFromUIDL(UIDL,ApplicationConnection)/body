@@ -1,19 +1,9 @@
 {
   rendering=true;
-  boolean measure=false;
-  if (this.client == null) {
-    this.client=client;
-    measure=true;
-  }
+  this.client=client;
   if (client.updateComponent(this,uidl,false)) {
     rendering=false;
     return;
-  }
-  if (measure) {
-    borderPaddingVertical=getOffsetHeight();
-    int ow=getOffsetWidth();
-    int dow=desc.getOffsetWidth();
-    borderPaddingHorizontal=ow - dow;
   }
   boolean legendEmpty=true;
   if (uidl.hasAttribute("caption")) {
@@ -58,19 +48,6 @@
   }
   updateSize();
   client.runDescendentsLayout(this);
-  final UIDL layoutUidl=uidl.getChildUIDL(0);
-  Container newLo=(Container)client.getPaintable(layoutUidl);
-  if (lo == null) {
-    lo=newLo;
-    add((Widget)lo,fieldContainer);
-  }
- else   if (lo != newLo) {
-    client.unregisterPaintable(lo);
-    remove((Widget)lo);
-    lo=newLo;
-    add((Widget)lo,fieldContainer);
-  }
-  lo.updateFromUIDL(layoutUidl,client);
   if (uidl.getChildCount() > 1) {
     Container newFooter=(Container)client.getPaintable(uidl.getChildUIDL(1));
     if (footer == null) {
@@ -84,12 +61,27 @@
     }
     footer=newFooter;
     footer.updateFromUIDL(uidl.getChildUIDL(1),client);
+    updateSize();
   }
  else {
     if (footer != null) {
       remove((Widget)footer);
       client.unregisterPaintable(footer);
+      updateSize();
     }
   }
+  final UIDL layoutUidl=uidl.getChildUIDL(0);
+  Container newLo=(Container)client.getPaintable(layoutUidl);
+  if (lo == null) {
+    lo=newLo;
+    add((Widget)lo,fieldContainer);
+  }
+ else   if (lo != newLo) {
+    client.unregisterPaintable(lo);
+    remove((Widget)lo);
+    lo=newLo;
+    add((Widget)lo,fieldContainer);
+  }
+  lo.updateFromUIDL(layoutUidl,client);
   rendering=false;
 }
