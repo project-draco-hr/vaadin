@@ -8,11 +8,54 @@
   main.addComponent(textFieldValue);
   up=new Upload("Upload",buffer);
   up.setImmediate(true);
-  up.addListener((FinishedListener)this);
-  up.addListener((FailedListener)this);
-  up.addListener((SucceededListener)this);
-  up.addListener((StartedListener)this);
-  up.setProgressListener(this);
+  up.addListener(new Listener(){
+    private static final long serialVersionUID=-8319074730512324303L;
+    public void componentEvent(    Event event){
+      System.out.println("Upload fired event | " + event);
+    }
+  }
+);
+  up.addListener(new StartedListener(){
+    private static final long serialVersionUID=5508883803861085154L;
+    public void uploadStarted(    StartedEvent event){
+      pi.setVisible(true);
+      pi2.setVisible(true);
+      l.setValue("Started uploading file " + event.getFilename());
+      textFieldValue.setValue(" TestFields value at the upload start is:" + textField.getValue());
+    }
+  }
+);
+  up.addListener(new Upload.FinishedListener(){
+    private static final long serialVersionUID=-3773034195991947371L;
+    public void uploadFinished(    FinishedEvent event){
+      pi.setVisible(false);
+      pi2.setVisible(false);
+      if (event instanceof Upload.FailedEvent) {
+        Exception reason=((Upload.FailedEvent)event).getReason();
+        l.setValue("Finished with failure ( " + reason + "  ), idle");
+      }
+ else       if (event instanceof Upload.SucceededEvent) {
+        l.setValue("Finished with succes, idle");
+      }
+ else {
+        l.setValue("Finished with unknow event");
+      }
+      setBuffer();
+      status.removeAllComponents();
+      final InputStream stream=buffer.getStream();
+      if (stream == null) {
+        status.addComponent(new Label("Upload finished, but output buffer is null"));
+      }
+ else {
+        status.addComponent(new Label("<b>Name:</b> " + event.getFilename(),Label.CONTENT_XHTML));
+        status.addComponent(new Label("<b>Mimetype:</b> " + event.getMIMEType(),Label.CONTENT_XHTML));
+        status.addComponent(new Label("<b>Size:</b> " + event.getLength() + " bytes.",Label.CONTENT_XHTML));
+        status.addComponent(new Link("Download " + buffer.getFileName(),new StreamResource(buffer,buffer.getFileName(),getApplication())));
+        status.setVisible(true);
+      }
+    }
+  }
+);
   up.addListener(new Upload.ProgressListener(){
     public void updateProgress(    long readBytes,    long contentLenght){
       pi2.setValue(new Float(readBytes / (float)contentLenght));
@@ -20,10 +63,19 @@
     }
   }
 );
-  final Button b=new Button("b",this,"readState");
-  final Button c=new Button("b with gc",this,"gc");
+  final Button b=new Button("Reed state from upload",this,"readState");
+  final Button c=new Button("Force GC",this,"gc");
   main.addComponent(b);
   main.addComponent(c);
+  main.addComponent(beSluggish);
+  main.addComponent(throwExecption);
+  main.addComponent(interrupt);
+  interrupt.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      up.interruptUpload();
+    }
+  }
+);
   uploadBufferSelector=new Select("Receiver type");
   uploadBufferSelector.setImmediate(true);
   uploadBufferSelector.addItem("memory");

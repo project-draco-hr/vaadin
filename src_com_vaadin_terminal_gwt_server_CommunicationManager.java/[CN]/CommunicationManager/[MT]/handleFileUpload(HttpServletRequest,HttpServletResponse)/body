@@ -41,7 +41,14 @@ synchronized (application) {
         }
 ;
         pl.setUpload(uploadComponent);
-        uploadComponent.receiveUpload(upstream);
+        try {
+          uploadComponent.receiveUpload(upstream);
+        }
+ catch (        UploadException e) {
+synchronized (application) {
+            handleChangeVariablesError(application,uploadComponent,e,new HashMap<String,Object>());
+          }
+        }
       }
     }
   }
