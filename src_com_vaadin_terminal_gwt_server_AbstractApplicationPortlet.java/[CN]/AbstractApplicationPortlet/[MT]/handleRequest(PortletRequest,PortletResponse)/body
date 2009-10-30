@@ -1,0 +1,57 @@
+{
+  System.out.println("AbstractApplicationPortlet.handleRequest()");
+  RequestType requestType=getRequestType(request);
+  if (requestType == RequestType.UNKNOWN) {
+    System.out.println("Unknown request type");
+    return;
+  }
+ else   if (requestType == RequestType.STATIC_FILE) {
+    serveStaticResources((ResourceRequest)request,(ResourceResponse)response);
+    return;
+  }
+  Application application=null;
+  try {
+    application=findApplicationInstance(request);
+    if (application == null) {
+      return;
+    }
+    PortletApplicationContext2 applicationContext=PortletApplicationContext2.getApplicationContext(request.getPortletSession());
+    PortletCommunicationManager applicationManager=applicationContext.getApplicationManager(application);
+    applicationContext.getBrowser().updateBrowserProperties(request);
+    startApplication(request,application,applicationManager);
+    applicationContext.startTransaction(application,request);
+    if (requestType == RequestType.FILE_UPLOAD) {
+      applicationManager.handleFileUpload((ActionRequest)request,(ActionResponse)response);
+      return;
+    }
+ else     if (requestType == RequestType.UIDL) {
+      applicationManager.handleUIDLRequest((ActionRequest)request,(ActionResponse)response);
+      return;
+    }
+ else     if (requestType == RequestType.RENDER) {
+      if (!application.isRunning()) {
+        endApplication(request,response,application);
+        return;
+      }
+      Window window=getApplicationWindow(request,applicationManager,application);
+      if (window == null) {
+        throw new PortletException(Constants.ERROR_NO_WINDOW_FOUND);
+      }
+      if (window.getTerminal() == null) {
+        window.setTerminal(applicationContext.getBrowser());
+      }
+      final Map<String,String[]> parameters=request.getParameterMap();
+      if (window != null && parameters != null) {
+        window.handleParameters(parameters);
+      }
+      writeAjaxPage((RenderRequest)request,(RenderResponse)response,window,application);
+    }
+  }
+ catch (  final Throwable e) {
+  }
+ finally {
+    if (application != null) {
+      ((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
+    }
+  }
+}
