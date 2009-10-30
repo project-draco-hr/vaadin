@@ -1,0 +1,20 @@
+{
+  System.err.println("classpathLocations keys:  " + classpathLocations.keySet());
+  Iterator<String> it=rawClasspathEntries.iterator();
+  while (it.hasNext()) {
+    String entry=it.next();
+    File directory=new File(entry);
+    if (directory.exists() && !directory.isHidden() && directory.isDirectory()) {
+      try {
+        return new URL("file://" + directory.getCanonicalPath());
+      }
+ catch (      MalformedURLException e) {
+        e.printStackTrace();
+      }
+catch (      IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+  return null;
+}

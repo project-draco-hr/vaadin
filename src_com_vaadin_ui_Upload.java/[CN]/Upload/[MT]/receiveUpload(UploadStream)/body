@@ -37,7 +37,7 @@ synchronized (application) {
         }
       }
       if (interrupted) {
-        throw new Exception("Upload interrupted by other thread");
+        throw new UploadInterruptedException();
       }
     }
     out.close();
@@ -49,15 +49,19 @@ synchronized (application) {
   }
  catch (  final Exception e) {
 synchronized (application) {
-      try {
-        out.close();
-      }
- catch (      IOException ignored) {
+      if (e instanceof UploadInterruptedException) {
+        try {
+          out.close();
+        }
+ catch (        IOException e1) {
+        }
       }
       fireUploadInterrupted(filename,type,totalBytes,e);
       endUpload();
       interrupted=false;
-      throw new IllegalStateException("Uploading failed",e);
+      if (!(e instanceof UploadInterruptedException)) {
+        throw new UploadException(e);
+      }
     }
   }
 }

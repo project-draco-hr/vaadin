@@ -2,6 +2,9 @@
   boolean changed=false;
   Map<String,URL> availableWidgetSets=ClassPathExplorer.getAvailableWidgetSets();
   URL sourceUrl=availableWidgetSets.get(widgetset);
+  if (sourceUrl == null) {
+    sourceUrl=ClassPathExplorer.getDefaultSourceDirectory();
+  }
   String widgetsetfilename=sourceUrl.getFile() + "/" + widgetset.replace(".","/")+ ".gwt.xml";
   File widgetsetFile=new File(widgetsetfilename);
   if (!widgetsetFile.exists()) {
@@ -28,7 +31,7 @@
       content=removeWidgetSet(ws,content);
     }
   }
-  changed=changed ? true : content.equals(originalContent);
+  changed=changed || !content.equals(originalContent);
   if (changed) {
     commitChanges(widgetsetfilename,content);
   }
