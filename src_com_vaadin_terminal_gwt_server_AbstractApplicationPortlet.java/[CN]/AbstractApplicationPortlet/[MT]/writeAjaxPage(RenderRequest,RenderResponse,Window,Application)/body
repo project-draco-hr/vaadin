@@ -1,6 +1,7 @@
 {
-  final BufferedWriter page=new BufferedWriter(new OutputStreamWriter(response.getPortletOutputStream(),"UTF-8"));
+  System.out.println("AbstractApplicationPortlet.writeAjaxPage()");
   response.setContentType("text/html");
+  final BufferedWriter page=new BufferedWriter(new OutputStreamWriter(response.getPortletOutputStream(),"UTF-8"));
   ResourceURL widgetsetURL=response.createResourceURL();
   widgetsetURL.setResourceID(Constants.DEFAULT_WIDGETSET);
   page.write("<script type=\"text/javascript\">\n");
@@ -9,9 +10,10 @@
   page.write("document.write('<iframe tabIndex=\"-1\" id=\"__gwt_historyFrame\" " + "style=\"width:0;height:0;border:0;overflow:" + "hidden\" src=\"javascript:false\"></iframe>');\n");
   page.write("document.write(\"<script language='javascript' src='" + widgetsetURL.toString() + "'><\\/script>\");\n}\n");
   page.write("vaadin.vaadinConfigurations[\"" + request.getWindowID() + "\"] = {");
-  page.write("portletMode: true, ");
-  String pathInfo=response.createActionURL().toString();
-  page.write("pathInfo: '" + pathInfo + "', ");
+  page.write("appId: null, ");
+  page.write("usePortletURLs: true, ");
+  page.write("portletActionURLBase: '" + response.createActionURL().toString() + "', ");
+  page.write("pathInfo: null, ");
   if (window != application.getMainWindow()) {
     page.write("windowName: '" + window.getName() + "', ");
   }
