@@ -4,26 +4,29 @@
     return;
   }
   if (width != null && !"".equals(width)) {
-    int pixelWidth;
+    int rootPixelWidth=-1;
     if (width.indexOf("px") < 0) {
       DOM.setStyleAttribute(getElement(),"width",width);
-      pixelWidth=getElement().getOffsetWidth();
-      width=pixelWidth + "px";
+      rootPixelWidth=getElement().getOffsetWidth();
+      width=rootPixelWidth + "px";
+    }
+ else {
+      rootPixelWidth=Integer.parseInt(width.substring(0,width.indexOf("px")));
     }
     if (BrowserInfo.get().isIE6()) {
       getElement().getStyle().setProperty("overflow","hidden");
     }
     getElement().getStyle().setProperty("width",width);
-    pixelWidth=getElement().getOffsetWidth() - getBorderWidth();
-    if (pixelWidth < MIN_WIDTH) {
-      pixelWidth=MIN_WIDTH;
-      int rootWidth=pixelWidth + getBorderWidth();
+    int contentAreaInnerWidth=rootPixelWidth - getContentAreaToRootDifference();
+    if (contentAreaInnerWidth < MIN_CONTENT_AREA_WIDTH) {
+      contentAreaInnerWidth=MIN_CONTENT_AREA_WIDTH;
+      int rootWidth=contentAreaInnerWidth + getContentAreaToRootDifference();
       DOM.setStyleAttribute(getElement(),"width",rootWidth + "px");
     }
     if (BrowserInfo.get().isIE6()) {
-      DOM.setStyleAttribute(contentPanel.getElement(),"width",pixelWidth + "px");
+      DOM.setStyleAttribute(contentPanel.getElement(),"width",contentAreaInnerWidth + "px");
     }
-    renderSpace.setWidth(contents.getOffsetWidth() - getBorderWidth());
+    renderSpace.setWidth(contentAreaInnerWidth);
     updateShadowSizeAndPosition();
   }
 }
