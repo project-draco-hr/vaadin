@@ -16,23 +16,28 @@
     changed=true;
   }
   String content=readFile(widgetsetFile);
-  String originalContent=content;
-  Collection<String> oldInheritedWidgetsets=getCurrentWidgetSets(content);
-  for (  String ws : availableWidgetSets.keySet()) {
-    if (ws.equals(widgetset)) {
-      continue;
+  if (isEditable(content)) {
+    String originalContent=content;
+    Collection<String> oldInheritedWidgetsets=getCurrentWidgetSets(content);
+    for (    String ws : availableWidgetSets.keySet()) {
+      if (ws.equals(widgetset)) {
+        continue;
+      }
+      if (!oldInheritedWidgetsets.contains(ws)) {
+        content=addWidgetSet(ws,content);
+      }
     }
-    if (!oldInheritedWidgetsets.contains(ws)) {
-      content=addWidgetSet(ws,content);
+    for (    String ws : oldInheritedWidgetsets) {
+      if (!availableWidgetSets.containsKey(ws)) {
+        content=removeWidgetSet(ws,content);
+      }
+    }
+    changed=changed || !content.equals(originalContent);
+    if (changed) {
+      commitChanges(widgetsetfilename,content);
     }
   }
-  for (  String ws : oldInheritedWidgetsets) {
-    if (!availableWidgetSets.containsKey(ws)) {
-      content=removeWidgetSet(ws,content);
-    }
-  }
-  changed=changed || !content.equals(originalContent);
-  if (changed) {
-    commitChanges(widgetsetfilename,content);
+ else {
+    System.out.println("Widgetset is manually edited. Skipping updates.");
   }
 }
