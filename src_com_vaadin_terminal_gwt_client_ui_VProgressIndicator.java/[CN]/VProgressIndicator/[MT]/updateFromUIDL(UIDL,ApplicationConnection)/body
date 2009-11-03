@@ -1,9 +1,8 @@
 {
-  if (client.updateComponent(this,uidl,true)) {
-    return;
-  }
-  poller.cancel();
   this.client=client;
+  if (!uidl.getBooleanAttribute("cached")) {
+    poller.cancel();
+  }
   if (client.updateComponent(this,uidl,true)) {
     return;
   }
@@ -23,6 +22,7 @@
     }
   }
   if (!uidl.getBooleanAttribute("disabled")) {
-    poller.scheduleRepeating(uidl.getIntAttribute("pollinginterval"));
+    interval=uidl.getIntAttribute("pollinginterval");
+    poller.scheduleRepeating(interval);
   }
 }
