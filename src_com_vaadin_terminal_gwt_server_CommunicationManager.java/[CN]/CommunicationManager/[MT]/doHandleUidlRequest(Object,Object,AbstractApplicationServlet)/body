@@ -1,0 +1,69 @@
+{
+  boolean repaintAll;
+  final OutputStream out;
+  if (request instanceof ResourceRequest) {
+    repaintAll=(((ResourceRequest)request).getParameter(GET_PARAM_REPAINT_ALL) != null) || ((ResourceRequest)request).getPortletSession().isNew();
+    out=((ResourceResponse)response).getPortletOutputStream();
+  }
+ else {
+    repaintAll=(((HttpServletRequest)request).getParameter(GET_PARAM_REPAINT_ALL) != null) || ((HttpServletRequest)request).getSession().isNew();
+    out=((HttpServletResponse)response).getOutputStream();
+  }
+  boolean analyzeLayouts=false;
+  if (repaintAll) {
+    if (request instanceof ResourceRequest) {
+      analyzeLayouts=(((ResourceRequest)request).getParameter(GET_PARAM_ANALYZE_LAYOUTS) != null);
+    }
+ else {
+      analyzeLayouts=(((HttpServletRequest)request).getParameter(GET_PARAM_ANALYZE_LAYOUTS) != null);
+    }
+  }
+  final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
+synchronized (application) {
+    Window window=null;
+    if (application.isRunning()) {
+      window=doGetApplicationWindow(request,applicationServlet,application,null);
+      if (window == null) {
+        if (request instanceof ResourceRequest) {
+          System.err.println("Warning, could not get window for application with resource ID " + ((ResourceRequest)request).getResourceID());
+        }
+ else {
+          System.err.println("Warning, could not get window for application with request URI " + ((HttpServletRequest)request).getRequestURI());
+        }
+        return;
+      }
+    }
+ else {
+      endApplication(request,response,application);
+      return;
+    }
+    if (!handleVariables(request,response,applicationServlet,application,window)) {
+      SystemMessages ci=null;
+      try {
+        Method m=application.getClass().getMethod("getSystemMessages",(Class[])null);
+        ci=(Application.SystemMessages)m.invoke(null,(Object[])null);
+      }
+ catch (      Exception e2) {
+        e2.printStackTrace();
+      }
+      if (ci != null) {
+        String msg=ci.getOutOfSyncMessage();
+        String cap=ci.getOutOfSyncCaption();
+        if (msg != null || cap != null) {
+          if (request instanceof HttpServletRequest) {
+            applicationServlet.criticalNotification((HttpServletRequest)request,(HttpServletResponse)response,cap,msg,null,ci.getOutOfSyncURL());
+          }
+          return;
+        }
+      }
+      repaintAll=true;
+    }
+    paintAfterVariablechanges(request,response,applicationServlet,repaintAll,outWriter,window,analyzeLayouts);
+    if (closingWindowName != null) {
+      currentlyOpenWindowsInClient.remove(closingWindowName);
+      closingWindowName=null;
+    }
+  }
+  out.flush();
+  out.close();
+}

@@ -1,6 +1,8 @@
 {
   System.out.println("AbstractApplicationPortlet.handleRequest()");
   RequestType requestType=getRequestType(request);
+  System.out.println("  RequestType: " + requestType);
+  System.out.println("  WindowID: " + request.getWindowID());
   if (requestType == RequestType.UNKNOWN) {
     System.out.println("Unknown request type");
     return;
@@ -16,16 +18,16 @@
       return;
     }
     PortletApplicationContext2 applicationContext=PortletApplicationContext2.getApplicationContext(request.getPortletSession());
-    PortletCommunicationManager applicationManager=applicationContext.getApplicationManager(application);
+    CommunicationManager applicationManager=applicationContext.getApplicationManager(application);
     applicationContext.getBrowser().updateBrowserProperties(request);
-    startApplication(request,application,applicationManager);
+    startApplication(request,application,applicationContext);
     applicationContext.startTransaction(application,request);
     if (requestType == RequestType.FILE_UPLOAD) {
       applicationManager.handleFileUpload((ActionRequest)request,(ActionResponse)response);
       return;
     }
  else     if (requestType == RequestType.UIDL) {
-      applicationManager.handleUIDLRequest((ActionRequest)request,(ActionResponse)response);
+      applicationManager.handleUidlRequest((ResourceRequest)request,(ResourceResponse)response);
       return;
     }
  else     if (requestType == RequestType.RENDER) {
@@ -33,9 +35,9 @@
         endApplication(request,response,application);
         return;
       }
-      Window window=getApplicationWindow(request,applicationManager,application);
+      Window window=application.getMainWindow();
       if (window == null) {
-        throw new PortletException(Constants.ERROR_NO_WINDOW_FOUND);
+        throw new PortletException(ERROR_NO_WINDOW_FOUND);
       }
       if (window.getTerminal() == null) {
         window.setTerminal(applicationContext.getBrowser());

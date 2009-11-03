@@ -1,3 +1,19 @@
 {
-  throw new UnsupportedOperationException("Not implemented yet");
+  final PortletSession session=request.getPortletSession(allowSessionCreation);
+  if (session == null) {
+    throw new SessionExpired();
+  }
+  PortletApplicationContext2 context=PortletApplicationContext2.getApplicationContext(session);
+  final Collection<Application> applications=context.getApplications();
+  for (final Iterator<Application> i=applications.iterator(); i.hasNext(); ) {
+    final Application sessionApplication=i.next();
+    if (request.getWindowID().equals(sessionApplication.getPortletWindowId())) {
+      if (sessionApplication.isRunning()) {
+        return sessionApplication;
+      }
+      PortletApplicationContext2.getApplicationContext(session).removeApplication(sessionApplication);
+      break;
+    }
+  }
+  return null;
 }

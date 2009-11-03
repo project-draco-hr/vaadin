@@ -2,21 +2,20 @@
   System.out.println("AbstractApplicationPortlet.writeAjaxPage()");
   response.setContentType("text/html");
   final BufferedWriter page=new BufferedWriter(new OutputStreamWriter(response.getPortletOutputStream(),"UTF-8"));
-  ResourceURL widgetsetURL=response.createResourceURL();
-  widgetsetURL.setResourceID(Constants.DEFAULT_WIDGETSET);
+  ;
+  String widgetsetURL="/html/VAADIN/widgetsets/" + DEFAULT_WIDGETSET + "/"+ DEFAULT_WIDGETSET+ ".nocache.js?"+ new Date().getTime();
   page.write("<script type=\"text/javascript\">\n");
   page.write("if(!vaadin || !vaadin.vaadinConfigurations) {\n " + "if(!vaadin) { var vaadin = {}} \n" + "vaadin.vaadinConfigurations = {};\n"+ "if (!vaadin.themesLoaded) { vaadin.themesLoaded = {}; }\n");
   page.write("vaadin.debug = true;\n");
   page.write("document.write('<iframe tabIndex=\"-1\" id=\"__gwt_historyFrame\" " + "style=\"width:0;height:0;border:0;overflow:" + "hidden\" src=\"javascript:false\"></iframe>');\n");
-  page.write("document.write(\"<script language='javascript' src='" + widgetsetURL.toString() + "'><\\/script>\");\n}\n");
+  page.write("document.write(\"<script language='javascript' src='" + widgetsetURL + "'><\\/script>\");\n}\n");
   page.write("vaadin.vaadinConfigurations[\"" + request.getWindowID() + "\"] = {");
-  page.write("appId: null, ");
+  page.write("appUri: '', ");
   page.write("usePortletURLs: true, ");
-  page.write("portletActionURLBase: '" + response.createActionURL().toString() + "', ");
-  page.write("pathInfo: null, ");
-  if (window != application.getMainWindow()) {
-    page.write("windowName: '" + window.getName() + "', ");
-  }
+  ResourceURL uidlUrlBase=response.createResourceURL();
+  uidlUrlBase.setResourceID("UIDL");
+  page.write("portletUidlURLBase: '" + uidlUrlBase.toString() + "', ");
+  page.write("pathInfo: '', ");
   page.write("themeUri:");
   page.write("null");
   page.write(", versionInfo : {vaadinVersion:\"");
@@ -25,5 +24,16 @@
   page.write(application.getVersion());
   page.write("\"},");
   page.write("};\n</script>\n");
+  String appClass="v-app-";
+  try {
+    appClass+=getApplicationClass().getSimpleName();
+  }
+ catch (  ClassNotFoundException e) {
+    appClass+="unknown";
+    e.printStackTrace();
+  }
+  String themeClass="v-theme-" + "reindeer".replaceAll("[^a-zA-Z0-9]","");
+  String classNames="v-app v-app-loading " + themeClass + " "+ appClass;
+  page.write("<div id=\"" + request.getWindowID() + "\" class=\""+ classNames+ "\"></div>\n");
   page.close();
 }
