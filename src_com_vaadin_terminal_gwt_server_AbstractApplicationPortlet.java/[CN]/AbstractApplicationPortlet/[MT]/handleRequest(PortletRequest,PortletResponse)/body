@@ -1,8 +1,5 @@
 {
-  System.out.println("AbstractApplicationPortlet.handleRequest() " + System.currentTimeMillis());
   RequestType requestType=getRequestType(request);
-  System.out.println("  RequestType: " + requestType);
-  System.out.println("  WindowID: " + request.getWindowID());
   if (requestType == RequestType.UNKNOWN) {
     System.out.println("Unknown request type");
     return;
@@ -49,8 +46,14 @@
       writeAjaxPage((RenderRequest)request,(RenderResponse)response,window,application);
     }
   }
- catch (  final Throwable e) {
-    e.printStackTrace();
+ catch (  final SessionExpired e) {
+    handleServiceSessionExpired(request,response);
+  }
+catch (  final GeneralSecurityException e) {
+    handleServiceSecurityException(request,response);
+  }
+catch (  final Throwable e) {
+    handleServiceException(request,response,application,e);
   }
  finally {
     if (application != null) {
