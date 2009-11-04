@@ -14,6 +14,9 @@
     if (application == null) {
       return;
     }
+    if (response instanceof MimeResponse) {
+      application.setResourceURLGenerator(new PortletResourceURLGenerator((MimeResponse)response));
+    }
     PortletApplicationContext2 applicationContext=PortletApplicationContext2.getApplicationContext(request.getPortletSession());
     PortletCommunicationManager applicationManager=applicationContext.getApplicationManager(application);
     applicationContext.getBrowser().updateBrowserProperties(request);
@@ -27,30 +30,35 @@
       applicationManager.handleUidlRequest((ResourceRequest)request,(ResourceResponse)response,this);
       return;
     }
+    if (!application.isRunning()) {
+      endApplication(request,response,application);
+      return;
+    }
+    Window window=application.getMainWindow();
+    if (window == null) {
+      throw new PortletException(ERROR_NO_WINDOW_FOUND);
+    }
+    if (window.getTerminal() == null) {
+      window.setTerminal(applicationContext.getBrowser());
+    }
+    final Map<String,String[]> parameters=request.getParameterMap();
+    if (window != null && parameters != null) {
+      window.handleParameters(parameters);
+    }
+    if (requestType == RequestType.APPLICATION_RESOURCE) {
+      handleURI(applicationManager,window,(ResourceRequest)request,(ResourceResponse)response);
+    }
  else     if (requestType == RequestType.RENDER) {
-      if (!application.isRunning()) {
-        endApplication(request,response,application);
-        return;
-      }
-      Window window=application.getMainWindow();
-      if (window == null) {
-        throw new PortletException(ERROR_NO_WINDOW_FOUND);
-      }
-      if (window.getTerminal() == null) {
-        window.setTerminal(applicationContext.getBrowser());
-      }
-      final Map<String,String[]> parameters=request.getParameterMap();
-      if (window != null && parameters != null) {
-        window.handleParameters(parameters);
-      }
       writeAjaxPage((RenderRequest)request,(RenderResponse)response,window,application);
     }
   }
  catch (  final SessionExpired e) {
-    handleServiceSessionExpired(request,response);
+    System.err.println("Session has expired");
+    e.printStackTrace(System.err);
   }
 catch (  final GeneralSecurityException e) {
-    handleServiceSecurityException(request,response);
+    System.err.println("General security exception, should never happen");
+    e.printStackTrace(System.err);
   }
 catch (  final Throwable e) {
     handleServiceException(request,response,application,e);
