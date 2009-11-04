@@ -1,11 +1,33 @@
 {
   response.setContentType("text/html");
   final BufferedWriter page=new BufferedWriter(new OutputStreamWriter(response.getPortletOutputStream(),"UTF-8"));
-  String widgetsetURL="/html/" + WIDGETSET_DIRECTORY_PATH + DEFAULT_WIDGETSET+ "/"+ DEFAULT_WIDGETSET+ ".nocache.js?"+ new Date().getTime();
-  String themeURI="/html/" + THEME_DIRECTORY_PATH + DEFAULT_THEME_NAME;
+  String requestWidgetset=(String)request.getAttribute(AbstractApplicationServlet.REQUEST_WIDGETSET);
+  String sharedWidgetset=(String)request.getAttribute(AbstractApplicationServlet.REQUEST_SHARED_WIDGETSET);
+  if (requestWidgetset == null && sharedWidgetset == null) {
+    requestWidgetset=getApplicationOrSystemProperty(PARAMETER_WIDGETSET,DEFAULT_WIDGETSET);
+  }
+  String widgetset;
+  if (requestWidgetset != null) {
+    widgetset=requestWidgetset;
+  }
+ else {
+    widgetset=sharedWidgetset;
+  }
+  String themeName=getThemeForWindow(request,window);
+  String widgetsetURL=getWidgetsetURL(widgetset);
+  String themeURI=getThemeURI(themeName);
+  Application.SystemMessages systemMessages=null;
+  try {
+    systemMessages=getSystemMessages();
+  }
+ catch (  SystemMessageException e) {
+    throw new PortletException("CommunicationError!",e);
+  }
   page.write("<script type=\"text/javascript\">\n");
   page.write("if(!vaadin || !vaadin.vaadinConfigurations) {\n " + "if(!vaadin) { var vaadin = {}} \n" + "vaadin.vaadinConfigurations = {};\n"+ "if (!vaadin.themesLoaded) { vaadin.themesLoaded = {}; }\n");
-  page.write("vaadin.debug = true;\n");
+  if (!isProductionMode()) {
+    page.write("vaadin.debug = true;\n");
+  }
   page.write("document.write('<iframe tabIndex=\"-1\" id=\"__gwt_historyFrame\" " + "style=\"width:0;height:0;border:0;overflow:" + "hidden\" src=\"javascript:false\"></iframe>');\n");
   page.write("document.write(\"<script language='javascript' src='" + widgetsetURL + "'><\\/script>\");\n}\n");
   page.write("vaadin.vaadinConfigurations[\"" + request.getWindowID() + "\"] = {");
@@ -17,20 +39,35 @@
   page.write("pathInfo: '', ");
   page.write("themeUri: '" + themeURI + "', ");
   page.write("versionInfo : {vaadinVersion:\"");
-  page.write("UNVERSIONED");
+  page.write(AbstractApplicationServlet.VERSION);
   page.write("\",applicationVersion:\"");
   page.write(application.getVersion());
   page.write("\"},");
+  if (systemMessages != null) {
+    String caption=systemMessages.getCommunicationErrorCaption();
+    if (caption != null) {
+      caption="\"" + caption + "\"";
+    }
+    String message=systemMessages.getCommunicationErrorMessage();
+    if (message != null) {
+      message="\"" + message + "\"";
+    }
+    String url=systemMessages.getCommunicationErrorURL();
+    if (url != null) {
+      url="\"" + url + "\"";
+    }
+    page.write("\"comErrMsg\": {" + "\"caption\":" + caption + ","+ "\"message\" : "+ message+ ","+ "\"url\" : "+ url+ "}");
+  }
   page.write("};\n</script>\n");
   page.write("<script type=\"text/javascript\">\n");
   page.write("//<![CDATA[\n");
-  page.write("if(!vaadin.themesLoaded['" + DEFAULT_THEME_NAME + "']) {\n");
+  page.write("if(!vaadin.themesLoaded['" + themeName + "']) {\n");
   page.write("var stylesheet = document.createElement('link');\n");
   page.write("stylesheet.setAttribute('rel', 'stylesheet');\n");
   page.write("stylesheet.setAttribute('type', 'text/css');\n");
   page.write("stylesheet.setAttribute('href', '" + themeURI + "/styles.css');\n");
   page.write("document.getElementsByTagName('head')[0].appendChild(stylesheet);\n");
-  page.write("vaadin.themesLoaded['" + DEFAULT_THEME_NAME + "'] = true;\n}\n");
+  page.write("vaadin.themesLoaded['" + themeName + "'] = true;\n}\n");
   page.write("//]]>\n</script>\n");
   String appClass="v-app-";
   try {
@@ -40,7 +77,7 @@
     appClass+="unknown";
     e.printStackTrace();
   }
-  String themeClass="v-theme-" + DEFAULT_THEME_NAME.replaceAll("[^a-zA-Z0-9]","");
+  String themeClass="v-theme-" + themeName.replaceAll("[^a-zA-Z0-9]","");
   String classNames="v-app v-app-loading " + themeClass + " "+ appClass;
   page.write("<div id=\"" + request.getWindowID() + "\" class=\""+ classNames+ "\"></div>\n");
   page.close();
