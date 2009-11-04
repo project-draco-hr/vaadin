@@ -2,7 +2,15 @@
   if (!text.getText().equals("")) {
     try {
       DateTimeFormat format=DateTimeFormat.getFormat(getFormatString());
-      date=format.parse(text.getText());
+      if (lenient) {
+        date=format.parse(text.getText());
+        if (date != null) {
+          text.setValue(DateTimeFormat.getFormat(getFormatString()).format(date),false);
+        }
+      }
+ else {
+        date=format.parseStrict(text.getText());
+      }
       long stamp=date.getTime();
       if (stamp == 0) {
         date=null;
