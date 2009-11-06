@@ -91,6 +91,17 @@
       }
       actionHandler.updateActionMap(childUidl);
     }
+ else     if (tag == "execJS") {
+      String script=childUidl.getStringAttribute("script");
+      int argNum=childUidl.getChildCount();
+      JavaScriptObject args=createArray();
+      for (int i=0; i < argNum; i++) {
+        String id=childUidl.getChildUIDL(i).getStringAttribute("ref");
+        Paintable p=client.getPaintable(id);
+        pushArray(args,p == null ? null : ((Widget)p).getElement());
+      }
+      eval(script,args);
+    }
  else     if (tag == "notifications") {
       for (final Iterator it=childUidl.getChildIterator(); it.hasNext(); ) {
         final UIDL notification=(UIDL)it.next();
