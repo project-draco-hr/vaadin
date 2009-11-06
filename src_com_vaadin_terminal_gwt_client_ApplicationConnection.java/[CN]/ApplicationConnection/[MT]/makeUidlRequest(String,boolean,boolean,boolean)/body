@@ -21,7 +21,6 @@
     uri+=(repaintAll ? "&" : "?") + "windowName=" + windowName;
   }
   if (!forceSync) {
-    boolean success=false;
     final RequestBuilder rb=new RequestBuilder(RequestBuilder.POST,uri);
     rb.setHeader("Content-Type","text/plain;charset=utf-8");
     try {
@@ -35,21 +34,25 @@
         }
         public void onResponseReceived(        Request request,        Response response){
           console.log("Server visit took " + String.valueOf((new Date()).getTime() - requestStartTime.getTime()) + "ms");
-switch (response.getStatusCode()) {
+          int statusCode=response.getStatusCode();
+switch (statusCode) {
 case 0:
             showCommunicationError("Invalid status code 0 (server down?)");
           return;
+case 404:
+        showCommunicationError("UIDL could not be read from server. Check servlets mappings.");
+      return;
 case 503:
-        int delay=Integer.parseInt(response.getHeader("Retry-After"));
-      console.log("503, retrying in " + delay + "msec");
-    (new Timer(){
-      @Override public void run(){
-        activeRequests--;
-        makeUidlRequest(requestData,repaintAll,forceSync,analyzeLayouts);
-      }
-    }
+    int delay=Integer.parseInt(response.getHeader("Retry-After"));
+  console.log("503, retrying in " + delay + "msec");
+(new Timer(){
+  @Override public void run(){
+    activeRequests--;
+    makeUidlRequest(requestData,repaintAll,forceSync,analyzeLayouts);
+  }
+}
 ).schedule(delay);
-  return;
+return;
 }
 if (applicationRunning) {
 handleReceivedJSONMessage(response);
@@ -66,9 +69,9 @@ private void handleWhenCSSLoaded(final Response response){
 int heightOfLoadElement=DOM.getElementPropertyInt(loadElement,"offsetHeight");
 if (heightOfLoadElement == 0 && cssWaits < MAX_CSS_WAITS) {
 (new Timer(){
-  @Override public void run(){
-    handleWhenCSSLoaded(response);
-  }
+@Override public void run(){
+handleWhenCSSLoaded(response);
+}
 }
 ).schedule(50);
 console.log("Assuming CSS loading is not complete, " + "postponing render phase. " + "(.v-loading-indicator height == 0)");
@@ -77,7 +80,7 @@ cssWaits++;
  else {
 handleReceivedJSONMessage(response);
 if (cssWaits >= MAX_CSS_WAITS) {
-  console.error("CSS files may have not loaded properly.");
+console.error("CSS files may have not loaded properly.");
 }
 }
 }
