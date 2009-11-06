@@ -1,71 +1,76 @@
 {
   RequestType requestType=getRequestType(request);
   if (requestType == RequestType.UNKNOWN) {
-    System.out.println("Unknown request type");
-    return;
+    System.err.println("Unknown request type");
   }
  else   if (requestType == RequestType.STATIC_FILE) {
     serveStaticResources((ResourceRequest)request,(ResourceResponse)response);
-    return;
   }
-  Application application=null;
-  try {
-    application=findApplicationInstance(request,requestType);
-    if (application == null) {
-      return;
+ else {
+    Application application=null;
+    try {
+      application=findApplicationInstance(request,requestType);
+      if (application == null) {
+        return;
+      }
+      if (response instanceof MimeResponse) {
+        application.setResourceURLGenerator(new PortletResourceURLGenerator((MimeResponse)response));
+      }
+      PortletApplicationContext2 applicationContext=PortletApplicationContext2.getApplicationContext(request.getPortletSession());
+      PortletCommunicationManager applicationManager=applicationContext.getApplicationManager(application);
+      applicationContext.getBrowser().updateBrowserProperties(request);
+      startApplication(request,application,applicationContext);
+      applicationContext.startTransaction(application,request);
+      if (requestType == RequestType.FILE_UPLOAD) {
+        applicationManager.handleFileUpload((ActionRequest)request,(ActionResponse)response);
+        return;
+      }
+ else       if (requestType == RequestType.UIDL) {
+        applicationManager.handleUidlRequest((ResourceRequest)request,(ResourceResponse)response,this);
+        return;
+      }
+ else {
+        if (!application.isRunning()) {
+          endApplication(request,response,application);
+          return;
+        }
+        Window window=application.getMainWindow();
+        if (window == null) {
+          throw new PortletException(ERROR_NO_WINDOW_FOUND);
+        }
+        if (window.getTerminal() == null) {
+          window.setTerminal(applicationContext.getBrowser());
+        }
+        final Map<String,String[]> parameters=request.getParameterMap();
+        if (window != null && parameters != null) {
+          window.handleParameters(parameters);
+        }
+        if (requestType == RequestType.APPLICATION_RESOURCE) {
+          handleURI(applicationManager,window,(ResourceRequest)request,(ResourceResponse)response);
+        }
+ else         if (requestType == RequestType.RENDER) {
+          writeAjaxPage((RenderRequest)request,(RenderResponse)response,window,application);
+        }
+ else {
+          throw new IllegalStateException("handleRequest() without anything to do - should never happen!");
+        }
+      }
     }
-    if (response instanceof MimeResponse) {
-      application.setResourceURLGenerator(new PortletResourceURLGenerator((MimeResponse)response));
+ catch (    final SessionExpired e) {
+      System.err.println("Session has expired");
+      e.printStackTrace(System.err);
     }
-    PortletApplicationContext2 applicationContext=PortletApplicationContext2.getApplicationContext(request.getPortletSession());
-    PortletCommunicationManager applicationManager=applicationContext.getApplicationManager(application);
-    applicationContext.getBrowser().updateBrowserProperties(request);
-    startApplication(request,application,applicationContext);
-    applicationContext.startTransaction(application,request);
-    if (requestType == RequestType.FILE_UPLOAD) {
-      applicationManager.handleFileUpload((ActionRequest)request,(ActionResponse)response);
-      return;
+catch (    final GeneralSecurityException e) {
+      System.err.println("General security exception, should never happen");
+      e.printStackTrace(System.err);
     }
- else     if (requestType == RequestType.UIDL) {
-      applicationManager.handleUidlRequest((ResourceRequest)request,(ResourceResponse)response,this);
-      return;
+catch (    final Throwable e) {
+      handleServiceException(request,response,application,e);
     }
-    if (!application.isRunning()) {
-      endApplication(request,response,application);
-      return;
-    }
-    Window window=application.getMainWindow();
-    if (window == null) {
-      throw new PortletException(ERROR_NO_WINDOW_FOUND);
-    }
-    if (window.getTerminal() == null) {
-      window.setTerminal(applicationContext.getBrowser());
-    }
-    final Map<String,String[]> parameters=request.getParameterMap();
-    if (window != null && parameters != null) {
-      window.handleParameters(parameters);
-    }
-    if (requestType == RequestType.APPLICATION_RESOURCE) {
-      handleURI(applicationManager,window,(ResourceRequest)request,(ResourceResponse)response);
-    }
- else     if (requestType == RequestType.RENDER) {
-      writeAjaxPage((RenderRequest)request,(RenderResponse)response,window,application);
-    }
-  }
- catch (  final SessionExpired e) {
-    System.err.println("Session has expired");
-    e.printStackTrace(System.err);
-  }
-catch (  final GeneralSecurityException e) {
-    System.err.println("General security exception, should never happen");
-    e.printStackTrace(System.err);
-  }
-catch (  final Throwable e) {
-    handleServiceException(request,response,application,e);
-  }
  finally {
-    if (application != null) {
-      ((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
+      if (application != null) {
+        ((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
+      }
     }
   }
 }
