@@ -14,15 +14,17 @@
  else {
     submenuIcon=null;
   }
-  collapseItems=options.getBooleanAttribute("collapseItems");
-  if (collapseItems) {
+  if (uidl.hasAttribute("width")) {
     UIDL moreItemUIDL=options.getChildUIDL(0);
     StringBuffer itemHTML=new StringBuffer();
     if (moreItemUIDL.hasAttribute("icon")) {
-      itemHTML.append("<img src=\"" + client.translateVaadinUri(moreItemUIDL.getStringAttribute("icon")) + "\" align=\"left\" />");
+      itemHTML.append("<img src=\"" + client.translateVaadinUri(moreItemUIDL.getStringAttribute("icon")) + "\" class=\""+ Icon.CLASSNAME+ "\" alt=\"\" />");
     }
     itemHTML.append(moreItemUIDL.getStringAttribute("text"));
     moreItem=new CustomMenuItem(itemHTML.toString(),emptyCommand);
+    collapsedRootItems=new VMenuBar(true);
+    moreItem.setSubMenu(collapsedRootItems);
+    moreItem.addStyleName(CLASSNAME + "-more-menuitem");
   }
   UIDL uidlItems=uidl.getChildUIDL(1);
   Iterator<Object> itr=uidlItems.getChildIterator();
@@ -37,11 +39,15 @@
     boolean itemHasCommand=item.getBooleanAttribute("command");
     StringBuffer itemHTML=new StringBuffer();
     if (item.hasAttribute("icon")) {
-      itemHTML.append("<img src=\"" + client.translateVaadinUri(item.getStringAttribute("icon")) + "\" align=\"left\" />");
+      itemHTML.append("<img src=\"" + client.translateVaadinUri(item.getStringAttribute("icon")) + "\" class=\""+ Icon.CLASSNAME+ "\" alt=\"\" />");
     }
     itemHTML.append(itemText);
-    if (currentMenu != this && item.getChildCount() > 0 && submenuIcon != null) {
-      itemHTML.append("<img src=\"" + submenuIcon + "\" align=\"right\" />");
+    if (item.getChildCount() > 0) {
+      String bgStyle="";
+      if (submenuIcon != null) {
+        bgStyle=" style=\"background-image: url(" + submenuIcon + "); text-indent: -999px; width: 1em;\"";
+      }
+      itemHTML.append("<span class=\"" + CLASSNAME + "-submenu-indicator\""+ bgStyle+ ">&#x25B6;</span>");
     }
     Command cmd=null;
     if (itemHasCommand) {
@@ -65,34 +71,5 @@
       currentMenu=menuStack.pop();
     }
   }
-  if (collapseItems && getItems().size() > 1) {
-    int topLevelWidth=0;
-    int ourWidth=getOffsetWidth();
-    int i=0;
-    for (; i < getItems().size() && topLevelWidth < ourWidth; i++) {
-      CustomMenuItem item=getItems().get(i);
-      topLevelWidth+=item.getOffsetWidth();
-    }
-    if (topLevelWidth > getOffsetWidth()) {
-      ArrayList<CustomMenuItem> toBeCollapsed=new ArrayList<CustomMenuItem>();
-      VMenuBar collapsed=new VMenuBar(true);
-      for (int j=i - 2; j < getItems().size(); j++) {
-        toBeCollapsed.add(getItems().get(j));
-      }
-      for (int j=0; j < toBeCollapsed.size(); j++) {
-        CustomMenuItem item=toBeCollapsed.get(j);
-        removeItem(item);
-        if (item.getSubMenu() != null && submenuIcon != null) {
-          StringBuffer itemText=new StringBuffer(item.getHTML());
-          itemText.append("<img src=\"");
-          itemText.append(submenuIcon);
-          itemText.append("\" align=\"right\" />");
-          item.setHTML(itemText.toString());
-        }
-        collapsed.addItem(item);
-      }
-      moreItem.setSubMenu(collapsed);
-      addItem(moreItem);
-    }
-  }
+  iLayout();
 }
