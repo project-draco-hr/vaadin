@@ -20,7 +20,11 @@
     if (moreItemUIDL.hasAttribute("icon")) {
       itemHTML.append("<img src=\"" + client.translateVaadinUri(moreItemUIDL.getStringAttribute("icon")) + "\" class=\""+ Icon.CLASSNAME+ "\" alt=\"\" />");
     }
-    itemHTML.append(moreItemUIDL.getStringAttribute("text"));
+    String moreItemText=moreItemUIDL.getStringAttribute("text");
+    if ("".equals(moreItemText)) {
+      moreItemText="&#x25B6;";
+    }
+    itemHTML.append(moreItemText);
     moreItem=new CustomMenuItem(itemHTML.toString(),emptyCommand);
     collapsedRootItems=new VMenuBar(true);
     moreItem.setSubMenu(collapsedRootItems);
@@ -38,10 +42,6 @@
     final int itemId=item.getIntAttribute("id");
     boolean itemHasCommand=item.getBooleanAttribute("command");
     StringBuffer itemHTML=new StringBuffer();
-    if (item.hasAttribute("icon")) {
-      itemHTML.append("<img src=\"" + client.translateVaadinUri(item.getStringAttribute("icon")) + "\" class=\""+ Icon.CLASSNAME+ "\" alt=\"\" />");
-    }
-    itemHTML.append(itemText);
     if (item.getChildCount() > 0) {
       String bgStyle="";
       if (submenuIcon != null) {
@@ -49,6 +49,10 @@
       }
       itemHTML.append("<span class=\"" + CLASSNAME + "-submenu-indicator\""+ bgStyle+ ">&#x25B6;</span>");
     }
+    if (item.hasAttribute("icon")) {
+      itemHTML.append("<img src=\"" + client.translateVaadinUri(item.getStringAttribute("icon")) + "\" class=\""+ Icon.CLASSNAME+ "\" alt=\"\" />");
+    }
+    itemHTML.append(itemText);
     Command cmd=null;
     if (itemHasCommand) {
       cmd=new Command(){
@@ -59,6 +63,7 @@
 ;
     }
     currentItem=currentMenu.addItem(itemHTML.toString(),cmd);
+    currentItem.setEnabled(!item.hasAttribute("disabled"));
     if (item.getChildCount() > 0) {
       menuStack.push(currentMenu);
       iteratorStack.push(itr);
