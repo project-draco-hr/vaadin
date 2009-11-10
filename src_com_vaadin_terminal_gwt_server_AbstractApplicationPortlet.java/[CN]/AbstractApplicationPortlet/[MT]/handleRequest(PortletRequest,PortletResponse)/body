@@ -1,13 +1,9 @@
 {
-  System.out.println("AbstractApplicationPortlet.handleRequest() " + System.currentTimeMillis());
   RequestType requestType=getRequestType(request);
-  System.out.println("  RequestType: " + requestType);
-  System.out.println("  WindowID: " + request.getWindowID());
   if (requestType == RequestType.UNKNOWN) {
     System.err.println("Unknown request type");
   }
  else   if (requestType == RequestType.DUMMY) {
-    System.out.println("Printing Dummy page");
     ((ResourceResponse)response).setContentType("text/html");
     final OutputStream out=((ResourceResponse)response).getPortletOutputStream();
     final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
@@ -45,6 +41,11 @@
  else       if (requestType == RequestType.UIDL) {
         applicationManager.handleUidlRequest((ResourceRequest)request,(ResourceResponse)response,this);
         return;
+      }
+ else       if (requestType == RequestType.EVENT) {
+        if (application instanceof EventPortlet) {
+          ((EventPortlet)application).processEvent((EventRequest)request,(EventResponse)response);
+        }
       }
  else {
         if (!application.isRunning()) {
