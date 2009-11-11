@@ -1,4 +1,5 @@
 {
+  final int shadowSpace=10;
   popup=new VOverlay(true,false,true);
   popup.setWidget(item.getSubMenu());
   popup.addCloseHandler(this);
@@ -18,13 +19,15 @@
   visibleChildMenu=item.getSubMenu();
   item.getSubMenu().setParentMenu(this);
   popup.show();
-  if (left + popup.getOffsetWidth() >= RootPanel.getBodyElement().getOffsetWidth()) {
+  if (left + popup.getOffsetWidth() >= RootPanel.getBodyElement().getOffsetWidth() - shadowSpace) {
     if (subMenu) {
-      left=item.getParentMenu().getAbsoluteLeft() - popup.getOffsetWidth();
+      left=item.getParentMenu().getAbsoluteLeft() - popup.getOffsetWidth() - shadowSpace;
     }
  else {
-      left=RootPanel.getBodyElement().getOffsetWidth() - popup.getOffsetWidth();
-      ApplicationConnection.getConsole().log("" + left);
+      left=RootPanel.getBodyElement().getOffsetWidth() - popup.getOffsetWidth() - shadowSpace;
+    }
+    if (left < shadowSpace) {
+      left=shadowSpace;
     }
     popup.setPopupPosition(left,top);
   }

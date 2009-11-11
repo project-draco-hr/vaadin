@@ -40,29 +40,35 @@
     CustomMenuItem currentItem=null;
     String itemText=item.getStringAttribute("text");
     final int itemId=item.getIntAttribute("id");
-    boolean itemHasCommand=item.getBooleanAttribute("command");
+    boolean itemHasCommand=item.hasAttribute("command");
     StringBuffer itemHTML=new StringBuffer();
-    if (item.getChildCount() > 0) {
-      String bgStyle="";
-      if (submenuIcon != null) {
-        bgStyle=" style=\"background-image: url(" + submenuIcon + "); text-indent: -999px; width: 1em;\"";
-      }
-      itemHTML.append("<span class=\"" + CLASSNAME + "-submenu-indicator\""+ bgStyle+ ">&#x25BA;</span>");
-    }
-    if (item.hasAttribute("icon")) {
-      itemHTML.append("<img src=\"" + client.translateVaadinUri(item.getStringAttribute("icon")) + "\" class=\""+ Icon.CLASSNAME+ "\" alt=\"\" />");
-    }
-    itemHTML.append(itemText);
     Command cmd=null;
-    if (itemHasCommand) {
-      cmd=new Command(){
-        public void execute(){
-          hostReference.onMenuClick(itemId);
+    if (item.hasAttribute("separator")) {
+      itemHTML.append("<span>---</span>");
+    }
+ else {
+      if (item.getChildCount() > 0) {
+        String bgStyle="";
+        if (submenuIcon != null) {
+          bgStyle=" style=\"background-image: url(" + submenuIcon + "); text-indent: -999px; width: 1em;\"";
         }
+        itemHTML.append("<span class=\"" + CLASSNAME + "-submenu-indicator\""+ bgStyle+ ">&#x25BA;</span>");
       }
+      if (item.hasAttribute("icon")) {
+        itemHTML.append("<img src=\"" + client.translateVaadinUri(item.getStringAttribute("icon")) + "\" class=\""+ Icon.CLASSNAME+ "\" alt=\"\" />");
+      }
+      itemHTML.append(Util.escapeHTML(itemText));
+      if (itemHasCommand) {
+        cmd=new Command(){
+          public void execute(){
+            hostReference.onMenuClick(itemId);
+          }
+        }
 ;
+      }
     }
     currentItem=currentMenu.addItem(itemHTML.toString(),cmd);
+    currentItem.setSeparator(item.hasAttribute("separator"));
     currentItem.setEnabled(!item.hasAttribute("disabled"));
     if (item.getChildCount() > 0) {
       menuStack.push(currentMenu);
