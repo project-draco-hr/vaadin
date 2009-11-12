@@ -34,22 +34,12 @@ synchronized (openList) {
   }
   super.paintContent(target);
   if (jsExecQueue != null) {
-    while (jsExecQueue.size() > 0) {
-      String script=jsExecQueue.get(0);
-      ArrayList<Paintable> args=jsExecParamsQueue.get(0);
+    for (    String script : jsExecQueue) {
       target.startTag("execJS");
       target.addAttribute("script",script);
-      for (      Paintable p : args) {
-        target.startTag("arg");
-        target.paintReference(p,"ref");
-        target.endTag("arg");
-      }
       target.endTag("execJS");
-      jsExecQueue.remove(0);
-      jsExecParamsQueue.remove(0);
     }
     jsExecQueue=null;
-    jsExecParamsQueue=null;
   }
   target.addVariable(this,"positionx",getPositionX());
   target.addVariable(this,"positiony",getPositionY());
