@@ -34,6 +34,18 @@
       applicationContext.getBrowser().updateBrowserProperties(request);
       startApplication(request,application,applicationContext);
       applicationContext.startTransaction(application,request);
+      if (request instanceof RenderRequest) {
+        applicationContext.firePortletRenderRequest(application,(RenderRequest)request,(RenderResponse)response);
+      }
+ else       if (request instanceof ActionRequest) {
+        applicationContext.firePortletActionRequest(application,(ActionRequest)request,(ActionResponse)response);
+      }
+ else       if (request instanceof EventRequest) {
+        applicationContext.firePortletEventRequest(application,(EventRequest)request,(EventResponse)response);
+      }
+ else       if (request instanceof ResourceRequest) {
+        applicationContext.firePortletResourceRequest(application,(ResourceRequest)request,(ResourceResponse)response);
+      }
       if (requestType == RequestType.FILE_UPLOAD) {
         applicationManager.handleFileUpload((ActionRequest)request,(ActionResponse)response);
         return;
@@ -41,11 +53,6 @@
  else       if (requestType == RequestType.UIDL) {
         applicationManager.handleUidlRequest((ResourceRequest)request,(ResourceResponse)response,this);
         return;
-      }
- else       if (requestType == RequestType.EVENT) {
-        if (application instanceof EventPortlet) {
-          ((EventPortlet)application).processEvent((EventRequest)request,(EventResponse)response);
-        }
       }
  else {
         if (!application.isRunning()) {
