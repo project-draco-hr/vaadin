@@ -1,0 +1,68 @@
+{
+  final List<Throwable> exceptions=new ArrayList<Throwable>();
+  HttpSession session=createSession();
+  final WebApplicationContext context=WebApplicationContext.getApplicationContext(session);
+  List<Thread> threads=new ArrayList<Thread>();
+  for (int i=0; i < 5; i++) {
+    Thread t=new Thread(new Runnable(){
+      public void run(){
+        Application app=new Application(){
+          @Override public void init(){
+            try {
+              Thread.sleep((long)(1000 * new Random().nextDouble()));
+            }
+ catch (            InterruptedException e) {
+              e.printStackTrace();
+            }
+            getContext().addTransactionListener(new DelayTransactionListener(2000));
+          }
+        }
+;
+        try {
+          app.start(new URL("http://localhost/"),new Properties(),context);
+        }
+ catch (        MalformedURLException e) {
+          e.printStackTrace();
+        }
+        try {
+          Method m=context.getClass().getDeclaredMethod("startTransaction",Application.class,HttpServletRequest.class);
+          m.setAccessible(true);
+          m.invoke(context,app,null);
+        }
+ catch (        Exception e) {
+          throw new RuntimeException(e);
+        }
+      }
+    }
+);
+    threads.add(t);
+    t.setUncaughtExceptionHandler(new UncaughtExceptionHandler(){
+      public void uncaughtException(      Thread t,      Throwable e){
+        e=e.getCause();
+        exceptions.add(e);
+      }
+    }
+);
+  }
+  for (  Thread t : threads) {
+    t.start();
+  }
+  int running=threads.size();
+  while (running > 0) {
+    for (Iterator<Thread> i=threads.iterator(); i.hasNext(); ) {
+      Thread t=i.next();
+      if (!t.isAlive()) {
+        running--;
+        i.remove();
+      }
+    }
+  }
+  for (  Throwable t : exceptions) {
+    if (t instanceof InvocationTargetException) {
+      t=t.getCause();
+    }
+    t.printStackTrace(System.err);
+    fail(t.getClass().getName());
+  }
+  System.out.println("Done, all ok");
+}
