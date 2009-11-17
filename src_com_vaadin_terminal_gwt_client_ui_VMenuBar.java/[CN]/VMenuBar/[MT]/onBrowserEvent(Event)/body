@@ -1,5 +1,9 @@
 {
   super.onBrowserEvent(e);
+  if (DOM.eventGetType(e) == Event.ONLOAD) {
+    requestLayout();
+    return;
+  }
   Element targetElement=DOM.eventGetTarget(e);
   CustomMenuItem targetItem=null;
   for (int i=0; i < items.size(); i++) {
@@ -11,10 +15,14 @@
   if (targetItem != null) {
 switch (DOM.eventGetType(e)) {
 case Event.ONCLICK:
-      itemClick(targetItem);
+      if (targetItem.isEnabled()) {
+        itemClick(targetItem);
+      }
     break;
 case Event.ONMOUSEOVER:
-  itemOver(targetItem);
+  if (targetItem.isEnabled()) {
+    itemOver(targetItem);
+  }
 break;
 case Event.ONMOUSEOUT:
 itemOut(targetItem);

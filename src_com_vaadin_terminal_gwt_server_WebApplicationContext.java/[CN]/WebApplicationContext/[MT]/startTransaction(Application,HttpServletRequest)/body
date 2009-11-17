@@ -1,8 +1,7 @@
 {
-  if (listeners == null) {
-    return;
-  }
-  for (final Iterator i=listeners.iterator(); i.hasNext(); ) {
-    ((ApplicationContext.TransactionListener)i.next()).transactionStart(application,request);
+synchronized (listeners) {
+    for (    TransactionListener listener : listeners) {
+      listener.transactionStart(application,request);
+    }
   }
 }

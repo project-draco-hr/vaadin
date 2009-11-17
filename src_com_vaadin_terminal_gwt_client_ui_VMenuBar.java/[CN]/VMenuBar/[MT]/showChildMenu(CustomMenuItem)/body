@@ -1,15 +1,34 @@
 {
+  final int shadowSpace=10;
   popup=new VOverlay(true,false,true);
   popup.setWidget(item.getSubMenu());
   popup.addCloseHandler(this);
+  popup.addAutoHidePartner(item.getElement());
+  int left=0;
+  int top=0;
   if (subMenu) {
-    popup.setPopupPosition(item.getParentMenu().getAbsoluteLeft() + item.getParentMenu().getOffsetWidth(),item.getAbsoluteTop());
+    left=item.getParentMenu().getAbsoluteLeft() + item.getParentMenu().getOffsetWidth();
+    top=item.getAbsoluteTop();
   }
  else {
-    popup.setPopupPosition(item.getAbsoluteLeft(),item.getParentMenu().getAbsoluteTop() + item.getParentMenu().getOffsetHeight());
+    left=item.getAbsoluteLeft();
+    top=item.getParentMenu().getAbsoluteTop() + item.getParentMenu().getOffsetHeight();
   }
+  popup.setPopupPosition(left,top);
   item.getSubMenu().onShow();
   visibleChildMenu=item.getSubMenu();
   item.getSubMenu().setParentMenu(this);
   popup.show();
+  if (left + popup.getOffsetWidth() >= RootPanel.getBodyElement().getOffsetWidth() - shadowSpace) {
+    if (subMenu) {
+      left=item.getParentMenu().getAbsoluteLeft() - popup.getOffsetWidth() - shadowSpace;
+    }
+ else {
+      left=RootPanel.getBodyElement().getOffsetWidth() - popup.getOffsetWidth() - shadowSpace;
+    }
+    if (left < shadowSpace) {
+      left=shadowSpace;
+    }
+    popup.setPopupPosition(left,top);
+  }
 }

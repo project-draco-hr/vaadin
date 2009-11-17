@@ -8,14 +8,21 @@
       public void setPosition(      int offsetWidth,      int offsetHeight){
         final int w=offsetWidth;
         final int h=offsetHeight;
+        final int browserWindowWidth=Window.getClientWidth() + Window.getScrollLeft();
+        final int browserWindowHeight=Window.getClientHeight() + Window.getScrollTop();
         int t=calendarToggle.getAbsoluteTop();
         int l=calendarToggle.getAbsoluteLeft();
-        if (l + w > Window.getClientWidth() + Window.getScrollLeft()) {
-          l=Window.getClientWidth() + Window.getScrollLeft() - w;
+        int extraSpace=30;
+        boolean overflowRight=false;
+        if (l + +w + extraSpace > browserWindowWidth) {
+          overflowRight=true;
+          l=browserWindowWidth - w - extraSpace;
         }
-        if (t + h + calendarToggle.getOffsetHeight()+ 30 > Window.getClientHeight() + Window.getScrollTop()) {
-          t=Window.getClientHeight() + Window.getScrollTop() - h - calendarToggle.getOffsetHeight() - 30;
-          l+=calendarToggle.getOffsetWidth();
+        if (t + h + calendarToggle.getOffsetHeight()+ 30 > browserWindowHeight) {
+          t=browserWindowHeight - h - calendarToggle.getOffsetHeight()- 30;
+          if (!overflowRight) {
+            l+=calendarToggle.getOffsetWidth();
+          }
         }
         popup.setWidth(w + "px");
         popup.setHeight(h + "px");

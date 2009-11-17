@@ -1,17 +1,16 @@
 {
-  if (listeners == null) {
-    return;
-  }
   LinkedList<Exception> exceptions=null;
-  for (final Iterator i=listeners.iterator(); i.hasNext(); ) {
-    try {
-      ((ApplicationContext.TransactionListener)i.next()).transactionEnd(application,request);
-    }
- catch (    final RuntimeException t) {
-      if (exceptions == null) {
-        exceptions=new LinkedList<Exception>();
+synchronized (listeners) {
+    for (    TransactionListener listener : listeners) {
+      try {
+        listener.transactionEnd(application,request);
       }
-      exceptions.add(t);
+ catch (      final RuntimeException t) {
+        if (exceptions == null) {
+          exceptions=new LinkedList<Exception>();
+        }
+        exceptions.add(t);
+      }
     }
   }
   if (exceptions != null) {
