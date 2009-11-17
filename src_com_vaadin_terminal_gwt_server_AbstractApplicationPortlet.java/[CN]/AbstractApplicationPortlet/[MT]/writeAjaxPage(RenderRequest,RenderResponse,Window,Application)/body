@@ -1,4 +1,5 @@
 {
+  System.out.println("writeAjaxPage");
   response.setContentType("text/html");
   final BufferedWriter page=new BufferedWriter(new OutputStreamWriter(response.getPortletOutputStream(),"UTF-8"));
   String requestWidgetset=(String)request.getAttribute(AbstractApplicationServlet.REQUEST_WIDGETSET);
@@ -14,8 +15,9 @@
     widgetset=sharedWidgetset;
   }
   String themeName=getThemeForWindow(request,window);
-  String widgetsetURL=getWidgetsetURL(widgetset);
-  String themeURI=getThemeURI(themeName);
+  String widgetsetURL=getWidgetsetURL(widgetset,request);
+  String themeURI=getThemeURI(themeName,request);
+  String portalTheme=getPortalProperty(PORTAL_PARAMETER_VAADIN_THEME,request.getPortalContext());
   Application.SystemMessages systemMessages=null;
   try {
     systemMessages=getSystemMessages();
@@ -61,13 +63,25 @@
   }
   page.write("};\n</script>\n");
   page.write("<script type=\"text/javascript\">\n");
-  page.write("if(!vaadin.themesLoaded['" + themeName + "']) {\n");
-  page.write("var stylesheet = document.createElement('link');\n");
-  page.write("stylesheet.setAttribute('rel', 'stylesheet');\n");
-  page.write("stylesheet.setAttribute('type', 'text/css');\n");
-  page.write("stylesheet.setAttribute('href', '" + themeURI + "/styles.css');\n");
-  page.write("document.getElementsByTagName('head')[0].appendChild(stylesheet);\n");
-  page.write("vaadin.themesLoaded['" + themeName + "'] = true;\n}\n");
+  if (portalTheme == null) {
+    portalTheme=DEFAULT_THEME_NAME;
+  }
+  page.write("if(!vaadin.themesLoaded['" + portalTheme + "']) {\n");
+  page.write("var defaultStylesheet = document.createElement('link');\n");
+  page.write("defaultStylesheet.setAttribute('rel', 'stylesheet');\n");
+  page.write("defaultStylesheet.setAttribute('type', 'text/css');\n");
+  page.write("defaultStylesheet.setAttribute('href', '" + getThemeURI(portalTheme,request) + "/styles.css');\n");
+  page.write("document.getElementsByTagName('head')[0].appendChild(defaultStylesheet);\n");
+  page.write("vaadin.themesLoaded['" + portalTheme + "'] = true;\n}\n");
+  if (!portalTheme.equals(themeName)) {
+    page.write("if(!vaadin.themesLoaded['" + themeName + "']) {\n");
+    page.write("var stylesheet = document.createElement('link');\n");
+    page.write("stylesheet.setAttribute('rel', 'stylesheet');\n");
+    page.write("stylesheet.setAttribute('type', 'text/css');\n");
+    page.write("stylesheet.setAttribute('href', '" + themeURI + "/styles.css');\n");
+    page.write("document.getElementsByTagName('head')[0].appendChild(stylesheet);\n");
+    page.write("vaadin.themesLoaded['" + themeName + "'] = true;\n}\n");
+  }
   page.write("</script>\n");
   String appClass="v-app-";
   try {
