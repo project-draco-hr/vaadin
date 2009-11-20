@@ -1,0 +1,17 @@
+{
+  String col=null;
+  String row=null;
+  Element clickTarget=(Element)event.getNativeEvent().getEventTarget().cast();
+  Element rootElement=getElement();
+  while (clickTarget != null && clickTarget != rootElement) {
+    Paintable paintable=client.getPaintable(clickTarget);
+    if (paintable != null) {
+      Cell cell=paintableToCell.get(paintable);
+      row=String.valueOf(cell.row);
+      col=String.valueOf(cell.col);
+      break;
+    }
+    clickTarget=DOM.getParent(clickTarget);
+  }
+  client.getEventHandler(this).fireEvent("click","left",row,col);
+}
