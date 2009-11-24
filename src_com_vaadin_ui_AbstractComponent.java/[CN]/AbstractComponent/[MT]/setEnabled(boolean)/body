@@ -1,8 +1,12 @@
 {
   if (this.enabled != enabled) {
-    boolean wasEnabled=isEnabled();
+    boolean wasEnabled=this.enabled;
+    boolean wasEnabledInContext=isEnabled();
     this.enabled=enabled;
-    if (wasEnabled != isEnabled()) {
+    boolean isEnabled=enabled;
+    boolean isEnabledInContext=isEnabled();
+    boolean needRepaint=(wasEnabledInContext != isEnabledInContext) || (wasEnabled != isEnabled && !parent.isVisible());
+    if (needRepaint) {
       requestRepaint();
     }
   }
