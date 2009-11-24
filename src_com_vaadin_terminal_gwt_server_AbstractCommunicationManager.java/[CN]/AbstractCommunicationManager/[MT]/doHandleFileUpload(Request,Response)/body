@@ -4,7 +4,7 @@
   upload.setProgressListener(pl);
   FileItemIterator iter;
   try {
-    iter=getItemIterator(upload,request);
+    iter=getUploadItemIterator(upload,request);
     while (iter.hasNext()) {
       final FileItemStream item=iter.next();
       final String name=item.getFieldName();
@@ -15,7 +15,6 @@
       }
  else {
         final String pid=name.split("_")[0];
-        System.out.println("Looking up upload component with PID " + pid);
         final Upload uploadComponent=(Upload)idPaintableMap.get(pid);
         if (uploadComponent == null) {
           throw new FileUploadException("Upload component not found");
@@ -47,7 +46,7 @@ synchronized (application) {
         }
  catch (        UploadException e) {
 synchronized (application) {
-            handleChangeVariablesError(application,uploadComponent,e,new HashMap<Object,Object>());
+            handleChangeVariablesError(application,uploadComponent,e,new HashMap<String,Object>());
           }
         }
       }
