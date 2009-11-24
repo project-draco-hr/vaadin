@@ -1,0 +1,26 @@
+{
+  if (file == null) {
+    return null;
+  }
+  try {
+    FileInputStream fis=new FileInputStream(file);
+    InputStreamReader isr=charset == null ? new InputStreamReader(fis) : new InputStreamReader(fis,charset);
+    BufferedReader r=new BufferedReader(isr);
+    StringBuilder b=new StringBuilder();
+    char buf[]=new char[8 * 1024];
+    int len;
+    while ((len=r.read(buf)) != -1) {
+      b.append(buf,0,len);
+    }
+    r.close();
+    isr.close();
+    fis.close();
+    return b.toString();
+  }
+ catch (  FileNotFoundException e) {
+    return null;
+  }
+catch (  IOException e) {
+    throw new RuntimeException(e);
+  }
+}
