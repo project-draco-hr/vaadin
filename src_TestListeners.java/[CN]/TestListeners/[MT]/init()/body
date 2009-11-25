@@ -1,18 +1,21 @@
 {
   Window w=new Window("main window");
   setMainWindow(w);
-  AbsoluteLayout al=new AbsoluteLayout();
+  HorizontalLayout hl=new HorizontalLayout();
+  w.setContent(hl);
+  final AbsoluteLayout al=new AbsoluteLayout();
   al.setWidth("200px");
   al.setHeight("200px");
   al.addComponent(new TextField("This is its caption","This is a textfield"),"top: 20px; left: 0px; width: 100px;");
   al.addComponent(new TextField("Antoerh caption","This is another textfield"),"top: 120px; left: 0px; width: 100px;");
-  al.addListener(new LayoutClickListener(){
+  final LayoutClickListener lcl=new LayoutClickListener(){
     public void layoutClick(    LayoutClickEvent event){
-      System.out.println("Click on " + event.getChildComponent());
+      System.out.println("AL: Click on " + event.getChildComponent());
     }
   }
-);
-  GridLayout vl=new GridLayout();
+;
+  al.addListener(lcl);
+  final GridLayout vl=new GridLayout();
   vl.addComponent(al);
   vl.setSpacing(true);
   for (int i=0; i < 10; i++) {
@@ -46,9 +49,12 @@
   vl.addListener(new LayoutClickListener(){
     public void layoutClick(    LayoutClickEvent event){
       TestListeners.this.layoutClick(event);
+      vl.removeListener(this);
     }
   }
 );
   vl.setMargin(true);
-  w.setContent(vl);
+  hl.addComponent(vl);
+  hl.addComponent(createClickableGridLayout());
+  hl.addComponent(createClickableVerticalLayout());
 }
