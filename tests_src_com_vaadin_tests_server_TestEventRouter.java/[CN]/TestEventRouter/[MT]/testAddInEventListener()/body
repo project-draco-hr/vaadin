@@ -1,0 +1,21 @@
+{
+  final TextField tf=new TextField();
+  final ValueChangeListener outer=new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      ValueChangeListener inner=new ValueChangeListener(){
+        public void valueChange(        ValueChangeEvent event){
+          innerListenerCalls++;
+          System.out.println("The inner listener was called");
+        }
+      }
+;
+      tf.addListener(inner);
+    }
+  }
+;
+  tf.addListener(outer);
+  tf.setValue("abc");
+  tf.setValue("def");
+  tf.setValue("ghi");
+  assert(innerListenerCalls == 3);
+}
