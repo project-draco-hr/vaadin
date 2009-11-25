@@ -1,0 +1,19 @@
+{
+  final PortletSession session=request.getPortletSession(allowSessionCreation);
+  if (session == null) {
+    throw new SessionExpiredException();
+  }
+  PortletApplicationContext2 context=PortletApplicationContext2.getApplicationContext(session);
+  final Collection<Application> applications=context.getApplications();
+  for (final Iterator<Application> i=applications.iterator(); i.hasNext(); ) {
+    final Application sessionApplication=i.next();
+    if (request.getWindowID().equals(sessionApplication.getPortletWindowId())) {
+      if (sessionApplication.isRunning()) {
+        return sessionApplication;
+      }
+      PortletApplicationContext2.getApplicationContext(session).removeApplication(sessionApplication);
+      break;
+    }
+  }
+  return null;
+}

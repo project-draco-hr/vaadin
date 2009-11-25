@@ -1,19 +1,7 @@
 {
-  if (relativeUri == null) {
-    return null;
-  }
-  String prefix=relativeUri;
-  final int index=relativeUri.indexOf('/');
-  if (index >= 0) {
-    prefix=relativeUri.substring(0,index);
-  }
-  if (prefix.equals("APP")) {
-    final int next=relativeUri.indexOf('/',index + 1);
-    if (next < 0) {
-      return null;
-    }
-    final String key=relativeUri.substring(index + 1,next);
-    final ApplicationResource resource=(ApplicationResource)keyResourceMap.get(key);
+  if (resourceURLGenerator.isResourceURL(context,relativeUri)) {
+    final String key=resourceURLGenerator.getMapKey(context,relativeUri);
+    final ApplicationResource resource=keyResourceMap.get(key);
     if (resource != null) {
       DownloadStream stream=resource.getStream();
       if (stream != null) {

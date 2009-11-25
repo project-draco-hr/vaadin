@@ -1,0 +1,54 @@
+{
+  Window w=new Window("main window");
+  setMainWindow(w);
+  AbsoluteLayout al=new AbsoluteLayout();
+  al.setWidth("200px");
+  al.setHeight("200px");
+  al.addComponent(new TextField("This is its caption","This is a textfield"),"top: 20px; left: 0px; width: 100px;");
+  al.addComponent(new TextField("Antoerh caption","This is another textfield"),"top: 120px; left: 0px; width: 100px;");
+  al.addListener(new LayoutClickListener(){
+    public void layoutClick(    LayoutClickEvent event){
+      System.out.println("Click on " + event.getChildComponent());
+    }
+  }
+);
+  GridLayout vl=new GridLayout();
+  vl.addComponent(al);
+  vl.setSpacing(true);
+  for (int i=0; i < 10; i++) {
+    vl.addComponent(new Label("Component " + i));
+    ExternalResource res=new ExternalResource("http://vaadin.com/image/image_gallery?uuid=07c1f6d5-2e94-4f4d-a707-b548bf22279d&groupId=10919&t=1241012632062");
+    Embedded e=new Embedded("an image",res);
+    e.setType(Embedded.TYPE_IMAGE);
+    e.addListener(new ClickListener(){
+      public void click(      ClickEvent event){
+        TestListeners.this.click(event);
+      }
+    }
+);
+    vl.addComponent(e);
+    TextField tf=new TextField("tf");
+    tf.setInputPrompt("Please enter a value");
+    tf.addListener(new BlurListener(){
+      public void blur(      BlurEvent event){
+        getMainWindow().showNotification("Blurred " + event.getComponent());
+      }
+    }
+);
+    tf.addListener(new FocusListener(){
+      public void focus(      FocusEvent event){
+        getMainWindow().showNotification("Focused " + event.getComponent());
+      }
+    }
+);
+    vl.addComponent(tf);
+  }
+  vl.addListener(new LayoutClickListener(){
+    public void layoutClick(    LayoutClickEvent event){
+      TestListeners.this.layoutClick(event);
+    }
+  }
+);
+  vl.setMargin(true);
+  w.setContent(vl);
+}

@@ -2,7 +2,13 @@
   startRequest();
   final String rd=uidl_security_key + VAR_BURST_SEPARATOR + requestData;
   console.log("Making UIDL Request with params: " + rd);
-  String uri=getAppUri() + "UIDL" + configuration.getPathInfo();
+  String uri;
+  if (configuration.usePortletURLs()) {
+    uri=configuration.getPortletUidlURLBase();
+  }
+ else {
+    uri=getAppUri() + "UIDL" + configuration.getPathInfo();
+  }
   if (repaintAll) {
     int clientHeight=Window.getClientHeight();
     int clientWidth=Window.getClientWidth();
@@ -12,13 +18,19 @@
     int screenWidth=BrowserInfo.get().getScreenWidth();
     int screenHeight=BrowserInfo.get().getScreenHeight();
     String token=History.getToken();
-    uri+="?repaintAll=1&" + "sh=" + screenHeight + "&sw="+ screenWidth+ "&cw="+ clientWidth+ "&ch="+ clientHeight+ "&vw="+ offsetWidth+ "&vh="+ offsetHeight+ "&fr="+ token;
+    if (configuration.usePortletURLs()) {
+      uri+="&";
+    }
+ else {
+      uri+="?";
+    }
+    uri+="repaintAll=1&" + "sh=" + screenHeight + "&sw="+ screenWidth+ "&cw="+ clientWidth+ "&ch="+ clientHeight+ "&vw="+ offsetWidth+ "&vh="+ offsetHeight+ "&fr="+ token;
     if (analyzeLayouts) {
       uri+="&analyzeLayouts=1";
     }
   }
   if (windowName != null && windowName.length() > 0) {
-    uri+=(repaintAll ? "&" : "?") + "windowName=" + windowName;
+    uri+=(repaintAll || configuration.usePortletURLs() ? "&" : "?") + "windowName=" + windowName;
   }
   if (!forceSync) {
     final RequestBuilder rb=new RequestBuilder(RequestBuilder.POST,uri);
