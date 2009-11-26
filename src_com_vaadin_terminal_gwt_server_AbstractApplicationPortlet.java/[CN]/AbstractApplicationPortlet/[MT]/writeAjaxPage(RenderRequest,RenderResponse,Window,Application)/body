@@ -1,17 +1,17 @@
 {
   response.setContentType("text/html");
   final BufferedWriter page=new BufferedWriter(new OutputStreamWriter(response.getPortletOutputStream(),"UTF-8"));
-  String requestWidgetset=(String)request.getAttribute(AbstractApplicationServlet.REQUEST_WIDGETSET);
+  String requestWidgetset=getApplicationOrSystemProperty(PARAMETER_WIDGETSET,null);
   String sharedWidgetset=getPortalProperty(PORTAL_PARAMETER_VAADIN_WIDGETSET,request.getPortalContext());
-  if (requestWidgetset == null && sharedWidgetset == null) {
-    requestWidgetset=getApplicationOrSystemProperty(PARAMETER_WIDGETSET,DEFAULT_WIDGETSET);
-  }
   String widgetset;
   if (requestWidgetset != null) {
     widgetset=requestWidgetset;
   }
- else {
+ else   if (sharedWidgetset != null) {
     widgetset=sharedWidgetset;
+  }
+ else {
+    widgetset=DEFAULT_WIDGETSET;
   }
   String themeName=getThemeForWindow(request,window);
   String widgetsetURL=getWidgetsetURL(widgetset,request);
