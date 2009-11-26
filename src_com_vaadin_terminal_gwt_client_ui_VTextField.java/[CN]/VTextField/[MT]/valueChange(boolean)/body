@@ -1,0 +1,19 @@
+{
+  if (client != null && id != null) {
+    boolean sendBlurEvent=false;
+    boolean sendValueChange=false;
+    if (blurred && client.hasEventListeners(this,BLUR_EVENT_IDENTIFIER)) {
+      sendBlurEvent=true;
+      client.updateVariable(id,BLUR_EVENT_IDENTIFIER,"",false);
+    }
+    String newText=getText();
+    if (!prompting && newText != null && !newText.equals(valueBeforeEdit)) {
+      sendValueChange=immediate;
+      client.updateVariable(id,"text",getText(),false);
+      valueBeforeEdit=newText;
+    }
+    if (sendBlurEvent || sendValueChange) {
+      client.sendPendingVariableChanges();
+    }
+  }
+}
