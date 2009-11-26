@@ -1,0 +1,27 @@
+{
+  Window w=new Window();
+  setMainWindow(w);
+  Layout layout=null;
+  for (int i=0; i < getLayoutCount(); i++) {
+    Layout newlayout=createLayout();
+    if (i == 0) {
+      w.setContent(newlayout);
+    }
+ else {
+      layout.addComponent(newlayout);
+    }
+    layout=newlayout;
+  }
+  Tree tree=new Tree();
+  for (int i=0; i < getItemCount(); i++) {
+    String text="ITEM " + i;
+    tree.addItem(text);
+    for (int j=0; j < getSubItemCount(); j++) {
+      String subtext=" SUBITEM " + j + " for "+ text;
+      tree.addItem(subtext);
+      tree.setParent(subtext,text);
+    }
+    tree.expandItemsRecursively(text);
+  }
+  layout.addComponent(tree);
+}
