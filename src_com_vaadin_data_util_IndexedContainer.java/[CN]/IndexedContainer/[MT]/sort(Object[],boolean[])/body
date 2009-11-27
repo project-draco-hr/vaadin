@@ -1,21 +1,5 @@
 {
-  final List ids=new ArrayList();
-  final List<Boolean> orders=new ArrayList<Boolean>();
-  final Collection sortable=getSortableContainerPropertyIds();
-  for (int i=0; i < propertyId.length; i++) {
-    if (sortable.contains(propertyId[i])) {
-      ids.add(propertyId[i]);
-      orders.add(Boolean.valueOf(i < ascending.length ? ascending[i] : true));
-    }
-  }
-  if (ids.size() == 0) {
-    return;
-  }
-  sortPropertyId=ids.toArray();
-  sortDirection=new boolean[orders.size()];
-  for (int i=0; i < sortDirection.length; i++) {
-    sortDirection[i]=(orders.get(i)).booleanValue();
-  }
+  itemSorter.setSortProperties(this,propertyId,ascending);
   doSort();
   if (filteredItemIds != null) {
     updateContainerFiltering();
@@ -23,6 +7,4 @@
  else {
     fireContentsChange(-1);
   }
-  sortPropertyId=null;
-  sortDirection=null;
 }
