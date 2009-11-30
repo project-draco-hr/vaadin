@@ -17,6 +17,9 @@
     WebApplicationContext webApplicationContext=WebApplicationContext.getApplicationContext(request.getSession());
     CommunicationManager applicationManager=webApplicationContext.getApplicationManager(application,this);
     updateBrowserProperties(webApplicationContext.getBrowser(),request);
+    if (application instanceof HttpServletRequestListener) {
+      ((HttpServletRequestListener)application).onRequestStart(request,response);
+    }
     startApplication(request,application,webApplicationContext);
     webApplicationContext.startTransaction(application,request);
     if (requestType == RequestType.FILE_UPLOAD) {
@@ -59,6 +62,9 @@ catch (  final Throwable e) {
  finally {
     if (application != null) {
       ((WebApplicationContext)application.getContext()).endTransaction(application,request);
+      if (application instanceof HttpServletRequestListener) {
+        ((HttpServletRequestListener)application).onRequestEnd(request,response);
+      }
     }
   }
 }

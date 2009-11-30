@@ -32,6 +32,9 @@
         applicationManager.dummyURL=dummyURL.toString();
       }
       updateBrowserProperties(applicationContext.getBrowser(),request);
+      if (application instanceof PortletRequestListener) {
+        ((PortletRequestListener)application).onRequestStart(request,response);
+      }
       startApplication(request,application,applicationContext);
       applicationContext.startTransaction(application,request);
       if (request instanceof RenderRequest) {
@@ -95,6 +98,9 @@ catch (    final Throwable e) {
  finally {
       if (application != null) {
         ((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
+        if (application instanceof PortletRequestListener) {
+          ((PortletRequestListener)application).onRequestEnd(request,response);
+        }
       }
     }
   }
