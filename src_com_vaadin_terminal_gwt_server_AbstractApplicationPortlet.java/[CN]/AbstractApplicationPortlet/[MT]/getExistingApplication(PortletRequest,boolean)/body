@@ -4,15 +4,13 @@
     throw new SessionExpiredException();
   }
   PortletApplicationContext2 context=PortletApplicationContext2.getApplicationContext(session);
-  final Collection<Application> applications=context.getApplications();
-  for (  Application sessionApplication : applications) {
-    if (request.getWindowID().equals(sessionApplication.getPortletWindowId())) {
-      if (sessionApplication.isRunning()) {
-        return sessionApplication;
-      }
-      PortletApplicationContext2.getApplicationContext(session).removeApplication(sessionApplication);
-      break;
-    }
+  Application application=context.getApplicationForWindowId(request.getWindowID());
+  if (application == null) {
+    return null;
   }
+  if (application.isRunning()) {
+    return application;
+  }
+  PortletApplicationContext2.getApplicationContext(session).removeApplication(application);
   return null;
 }
