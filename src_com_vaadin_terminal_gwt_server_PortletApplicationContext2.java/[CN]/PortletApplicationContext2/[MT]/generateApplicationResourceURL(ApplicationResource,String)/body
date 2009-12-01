@@ -1,11 +1,16 @@
 {
-  ResourceURL resourceURL=mimeResponse.createResourceURL();
-  final String filename=resource.getFilename();
-  if (filename == null) {
-    resourceURL.setResourceID("APP/" + mapKey + "/");
+  if (response instanceof MimeResponse) {
+    ResourceURL resourceURL=((MimeResponse)response).createResourceURL();
+    final String filename=resource.getFilename();
+    if (filename == null) {
+      resourceURL.setResourceID("APP/" + mapKey + "/");
+    }
+ else {
+      resourceURL.setResourceID("APP/" + mapKey + "/"+ filename);
+    }
+    return resourceURL.toString();
   }
  else {
-    resourceURL.setResourceID("APP/" + mapKey + "/"+ filename);
+    return null;
   }
-  return resourceURL.toString();
 }

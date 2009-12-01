@@ -24,9 +24,7 @@
         return;
       }
       PortletApplicationContext2 applicationContext=PortletApplicationContext2.getApplicationContext(request.getPortletSession());
-      if (response instanceof MimeResponse) {
-        applicationContext.setMimeResponse((MimeResponse)response);
-      }
+      applicationContext.setResponse(response);
       PortletCommunicationManager applicationManager=applicationContext.getApplicationManager(application);
       if (response instanceof RenderResponse && applicationManager.dummyURL == null) {
         ResourceURL dummyURL=((RenderResponse)response).createResourceURL();
@@ -82,6 +80,10 @@
         }
  else         if (requestType == RequestType.RENDER) {
           writeAjaxPage((RenderRequest)request,(RenderResponse)response,window,application);
+        }
+ else         if (requestType == RequestType.EVENT) {
+        }
+ else         if (requestType == RequestType.ACTION) {
         }
  else {
           throw new IllegalStateException("handleRequest() without anything to do - should never happen!");
