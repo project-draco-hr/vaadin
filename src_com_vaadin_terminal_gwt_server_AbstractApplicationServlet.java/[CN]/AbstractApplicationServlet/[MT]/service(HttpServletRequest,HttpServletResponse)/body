@@ -5,6 +5,8 @@
     return;
   }
   Application application=null;
+  boolean transactionStarted=false;
+  boolean requestStarted=false;
   try {
     if (requestType == RequestType.UIDL && request.getParameterMap().containsKey(ApplicationConnection.PARAM_UNLOADBURST) && request.getContentLength() < 1 && getExistingApplication(request,false) == null) {
       redirectToApplication(request,response);
@@ -19,9 +21,11 @@
     updateBrowserProperties(webApplicationContext.getBrowser(),request);
     if (application instanceof HttpServletRequestListener) {
       ((HttpServletRequestListener)application).onRequestStart(request,response);
+      requestStarted=true;
     }
     startApplication(request,application,webApplicationContext);
     webApplicationContext.startTransaction(application,request);
+    transactionStarted=true;
     if (requestType == RequestType.FILE_UPLOAD) {
       applicationManager.handleFileUpload(request,response);
       return;
@@ -60,9 +64,13 @@ catch (  final Throwable e) {
     handleServiceException(request,response,application,e);
   }
  finally {
-    if (application != null) {
-      ((WebApplicationContext)application.getContext()).endTransaction(application,request);
-      if (application instanceof HttpServletRequestListener) {
+    try {
+      if (transactionStarted) {
+        ((WebApplicationContext)application.getContext()).endTransaction(application,request);
+      }
+    }
+  finally {
+      if (requestStarted) {
         ((HttpServletRequestListener)application).onRequestEnd(request,response);
       }
     }

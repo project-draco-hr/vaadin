@@ -16,6 +16,8 @@
   }
  else {
     Application application=null;
+    boolean transactionStarted=false;
+    boolean requestStarted=false;
     try {
       application=findApplicationInstance(request,requestType);
       if (application == null) {
@@ -34,9 +36,11 @@
       updateBrowserProperties(applicationContext.getBrowser(),request);
       if (application instanceof PortletRequestListener) {
         ((PortletRequestListener)application).onRequestStart(request,response);
+        requestStarted=true;
       }
       startApplication(request,application,applicationContext);
       applicationContext.startTransaction(application,request);
+      transactionStarted=true;
       if (request instanceof RenderRequest) {
         applicationContext.firePortletRenderRequest(application,(RenderRequest)request,(RenderResponse)response);
       }
@@ -96,9 +100,13 @@ catch (    final Throwable e) {
       handleServiceException(request,response,application,e);
     }
  finally {
-      if (application != null) {
-        ((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
-        if (application instanceof PortletRequestListener) {
+      try {
+        if (transactionStarted) {
+          ((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
+        }
+      }
+  finally {
+        if (requestStarted) {
           ((PortletRequestListener)application).onRequestEnd(request,response);
         }
       }
