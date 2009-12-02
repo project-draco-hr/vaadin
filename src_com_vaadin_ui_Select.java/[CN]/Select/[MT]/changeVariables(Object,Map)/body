@@ -50,14 +50,19 @@
       filterstring=filterstring.toLowerCase();
     }
     optionRepaint();
-    return;
   }
-  if (isNewItemsAllowed()) {
+ else   if (isNewItemsAllowed()) {
     final String newitem=(String)variables.get("newitem");
     if (newitem != null && newitem.length() > 0) {
       getNewItemHandler().addNewItem(newitem);
       filterstring=null;
       prevfilterstring=null;
     }
+  }
+  if (variables.containsKey(FOCUS_EVENT_ID)) {
+    fireEvent(new FocusEvent(this));
+  }
+  if (variables.containsKey(BLUR_EVENT_ID)) {
+    fireEvent(new BlurEvent(this));
   }
 }
