@@ -1,0 +1,16 @@
+{
+  Map<String,String> parameters=new HashMap<String,String>();
+  Iterator<Object> childIterator=uidl.getChildIterator();
+  while (childIterator.hasNext()) {
+    Object child=childIterator.next();
+    if (child instanceof UIDL) {
+      UIDL childUIDL=(UIDL)child;
+      if (childUIDL.getTag().equals("embeddedparam")) {
+        String name=childUIDL.getStringAttribute("name");
+        String value=childUIDL.getStringAttribute("value");
+        parameters.put(name,value);
+      }
+    }
+  }
+  return parameters;
+}

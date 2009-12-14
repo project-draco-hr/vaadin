@@ -10,7 +10,7 @@
     if (type.equals("image")) {
       Element el=null;
       boolean created=false;
-      NodeList nodes=getElement().getChildNodes();
+      NodeList<Node> nodes=getElement().getChildNodes();
       if (nodes != null && nodes.getLength() == 1) {
         Node n=nodes.getItem(0);
         if (n.getNodeType() == Node.ELEMENT_NODE) {
@@ -65,15 +65,26 @@
  else   if (uidl.hasAttribute("mimetype")) {
     final String mime=uidl.getStringAttribute("mimetype");
     if (mime.equals("application/x-shockwave-flash")) {
-      setHTML("<object width=\"" + width + "\" height=\""+ height+ "\"><param name=\"movie\" value=\""+ getSrc(uidl,client)+ "\"><embed src=\""+ getSrc(uidl,client)+ "\" width=\""+ width+ "\" height=\""+ height+ "\"></embed></object>");
+      String html="<object width=\"" + width + "\" height=\""+ height+ "\">";
+      Map<String,String> parameters=getParameters(uidl);
+      if (parameters.get("movie") == null) {
+        parameters.put("movie",getSrc(uidl,client));
+      }
+      for (      String name : parameters.keySet()) {
+        html+="<param name=\"" + escapeAttribute(name) + "\" value=\""+ escapeAttribute(parameters.get(name))+ "\"/>";
+      }
+      html+="<embed src=\"" + getSrc(uidl,client) + "\" width=\""+ width+ "\" height=\""+ height+ "\"></embed>";
+      html+="</object>";
+      setHTML(html);
     }
  else     if (mime.equals("image/svg+xml")) {
       String data;
-      if (getParameter("data",uidl) == null) {
+      Map<String,String> parameters=getParameters(uidl);
+      if (parameters.get("data") == null) {
         data=getSrc(uidl,client);
       }
  else {
-        data="data:image/svg+xml," + getParameter("data",uidl);
+        data="data:image/svg+xml," + parameters.get("data");
       }
       setHTML("");
       ObjectElement obj=Document.get().createObjectElement();
