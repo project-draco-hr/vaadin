@@ -5,7 +5,12 @@
   try {
     Integer.parseInt(nodeName);
     Class<? extends Paintable> widgetClassByDecodedTag=conf.getWidgetClassByEncodedTag(nodeName);
-    nodeName=widgetClassByDecodedTag.getName();
+    if (widgetClassByDecodedTag == VUnknownComponent.class) {
+      nodeName=conf.getUnknownServerClassNameByEncodedTagName(nodeName) + "(NO CLIENT IMPLEMENTATION FOUND)";
+    }
+ else {
+      nodeName=widgetClassByDecodedTag.getName();
+    }
   }
  catch (  Exception e) {
   }
