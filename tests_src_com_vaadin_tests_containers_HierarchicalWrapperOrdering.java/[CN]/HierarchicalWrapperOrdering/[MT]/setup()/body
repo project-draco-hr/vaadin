@@ -1,0 +1,25 @@
+{
+  Layout l=getLayout();
+  populateContainer(hier);
+  tree1=new Tree("Tree with wrapped IndexedContainer");
+  tree1.setContainerDataSource(hier);
+  tree1.setItemCaptionPropertyId("name");
+  for (  Object id : hier.rootItemIds()) {
+    tree1.expandItemsRecursively(id);
+  }
+  l.addComponent(tree1);
+  Button modify=new Button("Modify and sort (has a bug)",new ClickListener(){
+    private static final long serialVersionUID=1L;
+    public void buttonClick(    ClickEvent event){
+      Object itemId=indexedContainer.getIdByIndex(0);
+      Item item=indexedContainer.getItem(itemId);
+      Property property=item.getItemProperty("name");
+      property.setValue("Z " + property.getValue());
+      sort(indexedContainer);
+    }
+  }
+);
+  l.addComponent(modify);
+  Table t=new Table("Table with indexed container",indexedContainer);
+  l.addComponent(t);
+}
