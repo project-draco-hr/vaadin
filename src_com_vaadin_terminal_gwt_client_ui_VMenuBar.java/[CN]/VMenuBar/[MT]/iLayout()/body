@@ -6,7 +6,13 @@
     if (!morePresent) {
       removeItem(moreItem);
     }
-    int availableWidth=getElement().getClientWidth();
+    if (paddingWidth == -1) {
+      int widthBefore=getElement().getClientWidth();
+      getElement().getStyle().setProperty("padding","0");
+      paddingWidth=widthBefore - getElement().getClientWidth();
+      getElement().getStyle().setProperty("padding","");
+    }
+    int availableWidth=getElement().getClientWidth() - paddingWidth;
     int diff=availableWidth - getConsumedWidth();
     removeItem(moreItem);
     if (diff < 0) {
