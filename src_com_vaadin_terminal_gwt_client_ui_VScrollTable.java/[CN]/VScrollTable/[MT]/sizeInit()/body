@@ -96,15 +96,19 @@
   }
   updatePageLength();
   if (height == null || "".equals(height)) {
+    int bodyHeight;
     if (pageLength == totalRows) {
-      int bodyHeight=scrollBody.getRequiredHeight();
-      bodyContainer.setHeight(bodyHeight + "px");
-      Util.runWebkitOverflowAutoFix(bodyContainer.getElement());
+      bodyHeight=scrollBody.getRequiredHeight();
     }
  else {
-      int bodyHeight=(scrollBody.getRowHeight(true) * pageLength);
-      bodyContainer.setHeight(bodyHeight + "px");
+      bodyHeight=(scrollBody.getRowHeight(true) * pageLength);
     }
+    boolean needsSpaceForHorizontalSrollbar=(total > availW);
+    if (needsSpaceForHorizontalSrollbar) {
+      bodyHeight+=Util.getNativeScrollbarSize();
+    }
+    bodyContainer.setHeight(bodyHeight + "px");
+    Util.runWebkitOverflowAutoFix(bodyContainer.getElement());
   }
   isNewBody=false;
   if (firstvisible > 0) {
