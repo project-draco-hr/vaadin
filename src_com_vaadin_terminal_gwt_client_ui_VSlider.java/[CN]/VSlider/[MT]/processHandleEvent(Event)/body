@@ -2,7 +2,9 @@
 switch (DOM.eventGetType(event)) {
 case Event.ONMOUSEDOWN:
     if (!disabled && !readonly) {
+      feedbackPopup.show();
       dragging=true;
+      DOM.setElementProperty(handle,"className",CLASSNAME + "-handle " + CLASSNAME+ "-handle-active");
       DOM.setCapture(getElement());
       DOM.eventPreventDefault(event);
       DOM.eventCancelBubble(event,true);
@@ -11,10 +13,13 @@ case Event.ONMOUSEDOWN:
 case Event.ONMOUSEMOVE:
 if (dragging) {
   setValueByEvent(event,false);
+  updateFeedbackPosition();
 }
 break;
 case Event.ONMOUSEUP:
+feedbackPopup.hide();
 dragging=false;
+DOM.setElementProperty(handle,"className",CLASSNAME + "-handle");
 DOM.releaseCapture(getElement());
 setValueByEvent(event,true);
 break;
