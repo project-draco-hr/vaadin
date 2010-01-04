@@ -1,0 +1,13 @@
+{
+  if (response instanceof MimeResponse) {
+    PortletURL url=((MimeResponse)response).createRenderURL();
+    url.setPortletMode(portletMode);
+    window.open(new ExternalResource(url.toString()));
+  }
+ else   if (response instanceof StateAwareResponse) {
+    ((StateAwareResponse)response).setPortletMode(portletMode);
+  }
+ else {
+    throw new IllegalStateException("Portlet mode can only be changed from a portlet request");
+  }
+}
