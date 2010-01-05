@@ -1,16 +1,25 @@
 {
-  int scrollLeft=bodyContainer.getElement().getScrollLeft();
-  int scrollTop=bodyContainer.getScrollPosition();
+  scrollLeft=bodyContainer.getElement().getScrollLeft();
+  scrollTop=bodyContainer.getScrollPosition();
   if (!initializedAndAttached) {
     return;
   }
   if (!enabled) {
-    bodyContainer.setScrollPosition(firstRowInViewPort * scrollBody.getRowHeight());
+    bodyContainer.setScrollPosition((int)(firstRowInViewPort * scrollBody.getRowHeight()));
     return;
   }
   rowRequestHandler.cancel();
+  if (BrowserInfo.get().isSafari() && event != null && scrollTop == 0) {
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        onScroll(null);
+      }
+    }
+);
+    return;
+  }
   tHead.setHorizontalScrollPosition(scrollLeft);
-  firstRowInViewPort=(int)Math.ceil(scrollTop / (double)scrollBody.getRowHeight());
+  firstRowInViewPort=(int)Math.ceil(scrollTop / scrollBody.getRowHeight());
   if (firstRowInViewPort > totalRows - pageLength) {
     firstRowInViewPort=totalRows - pageLength;
   }

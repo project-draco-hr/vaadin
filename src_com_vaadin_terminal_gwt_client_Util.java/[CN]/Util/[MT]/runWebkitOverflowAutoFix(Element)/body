@@ -4,14 +4,18 @@
     if ("hidden".equals(originalOverflow)) {
       return;
     }
+    final int scrolltop=elem.getScrollTop();
     elem.getStyle().setProperty("overflow","hidden");
     DeferredCommand.addCommand(new Command(){
       public void execute(){
         elem.getStyle().setProperty("overflow",originalOverflow);
-        if (elem.getScrollTop() > 0) {
-          int scrolltop=elem.getScrollTop();
-          elem.setScrollTop(scrolltop - 1);
-          elem.setScrollTop(scrolltop);
+        if (scrolltop > 0 || elem.getScrollTop() > 0) {
+          int scrollvalue=scrolltop;
+          if (scrolltop == 0) {
+            scrollvalue=elem.getScrollTop();
+          }
+          elem.setScrollTop(scrollvalue - 1);
+          elem.setScrollTop(scrollvalue);
         }
       }
     }

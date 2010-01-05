@@ -1,0 +1,24 @@
+{
+  super.setText(text);
+  if (BrowserInfo.get().isIE() && BrowserInfo.get().getIEVersion() < 8) {
+    boolean breakLink=text == null || "".equals(text);
+    NodeList<Node> childNodes=getElement().getChildNodes();
+    String id=null;
+    for (int i=0; i < childNodes.getLength(); i++) {
+      Node item=childNodes.getItem(i);
+      if (item.getNodeName().toLowerCase().equals("input")) {
+        InputElement input=(InputElement)item;
+        id=input.getId();
+      }
+      if (item.getNodeName().toLowerCase().equals("label")) {
+        LabelElement label=(LabelElement)item;
+        if (breakLink) {
+          label.setHtmlFor("");
+        }
+ else {
+          label.setHtmlFor(id);
+        }
+      }
+    }
+  }
+}
