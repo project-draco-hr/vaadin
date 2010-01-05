@@ -12,7 +12,15 @@
       paddingWidth=widthBefore - getElement().getClientWidth();
       getElement().getStyle().setProperty("padding","");
     }
+    String overflow="";
+    if (BrowserInfo.get().isIE6()) {
+      overflow=getElement().getStyle().getProperty("overflow");
+      getElement().getStyle().setProperty("overflow","hidden");
+    }
     int availableWidth=getElement().getClientWidth() - paddingWidth;
+    if (BrowserInfo.get().isIE6()) {
+      getElement().getStyle().setProperty("overflow",overflow);
+    }
     int diff=availableWidth - getConsumedWidth();
     removeItem(moreItem);
     if (diff < 0) {
