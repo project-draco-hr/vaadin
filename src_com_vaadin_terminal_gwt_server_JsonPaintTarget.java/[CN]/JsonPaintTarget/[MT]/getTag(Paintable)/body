@@ -1,13 +1,22 @@
 {
-  Class<? extends Paintable> class1=paintable.getClass();
-  while (!hasClientWidgetMapping(class1)) {
-    Class<?> superclass=class1.getSuperclass();
-    if (superclass != null && Paintable.class.isAssignableFrom(superclass)) {
-      class1=(Class<? extends Paintable>)superclass;
-    }
+  Class<? extends Paintable> class1;
+synchronized (widgetMappingCache) {
+    class1=widgetMappingCache.get(paintable.getClass());
+  }
+  if (class1 == null) {
+    class1=paintable.getClass();
+    while (!hasClientWidgetMapping(class1)) {
+      Class<?> superclass=class1.getSuperclass();
+      if (superclass != null && Paintable.class.isAssignableFrom(superclass)) {
+        class1=(Class<? extends Paintable>)superclass;
+      }
  else {
-      System.out.append("Warning: no superclass of givent has ClientWidget" + " annotation. Component will not be mapped correctly on client side.");
-      break;
+        System.out.append("Warning: no superclass of givent has ClientWidget" + " annotation. Component will not be mapped correctly on client side.");
+        break;
+      }
+    }
+synchronized (widgetMappingCache) {
+      widgetMappingCache.put(paintable.getClass(),class1);
     }
   }
   usedPaintableTypes.add(class1);
