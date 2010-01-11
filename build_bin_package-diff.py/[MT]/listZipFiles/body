@@ -1,10 +1,15 @@
-def listZipFiles(zipfile):
-    pin = os.popen(('unzip -ql %s' % zipfile), 'r')
-    lines = map((lambda x: x[:(-1)]), pin.readlines())
+def listZipFiles(archive):
+    pin = os.popen(('unzip -l -qq %s | cut -c 29- | sort' % archive), 'r')
+    files = map((lambda x: x.strip()), pin.readlines())
     pin.close()
-    namepos = lines[0].find('Name')
-    files = []
-    for i in xrange(2, (len(lines) - 2)):
-        filename = lines[i][namepos:]
-        files.append(filename)
-    return files
+    cleanedfiles = []
+    for file in files:
+        slashpos = file.find('/')
+        if (slashpos != (-1)):
+            cleanedname = file[(slashpos + 1):]
+        else:
+            cleanedname = file
+        if (cleanedname.find('.cache.html') != (-1)):
+            continue
+        cleanedfiles.append(cleanedname)
+    return cleanedfiles

@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, re
 from sets import Set
 downloadsite = 'http://vaadin.com/download'
 latestfile = '/LATEST'
@@ -24,8 +24,8 @@ except OSError:
     command(wgetcmd)
 latestfiles = listfiles(locallinuxpackage)
 builtversion = sys.argv[1]
-builtpackage = ('build/result/vaadin-linux-%s.tar.gz' % builtversion)
-builtfiles = listfiles(builtpackage)
+builtpackage = ('build/result/vaadin-%s.zip' % builtversion)
+builtfiles = listZipFiles(builtpackage)
 print '\n--------------------------------------------------------------------------------\nVaadin TAR differences'
 newfiles = diffFiles(builtfiles, latestfiles)
 print ('\n%d new files:' % len(newfiles))
@@ -37,7 +37,7 @@ for item in removed:
     print item
 print '\n--------------------------------------------------------------------------------\nVaadin JAR differences'
 latestJarFiles = listTarVaadinJarFiles(locallinuxpackage, latestversion)
-builtJarFiles = listTarVaadinJarFiles(builtpackage, builtversion)
+builtJarFiles = listZipVaadinJarFiles(builtpackage, builtversion)
 newfiles = diffFiles(builtJarFiles, latestJarFiles)
 print ('\n%d new files:' % len(newfiles))
 for item in newfiles:
