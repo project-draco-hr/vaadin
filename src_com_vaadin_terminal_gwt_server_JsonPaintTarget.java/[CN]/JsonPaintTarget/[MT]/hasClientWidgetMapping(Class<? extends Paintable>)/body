@@ -1,11 +1,43 @@
 {
   try {
-    ClientWidget annotation=class1.getAnnotation(ClientWidget.class);
-    return annotation != null;
+    return class1.isAnnotationPresent(ClientWidget.class);
   }
  catch (  RuntimeException e) {
     if (e.getStackTrace()[0].getClassName().equals("org.glassfish.web.loader.WebappClassLoader")) {
-      return true;
+      String name=class1.getName().replace('.',File.separatorChar) + ".class";
+      try {
+        InputStream stream=class1.getClassLoader().getResourceAsStream(name);
+        BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(stream));
+        try {
+          String line;
+          boolean atSourcefile=false;
+          while ((line=bufferedReader.readLine()) != null) {
+            if (line.startsWith("SourceFile")) {
+              atSourcefile=true;
+            }
+            if (atSourcefile) {
+              if (line.contains("ClientWidget")) {
+                return true;
+              }
+            }
+          }
+        }
+ catch (        IOException e1) {
+          e1.printStackTrace();
+        }
+ finally {
+          try {
+            bufferedReader.close();
+          }
+ catch (          IOException e1) {
+            e1.printStackTrace();
+          }
+        }
+      }
+ catch (      Throwable e2) {
+        e2.printStackTrace();
+      }
+      return false;
     }
  else {
       throw e;
