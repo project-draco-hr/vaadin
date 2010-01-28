@@ -20,4 +20,36 @@
  else   if (type == Event.ONCONTEXTMENU) {
     showContextMenu(event);
   }
+  if (dragModes != 0 || dropHandler != null) {
+    if (type == Event.ONMOUSEDOWN) {
+      if (nodeCaptionDiv.isOrHasChild(event.getTarget())) {
+        ApplicationConnection.getConsole().log("TreeNode m down");
+        event.preventDefault();
+        mouseDownEvent=event;
+      }
+    }
+ else     if (type == Event.ONMOUSEMOVE || type == Event.ONMOUSEOUT) {
+      if (mouseDownEvent != null) {
+        ApplicationConnection.getConsole().log("TreeNode drag start " + event.getType());
+        Transferable t=new Transferable();
+        t.setComponent(VTree.this);
+        t.setItemId(key);
+        DragEvent drag=DragAndDropManager.get().startDrag(t,mouseDownEvent,true);
+        Element node=(Element)nodeCaptionDiv.cloneNode(true);
+        node.getStyle().setOpacity(0.4);
+        node.getStyle().setBackgroundColor("#999");
+        drag.setDragImage(node);
+        event.stopPropagation();
+        mouseDownEvent=null;
+      }
+    }
+ else     if (type == Event.ONMOUSEUP) {
+      mouseDownEvent=null;
+    }
+    if (type == Event.ONMOUSEOVER) {
+      mouseDownEvent=null;
+      currentMouseOverKey=key;
+      event.stopPropagation();
+    }
+  }
 }

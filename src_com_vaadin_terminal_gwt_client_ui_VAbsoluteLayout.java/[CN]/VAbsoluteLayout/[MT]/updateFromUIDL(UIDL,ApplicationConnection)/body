@@ -9,9 +9,11 @@
   HashSet<String> unrenderedPids=new HashSet<String>(pidToComponentWrappper.keySet());
   for (Iterator<Object> childIterator=uidl.getChildIterator(); childIterator.hasNext(); ) {
     UIDL cc=(UIDL)childIterator.next();
-    UIDL componentUIDL=cc.getChildUIDL(0);
-    unrenderedPids.remove(componentUIDL.getId());
-    getWrapper(client,componentUIDL).updateFromUIDL(cc);
+    if (childIterator.hasNext()) {
+      UIDL componentUIDL=cc.getChildUIDL(0);
+      unrenderedPids.remove(componentUIDL.getId());
+      getWrapper(client,componentUIDL).updateFromUIDL(cc);
+    }
   }
   for (  String pid : unrenderedPids) {
     AbsoluteWrapper absoluteWrapper=pidToComponentWrappper.get(pid);

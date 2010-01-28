@@ -28,7 +28,7 @@
         if (i + 1 < variableRecords.length) {
           nextVariable=variableRecords[i + 1];
         }
-        final VariableOwner owner=(VariableOwner)idPaintableMap.get(variable[VAR_PID]);
+        final VariableOwner owner=getVariableOwner(variable[VAR_PID]);
         if (owner != null && owner.isEnabled()) {
           Map<String,Object> m;
           if (nextVariable != null && variable[VAR_PID].equals(nextVariable[VAR_PID])) {
@@ -59,7 +59,12 @@
             }
           }
  catch (          Exception e) {
-            handleChangeVariablesError(application2,(Component)owner,e,m);
+            if (owner instanceof Component) {
+              handleChangeVariablesError(application2,(Component)owner,e,m);
+            }
+ else {
+              throw new RuntimeException(e);
+            }
           }
         }
  else {
