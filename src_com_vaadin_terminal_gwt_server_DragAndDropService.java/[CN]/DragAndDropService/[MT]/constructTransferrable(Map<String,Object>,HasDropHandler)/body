@@ -1,0 +1,56 @@
+{
+  int eventId=(Integer)variables.get("eventId");
+  if (currentEventId != eventId) {
+    transferable=null;
+  }
+  currentEventId=eventId;
+  final Component sourceComponent=(Component)variables.get("component");
+  if (sourceComponent != null && sourceComponent instanceof TransferTranslator) {
+    transferable=((TransferTranslator)sourceComponent).getTransferrable(transferable,variables,false);
+  }
+ else {
+    if (transferable == null) {
+      if (sourceComponent != null) {
+        transferable=new ComponentTransferrable(){
+          private Map<String,Object> td=new HashMap<String,Object>();
+          public Component getSourceComponent(){
+            return sourceComponent;
+          }
+          public Object getData(          String dataFlawor){
+            return td.get(dataFlawor);
+          }
+          public void setData(          String dataFlawor,          Object value){
+            td.put(dataFlawor,value);
+          }
+          public Collection<String> getDataFlawors(){
+            return td.keySet();
+          }
+        }
+;
+      }
+ else {
+        transferable=new Transferable(){
+          private Map<String,Object> td=new HashMap<String,Object>();
+          public Object getData(          String dataFlawor){
+            return td.get(dataFlawor);
+          }
+          public void setData(          String dataFlawor,          Object value){
+            td.put(dataFlawor,value);
+          }
+          public Collection<String> getDataFlawors(){
+            return td.keySet();
+          }
+        }
+;
+      }
+    }
+  }
+  if (dropHandlerOwner instanceof TransferTranslator) {
+    transferable=((TransferTranslator)dropHandlerOwner).getTransferrable(transferable,variables,true);
+  }
+  variables=(Map<String,Object>)variables.get("payload");
+  for (  String key : variables.keySet()) {
+    transferable.setData(key,variables.get(key));
+  }
+  return transferable;
+}

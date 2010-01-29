@@ -1,0 +1,67 @@
+{
+  setWidth("400px");
+  setHeight("300px");
+  if (dropHandler == null) {
+    dropHandler=new AbstractDropHandler(){
+      @Override public void receive(      Transferable transferable){
+        if (transferable instanceof ComponentTransferrable) {
+          ComponentTransferrable ctr=(ComponentTransferrable)transferable;
+          Component component=ctr.getSourceComponent();
+          if (component.getParent() != DragDropPane.this) {
+            if (transferable instanceof DataBindedTransferrable) {
+              Label l=new Label();
+              l.setSizeUndefined();
+              l.setValue("ItemId : " + ((DataBindedTransferrable)transferable).getItemId());
+              DragDropPane.this.addComponent(l);
+              component=l;
+            }
+ else {
+              DragDropPane.this.addComponent(component);
+            }
+            Integer left=(Integer)transferable.getData("absoluteLeft");
+            Integer top=(Integer)transferable.getData("absoluteTop");
+            MouseEventDetails eventDetails=MouseEventDetails.deSerialize((String)transferable.getData("mouseEvent"));
+            int clientX=eventDetails.getClientX();
+            int clientY=eventDetails.getClientY();
+            try {
+              DragDropPane.this.getPosition(component).setTopValue(clientY - top);
+              DragDropPane.this.getPosition(component).setLeftValue(clientX - left);
+            }
+ catch (            Exception e) {
+            }
+          }
+ else {
+            MouseEventDetails start=MouseEventDetails.deSerialize((String)transferable.getData("mouseDown"));
+            MouseEventDetails eventDetails=MouseEventDetails.deSerialize((String)transferable.getData("mouseEvent"));
+            int deltaX=eventDetails.getClientX() - start.getClientX();
+            int deltaY=eventDetails.getClientY() - start.getClientY();
+            ComponentPosition p=DragDropPane.this.getPosition(component);
+            p.setTopValue(p.getTopValue() + deltaY);
+            p.setLeftValue(p.getLeftValue() + deltaX);
+          }
+        }
+ else {
+          String object=(String)transferable.getData("text/plain");
+          String content=(String)transferable.getData("fileContents");
+          Label l=new Label();
+          l.setCaption("Generated from HTML5 drag:");
+          if (object != null) {
+            l.setValue(object);
+          }
+ else {
+            l.setValue("HTML5 dd");
+          }
+          l.setDescription(content);
+          l.setSizeUndefined();
+          DragDropPane.this.addComponent(l);
+        }
+      }
+    }
+;
+    if (dropHandler instanceof AbstractDropHandler) {
+      AbstractDropHandler new_name=dropHandler;
+      new_name.setAcceptCriterion(AbstractDropHandler.CRITERION_ACCEPT_ALL);
+    }
+  }
+  abstractDropHandler=dropHandler;
+}

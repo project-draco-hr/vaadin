@@ -1,0 +1,19 @@
+{
+  if (handlerRegistration != null) {
+    handlerRegistration.removeHandler();
+    handlerRegistration=null;
+  }
+  if (currentDropHandler != null) {
+    boolean sendTransferrableToServer=currentDropHandler.drop(currentDrag);
+    if (sendTransferrableToServer) {
+      doRequest(DragEventType.DROP);
+    }
+    currentDropHandler=null;
+    acceptCallback=null;
+  }
+  currentDrag=null;
+  if (dragElement != null) {
+    RootPanel.getBodyElement().removeChild(dragElement);
+    dragElement=null;
+  }
+}

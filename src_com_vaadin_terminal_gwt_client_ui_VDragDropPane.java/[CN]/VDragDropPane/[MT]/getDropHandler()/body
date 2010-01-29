@@ -1,0 +1,35 @@
+{
+  if (dropHandler == null) {
+    dropHandler=new AbstractDropHandler(){
+      @Override public Paintable getPaintable(){
+        return VDragDropPane.this;
+      }
+      @Override public void dragLeave(      DragEvent drag){
+        ApplicationConnection.getConsole().log("DragLeave");
+        getStyleElement().getStyle().setBackgroundColor("yellow");
+      }
+      @Override public boolean drop(      DragEvent drag){
+        ApplicationConnection.getConsole().log("Drop" + drag.sinceStart());
+        if (getStyleElement().getStyle().getBackgroundColor().equals("yellow")) {
+          ApplicationConnection.getConsole().log("Drop was not accepted");
+          return false;
+        }
+        Transferable transferable=drag.getTransferrable();
+        int absoluteLeft=getAbsoluteLeft();
+        int absoluteTop=getAbsoluteTop();
+        transferable.setData("absoluteLeft",absoluteLeft);
+        transferable.setData("absoluteTop",absoluteTop);
+        getStyleElement().getStyle().setBackgroundColor("yellow");
+        return super.drop(drag);
+      }
+      @Override protected void dragAccepted(      DragEvent drag){
+        getStyleElement().getStyle().setBackgroundColor("green");
+      }
+      public ApplicationConnection getApplicationConnection(){
+        return client;
+      }
+    }
+;
+  }
+  return dropHandler;
+}
