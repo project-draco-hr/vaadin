@@ -8,13 +8,13 @@
       @Override protected void dragAccepted(      final DragEvent drag){
       }
       @Override public void dragOver(      final DragEvent currentDrag){
-        final Object oldIdOver=currentDrag.getTransferrable().getData("itemIdOver");
-        final String oldDetail=(String)currentDrag.getTransferrable().getData("detail");
+        final Object oldIdOver=currentDrag.getEventDetails().get("itemIdOver");
+        final String oldDetail=(String)currentDrag.getEventDetails().get("detail");
         DeferredCommand.addCommand(new Command(){
           public void execute(){
             final String detail=getDropDetail(currentDrag.getCurrentGwtEvent());
             boolean nodeHasChanged=(currentMouseOverKey != null && currentMouseOverKey != oldIdOver) || (oldIdOver != null);
-            boolean detailHasChanded=!detail.equals(oldIdOver);
+            boolean detailHasChanded=!detail.equals(oldDetail);
             if (nodeHasChanged || detailHasChanded) {
               ApplicationConnection.getConsole().log("Change in Transferable " + currentMouseOverKey + " "+ detail);
               updateTreeRelatedTransferData(currentDrag);
@@ -30,7 +30,7 @@
                 DragAndDropManager.get().visitServer(DragEventType.OVER,accpectedCb);
               }
  else {
-                if (validates(currentDrag.getTransferrable())) {
+                if (validates(currentDrag)) {
                   accpectedCb.handleResponse(null);
                 }
  else {

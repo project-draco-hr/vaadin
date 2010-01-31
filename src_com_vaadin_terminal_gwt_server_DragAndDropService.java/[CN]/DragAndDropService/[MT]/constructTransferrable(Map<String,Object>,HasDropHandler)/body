@@ -5,8 +5,9 @@
   }
   currentEventId=eventId;
   final Component sourceComponent=(Component)variables.get("component");
-  if (sourceComponent != null && sourceComponent instanceof TransferTranslator) {
-    transferable=((TransferTranslator)sourceComponent).getTransferrable(transferable,variables,false);
+  variables=(Map<String,Object>)variables.get("tra");
+  if (sourceComponent != null && sourceComponent instanceof DragSource) {
+    transferable=((DragSource)sourceComponent).getTransferrable(transferable,variables);
   }
  else {
     if (transferable == null) {
@@ -45,10 +46,6 @@
       }
     }
   }
-  if (dropHandlerOwner instanceof TransferTranslator) {
-    transferable=((TransferTranslator)dropHandlerOwner).getTransferrable(transferable,variables,true);
-  }
-  variables=(Map<String,Object>)variables.get("payload");
   for (  String key : variables.keySet()) {
     transferable.setData(key,variables.get(key));
   }

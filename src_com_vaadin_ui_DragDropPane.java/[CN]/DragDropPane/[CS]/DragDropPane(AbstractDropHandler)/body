@@ -3,7 +3,8 @@
   setHeight("300px");
   if (dropHandler == null) {
     dropHandler=new AbstractDropHandler(){
-      @Override public void receive(      Transferable transferable){
+      @Override public void receive(      Transferable transferable,      Object dropDetails){
+        DragEventDetails ed=(DragEventDetails)dropDetails;
         if (transferable instanceof ComponentTransferrable) {
           ComponentTransferrable ctr=(ComponentTransferrable)transferable;
           Component component=ctr.getSourceComponent();
@@ -18,9 +19,9 @@
  else {
               DragDropPane.this.addComponent(component);
             }
-            Integer left=(Integer)transferable.getData("absoluteLeft");
-            Integer top=(Integer)transferable.getData("absoluteTop");
-            MouseEventDetails eventDetails=MouseEventDetails.deSerialize((String)transferable.getData("mouseEvent"));
+            Integer left=ed.getAbsoluteLeft();
+            Integer top=ed.getAbsoluteTop();
+            MouseEventDetails eventDetails=ed.getMouseEvent();
             int clientX=eventDetails.getClientX();
             int clientY=eventDetails.getClientY();
             try {
@@ -31,8 +32,8 @@
             }
           }
  else {
-            MouseEventDetails start=MouseEventDetails.deSerialize((String)transferable.getData("mouseDown"));
-            MouseEventDetails eventDetails=MouseEventDetails.deSerialize((String)transferable.getData("mouseEvent"));
+            MouseEventDetails start=ed.getMouseDownEvent();
+            MouseEventDetails eventDetails=ed.getMouseEvent();
             int deltaX=eventDetails.getClientX() - start.getClientX();
             int deltaY=eventDetails.getClientY() - start.getClientY();
             ComponentPosition p=DragDropPane.this.getPosition(component);

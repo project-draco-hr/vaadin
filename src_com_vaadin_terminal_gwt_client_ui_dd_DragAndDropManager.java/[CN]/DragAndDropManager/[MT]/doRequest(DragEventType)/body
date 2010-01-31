@@ -17,13 +17,14 @@
   if (currentDrag.currentGwtEvent != null) {
     try {
       MouseEventDetails mouseEventDetails=new MouseEventDetails(currentDrag.currentGwtEvent);
-      transferable.setData("mouseEvent",mouseEventDetails.serialize());
+      currentDrag.getEventDetails().put("mouseEvent",mouseEventDetails.serialize());
     }
  catch (    Exception e) {
     }
   }
  else {
-    transferable.setData("mouseEvent",null);
+    currentDrag.getEventDetails().put("mouseEvent",null);
   }
-  client.updateVariable(DD_SERVICE,"payload",transferable.getVariableMap(),true);
+  client.updateVariable(DD_SERVICE,"evt",currentDrag.getEventDetails(),false);
+  client.updateVariable(DD_SERVICE,"tra",transferable.getVariableMap(),true);
 }
