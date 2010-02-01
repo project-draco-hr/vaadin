@@ -1,71 +1,53 @@
 {
   interruptDrag();
   currentDrag=new VDragEvent(transferable,startEvent);
-  VDropHandler dh=null;
-  if (startEvent != null) {
-    dh=findDragTarget((Element)startEvent.getEventTarget().cast());
+  updateCurrentEvent(startEvent);
+  final Command startDrag=new Command(){
+    public void execute(){
+      VDropHandler dh=null;
+      if (startEvent != null) {
+        dh=findDragTarget((Element)currentDrag.currentGwtEvent.getEventTarget().cast());
+      }
+      if (dh != null) {
+        currentDropHandler=dh;
+        dh.dragEnter(currentDrag);
+      }
+      if (handleDragEvents) {
+        handlerRegistration=Event.addNativePreviewHandler(defaultDragAndDropEventHandler);
+      }
+    }
   }
-  if (dh != null) {
-    currentDropHandler=dh;
-    updateCurrentEvent(startEvent);
-    dh.dragEnter(currentDrag);
-  }
+;
   if (handleDragEvents) {
-    handlerRegistration=Event.addNativePreviewHandler(new NativePreviewHandler(){
-      public void onPreviewNativeEvent(      NativePreviewEvent event){
-        updateCurrentEvent(event.getNativeEvent());
-        updateDragImagePosition();
-        NativeEvent nativeEvent=event.getNativeEvent();
-        Element targetElement=(Element)nativeEvent.getEventTarget().cast();
-        if (dragElement != null && targetElement.isOrHasChild(dragElement)) {
-          ApplicationConnection.getConsole().log("Event on dragImage, ignored");
-          event.cancel();
-          nativeEvent.stopPropagation();
-          return;
-        }
-        int typeInt=event.getTypeInt();
+    if (Event.as(startEvent).getTypeInt() == Event.ONMOUSEDOWN) {
+      deferredStartRegistration=Event.addNativePreviewHandler(new NativePreviewHandler(){
+        public void onPreviewNativeEvent(        NativePreviewEvent event){
+          int typeInt=event.getTypeInt();
 switch (typeInt) {
-case Event.ONMOUSEOVER:
-          ApplicationConnection.getConsole().log(event.getNativeEvent().getType());
-        VDropHandler target=findDragTarget(targetElement);
-      if (target != null && target != currentDrag) {
-        currentDropHandler=target;
-        target.dragEnter(currentDrag);
-      }
- else       if (target == null && currentDropHandler != null) {
-        ApplicationConnection.getConsole().log("Invalid state!?");
-        currentDropHandler=null;
-      }
-    break;
-case Event.ONMOUSEOUT:
-  ApplicationConnection.getConsole().log(event.getNativeEvent().getType());
-Element relatedTarget=(Element)nativeEvent.getRelatedEventTarget().cast();
-VDropHandler newDragHanler=findDragTarget(relatedTarget);
-if (dragElement != null && dragElement.isOrHasChild(relatedTarget)) {
-ApplicationConnection.getConsole().log("Mouse out of dragImage, ignored");
-return;
-}
-if (currentDropHandler != null && currentDropHandler != newDragHanler) {
-currentDropHandler.dragLeave(currentDrag);
-currentDropHandler=null;
-acceptCallback=null;
-}
-break;
+case Event.ONKEYDOWN:
+case Event.ONKEYPRESS:
+case Event.ONKEYUP:
+            break;
 case Event.ONMOUSEMOVE:
-if (currentDropHandler != null) {
-currentDropHandler.dragOver(currentDrag);
-}
-nativeEvent.preventDefault();
-break;
-case Event.ONMOUSEUP:
-endDrag();
-break;
+          deferredStartRegistration.removeHandler();
+        deferredStartRegistration=null;
+      updateCurrentEvent(event.getNativeEvent());
+    startDrag.execute();
 default :
+  deferredStartRegistration.removeHandler();
+deferredStartRegistration=null;
 break;
 }
 }
 }
 );
+}
+ else {
+startDrag.execute();
+}
+}
+ else {
+startDrag.execute();
 }
 return currentDrag;
 }
