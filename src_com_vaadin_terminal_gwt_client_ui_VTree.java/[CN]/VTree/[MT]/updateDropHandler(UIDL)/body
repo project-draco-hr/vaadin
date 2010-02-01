@@ -1,13 +1,13 @@
 {
   if (dropHandler == null) {
-    dropHandler=new AbstractDropHandler(){
-      @Override public void dragEnter(      DragEvent drag){
+    dropHandler=new VAbstractDropHandler(){
+      @Override public void dragEnter(      VDragEvent drag){
         updateTreeRelatedTransferData(drag);
         super.dragEnter(drag);
       }
-      @Override protected void dragAccepted(      final DragEvent drag){
+      @Override protected void dragAccepted(      final VDragEvent drag){
       }
-      @Override public void dragOver(      final DragEvent currentDrag){
+      @Override public void dragOver(      final VDragEvent currentDrag){
         final Object oldIdOver=currentDrag.getEventDetails().get("itemIdOver");
         final String oldDetail=(String)currentDrag.getEventDetails().get("detail");
         DeferredCommand.addCommand(new Command(){
@@ -18,7 +18,7 @@
             if (nodeHasChanged || detailHasChanded) {
               ApplicationConnection.getConsole().log("Change in Transferable " + currentMouseOverKey + " "+ detail);
               updateTreeRelatedTransferData(currentDrag);
-              AcceptCallback accpectedCb=new AcceptCallback(){
+              VAcceptCallback accpectedCb=new VAcceptCallback(){
                 public void handleResponse(                ValueMap responseData){
                   if (responseData == null || responseData.containsKey("accepted")) {
                     keyToNode.get(currentMouseOverKey).emphasis(detail);
@@ -27,7 +27,7 @@
               }
 ;
               if (validateOnServer()) {
-                DragAndDropManager.get().visitServer(DragEventType.OVER,accpectedCb);
+                VDragAndDropManager.get().visitServer(DragEventType.OVER,accpectedCb);
               }
  else {
                 if (validates(currentDrag)) {
@@ -45,7 +45,7 @@
         }
 );
       }
-      @Override public void dragLeave(      DragEvent drag){
+      @Override public void dragLeave(      VDragEvent drag){
         cleanUp();
       }
       private void cleanUp(){
@@ -54,7 +54,7 @@
           currentMouseOverKey=null;
         }
       }
-      @Override public boolean drop(      DragEvent drag){
+      @Override public boolean drop(      VDragEvent drag){
         cleanUp();
         return super.drop(drag);
       }

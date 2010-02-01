@@ -1,0 +1,30 @@
+{
+  Paintable paintable=currentDropHandler.getPaintable();
+  ApplicationConnection client=currentDropHandler.getApplicationConnection();
+  visitId++;
+  client.updateVariable(DD_SERVICE,"visitId",visitId,false);
+  client.updateVariable(DD_SERVICE,"eventId",currentDrag.getEventId(),false);
+  client.updateVariable(DD_SERVICE,"dhowner",paintable,false);
+  VTransferable transferable=currentDrag.getTransferrable();
+  if (transferable.getItemId() != null) {
+    client.updateVariable(DD_SERVICE,"itemId",transferable.getItemId(),false);
+  }
+  if (transferable.getPropertyId() != null) {
+    client.updateVariable(DD_SERVICE,"propertyId",transferable.getPropertyId(),false);
+  }
+  client.updateVariable(DD_SERVICE,"component",transferable.getComponent(),false);
+  client.updateVariable(DD_SERVICE,"type",drop.ordinal(),false);
+  if (currentDrag.currentGwtEvent != null) {
+    try {
+      MouseEventDetails mouseEventDetails=new MouseEventDetails(currentDrag.currentGwtEvent);
+      currentDrag.getEventDetails().put("mouseEvent",mouseEventDetails.serialize());
+    }
+ catch (    Exception e) {
+    }
+  }
+ else {
+    currentDrag.getEventDetails().put("mouseEvent",null);
+  }
+  client.updateVariable(DD_SERVICE,"evt",currentDrag.getEventDetails(),false);
+  client.updateVariable(DD_SERVICE,"tra",transferable.getVariableMap(),true);
+}

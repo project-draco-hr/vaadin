@@ -1,0 +1,24 @@
+{
+  ApplicationConnection.getConsole().log("HTML 5 Drag Drop");
+  VTransferable transferable=vaadinDragEvent.getTransferrable();
+  JsArrayString types=event.getTypes();
+  for (int i=0; i < types.length(); i++) {
+    String type=types.get(i);
+    ApplicationConnection.getConsole().log("Type: " + type);
+    if ("text/plain".equals(type)) {
+      String data=event.getDataAsText(type);
+      ApplicationConnection.getConsole().log(type + " : " + data);
+      transferable.setData("text/plain",data);
+    }
+  }
+  String fileAsString=event.getFileAsString(0);
+  if (fileAsString != null) {
+    ApplicationConnection.getConsole().log(fileAsString);
+    transferable.setData("fileContents",fileAsString);
+  }
+  VDragAndDropManager.get().endDrag();
+  vaadinDragEvent=null;
+  event.preventDefault();
+  event.stopPropagation();
+  return false;
+}

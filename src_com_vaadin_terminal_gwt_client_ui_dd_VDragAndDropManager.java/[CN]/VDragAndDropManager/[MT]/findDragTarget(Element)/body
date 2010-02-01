@@ -1,0 +1,34 @@
+{
+  EventListener eventListener=Event.getEventListener(element);
+  while (eventListener == null) {
+    element=element.getParentElement();
+    if (element == null) {
+      break;
+    }
+    eventListener=Event.getEventListener(element);
+  }
+  if (eventListener == null) {
+    ApplicationConnection.getConsole().log("No suitable DropHandler found");
+    return null;
+  }
+ else {
+    Widget w=(Widget)eventListener;
+    while (!(w instanceof VHasDropHandler)) {
+      w=w.getParent();
+      if (w == null) {
+        break;
+      }
+    }
+    if (w == null) {
+      ApplicationConnection.getConsole().log("No suitable DropHandler found2");
+      return null;
+    }
+ else {
+      VDropHandler dh=((VHasDropHandler)w).getDropHandler();
+      if (dh == null) {
+        ApplicationConnection.getConsole().log("No suitable DropHandler found3");
+      }
+      return dh;
+    }
+  }
+}
