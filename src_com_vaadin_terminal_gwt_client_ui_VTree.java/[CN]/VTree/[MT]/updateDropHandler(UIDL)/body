@@ -2,7 +2,7 @@
   if (dropHandler == null) {
     dropHandler=new VAbstractDropHandler(){
       @Override public void dragEnter(      VDragEvent drag){
-        updateTreeRelatedTransferData(drag);
+        updateTreeRelatedDragData(drag);
         super.dragEnter(drag);
       }
       @Override protected void dragAccepted(      final VDragEvent drag){
@@ -10,40 +10,35 @@
       @Override public void dragOver(      final VDragEvent currentDrag){
         final Object oldIdOver=currentDrag.getEventDetails().get("itemIdOver");
         final String oldDetail=(String)currentDrag.getEventDetails().get("detail");
-        DeferredCommand.addCommand(new Command(){
-          public void execute(){
-            final String detail=getDropDetail(currentDrag.getCurrentGwtEvent());
-            boolean nodeHasChanged=(currentMouseOverKey != null && currentMouseOverKey != oldIdOver) || (oldIdOver != null);
-            boolean detailHasChanded=!detail.equals(oldDetail);
-            if (nodeHasChanged || detailHasChanded) {
-              ApplicationConnection.getConsole().log("Change in Transferable " + currentMouseOverKey + " "+ detail);
-              updateTreeRelatedTransferData(currentDrag);
-              VAcceptCallback accpectedCb=new VAcceptCallback(){
-                public void handleResponse(                ValueMap responseData){
-                  if (responseData == null || responseData.containsKey("accepted")) {
-                    keyToNode.get(currentMouseOverKey).emphasis(detail);
-                  }
-                }
-              }
-;
-              if (validateOnServer()) {
-                VDragAndDropManager.get().visitServer(DragEventType.OVER,accpectedCb);
-              }
- else {
-                if (validates(currentDrag)) {
-                  accpectedCb.handleResponse(null);
-                }
- else {
-                  keyToNode.get(currentMouseOverKey).emphasis(null);
-                }
-                if (oldIdOver != null && oldIdOver != currentMouseOverKey) {
-                  keyToNode.get(oldIdOver).emphasis(null);
-                }
+        updateTreeRelatedDragData(currentDrag);
+        final String detail=getDropDetail(currentDrag.getCurrentGwtEvent());
+        boolean nodeHasChanged=(currentMouseOverKey != null && currentMouseOverKey != oldIdOver) || (oldIdOver != null);
+        boolean detailHasChanded=!detail.equals(oldDetail);
+        if (nodeHasChanged || detailHasChanded) {
+          ApplicationConnection.getConsole().log("Change in Transferable " + currentMouseOverKey + " "+ detail);
+          VAcceptCallback accpectedCb=new VAcceptCallback(){
+            public void handleResponse(            ValueMap responseData){
+              if (responseData == null || responseData.containsKey("accepted")) {
+                keyToNode.get(currentMouseOverKey).emphasis(detail);
               }
             }
           }
+;
+          if (validateOnServer()) {
+            VDragAndDropManager.get().visitServer(DragEventType.OVER,accpectedCb);
+          }
+ else {
+            if (validates(currentDrag)) {
+              accpectedCb.handleResponse(null);
+            }
+ else {
+              keyToNode.get(currentMouseOverKey).emphasis(null);
+            }
+            if (oldIdOver != null && oldIdOver != currentMouseOverKey) {
+              keyToNode.get(oldIdOver).emphasis(null);
+            }
+          }
         }
-);
       }
       @Override public void dragLeave(      VDragEvent drag){
         cleanUp();
