@@ -41,9 +41,11 @@ case Event.ONMOUSEOUT:
           break;
         }
 case Event.ONMOUSEMOVE:
-      updateCurrentEvent(event.getNativeEvent());
-    startDrag.execute();
-  break;
+      deferredStartRegistration.removeHandler();
+    deferredStartRegistration=null;
+  updateCurrentEvent(event.getNativeEvent());
+startDrag.execute();
+break;
 default :
 ApplicationConnection.getConsole().log("Drag did not start due event" + event.getNativeEvent().getType());
 deferredStartRegistration.removeHandler();
