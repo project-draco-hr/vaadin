@@ -1,9 +1,16 @@
 {
   Element cloneNode=(Element)element.cloneNode(true);
-  cloneNode.getStyle().setOpacity(0.4);
   if (BrowserInfo.get().isIE()) {
-    cloneNode.getStyle().setProperty("filter","alpha(opacity=70)");
+    if (cloneNode.getTagName().toLowerCase().equals("tr")) {
+      TableElement table=Document.get().createTableElement();
+      TableSectionElement tbody=Document.get().createTBodyElement();
+      table.appendChild(tbody);
+      tbody.appendChild(cloneNode);
+      cloneNode=table.cast();
+    }
+    cloneNode.getStyle().setProperty("filter","alpha(opacity=40)");
   }
+  cloneNode.getStyle().setOpacity(0.4);
   if (alignImageToEvent) {
     int absoluteTop=element.getAbsoluteTop();
     int absoluteLeft=element.getAbsoluteLeft();
