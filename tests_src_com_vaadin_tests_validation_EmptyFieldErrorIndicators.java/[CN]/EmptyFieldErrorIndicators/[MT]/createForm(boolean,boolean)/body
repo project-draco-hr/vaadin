@@ -1,10 +1,10 @@
 {
-  Form form=new Form(){
+  final Form form=new Form(){
     @Override public void addField(    Object propertyId,    Field field){
       super.addField(propertyId,field);
       field.setRequired(required);
       field.setRequiredError("Missing required value!");
-      if (failValidator) {
+      if (failValidator && !(field instanceof Button)) {
         field.addValidator(new AbstractValidator("Validation error"){
           public boolean isValid(          Object value){
             return false;
@@ -17,9 +17,17 @@
 ;
   form.addField("Field",new TextField("Text"));
   form.addField("Date",new DateField("Date"));
-  form.addField("Inline Date",new InlineDateField("Date"));
-  form.addField("Popup Date",new PopupDateField("Date"));
-  form.addField("Native Select",new NativeSelect("NativeSelect"));
+  Button setDateButton=new Button("Set date");
+  form.addField("Set Date",setDateButton);
+  setDateButton.addListener(new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      form.getField("Date").setValue(new Date(0));
+    }
+  }
+);
+  NativeSelect nativeSelect=new NativeSelect("NativeSelect");
+  form.addField("Native Select",nativeSelect);
+  nativeSelect.addItem("Value 1");
   form.addField("Select",new Select("Select"));
   Select select2=new Select("Select 2");
   select2.addItem("Value 1");
