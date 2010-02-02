@@ -24,18 +24,33 @@
         public void onPreviewNativeEvent(        NativePreviewEvent event){
           int typeInt=event.getTypeInt();
 switch (typeInt) {
+case Event.ONMOUSEOVER:
+            if (typeInt == Event.ONMOUSEOVER) {
+              if (dragElement == null || !dragElement.isOrHasChild((Node)event.getNativeEvent().getCurrentEventTarget().cast())) {
+                ApplicationConnection.getConsole().log("Drag image appeared");
+                break;
+              }
+            }
 case Event.ONKEYDOWN:
 case Event.ONKEYPRESS:
 case Event.ONKEYUP:
-            break;
+          break;
+case Event.ONMOUSEOUT:
+        if (dragElement == null || !dragElement.isOrHasChild((Node)event.getNativeEvent().getRelatedEventTarget().cast())) {
+          ApplicationConnection.getConsole().log("Drag image appeared");
+          break;
+        }
 case Event.ONMOUSEMOVE:
-          deferredStartRegistration.removeHandler();
-        deferredStartRegistration=null;
       updateCurrentEvent(event.getNativeEvent());
     startDrag.execute();
+  break;
 default :
-  deferredStartRegistration.removeHandler();
+ApplicationConnection.getConsole().log("Drag did not start due event" + event.getNativeEvent().getType());
+deferredStartRegistration.removeHandler();
 deferredStartRegistration=null;
+if (dragElement != null) {
+RootPanel.getBodyElement().removeChild(dragElement);
+}
 break;
 }
 }
