@@ -20,8 +20,8 @@
  else {
         ApplicationConnection.getConsole().log("Event on dragImage, target changed");
 switch (typeInt) {
-case Event.ONMOUSEOUT:
 case Event.ONMOUSEOVER:
+case Event.ONMOUSEOUT:
           ApplicationConnection.getConsole().log("IGNORING proxy image event, fired because of hack or not significant");
         return;
 case Event.ONMOUSEMOVE:
@@ -44,6 +44,7 @@ case Event.ONMOUSEMOVE:
   nativeEvent.preventDefault();
 return;
 default :
+ApplicationConnection.getConsole().log("Target just modified on " + event.getType());
 currentDrag.setElementOver((com.google.gwt.user.client.Element)targetElement);
 break;
 }
@@ -61,7 +62,10 @@ switch (typeInt) {
 case Event.ONMOUSEOVER:
 ApplicationConnection.getConsole().log(event.getNativeEvent().getType());
 VDropHandler target=findDragTarget(targetElement);
-if (target != null && target != currentDrag) {
+if (target != null && target != currentDropHandler) {
+if (currentDropHandler != null) {
+currentDropHandler.dragLeave(currentDrag);
+}
 currentDropHandler=target;
 target.dragEnter(currentDrag);
 }
