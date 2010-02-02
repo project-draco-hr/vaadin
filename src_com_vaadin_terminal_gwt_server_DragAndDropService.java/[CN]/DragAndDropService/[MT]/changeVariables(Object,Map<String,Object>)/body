@@ -1,15 +1,20 @@
 {
-  HasDropHandler dropHandlerOwner=(HasDropHandler)variables.get("dhowner");
-  if (dropHandlerOwner == null) {
+  Object owner=variables.get("dhowner");
+  if (!(owner instanceof DropTarget)) {
+    System.err.println("DropHandler owner " + owner + " must implement DropTarget");
     return;
   }
+  if (owner == null) {
+    System.err.println("DropHandler owner is null");
+    return;
+  }
+  DropTarget dropTarget=(DropTarget)owner;
   lastVisitId=(Integer)variables.get("visitId");
-  currentRequest=constructDragRequest(variables,dropHandlerOwner);
-  DropHandler dropHandler=(dropHandlerOwner).getDropHandler();
-  Object eventDetails=dropHandlerOwner.getDragEventDetails((Map<String,Object>)variables.get("evt"));
-  currentRequest.setEventDetails(eventDetails);
-  dropHandler.handleDragRequest(currentRequest);
-  if (currentRequest.getType() == DragEventType.DROP) {
-    transferable=null;
+  boolean dropRequest=isDropRequest(variables);
+  if (dropRequest) {
+    handleDropRequest(dropTarget,variables);
+  }
+ else {
+    handleDragRequest(dropTarget,variables);
   }
 }
