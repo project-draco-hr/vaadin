@@ -13,4 +13,16 @@
     }
   }
 );
+  addSelectionHandler(new SelectionHandler<TreeItem>(){
+    public void onSelection(    SelectionEvent<TreeItem> event){
+      UIDLItem selectedItem=(UIDLItem)event.getSelectedItem();
+      List<ApplicationConnection> runningApplications=ApplicationConfiguration.getRunningApplications();
+      for (      ApplicationConnection applicationConnection : runningApplications) {
+        Paintable paintable=applicationConnection.getPaintable(selectedItem.uidl.getId());
+        highlight(paintable);
+      }
+    }
+  }
+);
+  addMouseOutHandler(VUIDLBrowser.this);
 }
