@@ -16,27 +16,14 @@
         boolean detailHasChanded=!detail.equals(oldDetail);
         if (nodeHasChanged || detailHasChanded) {
           ApplicationConnection.getConsole().log("Change in Transferable " + currentMouseOverKey + " "+ detail);
-          VAcceptCallback accpectedCb=new VAcceptCallback(){
-            public void handleResponse(            ValueMap responseData){
-              if (responseData == null || responseData.containsKey("accepted")) {
-                keyToNode.get(currentMouseOverKey).emphasis(detail);
-              }
+          validate(new VAcceptCallback(){
+            public void accepted(){
+              keyToNode.get(currentMouseOverKey).emphasis(detail);
             }
           }
-;
-          if (validateOnServer()) {
-            VDragAndDropManager.get().visitServer(DragEventType.OVER,accpectedCb);
-          }
- else {
-            if (validates(currentDrag)) {
-              accpectedCb.handleResponse(null);
-            }
- else {
-              keyToNode.get(currentMouseOverKey).emphasis(null);
-            }
-            if (oldIdOver != null && oldIdOver != currentMouseOverKey) {
-              keyToNode.get(oldIdOver).emphasis(null);
-            }
+,currentDrag);
+          if (oldIdOver != null && oldIdOver != currentMouseOverKey) {
+            keyToNode.get(oldIdOver).emphasis(null);
           }
         }
       }

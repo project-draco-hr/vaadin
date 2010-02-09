@@ -1,9 +1,11 @@
 {
   interruptDrag();
+  isStarted=false;
   currentDrag=new VDragEvent(transferable,startEvent);
   updateCurrentEvent(startEvent);
   final Command startDrag=new Command(){
     public void execute(){
+      isStarted=true;
       VDropHandler dh=null;
       if (startEvent != null) {
         dh=findDragTarget((Element)currentDrag.currentGwtEvent.getEventTarget().cast());
@@ -14,35 +16,38 @@
       }
       if (handleDragEvents) {
         handlerRegistration=Event.addNativePreviewHandler(defaultDragAndDropEventHandler);
+        if (dragElement != null && dragElement.getParentElement() == null) {
+          lazyAttachDragElement.cancel();
+          lazyAttachDragElement.run();
+        }
       }
     }
   }
 ;
-  if (handleDragEvents) {
-    if (Event.as(startEvent).getTypeInt() == Event.ONMOUSEDOWN) {
-      deferredStartRegistration=Event.addNativePreviewHandler(new NativePreviewHandler(){
-        public void onPreviewNativeEvent(        NativePreviewEvent event){
-          int typeInt=event.getTypeInt();
+  if (handleDragEvents && Event.as(startEvent).getTypeInt() == Event.ONMOUSEDOWN) {
+    deferredStartRegistration=Event.addNativePreviewHandler(new NativePreviewHandler(){
+      public void onPreviewNativeEvent(      NativePreviewEvent event){
+        int typeInt=event.getTypeInt();
 switch (typeInt) {
 case Event.ONMOUSEOVER:
-            if (dragElement == null || !dragElement.isOrHasChild((Node)event.getNativeEvent().getCurrentEventTarget().cast())) {
-              ApplicationConnection.getConsole().log("Drag image appeared");
-              break;
-            }
+          if (dragElement == null || !dragElement.isOrHasChild((Node)event.getNativeEvent().getCurrentEventTarget().cast())) {
+            ApplicationConnection.getConsole().log("Drag image appeared");
+            break;
+          }
 case Event.ONKEYDOWN:
 case Event.ONKEYPRESS:
 case Event.ONKEYUP:
 case Event.ONBLUR:
-          break;
+        break;
 case Event.ONMOUSEOUT:
-        if (dragElement == null || !dragElement.isOrHasChild((Node)event.getNativeEvent().getRelatedEventTarget().cast())) {
-          ApplicationConnection.getConsole().log("Drag image appeared");
-          break;
-        }
+      if (dragElement == null || !dragElement.isOrHasChild((Node)event.getNativeEvent().getRelatedEventTarget().cast())) {
+        ApplicationConnection.getConsole().log("Drag image appeared");
+        break;
+      }
 case Event.ONMOUSEMOVE:
-      deferredStartRegistration.removeHandler();
-    deferredStartRegistration=null;
-  updateCurrentEvent(event.getNativeEvent());
+    deferredStartRegistration.removeHandler();
+  deferredStartRegistration=null;
+updateCurrentEvent(event.getNativeEvent());
 startDrag.execute();
 break;
 default :
@@ -59,10 +64,6 @@ break;
 }
 }
 );
-}
- else {
-startDrag.execute();
-}
 }
  else {
 startDrag.execute();
