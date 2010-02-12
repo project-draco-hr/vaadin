@@ -1,0 +1,29 @@
+{
+  if (lastDragEvent == null || lastDragEvent != drag) {
+    loaded=false;
+    lastDragEvent=drag;
+  }
+  if (loaded) {
+    Object object=drag.getDropDetails().get("itemIdOver");
+    if (hashSet.contains(object)) {
+      callback.accepted(drag);
+    }
+  }
+ else {
+    VDragEventServerCallback acceptCallback=new VDragEventServerCallback(){
+      public void handleResponse(      boolean accepted,      UIDL response){
+        hashSet=new HashSet<String>();
+        String[] stringArrayAttribute=response.getStringArrayAttribute("allowedIds");
+        for (int i=0; i < stringArrayAttribute.length; i++) {
+          hashSet.add(stringArrayAttribute[i]);
+        }
+        loaded=true;
+        if (accepted) {
+          callback.accepted(drag);
+        }
+      }
+    }
+;
+    VDragAndDropManager.get().visitServer(acceptCallback);
+  }
+}

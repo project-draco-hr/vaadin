@@ -1,0 +1,57 @@
+{
+  DragDropPane pane=(DragDropPane)event.getDropTargetData().getTarget();
+  DragEventDetails ed=(DragEventDetails)event.getDropTargetData();
+  Transferable transferable=event.getTransferable();
+  if (transferable instanceof ComponentTransferable) {
+    ComponentTransferable ctr=(ComponentTransferable)transferable;
+    Component component=ctr.getSourceComponent();
+    if (component.getParent() != pane) {
+      if (transferable instanceof DataBindedTransferable) {
+        Label l=new Label();
+        l.setSizeUndefined();
+        l.setValue("ItemId : " + ((DataBindedTransferable)transferable).getItemId());
+        pane.addComponent(l);
+        component=l;
+      }
+ else {
+        pane.addComponent(component);
+      }
+      Integer left=ed.getAbsoluteLeft();
+      Integer top=ed.getAbsoluteTop();
+      MouseEventDetails eventDetails=ed.getMouseEvent();
+      int clientX=eventDetails.getClientX();
+      int clientY=eventDetails.getClientY();
+      try {
+        pane.getPosition(component).setTopValue(clientY - top);
+        pane.getPosition(component).setLeftValue(clientX - left);
+      }
+ catch (      Exception e) {
+      }
+    }
+ else {
+      MouseEventDetails start=ed.getMouseDownEvent();
+      MouseEventDetails eventDetails=ed.getMouseEvent();
+      int deltaX=eventDetails.getClientX() - start.getClientX();
+      int deltaY=eventDetails.getClientY() - start.getClientY();
+      ComponentPosition p=pane.getPosition(component);
+      p.setTopValue(p.getTopValue() + deltaY);
+      p.setLeftValue(p.getLeftValue() + deltaX);
+    }
+  }
+ else {
+    String object=(String)transferable.getData("text/plain");
+    String content=(String)transferable.getData("fileContents");
+    Label l=new Label();
+    l.setCaption("Generated from HTML5 drag:");
+    if (object != null) {
+      l.setValue(object);
+    }
+ else {
+      l.setValue("HTML5 dd");
+    }
+    l.setDescription(content);
+    l.setSizeUndefined();
+    pane.addComponent(l);
+  }
+  return;
+}

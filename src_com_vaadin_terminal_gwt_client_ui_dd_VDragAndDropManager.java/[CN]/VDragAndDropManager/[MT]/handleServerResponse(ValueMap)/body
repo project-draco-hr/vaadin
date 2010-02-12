@@ -1,12 +1,12 @@
 {
-  if (acceptCallback == null) {
+  if (serverCallback == null) {
     return;
   }
-  int visitId=valueMap.getInt("visitId");
+  UIDL uidl=(UIDL)valueMap.cast();
+  int visitId=uidl.getIntAttribute("visitId");
   if (this.visitId == visitId) {
-    if (valueMap.containsKey("accepted")) {
-      acceptCallback.accepted();
-    }
-    acceptCallback=null;
+    serverCallback.handleResponse(uidl.getBooleanAttribute("accepted"),uidl);
+    serverCallback=null;
   }
+  runDeferredCommands();
 }

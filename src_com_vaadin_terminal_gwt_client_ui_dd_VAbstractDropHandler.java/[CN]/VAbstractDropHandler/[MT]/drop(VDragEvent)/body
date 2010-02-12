@@ -1,8 +1,15 @@
 {
-  if (mustValidateOnServer) {
+  if (acceptCriteria.needsServerSideCheck(drag,criterioUIDL)) {
     return true;
   }
  else {
-    return validateOnClient(drag);
+    validated=false;
+    acceptCriteria.accept(drag,criterioUIDL,new VAcceptCallback(){
+      public void accepted(      VDragEvent event){
+        validated=true;
+      }
+    }
+);
+    return validated;
   }
 }

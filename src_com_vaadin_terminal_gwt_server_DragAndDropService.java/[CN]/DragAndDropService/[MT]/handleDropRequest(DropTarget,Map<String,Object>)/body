@@ -5,6 +5,9 @@
     return;
   }
   Transferable transferable=constructTransferable(dropTarget,variables);
-  DragDropDetails dropData=constructDragDropDetails(dropTarget,variables);
-  dropHandler.drop(transferable,dropData);
+  TargetDetails dropData=constructDragDropDetails(dropTarget,variables);
+  DropEvent dropEvent=new DropEvent(transferable,dropData);
+  if (dropHandler.getAcceptCriterion().accepts(dropEvent)) {
+    dropHandler.drop(dropEvent);
+  }
 }

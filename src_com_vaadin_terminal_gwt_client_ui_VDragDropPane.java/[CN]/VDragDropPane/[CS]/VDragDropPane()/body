@@ -4,12 +4,14 @@
     public void onMouseDown(    MouseDownEvent event){
       EventTarget eventTarget=event.getNativeEvent().getEventTarget();
       Paintable paintable=client.getPaintable((Element)eventTarget.cast());
-      VTransferable transferable=new VTransferable();
-      transferable.setComponent(paintable);
-      VDragEvent drag=VDragAndDropManager.get().startDrag(transferable,event.getNativeEvent(),true);
-      drag.createDragImage(((Widget)paintable).getElement(),true);
-      drag.getDropDetails().put("mouseDown",new MouseEventDetails(event.getNativeEvent()).serialize());
-      event.preventDefault();
+      if (paintable != null) {
+        VTransferable transferable=new VTransferable();
+        transferable.setComponent(paintable);
+        VDragEvent drag=VDragAndDropManager.get().startDrag(transferable,event.getNativeEvent(),true);
+        drag.createDragImage(((Widget)paintable).getElement(),true);
+        drag.getDropDetails().put("mouseDown",new MouseEventDetails(event.getNativeEvent()).serialize());
+        event.preventDefault();
+      }
     }
   }
 ,MouseDownEvent.getType());

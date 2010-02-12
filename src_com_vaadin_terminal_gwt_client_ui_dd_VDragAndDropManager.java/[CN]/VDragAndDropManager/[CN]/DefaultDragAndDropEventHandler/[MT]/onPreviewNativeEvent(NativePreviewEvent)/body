@@ -29,7 +29,7 @@ case Event.ONMOUSEMOVE:
     if (findDragTarget != currentDropHandler) {
       if (currentDropHandler != null) {
         currentDropHandler.dragLeave(currentDrag);
-        acceptCallback=null;
+        serverCallback=null;
       }
       currentDropHandler=findDragTarget;
       if (currentDropHandler != null) {
@@ -52,7 +52,7 @@ break;
 }
  catch (Exception e) {
 ApplicationConnection.getConsole().log("FIXME : ERROR in elementFromPoint hack.");
-e.printStackTrace();
+throw new RuntimeException(e);
 }
  finally {
 dragElement.getStyle().setProperty("display",display);
@@ -86,7 +86,7 @@ return;
 if (currentDropHandler != null && currentDropHandler != newDragHanler) {
 currentDropHandler.dragLeave(currentDrag);
 currentDropHandler=null;
-acceptCallback=null;
+serverCallback=null;
 }
 break;
 case Event.ONMOUSEMOVE:

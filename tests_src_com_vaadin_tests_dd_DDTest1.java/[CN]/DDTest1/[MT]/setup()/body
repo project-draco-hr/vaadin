@@ -15,25 +15,32 @@
   label.setSizeUndefined();
   pane1.addComponent(label);
   DragDropPane pane2=new DragDropPane();
-  pane2.setDebugId("pane2");
-  pane2.setSizeFull();
-  pane2.setCaption("Pane2 (accept needs server side visit, only \"Bar\")");
-  AcceptCriterion f=new AcceptCriterion(){
-    public boolean accepts(    Transferable transferable,    DragDropDetails dragDropDetails){
-      if (transferable instanceof ComponentTransferable) {
-        ComponentTransferable ct=(ComponentTransferable)transferable;
-        Component component=ct.getSourceComponent();
-        if (component != null) {
-          if (component.toString() != null && component.toString().contains("Bar")) {
-            return true;
+  pane2.setCaption("Pane2 (accept needs server side visit, check for \"Bar\")");
+  DropHandler dropHandler=new DragDropPane.ImportPrettyMuchAnything(){
+    private final AcceptCriterion crit=new ServerSideCriterion(){
+      public boolean accepts(      DragAndDropEvent dragEvent){
+        Transferable transferable=dragEvent.getTransferable();
+        if (transferable instanceof ComponentTransferable) {
+          ComponentTransferable ct=(ComponentTransferable)transferable;
+          Component component=ct.getSourceComponent();
+          if (component != null) {
+            if (component.toString() != null && component.toString().contains("Bar")) {
+              return true;
+            }
           }
         }
+        return false;
       }
-      return false;
+    }
+;
+    @Override public AcceptCriterion getAcceptCriterion(){
+      return crit;
     }
   }
 ;
-  pane2.getDropHandler().setAcceptCriterion(f);
+  pane2.setDropHandler(dropHandler);
+  pane2.setDebugId("pane2");
+  pane2.setSizeFull();
   DragDropPane pane3=new DragDropPane();
   pane3.setSizeFull();
   pane3.setCaption("Pane3");
@@ -51,37 +58,7 @@
   t.addItem("Child");
   t.setParent("Child","Foo");
   t.setSizeFull();
-  AbstractDropHandler itemSorter=new AbstractDropHandler(){
-    @Override public void receive(    Transferable transferable,    DragDropDetails dropdetails){
-      TreeDropDetails details=(TreeDropDetails)dropdetails;
-      if (transferable instanceof DataBindedTransferable) {
-        DataBindedTransferable transferrable2=(DataBindedTransferable)transferable;
-        Object itemId=transferrable2.getItemId();
-        Object itemIdOver=details.getItemIdOver();
-        Location dropLocation=details.getDropLocation();
-        if (dropLocation == Location.MIDDLE) {
-          t.setParent(itemId,itemIdOver);
-          return;
-        }
- else         if (Location.TOP == dropLocation) {
-          itemIdOver=idx.prevItemId(itemIdOver);
-        }
-        if (itemId.equals(itemIdOver)) {
-          return;
-        }
-        HierarchicalContainer subtree=getSubTree(idx,itemId);
-        boolean removed=idx.removeItem(itemId);
-        if (removed) {
-          if (dropLocation == null) {
-            System.err.println("No detail of drop place available");
-          }
-          Item addItemAfter=idx.addItemAfter(itemIdOver,itemId);
-          populateSubTree(idx,subtree,itemId);
-          Object parent=idx.getParent(itemIdOver);
-          idx.setParent(itemId,parent);
-        }
-      }
-    }
+  DropHandler itemSorter=new DropHandler(){
     private void populateSubTree(    HierarchicalContainer idx,    HierarchicalContainer subtree,    Object itemId){
       Collection children=subtree.getChildren(itemId);
       if (children != null) {
@@ -124,9 +101,43 @@
         }
       }
     }
+    public void drop(    DropEvent event){
+      TreeDropDetails details=(TreeDropDetails)event.getDropTargetData();
+      Transferable transferable=event.getTransferable();
+      if (transferable instanceof DataBindedTransferable) {
+        DataBindedTransferable transferrable2=(DataBindedTransferable)transferable;
+        Object itemId=transferrable2.getItemId();
+        Object itemIdOver=details.getItemIdOver();
+        Location dropLocation=details.getDropLocation();
+        if (dropLocation == Location.MIDDLE) {
+          t.setParent(itemId,itemIdOver);
+          return;
+        }
+ else         if (Location.TOP == dropLocation) {
+          itemIdOver=idx.prevItemId(itemIdOver);
+        }
+        if (itemId.equals(itemIdOver)) {
+          return;
+        }
+        HierarchicalContainer subtree=getSubTree(idx,itemId);
+        boolean removed=idx.removeItem(itemId);
+        if (removed) {
+          if (dropLocation == null) {
+            System.err.println("No detail of drop place available");
+          }
+          Item addItemAfter=idx.addItemAfter(itemIdOver,itemId);
+          populateSubTree(idx,subtree,itemId);
+          Object parent=idx.getParent(itemIdOver);
+          idx.setParent(itemId,parent);
+        }
+      }
+      return;
+    }
+    public AcceptCriterion getAcceptCriterion(){
+      return IsDataBinded.get();
+    }
   }
 ;
-  itemSorter.setAcceptCriterion(AbstractDropHandler.CRITERION_HAS_ITEM_ID);
   t.setDropHandler(itemSorter);
   Table ta=new Table("Test table");
   ta.setContainerDataSource(idx);

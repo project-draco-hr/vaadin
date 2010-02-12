@@ -1,0 +1,27 @@
+{
+  VAcceptCriteria crit1=getCriteria(drag,configuration,0);
+  VAcceptCriteria crit2=getCriteria(drag,configuration,1);
+  if (crit1 == null || crit2 == null) {
+    ApplicationConnection.getConsole().log("And criteria didn't found a chidl criteria");
+    return;
+  }
+  b1=false;
+  b2=false;
+  VAcceptCallback accept1cb=new VAcceptCallback(){
+    public void accepted(    VDragEvent event){
+      b1=true;
+    }
+  }
+;
+  VAcceptCallback accept2cb=new VAcceptCallback(){
+    public void accepted(    VDragEvent event){
+      b2=true;
+    }
+  }
+;
+  crit1.accept(drag,configuration.getChildUIDL(0),accept1cb);
+  crit2.accept(drag,configuration.getChildUIDL(0),callback);
+  if (b1 && b2) {
+    callback.accepted(drag);
+  }
+}

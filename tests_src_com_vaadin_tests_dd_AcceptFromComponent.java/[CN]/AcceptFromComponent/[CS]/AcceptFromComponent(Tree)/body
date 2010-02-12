@@ -2,8 +2,12 @@
   setCaption("Checks the source is tree1 on server");
   DragDropPane pane=new DragDropPane();
   setContent(pane);
-  pane.getDropHandler().setAcceptCriterion(new AcceptCriterion(){
-    public boolean accepts(    Transferable transferable,    DragDropDetails dragDropDetails){
+  pane.setSizeFull();
+  setWidth("450px");
+  setHeight("150px");
+  final ServerSideCriterion serverSideCriterion=new ServerSideCriterion(){
+    public boolean accepts(    DragAndDropEvent dragEvent){
+      Transferable transferable=dragEvent.getTransferable();
       if (transferable instanceof ComponentTransferable) {
         ComponentTransferable componentTransferrable=(ComponentTransferable)transferable;
         if (componentTransferrable.getSourceComponent() == tree1) {
@@ -13,8 +17,11 @@
       return false;
     }
   }
+;
+  pane.setDropHandler(new DragDropPane.ImportPrettyMuchAnything(){
+    @Override public AcceptCriterion getAcceptCriterion(){
+      return serverSideCriterion;
+    }
+  }
 );
-  pane.setSizeFull();
-  setWidth("450px");
-  setHeight("150px");
 }
