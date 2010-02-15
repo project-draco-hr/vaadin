@@ -40,21 +40,26 @@
 );
   addComponent(tree3);
   table.setDragMode(Table.DragModes.ROWS);
-  AcceptCriterion onNode=new OverTreeNode();
-  AcceptCriterion fromTree=new ComponentFilter(table);
-  final And and=new And(fromTree,onNode);
+  OverTreeNode onNode=new OverTreeNode();
+  ComponentFilter fromTable=new ComponentFilter(table);
+  ComponentFilter fromTree=new ComponentFilter(tree1);
+  final Or fromTree1OrTable=new Or(fromTable,fromTree);
+  final And and=new And(fromTree1OrTable,onNode);
   DropHandler dropHandler=new DropHandler(){
     public void drop(    DropEvent event){
-      DataBindedTransferable tr=(DataBindedTransferable)event.getTransferable();
+      DataBoundTransferable tr=(DataBoundTransferable)event.getTransferable();
       Object itemId=tr.getItemId();
-      Table fromTable=(Table)tr.getSourceComponent();
-      String name=fromTable.getItem(itemId).getItemProperty("Name").toString();
-      tree1.addItem(name);
-      tree1.setChildrenAllowed(name,false);
+      Container sourceContainer=(Container)tr.getSourceComponent();
+      if (sourceContainer != tree1) {
+        String name=sourceContainer.getItem(itemId).getItemProperty("Name").toString();
+        tree1.addItem(name);
+        tree1.setChildrenAllowed(name,false);
+        sourceContainer.removeItem(itemId);
+        itemId=name;
+      }
       TreeDropDetails details=(TreeDropDetails)event.getDropTargetData();
       Object idOver=details.getItemIdOver();
-      tree1.setParent(name,idOver);
-      table.removeItem(itemId);
+      tree1.setParent(itemId,idOver);
     }
     public AcceptCriterion getAcceptCriterion(){
       return and;
@@ -66,8 +71,8 @@
     public void drop(    DropEvent event){
       TreeDropDetails details=(TreeDropDetails)event.getDropTargetData();
       Transferable transferable=event.getTransferable();
-      if (transferable instanceof DataBindedTransferable) {
-        DataBindedTransferable tr=(DataBindedTransferable)transferable;
+      if (transferable instanceof DataBoundTransferable) {
+        DataBoundTransferable tr=(DataBoundTransferable)transferable;
         Object itemId=tree2.addItem();
         tree2.setParent(itemId,details.getItemIdOver());
         if (tr.getSourceComponent() == tree1) {
@@ -95,7 +100,7 @@
       }
     }
     public AcceptCriterion getAcceptCriterion(){
-      return IsDataBinded.get();
+      return IsDatabound.get();
     }
   }
 ;
