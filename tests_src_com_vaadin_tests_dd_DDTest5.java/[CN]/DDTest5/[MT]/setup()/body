@@ -1,0 +1,69 @@
+{
+  Window w=getLayout().getWindow();
+  Label l;
+  l=new Label("Drag me");
+  DragAndDropWrapper dragAndDropWrapper=new DragAndDropWrapper(l);
+  dragAndDropWrapper.setDragStartMode(DragStartMode.COMPONENT);
+  dragAndDropWrapper.setWidth("100px");
+  dragAndDropWrapper.setHeight("100px");
+  getLayout().addComponent(dragAndDropWrapper);
+  l=new Label("Drag me too");
+  dragAndDropWrapper=new DragAndDropWrapper(l);
+  dragAndDropWrapper.setDragStartMode(DragStartMode.WRAPPER);
+  dragAndDropWrapper.setWidth("100px");
+  dragAndDropWrapper.setHeight("100px");
+  getLayout().addComponent(dragAndDropWrapper);
+  final CssLayout cssLayout=new CssLayout();
+  cssLayout.setHeight("300px");
+  dragAndDropWrapper2=new DragAndDropWrapper(cssLayout);
+  dragAndDropWrapper2.setCaption("Drop here");
+  dh=new DropHandler(){
+    public AcceptCriterion getAcceptCriterion(){
+      return AcceptAll.get();
+    }
+    public void drop(    DropEvent dropEvent){
+      if (dropEvent.getTransferable() instanceof DDWrapperTransferable) {
+        DDWrapperTransferable transferable=(DDWrapperTransferable)dropEvent.getTransferable();
+        Component sourceComponent=transferable.getSourceComponent();
+        Component draggedComponent=transferable.getDraggedComponent();
+        DropTarget target=dropEvent.getDropTargetData().getTarget();
+        WrappedLabel wrappedLabel=new WrappedLabel(draggedComponent.toString());
+        if (target instanceof WrappedLabel) {
+          int i=1;
+          Iterator<Component> componentIterator=cssLayout.getComponentIterator();
+          Component next=componentIterator.next();
+          while (next != target && componentIterator.hasNext()) {
+            if (next != sourceComponent) {
+              i++;
+            }
+            next=componentIterator.next();
+          }
+          if (sourceComponent instanceof WrappedLabel) {
+            cssLayout.removeComponent(sourceComponent);
+            wrappedLabel=(WrappedLabel)sourceComponent;
+          }
+          if (dropEvent.getDropTargetData().getData("verticalLocation").equals("Top")) {
+            i--;
+            if (i < 0) {
+              i=0;
+            }
+          }
+          cssLayout.addComponent(wrappedLabel,i);
+        }
+ else {
+          cssLayout.addComponent(wrappedLabel);
+        }
+      }
+ else {
+        String data=(String)dropEvent.getTransferable().getData("text/plain");
+        if (data == null || "".equals(data)) {
+          data="-- no Text --";
+        }
+        cssLayout.addComponent(new WrappedLabel(data));
+      }
+    }
+  }
+;
+  dragAndDropWrapper2.setDropHandler(dh);
+  getLayout().addComponent(dragAndDropWrapper2);
+}

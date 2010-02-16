@@ -6,7 +6,8 @@
       Paintable paintable=client.getPaintable((Element)eventTarget.cast());
       if (paintable != null) {
         VTransferable transferable=new VTransferable();
-        transferable.setComponent(paintable);
+        transferable.setDragSource(VDragDropPane.this);
+        transferable.setData("component",paintable);
         VDragEvent drag=VDragAndDropManager.get().startDrag(transferable,event.getNativeEvent(),true);
         drag.createDragImage(((Widget)paintable).getElement(),true);
         drag.getDropDetails().put("mouseDown",new MouseEventDetails(event.getNativeEvent()).serialize());
@@ -15,8 +16,6 @@
     }
   }
 ,MouseDownEvent.getType());
-  if (!BrowserInfo.get().isIE()) {
-    hookHtml5Events(getElement());
-  }
+  hookHtml5Events(getElement());
   getStyleElement().getStyle().setBackgroundColor("yellow");
 }

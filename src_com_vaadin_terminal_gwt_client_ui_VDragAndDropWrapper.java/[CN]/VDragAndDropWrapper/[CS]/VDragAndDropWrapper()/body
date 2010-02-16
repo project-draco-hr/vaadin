@@ -1,0 +1,22 @@
+{
+  super();
+  hookHtml5Events(getElement());
+  setStyleName(CLASSNAME);
+  addDomHandler(new MouseDownHandler(){
+    public void onMouseDown(    MouseDownEvent event){
+      if (dragStarMode > 0) {
+        VTransferable transferable=new VTransferable();
+        transferable.setDragSource(VDragAndDropWrapper.this);
+        Paintable paintable=client.getPaintable((Element)event.getNativeEvent().getEventTarget().cast());
+        transferable.setData("component",paintable);
+        VDragEvent startDrag=VDragAndDropManager.get().startDrag(transferable,event.getNativeEvent(),true);
+        if (dragStarMode == WRAPPER) {
+          paintable=VDragAndDropWrapper.this;
+        }
+        startDrag.createDragImage(((Widget)paintable).getElement(),true);
+        event.preventDefault();
+      }
+    }
+  }
+,MouseDownEvent.getType());
+}
