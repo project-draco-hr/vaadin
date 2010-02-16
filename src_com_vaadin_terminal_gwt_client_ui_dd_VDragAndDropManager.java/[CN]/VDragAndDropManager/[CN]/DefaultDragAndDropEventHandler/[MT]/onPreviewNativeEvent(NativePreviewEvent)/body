@@ -18,7 +18,6 @@
         return;
       }
  else {
-        ApplicationConnection.getConsole().log("Event on dragImage, target changed");
 switch (typeInt) {
 case Event.ONMOUSEOVER:
 case Event.ONMOUSEOUT:
@@ -32,6 +31,9 @@ case Event.ONMOUSEMOVE:
         serverCallback=null;
       }
       currentDropHandler=findDragTarget;
+      if (findDragTarget != null) {
+        ApplicationConnection.getConsole().log("DropHandler now" + currentDropHandler.getPaintable());
+      }
       if (currentDropHandler != null) {
         currentDrag.setElementOver((com.google.gwt.user.client.Element)targetElement);
         currentDropHandler.dragEnter(currentDrag);
@@ -50,9 +52,9 @@ break;
 }
 }
 }
- catch (Exception e) {
-ApplicationConnection.getConsole().log("FIXME : ERROR in elementFromPoint hack.");
-throw new RuntimeException(e);
+ catch (RuntimeException e) {
+ApplicationConnection.getConsole().log("ERROR during elementFromPoint hack.");
+throw e;
 }
  finally {
 dragElement.getStyle().setProperty("display",display);
@@ -67,6 +69,7 @@ if (currentDropHandler != null) {
 currentDropHandler.dragLeave(currentDrag);
 }
 currentDropHandler=target;
+ApplicationConnection.getConsole().log("DropHandler now" + currentDropHandler.getPaintable());
 target.dragEnter(currentDrag);
 }
  else if (target == null && currentDropHandler != null) {

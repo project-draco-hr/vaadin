@@ -1,0 +1,46 @@
+{
+  Window w=getLayout().getWindow();
+  hl.addComponent(table);
+  hl.setWidth("100%");
+  hl.setSpacing(true);
+  hl.setExpandRatio(table,1);
+  table.setWidth("100%");
+  table.setPageLength(10);
+  populateTable();
+  addComponent(hl);
+  table.setDragMode(Table.DragModes.ROWS);
+  table.setDropHandler(new DropHandler(){
+    AcceptCriterion crit=new ComponentFilter(table);
+    public AcceptCriterion getAcceptCriterion(){
+      return crit;
+    }
+    public void drop(    DropEvent dropEvent){
+      Table.TableTargetDetails dropTargetData=(TableTargetDetails)dropEvent.getDropTargetData();
+      DataBoundTransferable transferable=(DataBoundTransferable)dropEvent.getTransferable();
+      Object itemIdOver=dropTargetData.getItemIdOver();
+      Object itemId=transferable.getItemId();
+      if (itemId == null || itemIdOver == null || itemId.equals(itemIdOver)) {
+        return;
+      }
+      IndexedContainer containerDataSource=(IndexedContainer)table.getContainerDataSource();
+      IndexedContainer clone=null;
+      try {
+        clone=(IndexedContainer)containerDataSource.clone();
+        int newIndex=containerDataSource.indexOfId(itemIdOver);
+        if (dropTargetData.getDropLocation() != Location.TOP) {
+          newIndex++;
+        }
+        containerDataSource.removeItem(itemId);
+        Item newItem=containerDataSource.addItemAt(newIndex,itemId);
+        Item item=clone.getItem(itemId);
+        for (        Object propId : item.getItemPropertyIds()) {
+          newItem.getItemProperty(propId).setValue(item.getItemProperty(propId).getValue());
+        }
+      }
+ catch (      CloneNotSupportedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+);
+}

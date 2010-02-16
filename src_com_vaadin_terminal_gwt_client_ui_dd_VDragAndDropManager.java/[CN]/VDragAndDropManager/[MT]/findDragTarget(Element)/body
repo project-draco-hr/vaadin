@@ -1,23 +1,9 @@
 {
-  EventListener eventListener=Event.getEventListener(element);
-  while (eventListener == null) {
-    element=element.getParentElement();
-    if (element == null) {
-      break;
+  try {
+    Widget w=Util.findWidget((com.google.gwt.user.client.Element)element,null);
+    if (w == null) {
+      return null;
     }
-    try {
-      eventListener=Event.getEventListener(element);
-    }
- catch (    Exception e) {
-      e.printStackTrace();
-    }
-  }
-  if (eventListener == null) {
-    ApplicationConnection.getConsole().log("No suitable DropHandler found");
-    return null;
-  }
- else {
-    Widget w=(Widget)eventListener;
     while (!(w instanceof VHasDropHandler)) {
       w=w.getParent();
       if (w == null) {
@@ -35,5 +21,10 @@
       }
       return dh;
     }
+  }
+ catch (  Exception e) {
+    ApplicationConnection.getConsole().log("FIXME: Exception when detecting drop handler");
+    e.printStackTrace();
+    return null;
   }
 }
