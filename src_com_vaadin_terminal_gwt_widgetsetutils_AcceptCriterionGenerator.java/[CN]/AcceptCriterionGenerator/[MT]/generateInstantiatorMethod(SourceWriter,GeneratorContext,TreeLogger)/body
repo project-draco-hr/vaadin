@@ -2,20 +2,14 @@
   sourceWriter.println("public VAcceptCriteria get(String name) {");
   sourceWriter.indent();
   sourceWriter.println("name = name.intern();");
-  Collection<JClassType> paintablesHavingWidgetAnnotation=getAvailableCriteria(context);
-  for (  JClassType jClassType : paintablesHavingWidgetAnnotation) {
-    ServerCriterion annotation=jClassType.getAnnotation(ServerCriterion.class);
-    if (annotation == null) {
-      continue;
-    }
- else {
-      System.out.print("Printing for instantiation rule for " + annotation.value());
-    }
-    String serversideclass=annotation.value();
+  Collection<Class<? extends AcceptCriterion>> clientSideVerifiableCriterion=ClassPathExplorer.getCriterion();
+  for (  Class<? extends AcceptCriterion> class1 : clientSideVerifiableCriterion) {
+    String canonicalName=class1.getCanonicalName();
+    Class<? extends VAcceptCriteria> clientClass=class1.getAnnotation(ClientCriterion.class).value();
     sourceWriter.print("if (\"");
-    sourceWriter.print(serversideclass);
+    sourceWriter.print(canonicalName);
     sourceWriter.print("\" == name) return GWT.create(");
-    sourceWriter.print(jClassType.getName());
+    sourceWriter.print(clientClass.getCanonicalName());
     sourceWriter.println(".class );");
     sourceWriter.print("else ");
   }
