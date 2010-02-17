@@ -1,5 +1,9 @@
 {
   Window w=getLayout().getWindow();
+  VerticalSortableCssLayoutWithWrappers verticalSortableCssLayoutWithWrappers=new VerticalSortableCssLayoutWithWrappers();
+  w.addWindow(verticalSortableCssLayoutWithWrappers);
+  verticalSortableCssLayoutWithWrappers.setPositionX(200);
+  verticalSortableCssLayoutWithWrappers.setPositionY(40);
   Label l;
   l=new Label("Drag me");
   DragAndDropWrapper dragAndDropWrapper=new DragAndDropWrapper(l);
@@ -16,7 +20,7 @@
   final CssLayout cssLayout=new CssLayout();
   cssLayout.setHeight("300px");
   dragAndDropWrapper2=new DragAndDropWrapper(cssLayout);
-  dragAndDropWrapper2.setCaption("Drop here");
+  dragAndDropWrapper2.setCaption("Drop here or sort with dd (wrapper(csslayout(n*wrapper(label))))");
   dh=new DropHandler(){
     public AcceptCriterion getAcceptCriterion(){
       return AcceptAll.get();
@@ -42,7 +46,7 @@
             cssLayout.removeComponent(sourceComponent);
             wrappedLabel=(WrappedLabel)sourceComponent;
           }
-          if (dropEvent.getDropTargetData().getData("verticalLocation").equals("Top")) {
+          if (dropEvent.getDropTargetData().getData("verticalLocation").equals("TOP")) {
             i--;
             if (i < 0) {
               i=0;
