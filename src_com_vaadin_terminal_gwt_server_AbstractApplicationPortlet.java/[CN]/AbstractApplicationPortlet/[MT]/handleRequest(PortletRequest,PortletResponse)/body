@@ -1,7 +1,7 @@
 {
   RequestType requestType=getRequestType(request);
   if (requestType == RequestType.UNKNOWN) {
-    System.err.println("Unknown request type");
+    handleUnknownRequest(request,response);
   }
  else   if (requestType == RequestType.DUMMY) {
     ((ResourceResponse)response).setContentType("text/html");
@@ -64,30 +64,7 @@
           endApplication(request,response,application);
           return;
         }
-        Window window=application.getMainWindow();
-        if (window == null) {
-          throw new PortletException(ERROR_NO_WINDOW_FOUND);
-        }
-        if (window.getTerminal() == null) {
-          window.setTerminal(applicationContext.getBrowser());
-        }
-        final Map<String,String[]> parameters=request.getParameterMap();
-        if (window != null && parameters != null) {
-          window.handleParameters(parameters);
-        }
-        if (requestType == RequestType.APPLICATION_RESOURCE) {
-          handleURI(applicationManager,window,(ResourceRequest)request,(ResourceResponse)response);
-        }
- else         if (requestType == RequestType.RENDER) {
-          writeAjaxPage((RenderRequest)request,(RenderResponse)response,window,application);
-        }
- else         if (requestType == RequestType.EVENT) {
-        }
- else         if (requestType == RequestType.ACTION) {
-        }
- else {
-          throw new IllegalStateException("handleRequest() without anything to do - should never happen!");
-        }
+        handleOtherRequest(request,response,requestType,application,applicationContext,applicationManager);
       }
     }
  catch (    final SessionExpiredException e) {
