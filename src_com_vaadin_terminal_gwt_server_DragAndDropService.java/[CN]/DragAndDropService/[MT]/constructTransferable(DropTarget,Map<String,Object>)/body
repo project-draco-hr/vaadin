@@ -1,33 +1,16 @@
 {
   int eventId=(Integer)variables.get("eventId");
-  if (currentEventId != eventId) {
-    transferable=null;
-  }
   currentEventId=eventId;
   final Component sourceComponent=(Component)variables.get("component");
   variables=(Map<String,Object>)variables.get("tra");
+  Transferable transferable=null;
   if (sourceComponent != null && sourceComponent instanceof DragSource) {
-    transferable=((DragSource)sourceComponent).getTransferable(transferable,variables);
+    transferable=((DragSource)sourceComponent).getTransferable(variables);
   }
  else {
     if (transferable == null) {
       if (sourceComponent != null) {
-        transferable=new ComponentTransferable(){
-          private Map<String,Object> td=new HashMap<String,Object>();
-          public Component getSourceComponent(){
-            return sourceComponent;
-          }
-          public Object getData(          String dataFlawor){
-            return td.get(dataFlawor);
-          }
-          public void setData(          String dataFlawor,          Object value){
-            td.put(dataFlawor,value);
-          }
-          public Collection<String> getDataFlawors(){
-            return td.keySet();
-          }
-        }
-;
+        transferable=new ComponentTransferable(sourceComponent,variables);
       }
  else {
         transferable=new Transferable(){
@@ -45,9 +28,6 @@
 ;
       }
     }
-  }
-  for (  String key : variables.keySet()) {
-    transferable.setData(key,variables.get(key));
   }
   return transferable;
 }

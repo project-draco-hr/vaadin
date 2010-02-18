@@ -1,0 +1,19 @@
+{
+  if (needsServerSideCheck(drag,configuration)) {
+    VDragEventServerCallback acceptCallback=new VDragEventServerCallback(){
+      public void handleResponse(      boolean accepted,      UIDL response){
+        if (accepted) {
+          callback.accepted(drag);
+        }
+      }
+    }
+;
+    VDragAndDropManager.get().visitServer(acceptCallback);
+  }
+ else {
+    boolean validates=validates(drag,configuration);
+    if (validates) {
+      callback.accepted(drag);
+    }
+  }
+}
