@@ -7,27 +7,8 @@
   if (sourceComponent != null && sourceComponent instanceof DragSource) {
     transferable=((DragSource)sourceComponent).getTransferable(variables);
   }
- else {
-    if (transferable == null) {
-      if (sourceComponent != null) {
-        transferable=new ComponentTransferable(sourceComponent,variables);
-      }
- else {
-        transferable=new Transferable(){
-          private Map<String,Object> td=new HashMap<String,Object>();
-          public Object getData(          String dataFlawor){
-            return td.get(dataFlawor);
-          }
-          public void setData(          String dataFlawor,          Object value){
-            td.put(dataFlawor,value);
-          }
-          public Collection<String> getDataFlawors(){
-            return td.keySet();
-          }
-        }
-;
-      }
-    }
+  if (transferable == null) {
+    transferable=new TransferableImpl(sourceComponent,variables);
   }
   return transferable;
 }

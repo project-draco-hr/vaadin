@@ -14,10 +14,15 @@
   tree3=new Tree("Tree with lazy loading criteria, of first server visit caches accept rules for all captions");
   tree3.addItem("Drag on me");
   tree3.addItem("Or me");
-  final AcceptCriterion crit=new Tree.TreeDropCriterion(){
-    @Override protected Set<Object> getAllowedItemIds(    DragAndDropEvent dragEvent,    Tree tree){
-      HashSet<Object> hashSet=new HashSet<Object>(tree.getItemIds());
-      return hashSet;
+  final AcceptCriterion crit=new ServerSideCriterion(){
+    public boolean accepts(    DragAndDropEvent dragEvent){
+      TreeDropDetails dropTargetData=(TreeDropDetails)dragEvent.getDropTargetData();
+      Object itemIdOver=dropTargetData.getItemIdOver();
+      int i=r.nextInt();
+      if (i % 2 == 0) {
+        return true;
+      }
+      return false;
     }
   }
 ;
