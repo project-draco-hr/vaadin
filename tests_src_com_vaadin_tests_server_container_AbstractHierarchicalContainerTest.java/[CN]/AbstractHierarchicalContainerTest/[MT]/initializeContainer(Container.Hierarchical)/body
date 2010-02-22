@@ -1,0 +1,42 @@
+{
+  container.removeAllItems();
+  Object[] propertyIds=container.getContainerPropertyIds().toArray();
+  for (  Object propertyId : propertyIds) {
+    container.removeContainerProperty(propertyId);
+  }
+  container.addContainerProperty(PROP1,String.class,"");
+  container.addContainerProperty(PROP2,String.class,null);
+  container.addContainerProperty(PROP3,Integer.class,null);
+  for (int i=0; i < sampleData.length; i++) {
+    String id=sampleData[i];
+    String paths[]=id.split("\\.");
+    String path=paths[0];
+    if (container.addItem(path) != null) {
+      assertTrue(container.setChildrenAllowed(path,false));
+      Item item=container.getItem(path);
+      item.getItemProperty(PROP1).setValue(path);
+      item.getItemProperty(PROP2).setValue(reverse(path));
+      item.getItemProperty(PROP3).setValue(1);
+    }
+    for (int j=1; j < paths.length; j++) {
+      String parent=path;
+      path=path + "." + paths[j];
+      if (container.addItem(path) != null) {
+        assertTrue(container.setChildrenAllowed(path,false));
+        Item item=container.getItem(path);
+        item.getItemProperty(PROP1).setValue(path);
+        item.getItemProperty(PROP2).setValue(reverse(path));
+        item.getItemProperty(PROP3).setValue(1);
+      }
+      assertTrue(container.setChildrenAllowed(parent,true));
+      assertTrue("Failed to set " + parent + " as parent for "+ path,container.setParent(path,parent));
+    }
+    Item item=container.getItem(id);
+    assertNotNull(item);
+    String parent=id.substring(0,id.lastIndexOf('.'));
+    assertTrue(container.setParent(id,parent));
+    item.getItemProperty(PROP1).setValue(sampleData[i]);
+    item.getItemProperty(PROP2).setValue(reverse(sampleData[i]));
+    item.getItemProperty(PROP3).setValue(i % 2);
+  }
+}

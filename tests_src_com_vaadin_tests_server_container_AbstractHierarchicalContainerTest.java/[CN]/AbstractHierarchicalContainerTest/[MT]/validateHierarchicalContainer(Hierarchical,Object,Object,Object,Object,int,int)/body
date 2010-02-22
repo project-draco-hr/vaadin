@@ -1,0 +1,23 @@
+{
+  validateContainer(container,expectedFirstItemId,expectedLastItemId,itemIdInSet,itemIdNotInSet,expectedSize);
+  Collection<?> rootIds=container.rootItemIds();
+  assertEquals(expectedRootSize,rootIds.size());
+  for (  Object rootId : rootIds) {
+    assertTrue(container.containsId(rootId));
+    assertNull(container.getParent(rootId));
+    assertTrue(container.isRoot(rootId));
+    assertTrue(container.areChildrenAllowed(rootId));
+    Collection<?> children=container.getChildren(rootId);
+    assertNotNull(rootId + " should have children",children);
+    assertTrue(rootId + " should have children",(children.size() > 0));
+    for (    Object childId : children) {
+      assertEquals(container.getParent(childId),rootId);
+    }
+  }
+  assertFalse(container.isRoot(itemIdNotInSet));
+  assertFalse(container.hasChildren(itemIdNotInSet));
+  assertFalse(container.areChildrenAllowed(itemIdNotInSet));
+  assertFalse(container.removeItem(itemIdNotInSet));
+  assertEquals(countNodes(container),expectedSize);
+  validateHierarchy(container);
+}
