@@ -16,7 +16,7 @@
   tree3.addItem("Or me");
   final AcceptCriterion crit=new ServerSideCriterion(){
     public boolean accepts(    DragAndDropEvent dragEvent){
-      TreeDropDetails dropTargetData=(TreeDropDetails)dragEvent.getDropTargetData();
+      TreeDropTargetDetails dropTargetData=(TreeDropTargetDetails)dragEvent.getDropTargetDetails();
       Object itemIdOver=dropTargetData.getItemIdOver();
       int i=r.nextInt();
       if (i % 2 == 0) {
@@ -34,7 +34,7 @@
         data="-no Text data flawor-";
       }
       tree3.addItem(data);
-      AbstractSelect.AbstractSelectDropDetails dropTargetData=(AbstractSelect.AbstractSelectDropDetails)dropEvent.getDropTargetData();
+      AbstractSelect.AbstractSelectDropTargetDetails dropTargetData=(AbstractSelect.AbstractSelectDropTargetDetails)dropEvent.getDropTargetDetails();
       tree3.setParent(data,dropTargetData.getItemIdOver());
     }
     public AcceptCriterion getAcceptCriterion(){
@@ -45,8 +45,8 @@
   addComponent(tree3);
   table.setDragMode(Table.DragModes.ROWS);
   OverTreeNode onNode=new OverTreeNode();
-  ComponentFilter fromTable=new ComponentFilter(table);
-  ComponentFilter fromTree=new ComponentFilter(tree1);
+  IsDragSource fromTable=new IsDragSource(table);
+  IsDragSource fromTree=new IsDragSource(tree1);
   final Or fromTree1OrTable=new Or(fromTable,fromTree);
   final And and=new And(fromTree1OrTable,onNode);
   DropHandler dropHandler=new DropHandler(){
@@ -61,7 +61,7 @@
         sourceContainer.removeItem(itemId);
         itemId=name;
       }
-      AbstractSelectDropDetails details=(AbstractSelectDropDetails)event.getDropTargetData();
+      AbstractSelectDropTargetDetails details=(AbstractSelectDropTargetDetails)event.getDropTargetDetails();
       Object idOver=details.getItemIdOver();
       tree1.setParent(itemId,idOver);
     }
@@ -73,7 +73,7 @@
   tree1.setDropHandler(dropHandler);
   dropHandler=new DropHandler(){
     public void drop(    DragAndDropEvent event){
-      AbstractSelectDropDetails details=(AbstractSelectDropDetails)event.getDropTargetData();
+      AbstractSelectDropTargetDetails details=(AbstractSelectDropTargetDetails)event.getDropTargetDetails();
       Transferable transferable=event.getTransferable();
       if (transferable instanceof DataBoundTransferable) {
         DataBoundTransferable tr=(DataBoundTransferable)transferable;
@@ -104,7 +104,7 @@
       }
     }
     public AcceptCriterion getAcceptCriterion(){
-      return IsDatabound.get();
+      return IsDataBound.get();
     }
   }
 ;
