@@ -4,9 +4,10 @@
   for (  Object propertyId : propertyIds) {
     container.removeContainerProperty(propertyId);
   }
-  container.addContainerProperty(PROP1,String.class,"");
-  container.addContainerProperty(PROP2,String.class,null);
-  container.addContainerProperty(PROP3,Integer.class,null);
+  container.addContainerProperty(FULLY_QUALIFIED_NAME,String.class,"");
+  container.addContainerProperty(SIMPLE_NAME,String.class,"");
+  container.addContainerProperty(REVERSE_FULLY_QUALIFIED_NAME,String.class,null);
+  container.addContainerProperty(ID_NUMBER,Integer.class,null);
   for (int i=0; i < sampleData.length; i++) {
     String id=sampleData[i];
     String paths[]=id.split("\\.");
@@ -14,9 +15,10 @@
     if (container.addItem(path) != null) {
       assertTrue(container.setChildrenAllowed(path,false));
       Item item=container.getItem(path);
-      item.getItemProperty(PROP1).setValue(path);
-      item.getItemProperty(PROP2).setValue(reverse(path));
-      item.getItemProperty(PROP3).setValue(1);
+      item.getItemProperty(FULLY_QUALIFIED_NAME).setValue(path);
+      item.getItemProperty(SIMPLE_NAME).setValue(getSimpleName(path));
+      item.getItemProperty(REVERSE_FULLY_QUALIFIED_NAME).setValue(reverse(path));
+      item.getItemProperty(ID_NUMBER).setValue(1);
     }
     for (int j=1; j < paths.length; j++) {
       String parent=path;
@@ -24,9 +26,10 @@
       if (container.addItem(path) != null) {
         assertTrue(container.setChildrenAllowed(path,false));
         Item item=container.getItem(path);
-        item.getItemProperty(PROP1).setValue(path);
-        item.getItemProperty(PROP2).setValue(reverse(path));
-        item.getItemProperty(PROP3).setValue(1);
+        item.getItemProperty(FULLY_QUALIFIED_NAME).setValue(path);
+        item.getItemProperty(SIMPLE_NAME).setValue(getSimpleName(path));
+        item.getItemProperty(REVERSE_FULLY_QUALIFIED_NAME).setValue(reverse(path));
+        item.getItemProperty(ID_NUMBER).setValue(1);
       }
       assertTrue(container.setChildrenAllowed(parent,true));
       assertTrue("Failed to set " + parent + " as parent for "+ path,container.setParent(path,parent));
@@ -35,8 +38,9 @@
     assertNotNull(item);
     String parent=id.substring(0,id.lastIndexOf('.'));
     assertTrue(container.setParent(id,parent));
-    item.getItemProperty(PROP1).setValue(sampleData[i]);
-    item.getItemProperty(PROP2).setValue(reverse(sampleData[i]));
-    item.getItemProperty(PROP3).setValue(i % 2);
+    item.getItemProperty(FULLY_QUALIFIED_NAME).setValue(sampleData[i]);
+    item.getItemProperty(SIMPLE_NAME).setValue(getSimpleName(sampleData[i]));
+    item.getItemProperty(REVERSE_FULLY_QUALIFIED_NAME).setValue(reverse(sampleData[i]));
+    item.getItemProperty(ID_NUMBER).setValue(i % 2);
   }
 }

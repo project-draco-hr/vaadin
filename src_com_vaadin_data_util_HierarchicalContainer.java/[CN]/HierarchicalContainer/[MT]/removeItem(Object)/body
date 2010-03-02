@@ -1,15 +1,27 @@
 {
   final boolean success=super.removeItem(itemId);
   if (success) {
-    if (isRoot(itemId)) {
-      roots.remove(itemId);
+    if (roots.remove(itemId)) {
+      if (filteredRoots != null) {
+        filteredRoots.remove(itemId);
+      }
     }
-    children.remove(itemId);
-    final Object p=parent.get(itemId);
-    if (p != null) {
-      final LinkedList c=children.get(p);
+    if (children.remove(itemId) != null) {
+      if (filteredChildren != null) {
+        filteredChildren.remove(itemId);
+      }
+    }
+    final Object parentItemId=parent.get(itemId);
+    if (parentItemId != null) {
+      final LinkedList<Object> c=children.get(parentItemId);
       if (c != null) {
         c.remove(itemId);
+        if (filteredChildren != null) {
+          LinkedList<Object> f=filteredChildren.get(parentItemId);
+          if (f != null) {
+            f.remove(parentItemId);
+          }
+        }
       }
     }
     parent.remove(itemId);

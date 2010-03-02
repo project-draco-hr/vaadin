@@ -7,14 +7,28 @@
     return true;
   }
   if (newParentId == null) {
-    final LinkedList l=children.get(itemId);
+    final LinkedList<Object> l=children.get(itemId);
     if (l != null) {
       l.remove(itemId);
       if (l.isEmpty()) {
         children.remove(itemId);
       }
+      if (filteredChildren != null) {
+        LinkedList<Object> f=filteredChildren.get(itemId);
+        if (f != null) {
+          f.remove(itemId);
+          if (f.isEmpty()) {
+            filteredChildren.remove(f);
+          }
+        }
+      }
     }
     roots.add(itemId);
+    if (filteredRoots != null) {
+      if (passesFilters(itemId)) {
+        filteredRoots.add(itemId);
+      }
+    }
     parent.remove(itemId);
     return true;
   }
@@ -29,21 +43,37 @@
     return false;
   }
   parent.put(itemId,newParentId);
-  LinkedList pcl=children.get(newParentId);
+  LinkedList<Object> pcl=children.get(newParentId);
   if (pcl == null) {
-    pcl=new LinkedList();
+    pcl=new LinkedList<Object>();
     children.put(newParentId,pcl);
   }
   pcl.add(itemId);
+  if (filteredChildren != null) {
+    LinkedList<Object> f=filteredChildren.get(newParentId);
+    if (f == null) {
+      f=new LinkedList<Object>();
+      filteredChildren.put(newParentId,f);
+    }
+  }
   if (oldParentId == null) {
     roots.remove(itemId);
   }
  else {
-    final LinkedList l=children.get(oldParentId);
+    final LinkedList<Object> l=children.get(oldParentId);
     if (l != null) {
       l.remove(itemId);
       if (l.isEmpty()) {
         children.remove(oldParentId);
+      }
+    }
+    if (filteredChildren != null) {
+      LinkedList<Object> f=filteredChildren.get(oldParentId);
+      if (f != null) {
+        f.remove(itemId);
+        if (f.isEmpty()) {
+          filteredChildren.remove(oldParentId);
+        }
       }
     }
   }

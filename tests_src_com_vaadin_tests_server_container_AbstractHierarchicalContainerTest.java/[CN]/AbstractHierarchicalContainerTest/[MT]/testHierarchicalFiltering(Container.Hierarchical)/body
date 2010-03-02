@@ -1,13 +1,22 @@
 {
   Container.Filterable filterable=(Container.Filterable)container;
   initializeContainer(container);
-  filterable.addContainerFilter(PROP1,"ab",false,false);
-  validateHierarchicalContainer(container,"com.vaadin.data.BufferedValidatable","com.vaadin.ui.TabSheet","com.vaadin.terminal.gwt.client.Focusable","blah",20,0);
+  filterable.addContainerFilter(FULLY_QUALIFIED_NAME,"ab",false,false);
+  int expectedSize=20;
+  int expectedTraversalSize=0;
+  int expectedRoots=0;
+  validateHierarchicalContainer(container,"com.vaadin.data.BufferedValidatable","com.vaadin.ui.TabSheet","com.vaadin.terminal.gwt.client.Focusable","blah",true,expectedSize,expectedTraversalSize,expectedRoots);
   filterable.removeAllContainerFilters();
-  filterable.addContainerFilter(PROP3,"1",false,false);
+  filterable.addContainerFilter(ID_NUMBER,"1",false,false);
   int packages=21;
   int other=sampleData.length / 2;
-  validateHierarchicalContainer(container,"com","com.vaadin.util","com.vaadin.data.util.IndexedContainer","com.vaadin.data.util.ObjectProperty",packages + other,0);
-  filterable.addContainerFilter(PROP1,"m",false,false);
-  validateHierarchicalContainer(container,"com.vaadin.data.Buffered","com.vaadin.terminal.gwt.server.ComponentSizeValidator","com.vaadin.data.util.IndexedContainer","com.vaadin.terminal.gwt.client.ui.VUriFragmentUtility",packages + other,0);
+  expectedSize=packages + other;
+  expectedRoots=1;
+  expectedTraversalSize=expectedSize;
+  validateHierarchicalContainer(container,"com","com.vaadin.util","com.vaadin.data.util.IndexedContainer","blah",true,expectedSize,expectedTraversalSize,expectedRoots);
+  filterable.addContainerFilter(SIMPLE_NAME,"m",false,false);
+  expectedSize=27;
+  expectedRoots=1;
+  expectedTraversalSize=1;
+  validateHierarchicalContainer(container,"com","com.vaadin.ui.UriFragmentUtility","com.vaadin.terminal.gwt.client.ui.TreeImages","blah",false,expectedSize,expectedTraversalSize,expectedRoots);
 }
