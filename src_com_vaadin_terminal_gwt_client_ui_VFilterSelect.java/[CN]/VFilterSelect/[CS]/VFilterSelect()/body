@@ -4,6 +4,14 @@
     public void onLoad(    LoadEvent event){
       updateRootWidth();
       updateSelectedIconPosition();
+      if (BrowserInfo.get().isIE()) {
+        int tbWidth=Util.getRequiredWidth(tb);
+        int openerWidth=Util.getRequiredWidth(popupOpener);
+        int iconWidth=selectedItemIcon.isAttached() ? Util.measureMarginLeft(tb.getElement()) - Util.measureMarginLeft(selectedItemIcon.getElement()) : 0;
+        int w=tbWidth + openerWidth + iconWidth;
+        tb.setWidth((tbWidth - getTextboxPadding()) + "px");
+        setTextboxWidth(w);
+      }
     }
   }
 );
