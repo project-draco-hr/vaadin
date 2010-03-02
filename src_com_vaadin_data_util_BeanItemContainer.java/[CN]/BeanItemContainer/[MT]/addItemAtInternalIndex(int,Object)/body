@@ -1,19 +1,7 @@
 {
-  if (allItems.contains(newItemId)) {
-    return null;
-  }
-  if (type.isAssignableFrom(newItemId.getClass())) {
-    BT pojo=(BT)newItemId;
-    allItems.add(index,pojo);
-    BeanItem<BT> beanItem=new BeanItem<BT>(pojo,model);
-    beanToItem.put(pojo,beanItem);
-    for (    Filter filter : filters) {
-      addValueChangeListener(beanItem,filter.propertyId);
-    }
+  BeanItem<BT> beanItem=internalAddAt(index,(BT)newItemId);
+  if (beanItem != null) {
     filterAll();
-    return beanItem;
   }
- else {
-    return null;
-  }
+  return beanItem;
 }
