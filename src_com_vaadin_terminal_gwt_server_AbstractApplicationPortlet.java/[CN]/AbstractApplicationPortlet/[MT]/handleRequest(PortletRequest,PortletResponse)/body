@@ -8,8 +8,7 @@
     final OutputStream out=((ResourceResponse)response).getPortletOutputStream();
     final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
     outWriter.print("<html><body>dummy page</body></html>");
-    outWriter.flush();
-    out.close();
+    outWriter.close();
   }
  else   if (requestType == RequestType.STATIC_FILE) {
     serveStaticResources((ResourceRequest)request,(ResourceResponse)response);
@@ -39,56 +38,70 @@
       startApplication(request,application,applicationContext);
       applicationContext.startTransaction(application,request);
       transactionStarted=true;
-      if (request instanceof RenderRequest) {
-        applicationContext.firePortletRenderRequest(application,(RenderRequest)request,(RenderResponse)response);
-      }
- else       if (request instanceof ActionRequest) {
-        applicationContext.firePortletActionRequest(application,(ActionRequest)request,(ActionResponse)response);
-      }
- else       if (request instanceof EventRequest) {
-        applicationContext.firePortletEventRequest(application,(EventRequest)request,(EventResponse)response);
-      }
- else       if (request instanceof ResourceRequest) {
-        applicationContext.firePortletResourceRequest(application,(ResourceRequest)request,(ResourceResponse)response);
-      }
-      if (requestType == RequestType.FILE_UPLOAD) {
-        applicationManager.handleFileUpload((ActionRequest)request,(ActionResponse)response);
-        return;
-      }
- else       if (requestType == RequestType.UIDL) {
-        applicationManager.handleUidlRequest((ResourceRequest)request,(ResourceResponse)response,this);
-        return;
-      }
- else {
-        if (!application.isRunning()) {
-          endApplication(request,response,application);
-          return;
-        }
-        handleOtherRequest(request,response,requestType,application,applicationContext,applicationManager);
-      }
-    }
- catch (    final SessionExpiredException e) {
-      System.err.println("Session has expired");
-      e.printStackTrace(System.err);
-    }
-catch (    final GeneralSecurityException e) {
-      System.err.println("General security exception, should never happen");
-      e.printStackTrace(System.err);
-    }
-catch (    final Throwable e) {
-      handleServiceException(request,response,application,e);
-    }
- finally {
-      try {
-        if (transactionStarted) {
-          ((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
-        }
-      }
-  finally {
-        if (requestStarted) {
-          ((PortletRequestListener)application).onRequestEnd(request,response);
-        }
-      }
-    }
+      Window window=null;
+synchronized (application) {
+        if (application.isRunning()) {
+switch (requestType) {
+case FILE_UPLOAD:
+            break;
+case APPLICATION_RESOURCE:
+          window=application.getMainWindow();
+        break;
+default :
+      window=applicationManager.getApplicationWindow(request,this,application,null);
   }
+}
+}
+if (request instanceof RenderRequest) {
+applicationContext.firePortletRenderRequest(application,window,(RenderRequest)request,(RenderResponse)response);
+}
+ else if (request instanceof ActionRequest) {
+applicationContext.firePortletActionRequest(application,window,(ActionRequest)request,(ActionResponse)response);
+}
+ else if (request instanceof EventRequest) {
+applicationContext.firePortletEventRequest(application,window,(EventRequest)request,(EventResponse)response);
+}
+ else if (request instanceof ResourceRequest) {
+applicationContext.firePortletResourceRequest(application,window,(ResourceRequest)request,(ResourceResponse)response);
+}
+if (requestType == RequestType.FILE_UPLOAD) {
+applicationManager.handleFileUpload((ActionRequest)request,(ActionResponse)response);
+return;
+}
+ else if (requestType == RequestType.UIDL) {
+applicationManager.handleUidlRequest((ResourceRequest)request,(ResourceResponse)response,this,window);
+return;
+}
+ else {
+if (!application.isRunning()) {
+  endApplication(request,response,application);
+  return;
+}
+handleOtherRequest(request,response,requestType,application,window,applicationContext,applicationManager);
+}
+}
+ catch (final SessionExpiredException e) {
+System.err.println("Session has expired");
+e.printStackTrace(System.err);
+}
+catch (final GeneralSecurityException e) {
+System.err.println("General security exception, should never happen");
+e.printStackTrace(System.err);
+}
+catch (final Throwable e) {
+handleServiceException(request,response,application,e);
+}
+ finally {
+try {
+if (transactionStarted) {
+  ((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
+}
+}
+  finally {
+if (requestStarted) {
+  ((PortletRequestListener)application).onRequestEnd(request,response);
+}
+}
+}
+}
 }
