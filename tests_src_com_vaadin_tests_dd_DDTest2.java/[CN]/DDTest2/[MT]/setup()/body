@@ -1,5 +1,7 @@
 {
   Window w=getLayout().getWindow();
+  tree1.setDragMode(TreeDragMode.NODE);
+  tree2.setDragMode(TreeDragMode.NODE);
   hl.addComponent(tree1);
   hl.addComponent(table);
   hl.addComponent(tree2);
@@ -12,6 +14,7 @@
   populateTable();
   addComponent(hl);
   tree3=new Tree("Tree with lazy loading criteria, of first server visit caches accept rules for all captions");
+  tree3.setDragMode(TreeDragMode.NODE);
   tree3.addItem("Drag on me");
   tree3.addItem("Or me");
   final AcceptCriterion crit=new ServerSideCriterion(){
@@ -44,10 +47,11 @@
 );
   addComponent(tree3);
   table.setDragMode(Table.DragModes.ROWS);
-  OverTreeNode onNode=new OverTreeNode();
-  IsDragSource fromTable=new IsDragSource(table);
-  IsDragSource fromTree=new IsDragSource(tree1);
+  OverFolderNode onNode=new OverFolderNode();
+  DragSourceIs fromTable=new DragSourceIs(table);
+  DragSourceIs fromTree=new DragSourceIs(tree1);
   final Or fromTree1OrTable=new Or(fromTable,fromTree);
+  DragSourceIs treeOrTable=new DragSourceIs(table,tree1);
   final And and=new And(fromTree1OrTable,onNode);
   DropHandler dropHandler=new DropHandler(){
     public void drop(    DragAndDropEvent event){

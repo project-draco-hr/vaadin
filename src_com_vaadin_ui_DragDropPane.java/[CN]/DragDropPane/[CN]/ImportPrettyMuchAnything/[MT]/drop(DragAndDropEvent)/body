@@ -1,18 +1,17 @@
 {
   DragDropPane pane=(DragDropPane)event.getDropTargetDetails().getTarget();
   DragEventDetails ed=(DragEventDetails)event.getDropTargetDetails();
-  Transferable transferable=event.getTransferable();
-  if (transferable instanceof TransferableImpl) {
-    TransferableImpl ctr=(TransferableImpl)transferable;
+  Transferable ctr=event.getTransferable();
+  if (ctr.getSourceComponent() != null) {
     Component component=(Component)ctr.getData("component");
     if (component == null) {
       component=ctr.getSourceComponent();
     }
     if (component.getParent() != pane) {
-      if (transferable instanceof DataBoundTransferable) {
+      if (ctr instanceof DataBoundTransferable) {
         Label l=new Label();
         l.setSizeUndefined();
-        l.setValue("ItemId : " + ((DataBoundTransferable)transferable).getItemId());
+        l.setValue("ItemId : " + ((DataBoundTransferable)ctr).getItemId());
         pane.addComponent(l);
         component=l;
       }
@@ -42,8 +41,8 @@
     }
   }
  else {
-    String object=(String)transferable.getData("text/plain");
-    String content=(String)transferable.getData("fileContents");
+    String object=(String)ctr.getData("text/plain");
+    String content=(String)ctr.getData("fileContents");
     Label l=new Label();
     l.setCaption("Generated from HTML5 drag:");
     if (object != null) {

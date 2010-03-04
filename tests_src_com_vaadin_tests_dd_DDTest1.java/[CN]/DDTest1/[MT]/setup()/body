@@ -20,13 +20,13 @@
     private final AcceptCriterion crit=new ServerSideCriterion(){
       public boolean accepts(      DragAndDropEvent dragEvent){
         Transferable transferable=dragEvent.getTransferable();
-        if (transferable instanceof TransferableImpl) {
-          TransferableImpl ct=(TransferableImpl)transferable;
-          Component component=(Component)ct.getData("component");
-          if (component != null) {
-            if (component.toString() != null && component.toString().contains("Bar")) {
-              return true;
-            }
+        Component component=(Component)transferable.getData("component");
+        if (component == null) {
+          component=transferable.getSourceComponent();
+        }
+        if (component != null) {
+          if (component.toString() != null && component.toString().contains("Bar")) {
+            return true;
           }
         }
         return false;
@@ -58,6 +58,7 @@
   t.addItem("Child");
   t.setParent("Child","Foo");
   t.setSizeFull();
+  t.setDragMode(TreeDragMode.NODE);
   DropHandler itemSorter=new DropHandler(){
     private void populateSubTree(    HierarchicalContainer idx,    HierarchicalContainer subtree,    Object itemId){
       Collection children=subtree.getChildren(itemId);
@@ -102,18 +103,19 @@
       }
     }
     public void drop(    DragAndDropEvent event){
-      AbstractSelectDropTargetDetails details=(AbstractSelectDropTargetDetails)event.getDropTargetDetails();
+      TreeDropTargetDetails details=(TreeDropTargetDetails)event.getDropTargetDetails();
       Transferable transferable=event.getTransferable();
       if (transferable instanceof DataBoundTransferable) {
         DataBoundTransferable transferrable2=(DataBoundTransferable)transferable;
         Object itemId=transferrable2.getItemId();
         Object itemIdOver=details.getItemIdOver();
-        Location dropLocation=details.getDropLocation();
-        if (dropLocation == Location.MIDDLE) {
+        Object itemIdInto=details.getItemIdInto();
+        VerticalDropLocation dropLocation=details.getDropLocation();
+        if (dropLocation == VerticalDropLocation.MIDDLE) {
           t.setParent(itemId,itemIdOver);
           return;
         }
- else         if (Location.TOP == dropLocation) {
+ else         if (VerticalDropLocation.TOP == dropLocation) {
           itemIdOver=idx.prevItemId(itemIdOver);
         }
         if (itemId.equals(itemIdOver)) {

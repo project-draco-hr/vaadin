@@ -7,14 +7,20 @@
       }
       @Override public void dragOver(      final VDragEvent currentDrag){
         final Object oldIdOver=currentDrag.getDropDetails().get("itemIdOver");
-        final String oldDetail=(String)currentDrag.getDropDetails().get("detail");
+        final VerticalDropLocation oldDetail=(VerticalDropLocation)currentDrag.getDropDetails().get("detail");
         updateTreeRelatedDragData(currentDrag);
-        final String detail=getDropDetail(currentDrag.getCurrentGwtEvent());
+        final VerticalDropLocation detail=getDropDetail(currentDrag.getCurrentGwtEvent());
         boolean nodeHasChanged=(currentMouseOverKey != null && currentMouseOverKey != oldIdOver) || (currentMouseOverKey == null && oldIdOver != null);
-        boolean detailHasChanded=(detail != null && !detail.equals(oldDetail)) || (detail == null && oldDetail != null);
+        boolean detailHasChanded=(detail != null && detail != oldDetail) || (detail == null && oldDetail != null);
         if (nodeHasChanged || detailHasChanded) {
           ApplicationConnection.getConsole().log("Change in Transferable " + currentMouseOverKey + " "+ detail);
           final String newKey=currentMouseOverKey;
+          if (oldIdOver != null && oldIdOver != currentMouseOverKey) {
+            TreeNode treeNode=keyToNode.get(oldIdOver);
+            if (treeNode != null) {
+              treeNode.emphasis(null);
+            }
+          }
           validate(new VAcceptCallback(){
             public void accepted(            VDragEvent event){
               if (newKey != null) {
@@ -23,12 +29,6 @@
             }
           }
 ,currentDrag);
-          if (oldIdOver != null && oldIdOver != currentMouseOverKey) {
-            TreeNode treeNode=keyToNode.get(oldIdOver);
-            if (treeNode != null) {
-              treeNode.emphasis(null);
-            }
-          }
         }
       }
       @Override public void dragLeave(      VDragEvent drag){

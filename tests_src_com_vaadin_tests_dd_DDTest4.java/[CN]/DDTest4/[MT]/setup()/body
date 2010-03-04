@@ -1,16 +1,19 @@
 {
   Window w=getLayout().getWindow();
+  TestUtils.injectCSS(w,".v-table-row-drag-middle .v-table-cell-content {" + "        background-color: inherit ; border-bottom: 1px solid cyan;" + "}");
   hl.addComponent(table);
   hl.setWidth("100%");
   hl.setSpacing(true);
   hl.setExpandRatio(table,1);
   table.setWidth("100%");
   table.setPageLength(10);
+  table.setRowHeaderMode(Table.ROW_HEADER_MODE_ID);
+  table.setSelectable(true);
   populateTable();
   addComponent(hl);
   table.setDragMode(Table.DragModes.ROWS);
   table.setDropHandler(new DropHandler(){
-    AcceptCriterion crit=new IsDragSource(table);
+    AcceptCriterion crit=new DragSourceIs(table);
     public AcceptCriterion getAcceptCriterion(){
       return crit;
     }
@@ -26,9 +29,12 @@
       IndexedContainer clone=null;
       try {
         clone=(IndexedContainer)containerDataSource.clone();
-        int newIndex=containerDataSource.indexOfId(itemIdOver);
-        if (dropTargetData.getDropLocation() != Location.TOP) {
+        int newIndex=containerDataSource.indexOfId(itemIdOver) - 1;
+        if (dropTargetData.getDropLocation() != VerticalDropLocation.TOP) {
           newIndex++;
+        }
+        if (newIndex < 0) {
+          newIndex=0;
         }
         containerDataSource.removeItem(itemId);
         Item newItem=containerDataSource.addItemAt(newIndex,itemId);
