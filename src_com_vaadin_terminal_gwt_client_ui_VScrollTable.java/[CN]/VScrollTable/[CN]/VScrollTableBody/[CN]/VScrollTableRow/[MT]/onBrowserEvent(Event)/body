@@ -7,14 +7,30 @@ case Event.ONDBLCLICK:
         handleClickEvent(event,targetTdOrTr);
       break;
 case Event.ONMOUSEUP:
-    handleClickEvent(event,targetTdOrTr);
-  if (event.getButton() == Event.BUTTON_LEFT && selectMode > Table.SELECT_MODE_NONE) {
-    toggleSelection();
-    client.updateVariable(paintableId,"selected",selectedRowKeys.toArray(new String[selectedRowKeys.size()]),immediate);
-  }
+    mDown=false;
+  handleClickEvent(event,targetTdOrTr);
+if (event.getButton() == Event.BUTTON_LEFT && selectMode > Table.SELECT_MODE_NONE) {
+  toggleSelection();
+  client.updateVariable(paintableId,"selected",selectedRowKeys.toArray(new String[selectedRowKeys.size()]),immediate);
+}
 break;
 case Event.ONCONTEXTMENU:
 showContextMenu(event);
+break;
+case Event.ONMOUSEDOWN:
+if (dragmode != 0) {
+mDown=true;
+VTransferable transferable=new VTransferable();
+transferable.setDragSource(VScrollTable.this);
+transferable.setData("itemId","" + rowKey);
+VDragEvent ev=VDragAndDropManager.get().startDrag(transferable,event,true);
+ev.createDragImage(getElement(),true);
+event.preventDefault();
+event.stopPropagation();
+}
+break;
+case Event.ONMOUSEOUT:
+mDown=false;
 break;
 default :
 break;

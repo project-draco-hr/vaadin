@@ -2,6 +2,9 @@
   if (getTabIndex() > 0) {
     target.addAttribute("tabindex",getTabIndex());
   }
+  if (dragMode != DragModes.NONE) {
+    target.addAttribute("dragmode",dragMode.ordinal());
+  }
   final Object[] colids=getVisibleColumns();
   final int cols=colids.length;
   final int first=getCurrentPageFirstItemIndex();
@@ -265,4 +268,7 @@
     }
   }
   target.endTag("visiblecolumns");
+  if (dropHandler != null) {
+    dropHandler.getAcceptCriterion().paint(target);
+  }
 }

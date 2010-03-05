@@ -1,0 +1,28 @@
+{
+  String base="v-tree-node-drag-";
+  UIObject.setStyleName(getElement(),base + "top",VerticalDropLocation.TOP == detail);
+  UIObject.setStyleName(getElement(),base + "bottom",VerticalDropLocation.BOTTOM == detail);
+  UIObject.setStyleName(getElement(),base + "center",VerticalDropLocation.MIDDLE == detail);
+  base="v-tree-node-caption-drag-";
+  UIObject.setStyleName(nodeCaptionDiv,base + "top",VerticalDropLocation.TOP == detail);
+  UIObject.setStyleName(nodeCaptionDiv,base + "bottom",VerticalDropLocation.BOTTOM == detail);
+  UIObject.setStyleName(nodeCaptionDiv,base + "center",VerticalDropLocation.MIDDLE == detail);
+  TreeNode folder=null;
+  TreeNode parentFolder=getParentNode();
+  if (isLeaf()) {
+    folder=parentFolder;
+  }
+ else {
+    if (detail == VerticalDropLocation.TOP) {
+      folder=parentFolder;
+    }
+ else {
+      folder=this;
+    }
+    setDragFolderStyleName(this,false);
+    setDragFolderStyleName(parentFolder,false);
+  }
+  if (folder != null) {
+    setDragFolderStyleName(folder,detail != null);
+  }
+}

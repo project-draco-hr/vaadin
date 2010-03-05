@@ -1,0 +1,13 @@
+{
+  DropHandler dropHandler=(dropTarget).getDropHandler();
+  if (dropHandler == null) {
+    System.err.println("DropTarget.getDropHandler() returned null for owner: " + dropTarget);
+    return;
+  }
+  Transferable transferable=constructTransferable(dropTarget,variables);
+  DropTargetDetails dropData=constructDragDropDetails(dropTarget,variables);
+  DragAndDropEvent dropEvent=new DragAndDropEvent(transferable,dropData);
+  if (dropHandler.getAcceptCriterion().accepts(dropEvent)) {
+    dropHandler.drop(dropEvent);
+  }
+}

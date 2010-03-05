@@ -1,0 +1,57 @@
+{
+  if (dropHandler == null) {
+    dropHandler=new VAbstractDropHandler(){
+      @Override public void dragEnter(      VDragEvent drag){
+      }
+      @Override protected void dragAccepted(      final VDragEvent drag){
+      }
+      @Override public void dragOver(      final VDragEvent currentDrag){
+        final Object oldIdOver=currentDrag.getDropDetails().get("itemIdOver");
+        final VerticalDropLocation oldDetail=(VerticalDropLocation)currentDrag.getDropDetails().get("detail");
+        updateTreeRelatedDragData(currentDrag);
+        final VerticalDropLocation detail=getDropDetail(currentDrag.getCurrentGwtEvent());
+        boolean nodeHasChanged=(currentMouseOverKey != null && currentMouseOverKey != oldIdOver) || (currentMouseOverKey == null && oldIdOver != null);
+        boolean detailHasChanded=(detail != null && detail != oldDetail) || (detail == null && oldDetail != null);
+        if (nodeHasChanged || detailHasChanded) {
+          ApplicationConnection.getConsole().log("Change in Transferable " + currentMouseOverKey + " "+ detail);
+          final String newKey=currentMouseOverKey;
+          if (oldIdOver != null && oldIdOver != currentMouseOverKey) {
+            TreeNode treeNode=keyToNode.get(oldIdOver);
+            if (treeNode != null) {
+              treeNode.emphasis(null);
+            }
+          }
+          validate(new VAcceptCallback(){
+            public void accepted(            VDragEvent event){
+              if (newKey != null) {
+                keyToNode.get(newKey).emphasis(detail);
+              }
+            }
+          }
+,currentDrag);
+        }
+      }
+      @Override public void dragLeave(      VDragEvent drag){
+        cleanUp();
+      }
+      private void cleanUp(){
+        if (currentMouseOverKey != null) {
+          keyToNode.get(currentMouseOverKey).emphasis(null);
+          currentMouseOverKey=null;
+        }
+      }
+      @Override public boolean drop(      VDragEvent drag){
+        cleanUp();
+        return super.drop(drag);
+      }
+      @Override public Paintable getPaintable(){
+        return VTree.this;
+      }
+      public ApplicationConnection getApplicationConnection(){
+        return client;
+      }
+    }
+;
+  }
+  dropHandler.updateAcceptRules(childUidl);
+}

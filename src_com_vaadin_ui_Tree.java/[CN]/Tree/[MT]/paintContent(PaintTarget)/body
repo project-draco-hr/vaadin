@@ -21,6 +21,9 @@
     if (isNullSelectionAllowed()) {
       target.addAttribute("nullselect",true);
     }
+    if (dragMode != TreeDragMode.NONE) {
+      target.addAttribute("dragMode",dragMode.ordinal());
+    }
   }
   final Set<Action> actionSet=new LinkedHashSet<Action>();
   LinkedList<String> selectedKeys=new LinkedList<String>();
@@ -129,5 +132,8 @@
     target.addVariable(this,"expand",new String[]{});
     target.addVariable(this,"collapse",new String[]{});
     target.addVariable(this,"newitem",new String[]{});
+    if (dropHandler != null) {
+      dropHandler.getAcceptCriterion().paint(target);
+    }
   }
 }

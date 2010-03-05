@@ -1,0 +1,33 @@
+{
+  Object parent2=getParent(itemId);
+  LinkedList<Object> childrenList;
+  if (parent2 == null) {
+    childrenList=roots;
+  }
+ else {
+    childrenList=children.get(parent2);
+  }
+  if (siblingId == null) {
+    childrenList.remove(itemId);
+    childrenList.addFirst(itemId);
+  }
+ else {
+    int oldIndex=childrenList.indexOf(itemId);
+    int indexOfSibling=childrenList.indexOf(siblingId);
+    if (indexOfSibling != -1 && oldIndex != -1) {
+      int newIndex;
+      if (oldIndex > indexOfSibling) {
+        newIndex=indexOfSibling + 1;
+      }
+ else {
+        newIndex=indexOfSibling;
+      }
+      childrenList.remove(oldIndex);
+      childrenList.add(newIndex,itemId);
+    }
+ else {
+      throw new IllegalArgumentException("Given identifiers no not have the same parent.");
+    }
+  }
+  fireContentsChange(-1);
+}

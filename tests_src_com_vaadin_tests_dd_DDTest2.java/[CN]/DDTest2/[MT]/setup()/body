@@ -1,0 +1,124 @@
+{
+  Window w=getLayout().getWindow();
+  tree1.setDragMode(TreeDragMode.NODE);
+  tree2.setDragMode(TreeDragMode.NODE);
+  hl.addComponent(tree1);
+  hl.addComponent(table);
+  hl.addComponent(tree2);
+  hl.setWidth("100%");
+  hl.setSpacing(true);
+  hl.setExpandRatio(table,1);
+  popuplateTrees();
+  table.setWidth("100%");
+  table.setPageLength(10);
+  populateTable();
+  addComponent(hl);
+  tree3=new Tree("Tree with lazy loading criteria, of first server visit caches accept rules for all captions");
+  tree3.setDragMode(TreeDragMode.NODE);
+  tree3.addItem("Drag on me");
+  tree3.addItem("Or me");
+  final AcceptCriterion crit=new ServerSideCriterion(){
+    public boolean accepts(    DragAndDropEvent dragEvent){
+      TreeDropTargetDetails dropTargetData=(TreeDropTargetDetails)dragEvent.getDropTargetDetails();
+      Object itemIdOver=dropTargetData.getItemIdOver();
+      int i=r.nextInt();
+      if (i % 2 == 0) {
+        return true;
+      }
+      return false;
+    }
+  }
+;
+  tree3.setDropHandler(new DropHandler(){
+    public void drop(    DragAndDropEvent dropEvent){
+      Transferable transferable=dropEvent.getTransferable();
+      String data=(String)transferable.getData("Text");
+      if (data == null) {
+        data="-no Text data flawor-";
+      }
+      tree3.addItem(data);
+      AbstractSelect.AbstractSelectDropTargetDetails dropTargetData=(AbstractSelect.AbstractSelectDropTargetDetails)dropEvent.getDropTargetDetails();
+      tree3.setParent(data,dropTargetData.getItemIdOver());
+    }
+    public AcceptCriterion getAcceptCriterion(){
+      return crit;
+    }
+  }
+);
+  addComponent(tree3);
+  table.setDragMode(Table.DragModes.ROWS);
+  OverFolderNode onNode=new OverFolderNode();
+  DragSourceIs fromTable=new DragSourceIs(table);
+  DragSourceIs fromTree=new DragSourceIs(tree1);
+  final Or fromTree1OrTable=new Or(fromTable,fromTree);
+  DragSourceIs treeOrTable=new DragSourceIs(table,tree1);
+  final And and=new And(fromTree1OrTable,onNode);
+  DropHandler dropHandler=new DropHandler(){
+    public void drop(    DragAndDropEvent event){
+      DataBoundTransferable tr=(DataBoundTransferable)event.getTransferable();
+      Object itemId=tr.getItemId();
+      Container sourceContainer=(Container)tr.getSourceComponent();
+      if (sourceContainer != tree1) {
+        String name=sourceContainer.getItem(itemId).getItemProperty("Name").toString();
+        tree1.addItem(name);
+        tree1.setChildrenAllowed(name,false);
+        sourceContainer.removeItem(itemId);
+        itemId=name;
+      }
+      AbstractSelectDropTargetDetails details=(AbstractSelectDropTargetDetails)event.getDropTargetDetails();
+      Object idOver=details.getItemIdOver();
+      tree1.setParent(itemId,idOver);
+    }
+    public AcceptCriterion getAcceptCriterion(){
+      return and;
+    }
+  }
+;
+  tree1.setDropHandler(dropHandler);
+  dropHandler=new DropHandler(){
+    public void drop(    DragAndDropEvent event){
+      AbstractSelectDropTargetDetails details=(AbstractSelectDropTargetDetails)event.getDropTargetDetails();
+      Transferable transferable=event.getTransferable();
+      if (transferable instanceof DataBoundTransferable) {
+        DataBoundTransferable tr=(DataBoundTransferable)transferable;
+        Object itemId=tree2.addItem();
+        tree2.setParent(itemId,details.getItemIdOver());
+        if (tr.getSourceComponent() == tree1) {
+          tree2.setItemCaption(itemId,(String)tr.getItemId());
+          copySubTree(tr.getItemId(),itemId);
+        }
+ else         if (tr.getSourceComponent() == table) {
+          String name=(String)table.getItem(tr.getItemId()).getItemProperty("Name").getValue();
+          tree2.setItemCaption(itemId,name);
+        }
+ else         if (tr.getSourceComponent() == tree2) {
+          tree2.setItemCaption(itemId,tree2.getItemCaption(tr.getItemId()));
+        }
+      }
+    }
+    private void copySubTree(    Object itemId,    Object itemIdTo){
+      Collection children=tree1.getChildren(itemId);
+      if (children != null) {
+        for (        Object childId : children) {
+          Object newItemId=tree2.addItem();
+          tree2.setItemCaption(newItemId,(String)childId);
+          tree2.setParent(newItemId,itemIdTo);
+          copySubTree(childId,newItemId);
+        }
+      }
+    }
+    public AcceptCriterion getAcceptCriterion(){
+      return IsDataBound.get();
+    }
+  }
+;
+  tree2.setDropHandler(dropHandler);
+  Window acceptAnyThing=new AcceptAnythingWindow();
+  Window acceptFromTree1viaServerCheck=new AcceptFromComponent(tree1);
+  w.addWindow(acceptAnyThing);
+  acceptAnyThing.setPositionY(450);
+  acceptAnyThing.setPositionX(150);
+  w.addWindow(acceptFromTree1viaServerCheck);
+  acceptFromTree1viaServerCheck.setPositionY(450);
+  acceptFromTree1viaServerCheck.setPositionX(450);
+}

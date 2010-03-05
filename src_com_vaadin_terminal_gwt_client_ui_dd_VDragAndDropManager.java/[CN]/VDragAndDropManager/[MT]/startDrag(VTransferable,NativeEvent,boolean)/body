@@ -1,0 +1,69 @@
+{
+  interruptDrag();
+  isStarted=false;
+  currentDrag=new VDragEvent(transferable,startEvent);
+  updateCurrentEvent(startEvent);
+  final Command startDrag=new Command(){
+    public void execute(){
+      isStarted=true;
+      VDropHandler dh=null;
+      if (startEvent != null) {
+        dh=findDragTarget((Element)currentDrag.currentGwtEvent.getEventTarget().cast());
+      }
+      if (dh != null) {
+        currentDropHandler=dh;
+        dh.dragEnter(currentDrag);
+      }
+      if (handleDragEvents) {
+        handlerRegistration=Event.addNativePreviewHandler(defaultDragAndDropEventHandler);
+        if (dragElement != null && dragElement.getParentElement() == null) {
+          lazyAttachDragElement.cancel();
+          lazyAttachDragElement.run();
+        }
+      }
+    }
+  }
+;
+  if (handleDragEvents && Event.as(startEvent).getTypeInt() == Event.ONMOUSEDOWN) {
+    deferredStartRegistration=Event.addNativePreviewHandler(new NativePreviewHandler(){
+      public void onPreviewNativeEvent(      NativePreviewEvent event){
+        int typeInt=event.getTypeInt();
+switch (typeInt) {
+case Event.ONMOUSEOVER:
+          if (dragElement == null || !dragElement.isOrHasChild((Node)event.getNativeEvent().getCurrentEventTarget().cast())) {
+            ApplicationConnection.getConsole().log("Drag image appeared");
+            break;
+          }
+case Event.ONKEYDOWN:
+case Event.ONKEYPRESS:
+case Event.ONKEYUP:
+case Event.ONBLUR:
+        break;
+case Event.ONMOUSEOUT:
+      if (dragElement == null || !dragElement.isOrHasChild((Node)event.getNativeEvent().getRelatedEventTarget().cast())) {
+        ApplicationConnection.getConsole().log("Drag image appeared");
+        break;
+      }
+case Event.ONMOUSEMOVE:
+    deferredStartRegistration.removeHandler();
+  deferredStartRegistration=null;
+updateCurrentEvent(event.getNativeEvent());
+startDrag.execute();
+break;
+default :
+ApplicationConnection.getConsole().log("Drag did not start due event" + event.getNativeEvent().getType());
+deferredStartRegistration.removeHandler();
+deferredStartRegistration=null;
+currentDrag=null;
+clearDragElement();
+break;
+}
+}
+}
+);
+}
+ else {
+startDrag.execute();
+}
+return currentDrag;
+}
