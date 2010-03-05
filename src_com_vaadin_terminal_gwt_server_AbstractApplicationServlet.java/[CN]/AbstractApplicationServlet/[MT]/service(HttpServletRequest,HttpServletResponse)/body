@@ -1,5 +1,8 @@
 {
   RequestType requestType=getRequestType(request);
+  if (!ensureCookiesEnabled(requestType,request,response)) {
+    return;
+  }
   if (requestType == RequestType.STATIC_FILE) {
     serveStaticResources(request,response);
     return;
@@ -31,7 +34,8 @@
       return;
     }
  else     if (requestType == RequestType.UIDL) {
-      applicationManager.handleUidlRequest(request,response,this);
+      Window window=applicationManager.getApplicationWindow(request,this,application,null);
+      applicationManager.handleUidlRequest(request,response,this,window);
       return;
     }
     if (!application.isRunning()) {

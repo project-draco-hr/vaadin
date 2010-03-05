@@ -1,0 +1,36 @@
+{
+  Map<String,String> config=new LinkedHashMap<String,String>();
+  PortletURL appUri=response.createActionURL();
+  config.put("appUri","'" + appUri.toString() + "'");
+  config.put("usePortletURLs","true");
+  ResourceURL uidlUrlBase=response.createResourceURL();
+  uidlUrlBase.setResourceID("UIDL");
+  config.put("portletUidlURLBase","'" + uidlUrlBase.toString() + "'");
+  config.put("pathInfo","''");
+  config.put("themeUri","'" + themeURI + "'");
+  String versionInfo="{vaadinVersion:\"" + AbstractApplicationServlet.VERSION + "\",applicationVersion:\""+ application.getVersion()+ "\"}";
+  config.put("versionInfo",versionInfo);
+  Application.SystemMessages systemMessages=null;
+  try {
+    systemMessages=getSystemMessages();
+  }
+ catch (  SystemMessageException e) {
+    throw new PortletException("Failed to obtain system messages!",e);
+  }
+  if (systemMessages != null) {
+    String caption=systemMessages.getCommunicationErrorCaption();
+    if (caption != null) {
+      caption="\"" + caption + "\"";
+    }
+    String message=systemMessages.getCommunicationErrorMessage();
+    if (message != null) {
+      message="\"" + message + "\"";
+    }
+    String url=systemMessages.getCommunicationErrorURL();
+    if (url != null) {
+      url="\"" + url + "\"";
+    }
+    config.put("\"comErrMsg\"","{" + "\"caption\":" + caption + ","+ "\"message\" : "+ message+ ","+ "\"url\" : "+ url+ "}");
+  }
+  return config;
+}

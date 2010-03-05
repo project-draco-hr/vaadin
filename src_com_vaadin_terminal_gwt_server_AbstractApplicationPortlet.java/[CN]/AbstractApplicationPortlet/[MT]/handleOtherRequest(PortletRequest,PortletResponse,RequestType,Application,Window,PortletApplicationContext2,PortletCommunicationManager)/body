@@ -1,0 +1,25 @@
+{
+  if (window == null) {
+    throw new PortletException(ERROR_NO_WINDOW_FOUND);
+  }
+  if (window.getTerminal() == null) {
+    window.setTerminal(applicationContext.getBrowser());
+  }
+  final Map<String,String[]> parameters=request.getParameterMap();
+  if (window != null && parameters != null) {
+    window.handleParameters(parameters);
+  }
+  if (requestType == RequestType.APPLICATION_RESOURCE) {
+    handleURI(applicationManager,window,(ResourceRequest)request,(ResourceResponse)response);
+  }
+ else   if (requestType == RequestType.RENDER) {
+    writeAjaxPage((RenderRequest)request,(RenderResponse)response,window,application);
+  }
+ else   if (requestType == RequestType.EVENT) {
+  }
+ else   if (requestType == RequestType.ACTION) {
+  }
+ else {
+    throw new IllegalStateException("handleRequest() without anything to do - should never happen!");
+  }
+}

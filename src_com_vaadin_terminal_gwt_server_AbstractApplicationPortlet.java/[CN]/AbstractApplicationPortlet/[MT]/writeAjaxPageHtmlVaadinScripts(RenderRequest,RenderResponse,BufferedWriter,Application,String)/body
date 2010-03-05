@@ -1,0 +1,14 @@
+{
+  String themeURI=getThemeURI(themeName,request);
+  String portalTheme=getPortalProperty(PORTAL_PARAMETER_VAADIN_THEME,request.getPortalContext());
+  writer.write("<script type=\"text/javascript\">\n");
+  writer.write("if(!vaadin || !vaadin.vaadinConfigurations) {\n " + "if(!vaadin) { var vaadin = {}} \n" + "vaadin.vaadinConfigurations = {};\n"+ "if (!vaadin.themesLoaded) { vaadin.themesLoaded = {}; }\n");
+  if (!isProductionMode()) {
+    writer.write("vaadin.debug = true;\n");
+  }
+  writeAjaxPageScriptWidgetset(request,response,writer);
+  Map<String,String> config=getVaadinConfigurationMap(request,response,application,themeURI);
+  writeAjaxPageScriptConfigurations(request,response,writer,config);
+  writer.write("</script>\n");
+  writeAjaxPageHtmlTheme(request,writer,themeName,themeURI,portalTheme);
+}

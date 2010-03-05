@@ -1,7 +1,15 @@
 {
-  final Object id=super.addItem();
-  if (id != null && !roots.contains(id)) {
-    roots.add(id);
+  final Object itemId=super.addItem();
+  if (itemId == null) {
+    return null;
   }
-  return id;
+  if (!roots.contains(itemId)) {
+    roots.add(itemId);
+    if (filteredRoots != null) {
+      if (passesFilters(itemId)) {
+        filteredRoots.add(itemId);
+      }
+    }
+  }
+  return itemId;
 }

@@ -1,87 +1,8 @@
 {
   response.setContentType("text/html");
   final BufferedWriter page=new BufferedWriter(new OutputStreamWriter(response.getPortletOutputStream(),"UTF-8"));
-  String requestWidgetset=getApplicationOrSystemProperty(PARAMETER_WIDGETSET,null);
-  String sharedWidgetset=getPortalProperty(PORTAL_PARAMETER_VAADIN_WIDGETSET,request.getPortalContext());
-  String widgetset;
-  if (requestWidgetset != null) {
-    widgetset=requestWidgetset;
-  }
- else   if (sharedWidgetset != null) {
-    widgetset=sharedWidgetset;
-  }
- else {
-    widgetset=DEFAULT_WIDGETSET;
-  }
   String themeName=getThemeForWindow(request,window);
-  String widgetsetURL=getWidgetsetURL(widgetset,request);
-  String themeURI=getThemeURI(themeName,request);
-  String portalTheme=getPortalProperty(PORTAL_PARAMETER_VAADIN_THEME,request.getPortalContext());
-  Application.SystemMessages systemMessages=null;
-  try {
-    systemMessages=getSystemMessages();
-  }
- catch (  SystemMessageException e) {
-    throw new PortletException("Failed to obtain system messages!",e);
-  }
-  page.write("<script type=\"text/javascript\">\n");
-  page.write("if(!vaadin || !vaadin.vaadinConfigurations) {\n " + "if(!vaadin) { var vaadin = {}} \n" + "vaadin.vaadinConfigurations = {};\n"+ "if (!vaadin.themesLoaded) { vaadin.themesLoaded = {}; }\n");
-  if (!isProductionMode()) {
-    page.write("vaadin.debug = true;\n");
-  }
-  page.write("document.write('<iframe tabIndex=\"-1\" id=\"__gwt_historyFrame\" " + "style=\"width:0;height:0;border:0;overflow:" + "hidden\" src=\"javascript:false\"></iframe>');\n");
-  page.write("document.write(\"<script language='javascript' src='" + widgetsetURL + "'><\\/script>\");\n}\n");
-  page.write("vaadin.vaadinConfigurations[\"" + request.getWindowID() + "\"] = {");
-  PortletURL appUri=response.createActionURL();
-  page.write("appUri: '" + appUri.toString() + "', ");
-  page.write("usePortletURLs: true, ");
-  ResourceURL uidlUrlBase=response.createResourceURL();
-  uidlUrlBase.setResourceID("UIDL");
-  page.write("portletUidlURLBase: '" + uidlUrlBase.toString() + "', ");
-  page.write("pathInfo: '', ");
-  page.write("themeUri: '" + themeURI + "', ");
-  page.write("versionInfo : {vaadinVersion:\"");
-  page.write(AbstractApplicationServlet.VERSION);
-  page.write("\",applicationVersion:\"");
-  page.write(application.getVersion());
-  page.write("\"},");
-  if (systemMessages != null) {
-    String caption=systemMessages.getCommunicationErrorCaption();
-    if (caption != null) {
-      caption="\"" + caption + "\"";
-    }
-    String message=systemMessages.getCommunicationErrorMessage();
-    if (message != null) {
-      message="\"" + message + "\"";
-    }
-    String url=systemMessages.getCommunicationErrorURL();
-    if (url != null) {
-      url="\"" + url + "\"";
-    }
-    page.write("\"comErrMsg\": {" + "\"caption\":" + caption + ","+ "\"message\" : "+ message+ ","+ "\"url\" : "+ url+ "}");
-  }
-  page.write("};\n</script>\n");
-  page.write("<script type=\"text/javascript\">\n");
-  if (portalTheme == null) {
-    portalTheme=DEFAULT_THEME_NAME;
-  }
-  page.write("if(!vaadin.themesLoaded['" + portalTheme + "']) {\n");
-  page.write("var defaultStylesheet = document.createElement('link');\n");
-  page.write("defaultStylesheet.setAttribute('rel', 'stylesheet');\n");
-  page.write("defaultStylesheet.setAttribute('type', 'text/css');\n");
-  page.write("defaultStylesheet.setAttribute('href', '" + getThemeURI(portalTheme,request) + "/styles.css');\n");
-  page.write("document.getElementsByTagName('head')[0].appendChild(defaultStylesheet);\n");
-  page.write("vaadin.themesLoaded['" + portalTheme + "'] = true;\n}\n");
-  if (!portalTheme.equals(themeName)) {
-    page.write("if(!vaadin.themesLoaded['" + themeName + "']) {\n");
-    page.write("var stylesheet = document.createElement('link');\n");
-    page.write("stylesheet.setAttribute('rel', 'stylesheet');\n");
-    page.write("stylesheet.setAttribute('type', 'text/css');\n");
-    page.write("stylesheet.setAttribute('href', '" + themeURI + "/styles.css');\n");
-    page.write("document.getElementsByTagName('head')[0].appendChild(stylesheet);\n");
-    page.write("vaadin.themesLoaded['" + themeName + "'] = true;\n}\n");
-  }
-  page.write("</script>\n");
+  writeAjaxPageHtmlVaadinScripts(request,response,page,application,themeName);
   String appClass="v-app-";
   try {
     appClass+=getApplicationClass().getSimpleName();
@@ -97,6 +18,6 @@
   if (style != null) {
     divStyle="style=\"" + style + "\"";
   }
-  page.write("<div id=\"" + request.getWindowID() + "\" class=\""+ classNames+ "\" "+ divStyle+ "></div>\n");
+  writeAjaxPageHtmlMainDiv(request,response,page,request.getWindowID(),classNames,divStyle);
   page.close();
 }

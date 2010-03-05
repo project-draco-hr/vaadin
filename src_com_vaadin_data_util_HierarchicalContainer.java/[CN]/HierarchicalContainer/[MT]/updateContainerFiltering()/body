@@ -1,0 +1,21 @@
+{
+  super.updateContainerFiltering();
+  filteredRoots=new LinkedList<Object>();
+  filteredChildren=new HashMap<Object,LinkedList<Object>>();
+  for (  Object rootId : roots) {
+    if (passesFilters(rootId)) {
+      filteredRoots.add(rootId);
+    }
+  }
+  for (  Object parent : children.keySet()) {
+    if (passesFilters(parent)) {
+      LinkedList<Object> filtered=new LinkedList<Object>();
+      filteredChildren.put(parent,filtered);
+      for (      Object child : children.get(parent)) {
+        if (passesFilters(child)) {
+          filtered.add(child);
+        }
+      }
+    }
+  }
+}

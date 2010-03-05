@@ -1,6 +1,9 @@
 {
+  if (!isUIDLRequest(request)) {
+    throw new RuntimeException("criticalNotification can only be used in UIDL requests");
+  }
   if (caption != null) {
-    caption="\"" + caption + "\"";
+    caption="\"" + JsonPaintTarget.escapeJSON(caption) + "\"";
   }
   if (details != null) {
     if (message == null) {
@@ -11,10 +14,10 @@
     }
   }
   if (message != null) {
-    message="\"" + message + "\"";
+    message="\"" + JsonPaintTarget.escapeJSON(message) + "\"";
   }
   if (url != null) {
-    url="\"" + url + "\"";
+    url="\"" + JsonPaintTarget.escapeJSON(url) + "\"";
   }
   response.setContentType("application/json; charset=UTF-8");
   final ServletOutputStream out=response.getOutputStream();
