@@ -34,6 +34,18 @@
   }
 ;
   tree1.setDropHandler(dropHandler);
+  Handler actionHandler=new Handler(){
+    private Action[] actions=new Action[]{new Action("Remove")};
+    public void handleAction(    Action action,    Object sender,    Object target){
+      ContainerHierarchicalWrapper containerDataSource=(ContainerHierarchicalWrapper)tree1.getContainerDataSource();
+      containerDataSource.removeItemRecursively(target);
+    }
+    public Action[] getActions(    Object target,    Object sender){
+      return actions;
+    }
+  }
+;
+  tree1.addActionHandler(actionHandler);
   l.addComponent(tree1);
   getLayout().setSizeFull();
   getLayout().addComponent(sp);
