@@ -1,0 +1,17 @@
+{
+  if (dropEvent.getTransferable().getSourceComponent() instanceof FileIcon) {
+    DragAndDropWrapper.WrapperTransferable transferable=(WrapperTransferable)dropEvent.getTransferable();
+    MouseEventDetails mouseDownEvent=transferable.getMouseDownEvent();
+    WrapperDropDetails dropTargetDetails=(WrapperDropDetails)dropEvent.getDropTargetDetails();
+    MouseEventDetails mouseEvent=dropTargetDetails.getMouseEvent();
+    int deltaX=mouseEvent.getClientX() - mouseDownEvent.getClientX();
+    int deltaY=mouseEvent.getClientY() - mouseDownEvent.getClientY();
+    ComponentPosition position=l.getPosition(transferable.getSourceComponent());
+    position.setTop(position.getTopValue() + deltaY,UNITS_PIXELS);
+    position.setLeft(position.getLeftValue() + deltaX,UNITS_PIXELS);
+  }
+ else   if (dropEvent.getTransferable().getSourceComponent() == tree1) {
+    File draggedFile=(File)((TreeTransferable)dropEvent.getTransferable()).getItemId();
+    DDTest6.get().setParent(draggedFile,folder);
+  }
+}

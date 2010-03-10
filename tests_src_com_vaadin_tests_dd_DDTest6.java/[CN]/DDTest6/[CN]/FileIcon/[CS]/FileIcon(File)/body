@@ -1,0 +1,43 @@
+{
+  super(new CssLayout());
+  l=(CssLayout)getCompositionRoot();
+  setWidth(null);
+  l.setWidth(null);
+  setDragStartMode(DragStartMode.WRAPPER);
+  this.file=file;
+  Resource icon2=file.getIcon();
+  String name=file.getName();
+  l.addComponent(new Embedded(null,icon2));
+  l.addComponent(new Label(name));
+  l.addListener(new LayoutClickListener(){
+    public void layoutClick(    LayoutClickEvent event){
+      if (file instanceof Folder) {
+        if (event.isDoubleClick()) {
+          get().tree1.setValue(file);
+        }
+      }
+    }
+  }
+);
+  if (file instanceof Folder) {
+    setDropHandler(new DropHandler(){
+      public AcceptCriterion getAcceptCriterion(){
+        return new Not(IsSameSourceAndTarget.get());
+      }
+      public void drop(      DragAndDropEvent dropEvent){
+        File f=null;
+        if (dropEvent.getTransferable().getSourceComponent() instanceof FileIcon) {
+          FileIcon new_name=(FileIcon)dropEvent.getTransferable().getSourceComponent();
+          f=new_name.file;
+        }
+ else         if (dropEvent.getTransferable().getSourceComponent() == tree1) {
+          f=(File)((DataBoundTransferable)dropEvent.getTransferable()).getItemId();
+        }
+        if (f != null) {
+          get().setParent(f,(Folder)FileIcon.this.file);
+        }
+      }
+    }
+);
+  }
+}
