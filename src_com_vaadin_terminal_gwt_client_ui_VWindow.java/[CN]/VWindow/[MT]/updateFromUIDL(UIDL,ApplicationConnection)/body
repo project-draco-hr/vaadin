@@ -129,17 +129,23 @@
     centered=false;
   }
   updateShadowSizeAndPosition();
+  boolean sizeReduced=false;
   if (getOffsetWidth() > Window.getClientWidth()) {
     setWidth(Window.getClientWidth() + "px");
+    sizeReduced=true;
   }
   if (getOffsetHeight() > Window.getClientHeight()) {
     setHeight(Window.getClientHeight() + "px");
+    sizeReduced=true;
   }
   if (dynamicHeight && layoutRelativeHeight) {
     int h=contents.getOffsetHeight() + getExtraHeight();
     int w=contents.getOffsetWidth();
     client.updateVariable(id,"height",h,false);
     client.updateVariable(id,"width",w,true);
+  }
+  if (sizeReduced) {
+    client.runDescendentsLayout(this);
   }
   Util.runWebkitOverflowAutoFix(contentPanel.getElement());
 }
