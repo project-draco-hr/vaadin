@@ -1,0 +1,41 @@
+{
+  final ServletContext sc=getServletContext();
+  URL resourceUrl=sc.getResource(filename);
+  if (resourceUrl == null) {
+    filename=filename.substring(1);
+    resourceUrl=getClassLoader().getResource(filename);
+    if (resourceUrl == null) {
+      System.err.println("Requested resource [" + filename + "] not found from filesystem or through class loader."+ " Add widgetset and/or theme JAR to your classpath or add files to WebContent/VAADIN folder.");
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      return;
+    }
+  }
+  long lastModifiedTime=0;
+  try {
+    lastModifiedTime=resourceUrl.openConnection().getLastModified();
+    lastModifiedTime=lastModifiedTime - lastModifiedTime % 1000;
+    if (browserHasNewestVersion(request,lastModifiedTime)) {
+      response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+      return;
+    }
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+  final String mimetype=sc.getMimeType(filename);
+  if (mimetype != null) {
+    response.setContentType(mimetype);
+  }
+  if (lastModifiedTime > 0) {
+    response.setDateHeader("Last-Modified",lastModifiedTime);
+    response.setHeader("Cache-Control","max-age: 900");
+  }
+  final OutputStream os=response.getOutputStream();
+  final byte buffer[]=new byte[DEFAULT_BUFFER_SIZE];
+  int bytes;
+  InputStream is=resourceUrl.openStream();
+  while ((bytes=is.read(buffer)) >= 0) {
+    os.write(buffer,0,bytes);
+  }
+  is.close();
+}
