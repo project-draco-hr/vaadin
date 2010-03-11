@@ -1,0 +1,24 @@
+{
+  final CssLayout log=new CssLayout();
+  log.setWidth("100%");
+  final Table table=new Table(){
+    @Override public Property getContainerProperty(    Object itemId,    Object propertyId){
+      log("Fetched container property \"" + propertyId + "\" for item \""+ itemId+ "\"");
+      return super.getContainerProperty(itemId,propertyId);
+    }
+    private void log(    String string){
+      log.addComponent(new Label(string));
+    }
+  }
+;
+  table.addContainerProperty("foo",String.class,"bar");
+  Button b=new Button("Click to add row",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      table.addItem();
+    }
+  }
+);
+  getLayout().addComponent(table);
+  getLayout().addComponent(b);
+  getLayout().addComponent(log);
+}
