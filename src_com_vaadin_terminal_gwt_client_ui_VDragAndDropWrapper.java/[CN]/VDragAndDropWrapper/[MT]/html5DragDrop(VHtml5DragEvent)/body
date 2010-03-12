@@ -19,27 +19,13 @@
     transferable.setData("filecount",fileCount);
     for (int i=0; i < fileCount; i++) {
       final int fileId=filecounter++;
-      final VHtml5File file=event.getFile(fileCount);
-      transferable.setData("fn" + fileId,file.getName());
-      transferable.setData("ft" + fileId,file.getType());
-      transferable.setData("fs" + fileId,file.getSize());
-      DeferredCommand.addCommand(new Command(){
-        public void execute(){
-          file.readAsDataUrl(new Callback(){
-            public void handleFile(            JavaScriptObject object){
-              client.updateVariable(client.getPid(VDragAndDropWrapper.this),"file" + fileId,object.toString(),true);
-            }
-          }
-);
-        }
-      }
-);
+      final VHtml5File file=event.getFile(i);
+      transferable.setData("fi" + i,"" + fileId);
+      transferable.setData("fn" + i,file.getName());
+      transferable.setData("ft" + i,file.getType());
+      transferable.setData("fs" + i,file.getSize());
+      postFile(fileId,file);
     }
-  }
-  String fileAsString=event.getFileAsString(0);
-  if (fileAsString != null) {
-    ApplicationConnection.getConsole().log(fileAsString);
-    transferable.setData("fileContents",fileAsString);
   }
   VDragAndDropManager.get().endDrag();
   vaadinDragEvent=null;

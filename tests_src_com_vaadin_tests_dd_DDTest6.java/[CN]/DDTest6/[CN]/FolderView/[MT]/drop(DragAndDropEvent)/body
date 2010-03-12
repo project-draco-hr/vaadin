@@ -14,4 +14,26 @@
     File draggedFile=(File)((DataBoundTransferable)dropEvent.getTransferable()).getItemId();
     DDTest6.get().setParent(draggedFile,folder);
   }
+ else {
+    WrapperTransferable tr=(WrapperTransferable)dropEvent.getTransferable();
+    Html5File[] files2=tr.getFiles();
+    if (files2 != null) {
+      for (      Html5File html5File : files2) {
+        String fileName=html5File.getFileName();
+        final ByteArrayOutputStream bas=new ByteArrayOutputStream();
+        Receiver receiver=new Receiver(){
+          public OutputStream receiveUpload(          String filename,          String MIMEType){
+            return bas;
+          }
+        }
+;
+        html5File.receive(receiver);
+        File file=new File(fileName,bas);
+        file.setType(html5File.getType());
+        DDTest6.get().fs1.addBean(file);
+        DDTest6.get().tree1.setChildrenAllowed(file,false);
+        DDTest6.get().setParent(file,folder);
+      }
+    }
+  }
 }

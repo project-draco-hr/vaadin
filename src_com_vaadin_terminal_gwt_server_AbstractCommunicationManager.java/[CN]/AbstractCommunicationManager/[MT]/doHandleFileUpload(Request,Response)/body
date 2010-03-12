@@ -14,18 +14,6 @@
       if (item.isFormField()) {
       }
  else {
-        int separatorPos=name.lastIndexOf("_");
-        final String pid=name.substring(0,separatorPos);
-        final Upload uploadComponent=(Upload)idPaintableMap.get(pid);
-        if (uploadComponent == null) {
-          throw new FileUploadException("Upload component not found");
-        }
-        if (uploadComponent.isReadOnly()) {
-          throw new FileUploadException("Warning: ignored file upload because upload component is set as read-only");
-        }
-synchronized (application) {
-          uploadComponent.startUpload();
-        }
         final UploadStream upstream=new UploadStream(){
           public String getContentName(){
             return filename;
@@ -41,13 +29,33 @@ synchronized (application) {
           }
         }
 ;
-        pl.setUpload(uploadComponent);
-        try {
-          uploadComponent.receiveUpload(upstream);
+        if (name.startsWith("XHRFILE")) {
+          String[] split=item.getFieldName().substring(7).split("\\.");
+          DragAndDropWrapper ddw=(DragAndDropWrapper)idPaintableMap.get(split[0]);
+          ddw.receiveFile(upstream,split[1]);
+          String debugId=ddw.getDebugId();
         }
- catch (        UploadException e) {
+ else {
+          int separatorPos=name.lastIndexOf("_");
+          final String pid=name.substring(0,separatorPos);
+          final Upload uploadComponent=(Upload)idPaintableMap.get(pid);
+          if (uploadComponent == null) {
+            throw new FileUploadException("Upload component not found");
+          }
+          if (uploadComponent.isReadOnly()) {
+            throw new FileUploadException("Warning: ignored file upload because upload component is set as read-only");
+          }
 synchronized (application) {
-            handleChangeVariablesError(application,uploadComponent,e,new HashMap<String,Object>());
+            uploadComponent.startUpload();
+          }
+          pl.setUpload(uploadComponent);
+          try {
+            uploadComponent.receiveUpload(upstream);
+          }
+ catch (          UploadException e) {
+synchronized (application) {
+              handleChangeVariablesError(application,uploadComponent,e,new HashMap<String,Object>());
+            }
           }
         }
       }
