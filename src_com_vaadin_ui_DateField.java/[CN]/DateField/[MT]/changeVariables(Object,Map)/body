@@ -2,14 +2,11 @@
   super.changeVariables(source,variables);
   if (!isReadOnly() && (variables.containsKey("year") || variables.containsKey("month") || variables.containsKey("day")|| variables.containsKey("hour")|| variables.containsKey("min")|| variables.containsKey("sec")|| variables.containsKey("msec")|| variables.containsKey("dateString"))) {
     final Date oldDate=(Date)getValue();
-    final String oldDateString=dateString;
     Date newDate=null;
     Object o=variables.get("dateString");
+    String dateString=null;
     if (o != null) {
       dateString=o.toString();
-    }
- else {
-      dateString=null;
     }
     int year=variables.containsKey("year") ? (variables.get("year") == null ? -1 : ((Integer)variables.get("year")).intValue()) : -1;
     int month=variables.containsKey("month") ? (variables.get("month") == null ? -1 : ((Integer)variables.get("month")).intValue() - 1) : -1;
@@ -39,8 +36,14 @@
       cal.set(Calendar.MILLISECOND,msec);
       newDate=cal.getTime();
     }
-    if (newDate == null && dateString != null && !"".equals(dateString) && !dateString.equals(oldDateString)) {
-      setValue(handleUnparsableDateString(dateString));
+    if (newDate == null && dateString != null && !"".equals(dateString)) {
+      try {
+        setValue(handleUnparsableDateString(dateString));
+        requestRepaint();
+      }
+ catch (      ConversionException e) {
+        throw e;
+      }
     }
  else     if (newDate != oldDate && (newDate == null || !newDate.equals(oldDate))) {
       setValue(newDate,true);
