@@ -3,16 +3,10 @@
     public void execute(){
       file.readAsBinary(new Callback(){
         public void handleFile(        final JavaScriptObject object){
-          DeferredCommand.addCommand(new Command(){
-            public void execute(){
-              ExtendedXHR extendedXHR=(ExtendedXHR)ExtendedXHR.create();
-              extendedXHR.open("POST",client.getAppUri());
-              extendedXHR.setRequestHeader("PaintableId",client.getPid(VDragAndDropWrapper.this));
-              extendedXHR.setRequestHeader("FileId","" + fileId);
-              multipartSend(extendedXHR,object,"XHRFILE" + client.getPid(VDragAndDropWrapper.this) + "."+ fileId);
-            }
-          }
-);
+          ExtendedXHR extendedXHR=(ExtendedXHR)ExtendedXHR.create();
+          extendedXHR.open("POST",client.getAppUri());
+          String name="XHRFILE" + getPid() + "."+ fileId;
+          multipartSend(extendedXHR,object,name);
         }
       }
 );

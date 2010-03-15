@@ -16,29 +16,26 @@
   pane1.addComponent(label);
   DragDropPane pane2=new DragDropPane();
   pane2.setCaption("Pane2 (accept needs server side visit, check for \"Bar\")");
-  DropHandler dropHandler=new DragDropPane.ImportPrettyMuchAnything(){
-    private final AcceptCriterion crit=new ServerSideCriterion(){
-      public boolean accepts(      DragAndDropEvent dragEvent){
-        Transferable transferable=dragEvent.getTransferable();
-        Component component=(Component)transferable.getData("component");
-        if (component == null) {
-          component=transferable.getSourceComponent();
-        }
-        if (component != null) {
-          if (component.toString() != null && component.toString().contains("Bar")) {
-            return true;
-          }
-        }
-        return false;
+  final AcceptCriterion crit=new ServerSideCriterion(){
+    /** 
+ */
+    private static final long serialVersionUID=1L;
+    public boolean accepts(    DragAndDropEvent dragEvent){
+      Transferable transferable=dragEvent.getTransferable();
+      Component component=(Component)transferable.getData("component");
+      if (component == null) {
+        component=transferable.getSourceComponent();
       }
-    }
-;
-    @Override public AcceptCriterion getAcceptCriterion(){
-      return crit;
+      if (component != null) {
+        if (component.toString() != null && component.toString().contains("Bar")) {
+          return true;
+        }
+      }
+      return false;
     }
   }
 ;
-  pane2.setDropHandler(dropHandler);
+  pane2.setAcceptCriterion(crit);
   pane2.setDebugId("pane2");
   pane2.setSizeFull();
   DragDropPane pane3=new DragDropPane();

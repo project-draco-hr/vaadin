@@ -1,8 +1,10 @@
 {
   setCaption("Checks the source is tree1 on server");
-  DragDropPane pane=new DragDropPane();
-  setContent(pane);
-  pane.setSizeFull();
+  layout=new AbsoluteLayout();
+  DragAndDropWrapper wrapper=new DragAndDropWrapper(layout);
+  setContent(wrapper);
+  wrapper.setSizeFull();
+  layout.setSizeFull();
   setWidth("450px");
   setHeight("150px");
   final ServerSideCriterion serverSideCriterion=new ServerSideCriterion(){
@@ -18,9 +20,68 @@
     }
   }
 ;
-  pane.setDropHandler(new DragDropPane.ImportPrettyMuchAnything(){
-    @Override public AcceptCriterion getAcceptCriterion(){
+  wrapper.setDropHandler(new DropHandler(){
+    public AcceptCriterion getAcceptCriterion(){
       return serverSideCriterion;
+    }
+    public void drop(    DragAndDropEvent event){
+      WrapperDropDetails ed=(WrapperDropDetails)event.getDropTargetDetails();
+      Transferable ctr=event.getTransferable();
+      if (ctr.getSourceComponent() != null) {
+        Component component=(Component)ctr.getData("component");
+        if (component == null) {
+          component=ctr.getSourceComponent();
+        }
+        if (component.getParent() != layout) {
+          if (ctr instanceof DataBoundTransferable) {
+            Label l=new Label();
+            l.setSizeUndefined();
+            l.setValue("ItemId : " + ((DataBoundTransferable)ctr).getItemId());
+            layout.addComponent(l);
+            component=l;
+          }
+ else {
+            layout.addComponent(component);
+          }
+          Integer left=ed.getAbsoluteLeft();
+          Integer top=ed.getAbsoluteTop();
+          MouseEventDetails eventDetails=ed.getMouseEvent();
+          int clientX=eventDetails.getClientX();
+          int clientY=eventDetails.getClientY();
+          try {
+            layout.getPosition(component).setTopValue(clientY - top);
+            layout.getPosition(component).setLeftValue(clientX - left);
+          }
+ catch (          Exception e) {
+          }
+        }
+ else {
+          DragAndDropWrapper.WrapperTransferable tr=(WrapperTransferable)event.getTransferable();
+          MouseEventDetails start=tr.getMouseDownEvent();
+          MouseEventDetails eventDetails=ed.getMouseEvent();
+          int deltaX=eventDetails.getClientX() - start.getClientX();
+          int deltaY=eventDetails.getClientY() - start.getClientY();
+          ComponentPosition p=layout.getPosition(component);
+          p.setTopValue(p.getTopValue() + deltaY);
+          p.setLeftValue(p.getLeftValue() + deltaX);
+        }
+      }
+ else {
+        String object=(String)ctr.getData("text/plain");
+        String content=(String)ctr.getData("fileContents");
+        Label l=new Label();
+        l.setCaption("Generated from HTML5 drag:");
+        if (object != null) {
+          l.setValue(object);
+        }
+ else {
+          l.setValue("HTML5 dd");
+        }
+        l.setDescription(content);
+        l.setSizeUndefined();
+        layout.addComponent(l);
+      }
+      return;
     }
   }
 );
