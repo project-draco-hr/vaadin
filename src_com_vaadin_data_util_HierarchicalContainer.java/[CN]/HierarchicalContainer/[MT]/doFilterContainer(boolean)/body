@@ -1,0 +1,37 @@
+{
+  if (!hasFilters) {
+    filteredRoots=null;
+    filteredChildren=null;
+    return super.doFilterContainer(hasFilters);
+  }
+  filteredRoots=new LinkedList<Object>();
+  filteredChildren=new HashMap<Object,LinkedList<Object>>();
+  filteredParent=new HashMap<Object,Object>();
+  if (includeParentsWhenFiltering) {
+    HashSet<Object> includedItems=new HashSet<Object>();
+    for (    Object rootId : roots) {
+      if (filterIncludingParents(rootId,includedItems)) {
+        filteredRoots.add(rootId);
+        addFilteredChildrenRecursively(rootId,includedItems);
+      }
+    }
+    filterOverride=includedItems;
+    super.doFilterContainer(hasFilters);
+    filterOverride=null;
+    return true;
+  }
+ else {
+    super.doFilterContainer(hasFilters);
+    LinkedHashSet<Object> filteredItemIds=new LinkedHashSet<Object>(getItemIds());
+    for (    Object itemId : filteredItemIds) {
+      Object itemParent=parent.get(itemId);
+      if (itemParent == null || !filteredItemIds.contains(itemParent)) {
+        filteredRoots.add(itemId);
+      }
+ else {
+        addFilteredChild(itemParent,itemId);
+      }
+    }
+    return true;
+  }
+}
