@@ -1,0 +1,48 @@
+{
+  userAgent=userAgent.toLowerCase();
+  isGecko=userAgent.indexOf("gecko") != -1 && userAgent.indexOf("webkit") == -1;
+  isWebKit=userAgent.indexOf("applewebkit") != -1;
+  isPresto=userAgent.indexOf(" presto/") != -1;
+  isChrome=userAgent.indexOf(" chrome/") != -1;
+  isSafari=!isChrome && userAgent.indexOf("safari") != -1;
+  isOpera=userAgent.indexOf("opera") != -1;
+  isIE=userAgent.indexOf("msie") != -1 && !isOpera && (userAgent.indexOf("webtv") == -1);
+  isFirefox=userAgent.indexOf(" firefox/") != -1;
+  if (isGecko) {
+    String tmp=userAgent.substring(userAgent.indexOf("rv:") + 3);
+    tmp=tmp.replaceFirst("(\\.[0-9]+).+","$1");
+    browserEngineVersion=Float.parseFloat(tmp);
+  }
+ else   if (isWebKit) {
+    String tmp=userAgent.substring(userAgent.indexOf("webkit/") + 7);
+    tmp=tmp.replaceFirst("([0-9]+)[^0-9].+","$1");
+    browserEngineVersion=Float.parseFloat(tmp);
+  }
+  if (isIE) {
+    String ieVersionString=userAgent.substring(userAgent.indexOf("msie ") + 5);
+    ieVersionString=ieVersionString.substring(0,ieVersionString.indexOf(";"));
+    browserMajorVersion=(int)Float.parseFloat(ieVersionString);
+  }
+ else   if (isFirefox) {
+    int i=userAgent.indexOf(" firefox/") + 9;
+    browserMajorVersion=Integer.parseInt(userAgent.substring(i,i + 1));
+  }
+ else   if (isChrome) {
+    int i=userAgent.indexOf(" chrome/") + 8;
+    browserMajorVersion=Integer.parseInt(userAgent.substring(i,i + 1));
+  }
+ else   if (isSafari) {
+    int i=userAgent.indexOf(" version/") + 9;
+    browserMajorVersion=Integer.parseInt(userAgent.substring(i,i + 1));
+  }
+ else   if (isOpera) {
+    int i=userAgent.indexOf(" version/");
+    if (i != -1) {
+      i+=9;
+    }
+ else {
+      i=userAgent.indexOf("opera/") + 6;
+    }
+    browserMajorVersion=Integer.parseInt(userAgent.substring(i,i + 2).replace(".",""));
+  }
+}

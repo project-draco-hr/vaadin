@@ -1,36 +1,27 @@
 {
   String prefix="v-";
   if (cssClass == null) {
-    String bs=getBrowserString().toLowerCase();
     String b="";
     String v="";
-    if (bs.indexOf(" firefox/") != -1) {
+    if (browserDetails.isFirefox()) {
       b="ff";
-      int i=bs.indexOf(" firefox/") + 9;
-      v=b + bs.substring(i,i + 1);
+      v="b" + browserDetails.getBrowserMajorVersion();
     }
- else     if (bs.indexOf(" chrome/") != -1) {
+ else     if (browserDetails.isChrome()) {
       b="sa";
       v="ch";
     }
- else     if (bs.indexOf(" safari") != -1) {
+ else     if (browserDetails.isSafari()) {
       b="sa";
-      int i=bs.indexOf(" version/") + 9;
-      v=b + bs.substring(i,i + 1);
+      v="b" + browserDetails.getBrowserMajorVersion();
     }
- else     if (bs.indexOf(" msie ") != -1) {
+ else     if (browserDetails.isIE()) {
       b="ie";
-      int i=bs.indexOf(" msie ") + 6;
-      String ieVersion=bs.substring(i,i + 1);
-      if (ieVersion != null && ieVersion.equals("8") && isIE8InIE7CompatibilityMode()) {
-        ieVersion="7";
-      }
-      v=b + ieVersion;
+      v=b + browserDetails.getBrowserMajorVersion();
     }
- else     if (bs.indexOf("opera/") != -1) {
+ else     if (browserDetails.isOpera()) {
       b="op";
-      int i=bs.indexOf("opera/") + 6;
-      v=b + bs.substring(i,i + 3).replace(".","");
+      v=b + browserDetails.getBrowserMajorVersion();
     }
     cssClass=prefix + b + " "+ prefix+ v;
   }

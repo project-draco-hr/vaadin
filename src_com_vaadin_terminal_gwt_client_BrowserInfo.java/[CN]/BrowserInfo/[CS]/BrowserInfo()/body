@@ -1,28 +1,8 @@
 {
   try {
-    String ua=getBrowserString().toLowerCase();
-    isGecko=ua.indexOf("gecko") != -1 && ua.indexOf("webkit") == -1;
-    isAppleWebKit=ua.indexOf("applewebkit") != -1;
-    isSafari=ua.indexOf("safari") != -1;
-    isOpera=ua.indexOf("opera") != -1;
-    isIE=ua.indexOf("msie") != -1 && !isOpera && (ua.indexOf("webtv") == -1);
-    if (isGecko) {
-      String tmp=ua.substring(ua.indexOf("rv:") + 3);
-      tmp=tmp.replaceFirst("(\\.[0-9]+).+","$1");
-      version=Float.parseFloat(tmp);
-    }
-    if (isAppleWebKit) {
-      String tmp=ua.substring(ua.indexOf("webkit/") + 7);
-      tmp=tmp.replaceFirst("([0-9]+)[^0-9].+","$1");
-      version=Float.parseFloat(tmp);
-    }
-    if (isIE) {
-      String ieVersionString=ua.substring(ua.indexOf("msie ") + 5);
-      ieVersionString=ieVersionString.substring(0,ieVersionString.indexOf(";"));
-      version=Float.parseFloat(ieVersionString);
-      if (version == 8 && isIE8InIE7CompatibilityMode()) {
-        version=7;
-      }
+    browserDetails=new VBrowserDetails(getBrowserString());
+    if (browserDetails.isIE() && browserDetails.getBrowserMajorVersion() == 8 && isIE8InIE7CompatibilityMode()) {
+      browserDetails.setIE8InCompatibilityMode();
     }
   }
  catch (  Exception e) {
