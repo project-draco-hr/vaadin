@@ -2,10 +2,15 @@
   if (dropHandler == null) {
     return true;
   }
+  if (dragLeavPostponed) {
+    dragLeavPostponed=false;
+    return false;
+  }
   ApplicationConnection.getConsole().log("HTML 5 Drag Enter");
   VTransferable transferable=new VTransferable();
   transferable.setDragSource(this);
   vaadinDragEvent=VDragAndDropManager.get().startDrag(transferable,event,false);
+  VDragAndDropManager.get().setCurrentDropHandler(getDropHandler());
   event.preventDefault();
   event.stopPropagation();
   return false;

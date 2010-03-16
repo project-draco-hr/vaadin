@@ -4,8 +4,17 @@
       file.readAsBinary(new Callback(){
         public void handleFile(        final JavaScriptObject object){
           ExtendedXHR extendedXHR=(ExtendedXHR)ExtendedXHR.create();
-          extendedXHR.open("POST",client.getAppUri());
           String name="XHRFILE" + getPid() + "."+ fileId;
+          extendedXHR.setOnReadyStateChange(new ReadyStateChangeHandler(){
+            public void onReadyStateChange(            XMLHttpRequest xhr){
+              if (xhr.getReadyState() == XMLHttpRequest.DONE) {
+                client.sendPendingVariableChanges();
+                xhr.clearOnReadyStateChange();
+              }
+            }
+          }
+);
+          extendedXHR.open("POST",client.getAppUri());
           multipartSend(extendedXHR,object,name);
         }
       }

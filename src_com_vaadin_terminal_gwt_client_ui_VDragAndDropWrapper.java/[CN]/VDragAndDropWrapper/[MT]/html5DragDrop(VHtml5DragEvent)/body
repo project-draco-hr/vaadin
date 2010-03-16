@@ -1,19 +1,23 @@
 {
-  if (dropHandler == null) {
+  if (dropHandler == null || !currentlyValid) {
     return true;
   }
   ApplicationConnection.getConsole().log("HTML 5 Drag Drop");
   VTransferable transferable=vaadinDragEvent.getTransferable();
   JsArrayString types=event.getTypes();
+  ApplicationConnection.getConsole().log("Types fetched");
   for (int i=0; i < types.length(); i++) {
     String type=types.get(i);
     ApplicationConnection.getConsole().log("Type: " + type);
-    if ("text/plain".equals(type)) {
+    if ("Text".equals(type) || "Url".equals(type) || "text/html".equals(type)) {
       String data=event.getDataAsText(type);
-      ApplicationConnection.getConsole().log(type + " : " + data);
-      transferable.setData("text/plain",data);
+      if (data != null) {
+        ApplicationConnection.getConsole().log(type + " : " + data);
+        transferable.setData(type,data);
+      }
     }
   }
+  ApplicationConnection.getConsole().log("checking files");
   int fileCount=event.getFileCount();
   if (fileCount > 0) {
     transferable.setData("filecount",fileCount);
@@ -27,6 +31,7 @@
       postFile(fileId,file);
     }
   }
+  ApplicationConnection.getConsole().log("Ending drag");
   VDragAndDropManager.get().endDrag();
   vaadinDragEvent=null;
   event.preventDefault();

@@ -3,12 +3,14 @@
     return true;
   }
   ApplicationConnection.getConsole().log("HTML 5 Drag Leave posponed...");
+  dragLeavPostponed=true;
   DeferredCommand.addCommand(new Command(){
     public void execute(){
-      if (vaadinDragEvent != null) {
+      if (dragLeavPostponed && vaadinDragEvent != null && VDragAndDropManager.get().getCurrentDropHandler() == getDropHandler()) {
         ApplicationConnection.getConsole().log("...HTML 5 Drag Leave");
-        getDropHandler().dragLeave(vaadinDragEvent);
+        VDragAndDropManager.get().interruptDrag();
       }
+      dragLeavPostponed=false;
     }
   }
 );

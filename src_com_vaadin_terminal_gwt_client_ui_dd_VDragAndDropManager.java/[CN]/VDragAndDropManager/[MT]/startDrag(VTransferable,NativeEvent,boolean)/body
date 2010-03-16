@@ -2,13 +2,13 @@
   interruptDrag();
   isStarted=false;
   currentDrag=new VDragEvent(transferable,startEvent);
-  updateCurrentEvent(startEvent);
+  currentDrag.setCurrentGwtEvent(startEvent);
   final Command startDrag=new Command(){
     public void execute(){
       isStarted=true;
       VDropHandler dh=null;
       if (startEvent != null) {
-        dh=findDragTarget((Element)currentDrag.currentGwtEvent.getEventTarget().cast());
+        dh=findDragTarget((Element)currentDrag.getCurrentGwtEvent().getEventTarget().cast());
       }
       if (dh != null) {
         currentDropHandler=dh;
@@ -48,7 +48,7 @@ case Event.ONMOUSEOUT:
 case Event.ONMOUSEMOVE:
     deferredStartRegistration.removeHandler();
   deferredStartRegistration=null;
-updateCurrentEvent(event.getNativeEvent());
+currentDrag.setCurrentGwtEvent(event.getNativeEvent());
 startDrag.execute();
 break;
 default :
