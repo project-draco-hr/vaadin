@@ -23,14 +23,16 @@
   }
   immediate=uidl.hasAttribute("immediate");
   setClosable(!uidl.getBooleanAttribute("readonly"));
-  try {
-    final int positionx=uidl.getIntVariable("positionx");
-    final int positiony=uidl.getIntVariable("positiony");
-    if (positionx >= 0 && positiony >= 0) {
-      setPopupPosition(positionx,positiony);
+  int positionx=uidl.getIntVariable("positionx");
+  int positiony=uidl.getIntVariable("positiony");
+  if (positionx >= 0 || positiony >= 0) {
+    if (positionx < 0) {
+      positionx=0;
     }
-  }
- catch (  final IllegalArgumentException e) {
+    if (positiony < 0) {
+      positiony=0;
+    }
+    setPopupPosition(positionx,positiony);
   }
   if (uidl.hasAttribute("caption")) {
     setCaption(uidl.getStringAttribute("caption"),uidl.getStringAttribute("icon"));
