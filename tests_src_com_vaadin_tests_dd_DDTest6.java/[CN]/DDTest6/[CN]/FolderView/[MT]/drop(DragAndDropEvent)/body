@@ -20,7 +20,12 @@
     if (files2 != null) {
       for (      Html5File html5File : files2) {
         String fileName=html5File.getFileName();
-        final ByteArrayOutputStream bas=new ByteArrayOutputStream();
+        final ByteArrayOutputStream bas=new ByteArrayOutputStream(){
+          @Override public void close() throws IOException {
+            super.close();
+          }
+        }
+;
         Receiver receiver=new Receiver(){
           public OutputStream receiveUpload(          String filename,          String MIMEType){
             return bas;
