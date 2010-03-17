@@ -1,0 +1,20 @@
+{
+  ApplicationResource resource=(ApplicationResource)file.getResource();
+  String string=new String(file.bas.toByteArray());
+  String[] rows=string.split("\n");
+  String[] cols=rows[0].split(",");
+  Table table=new Table();
+  for (  String string2 : cols) {
+    String col=string2.replaceAll("\"","");
+    table.addContainerProperty(string2,String.class,"");
+  }
+  for (int i=1; i < rows.length; i++) {
+    String[] split=rows[i].split(",");
+    table.addItem(split,"" + i);
+  }
+  Window w=new Window(file.getName());
+  w.getContent().setSizeUndefined();
+  table.setEditable(true);
+  w.addComponent(table);
+  getMainWindow().addWindow(w);
+}
