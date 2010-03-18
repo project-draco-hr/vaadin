@@ -1,0 +1,78 @@
+{
+  Window w=getLayout().getWindow();
+  TestUtils.injectCSS(w,".v-table-row-drag-middle .v-table-cell-content {" + "        background-color: inherit ; border-bottom: 1px solid cyan;" + "}"+ ".v-table-row-drag-middle .v-table-cell-wrapper {"+ "        margin-bottom: -1px;"+ "}"+ ""+ ".v-table-row-drag-top .v-table-cell-content {"+ "border-top: 0; margin-top:0;border-bottom:1px solid cyan;"+ "        margin-bottom: -1px;"+ "}"+ "");
+  hl.addComponent(table);
+  hl.setWidth("100%");
+  hl.setSpacing(true);
+  hl.setExpandRatio(table,1);
+  table.setWidth("100%");
+  table.setPageLength(10);
+  table.setRowHeaderMode(Table.ROW_HEADER_MODE_ID);
+  table.setSelectable(true);
+  table.setMultiSelect(true);
+  populateTable();
+  addComponent(hl);
+  table.setDragMode(Table.TableDragMode.ROWS);
+  table.setDropHandler(new DropHandler(){
+    AcceptCriterion crit=new Table.TableDropCriterion(){
+      @Override protected Set<Object> getAllowedItemIds(      DragAndDropEvent dragEvent,      Table table,      Collection<Object> visibleItemIds){
+        Object draggedItemId=((Table.TableTransferable)dragEvent.getTransferable()).getItemId();
+        Integer weightOfDraggedRow=(Integer)table.getItem(draggedItemId).getItemProperty("Weight").getValue();
+        HashSet<Object> accepted=new HashSet<Object>();
+        for (        Object itemId : visibleItemIds) {
+          Item item=table.getItem(itemId);
+          Integer w=(Integer)item.getItemProperty("Weight").getValue();
+          if (weightOfDraggedRow < w) {
+            accepted.add(itemId);
+          }
+        }
+        return accepted;
+      }
+    }
+;
+    public AcceptCriterion getAcceptCriterion(){
+      return crit;
+    }
+    public void drop(    DragAndDropEvent dropEvent){
+      AbstractSelectDropTargetDetails dropTargetData=(AbstractSelectDropTargetDetails)dropEvent.getDropTargetDetails();
+      DataBoundTransferable transferable=(DataBoundTransferable)dropEvent.getTransferable();
+      Object itemIdOver=dropTargetData.getItemIdOver();
+      Object itemId=transferable.getItemId();
+      if (itemId == null || itemIdOver == null || itemId.equals(itemIdOver)) {
+        return;
+      }
+      IndexedContainer containerDataSource=(IndexedContainer)table.getContainerDataSource();
+      int newIndex=containerDataSource.indexOfId(itemIdOver) - 1;
+      newIndex++;
+      if (newIndex < 0) {
+        newIndex=0;
+      }
+      Object idAfter=containerDataSource.getIdByIndex(newIndex);
+      Collection selections=(Collection)table.getValue();
+      if (selections != null && selections.contains(itemId)) {
+        for (        Object object : selections) {
+          moveAfter(containerDataSource,object,idAfter);
+        }
+      }
+ else {
+        moveAfter(containerDataSource,itemId,idAfter);
+      }
+    }
+    private void moveAfter(    IndexedContainer containerDataSource,    Object itemId,    Object idAfter){
+      try {
+        IndexedContainer clone=null;
+        clone=(IndexedContainer)containerDataSource.clone();
+        containerDataSource.removeItem(itemId);
+        Item newItem=containerDataSource.addItemAfter(idAfter,itemId);
+        Item item=clone.getItem(itemId);
+        for (        Object propId : item.getItemPropertyIds()) {
+          newItem.getItemProperty(propId).setValue(item.getItemProperty(propId).getValue());
+        }
+      }
+ catch (      CloneNotSupportedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+);
+}
