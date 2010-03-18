@@ -17,15 +17,9 @@
   tree3.setDragMode(TreeDragMode.NODE);
   tree3.addItem("Drag on me");
   tree3.addItem("Or me");
-  final AcceptCriterion crit=new ServerSideCriterion(){
-    public boolean accepts(    DragAndDropEvent dragEvent){
-      TreeDropTargetDetails dropTargetData=(TreeDropTargetDetails)dragEvent.getDropTargetDetails();
-      Object itemIdOver=dropTargetData.getItemIdOver();
-      int i=r.nextInt();
-      if (i % 2 == 0) {
-        return true;
-      }
-      return false;
+  final AcceptCriterion crit=new Tree.TreeDropCriterion(){
+    @Override protected Set<Object> getAllowedItemIds(    DragAndDropEvent dragEvent,    Tree tree){
+      return new HashSet(tree.getItemIds());
     }
   }
 ;
@@ -33,6 +27,11 @@
     public void drop(    DragAndDropEvent dropEvent){
       Transferable transferable=dropEvent.getTransferable();
       String data=(String)transferable.getData("Text");
+      if (transferable instanceof TableTransferable) {
+        TableTransferable tr=(TableTransferable)transferable;
+        System.out.println("From table row" + tr.getPropertyId());
+        data=tr.getSourceContainer().getItem(tr.getItemId()).getItemProperty(tr.getPropertyId()).toString();
+      }
       if (data == null) {
         data="-no Text data flawor-";
       }
