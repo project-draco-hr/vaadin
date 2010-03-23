@@ -18,6 +18,7 @@
     modified=dataSource != null;
     if (isWriteThrough() && dataSource != null && (isInvalidCommitted() || isValid())) {
       try {
+        suppressValueChangePropagation=true;
         dataSource.setValue(newValue);
         modified=false;
       }
@@ -25,6 +26,9 @@
         currentBufferedSourceException=new Buffered.SourceException(this,e);
         requestRepaint();
         throw currentBufferedSourceException;
+      }
+ finally {
+        suppressValueChangePropagation=false;
       }
     }
     if (currentBufferedSourceException != null) {
