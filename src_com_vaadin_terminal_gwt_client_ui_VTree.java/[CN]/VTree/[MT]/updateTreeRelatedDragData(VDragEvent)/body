@@ -1,5 +1,6 @@
 {
   currentMouseOverKey=findCurrentMouseOverKey(drag.getElementOver());
+  drag.getDropDetails().put("itemIdOver",currentMouseOverKey);
   if (currentMouseOverKey != null) {
     TreeNode treeNode=keyToNode.get(currentMouseOverKey);
     VerticalDropLocation detail=treeNode.getDropDetail(drag.getCurrentGwtEvent());
@@ -7,8 +8,11 @@
     if (treeNode != null && !treeNode.isLeaf() && detail == VerticalDropLocation.MIDDLE) {
       overTreeNode=true;
     }
-    drag.getDropDetails().put("itemIdOver",currentMouseOverKey);
     drag.getDropDetails().put("itemIdOverIsNode",overTreeNode);
     drag.getDropDetails().put("detail",detail);
+  }
+ else {
+    drag.getDropDetails().put("itemIdOverIsNode",null);
+    drag.getDropDetails().put("detail",null);
   }
 }

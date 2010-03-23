@@ -19,14 +19,17 @@
           if (treeNode != null) {
             treeNode.emphasis(null);
           }
-          validate(new VAcceptCallback(){
-            public void accepted(            VDragEvent event){
-              if (newKey != null) {
-                keyToNode.get(newKey).emphasis(detail);
+          if (newKey != null) {
+            validate(new VAcceptCallback(){
+              public void accepted(              VDragEvent event){
+                VerticalDropLocation curDetail=(VerticalDropLocation)event.getDropDetails().get("detail");
+                if (curDetail == detail && newKey.equals(currentMouseOverKey)) {
+                  keyToNode.get(newKey).emphasis(detail);
+                }
               }
             }
-          }
 ,currentDrag);
+          }
         }
       }
       @Override public void dragLeave(      VDragEvent drag){
