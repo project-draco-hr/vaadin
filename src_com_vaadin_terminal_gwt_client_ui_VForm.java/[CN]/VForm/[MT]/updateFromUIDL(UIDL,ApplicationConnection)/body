@@ -1,6 +1,7 @@
 {
   rendering=true;
   this.client=client;
+  id=uidl.getId();
   if (client.updateComponent(this,uidl,false)) {
     rendering=false;
     return;
@@ -48,7 +49,7 @@
   }
   updateSize();
   client.runDescendentsLayout(this);
-  if (uidl.getChildCount() > 1) {
+  if (uidl.getChildCount() > 1 && !uidl.getChildUIDL(1).getTag().equals("actions")) {
     Container newFooter=(Container)client.getPaintable(uidl.getChildUIDL(1));
     if (footer == null) {
       add((Widget)newFooter,footerContainer);
@@ -83,5 +84,17 @@
     add((Widget)lo,fieldContainer);
   }
   lo.updateFromUIDL(layoutUidl,client);
+  if (uidl.getChildCount() > 1) {
+    final int cnt=uidl.getChildCount();
+    for (int i=1; i < cnt; i++) {
+      UIDL childUidl=uidl.getChildUIDL(i);
+      if (childUidl.getTag().equals("actions")) {
+        if (shortcutHandler == null) {
+          shortcutHandler=new ShortcutActionHandler(id,client);
+        }
+        shortcutHandler.updateActionMap(childUidl);
+      }
+    }
+  }
   rendering=false;
 }

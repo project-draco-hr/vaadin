@@ -1,0 +1,47 @@
+{
+  actionMapper=null;
+  HashSet<Action> actions=new HashSet<Action>();
+  if (actionHandlers != null) {
+    for (    Action.Handler handler : actionHandlers) {
+      Action[] as=handler.getActions(actionTarget,this.viewer);
+      if (as != null) {
+        for (        Action action : as) {
+          actions.add(action);
+        }
+      }
+    }
+  }
+  if (ownActions != null) {
+    actions.addAll(ownActions);
+  }
+  if (!actions.isEmpty()) {
+    actionMapper=new KeyMapper();
+    paintTarget.addVariable(this.viewer,"action","");
+    paintTarget.startTag("actions");
+    for (    final Action a : actions) {
+      paintTarget.startTag("action");
+      final String akey=actionMapper.key(a);
+      paintTarget.addAttribute("key",akey);
+      if (a.getCaption() != null) {
+        paintTarget.addAttribute("caption",a.getCaption());
+      }
+      if (a.getIcon() != null) {
+        paintTarget.addAttribute("icon",a.getIcon());
+      }
+      if (a instanceof ShortcutAction) {
+        final ShortcutAction sa=(ShortcutAction)a;
+        paintTarget.addAttribute("kc",sa.getKeyCode());
+        final int[] modifiers=sa.getModifiers();
+        if (modifiers != null) {
+          final String[] smodifiers=new String[modifiers.length];
+          for (int i=0; i < modifiers.length; i++) {
+            smodifiers[i]=String.valueOf(modifiers[i]);
+          }
+          paintTarget.addAttribute("mk",smodifiers);
+        }
+      }
+      paintTarget.endTag("action");
+    }
+    paintTarget.endTag("actions");
+  }
+}

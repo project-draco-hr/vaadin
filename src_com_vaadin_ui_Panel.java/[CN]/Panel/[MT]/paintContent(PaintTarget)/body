@@ -4,39 +4,7 @@
     target.addVariable(this,"scrollLeft",getScrollLeft());
     target.addVariable(this,"scrollTop",getScrollTop());
   }
-  target.addVariable(this,"action","");
-  target.startTag("actions");
-  if (actionHandlers != null && !actionHandlers.isEmpty()) {
-    for (final Iterator ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
-      final Action[] aa=((Action.Handler)ahi.next()).getActions(null,this);
-      if (aa != null) {
-        for (int ai=0; ai < aa.length; ai++) {
-          final Action a=aa[ai];
-          target.startTag("action");
-          final String akey=actionMapper.key(aa[ai]);
-          target.addAttribute("key",akey);
-          if (a.getCaption() != null) {
-            target.addAttribute("caption",a.getCaption());
-          }
-          if (a.getIcon() != null) {
-            target.addAttribute("icon",a.getIcon());
-          }
-          if (a instanceof ShortcutAction) {
-            final ShortcutAction sa=(ShortcutAction)a;
-            target.addAttribute("kc",sa.getKeyCode());
-            final int[] modifiers=sa.getModifiers();
-            if (modifiers != null) {
-              final String[] smodifiers=new String[modifiers.length];
-              for (int i=0; i < modifiers.length; i++) {
-                smodifiers[i]=String.valueOf(modifiers[i]);
-              }
-              target.addAttribute("mk",smodifiers);
-            }
-          }
-          target.endTag("action");
-        }
-      }
-    }
+  if (actionManager != null) {
+    actionManager.paintActions(null,target);
   }
-  target.endTag("actions");
 }

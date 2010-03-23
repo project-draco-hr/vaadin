@@ -1,0 +1,34 @@
+{
+  super(MNEMONICS_ESCAPE.matcher(shorthandCaption).replaceAll("$1$2$3"));
+  shorthandCaption=MNEMONICS_REMOVE.matcher(shorthandCaption).replaceAll("\u001A");
+  Matcher matcher=MNEMONICS.matcher(shorthandCaption);
+  if (matcher.find()) {
+    String match=matcher.group();
+    keyCode=Character.toLowerCase(matcher.group().charAt(match.length() - 1));
+    if (modifierKeys != null) {
+      modifiers=modifierKeys;
+    }
+ else {
+      int[] mod=new int[match.length() - 1];
+      for (int i=0; i < mod.length; i++) {
+        int kc=match.charAt(i);
+switch (kc) {
+case MNEMONIC_CHAR_ALT:
+          mod[i]=ModifierKey.ALT;
+        break;
+case MNEMONIC_CHAR_CTRL:
+      mod[i]=ModifierKey.CTRL;
+    break;
+case MNEMONIC_CHAR_SHIFT:
+  mod[i]=ModifierKey.SHIFT;
+break;
+}
+}
+modifiers=mod;
+}
+}
+ else {
+keyCode=-1;
+modifiers=modifierKeys;
+}
+}

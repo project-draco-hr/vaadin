@@ -19,14 +19,7 @@
   if (newScrollY != null && newScrollY.intValue() != getScrollTop()) {
     scrollOffsetY=newScrollY.intValue();
   }
-  if (variables.containsKey("action")) {
-    final String key=(String)variables.get("action");
-    final Action action=(Action)actionMapper.get(key);
-    if (action != null && actionHandlers != null) {
-      Object[] array=actionHandlers.toArray();
-      for (int i=0; i < array.length; i++) {
-        ((Action.Handler)array[i]).handleAction(action,this,this);
-      }
-    }
+  if (actionManager != null) {
+    actionManager.handleActions(variables,this);
   }
 }
