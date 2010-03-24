@@ -10,10 +10,19 @@
   getFlexCellFormatter().setColSpan(1,0,columns);
   getFlexCellFormatter().setStyleName(1,0,VDateField.CLASSNAME + "-calendarpanel-body");
   days.getFlexCellFormatter().setStyleName(headerRow,weekColumn,"v-week");
+  days.setHTML(headerRow,weekColumn,"<strong></strong>");
   days.getFlexCellFormatter().setVisible(headerRow,weekColumn,showISOWeekNumbers);
-  days.getFlexCellFormatter().setStyleName(headerRow,firstWeekdayColumn,"v-first");
-  days.getFlexCellFormatter().setStyleName(headerRow,firstWeekdayColumn + 6,"v-last");
   days.getRowFormatter().setStyleName(headerRow,VDateField.CLASSNAME + "-calendarpanel-weekdays");
+  if (showISOWeekNumbers) {
+    days.getFlexCellFormatter().setStyleName(headerRow,weekColumn,"v-first");
+    days.getFlexCellFormatter().setStyleName(headerRow,firstWeekdayColumn,"");
+    days.getRowFormatter().addStyleName(headerRow,VDateField.CLASSNAME + "-calendarpanel-weeknumbers");
+  }
+ else {
+    days.getFlexCellFormatter().setStyleName(headerRow,weekColumn,"");
+    days.getFlexCellFormatter().setStyleName(headerRow,firstWeekdayColumn,"v-first");
+  }
+  days.getFlexCellFormatter().setStyleName(headerRow,firstWeekdayColumn + 6,"v-last");
   final int firstDay=datefield.getDateTimeService().getFirstDayOfWeek();
   for (int i=0; i < 7; i++) {
     int day=i + firstDay;
