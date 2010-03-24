@@ -1,0 +1,27 @@
+{
+  super.changeVariables(source,variables);
+  if (!isReadOnly() && variables.containsKey("state")) {
+    final Boolean newValue=(Boolean)variables.get("state");
+    final Boolean oldValue=(Boolean)getValue();
+    if (isSwitchMode()) {
+      if (newValue != null && !newValue.equals(oldValue) && !isReadOnly()) {
+        setValue(newValue);
+        fireClick();
+      }
+    }
+ else {
+      if (newValue.booleanValue()) {
+        fireClick();
+      }
+      if (oldValue.booleanValue()) {
+        setValue(Boolean.FALSE);
+      }
+    }
+  }
+  if (variables.containsKey(FocusEvent.EVENT_ID)) {
+    fireEvent(new FocusEvent(this));
+  }
+  if (variables.containsKey(BlurEvent.EVENT_ID)) {
+    fireEvent(new BlurEvent(this));
+  }
+}
