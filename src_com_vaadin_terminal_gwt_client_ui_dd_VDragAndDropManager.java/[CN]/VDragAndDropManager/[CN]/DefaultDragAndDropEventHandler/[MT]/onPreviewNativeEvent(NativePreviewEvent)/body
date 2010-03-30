@@ -1,8 +1,17 @@
 {
   NativeEvent nativeEvent=event.getNativeEvent();
+  int typeInt=event.getTypeInt();
+  if (typeInt == Event.ONKEYDOWN) {
+    int keyCode=event.getNativeEvent().getKeyCode();
+    if (keyCode == KeyCodes.KEY_ESCAPE) {
+      interruptDrag();
+      event.cancel();
+      event.getNativeEvent().preventDefault();
+    }
+    return;
+  }
   currentDrag.setCurrentGwtEvent(nativeEvent);
   updateDragImagePosition();
-  int typeInt=event.getTypeInt();
   Element targetElement=(Element)nativeEvent.getEventTarget().cast();
   if (dragElement != null && dragElement.isOrHasChild(targetElement)) {
     String display=dragElement.getStyle().getDisplay();

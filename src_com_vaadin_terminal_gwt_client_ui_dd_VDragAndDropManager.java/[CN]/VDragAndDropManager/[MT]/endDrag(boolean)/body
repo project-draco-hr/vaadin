@@ -1,0 +1,24 @@
+{
+  if (handlerRegistration != null) {
+    handlerRegistration.removeHandler();
+    handlerRegistration=null;
+  }
+  if (currentDropHandler != null) {
+    if (doDrop) {
+      boolean sendTransferableToServer=currentDropHandler.drop(currentDrag);
+      if (sendTransferableToServer) {
+        doRequest(DragEventType.DROP);
+      }
+    }
+ else {
+      currentDrag.setCurrentGwtEvent(null);
+      currentDropHandler.dragLeave(currentDrag);
+    }
+    currentDropHandler=null;
+    serverCallback=null;
+    visitId=-1;
+  }
+  currentDrag=null;
+  clearDragElement();
+  Event.releaseCapture(RootPanel.getBodyElement());
+}
