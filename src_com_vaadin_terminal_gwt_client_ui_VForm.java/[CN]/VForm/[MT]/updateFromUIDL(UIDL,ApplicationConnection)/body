@@ -85,16 +85,19 @@
   }
   lo.updateFromUIDL(layoutUidl,client);
   if (uidl.getChildCount() > 1) {
-    final int cnt=uidl.getChildCount();
-    for (int i=1; i < cnt; i++) {
-      UIDL childUidl=uidl.getChildUIDL(i);
-      if (childUidl.getTag().equals("actions")) {
-        if (shortcutHandler == null) {
-          shortcutHandler=new ShortcutActionHandler(id,client);
-        }
-        shortcutHandler.updateActionMap(childUidl);
+    UIDL childUidl=uidl.getChildByTagName("actions");
+    if (childUidl != null) {
+      if (shortcutHandler == null) {
+        shortcutHandler=new ShortcutActionHandler(id,client);
+        keyDownRegistration=addDomHandler(this,KeyDownEvent.getType());
       }
+      shortcutHandler.updateActionMap(childUidl);
     }
+  }
+ else   if (shortcutHandler != null) {
+    keyDownRegistration.removeHandler();
+    shortcutHandler=null;
+    keyDownRegistration=null;
   }
   rendering=false;
 }
