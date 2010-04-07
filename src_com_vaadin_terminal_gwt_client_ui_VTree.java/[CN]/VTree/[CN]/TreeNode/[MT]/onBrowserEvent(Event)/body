@@ -5,14 +5,15 @@
   }
   final int type=DOM.eventGetType(event);
   final Element target=DOM.eventGetTarget(event);
-  if (client.hasEventListeners(VTree.this,ITEM_CLICK_EVENT_ID) && target == nodeCaptionSpan && (type == Event.ONDBLCLICK || type == Event.ONMOUSEUP)) {
+  final boolean inCaption=target == nodeCaptionSpan || target == icon.getElement();
+  if (inCaption && client.hasEventListeners(VTree.this,ITEM_CLICK_EVENT_ID) && (type == Event.ONDBLCLICK || type == Event.ONMOUSEUP)) {
     fireClick(event);
   }
   if (type == Event.ONCLICK) {
     if (getElement() == target || ie6compatnode == target) {
       toggleState();
     }
- else     if (!readonly && target == nodeCaptionSpan) {
+ else     if (!readonly && inCaption) {
       toggleSelection();
     }
     DOM.eventCancelBubble(event,true);
