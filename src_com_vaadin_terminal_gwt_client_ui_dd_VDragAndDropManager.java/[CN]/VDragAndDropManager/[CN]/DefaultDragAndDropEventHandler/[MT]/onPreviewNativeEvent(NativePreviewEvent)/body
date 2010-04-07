@@ -21,7 +21,6 @@
       int y=nativeEvent.getClientY();
       targetElement=Util.getElementFromPoint(x,y);
       if (targetElement == null) {
-        ApplicationConnection.getConsole().log("Event on dragImage, ignored");
         event.cancel();
         nativeEvent.stopPropagation();
         return;
@@ -30,40 +29,36 @@
 switch (typeInt) {
 case Event.ONMOUSEOVER:
 case Event.ONMOUSEOUT:
-          ApplicationConnection.getConsole().log("IGNORING proxy image event, fired because of hack or not significant");
-        return;
+          return;
 case Event.ONMOUSEMOVE:
-      VDropHandler findDragTarget=findDragTarget(targetElement);
-    if (findDragTarget != currentDropHandler) {
-      if (currentDropHandler != null) {
-        currentDropHandler.dragLeave(currentDrag);
-        currentDrag.getDropDetails().clear();
-        serverCallback=null;
+        VDropHandler findDragTarget=findDragTarget(targetElement);
+      if (findDragTarget != currentDropHandler) {
+        if (currentDropHandler != null) {
+          currentDropHandler.dragLeave(currentDrag);
+          currentDrag.getDropDetails().clear();
+          serverCallback=null;
+        }
+        currentDropHandler=findDragTarget;
+        if (findDragTarget != null) {
+        }
+        if (currentDropHandler != null) {
+          currentDrag.setElementOver((com.google.gwt.user.client.Element)targetElement);
+          currentDropHandler.dragEnter(currentDrag);
+        }
       }
-      currentDropHandler=findDragTarget;
-      if (findDragTarget != null) {
-        ApplicationConnection.getConsole().log("DropHandler now" + currentDropHandler.getPaintable());
-      }
-      if (currentDropHandler != null) {
+ else       if (findDragTarget != null) {
         currentDrag.setElementOver((com.google.gwt.user.client.Element)targetElement);
-        currentDropHandler.dragEnter(currentDrag);
+        currentDropHandler.dragOver(currentDrag);
       }
-    }
- else     if (findDragTarget != null) {
-      currentDrag.setElementOver((com.google.gwt.user.client.Element)targetElement);
-      currentDropHandler.dragOver(currentDrag);
-    }
-  nativeEvent.preventDefault();
-return;
+    nativeEvent.preventDefault();
+  return;
 default :
-ApplicationConnection.getConsole().log("Target just modified on " + event.getType());
 currentDrag.setElementOver((com.google.gwt.user.client.Element)targetElement);
 break;
 }
 }
 }
  catch (RuntimeException e) {
-ApplicationConnection.getConsole().log("ERROR during elementFromPoint hack.");
 throw e;
 }
  finally {
@@ -72,7 +67,6 @@ dragElement.getStyle().setProperty("display",display);
 }
 switch (typeInt) {
 case Event.ONMOUSEOVER:
-ApplicationConnection.getConsole().log(event.getNativeEvent().getType());
 VDropHandler target=findDragTarget(targetElement);
 if (target != null && target != currentDropHandler) {
 if (currentDropHandler != null) {
@@ -80,22 +74,18 @@ currentDropHandler.dragLeave(currentDrag);
 currentDrag.getDropDetails().clear();
 }
 currentDropHandler=target;
-ApplicationConnection.getConsole().log("DropHandler now" + currentDropHandler.getPaintable());
 target.dragEnter(currentDrag);
 }
  else if (target == null && currentDropHandler != null) {
-ApplicationConnection.getConsole().log("Invalid state!?");
 currentDropHandler.dragLeave(currentDrag);
 currentDrag.getDropDetails().clear();
 currentDropHandler=null;
 }
 break;
 case Event.ONMOUSEOUT:
-ApplicationConnection.getConsole().log(event.getNativeEvent().getType());
 Element relatedTarget=(Element)nativeEvent.getRelatedEventTarget().cast();
 VDropHandler newDragHanler=findDragTarget(relatedTarget);
 if (dragElement != null && dragElement.isOrHasChild(relatedTarget)) {
-ApplicationConnection.getConsole().log("Mouse out of dragImage, ignored");
 return;
 }
 if (currentDropHandler != null && currentDropHandler != newDragHanler) {
