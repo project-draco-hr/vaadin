@@ -6,10 +6,16 @@
   while (it.hasNext()) {
     final ShortcutAction a=(ShortcutAction)it.next();
     if (a.getShortcutCombination().equals(kc)) {
-      Element et=DOM.eventGetTarget(event);
+      final Element et=DOM.eventGetTarget(event);
       final Paintable target=client.getPaintable(et);
       DOM.eventPreventDefault(event);
       shakeTarget(et);
+      DeferredCommand.addCommand(new Command(){
+        public void execute(){
+          shakeTarget(et);
+        }
+      }
+);
       DeferredCommand.addCommand(new Command(){
         public void execute(){
           if (target != null) {
