@@ -13,7 +13,12 @@
     style+=" " + "v-disabled";
   }
   setStyleName(style);
-  if (uidl.hasAttribute(ATTRIBUTE_ICON)) {
+  boolean hasIcon=uidl.hasAttribute(ATTRIBUTE_ICON);
+  boolean hasText=uidl.hasAttribute(ATTRIBUTE_CAPTION);
+  boolean hasDescription=uidl.hasAttribute(ATTRIBUTE_DESCRIPTION);
+  boolean showRequired=uidl.getBooleanAttribute(ATTRIBUTE_REQUIRED);
+  boolean showError=uidl.hasAttribute(ATTRIBUTE_ERROR) && !uidl.getBooleanAttribute(ATTRIBUTE_HIDEERRORS);
+  if (hasIcon) {
     if (icon == null) {
       icon=new Icon(client);
       icon.setWidth("0");
@@ -28,7 +33,7 @@
     DOM.removeChild(getElement(),icon.getElement());
     icon=null;
   }
-  if (uidl.hasAttribute(ATTRIBUTE_CAPTION)) {
+  if (hasText) {
     if (captionText == null) {
       captionText=DOM.createDiv();
       captionText.setClassName("v-captiontext");
@@ -37,7 +42,9 @@
     String c=uidl.getStringAttribute(ATTRIBUTE_CAPTION);
     placedAfterComponent=false;
     if (c == null || c.trim().equals("")) {
-      captionText.setInnerHTML("&nbsp;");
+      if (!hasIcon && !showRequired && !showError) {
+        captionText.setInnerHTML("&nbsp;");
+      }
     }
  else {
       DOM.setInnerText(captionText,c);
@@ -47,7 +54,7 @@
     DOM.removeChild(getElement(),captionText);
     captionText=null;
   }
-  if (uidl.hasAttribute(ATTRIBUTE_DESCRIPTION)) {
+  if (hasDescription) {
     if (captionText != null) {
       addStyleDependentName("hasdescription");
     }
@@ -55,7 +62,7 @@
       removeStyleDependentName("hasdescription");
     }
   }
-  if (uidl.getBooleanAttribute(ATTRIBUTE_REQUIRED)) {
+  if (showRequired) {
     if (requiredFieldIndicator == null) {
       requiredFieldIndicator=DOM.createDiv();
       requiredFieldIndicator.setClassName("v-required-field-indicator");
@@ -67,7 +74,7 @@
     DOM.removeChild(getElement(),requiredFieldIndicator);
     requiredFieldIndicator=null;
   }
-  if (uidl.hasAttribute(ATTRIBUTE_ERROR) && !uidl.getBooleanAttribute(ATTRIBUTE_HIDEERRORS)) {
+  if (showError) {
     if (errorIndicatorElement == null) {
       errorIndicatorElement=DOM.createDiv();
       DOM.setInnerHTML(errorIndicatorElement,"&nbsp;");
