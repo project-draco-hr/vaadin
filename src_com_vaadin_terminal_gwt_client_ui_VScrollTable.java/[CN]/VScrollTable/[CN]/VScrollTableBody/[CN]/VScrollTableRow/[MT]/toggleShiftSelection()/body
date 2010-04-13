@@ -1,0 +1,26 @@
+{
+  if (selectedRowKeys.isEmpty() || lastSelectedRowKey < 0) {
+    deselectAll();
+    toggleSelection(true);
+    return;
+  }
+  int startKey=lastSelectedRowKey;
+  int endKey=rowKey;
+  if (endKey < startKey) {
+    startKey^=endKey;
+    endKey^=startKey;
+    startKey^=endKey;
+  }
+  deselectAll();
+  for (int r=startKey; r <= endKey; r++) {
+    if (r != rowKey) {
+      selectedRowKeys.add(String.valueOf(r));
+      VScrollTableRow row=getRenderedRowByKey(String.valueOf(r));
+      if (!row.isSelected()) {
+        row.toggleSelection(false);
+      }
+    }
+  }
+  toggleSelection(false);
+  getElement().focus();
+}

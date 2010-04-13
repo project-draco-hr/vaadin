@@ -10,7 +10,19 @@ case Event.ONMOUSEUP:
     mDown=false;
   handleClickEvent(event,targetTdOrTr);
 if (event.getButton() == Event.BUTTON_LEFT && selectMode > Table.SELECT_MODE_NONE) {
-  toggleSelection();
+  if (event.getCtrlKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == 0) {
+    toggleSelection(true);
+  }
+ else   if (event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == 0) {
+    toggleShiftSelection();
+  }
+ else {
+    if (multiselectmode == 0) {
+      deselectAll();
+    }
+    toggleSelection(multiselectmode == 0);
+  }
+  event.getTarget().setPropertyJSO("onselectstart",null);
   client.updateVariable(paintableId,"selected",selectedRowKeys.toArray(new String[selectedRowKeys.size()]),immediate);
 }
 break;
@@ -48,6 +60,11 @@ child.getStyle().setVisibility(Visibility.HIDDEN);
 ev.createDragImage(getElement(),true);
 }
 event.preventDefault();
+event.stopPropagation();
+}
+ else if (event.getCtrlKey() || event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == 0) {
+event.preventDefault();
+event.getTarget().setPropertyJSO("onselectstart",applyDisableTextSelectionIEHack());
 event.stopPropagation();
 }
 break;
