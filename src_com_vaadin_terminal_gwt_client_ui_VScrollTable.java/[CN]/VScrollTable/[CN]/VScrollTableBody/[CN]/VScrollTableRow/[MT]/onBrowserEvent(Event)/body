@@ -10,20 +10,20 @@ case Event.ONMOUSEUP:
     mDown=false;
   handleClickEvent(event,targetTdOrTr);
 if (event.getButton() == Event.BUTTON_LEFT && selectMode > Table.SELECT_MODE_NONE) {
-  if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == 0) {
+  if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
     toggleShiftSelection(false);
   }
- else   if ((event.getCtrlKey() || event.getMetaKey()) && selectMode == SELECT_MODE_MULTI && multiselectmode == 0) {
+ else   if ((event.getCtrlKey() || event.getMetaKey()) && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
     toggleSelection(true);
   }
- else   if (event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == 0) {
+ else   if (event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
     toggleShiftSelection(true);
   }
  else {
-    if (multiselectmode == 0) {
+    if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
       deselectAll();
     }
-    toggleSelection(multiselectmode == 0);
+    toggleSelection(multiselectmode == MULTISELECT_MODE_DEFAULT);
   }
   if (BrowserInfo.get().isIE()) {
     ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",null);
@@ -67,7 +67,7 @@ ev.createDragImage(getElement(),true);
 event.preventDefault();
 event.stopPropagation();
 }
- else if (event.getCtrlKey() || event.getShiftKey() || event.getMetaKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == 0) {
+ else if (event.getCtrlKey() || event.getShiftKey() || event.getMetaKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
 event.preventDefault();
 if (BrowserInfo.get().isIE()) {
 ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",applyDisableTextSelectionIEHack());
