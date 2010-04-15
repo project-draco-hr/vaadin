@@ -9,24 +9,24 @@ pin.close()
 latestversion = latestdata[0].strip()
 latestpath = latestdata[1].strip()
 latestURL = (((downloadsite + '/') + latestpath) + '/')
-filename = ('vaadin-%s.tar.gz' % latestversion)
-package = (latestURL + filename)
-localpackage = ('/tmp/%s' % filename)
+latestfilename = ('vaadin-%s.zip' % latestversion)
+latestpackage = (latestURL + latestfilename)
+locallatestpackage = ('/tmp/%s' % latestfilename)
 print ('Latest version:      %s' % latestversion)
 print ('Latest version path: %s' % latestpath)
 print ('Latest version URL:  %s' % latestURL)
 try:
-    os.stat(localpackage)
-    print ('Latest package already exists in %s' % localpackage)
+    os.stat(locallatestpackage)
+    print ('Latest package already exists in %s' % locallatestpackage)
 except OSError:
-    print ('Downloading package %s to %s' % (package, localpackage))
-    wgetcmd = ('wget -q -O %s %s' % (localpackage, package))
+    print ('Downloading latest release package %s to %s' % (latestpackage, locallatestpackage))
+    wgetcmd = ('wget -q -O %s %s' % (locallatestpackage, latestpackage))
     command(wgetcmd)
-latestfiles = listfiles(localpackage)
+latestfiles = listZipFiles(locallatestpackage)
 builtversion = sys.argv[1]
 builtpackage = ('build/result/vaadin-%s.zip' % builtversion)
 builtfiles = listZipFiles(builtpackage)
-print '\n--------------------------------------------------------------------------------\nVaadin TAR differences'
+print '\n--------------------------------------------------------------------------------\nVaadin ZIP differences'
 newfiles = diffFiles(builtfiles, latestfiles)
 print ('\n%d new files:' % len(newfiles))
 for item in newfiles:
@@ -36,7 +36,7 @@ print ('\n%d removed files:' % len(removed))
 for item in removed:
     print item
 print '\n--------------------------------------------------------------------------------\nVaadin JAR differences'
-latestJarFiles = listTarVaadinJarFiles(localpackage, latestversion)
+latestJarFiles = listZipVaadinJarFiles(locallatestpackage, latestversion)
 builtJarFiles = listZipVaadinJarFiles(builtpackage, builtversion)
 newfiles = diffFiles(builtJarFiles, latestJarFiles)
 print ('\n%d new files:' % len(newfiles))
@@ -46,4 +46,4 @@ removed = diffFiles(latestJarFiles, builtJarFiles)
 print ('\n%d removed files:' % len(removed))
 for item in removed:
     print item
-command(('rm %s' % localpackage))
+command(('rm %s' % locallatestpackage))
