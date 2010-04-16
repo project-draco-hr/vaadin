@@ -1,5 +1,7 @@
 {
   rendering=true;
+  showColFooters=uidl.getBooleanAttribute("colfooters");
+  tFoot.setVisible(showColFooters);
   if (client.updateComponent(this,uidl,true)) {
     rendering=false;
     return;
@@ -14,6 +16,7 @@
     if (scrollBody != null) {
       if (totalRows == 0) {
         tHead.clear();
+        tFoot.clear();
       }
       initializedAndAttached=false;
       initialContentReceived=false;
@@ -27,6 +30,7 @@
   recalcWidths=uidl.hasAttribute("recalcWidths");
   if (recalcWidths) {
     tHead.clear();
+    tFoot.clear();
   }
   if (uidl.hasAttribute("pagelength")) {
     pageLength=uidl.getIntAttribute("pagelength");
@@ -89,6 +93,7 @@
     }
  else     if (c.getTag().equals("visiblecolumns")) {
       tHead.updateCellsFromUIDL(c);
+      tFoot.updateCellsFromUIDL(c);
     }
  else     if (c.getTag().equals("-ac")) {
       ac=c;
@@ -106,6 +111,7 @@
     dropHandler.updateAcceptRules(ac);
   }
   updateHeader(uidl.getStringArrayAttribute("vcolorder"));
+  updateFooter(uidl.getStringArrayAttribute("vcolorder"));
   if (!recalcWidths && initializedAndAttached) {
     updateBody(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
     if (headerChangedDuringUpdate) {
