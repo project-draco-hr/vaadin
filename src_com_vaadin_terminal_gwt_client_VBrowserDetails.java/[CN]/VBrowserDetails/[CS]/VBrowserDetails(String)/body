@@ -8,42 +8,55 @@
   isOpera=userAgent.indexOf("opera") != -1;
   isIE=userAgent.indexOf("msie") != -1 && !isOpera && (userAgent.indexOf("webtv") == -1);
   isFirefox=userAgent.indexOf(" firefox/") != -1;
-  if (isGecko) {
-    String tmp=userAgent.substring(userAgent.indexOf("rv:") + 3);
-    tmp=tmp.replaceFirst("(\\.[0-9]+).+","$1");
-    browserEngineVersion=Float.parseFloat(tmp);
-  }
- else   if (isWebKit) {
-    String tmp=userAgent.substring(userAgent.indexOf("webkit/") + 7);
-    tmp=tmp.replaceFirst("([0-9]+)[^0-9].+","$1");
-    browserEngineVersion=Float.parseFloat(tmp);
-  }
-  if (isIE) {
-    String ieVersionString=userAgent.substring(userAgent.indexOf("msie ") + 5);
-    ieVersionString=safeSubstring(ieVersionString,0,ieVersionString.indexOf(";"));
-    parseVersionString(ieVersionString);
-  }
- else   if (isFirefox) {
-    int i=userAgent.indexOf(" firefox/") + 9;
-    parseVersionString(safeSubstring(userAgent,i,i + 5));
-  }
- else   if (isChrome) {
-    int i=userAgent.indexOf(" chrome/") + 8;
-    parseVersionString(safeSubstring(userAgent,i,i + 5));
-  }
- else   if (isSafari) {
-    int i=userAgent.indexOf(" version/") + 9;
-    parseVersionString(safeSubstring(userAgent,i,i + 5));
-  }
- else   if (isOpera) {
-    int i=userAgent.indexOf(" version/");
-    if (i != -1) {
-      i+=9;
+  try {
+    if (isGecko) {
+      int rvPos=userAgent.indexOf("rv:");
+      if (rvPos >= 0) {
+        String tmp=userAgent.substring(rvPos + 3);
+        tmp=tmp.replaceFirst("(\\.[0-9]+).+","$1");
+        browserEngineVersion=Float.parseFloat(tmp);
+      }
     }
+ else     if (isWebKit) {
+      String tmp=userAgent.substring(userAgent.indexOf("webkit/") + 7);
+      tmp=tmp.replaceFirst("([0-9]+)[^0-9].+","$1");
+      browserEngineVersion=Float.parseFloat(tmp);
+    }
+  }
+ catch (  Exception e) {
+    System.err.println("Browser engine version parsing failed for: " + userAgent);
+  }
+  try {
+    if (isIE) {
+      String ieVersionString=userAgent.substring(userAgent.indexOf("msie ") + 5);
+      ieVersionString=safeSubstring(ieVersionString,0,ieVersionString.indexOf(";"));
+      parseVersionString(ieVersionString);
+    }
+ else     if (isFirefox) {
+      int i=userAgent.indexOf(" firefox/") + 9;
+      parseVersionString(safeSubstring(userAgent,i,i + 5));
+    }
+ else     if (isChrome) {
+      int i=userAgent.indexOf(" chrome/") + 8;
+      parseVersionString(safeSubstring(userAgent,i,i + 5));
+    }
+ else     if (isSafari) {
+      int i=userAgent.indexOf(" version/") + 9;
+      parseVersionString(safeSubstring(userAgent,i,i + 5));
+    }
+ else     if (isOpera) {
+      int i=userAgent.indexOf(" version/");
+      if (i != -1) {
+        i+=9;
+      }
  else {
-      i=userAgent.indexOf("opera/") + 6;
+        i=userAgent.indexOf("opera/") + 6;
+      }
+      parseVersionString(safeSubstring(userAgent,i,i + 5));
     }
-    parseVersionString(safeSubstring(userAgent,i,i + 5));
+  }
+ catch (  Exception e) {
+    System.err.println("Browser version parsing failed for: " + userAgent);
   }
   if (userAgent.contains("windows ")) {
     isWindows=true;
