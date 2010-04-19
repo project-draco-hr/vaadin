@@ -1,0 +1,24 @@
+{
+  final Label showID=new Label("");
+  final Table testTable=new Table();
+  BeanItemContainer<TestItem> cont=new BeanItemContainer<TestItem>(TestItem.class);
+  for (int i=0; i < 20; i++) {
+    TestItem ti=new TestItem();
+    ti.setTestName("Name_" + i);
+    cont.addBean(ti);
+  }
+  testTable.setContainerDataSource(cont);
+  testTable.setImmediate(true);
+  testTable.setSelectable(true);
+  testTable.setMultiSelect(false);
+  testTable.setVisibleColumns(new Object[]{"testName"});
+  testTable.addListener(new Property.ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      System.out.println("ValueChanged: " + testTable.getValue().toString());
+      showID.setCaption("ID: " + testTable.getValue().toString());
+    }
+  }
+);
+  addComponent(testTable);
+  addComponent(showID);
+}
