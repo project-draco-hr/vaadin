@@ -1,29 +1,41 @@
 {
-  w--;
   if (ensureDefinedWidth) {
     expandRatio=0;
   }
   if (width == w) {
     return;
   }
-  if (width == -1) {
+  width=w;
+  if (width <= 0) {
     DOM.setStyleAttribute(captionContainer,"overflow","");
   }
-  width=w;
   if (w == -1) {
     DOM.setStyleAttribute(captionContainer,"width","");
     setWidth("");
   }
  else {
-    captionContainer.getStyle().setPropertyPx("width",w);
+    int borderWidths=1;
+    if (BrowserInfo.get().isIE6()) {
+      borderWidths+=2;
+    }
+    if (w - borderWidths >= 0) {
+      captionContainer.getStyle().setPropertyPx("width",w - borderWidths);
+    }
+ else {
+      captionContainer.getStyle().setPropertyPx("width",0);
+    }
     if (scrollBody != null) {
-      int tdWidth=width + scrollBody.getCellExtraWidth();
+      int tdWidth=width + scrollBody.getCellExtraWidth() - borderWidths;
       setWidth(tdWidth + "px");
     }
  else {
       DeferredCommand.addCommand(new Command(){
         public void execute(){
-          int tdWidth=width + scrollBody.getCellExtraWidth();
+          int borderWidths=1;
+          if (BrowserInfo.get().isIE6()) {
+            borderWidths+=2;
+          }
+          int tdWidth=width + scrollBody.getCellExtraWidth() - borderWidths;
           setWidth(tdWidth + "px");
         }
       }
