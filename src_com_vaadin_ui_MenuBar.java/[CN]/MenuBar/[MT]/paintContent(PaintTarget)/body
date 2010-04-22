@@ -15,46 +15,8 @@
   }
   target.endTag("options");
   target.startTag("items");
-  Iterator<MenuItem> itr=menuItems.iterator();
-  while (itr.hasNext()) {
-    MenuItem item=itr.next();
-    if (!item.isVisible()) {
-      continue;
-    }
-    target.startTag("item");
-    target.addAttribute("id",item.getId());
-    if (item.getStyleName() != null) {
-      target.addAttribute("style",item.getStyleName());
-    }
-    if (item.isSeparator()) {
-      target.addAttribute("separator",true);
-      target.endTag("item");
-    }
- else {
-      target.addAttribute("text",item.getText());
-      Command command=item.getCommand();
-      if (command != null) {
-        target.addAttribute("command",true);
-      }
-      Resource icon=item.getIcon();
-      if (icon != null) {
-        target.addAttribute("icon",icon);
-      }
-      if (!item.isEnabled()) {
-        target.addAttribute("disabled",true);
-      }
-      if (item.hasChildren()) {
-        iteratorStack.push(itr);
-        itr=item.getChildren().iterator();
-      }
- else {
-        target.endTag("item");
-      }
-    }
-    while (!itr.hasNext() && !iteratorStack.empty()) {
-      itr=iteratorStack.pop();
-      target.endTag("item");
-    }
+  for (  MenuItem item : menuItems) {
+    paintItem(target,item);
   }
   target.endTag("items");
 }
