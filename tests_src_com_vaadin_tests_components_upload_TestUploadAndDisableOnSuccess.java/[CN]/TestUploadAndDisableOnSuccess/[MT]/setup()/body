@@ -1,35 +1,23 @@
 {
   super.setup();
+  final Label labe=new Label();
+  addComponent(labe);
   final Upload u;
-  u=new Upload("Undefined wide upload",this);
+  u=new Upload(null,this);
   u.setImmediate(true);
   addTestComponent(u);
   l=new Label(getUploadcount());
   addComponent(l);
   u.addListener(new Upload.StartedListener(){
     public void uploadStarted(    StartedEvent event){
-      addComponent(new Label("SluggishLabel"){
-        @Override public void paintContent(        PaintTarget target) throws PaintException {
-          try {
-            Thread.sleep(600);
-          }
- catch (          InterruptedException e) {
-            e.printStackTrace();
-          }
-          super.paintContent(target);
-        }
-      }
-);
+      getLayout().removeComponent(labe);
     }
   }
 );
   u.addListener(new Upload.FinishedListener(){
     public void uploadFinished(    FinishedEvent event){
       getMainWindow().showNotification("Done");
-      u.setEnabled(false);
-      Label l2=new Label(getUploadcount());
-      getLayout().replaceComponent(l,l2);
-      l=l2;
+      l.setValue(getUploadcount());
     }
   }
 );
