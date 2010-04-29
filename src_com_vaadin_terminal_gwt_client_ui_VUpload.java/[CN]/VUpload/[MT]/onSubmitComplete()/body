@@ -1,0 +1,20 @@
+{
+  DeferredCommand.addCommand(new Command(){
+    public void execute(){
+      if (client != null) {
+        if (t != null) {
+          t.cancel();
+        }
+        ApplicationConnection.getConsole().log("Submit complete");
+        client.sendPendingVariableChanges();
+      }
+      rebuildPanel();
+      submitted=false;
+      enableUpload();
+      if (!isAttached()) {
+        cleanTargetFrame();
+      }
+    }
+  }
+);
+}
