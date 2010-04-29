@@ -51,10 +51,12 @@
   }
   if (uidl.hasVariable("selected")) {
     final Set<String> selectedKeys=uidl.getStringArrayVariableAsSet("selected");
-    selectedRowKeys.clear();
-    selectedRowRanges.clear();
+    deselectAll();
     for (    String string : selectedKeys) {
-      selectedRowKeys.add(string);
+      VScrollTableRow row=getRenderedRowByKey(string);
+      if (row != null && !row.isSelected()) {
+        row.toggleSelection(false);
+      }
     }
   }
   if (uidl.hasAttribute("selectmode")) {

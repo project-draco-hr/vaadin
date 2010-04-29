@@ -9,33 +9,37 @@ case Event.ONDBLCLICK:
 case Event.ONMOUSEUP:
     mDown=false;
   handleClickEvent(event,targetTdOrTr);
+onFocus(null);
 if (event.getButton() == Event.BUTTON_LEFT && selectMode > Table.SELECT_MODE_NONE) {
-  if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
-    toggleShiftSelection(false);
-  }
- else   if ((event.getCtrlKey() || event.getMetaKey()) && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
-    toggleSelection(true);
-  }
- else   if (event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
-    toggleShiftSelection(true);
-  }
+if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+  toggleShiftSelection(false);
+  setRowFocus(this);
+}
+ else if ((event.getCtrlKey() || event.getMetaKey()) && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+  toggleSelection(true);
+  setRowFocus(this);
+}
+ else if (event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+  toggleShiftSelection(true);
+}
  else {
-    if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
-      deselectAll();
-    }
-    toggleSelection(multiselectmode == MULTISELECT_MODE_DEFAULT);
-  }
-  if (BrowserInfo.get().isIE()) {
-    ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",null);
-  }
   if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
-    Set<String> ranges=new HashSet<String>();
-    for (    SelectionRange range : selectedRowRanges) {
-      ranges.add(range.toString());
-    }
-    client.updateVariable(paintableId,"selectedRanges",ranges.toArray(new String[selectedRowRanges.size()]),false);
+    deselectAll();
   }
-  client.updateVariable(paintableId,"selected",selectedRowKeys.toArray(new String[selectedRowKeys.size()]),immediate);
+  toggleSelection(multiselectmode == MULTISELECT_MODE_DEFAULT);
+  setRowFocus(this);
+}
+if (BrowserInfo.get().isIE()) {
+  ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",null);
+}
+if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
+  Set<String> ranges=new HashSet<String>();
+  for (  SelectionRange range : selectedRowRanges) {
+    ranges.add(range.toString());
+  }
+  client.updateVariable(paintableId,"selectedRanges",ranges.toArray(new String[selectedRowRanges.size()]),false);
+}
+client.updateVariable(paintableId,"selected",selectedRowKeys.toArray(new String[selectedRowKeys.size()]),immediate);
 }
 break;
 case Event.ONCONTEXTMENU:

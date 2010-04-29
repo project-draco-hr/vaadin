@@ -1,0 +1,39 @@
+{
+  if (selectMode == SELECT_MODE_NONE && event.getKeyCode() == getNavigationDownKey()) {
+    bodyContainer.setScrollPosition(bodyContainer.getScrollPosition() + 5);
+    event.preventDefault();
+  }
+ else   if (event.getKeyCode() == getNavigationDownKey()) {
+    if (moveSelectionDown()) {
+      if (event.getShiftKey()) {
+        selectFocusedRow(false,true);
+      }
+      event.preventDefault();
+    }
+  }
+  if (selectMode == SELECT_MODE_NONE && event.getKeyCode() == getNavigationUpKey()) {
+    bodyContainer.setScrollPosition(bodyContainer.getScrollPosition() - 5);
+    event.preventDefault();
+  }
+ else   if (event.getKeyCode() == getNavigationUpKey()) {
+    if (moveSelectionUp()) {
+      if (event.getShiftKey()) {
+        selectFocusedRow(false,true);
+      }
+      event.preventDefault();
+    }
+  }
+ else   if (event.getKeyCode() == getNavigationLeftKey()) {
+    bodyContainer.setHorizontalScrollPosition(bodyContainer.getHorizontalScrollPosition() - 5);
+    event.preventDefault();
+  }
+ else   if (event.getKeyCode() == getNavigationRightKey()) {
+    bodyContainer.setHorizontalScrollPosition(bodyContainer.getHorizontalScrollPosition() + 5);
+    event.preventDefault();
+  }
+  if (selectMode > SELECT_MODE_NONE && event.getKeyCode() == getNavigationSelectKey()) {
+    selectFocusedRow(event.getCtrlKey() || event.getMetaKey(),event.getShiftKey());
+    event.preventDefault();
+    client.updateVariable(paintableId,"selected",selectedRowKeys.toArray(new String[selectedRowKeys.size()]),immediate);
+  }
+}
