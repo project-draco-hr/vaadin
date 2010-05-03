@@ -8,7 +8,7 @@
       isStarted=true;
       VDropHandler dh=null;
       if (startEvent != null) {
-        dh=findDragTarget((Element)currentDrag.getCurrentGwtEvent().getEventTarget().cast());
+        dh=findDragTarget(Element.as(currentDrag.getCurrentGwtEvent().getEventTarget()));
       }
       if (dh != null) {
         currentDropHandler=dh;
@@ -31,21 +31,29 @@
         int typeInt=event.getTypeInt();
 switch (typeInt) {
 case Event.ONMOUSEOVER:
-          if (dragElement == null || !dragElement.isOrHasChild((Node)event.getNativeEvent().getCurrentEventTarget().cast())) {
+          if (dragElement == null) {
             break;
           }
+        EventTarget currentEventTarget=event.getNativeEvent().getCurrentEventTarget();
+      if (Node.is(currentEventTarget) && !dragElement.isOrHasChild(Node.as(currentEventTarget))) {
+        break;
+      }
 case Event.ONKEYDOWN:
 case Event.ONKEYPRESS:
 case Event.ONKEYUP:
 case Event.ONBLUR:
-        break;
+    break;
 case Event.ONMOUSEOUT:
-      if (dragElement == null || !dragElement.isOrHasChild((Node)event.getNativeEvent().getRelatedEventTarget().cast())) {
-        break;
-      }
+  if (dragElement == null) {
+    break;
+  }
+EventTarget relatedEventTarget=event.getNativeEvent().getRelatedEventTarget();
+if (Node.is(relatedEventTarget) && !dragElement.isOrHasChild(Node.as(relatedEventTarget))) {
+break;
+}
 case Event.ONMOUSEMOVE:
-    deferredStartRegistration.removeHandler();
-  deferredStartRegistration=null;
+deferredStartRegistration.removeHandler();
+deferredStartRegistration=null;
 currentDrag.setCurrentGwtEvent(event.getNativeEvent());
 startDrag.execute();
 break;
