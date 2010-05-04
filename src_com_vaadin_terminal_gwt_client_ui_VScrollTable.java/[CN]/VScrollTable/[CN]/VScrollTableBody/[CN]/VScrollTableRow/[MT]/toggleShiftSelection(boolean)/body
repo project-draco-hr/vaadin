@@ -14,15 +14,23 @@
   if (deselectPrevious) {
     deselectAll();
   }
-  for (int r=startKey; r <= endKey; r++) {
-    if (r != rowKey) {
-      VScrollTableRow row=getRenderedRowByKey(String.valueOf(r));
-      if (row != null && !row.isSelected()) {
-        row.toggleSelection(false);
-        selectedRowKeys.add(String.valueOf(r));
-      }
+  VScrollTableRow startRow=getRenderedRowByKey(String.valueOf(startKey));
+  VScrollTableRow endRow=getRenderedRowByKey(String.valueOf(endKey));
+  if (startRow == null) {
+    startRow=(VScrollTableRow)scrollBody.iterator().next();
+  }
+  Iterator<Widget> rows=scrollBody.iterator();
+  boolean startSelection=false;
+  while (rows.hasNext()) {
+    VScrollTableRow row=(VScrollTableRow)rows.next();
+    if (row == startRow || startSelection) {
+      startSelection=true;
+      row.toggleSelection(false);
+      selectedRowKeys.add(row.getKey());
+    }
+    if (row == endRow && row != null) {
+      startSelection=false;
     }
   }
-  toggleSelection(false);
   selectedRowRanges.add(new SelectionRange(startKey,endKey));
 }
