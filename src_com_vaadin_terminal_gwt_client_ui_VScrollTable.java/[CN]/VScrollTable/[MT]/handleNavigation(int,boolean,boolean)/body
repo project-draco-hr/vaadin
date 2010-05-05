@@ -1,40 +1,39 @@
 {
-  if (event.getKeyCode() == KeyCodes.KEY_TAB) {
-    return;
+  if (keycode == KeyCodes.KEY_TAB) {
+    return false;
   }
-  if (selectMode == SELECT_MODE_NONE && event.getKeyCode() == getNavigationDownKey()) {
+  if (selectMode == SELECT_MODE_NONE && keycode == getNavigationDownKey()) {
     bodyContainer.setScrollPosition(bodyContainer.getScrollPosition() + scrollingVelocity);
   }
- else   if (event.getKeyCode() == getNavigationDownKey()) {
+ else   if (keycode == getNavigationDownKey()) {
     if (selectMode == SELECT_MODE_MULTI && moveFocusDown()) {
-      selectFocusedRow(event.getCtrlKey() || event.getMetaKey(),event.getShiftKey());
+      selectFocusedRow(ctrl,shift);
     }
- else     if (selectMode == SELECT_MODE_SINGLE && !event.getShiftKey() && moveFocusDown()) {
-      selectFocusedRow(event.getCtrlKey() || event.getMetaKey(),event.getShiftKey());
+ else     if (selectMode == SELECT_MODE_SINGLE && !shift && moveFocusDown()) {
+      selectFocusedRow(ctrl,shift);
     }
   }
-  if (selectMode == SELECT_MODE_NONE && event.getKeyCode() == getNavigationUpKey()) {
+  if (selectMode == SELECT_MODE_NONE && keycode == getNavigationUpKey()) {
     bodyContainer.setScrollPosition(bodyContainer.getScrollPosition() - scrollingVelocity);
   }
- else   if (event.getKeyCode() == getNavigationUpKey()) {
+ else   if (keycode == getNavigationUpKey()) {
     if (selectMode == SELECT_MODE_MULTI && moveFocusUp()) {
-      selectFocusedRow(event.getCtrlKey() || event.getMetaKey(),event.getShiftKey());
+      selectFocusedRow(ctrl,shift);
     }
- else     if (selectMode == SELECT_MODE_SINGLE && !event.getShiftKey() && moveFocusUp()) {
-      selectFocusedRow(event.getCtrlKey() || event.getMetaKey(),event.getShiftKey());
+ else     if (selectMode == SELECT_MODE_SINGLE && !shift && moveFocusUp()) {
+      selectFocusedRow(ctrl,shift);
     }
   }
-  if (event.getKeyCode() == getNavigationLeftKey()) {
+  if (keycode == getNavigationLeftKey()) {
     bodyContainer.setHorizontalScrollPosition(bodyContainer.getHorizontalScrollPosition() - scrollingVelocity);
   }
- else   if (event.getKeyCode() == getNavigationRightKey()) {
+ else   if (keycode == getNavigationRightKey()) {
     bodyContainer.setHorizontalScrollPosition(bodyContainer.getHorizontalScrollPosition() + scrollingVelocity);
   }
-  if (selectMode > SELECT_MODE_NONE && event.getKeyCode() == getNavigationSelectKey()) {
+  if (selectMode > SELECT_MODE_NONE && keycode == getNavigationSelectKey()) {
     if (selectMode == SELECT_MODE_SINGLE) {
       boolean wasSelected=focusedRow.isSelected();
       deselectAll();
-      lastSelectedRowKey=-1;
       if (!wasSelected) {
         focusedRow.toggleSelection(true);
       }
@@ -44,7 +43,7 @@
     }
     sendSelectedRows();
   }
-  if (event.getKeyCode() == getNavigationPageDownKey()) {
+  if (keycode == getNavigationPageDownKey()) {
     int rowHeight=(int)scrollBody.getRowHeight();
     int offset=pageLength * rowHeight - rowHeight;
     bodyContainer.setScrollPosition(bodyContainer.getScrollPosition() + offset);
@@ -64,7 +63,7 @@
       }
     }
   }
-  if (event.getKeyCode() == getNavigationPageUpKey()) {
+  if (keycode == getNavigationPageUpKey()) {
     int rowHeight=(int)scrollBody.getRowHeight();
     int offset=pageLength * rowHeight - rowHeight;
     bodyContainer.setScrollPosition(bodyContainer.getScrollPosition() - offset);
@@ -84,10 +83,10 @@
       }
     }
   }
-  if (event.getKeyCode() == getNavigationStartKey()) {
+  if (keycode == getNavigationStartKey()) {
     if (selectMode > SELECT_MODE_NONE) {
       final int firstRendered=scrollBody.getFirstRendered();
-      boolean focusOnly=event.getCtrlKey() || event.getMetaKey();
+      boolean focusOnly=ctrl;
       if (firstRendered == 0) {
         selectFirstRenderedRow(focusOnly);
       }
@@ -100,10 +99,10 @@
     }
     bodyContainer.setScrollPosition(0);
   }
-  if (event.getKeyCode() == getNavigationEndKey()) {
+  if (keycode == getNavigationEndKey()) {
     if (selectMode > SELECT_MODE_NONE) {
       final int lastRendered=scrollBody.getLastRendered();
-      boolean focusOnly=event.getCtrlKey() || event.getMetaKey();
+      boolean focusOnly=ctrl;
       if (lastRendered == totalRows - 1) {
         selectLastRenderedRow(focusOnly);
       }
@@ -116,5 +115,5 @@
     }
     bodyContainer.setScrollPosition(scrollBody.getOffsetHeight());
   }
-  event.preventDefault();
+  return true;
 }

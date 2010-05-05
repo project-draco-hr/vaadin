@@ -1,10 +1,16 @@
 {
-  if (selectedRowKeys.isEmpty() || lastSelectedRowKey < 0 || selectMode == SELECT_MODE_SINGLE) {
+  if (selectMode == SELECT_MODE_SINGLE) {
     deselectAll();
     toggleSelection(true);
     return;
   }
-  int startKey=lastSelectedRowKey;
+  int startKey;
+  if (selectionRangeStart != null) {
+    startKey=Integer.valueOf(selectionRangeStart.getKey());
+  }
+ else {
+    startKey=Integer.valueOf(focusedRow.getKey());
+  }
   int endKey=rowKey;
   if (endKey < startKey) {
     startKey^=endKey;
@@ -25,12 +31,16 @@
     VScrollTableRow row=(VScrollTableRow)rows.next();
     if (row == startRow || startSelection) {
       startSelection=true;
-      row.toggleSelection(false);
+      if (!row.isSelected()) {
+        row.toggleSelection(false);
+      }
       selectedRowKeys.add(row.getKey());
     }
     if (row == endRow && row != null) {
       startSelection=false;
     }
   }
-  selectedRowRanges.add(new SelectionRange(startKey,endKey));
+  if (startRow != endRow) {
+    selectedRowRanges.add(new SelectionRange(startKey,endKey));
+  }
 }
