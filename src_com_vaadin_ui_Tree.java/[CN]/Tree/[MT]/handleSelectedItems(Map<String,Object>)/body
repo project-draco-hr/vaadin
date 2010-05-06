@@ -1,0 +1,18 @@
+{
+  final String[] ka=(String[])variables.get("selected");
+  final LinkedList s=new LinkedList();
+  for (int i=0; i < ka.length; i++) {
+    final Object id=itemIdMapper.get(ka[i]);
+    if (!isNullSelectionAllowed() && (id == null || id == getNullSelectionItemId())) {
+      requestRepaint();
+    }
+ else     if (id != null && containsId(id)) {
+      s.add(id);
+    }
+  }
+  if (!isNullSelectionAllowed() && s.size() < 1) {
+    requestRepaint();
+    return;
+  }
+  setValue(s,true);
+}

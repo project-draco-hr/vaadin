@@ -1,0 +1,38 @@
+{
+  TreeNode parent=startNode.getParentNode();
+  List<TreeNode> children=new LinkedList<TreeNode>();
+  if (parent == null) {
+    for (    Widget w : getChildren()) {
+      TreeNode node=(TreeNode)w;
+      children.add(node);
+    }
+  }
+ else {
+    children=parent.getChildren();
+  }
+  if (children.indexOf(startNode) > children.indexOf(endNode)) {
+    TreeNode temp=startNode;
+    startNode=endNode;
+    endNode=temp;
+  }
+  Iterator<TreeNode> childIter=children.iterator();
+  boolean startFound=false;
+  while (childIter.hasNext()) {
+    TreeNode node=childIter.next();
+    if (node == startNode) {
+      startFound=true;
+    }
+    if (startFound && node != endNode && node.getState()) {
+      selectAllChildren(node,true);
+    }
+ else     if (startFound && node != endNode) {
+      node.setSelected(true);
+      selectedIds.add(node.key);
+    }
+    if (node == endNode) {
+      node.setSelected(true);
+      selectedIds.add(node.key);
+      break;
+    }
+  }
+}

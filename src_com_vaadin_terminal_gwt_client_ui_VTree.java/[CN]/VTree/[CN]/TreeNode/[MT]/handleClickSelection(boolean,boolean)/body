@@ -1,0 +1,26 @@
+{
+  if (multiSelectMode == MULTISELECT_MODE_SIMPLE || !isMultiselect) {
+    toggleSelection();
+    lastSelection=this;
+  }
+ else   if (multiSelectMode == MULTISELECT_MODE_DEFAULT) {
+    if (isMultiselect && ctrl && !shift) {
+      toggleSelection();
+      lastSelection=this;
+    }
+ else     if (isMultiselect && !ctrl && shift) {
+      deselectAll();
+      selectNodeRange(lastSelection.key,key);
+      sendSelectionToServer();
+    }
+ else     if (isMultiselect && ctrl && shift) {
+      selectNodeRange(lastSelection.key,key);
+    }
+ else {
+      deselectAll();
+      toggleSelection();
+      lastSelection=this;
+    }
+  }
+  return true;
+}

@@ -1,0 +1,27 @@
+{
+  if (includeRootNode) {
+    root.setSelected(true);
+    selectedIds.add(root.key);
+  }
+  if (root.getState() && root != stopNode) {
+    for (    TreeNode child : root.getChildren()) {
+      if (!child.isLeaf() && child.getState() && child != stopNode) {
+        if (!selectAllChildrenUntil(child,stopNode,true,includeStopNode)) {
+          return false;
+        }
+      }
+ else       if (child == stopNode) {
+        if (includeStopNode) {
+          child.setSelected(true);
+          selectedIds.add(child.key);
+        }
+        return false;
+      }
+ else       if (child.isLeaf()) {
+        child.setSelected(true);
+        selectedIds.add(child.key);
+      }
+    }
+  }
+  return true;
+}

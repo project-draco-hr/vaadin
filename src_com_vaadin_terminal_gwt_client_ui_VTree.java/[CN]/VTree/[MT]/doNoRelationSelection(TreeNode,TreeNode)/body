@@ -1,0 +1,46 @@
+{
+  TreeNode commonParent=getCommonGrandParent(startNode,endNode);
+  TreeNode startBranch=null, endBranch=null;
+  List<TreeNode> children;
+  if (commonParent != null) {
+    children=commonParent.getChildren();
+  }
+ else {
+    children=new LinkedList<TreeNode>();
+    for (    Widget w : getChildren()) {
+      children.add((TreeNode)w);
+    }
+  }
+  for (  TreeNode node : children) {
+    if (nodeIsInBranch(startNode,node)) {
+      startBranch=node;
+    }
+    if (nodeIsInBranch(endNode,node)) {
+      endBranch=node;
+    }
+  }
+  if (children.indexOf(startBranch) > children.indexOf(endBranch)) {
+    TreeNode temp=startBranch;
+    startBranch=endBranch;
+    endBranch=temp;
+    temp=startNode;
+    startNode=endNode;
+    endNode=temp;
+  }
+  selectAllChildren(startNode,true);
+  TreeNode startParent=startNode.getParentNode();
+  TreeNode currentNode=startNode;
+  while (startParent != null && startParent != commonParent) {
+    List<TreeNode> startChildren=startParent.getChildren();
+    for (int i=startChildren.indexOf(currentNode) + 1; i < startChildren.size(); i++) {
+      selectAllChildren(startChildren.get(i),true);
+    }
+    currentNode=startParent;
+    startParent=startParent.getParentNode();
+  }
+  for (int i=children.indexOf(startBranch) + 1; i <= children.indexOf(endBranch); i++) {
+    selectAllChildrenUntil(children.get(i),endNode,true,true);
+  }
+  endNode.setSelected(true);
+  selectedIds.add(endNode.key);
+}

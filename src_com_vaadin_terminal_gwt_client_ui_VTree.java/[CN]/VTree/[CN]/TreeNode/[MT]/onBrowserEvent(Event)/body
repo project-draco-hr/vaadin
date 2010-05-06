@@ -14,12 +14,17 @@
       toggleState();
     }
  else     if (!readonly && inCaption) {
-      toggleSelection();
+      if (handleClickSelection(event.getCtrlKey() || event.getMetaKey(),event.getShiftKey())) {
+        event.preventDefault();
+      }
     }
     DOM.eventCancelBubble(event,true);
   }
  else   if (type == Event.ONCONTEXTMENU) {
     showContextMenu(event);
+  }
+  if (type == Event.ONMOUSEDOWN) {
+    event.preventDefault();
   }
   if (dragMode != 0 || dropHandler != null) {
     if (type == Event.ONMOUSEDOWN) {
