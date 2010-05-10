@@ -1,0 +1,103 @@
+{
+  if (keycode == getNavigationDownKey()) {
+    TreeNode node=null;
+    if (!focusedNode.isLeaf() && focusedNode.getState() && focusedNode.getChildren().size() > 0) {
+      node=focusedNode.getChildren().get(0);
+    }
+ else {
+      node=getNextSibling(focusedNode);
+      if (node == null) {
+        TreeNode current=focusedNode;
+        while (node == null && current.getParentNode() != null) {
+          node=getNextSibling(current.getParentNode());
+          current=current.getParentNode();
+        }
+      }
+    }
+    if (node != null) {
+      setFocusedNode(node);
+      if (!ctrl && !shift) {
+        selectNode(node,true);
+      }
+ else       if (shift) {
+        deselectAll();
+        selectNodeRange(lastSelection.key,node.key);
+      }
+    }
+    return true;
+  }
+  if (keycode == getNavigationUpKey()) {
+    TreeNode prev=getPreviousSibling(focusedNode);
+    TreeNode node=null;
+    if (prev != null) {
+      node=getLastVisibleChildInTree(prev);
+    }
+ else     if (focusedNode.getParentNode() != null) {
+      node=focusedNode.getParentNode();
+    }
+    if (node != null) {
+      setFocusedNode(node);
+      if (!ctrl && !shift) {
+        selectNode(node,true);
+      }
+ else       if (shift) {
+        deselectAll();
+        selectNodeRange(lastSelection.key,node.key);
+      }
+    }
+    return true;
+  }
+  if (keycode == getNavigationLeftKey()) {
+    if (!focusedNode.isLeaf() && focusedNode.getState()) {
+      focusedNode.setState(false,true);
+    }
+    return true;
+  }
+  if (keycode == getNavigationRightKey()) {
+    if (!focusedNode.isLeaf() && !focusedNode.getState()) {
+      focusedNode.setState(true,true);
+    }
+    return true;
+  }
+  if (keycode == getNavigationSelectKey()) {
+    if (!focusedNode.isSelected()) {
+      selectNode(focusedNode,!isMultiselect || multiSelectMode == MULTISELECT_MODE_SIMPLE);
+    }
+ else {
+      deselectNode(focusedNode);
+    }
+    return true;
+  }
+  if (keycode == getNavigationStartKey()) {
+    TreeNode node=(TreeNode)body.getWidget(0);
+    if (!ctrl && !shift) {
+      selectNode(node,true);
+    }
+ else     if (ctrl) {
+      setFocusedNode(node);
+    }
+ else     if (shift) {
+      deselectAll();
+      selectNodeRange(focusedNode.key,node.key);
+    }
+    sendSelectionToServer();
+    return true;
+  }
+  if (keycode == getNavigationEndKey()) {
+    TreeNode lastNode=(TreeNode)body.getWidget(body.getWidgetCount() - 1);
+    TreeNode node=getLastVisibleChildInTree(lastNode);
+    if (!ctrl && !shift) {
+      selectNode(node,true);
+    }
+ else     if (ctrl) {
+      setFocusedNode(node);
+    }
+ else     if (shift) {
+      deselectAll();
+      selectNodeRange(focusedNode.key,node.key);
+    }
+    sendSelectionToServer();
+    return true;
+  }
+  return false;
+}

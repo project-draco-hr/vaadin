@@ -1,0 +1,36 @@
+{
+  super.onBrowserEvent(event);
+  if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+    setFocus(true);
+    if (BrowserInfo.get().isIE()) {
+      ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",applyDisableTextSelectionIEHack());
+    }
+    event.preventDefault();
+  }
+ else   if (event.getTypeInt() == Event.ONMOUSEUP) {
+    if (BrowserInfo.get().isIE()) {
+      ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",null);
+    }
+    event.preventDefault();
+  }
+ else   if (event.getTypeInt() == Event.ONKEYUP) {
+    if (selectionHasChanged) {
+      if (event.getKeyCode() == getNavigationDownKey() && !event.getShiftKey()) {
+        sendSelectionToServer();
+        event.preventDefault();
+      }
+ else       if (event.getKeyCode() == getNavigationUpKey() && !event.getShiftKey()) {
+        sendSelectionToServer();
+        event.preventDefault();
+      }
+ else       if (event.getKeyCode() == KeyCodes.KEY_SHIFT) {
+        sendSelectionToServer();
+        event.preventDefault();
+      }
+ else       if (event.getKeyCode() == getNavigationSelectKey()) {
+        sendSelectionToServer();
+        event.preventDefault();
+      }
+    }
+  }
+}
