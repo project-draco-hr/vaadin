@@ -1,0 +1,35 @@
+{
+  if (rowheads) {
+    if (cells[CELL_ICON][indexInRowbuffer] != null) {
+      target.addAttribute("icon",(Resource)cells[CELL_ICON][indexInRowbuffer]);
+    }
+    if (cells[CELL_HEADER][indexInRowbuffer] != null) {
+      target.addAttribute("caption",(String)cells[CELL_HEADER][indexInRowbuffer]);
+    }
+  }
+  target.addAttribute("key",Integer.parseInt(cells[CELL_KEY][indexInRowbuffer].toString()));
+  if (isSelected(itemId)) {
+    target.addAttribute("selected",true);
+  }
+  if (actionHandlers != null) {
+    final ArrayList<String> keys=new ArrayList<String>();
+    for (final Iterator<Handler> ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
+      final Action[] aa=(ahi.next()).getActions(itemId,this);
+      if (aa != null) {
+        for (int ai=0; ai < aa.length; ai++) {
+          final String key=actionMapper.key(aa[ai]);
+          actionSet.add(aa[ai]);
+          keys.add(key);
+        }
+      }
+    }
+    target.addAttribute("al",keys.toArray());
+  }
+  if (cellStyleGenerator != null) {
+    String rowStyle=cellStyleGenerator.getStyle(itemId,null);
+    if (rowStyle != null && !rowStyle.equals("")) {
+      target.addAttribute("rowstyle",rowStyle);
+    }
+  }
+  renderRowAttributes(target,itemId);
+}

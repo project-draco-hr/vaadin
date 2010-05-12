@@ -12,7 +12,7 @@
   }
   if (items instanceof Container.Indexed) {
     try {
-      currentPageFirstItemId=((Container.Indexed)items).getIdByIndex(newIndex);
+      currentPageFirstItemId=getIdByIndex(newIndex);
     }
  catch (    final IndexOutOfBoundsException e) {
       currentPageFirstItemId=null;
@@ -20,26 +20,26 @@
     currentPageFirstItemIndex=newIndex;
   }
  else {
-    currentPageFirstItemId=((Container.Ordered)items).firstItemId();
-    while (currentPageFirstItemIndex < newIndex && !((Container.Ordered)items).isLastId(currentPageFirstItemId)) {
+    currentPageFirstItemId=firstItemId();
+    while (currentPageFirstItemIndex < newIndex && !isLastId(currentPageFirstItemId)) {
       currentPageFirstItemIndex++;
-      currentPageFirstItemId=((Container.Ordered)items).nextItemId(currentPageFirstItemId);
+      currentPageFirstItemId=nextItemId(currentPageFirstItemId);
     }
-    if (((Container.Ordered)items).isLastId(currentPageFirstItemId)) {
+    if (isLastId(currentPageFirstItemId)) {
       currentPageFirstItemIndex=size - 1;
     }
-    while (currentPageFirstItemIndex > newIndex && !((Container.Ordered)items).isFirstId(currentPageFirstItemId)) {
+    while (currentPageFirstItemIndex > newIndex && !isFirstId(currentPageFirstItemId)) {
       currentPageFirstItemIndex--;
-      currentPageFirstItemId=((Container.Ordered)items).prevItemId(currentPageFirstItemId);
+      currentPageFirstItemId=prevItemId(currentPageFirstItemId);
     }
-    if (((Container.Ordered)items).isFirstId(currentPageFirstItemId)) {
+    if (isFirstId(currentPageFirstItemId)) {
       currentPageFirstItemIndex=0;
     }
-    while (currentPageFirstItemIndex < newIndex && !((Container.Ordered)items).isLastId(currentPageFirstItemId)) {
+    while (currentPageFirstItemIndex < newIndex && !isLastId(currentPageFirstItemId)) {
       currentPageFirstItemIndex++;
-      currentPageFirstItemId=((Container.Ordered)items).nextItemId(currentPageFirstItemId);
+      currentPageFirstItemId=nextItemId(currentPageFirstItemId);
     }
-    if (((Container.Ordered)items).isLastId(currentPageFirstItemId)) {
+    if (isLastId(currentPageFirstItemId)) {
       newIndex=currentPageFirstItemIndex=size - 1;
     }
   }
