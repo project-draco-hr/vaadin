@@ -3,8 +3,10 @@
     target.addAttribute("hidetabs",true);
   }
   target.startTag("tabs");
+  Collection<Component> orphaned=new HashSet<Component>(paintedTabs);
   for (final Iterator<Component> i=getComponentIterator(); i.hasNext(); ) {
     final Component component=i.next();
+    orphaned.remove(component);
     Tab tab=tabs.get(component);
     Tab selectedTabInfo=null;
     if (selected != null) {
@@ -61,5 +63,8 @@
   target.endTag("tabs");
   if (selected != null) {
     target.addVariable(this,"selected",keyMapper.key(selected));
+  }
+  for (  Component component2 : orphaned) {
+    paintedTabs.remove(component2);
   }
 }
