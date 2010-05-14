@@ -15,7 +15,6 @@
   final int pagelen=getPageLength();
   final int colHeadMode=getColumnHeaderMode();
   final boolean colheads=colHeadMode != COLUMN_HEADER_MODE_HIDDEN;
-  final boolean rowheads=getRowHeaderMode() != ROW_HEADER_MODE_HIDDEN;
   final Object[][] cells=getVisibleCells();
   final boolean iseditable=isEditable();
   int rows;
@@ -71,7 +70,7 @@
   if (colheads) {
     target.addAttribute("colheaders",true);
   }
-  if (rowheads) {
+  if (getRowHeaderMode() != ROW_HEADER_MODE_HIDDEN) {
     target.addAttribute("rowheaders",true);
   }
   if (columnFootersVisible) {
@@ -120,7 +119,7 @@
     if (!isNullSelectionAllowed() && getNullSelectionItemId() != null && itemId == getNullSelectionItemId()) {
       continue;
     }
-    paintRow(target,rowheads,cells,iseditable,actionSet,iscomponent,indexInRowbuffer,itemId);
+    paintRow(target,cells,iseditable,actionSet,iscomponent,indexInRowbuffer,itemId);
   }
   target.endTag("rows");
   if (selectable) {
