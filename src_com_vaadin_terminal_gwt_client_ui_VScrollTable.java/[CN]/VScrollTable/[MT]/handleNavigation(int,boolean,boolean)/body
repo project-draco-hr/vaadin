@@ -4,6 +4,7 @@
   }
   if (selectMode == SELECT_MODE_NONE && keycode == getNavigationDownKey()) {
     bodyContainer.setScrollPosition(bodyContainer.getScrollPosition() + scrollingVelocity);
+    return true;
   }
  else   if (keycode == getNavigationDownKey()) {
     if (selectMode == SELECT_MODE_MULTI && moveFocusDown()) {
@@ -12,9 +13,11 @@
  else     if (selectMode == SELECT_MODE_SINGLE && !shift && moveFocusDown()) {
       selectFocusedRow(ctrl,shift);
     }
+    return true;
   }
   if (selectMode == SELECT_MODE_NONE && keycode == getNavigationUpKey()) {
     bodyContainer.setScrollPosition(bodyContainer.getScrollPosition() - scrollingVelocity);
+    return true;
   }
  else   if (keycode == getNavigationUpKey()) {
     if (selectMode == SELECT_MODE_MULTI && moveFocusUp()) {
@@ -23,9 +26,11 @@
  else     if (selectMode == SELECT_MODE_SINGLE && !shift && moveFocusUp()) {
       selectFocusedRow(ctrl,shift);
     }
+    return true;
   }
   if (keycode == getNavigationLeftKey()) {
     bodyContainer.setHorizontalScrollPosition(bodyContainer.getHorizontalScrollPosition() - scrollingVelocity);
+    return true;
   }
  else   if (keycode == getNavigationRightKey()) {
     bodyContainer.setHorizontalScrollPosition(bodyContainer.getHorizontalScrollPosition() + scrollingVelocity);
@@ -42,6 +47,7 @@
       focusedRow.toggleSelection(true);
     }
     sendSelectedRows();
+    return true;
   }
   if (keycode == getNavigationPageDownKey()) {
     int rowHeight=(int)scrollBody.getRowHeight();
@@ -62,6 +68,7 @@
         sendSelectedRows();
       }
     }
+    return true;
   }
   if (keycode == getNavigationPageUpKey()) {
     int rowHeight=(int)scrollBody.getRowHeight();
@@ -82,6 +89,7 @@
         sendSelectedRows();
       }
     }
+    return true;
   }
   if (keycode == getNavigationStartKey()) {
     if (selectMode > SELECT_MODE_NONE) {
@@ -98,6 +106,7 @@
       }
     }
     bodyContainer.setScrollPosition(0);
+    return true;
   }
   if (keycode == getNavigationEndKey()) {
     if (selectMode > SELECT_MODE_NONE) {
@@ -114,6 +123,7 @@
       }
     }
     bodyContainer.setScrollPosition(scrollBody.getOffsetHeight());
+    return true;
   }
-  return true;
+  return false;
 }
