@@ -41,7 +41,7 @@
   firstvisible=uidl.hasVariable("firstvisible") ? uidl.getIntVariable("firstvisible") : 0;
   if (firstvisible != lastRequestedFirstvisible && scrollBody != null) {
     firstRowInViewPort=firstvisible;
-    bodyContainer.setScrollPosition((int)(firstvisible * scrollBody.getRowHeight()));
+    scrollBodyPanel.setScrollPosition((int)(firstvisible * scrollBody.getRowHeight()));
   }
   showRowHeaders=uidl.getBooleanAttribute("rowheaders");
   showColHeaders=uidl.getBooleanAttribute("colheaders");
@@ -122,7 +122,7 @@
  else {
       DeferredCommand.addCommand(new Command(){
         public void execute(){
-          Util.runWebkitOverflowAutoFix(bodyContainer.getElement());
+          Util.runWebkitOverflowAutoFix(scrollBodyPanel.getElement());
         }
       }
 );
@@ -135,7 +135,7 @@
     }
     scrollBody=createScrollBody();
     scrollBody.renderInitialRows(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
-    bodyContainer.add(scrollBody);
+    scrollBodyPanel.add(scrollBody);
     initialContentReceived=true;
     if (isAttached()) {
       sizeInit();
