@@ -1,12 +1,18 @@
 {
-  System.out.println("-------------------------------------------------\n" + "Starting Vaadin in " + mode + ".\n"+ "Running in http://localhost:"+ serverPort+ "\n-------------------------------------------------\n");
   assignDefault(serverArgs,"webroot","WebContent");
-  assignDefault(serverArgs,"httpPort",serverPort);
+  assignDefault(serverArgs,"httpPort","" + serverPort);
   assignDefault(serverArgs,"context","");
+  int port=serverPort;
+  try {
+    port=Integer.parseInt(serverArgs.get("httpPort"));
+  }
+ catch (  NumberFormatException e) {
+  }
+  System.out.println("-------------------------------------------------\n" + "Starting Vaadin in " + mode + ".\n"+ "Running in http://localhost:"+ serverPort+ "\n-------------------------------------------------\n");
   try {
     final Server server=new Server();
     final Connector connector=new SelectChannelConnector();
-    connector.setPort(8888);
+    connector.setPort(port);
     server.setConnectors(new Connector[]{connector});
     final WebAppContext webappcontext=new WebAppContext();
     String path=DevelopmentServerLauncher.class.getPackage().getName().replace(".",File.separator);
@@ -20,5 +26,5 @@
     e.printStackTrace();
     return null;
   }
-  return "http://localhost:" + serverArgs.get("httpPort") + serverArgs.get("context");
+  return "http://localhost:" + port + serverArgs.get("context");
 }
