@@ -1,15 +1,24 @@
 {
   if (newValue == null || newValue instanceof Date) {
-    super.setValue(newValue,repaintIsNotNeeded);
+    try {
+      super.setValue(newValue,repaintIsNotNeeded);
+      parsingSucceeded=true;
+    }
+ catch (    InvalidValueException ive) {
+      parsingSucceeded=false;
+      throw ive;
+    }
   }
  else {
     try {
       final SimpleDateFormat parser=new SimpleDateFormat();
       final Date val=parser.parse(newValue.toString());
       super.setValue(val,repaintIsNotNeeded);
+      parsingSucceeded=true;
     }
  catch (    final ParseException e) {
-      throw new Property.ConversionException(e.getMessage());
+      parsingSucceeded=false;
+      throw new Property.ConversionException("Date format not recognized");
     }
   }
 }
