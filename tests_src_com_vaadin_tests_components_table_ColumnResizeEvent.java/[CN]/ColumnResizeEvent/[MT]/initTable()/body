@@ -1,0 +1,40 @@
+{
+  Table table=new Table();
+  table.setWidth("100%");
+  table.setImmediate(true);
+  IndexedContainer idx=new IndexedContainer();
+  idx.addContainerProperty("firstname",String.class,null);
+  idx.addContainerProperty("lastname",String.class,null);
+  Item i=idx.addItem(1);
+  i.getItemProperty("firstname").setValue("John");
+  i.getItemProperty("lastname").setValue("Johnson");
+  i=idx.addItem(2);
+  i.getItemProperty("firstname").setValue("Jane");
+  i.getItemProperty("lastname").setValue("Janeine");
+  for (int index=3; index < ROWS; index++) {
+    i=idx.addItem(index);
+    i.getItemProperty("firstname").setValue("Jane");
+    i.getItemProperty("lastname").setValue("Janeine");
+  }
+  idx.addContainerProperty("150pxfixedCol",String.class,"foobar");
+  table.setContainerDataSource(idx);
+  table.setColumnHeader("firstname","FirstName");
+  table.setColumnHeader("lastname","LastName with long header");
+  table.setColumnWidth("150pxfixedCol",150);
+  column3Width.setValue(table.getColumnWidth("150pxfixedCol") + "px");
+  table.addListener(new ColumnResizeListener(){
+    public void columnResize(    com.vaadin.ui.Table.ColumnResizeEvent event){
+      if (event.getPropertyId().equals("firstname")) {
+        column1Width.setValue(event.getCurrentWidth() + "px (previously " + event.getPreviousWidth()+ "px)");
+      }
+ else       if (event.getPropertyId().equals("lastname")) {
+        column2Width.setValue(event.getCurrentWidth() + "px (previously " + event.getPreviousWidth()+ "px)");
+      }
+ else       if (event.getPropertyId().equals("150pxfixedCol")) {
+        column3Width.setValue(event.getCurrentWidth() + "px (previously " + event.getPreviousWidth()+ "px)");
+      }
+    }
+  }
+);
+  return table;
+}
