@@ -8,6 +8,9 @@
   if (dataSource != null && Property.ValueChangeNotifier.class.isAssignableFrom(dataSource.getClass())) {
     ((Property.ValueChangeNotifier)dataSource).removeListener(this);
   }
+  if (dataSource != null && Property.ReadOnlyStatusChangeNotifier.class.isAssignableFrom(dataSource.getClass())) {
+    ((Property.ReadOnlyStatusChangeNotifier)dataSource).removeListener(this);
+  }
   dataSource=newDataSource;
   try {
     if (dataSource != null) {
@@ -21,6 +24,9 @@
   }
   if (dataSource instanceof Property.ValueChangeNotifier) {
     ((Property.ValueChangeNotifier)dataSource).addListener(this);
+  }
+  if (dataSource instanceof Property.ReadOnlyStatusChangeNotifier) {
+    ((Property.ReadOnlyStatusChangeNotifier)dataSource).addListener(this);
   }
   if (dataSource instanceof Validatable) {
     final Collection<Validator> validators=((Validatable)dataSource).getValidators();
