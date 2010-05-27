@@ -1,0 +1,173 @@
+{
+  if (keycode == KeyCodes.KEY_TAB || ctrl || shift || !isEnabled()) {
+    return false;
+  }
+  if (keycode == getNavigationLeftKey()) {
+    if (getSelected() == null) {
+      setSelected(items.get(items.size() - 1));
+      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+        handleNavigation(keycode,ctrl,shift);
+      }
+    }
+ else     if (visibleChildMenu == null && getParentMenu() == null) {
+      int idx=items.indexOf(getSelected());
+      if (idx > 0) {
+        setSelected(items.get(idx - 1));
+      }
+ else {
+        setSelected(items.get(items.size() - 1));
+      }
+      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+        handleNavigation(keycode,ctrl,shift);
+      }
+    }
+ else     if (visibleChildMenu != null) {
+      visibleChildMenu.handleNavigation(keycode,ctrl,shift);
+    }
+ else     if (getParentMenu().getParentMenu() == null) {
+      VMenuBar root=getParentMenu();
+      root.getSelected().getSubMenu().setSelected(null);
+      root.hideChildren();
+      int idx=root.getItems().indexOf(root.getSelected());
+      idx=idx > 0 ? idx : root.getItems().size();
+      CustomMenuItem selected=root.getItems().get(--idx);
+      while (selected.isSeparator() || !selected.isEnabled()) {
+        idx=idx > 0 ? idx : root.getItems().size();
+        selected=root.getItems().get(--idx);
+      }
+      root.setSelected(selected);
+      root.showChildMenu(selected);
+      VMenuBar submenu=selected.getSubMenu();
+      submenu.setSelected(submenu.getItems().get(0));
+    }
+ else {
+      getParentMenu().getSelected().getSubMenu().setSelected(null);
+      getParentMenu().hideChildren();
+    }
+    return true;
+  }
+ else   if (keycode == getNavigationRightKey()) {
+    if (getSelected() == null) {
+      setSelected(items.get(0));
+      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+        handleNavigation(keycode,ctrl,shift);
+      }
+    }
+ else     if (visibleChildMenu == null && getParentMenu() == null) {
+      int idx=items.indexOf(getSelected());
+      if (idx < items.size() - 1) {
+        setSelected(items.get(idx + 1));
+      }
+ else {
+        setSelected(items.get(0));
+      }
+      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+        handleNavigation(keycode,ctrl,shift);
+      }
+    }
+ else     if (visibleChildMenu == null && getSelected().getSubMenu() != null) {
+      showChildMenu(getSelected());
+      menuVisible=true;
+      visibleChildMenu.handleNavigation(keycode,ctrl,shift);
+    }
+ else     if (visibleChildMenu == null) {
+      VMenuBar root=getParentMenu();
+      while (root.getParentMenu() != null) {
+        root=root.getParentMenu();
+      }
+      root.hideChildren();
+      int idx=root.getItems().indexOf(root.getSelected());
+      idx=idx < root.getItems().size() - 1 ? idx : -1;
+      CustomMenuItem selected=root.getItems().get(++idx);
+      while (selected.isSeparator() || !selected.isEnabled()) {
+        idx=idx < root.getItems().size() - 1 ? idx : -1;
+        selected=root.getItems().get(++idx);
+      }
+      root.setSelected(selected);
+      root.showChildMenu(selected);
+      VMenuBar submenu=selected.getSubMenu();
+      submenu.setSelected(submenu.getItems().get(0));
+    }
+ else     if (visibleChildMenu != null) {
+      visibleChildMenu.handleNavigation(keycode,ctrl,shift);
+    }
+    return true;
+  }
+ else   if (keycode == getNavigationUpKey()) {
+    if (getSelected() == null) {
+      setSelected(items.get(items.size() - 1));
+      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+        handleNavigation(keycode,ctrl,shift);
+      }
+    }
+ else     if (visibleChildMenu != null) {
+      visibleChildMenu.handleNavigation(keycode,ctrl,shift);
+    }
+ else {
+      int idx=items.indexOf(getSelected());
+      if (idx > 0) {
+        setSelected(items.get(idx - 1));
+      }
+ else {
+        setSelected(items.get(items.size() - 1));
+      }
+      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+        handleNavigation(keycode,ctrl,shift);
+      }
+    }
+    return true;
+  }
+ else   if (keycode == getNavigationDownKey()) {
+    if (getSelected() == null) {
+      setSelected(items.get(0));
+      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+        handleNavigation(keycode,ctrl,shift);
+      }
+    }
+ else     if (visibleChildMenu == null && getParentMenu() == null) {
+      showChildMenu(getSelected());
+      menuVisible=true;
+      visibleChildMenu.handleNavigation(keycode,ctrl,shift);
+    }
+ else     if (visibleChildMenu != null) {
+      visibleChildMenu.handleNavigation(keycode,ctrl,shift);
+    }
+ else {
+      int idx=items.indexOf(getSelected());
+      if (idx < items.size() - 1) {
+        setSelected(items.get(idx + 1));
+      }
+ else {
+        setSelected(items.get(0));
+      }
+      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+        handleNavigation(keycode,ctrl,shift);
+      }
+    }
+    return true;
+  }
+ else   if (keycode == getCloseMenuKey()) {
+    setSelected(null);
+    hideChildren();
+    menuVisible=false;
+  }
+ else   if (keycode == getNavigationSelectKey()) {
+    if (visibleChildMenu != null) {
+      visibleChildMenu.handleNavigation(keycode,ctrl,shift);
+      menuVisible=false;
+    }
+ else     if (visibleChildMenu == null && getSelected().getSubMenu() != null) {
+      showChildMenu(getSelected());
+      menuVisible=true;
+      visibleChildMenu.handleNavigation(keycode,ctrl,shift);
+    }
+ else {
+      Command command=getSelected().getCommand();
+      if (command != null) {
+        command.execute();
+      }
+      hideParents(true);
+    }
+  }
+  return false;
+}
