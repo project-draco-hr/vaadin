@@ -1,13 +1,14 @@
 {
+  URL location=classpathLocations.get(locationString);
   File directory=new File(location.getFile());
   if (directory.exists() && !directory.isHidden()) {
     String[] files=directory.list();
     for (int i=0; i < files.length; i++) {
       if (files[i].endsWith(".gwt.xml")) {
         String classname=files[i].substring(0,files[i].length() - 8);
-        classname=classpathLocations.get(location) + "." + classname;
+        String packageName=locationString;
+        classname=packageName + "." + classname;
         if (!widgetsets.containsKey(classname)) {
-          String packageName=classpathLocations.get(location);
           String packagePath=packageName.replaceAll("\\.","/");
           String basePath=location.getFile().replaceAll("/" + packagePath + "$","");
           try {
