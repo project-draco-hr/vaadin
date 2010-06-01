@@ -1,0 +1,28 @@
+{
+  int keycode=event.getNativeKeyCode();
+  if (keycode == KeyCodes.KEY_TAB && event.getSource() == options) {
+    event.preventDefault();
+    for (int i=0; i < options.getItemCount(); i++) {
+      options.setItemSelected(i,false);
+    }
+    selections.setFocus(true);
+  }
+  if (keycode == KeyCodes.KEY_TAB && event.isShiftKeyDown() && event.getSource() == selections) {
+    event.preventDefault();
+    for (int i=0; i < selections.getItemCount(); i++) {
+      selections.setItemSelected(i,false);
+    }
+    options.setFocus(true);
+  }
+  if (keycode == getNavigationSelectKey()) {
+    event.preventDefault();
+    if (event.getSource() == options) {
+      options.setFocus(false);
+      addItem();
+    }
+ else     if (event.getSource() == selections) {
+      selections.setFocus(false);
+      removeItem();
+    }
+  }
+}

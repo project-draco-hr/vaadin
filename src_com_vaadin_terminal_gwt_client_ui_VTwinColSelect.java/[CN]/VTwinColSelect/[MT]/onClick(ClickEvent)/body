@@ -1,34 +1,10 @@
 {
   super.onClick(event);
   if (event.getSource() == add) {
-    final boolean[] sel=getItemsToAdd();
-    for (int i=0; i < sel.length; i++) {
-      if (sel[i]) {
-        final int optionIndex=i - (sel.length - options.getItemCount());
-        selectedKeys.add(options.getValue(optionIndex));
-        final String text=options.getItemText(optionIndex);
-        final String value=options.getValue(optionIndex);
-        selections.addItem(text,value);
-        selections.setItemSelected(selections.getItemCount() - 1,true);
-        options.removeItem(optionIndex);
-      }
-    }
-    client.updateVariable(id,"selected",selectedKeys.toArray(new String[selectedKeys.size()]),isImmediate());
+    addItem();
   }
  else   if (event.getSource() == remove) {
-    final boolean[] sel=getItemsToRemove();
-    for (int i=0; i < sel.length; i++) {
-      if (sel[i]) {
-        final int selectionIndex=i - (sel.length - selections.getItemCount());
-        selectedKeys.remove(selections.getValue(selectionIndex));
-        final String text=selections.getItemText(selectionIndex);
-        final String value=selections.getValue(selectionIndex);
-        options.addItem(text,value);
-        options.setItemSelected(options.getItemCount() - 1,true);
-        selections.removeItem(selectionIndex);
-      }
-    }
-    client.updateVariable(id,"selected",selectedKeys.toArray(new String[selectedKeys.size()]),isImmediate());
+    removeItem();
   }
  else   if (event.getSource() == options) {
     final int c=selections.getItemCount();

@@ -1,0 +1,24 @@
+{
+  final boolean[] sel=getItemsToRemove();
+  for (int i=0; i < sel.length; i++) {
+    if (sel[i]) {
+      final int selectionIndex=i - (sel.length - selections.getItemCount());
+      selectedKeys.remove(selections.getValue(selectionIndex));
+      final String text=selections.getItemText(selectionIndex);
+      final String value=selections.getValue(selectionIndex);
+      options.addItem(text,value);
+      options.setItemSelected(options.getItemCount() - 1,true);
+      selections.removeItem(selectionIndex);
+      if (selections.getItemCount() > 0) {
+        selections.setItemSelected(selectionIndex > 0 ? selectionIndex - 1 : 0,true);
+      }
+    }
+  }
+  if (selections.getItemCount() == 0) {
+    options.setFocus(true);
+  }
+ else {
+    selections.setFocus(true);
+  }
+  client.updateVariable(id,"selected",selectedKeys.toArray(new String[selectedKeys.size()]),isImmediate());
+}
