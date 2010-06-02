@@ -15,7 +15,31 @@
  else   if (targ == bigger) {
     increaseValue(true);
   }
- else {
+ else   if (DOM.eventGetType(event) == Event.MOUSEEVENTS) {
     processBaseEvent(event);
+  }
+ else   if ((BrowserInfo.get().isGecko() && DOM.eventGetType(event) == Event.ONKEYPRESS) || (!BrowserInfo.get().isGecko() && DOM.eventGetType(event) == Event.ONKEYDOWN)) {
+    if (handleNavigation(event.getKeyCode(),event.getCtrlKey(),event.getShiftKey())) {
+      feedbackPopup.show();
+      if (scrollTimer != null) {
+        scrollTimer.cancel();
+      }
+      scrollTimer=new Timer(){
+        @Override public void run(){
+          updateValueToServer();
+          acceleration=1;
+        }
+      }
+;
+      scrollTimer.schedule(100);
+      DOM.eventPreventDefault(event);
+      DOM.eventCancelBubble(event,true);
+    }
+  }
+ else   if (DOM.eventGetType(event) == Event.ONFOCUS) {
+    feedbackPopup.show();
+  }
+ else   if (DOM.eventGetType(event) == Event.ONBLUR) {
+    feedbackPopup.hide();
   }
 }
