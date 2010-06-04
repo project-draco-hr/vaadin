@@ -1,5 +1,5 @@
 {
-  sourceWriter.println("public Class<? extends Paintable> " + "getImplementationByServerSideClassName(String fullyQualifiedName) {");
+  sourceWriter.println("public Class<? extends Paintable> " + "getImplementationByServerSideClassName(String fullyQualifiedName, ApplicationConfiguration c) {");
   sourceWriter.indent();
   sourceWriter.println("fullyQualifiedName = fullyQualifiedName.intern();");
   for (  Class<? extends Paintable> class1 : paintablesHavingWidgetAnnotation) {
@@ -7,9 +7,9 @@
     Class<? extends com.vaadin.terminal.gwt.client.Paintable> clientClass=annotation.value();
     sourceWriter.print("if ( fullyQualifiedName == \"");
     sourceWriter.print(class1.getName());
-    sourceWriter.print("\" ) return ");
+    sourceWriter.print("\" ) { ensureInstantiator(" + clientClass.getName() + ".class, c); return ");
     sourceWriter.print(clientClass.getName());
-    sourceWriter.println(".class;");
+    sourceWriter.println(".class;}");
     sourceWriter.print("else ");
   }
   sourceWriter.println("return com.vaadin.terminal.gwt.client.ui.VUnknownComponent.class;");

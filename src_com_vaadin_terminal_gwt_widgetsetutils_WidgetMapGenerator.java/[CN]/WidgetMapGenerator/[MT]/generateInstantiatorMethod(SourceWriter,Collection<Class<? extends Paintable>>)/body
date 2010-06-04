@@ -1,21 +1,40 @@
 {
-  sourceWriter.println("public Paintable instantiate(Class<? extends Paintable> classType) {");
-  sourceWriter.indent();
-  sourceWriter.println("Paintable p = super.instantiate(classType); if(p!= null) return p;");
+  sourceWriter.println("public interface Instantiator { public Paintable get();};");
+  sourceWriter.println("private HashMap<Class,Instantiator> instmap = new HashMap<Class,Instantiator>();");
+  sourceWriter.println("public void ensureInstantiator(Class<? extends Paintable> classType, final ApplicationConfiguration c) {");
+  sourceWriter.println("if(!instmap.containsKey(classType)){");
   for (  Class<? extends Paintable> class1 : paintablesHavingWidgetAnnotation) {
     ClientWidget annotation=class1.getAnnotation(ClientWidget.class);
     Class<? extends com.vaadin.terminal.gwt.client.Paintable> clientClass=annotation.value();
     if (clientClass == VView.class) {
       continue;
     }
-    sourceWriter.print("if (");
-    sourceWriter.print(clientClass.getName());
-    sourceWriter.print(".class == classType) return GWT.create(");
-    sourceWriter.print(clientClass.getName());
-    sourceWriter.println(".class );");
-    sourceWriter.print("else ");
+    sourceWriter.print("if( classType == " + clientClass.getName() + ".class) {");
+    String instantiator="new Instantiator() { public Paintable get(){ return GWT.create(" + clientClass.getName() + ".class );}}";
+    if (isLazyLoaded(class1)) {
+      sourceWriter.print("c.widgetLoadStart();GWT.runAsync(new RunAsyncCallback() {\n" + "            public void onSuccess() {");
+      sourceWriter.print("instmap.put(");
+      sourceWriter.print(clientClass.getName());
+      sourceWriter.print(".class, ");
+      sourceWriter.print(instantiator);
+      sourceWriter.println("); c.widgetLoaded();");
+      sourceWriter.print("            }\n" + "\n" + "            public void onFailure(Throwable reason) {c.widgetLoaded();\n"+ "\n"+ "            }\n"+ "        });\n");
+    }
+ else {
+      sourceWriter.print("instmap.put(");
+      sourceWriter.print(clientClass.getName());
+      sourceWriter.print(".class, ");
+      sourceWriter.print(instantiator);
+      sourceWriter.print(");");
+    }
+    sourceWriter.print("}");
   }
-  sourceWriter.println("return null;");
+  sourceWriter.println("}");
+  sourceWriter.println("}");
+  sourceWriter.println("public Paintable instantiate(Class<? extends Paintable> classType) {");
+  sourceWriter.indent();
+  sourceWriter.println("Paintable p = super.instantiate(classType); if(p!= null) return p;");
+  sourceWriter.println("return instmap.get(classType).get();");
   sourceWriter.outdent();
   sourceWriter.println("}");
 }
