@@ -6,50 +6,34 @@
       datefield.setShowingDate(now);
     }
     datefield.setCurrentDate(new Date(now.getTime()));
-    datefield.getClient().updateVariable(datefield.getId(),"year",now.getYear() + 1900,false);
-    datefield.getClient().updateVariable(datefield.getId(),"month",now.getMonth() + 1,false);
-    datefield.getClient().updateVariable(datefield.getId(),"day",now.getDate(),false);
-    datefield.getClient().updateVariable(datefield.getId(),"hour",now.getHours(),false);
-    datefield.getClient().updateVariable(datefield.getId(),"min",now.getMinutes(),false);
-    datefield.getClient().updateVariable(datefield.getId(),"sec",now.getSeconds(),false);
-    datefield.getClient().updateVariable(datefield.getId(),"msec",datefield.getMilliseconds(),false);
+    notifyServerOfChanges();
   }
   if (event.getSource() == hours) {
     int h=hours.getSelectedIndex();
     if (datefield.getDateTimeService().isTwelveHourClock()) {
       h=h + ampm.getSelectedIndex() * 12;
     }
-    datefield.getCurrentDate().setHours(h);
     datefield.getShowingDate().setHours(h);
-    datefield.getClient().updateVariable(datefield.getId(),"hour",h,datefield.isImmediate());
     updateTime(false);
   }
  else   if (event.getSource() == mins) {
     final int m=mins.getSelectedIndex();
-    datefield.getCurrentDate().setMinutes(m);
     datefield.getShowingDate().setMinutes(m);
-    datefield.getClient().updateVariable(datefield.getId(),"min",m,datefield.isImmediate());
     updateTime(false);
   }
  else   if (event.getSource() == sec) {
     final int s=sec.getSelectedIndex();
-    datefield.getCurrentDate().setSeconds(s);
     datefield.getShowingDate().setSeconds(s);
-    datefield.getClient().updateVariable(datefield.getId(),"sec",s,datefield.isImmediate());
     updateTime(false);
   }
  else   if (event.getSource() == msec) {
     final int ms=msec.getSelectedIndex();
-    datefield.setMilliseconds(ms);
     datefield.setShowingMilliseconds(ms);
-    datefield.getClient().updateVariable(datefield.getId(),"msec",ms,datefield.isImmediate());
     updateTime(false);
   }
  else   if (event.getSource() == ampm) {
-    final int h=hours.getSelectedIndex() + ampm.getSelectedIndex() * 12;
-    datefield.getCurrentDate().setHours(h);
+    final int h=hours.getSelectedIndex() + (ampm.getSelectedIndex() * 12);
     datefield.getShowingDate().setHours(h);
-    datefield.getClient().updateVariable(datefield.getId(),"hour",h,datefield.isImmediate());
     updateTime(false);
   }
 }

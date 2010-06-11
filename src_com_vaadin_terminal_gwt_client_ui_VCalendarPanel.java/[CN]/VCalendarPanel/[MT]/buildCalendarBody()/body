@@ -37,9 +37,16 @@
   }
   Date selectedDate=datefield.getCurrentDate();
   Date showing=datefield.getShowingDate();
+  if (showing == null) {
+    showing=new Date();
+    datefield.setShowingDate(showing);
+  }
   int dayOfMonthSelected=-1;
   int dayOfMonthToday=-1;
-  if (selectedDate != null && selectedDate.getMonth() == showing.getMonth() && selectedDate.getYear() == showing.getYear()) {
+  if (showing != null) {
+    dayOfMonthSelected=showing.getDate();
+  }
+ else   if (selectedDate != null && selectedDate.getMonth() == showing.getMonth() && selectedDate.getYear() == showing.getYear()) {
     dayOfMonthSelected=selectedDate.getDate();
   }
   final Date today=new Date();
@@ -70,20 +77,24 @@
             }
           }
         }
-        String cssClass=baseclass;
+        InlineHTML html=new InlineHTML(String.valueOf(dayOfMonth));
+        html.setStylePrimaryName(baseclass);
+        html.setTitle(title);
         if (!isEnabledDate(curr)) {
-          cssClass+=" " + baseclass + "-disabled";
+          html.addStyleDependentName("disabled");
         }
         if (dayOfMonthSelected == dayOfMonth) {
-          cssClass+=" " + baseclass + "-selected";
+          html.addStyleDependentName("selected");
+          selectedRow=weekOfMonth;
+          selectedColumn=firstWeekdayColumn + dayOfWeek;
         }
         if (dayOfMonthToday == dayOfMonth) {
-          cssClass+=" " + baseclass + "-today";
+          html.addStyleDependentName("today");
         }
         if (title.length() > 0) {
-          cssClass+=" " + baseclass + "-entry";
+          html.addStyleDependentName("entry");
         }
-        days.setHTML(weekOfMonth,firstWeekdayColumn + dayOfWeek,"<span title=\"" + title + "\" class=\""+ cssClass+ "\">"+ dayOfMonth+ "</span>");
+        days.setWidget(weekOfMonth,firstWeekdayColumn + dayOfWeek,html);
         if (!weekNumberProcessed[weekOfMonth]) {
           days.getCellFormatter().setVisible(weekOfMonth,weekColumn,showISOWeekNumbers);
           if (showISOWeekNumbers) {

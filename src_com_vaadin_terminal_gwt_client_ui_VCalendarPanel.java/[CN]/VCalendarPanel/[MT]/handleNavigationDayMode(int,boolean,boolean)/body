@@ -1,0 +1,159 @@
+{
+  if (ctrl) {
+    return false;
+  }
+  Date showingDate=datefield.getShowingDate();
+  Widget currentSelection=days.getWidget(selectedRow,selectedColumn);
+  if (keycode == getForwardKey() && !shift) {
+    Date newCurrentDate=new Date(showingDate.getYear(),showingDate.getMonth(),showingDate.getDate(),showingDate.getHours(),showingDate.getMinutes(),showingDate.getSeconds());
+    newCurrentDate.setDate(newCurrentDate.getDate() + 1);
+    if (newCurrentDate.getMonth() == showingDate.getMonth()) {
+      showingDate.setDate(showingDate.getDate() + 1);
+      if (currentSelection != null) {
+        currentSelection.removeStyleDependentName("selected");
+        if (selectedColumn == 7) {
+          selectedColumn=1;
+          selectedRow++;
+        }
+ else {
+          selectedColumn++;
+        }
+      }
+      currentSelection=days.getWidget(selectedRow,selectedColumn);
+      currentSelection.addStyleDependentName("selected");
+    }
+ else {
+      showingDate.setDate(showingDate.getDate() + 1);
+      updateCalendarOnly();
+      selectedRow=1;
+      selectedColumn=getFirstWeekdayColumn();
+      currentSelection=days.getWidget(selectedRow,selectedColumn);
+      currentSelection.addStyleDependentName("selected");
+    }
+    return true;
+  }
+ else   if (keycode == getBackwardKey() && !shift) {
+    Date newCurrentDate=new Date(showingDate.getYear(),showingDate.getMonth(),showingDate.getDate(),showingDate.getHours(),showingDate.getMinutes(),showingDate.getSeconds());
+    newCurrentDate.setDate(newCurrentDate.getDate() - 1);
+    if (newCurrentDate.getMonth() == showingDate.getMonth()) {
+      showingDate.setDate(showingDate.getDate() - 1);
+      if (currentSelection != null) {
+        currentSelection.removeStyleDependentName("selected");
+        if (selectedColumn == 1) {
+          selectedColumn=7;
+          selectedRow--;
+        }
+ else {
+          selectedColumn--;
+        }
+      }
+      currentSelection=days.getWidget(selectedRow,selectedColumn);
+      currentSelection.addStyleDependentName("selected");
+    }
+ else {
+      showingDate.setDate(showingDate.getDate() - 1);
+      updateCalendarOnly();
+      int[] pos=getLastWeekdayColumn();
+      selectedRow=pos[0];
+      selectedColumn=pos[1];
+      currentSelection=days.getWidget(selectedRow,selectedColumn);
+      currentSelection.addStyleDependentName("selected");
+    }
+    return true;
+  }
+ else   if (keycode == getPreviousKey() && !shift) {
+    Date newCurrentDate=new Date(showingDate.getYear(),showingDate.getMonth(),showingDate.getDate(),showingDate.getHours(),showingDate.getMinutes(),showingDate.getSeconds());
+    newCurrentDate.setDate(newCurrentDate.getDate() - 7);
+    if (newCurrentDate.getMonth() == showingDate.getMonth() && selectedRow > 1) {
+      showingDate.setDate(showingDate.getDate() - 7);
+      if (currentSelection != null) {
+        currentSelection.removeStyleDependentName("selected");
+      }
+      selectedRow--;
+      currentSelection=days.getWidget(selectedRow,selectedColumn);
+      currentSelection.addStyleDependentName("selected");
+    }
+ else {
+      showingDate.setDate(showingDate.getDate() - 7);
+      updateCalendarOnly();
+      int[] pos=getLastWeekdayColumn();
+      selectedRow=pos[0];
+      currentSelection=days.getWidget(selectedRow,selectedColumn);
+      if (currentSelection == null) {
+        selectedRow--;
+        currentSelection=days.getWidget(selectedRow,selectedColumn);
+      }
+      currentSelection.addStyleDependentName("selected");
+    }
+    return true;
+  }
+ else   if (keycode == getNextKey() && !ctrl && !shift) {
+    Date newCurrentDate=new Date(showingDate.getYear(),showingDate.getMonth(),showingDate.getDate(),showingDate.getHours(),showingDate.getMinutes(),showingDate.getSeconds());
+    newCurrentDate.setDate(newCurrentDate.getDate() + 7);
+    if (newCurrentDate.getMonth() == showingDate.getMonth()) {
+      showingDate.setDate(showingDate.getDate() + 7);
+      if (currentSelection != null) {
+        currentSelection.removeStyleDependentName("selected");
+      }
+      selectedRow++;
+      currentSelection=days.getWidget(selectedRow,selectedColumn);
+      currentSelection.addStyleDependentName("selected");
+    }
+ else {
+      showingDate.setDate(showingDate.getDate() + 7);
+      updateCalendarOnly();
+      selectedRow=1;
+      currentSelection=days.getWidget(selectedRow,selectedColumn);
+      if (currentSelection == null) {
+        selectedRow++;
+        currentSelection=days.getWidget(selectedRow,selectedColumn);
+      }
+      currentSelection.addStyleDependentName("selected");
+    }
+    return true;
+  }
+ else   if (keycode == getSelectKey() && !shift) {
+    InlineHTML selection=(InlineHTML)days.getWidget(selectedRow,selectedColumn);
+    dateClickHandler.selectDate(selection.getText());
+    if (datefield instanceof VTextualDate) {
+      ((VTextualDate)datefield).focus();
+    }
+    return true;
+  }
+ else   if (keycode == getCloseKey() || keycode == KeyCodes.KEY_TAB) {
+    if (datefield instanceof VPopupCalendar) {
+      Date showing=datefield.getShowingDate();
+      Date current=datefield.getCurrentDate();
+      if (current != null && current != null) {
+        showing.setTime(current.getTime());
+      }
+      ((VPopupCalendar)datefield).closeCalendarPanel();
+      ((VPopupCalendar)datefield).focus();
+    }
+    return true;
+  }
+ else   if (shift && keycode == getForwardKey()) {
+    selectNextMonth();
+    return true;
+  }
+ else   if (shift && keycode == getBackwardKey()) {
+    selectPreviousMonth();
+    return true;
+  }
+ else   if (shift && keycode == getPreviousKey()) {
+    selectNextYear(1);
+    return true;
+  }
+ else   if (shift && keycode == getNextKey()) {
+    selectPreviousYear(1);
+    return true;
+  }
+ else   if (keycode == getResetKey() && !shift) {
+    Date showing=datefield.getShowingDate();
+    Date current=datefield.getCurrentDate();
+    showing.setTime(current.getTime());
+    updateCalendar();
+    return true;
+  }
+  return false;
+}

@@ -2,42 +2,23 @@
   if (!datefield.isEnabled() || datefield.isReadonly()) {
     return;
   }
-  Date showingDate=datefield.getShowingDate();
   if (!updateVariable) {
     if (sender == prevYear) {
-      showingDate.setYear(showingDate.getYear() - 1);
-      updateCalendar();
+      selectPreviousYear(1);
     }
  else     if (sender == nextYear) {
-      showingDate.setYear(showingDate.getYear() + 1);
-      updateCalendar();
+      selectNextYear(1);
     }
  else     if (sender == prevMonth) {
-      int currentMonth=showingDate.getMonth();
-      showingDate.setMonth(currentMonth - 1);
-      while (showingDate.getMonth() == currentMonth) {
-        showingDate.setDate(showingDate.getDate() - 1);
-      }
-      updateCalendar();
+      selectPreviousMonth();
     }
  else     if (sender == nextMonth) {
-      int currentMonth=showingDate.getMonth();
-      showingDate.setMonth(currentMonth + 1);
-      int requestedMonth=(currentMonth + 1) % 12;
-      while (showingDate.getMonth() != requestedMonth) {
-        showingDate.setDate(showingDate.getDate() - 1);
-      }
-      updateCalendar();
+      selectNextMonth();
     }
   }
  else {
     if (datefield.getCurrentResolution() == VDateField.RESOLUTION_YEAR || datefield.getCurrentResolution() == VDateField.RESOLUTION_MONTH) {
-      datefield.setCurrentDate(new Date(showingDate.getTime()));
-      if (datefield.getCurrentResolution() == VDateField.RESOLUTION_MONTH) {
-        datefield.getClient().updateVariable(datefield.getId(),"month",datefield.getCurrentDate().getMonth() + 1,false);
-      }
-      datefield.getClient().updateVariable(datefield.getId(),"year",datefield.getCurrentDate().getYear() + 1900,datefield.isImmediate());
-      updateCalendar();
+      notifyServerOfChanges();
     }
   }
 }
