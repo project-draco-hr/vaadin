@@ -1,0 +1,30 @@
+{
+  if (repaintIsNotNeeded) {
+    if (isMultiSelect()) {
+      Set currentValueSet=(Set)getValue();
+      Set newValueSet=(Set)newValue;
+      for (      Object itemId : currentValueSet) {
+        if (!isItemEnabled(itemId) && !newValueSet.contains(itemId)) {
+          requestRepaint();
+          return;
+        }
+      }
+      for (      Object itemId : newValueSet) {
+        if (!isItemEnabled(itemId) && !currentValueSet.contains(itemId)) {
+          requestRepaint();
+          return;
+        }
+      }
+    }
+ else {
+      if (newValue == null) {
+        newValue=getNullSelectionItemId();
+      }
+      if (!isItemEnabled(newValue)) {
+        requestRepaint();
+        return;
+      }
+    }
+  }
+  super.setValue(newValue,repaintIsNotNeeded);
+}

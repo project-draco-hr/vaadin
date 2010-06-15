@@ -1,0 +1,49 @@
+{
+  ArrayList<Component> actions=new ArrayList<Component>();
+  CheckBox enabled=new CheckBox("Enabled",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      setEnabled(event.getButton().booleanValue());
+    }
+  }
+);
+  enabled.setValue(true);
+  enabled.setImmediate(true);
+  actions.add(enabled);
+  CheckBox readonly=new CheckBox("Readonly",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      setReadOnly(event.getButton().booleanValue());
+    }
+  }
+);
+  readonly.setValue(false);
+  readonly.setImmediate(true);
+  actions.add(readonly);
+  Button toggleDisabledItems=new Button("Toggle disabled items",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      for (      OptionGroup og : getTestComponents()) {
+        for (        Object itemId : og.getItemIds()) {
+          og.setItemEnabled(itemId,!og.isItemEnabled(itemId));
+        }
+      }
+    }
+  }
+);
+  actions.add(toggleDisabledItems);
+  Button toggleSelectionMode=new Button("Toggle selection mode",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      for (      OptionGroup og : getTestComponents()) {
+        if (og.isMultiSelect()) {
+          og.setMultiSelect(false);
+          og.setNullSelectionItemId(NULL_SELECTION_ID);
+        }
+ else {
+          og.setNullSelectionItemId(null);
+          og.setMultiSelect(true);
+        }
+      }
+    }
+  }
+);
+  actions.add(toggleSelectionMode);
+  return actions;
+}

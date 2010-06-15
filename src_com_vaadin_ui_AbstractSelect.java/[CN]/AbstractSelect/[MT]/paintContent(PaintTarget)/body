@@ -25,19 +25,10 @@
   final Collection ids=getItemIds();
   if (isNullSelectionAllowed() && getNullSelectionItemId() != null && !ids.contains(getNullSelectionItemId())) {
     final Object id=getNullSelectionItemId();
-    final String key=itemIdMapper.key(id);
-    final String caption=getItemCaption(id);
-    final Resource icon=getItemIcon(id);
     target.startTag("so");
-    if (icon != null) {
-      target.addAttribute("icon",icon);
-    }
-    target.addAttribute("caption",caption);
-    target.addAttribute("nullselection",true);
-    target.addAttribute("key",key);
+    paintItem(target,id);
     if (isSelected(id)) {
-      target.addAttribute("selected",true);
-      selectedKeys[keyIndex++]=key;
+      selectedKeys[keyIndex++]=itemIdMapper.key(id);
     }
     target.endTag("so");
   }
@@ -48,20 +39,10 @@
       continue;
     }
     final String key=itemIdMapper.key(id);
-    final String caption=getItemCaption(id);
     getCaptionChangeListener().addNotifierForItem(id);
-    final Resource icon=getItemIcon(id);
     target.startTag("so");
-    if (icon != null) {
-      target.addAttribute("icon",icon);
-    }
-    target.addAttribute("caption",caption);
-    if (id != null && id.equals(getNullSelectionItemId())) {
-      target.addAttribute("nullselection",true);
-    }
-    target.addAttribute("key",key);
+    paintItem(target,id);
     if (isSelected(id) && keyIndex < selectedKeys.length) {
-      target.addAttribute("selected",true);
       selectedKeys[keyIndex++]=key;
     }
     target.endTag("so");
