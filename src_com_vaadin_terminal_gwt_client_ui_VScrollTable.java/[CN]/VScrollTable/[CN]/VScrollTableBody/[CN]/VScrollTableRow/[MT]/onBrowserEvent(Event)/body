@@ -1,8 +1,14 @@
 {
   if (enabled) {
     Element targetTdOrTr=getEventTargetTdOrTr(event);
+    int type=event.getTypeInt();
+    if (type == Event.ONCONTEXTMENU) {
+      showContextMenu(event);
+      event.stopPropagation();
+      return;
+    }
     if (targetTdOrTr != null) {
-switch (DOM.eventGetType(event)) {
+switch (type) {
 case Event.ONDBLCLICK:
         handleClickEvent(event,targetTdOrTr);
       break;
@@ -45,9 +51,6 @@ if (BrowserInfo.get().isIE()) {
 sendSelectedRows();
 }
 break;
-case Event.ONCONTEXTMENU:
-showContextMenu(event);
-break;
 case Event.ONMOUSEDOWN:
 if (dragmode != 0 && event.getButton() == NativeEvent.BUTTON_LEFT) {
 mDown=true;
@@ -71,7 +74,7 @@ for (Iterator<Widget> iterator=scrollBody.iterator(); iterator.hasNext(); ) {
 VScrollTableRow next=(VScrollTableRow)iterator.next();
 Element child=(Element)dragImage.getChild(i++);
 if (!selectedRowKeys.contains("" + next.rowKey)) {
-child.getStyle().setVisibility(Visibility.HIDDEN);
+  child.getStyle().setVisibility(Visibility.HIDDEN);
 }
 }
 }
