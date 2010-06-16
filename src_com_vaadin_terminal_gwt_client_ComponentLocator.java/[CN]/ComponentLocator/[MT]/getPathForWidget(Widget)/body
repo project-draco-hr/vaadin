@@ -15,19 +15,20 @@
     int indexOfSubWindow=subWindowList.indexOf(win);
     return PARENTCHILD_SEPARATOR + "VWindow[" + indexOfSubWindow+ "]";
   }
+ else   if (w instanceof RootPanel) {
+    return ROOT_ID;
+  }
   Widget parent=w.getParent();
   String basePath=getPathForWidget(parent);
   if (basePath == null) {
     return null;
   }
   String simpleName=Util.getSimpleName(w);
-  if (!(parent instanceof Iterable<?>)) {
+  if (!(parent instanceof HasWidgets)) {
     return null;
   }
-  Iterator<Widget> i=((Iterable<Widget>)parent).iterator();
   int pos=0;
-  while (i.hasNext()) {
-    Object child=i.next();
+  for (  Widget child : ((HasWidgets)parent)) {
     if (child == w) {
       return basePath + PARENTCHILD_SEPARATOR + simpleName+ "["+ pos+ "]";
     }

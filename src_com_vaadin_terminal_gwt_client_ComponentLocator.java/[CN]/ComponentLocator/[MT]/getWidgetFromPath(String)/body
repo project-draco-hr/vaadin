@@ -1,8 +1,12 @@
 {
   Widget w=null;
   String parts[]=path.split(PARENTCHILD_SEPARATOR);
-  for (  String part : parts) {
-    if (part.equals("")) {
+  for (int i=0; i < parts.length; i++) {
+    String part=parts[i];
+    if (part.equals(ROOT_ID)) {
+      w=RootPanel.get();
+    }
+ else     if (part.equals("")) {
       w=client.getView();
     }
  else     if (w == null) {
@@ -11,32 +15,33 @@
  else     if (part.startsWith("domChild[")) {
       break;
     }
- else     if (w instanceof Iterable<?>) {
-      Iterable<Widget> parent=(Iterable<Widget>)w;
-      String[] split=part.split("\\[");
-      Iterator<? extends Widget> i;
+ else     if (w instanceof HasWidgets) {
+      HasWidgets parent=(HasWidgets)w;
+      String[] split=part.split("\\[",2);
       String widgetClassName=split[0];
+      String indexString=split[1];
+      int widgetPosition=Integer.parseInt(indexString.substring(0,indexString.length() - 1));
+      Iterator<? extends Widget> iterator;
       if (widgetClassName.equals("VWindow")) {
-        i=client.getView().getSubWindowList().iterator();
+        iterator=client.getView().getSubWindowList().iterator();
       }
  else       if (widgetClassName.equals("VContextMenu")) {
         return client.getContextMenu();
       }
  else {
-        i=parent.iterator();
+        iterator=parent.iterator();
       }
       boolean ok=false;
-      int pos=Integer.parseInt(split[1].substring(0,split[1].length() - 1));
-      while (i.hasNext()) {
-        Widget child=i.next();
+      while (iterator.hasNext()) {
+        Widget child=iterator.next();
         String simpleName2=Util.getSimpleName(child);
         if (widgetClassName.equals(simpleName2)) {
-          if (pos == 0) {
+          if (widgetPosition == 0) {
             w=child;
             ok=true;
             break;
           }
-          pos--;
+          widgetPosition--;
         }
       }
       if (!ok) {

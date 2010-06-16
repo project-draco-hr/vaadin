@@ -11,14 +11,21 @@
       break;
     }
   }
-  if (e == null || pid == null) {
-    String subPartName=client.getContextMenu().getSubPartName(targetElement);
-    if (subPartName != null) {
-      return "/VContextMenu[0]" + SUBPART_SEPARATOR + subPartName;
-    }
-    return null;
+  Widget w=null;
+  if (pid != null) {
+    w=(Widget)client.getPaintable(pid);
   }
-  Widget w=(Widget)client.getPaintable(pid);
+  if (w == null) {
+    RootPanel rootPanel=RootPanel.get();
+    int rootWidgetCount=rootPanel.getWidgetCount();
+    for (int i=0; i < rootWidgetCount; i++) {
+      Widget rootWidget=rootPanel.getWidget(i);
+      if (rootWidget.getElement().isOrHasChild(targetElement)) {
+        w=findParentWidget(targetElement,rootWidget);
+        break;
+      }
+    }
+  }
   if (w == null) {
     return null;
   }
@@ -30,10 +37,10 @@
     return path;
   }
  else   if (w instanceof SubPartAware) {
-    return path + SUBPART_SEPARATOR + ((SubPartAware)w).getSubPartName(targetElement);
+    String elementLocator=((SubPartAware)w).getSubPartName(targetElement);
+    return path + SUBPART_SEPARATOR + elementLocator;
   }
  else {
-    path=path + getDOMPathForElement(targetElement,w.getElement());
-    return path;
+    return path + getDOMPathForElement(targetElement,w.getElement());
   }
 }
