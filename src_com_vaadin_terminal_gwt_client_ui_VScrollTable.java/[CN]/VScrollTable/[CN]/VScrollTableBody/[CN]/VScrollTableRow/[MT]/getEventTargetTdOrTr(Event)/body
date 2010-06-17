@@ -14,14 +14,20 @@
     targetTdOrTr=eventTargetParent;
   }
  else {
-    Element tdElement=eventTargetParent;
-    while (DOM.getParent(tdElement) != thisTrElement) {
-      tdElement=DOM.getParent(tdElement);
-    }
-    Element componentElement=tdElement.getFirstChildElement().getFirstChildElement().cast();
-    Widget widget=(Widget)client.getPaintable(componentElement);
-    if (widget instanceof VLabel || widget instanceof VEmbedded) {
-      targetTdOrTr=tdElement;
+    Widget widget=Util.findWidget(eventTarget,null);
+    if (widget != this) {
+      while (widget != null && widget.getParent() != this) {
+        widget=widget.getParent();
+      }
+      if (widget != null) {
+        if (widget instanceof VLabel || widget instanceof VEmbedded || (widget instanceof VTextField && ((VTextField)widget).isReadOnly())) {
+          Element tdElement=eventTargetParent;
+          while (DOM.getParent(tdElement) != thisTrElement) {
+            tdElement=DOM.getParent(tdElement);
+          }
+          targetTdOrTr=tdElement;
+        }
+      }
     }
   }
   return targetTdOrTr;
