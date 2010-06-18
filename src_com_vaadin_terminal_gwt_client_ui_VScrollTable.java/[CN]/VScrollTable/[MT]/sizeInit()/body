@@ -1,5 +1,6 @@
 {
   Iterator<Widget> headCells=tHead.iterator();
+  Iterator<Widget> footCells=tFoot.iterator();
   int i=0;
   int totalExplicitColumnsWidths=0;
   int total=0;
@@ -9,6 +10,7 @@
   tFoot.enableBrowserIntelligence();
   while (headCells.hasNext()) {
     final HeaderCell hCell=(HeaderCell)headCells.next();
+    final FooterCell fCell=(FooterCell)footCells.next();
     int w=hCell.getWidth();
     if (hCell.isDefinedWidth()) {
       totalExplicitColumnsWidths+=w;
@@ -19,9 +21,12 @@
         w=0;
       }
  else {
-        w=hCell.getNaturalColumnWidth(i);
+        int headerWidth=hCell.getNaturalColumnWidth(i);
+        int footerWidth=fCell.getNaturalColumnWidth(i);
+        w=headerWidth > footerWidth ? headerWidth : footerWidth;
       }
       hCell.setNaturalMinimumColumnWidth(w);
+      fCell.setNaturalMinimumColumnWidth(w);
     }
     widths[i]=w;
     total+=w;
@@ -136,4 +141,11 @@
       }
     }
   }
+  scrollBody.reLayoutComponents();
+  DeferredCommand.addCommand(new Command(){
+    public void execute(){
+      Util.runWebkitOverflowAutoFix(scrollBodyPanel.getElement());
+    }
+  }
+);
 }
