@@ -2,6 +2,8 @@ import sys, os, re
 from sets import Set
 downloadsite = 'http://vaadin.com/download'
 latestfile = '/LATEST'
+JAPIZE = 'japize'
+JAPICOMPAT = 'japicompat'
 wgetcmd = ('wget -q -O - %s' % (downloadsite + latestfile))
 pin = os.popen(wgetcmd, 'r')
 latestdata = pin.readlines()
@@ -46,4 +48,13 @@ removed = diffFiles(latestJarFiles, builtJarFiles)
 print ('\n%d removed files:' % len(removed))
 for item in removed:
     print item
+print '\n--------------------------------------------------------------------------------\nVaadin API differences'
+oldjapi = japize(latestversion, locallatestpackage)
+newjapi = japize(builtversion, builtpackage)
+print '\n--------------------------------------------------------------------------------\nLost API features\n'
+japidiff1 = japicompat(oldjapi, newjapi)
+print japidiff1
+print '\n--------------------------------------------------------------------------------\nNew API features\n'
+japidiff2 = japicompat(newjapi, oldjapi)
+print japidiff2
 command(('rm %s' % locallatestpackage))
