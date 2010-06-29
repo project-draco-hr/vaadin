@@ -1,10 +1,12 @@
 {
   if (width == null) {
     int tbWidth=Util.getRequiredWidth(tb);
-    int openerWidth=Util.getRequiredWidth(popupOpener);
+    if (popupWidth < 0) {
+      popupWidth=Util.getRequiredWidth(popupOpener);
+    }
     int iconWidth=selectedItemIcon.isAttached() ? Util.measureMarginLeft(tb.getElement()) - Util.measureMarginLeft(selectedItemIcon.getElement()) : 0;
-    int w=tbWidth + openerWidth + iconWidth;
-    if ((!initDone || currentPage + 1 <= 0) && suggestionPopupMinWidth > w) {
+    int w=tbWidth + popupWidth + iconWidth;
+    if ((!initDone || currentPage + 1 < 0) && suggestionPopupMinWidth > w) {
       setTextboxWidth(suggestionPopupMinWidth);
       w=suggestionPopupMinWidth;
     }
