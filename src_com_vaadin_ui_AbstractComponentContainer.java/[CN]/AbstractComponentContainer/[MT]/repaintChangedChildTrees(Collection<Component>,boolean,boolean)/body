@@ -1,0 +1,25 @@
+{
+  if (childrenMayBecomeUndefined) {
+    Collection<Component> previouslyInvalidComponents=invalidChildren;
+    invalidChildren=getInvalidSizedChildren(vertical);
+    if (previouslyInvalidComponents != null) {
+      for (Iterator<Component> iterator=invalidChildren.iterator(); iterator.hasNext(); ) {
+        Component component=iterator.next();
+        if (previouslyInvalidComponents.contains(component)) {
+          iterator.remove();
+        }
+      }
+    }
+  }
+ else   if (invalidChildren != null) {
+    Collection<Component> stillInvalidChildren=getInvalidSizedChildren(vertical);
+    if (stillInvalidChildren != null) {
+      for (      Component component : stillInvalidChildren) {
+        invalidChildren.remove(component);
+      }
+    }
+  }
+  if (invalidChildren != null) {
+    repaintChildTrees(invalidChildren);
+  }
+}
