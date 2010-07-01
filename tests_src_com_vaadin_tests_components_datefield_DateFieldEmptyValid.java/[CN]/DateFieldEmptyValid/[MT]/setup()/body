@@ -1,0 +1,36 @@
+{
+  addComponent(new Label("<br/><br/>",Label.CONTENT_XHTML));
+  log=new Log(5);
+  log.setNumberLogRows(true);
+  addComponent(log);
+  df=new MyDateField();
+  df.setRequired(true);
+  df.setLocale(new Locale("fi","FI"));
+  df.setValue(new Date(100000000000L));
+  df.setImmediate(true);
+  df.setResolution(DateField.RESOLUTION_DAY);
+  df.addListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      checkEmpty();
+    }
+  }
+);
+  addComponent(df);
+  checkEmpty();
+  Button b=new Button("Clear date");
+  b.addListener(new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      df.setValue(null);
+    }
+  }
+);
+  addComponent(b);
+  b=new Button("Set date to 4.5.1990");
+  b.addListener(new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      df.setValue(new Date(1990 - 1900,5 - 1,4));
+    }
+  }
+);
+  addComponent(b);
+}
