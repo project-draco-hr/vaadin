@@ -5,7 +5,14 @@
  else {
     this.width=width;
   }
-  horizPaddingAndBorder=Util.setWidthExcludingPaddingAndBorder(this,width,horizPaddingAndBorder);
+  if (BrowserInfo.get().isIE6()) {
+    getElement().getStyle().setOverflow(Overflow.HIDDEN);
+    horizPaddingAndBorder=Util.setWidthExcludingPaddingAndBorder(this,width,horizPaddingAndBorder);
+    getElement().getStyle().setProperty("overflow","");
+  }
+ else {
+    horizPaddingAndBorder=Util.setWidthExcludingPaddingAndBorder(this,width,horizPaddingAndBorder);
+  }
   if (initDone) {
     updateRootWidth();
   }
