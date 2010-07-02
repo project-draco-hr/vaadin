@@ -1,7 +1,15 @@
 {
+  dateString=null;
   if (newValue == null || newValue instanceof Date) {
     try {
-      super.setValue(newValue,repaintIsNotNeeded);
+      dateString=newValue == null ? null : newValue.toString();
+      if (dateString == null && super.getValue() == null) {
+        requestRepaint();
+      }
+ else {
+        super.setValue(newValue,repaintIsNotNeeded);
+      }
+      setComponentError(null);
       parsingSucceeded=true;
     }
  catch (    InvalidValueException ive) {
@@ -15,6 +23,7 @@
       final Date val=parser.parse(newValue.toString());
       super.setValue(val,repaintIsNotNeeded);
       parsingSucceeded=true;
+      dateString=newValue.toString();
     }
  catch (    final ParseException e) {
       parsingSucceeded=false;
