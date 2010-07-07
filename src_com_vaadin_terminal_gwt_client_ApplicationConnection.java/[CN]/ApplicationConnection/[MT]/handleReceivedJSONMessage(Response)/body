@@ -90,9 +90,12 @@
               ClientExceptionHandler.displayError("Received update for " + uidl.getTag() + ", but there is no such paintable ("+ uidl.getId()+ ") rendered.");
             }
  else {
-              if (!idToPaintableDetail.containsKey(uidl.getId())) {
-                registerPaintable(uidl.getId(),view);
+              String pid=uidl.getId();
+              if (!idToPaintableDetail.containsKey(pid)) {
+                registerPaintable(pid,view);
               }
+              ComponentDetail cd=idToPaintableDetail.get(pid);
+              cd.registerEventListenersFromUIDL(uidl);
               view.updateFromUIDL(uidl,ApplicationConnection.this);
             }
           }
