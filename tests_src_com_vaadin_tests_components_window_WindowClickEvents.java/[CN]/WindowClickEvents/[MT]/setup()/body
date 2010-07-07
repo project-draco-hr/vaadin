@@ -1,0 +1,40 @@
+{
+  VerticalLayout layout=new VerticalLayout();
+  layout.addListener(new LayoutClickListener(){
+    public void layoutClick(    LayoutClickEvent event){
+      WindowClickEvents.this.click("Sub window layout",event);
+    }
+  }
+);
+  ((VerticalLayout)getMainWindow().getContent()).addListener(new LayoutClickListener(){
+    public void layoutClick(    LayoutClickEvent event){
+      WindowClickEvents.this.click("Main window layout",event);
+    }
+  }
+);
+  layout.setMargin(true);
+  Window centered=new Window("A window with a click listener",layout);
+  centered.addListener(new ClickListener(){
+    public void click(    ClickEvent event){
+      WindowClickEvents.this.click("Sub window",event);
+    }
+  }
+);
+  centered.setSizeUndefined();
+  centered.getContent().setSizeUndefined();
+  centered.center();
+  Label l=new Label("This window is centered");
+  l.setSizeUndefined();
+  Button b=new Button("Clicking here should not produce an event");
+  centered.addComponent(l);
+  centered.addComponent(b);
+  getMainWindow().addWindow(centered);
+  log=new Log(5);
+  addComponent(log);
+  getMainWindow().addListener(new ClickListener(){
+    public void click(    ClickEvent event){
+      WindowClickEvents.this.click("Main window",event);
+    }
+  }
+);
+}
