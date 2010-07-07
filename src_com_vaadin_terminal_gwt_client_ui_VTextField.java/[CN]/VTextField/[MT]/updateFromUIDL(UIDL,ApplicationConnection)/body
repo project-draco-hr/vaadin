@@ -16,26 +16,35 @@
   if (uidl.hasAttribute("cols")) {
     setColumns(new Integer(uidl.getStringAttribute("cols")).intValue());
   }
-  String text=uidl.hasVariable("text") ? uidl.getStringVariable("text") : null;
+  final String text=uidl.hasVariable("text") ? uidl.getStringVariable("text") : null;
   setPrompting(inputPrompt != null && focusedTextField != this && (text == null || text.equals("")));
-  final String fieldValue;
-  if (prompting) {
-    fieldValue=isReadOnly() ? "" : inputPrompt;
-    addStyleDependentName(CLASSNAME_PROMPT);
-  }
- else {
-    fieldValue=text;
-    removeStyleDependentName(CLASSNAME_PROMPT);
-  }
   if (BrowserInfo.get().isGecko()) {
     DeferredCommand.addCommand(new Command(){
       public void execute(){
+        String fieldValue;
+        if (prompting) {
+          fieldValue=isReadOnly() ? "" : inputPrompt;
+          addStyleDependentName(CLASSNAME_PROMPT);
+        }
+ else {
+          fieldValue=text;
+          removeStyleDependentName(CLASSNAME_PROMPT);
+        }
         setText(fieldValue);
       }
     }
 );
   }
  else {
+    String fieldValue;
+    if (prompting) {
+      fieldValue=isReadOnly() ? "" : inputPrompt;
+      addStyleDependentName(CLASSNAME_PROMPT);
+    }
+ else {
+      fieldValue=text;
+      removeStyleDependentName(CLASSNAME_PROMPT);
+    }
     setText(fieldValue);
   }
   valueBeforeEdit=uidl.getStringVariable("text");
