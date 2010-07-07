@@ -1,4 +1,5 @@
 {
+  boolean bubble=true;
   if (event != null) {
     final int type=event.getTypeInt();
     if (type == Event.ONKEYDOWN && shortcutHandler != null) {
@@ -11,17 +12,17 @@
     }
     if (resizing || resizeBox == target) {
       onResizeEvent(event);
-      event.cancelBubble(true);
+      bubble=false;
     }
  else     if (target == closeBox) {
       if (type == Event.ONCLICK && isClosable()) {
         onCloseClick();
-        event.cancelBubble(true);
+        bubble=false;
       }
     }
  else     if (dragging || !DOM.isOrHasChild(contents,target)) {
       onDragEvent(event);
-      event.cancelBubble(true);
+      bubble=false;
     }
  else     if (type == Event.ONCLICK) {
       if (!isActive()) {
@@ -31,5 +32,11 @@
     if (type == Event.ONMOUSEDOWN && !DOM.isOrHasChild(contentPanel.getElement(),target)) {
       Util.focus(contentPanel.getElement());
     }
+  }
+  if (!bubble) {
+    event.cancelBubble(true);
+  }
+ else {
+    super.onBrowserEvent(event);
   }
 }
