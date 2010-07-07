@@ -8,6 +8,12 @@
   String widgetsetfilename=sourceUrl.getFile() + "/" + widgetset.replace(".","/")+ ".gwt.xml";
   File widgetsetFile=new File(widgetsetfilename);
   if (!widgetsetFile.exists()) {
+    File parent=widgetsetFile.getParentFile();
+    if (parent != null && !parent.exists()) {
+      if (!parent.mkdirs()) {
+        throw new IOException("Could not create directory for the widgetset: " + parent.getCanonicalPath());
+      }
+    }
     widgetsetFile.createNewFile();
     PrintStream printStream=new PrintStream(new FileOutputStream(widgetsetFile));
     printStream.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<!DOCTYPE module PUBLIC \"-//Google Inc.//DTD " + "Google Web Toolkit 1.7.0//EN\" \"http://google"+ "-web-toolkit.googlecode.com/svn/tags/1.7.0/dis"+ "tro-source/core/src/gwt-module.dtd\">\n");
