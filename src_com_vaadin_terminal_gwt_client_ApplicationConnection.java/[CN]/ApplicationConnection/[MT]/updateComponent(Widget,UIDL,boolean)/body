@@ -32,14 +32,16 @@
     return true;
   }
   if (!widgetSet.isCorrectImplementation(component,uidl,configuration)) {
-    final Container parent=Util.getLayout(component);
-    if (parent != null) {
-      final Widget w=(Widget)widgetSet.createWidget(uidl,configuration);
-      parent.replaceChildComponent(component,w);
-      unregisterPaintable((Paintable)component);
-      registerPaintable(uidl.getId(),(Paintable)w);
-      ((Paintable)w).updateFromUIDL(uidl,this);
-      return true;
+    final Widget w=(Widget)widgetSet.createWidget(uidl,configuration);
+    if (w.getClass() != component.getClass()) {
+      final Container parent=Util.getLayout(component);
+      if (parent != null) {
+        parent.replaceChildComponent(component,w);
+        unregisterPaintable((Paintable)component);
+        registerPaintable(uidl.getId(),(Paintable)w);
+        ((Paintable)w).updateFromUIDL(uidl,this);
+        return true;
+      }
     }
   }
   boolean enabled=!uidl.getBooleanAttribute("disabled");
