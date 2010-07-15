@@ -38,11 +38,14 @@ if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && selectM
   toggleShiftSelection(true);
 }
  else {
-  if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
-    deselectAll();
+  boolean currentlyJustThisRowSelected=selectedRowKeys.size() == 1 && selectedRowKeys.contains(getKey());
+  if (!currentlyJustThisRowSelected) {
+    if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
+      deselectAll();
+    }
+    toggleSelection();
   }
   selectionRangeStart=this;
-  toggleSelection();
   setRowFocus(this);
 }
 if (BrowserInfo.get().isIE()) {
