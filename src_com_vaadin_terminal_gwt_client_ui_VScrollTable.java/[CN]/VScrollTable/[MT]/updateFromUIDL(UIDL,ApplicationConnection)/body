@@ -54,10 +54,14 @@
   }
   if (uidl.hasVariable("selected")) {
     final Set<String> selectedKeys=uidl.getStringArrayVariableAsSet("selected");
-    for (    String string : selectedKeys) {
-      VScrollTableRow row=getRenderedRowByKey(string);
-      if (row != null && !row.isSelected()) {
-        row.toggleSelection();
+    if (scrollBody != null) {
+      Iterator<Widget> iterator=scrollBody.iterator();
+      while (iterator.hasNext()) {
+        VScrollTableRow row=(VScrollTableRow)iterator.next();
+        boolean selected=selectedKeys.contains(row.getKey());
+        if (selected != row.isSelected()) {
+          row.toggleSelection();
+        }
       }
     }
   }
@@ -153,6 +157,7 @@
   }
   hideScrollPositionAnnotation();
   purgeUnregistryBag();
+  selectionChanged=false;
   if (selectFirstItemInNextRender) {
     selectFirstRenderedRow(false);
     selectFirstItemInNextRender=false;
@@ -170,7 +175,12 @@
     focusLastItemInNextRender=false;
   }
   if (focusedRow != null) {
-    setRowFocus(getRenderedRowByKey(focusedRow.getKey()));
+    if (!focusedRow.isAttached()) {
+      focusedRow=null;
+    }
+ else {
+      setRowFocus(getRenderedRowByKey(focusedRow.getKey()));
+    }
   }
   if (!isFocusable()) {
     scrollBodyPanel.getElement().setTabIndex(-1);
