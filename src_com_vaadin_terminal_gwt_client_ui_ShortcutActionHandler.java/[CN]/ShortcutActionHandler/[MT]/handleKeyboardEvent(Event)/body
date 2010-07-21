@@ -1,31 +1,3 @@
 {
-  final int modifiers=KeyboardListenerCollection.getKeyboardModifiers(event);
-  final char keyCode=(char)DOM.eventGetKeyCode(event);
-  final ShortcutKeyCombination kc=new ShortcutKeyCombination(keyCode,modifiers);
-  final Iterator it=actions.iterator();
-  while (it.hasNext()) {
-    final ShortcutAction a=(ShortcutAction)it.next();
-    if (a.getShortcutCombination().equals(kc)) {
-      final Element et=DOM.eventGetTarget(event);
-      final Paintable target=client.getPaintable(et);
-      DOM.eventPreventDefault(event);
-      shakeTarget(et);
-      DeferredCommand.addCommand(new Command(){
-        public void execute(){
-          shakeTarget(et);
-        }
-      }
-);
-      DeferredCommand.addCommand(new Command(){
-        public void execute(){
-          if (target != null) {
-            client.updateVariable(paintableId,"actiontarget",target,false);
-          }
-          client.updateVariable(paintableId,"action",a.getKey(),true);
-        }
-      }
-);
-      break;
-    }
-  }
+  handleKeyboardEvent(event,null);
 }

@@ -1,0 +1,13 @@
+{
+  final int modifiers=KeyboardListenerCollection.getKeyboardModifiers(event);
+  final char keyCode=(char)DOM.eventGetKeyCode(event);
+  final ShortcutKeyCombination kc=new ShortcutKeyCombination(keyCode,modifiers);
+  final Iterator<ShortcutAction> it=actions.iterator();
+  while (it.hasNext()) {
+    final ShortcutAction a=it.next();
+    if (a.getShortcutCombination().equals(kc)) {
+      fireAction(event,a,target);
+      break;
+    }
+  }
+}
