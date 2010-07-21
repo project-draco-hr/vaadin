@@ -3,12 +3,20 @@
   id=uidl.getId();
   if (uidl.hasVariable("text")) {
     currentValue=uidl.getStringVariable("text");
-    rta.setHTML(currentValue);
+    if (rta.isAttached()) {
+      rta.setHTML(currentValue);
+    }
+ else {
+      html.setHTML(currentValue);
+    }
   }
-  setEnabled(!uidl.getBooleanAttribute("disabled"));
+  if (!uidl.hasAttribute("cached")) {
+    setEnabled(!uidl.getBooleanAttribute("disabled"));
+  }
   if (client.updateComponent(this,uidl,true)) {
     return;
   }
+  setReadOnly(uidl.getBooleanAttribute("readonly"));
   immediate=uidl.getBooleanAttribute("immediate");
   int newMaxLength=uidl.hasAttribute("maxLength") ? uidl.getIntAttribute("maxLength") : -1;
   if (newMaxLength >= 0) {
