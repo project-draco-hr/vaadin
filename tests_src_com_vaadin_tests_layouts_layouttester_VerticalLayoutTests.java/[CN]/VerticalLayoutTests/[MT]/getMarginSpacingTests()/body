@@ -1,8 +1,8 @@
 {
+  Layout baseLayout=getBaseLayout();
   final VerticalLayout vlo=getTestLaytout();
   vlo.setSpacing(false);
   vlo.setMargin(false);
-  vlo.addComponent(new Label("<hr />",Label.CONTENT_XHTML));
   final AbstractComponent c1=getTestTable();
   c1.setSizeFull();
   final AbstractComponent c2=getTestTable();
@@ -19,17 +19,18 @@
   button2.setEnabled(false);
   button3.setEnabled(false);
   button4.setEnabled(false);
-  vlo.addComponent(new Label("<hr />",Label.CONTENT_XHTML));
-  vlo.addComponent(c1);
-  vlo.addComponent(new Label("<hr />",Label.CONTENT_XHTML));
-  vlo.addComponent(c2);
-  vlo.addComponent(new Label("<hr />",Label.CONTENT_XHTML));
-  vlo.setExpandRatio(c1,0.5f);
-  vlo.setExpandRatio(c2,0.5f);
+  baseLayout.addComponent(vlo);
+  final VerticalLayout vlo2=getTestLaytout();
+  vlo2.addComponent(c1);
+  vlo2.addComponent(new Label("<hr />",Label.CONTENT_XHTML));
+  vlo2.addComponent(c2);
+  vlo2.setExpandRatio(c1,0.5f);
+  vlo2.setExpandRatio(c2,0.5f);
+  baseLayout.addComponent(vlo2);
   button1.addListener(new Button.ClickListener(){
     private static final long serialVersionUID=7716267156088629379L;
     public void buttonClick(    ClickEvent event){
-      vlo.setMargin(true);
+      vlo2.setMargin(true);
       button1.setEnabled(false);
       button2.setEnabled(true);
     }
@@ -38,7 +39,7 @@
   button2.addListener(new Button.ClickListener(){
     private static final long serialVersionUID=7716267156088629379L;
     public void buttonClick(    ClickEvent event){
-      vlo.setSpacing(true);
+      vlo2.setSpacing(true);
       button2.setEnabled(false);
       button3.setEnabled(true);
     }
@@ -47,7 +48,7 @@
   button3.addListener(new Button.ClickListener(){
     private static final long serialVersionUID=7716267156088629379L;
     public void buttonClick(    ClickEvent event){
-      vlo.setMargin(false);
+      vlo2.setMargin(false);
       button3.setEnabled(false);
       button4.setEnabled(true);
     }
@@ -56,10 +57,10 @@
   button4.addListener(new Button.ClickListener(){
     private static final long serialVersionUID=7716267156088629379L;
     public void buttonClick(    ClickEvent event){
-      vlo.setSpacing(false);
+      vlo2.setSpacing(false);
       button4.setEnabled(false);
     }
   }
 );
-  return vlo;
+  return baseLayout;
 }
