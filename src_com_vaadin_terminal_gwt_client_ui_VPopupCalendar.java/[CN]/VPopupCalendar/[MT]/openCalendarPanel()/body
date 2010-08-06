@@ -1,7 +1,13 @@
 {
   if (!open && !readonly) {
     open=true;
-    calendar.updateCalendar();
+    final Date start=new Date();
+    if (getCurrentDate() != null) {
+      calendar.setDate((Date)getCurrentDate().clone());
+    }
+ else {
+      calendar.setDate(new Date());
+    }
     popup.setWidth("");
     popup.setHeight("");
     popup.setPopupPositionAndShow(new PositionCallback(){
@@ -27,6 +33,8 @@
         popup.setWidth(w + "px");
         popup.setHeight(h + "px");
         popup.setPopupPosition(l,t + calendarToggle.getOffsetHeight() + 2);
+        Date end=new Date();
+        ApplicationConnection.getConsole().log("Rendering VCalendar took " + (end.getTime() - start.getTime() + "ms"));
         Timer focusTimer=new Timer(){
           @Override public void run(){
             setFocus(true);
@@ -37,5 +45,8 @@
       }
     }
 );
+  }
+ else {
+    ApplicationConnection.getConsole().error("Cannot reopen popup, it is already open!");
   }
 }

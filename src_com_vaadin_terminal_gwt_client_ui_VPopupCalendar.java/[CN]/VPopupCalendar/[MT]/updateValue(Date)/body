@@ -1,0 +1,28 @@
+{
+  Date currentDate=getCurrentDate();
+  if (currentDate == null || newDate.getTime() != currentDate.getTime()) {
+    setCurrentDate(newDate);
+    getClient().updateVariable(getId(),"year",newDate.getYear() + 1900,false);
+    if (getCurrentResolution() > VDateField.RESOLUTION_YEAR) {
+      getClient().updateVariable(getId(),"month",newDate.getMonth() + 1,false);
+      if (getCurrentResolution() > RESOLUTION_MONTH) {
+        getClient().updateVariable(getId(),"day",newDate.getDate(),false);
+        if (getCurrentResolution() > RESOLUTION_DAY) {
+          getClient().updateVariable(getId(),"hour",newDate.getHours(),false);
+          if (getCurrentResolution() > RESOLUTION_HOUR) {
+            getClient().updateVariable(getId(),"min",newDate.getMinutes(),false);
+            if (getCurrentResolution() > RESOLUTION_MIN) {
+              getClient().updateVariable(getId(),"sec",newDate.getSeconds(),false);
+              if (getCurrentResolution() == RESOLUTION_MSEC) {
+                getClient().updateVariable(getId(),"msec",DateTimeService.getMilliseconds(newDate),false);
+              }
+            }
+          }
+        }
+      }
+    }
+    if (isImmediate()) {
+      getClient().sendPendingVariableChanges();
+    }
+  }
+}

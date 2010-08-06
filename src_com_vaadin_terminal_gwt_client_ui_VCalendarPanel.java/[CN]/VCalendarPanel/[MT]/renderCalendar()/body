@@ -1,0 +1,31 @@
+{
+  if (focusedDate == null) {
+    focusedDate=new Date();
+  }
+  if (getResolution() <= VDateField.RESOLUTION_MONTH && valueChangeListener != null) {
+    valueChangeListener.changed(focusedDate);
+  }
+  Date start=new Date();
+  final boolean needsMonth=getResolution() > VDateField.RESOLUTION_YEAR;
+  boolean needsBody=getResolution() >= VDateField.RESOLUTION_DAY;
+  buildCalendarHeader(true,needsMonth);
+  clearCalendarBody(!needsBody);
+  if (needsBody) {
+    buildCalendarBody();
+  }
+  if (isTimeSelectorNeeded() && (time == null || this.resolution != this.oldResolution)) {
+    time=new VTime();
+    setWidget(2,0,time);
+    getFlexCellFormatter().setColSpan(2,0,5);
+    getFlexCellFormatter().setStyleName(2,0,VDateField.CLASSNAME + "-calendarpanel-time");
+    this.oldResolution=this.resolution;
+  }
+ else   if (isTimeSelectorNeeded()) {
+    time.updateTimes();
+  }
+ else   if (time != null) {
+    remove(time);
+  }
+  Date end=new Date();
+  ApplicationConnection.getConsole().error("Rendering calendar panel for(ms) " + (end.getTime() - start.getTime()));
+}

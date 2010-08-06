@@ -3,46 +3,32 @@
     return false;
   }
  else   if (keycode == getPreviousKey()) {
-    selectNextYear(10);
+    focusNextYear(10);
     return true;
   }
  else   if (keycode == getForwardKey()) {
-    selectNextYear(1);
+    focusNextYear(1);
     return true;
   }
  else   if (keycode == getNextKey()) {
-    selectPreviousYear(10);
+    focusPreviousYear(10);
     return true;
   }
  else   if (keycode == getBackwardKey()) {
-    selectPreviousYear(1);
+    focusPreviousYear(1);
     return true;
   }
  else   if (keycode == getSelectKey()) {
-    dateClickHandler.selectDate(String.valueOf(datefield.getShowingDate().getDay()));
-    notifyServerOfChanges();
-    if (datefield instanceof VTextualDate) {
-      ((VTextualDate)datefield).focus();
-    }
+    value=(Date)focusedDate.clone();
+    onSubmit();
     return true;
   }
  else   if (keycode == getResetKey()) {
-    Date showing=datefield.getShowingDate();
-    Date current=datefield.getCurrentDate();
-    showing.setTime(current.getTime());
-    updateCalendar();
+    focusedDate.setTime(value.getTime());
+    renderCalendar();
     return true;
   }
  else   if (keycode == getCloseKey()) {
-    if (datefield instanceof VPopupCalendar) {
-      Date showing=datefield.getShowingDate();
-      Date current=datefield.getCurrentDate();
-      if (current != null && current != null) {
-        showing.setTime(current.getTime());
-      }
-      ((VPopupCalendar)datefield).closeCalendarPanel();
-      ((VPopupCalendar)datefield).focus();
-    }
     return true;
   }
   return false;

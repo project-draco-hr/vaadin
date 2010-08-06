@@ -23,7 +23,7 @@
  catch (    final Exception e) {
       ClientExceptionHandler.displayError(e.getMessage());
       addStyleName(PARSE_ERROR_CLASSNAME);
-      client.updateVariable(id,"lastInvalidDateString",text.getText(),false);
+      getClient().updateVariable(getId(),"lastInvalidDateString",text.getText(),false);
       date=null;
     }
   }
@@ -31,27 +31,24 @@
     date=null;
     removeStyleName(PARSE_ERROR_CLASSNAME);
   }
-  client.updateVariable(id,"dateString",text.getText(),false);
-  if (date != null) {
-    showingDate=new Date(date.getTime());
-  }
-  client.updateVariable(id,"year",date != null ? date.getYear() + 1900 : -1,currentResolution == VDateField.RESOLUTION_YEAR && immediate);
+  getClient().updateVariable(getId(),"dateString",text.getText(),false);
+  getClient().updateVariable(getId(),"year",date != null ? date.getYear() + 1900 : -1,currentResolution == VDateField.RESOLUTION_YEAR && immediate);
   if (currentResolution >= VDateField.RESOLUTION_MONTH) {
-    client.updateVariable(id,"month",date != null ? date.getMonth() + 1 : -1,currentResolution == VDateField.RESOLUTION_MONTH && immediate);
+    getClient().updateVariable(getId(),"month",date != null ? date.getMonth() + 1 : -1,currentResolution == VDateField.RESOLUTION_MONTH && immediate);
   }
   if (currentResolution >= VDateField.RESOLUTION_DAY) {
-    client.updateVariable(id,"day",date != null ? date.getDate() : -1,currentResolution == VDateField.RESOLUTION_DAY && immediate);
+    getClient().updateVariable(getId(),"day",date != null ? date.getDate() : -1,currentResolution == VDateField.RESOLUTION_DAY && immediate);
   }
   if (currentResolution >= VDateField.RESOLUTION_HOUR) {
-    client.updateVariable(id,"hour",date != null ? date.getHours() : -1,currentResolution == VDateField.RESOLUTION_HOUR && immediate);
+    getClient().updateVariable(getId(),"hour",date != null ? date.getHours() : -1,currentResolution == VDateField.RESOLUTION_HOUR && immediate);
   }
   if (currentResolution >= VDateField.RESOLUTION_MIN) {
-    client.updateVariable(id,"min",date != null ? date.getMinutes() : -1,currentResolution == VDateField.RESOLUTION_MIN && immediate);
+    getClient().updateVariable(getId(),"min",date != null ? date.getMinutes() : -1,currentResolution == VDateField.RESOLUTION_MIN && immediate);
   }
   if (currentResolution >= VDateField.RESOLUTION_SEC) {
-    client.updateVariable(id,"sec",date != null ? date.getSeconds() : -1,currentResolution == VDateField.RESOLUTION_SEC && immediate);
+    getClient().updateVariable(getId(),"sec",date != null ? date.getSeconds() : -1,currentResolution == VDateField.RESOLUTION_SEC && immediate);
   }
   if (currentResolution == VDateField.RESOLUTION_MSEC) {
-    client.updateVariable(id,"msec",date != null ? getMilliseconds() : -1,immediate);
+    getClient().updateVariable(getId(),"msec",date != null ? getMilliseconds() : -1,immediate);
   }
 }

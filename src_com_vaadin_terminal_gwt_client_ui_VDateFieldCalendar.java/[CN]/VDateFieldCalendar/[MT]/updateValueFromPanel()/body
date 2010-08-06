@@ -1,0 +1,29 @@
+{
+  Date date2=caleandarPanel.getDate();
+  Date currentDate=getCurrentDate();
+  if (currentDate == null || date2.getTime() != currentDate.getTime()) {
+    setCurrentDate(date2);
+    getClient().updateVariable(getId(),"year",date2.getYear() + 1900,false);
+    if (getCurrentResolution() > VDateField.RESOLUTION_YEAR) {
+      getClient().updateVariable(getId(),"month",date2.getMonth() + 1,false);
+      if (getCurrentResolution() > RESOLUTION_MONTH) {
+        getClient().updateVariable(getId(),"day",date2.getDate(),false);
+        if (getCurrentResolution() > RESOLUTION_DAY) {
+          getClient().updateVariable(getId(),"hour",date2.getHours(),false);
+          if (getCurrentResolution() > RESOLUTION_HOUR) {
+            getClient().updateVariable(getId(),"min",date2.getMinutes(),false);
+            if (getCurrentResolution() > RESOLUTION_MIN) {
+              getClient().updateVariable(getId(),"sec",date2.getSeconds(),false);
+              if (getCurrentResolution() > RESOLUTION_MSEC) {
+                getClient().updateVariable(getId(),"msec",DateTimeService.getMilliseconds(date2),false);
+              }
+            }
+          }
+        }
+      }
+    }
+    if (isImmediate()) {
+      getClient().sendPendingVariableChanges();
+    }
+  }
+}

@@ -1,0 +1,138 @@
+{
+  clear();
+  hours=createListBox();
+  if (getDateTimeService().isTwelveHourClock()) {
+    hours.addItem("12");
+    for (int i=1; i < 12; i++) {
+      hours.addItem((i < 10) ? "0" + i : "" + i);
+    }
+  }
+ else {
+    for (int i=0; i < 24; i++) {
+      hours.addItem((i < 10) ? "0" + i : "" + i);
+    }
+  }
+  hours.addChangeHandler(this);
+  if (getDateTimeService().isTwelveHourClock()) {
+    ampm=createListBox();
+    final String[] ampmText=getDateTimeService().getAmPmStrings();
+    ampm.addItem(ampmText[0]);
+    ampm.addItem(ampmText[1]);
+    ampm.addChangeHandler(this);
+  }
+  if (getResolution() >= VDateField.RESOLUTION_MIN) {
+    mins=createListBox();
+    for (int i=0; i < 60; i++) {
+      mins.addItem((i < 10) ? "0" + i : "" + i);
+    }
+    mins.addChangeHandler(this);
+  }
+  if (getResolution() >= VDateField.RESOLUTION_SEC) {
+    sec=createListBox();
+    for (int i=0; i < 60; i++) {
+      sec.addItem((i < 10) ? "0" + i : "" + i);
+    }
+    sec.addChangeHandler(this);
+  }
+  if (getResolution() == VDateField.RESOLUTION_MSEC) {
+    msec=createListBox();
+    for (int i=0; i < 1000; i++) {
+      if (i < 10) {
+        msec.addItem("00" + i);
+      }
+ else       if (i < 100) {
+        msec.addItem("0" + i);
+      }
+ else {
+        msec.addItem("" + i);
+      }
+    }
+    msec.addChangeHandler(this);
+  }
+  final String delimiter=getDateTimeService().getClockDelimeter();
+  if (isReadonly()) {
+    int h=0;
+    if (value != null) {
+      h=value.getHours();
+    }
+    if (getDateTimeService().isTwelveHourClock()) {
+      h-=h < 12 ? 0 : 12;
+    }
+    add(new VLabel(h < 10 ? "0" + h : "" + h));
+  }
+ else {
+    add(hours);
+    lastField=hours;
+  }
+  if (getResolution() >= VDateField.RESOLUTION_MIN) {
+    add(new VLabel(delimiter));
+    if (isReadonly()) {
+      final int m=mins.getSelectedIndex();
+      add(new VLabel(m < 10 ? "0" + m : "" + m));
+    }
+ else {
+      add(mins);
+      lastField=mins;
+    }
+  }
+  if (getResolution() >= VDateField.RESOLUTION_SEC) {
+    add(new VLabel(delimiter));
+    if (isReadonly()) {
+      final int s=sec.getSelectedIndex();
+      add(new VLabel(s < 10 ? "0" + s : "" + s));
+    }
+ else {
+      add(sec);
+      lastField=sec;
+    }
+  }
+  if (getResolution() == VDateField.RESOLUTION_MSEC) {
+    add(new VLabel("."));
+    if (isReadonly()) {
+      final int m=getMilliseconds();
+      final String ms=m < 100 ? "0" + m : "" + m;
+      add(new VLabel(m < 10 ? "0" + ms : ms));
+    }
+ else {
+      add(msec);
+      lastField=msec;
+    }
+  }
+  if (getResolution() == VDateField.RESOLUTION_HOUR) {
+    add(new VLabel(delimiter + "00"));
+  }
+  if (getDateTimeService().isTwelveHourClock()) {
+    add(new VLabel("&nbsp;"));
+    if (isReadonly()) {
+      int i=0;
+      if (value != null) {
+        i=(value.getHours() < 12) ? 0 : 1;
+      }
+      add(new VLabel(ampm.getItemText(i)));
+    }
+ else {
+      add(ampm);
+      lastField=ampm;
+    }
+  }
+  if (isReadonly()) {
+    return;
+  }
+  updateTimes();
+  ListBox lastDropDown=(ListBox)getWidget(getWidgetCount() - 1);
+  lastDropDown.addKeyDownHandler(new KeyDownHandler(){
+    public void onKeyDown(    KeyDownEvent event){
+      boolean shiftKey=event.getNativeEvent().getShiftKey();
+      if (shiftKey) {
+        return;
+      }
+ else {
+        int nativeKeyCode=event.getNativeKeyCode();
+        if (nativeKeyCode == KeyCodes.KEY_TAB) {
+          onTabOut(event);
+        }
+      }
+    }
+  }
+);
+}

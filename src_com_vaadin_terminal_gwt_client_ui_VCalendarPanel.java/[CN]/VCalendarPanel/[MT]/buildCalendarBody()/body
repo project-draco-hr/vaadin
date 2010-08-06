@@ -1,5 +1,4 @@
 {
-  final boolean showISOWeekNumbers=datefield.isShowISOWeekNumbers();
   final int weekColumn=0;
   final int firstWeekdayColumn=1;
   final int headerRow=0;
@@ -10,9 +9,9 @@
   getFlexCellFormatter().setStyleName(1,0,VDateField.CLASSNAME + "-calendarpanel-body");
   days.getFlexCellFormatter().setStyleName(headerRow,weekColumn,"v-week");
   days.setHTML(headerRow,weekColumn,"<strong></strong>");
-  days.getFlexCellFormatter().setVisible(headerRow,weekColumn,showISOWeekNumbers);
+  days.getFlexCellFormatter().setVisible(headerRow,weekColumn,isShowISOWeekNumbers());
   days.getRowFormatter().setStyleName(headerRow,VDateField.CLASSNAME + "-calendarpanel-weekdays");
-  if (showISOWeekNumbers) {
+  if (isShowISOWeekNumbers()) {
     days.getFlexCellFormatter().setStyleName(headerRow,weekColumn,"v-first");
     days.getFlexCellFormatter().setStyleName(headerRow,firstWeekdayColumn,"");
     days.getRowFormatter().addStyleName(headerRow,VDateField.CLASSNAME + "-calendarpanel-weeknumbers");
@@ -22,41 +21,33 @@
     days.getFlexCellFormatter().setStyleName(headerRow,firstWeekdayColumn,"v-first");
   }
   days.getFlexCellFormatter().setStyleName(headerRow,firstWeekdayColumn + 6,"v-last");
-  final int firstDay=datefield.getDateTimeService().getFirstDayOfWeek();
+  final int firstDay=getDateTimeService().getFirstDayOfWeek();
   for (int i=0; i < 7; i++) {
     int day=i + firstDay;
     if (day > 6) {
       day=0;
     }
-    if (datefield.getCurrentResolution() > VDateField.RESOLUTION_MONTH) {
-      days.setHTML(headerRow,firstWeekdayColumn + i,"<strong>" + datefield.getDateTimeService().getShortDay(day) + "</strong>");
+    if (getResolution() > VDateField.RESOLUTION_MONTH) {
+      days.setHTML(headerRow,firstWeekdayColumn + i,"<strong>" + getDateTimeService().getShortDay(day) + "</strong>");
     }
  else {
       days.setHTML(headerRow,firstWeekdayColumn + i,"");
     }
   }
-  Date selectedDate=datefield.getCurrentDate();
-  Date showing=datefield.getShowingDate();
-  if (showing == null) {
-    showing=new Date();
-    datefield.setShowingDate(showing);
-  }
   int dayOfMonthSelected=-1;
   int dayOfMonthToday=-1;
-  if (showing != null) {
-    dayOfMonthSelected=showing.getDate();
-  }
- else   if (selectedDate != null && selectedDate.getMonth() == showing.getMonth() && selectedDate.getYear() == showing.getYear()) {
-    dayOfMonthSelected=selectedDate.getDate();
+  boolean initiallyNull=value == null;
+  if (!initiallyNull && value.getMonth() == focusedDate.getMonth() && value.getYear() == focusedDate.getYear()) {
+    dayOfMonthSelected=value.getDate();
   }
   final Date today=new Date();
-  if (today.getMonth() == showing.getMonth() && today.getYear() == showing.getYear()) {
+  if (today.getMonth() == focusedDate.getMonth() && today.getYear() == focusedDate.getYear()) {
     dayOfMonthToday=today.getDate();
   }
-  final int startWeekDay=datefield.getDateTimeService().getStartWeekDay(showing);
-  final int daysInMonth=DateTimeService.getNumberOfDaysInMonth(showing);
+  final int startWeekDay=getDateTimeService().getStartWeekDay(focusedDate);
+  final int daysInMonth=DateTimeService.getNumberOfDaysInMonth(focusedDate);
   int dayCount=0;
-  final Date curr=new Date(showing.getTime());
+  final Date curr=new Date(focusedDate.getTime());
   for (int weekOfMonth=1; weekOfMonth < 7; weekOfMonth++) {
     boolean weekNumberProcessed[]=new boolean[]{false,false,false,false,false,false,false};
     for (int dayOfWeek=0; dayOfWeek < 7; dayOfWeek++) {
@@ -65,39 +56,25 @@
           break;
         }
         final int dayOfMonth=++dayCount;
-        final String baseclass=VDateField.CLASSNAME + "-calendarpanel-day";
-        String title="";
         curr.setDate(dayCount);
-        if (entrySource != null) {
-          final List entries=entrySource.getEntries(curr,VDateField.RESOLUTION_DAY);
-          if (entries != null) {
-            for (final Iterator it=entries.iterator(); it.hasNext(); ) {
-              final CalendarEntry entry=(CalendarEntry)it.next();
-              title+=(title.length() > 0 ? ", " : "") + entry.getStringForDate(curr);
-            }
-          }
-        }
-        InlineHTML html=new InlineHTML(String.valueOf(dayOfMonth));
-        html.setStyleName(baseclass);
-        html.setTitle(title);
-        if (!isEnabledDate(curr)) {
-          html.addStyleDependentName("disabled");
-        }
+        Day day=new Day(dayOfMonth);
         if (dayOfMonthSelected == dayOfMonth) {
-          html.addStyleDependentName("selected");
-          selectedRow=weekOfMonth;
-          selectedColumn=firstWeekdayColumn + dayOfWeek;
+          day.addStyleDependentName(CN_SELECTED);
+          selectedDay=day;
         }
         if (dayOfMonthToday == dayOfMonth) {
-          html.addStyleDependentName("today");
+          day.addStyleDependentName(CN_TODAY);
         }
-        if (title.length() > 0) {
-          html.addStyleDependentName("entry");
+        if (dayOfMonth == focusedDate.getDate()) {
+          day.addStyleDependentName(CN_FOCUSED);
+          focusedDay=day;
+          focusedRow=weekOfMonth;
+          focusedColumn=firstWeekdayColumn + dayOfWeek;
         }
-        days.setWidget(weekOfMonth,firstWeekdayColumn + dayOfWeek,html);
+        days.setWidget(weekOfMonth,firstWeekdayColumn + dayOfWeek,day);
         if (!weekNumberProcessed[weekOfMonth]) {
-          days.getCellFormatter().setVisible(weekOfMonth,weekColumn,showISOWeekNumbers);
-          if (showISOWeekNumbers) {
+          days.getCellFormatter().setVisible(weekOfMonth,weekColumn,isShowISOWeekNumbers());
+          if (isShowISOWeekNumbers()) {
             final String baseCssClass=VDateField.CLASSNAME + "-calendarpanel-weeknumber";
             String weekCssClass=baseCssClass;
             int weekNumber=DateTimeService.getISOWeekNumber(curr);

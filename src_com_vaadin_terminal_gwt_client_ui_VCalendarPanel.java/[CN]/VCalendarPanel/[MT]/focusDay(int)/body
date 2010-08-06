@@ -1,0 +1,25 @@
+{
+  if (resolution > VDateField.RESOLUTION_MONTH) {
+    if (focusedDay != null)     focusedDay.removeStyleDependentName(CN_FOCUSED);
+    if (day > 0 && focusedDate != null) {
+      focusedDate.setDate(day);
+      int rowCount=days.getRowCount();
+      for (int i=0; i < rowCount; i++) {
+        int cellCount=days.getCellCount(i);
+        for (int j=0; j < cellCount; j++) {
+          Widget widget=days.getWidget(i,j);
+          if (widget != null && widget instanceof Day) {
+            Day curday=(Day)widget;
+            if (curday.getDay() == day) {
+              curday.addStyleDependentName(CN_FOCUSED);
+              focusedDay=curday;
+              focusedColumn=j;
+              focusedRow=i;
+              return;
+            }
+          }
+        }
+      }
+    }
+  }
+}

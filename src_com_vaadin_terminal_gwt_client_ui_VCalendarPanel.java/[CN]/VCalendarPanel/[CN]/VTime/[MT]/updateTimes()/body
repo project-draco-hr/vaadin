@@ -1,0 +1,46 @@
+{
+  boolean selected=true;
+  if (value == null) {
+    value=new Date();
+    selected=false;
+  }
+  if (getDateTimeService().isTwelveHourClock()) {
+    int h=value.getHours();
+    ampm.setSelectedIndex(h < 12 ? 0 : 1);
+    h-=ampm.getSelectedIndex() * 12;
+    hours.setSelectedIndex(h);
+  }
+ else {
+    hours.setSelectedIndex(value.getHours());
+  }
+  if (getResolution() >= VDateField.RESOLUTION_MIN) {
+    mins.setSelectedIndex(value.getMinutes());
+  }
+  if (getResolution() >= VDateField.RESOLUTION_SEC) {
+    sec.setSelectedIndex(value.getSeconds());
+  }
+  if (getResolution() == VDateField.RESOLUTION_MSEC) {
+    if (selected) {
+      msec.setSelectedIndex(getMilliseconds());
+    }
+ else {
+      msec.setSelectedIndex(0);
+    }
+  }
+  if (getDateTimeService().isTwelveHourClock()) {
+    ampm.setSelectedIndex(value.getHours() < 12 ? 0 : 1);
+  }
+  hours.setEnabled(isEnabled());
+  if (mins != null) {
+    mins.setEnabled(isEnabled());
+  }
+  if (sec != null) {
+    sec.setEnabled(isEnabled());
+  }
+  if (msec != null) {
+    msec.setEnabled(isEnabled());
+  }
+  if (ampm != null) {
+    ampm.setEnabled(isEnabled());
+  }
+}

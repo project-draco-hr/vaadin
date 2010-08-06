@@ -3,10 +3,19 @@
   parsable=uidl.getBooleanAttribute("parsable");
   super.updateFromUIDL(uidl,client);
   popup.setStyleName(VDateField.CLASSNAME + "-popup " + VDateField.CLASSNAME+ "-"+ resolutionToString(currentResolution));
-  if (date != null) {
-    calendar.updateCalendar();
-  }
+  calendar.setDateTimeService(getDateTimeService());
+  calendar.setShowISOWeekNumbers(isShowISOWeekNumbers());
+  calendar.setResolution(currentResolution);
   calendarToggle.setEnabled(enabled);
+  if (currentResolution <= RESOLUTION_MONTH) {
+    calendar.setValueChangeListener(new ValueChangeListener(){
+      public void changed(      Date date){
+        setCurrentDate(date);
+        buildDate();
+      }
+    }
+);
+  }
   if (readonly) {
     calendarToggle.addStyleName(CLASSNAME + "-button-readonly");
   }

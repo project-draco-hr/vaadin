@@ -6,7 +6,26 @@
   calendarToggle.addClickHandler(this);
   calendarToggle.getElement().setTabIndex(-1);
   add(calendarToggle);
-  calendar=new VCalendarPanel(this);
+  calendar=GWT.create(VCalendarPanel.class);
+  calendar.setFocusOutListener(new FocusOutListener(){
+    public boolean onFocusOut(    DomEvent event){
+      ApplicationConnection.getConsole().log("Focus out event, due to " + event.getNativeEvent().getType());
+      event.preventDefault();
+      closeCalendarPanel();
+      return true;
+    }
+  }
+);
+  calendar.setSubmitListener(new SubmitListener(){
+    public void onSubmit(){
+      updateValue(calendar.getDate());
+      closeCalendarPanel();
+    }
+    public void onCancel(){
+      closeCalendarPanel();
+    }
+  }
+);
   popup=new VOverlay(true,true,true);
   popup.setStyleName(VDateField.CLASSNAME + "-popup");
   popup.setWidget(calendar);
