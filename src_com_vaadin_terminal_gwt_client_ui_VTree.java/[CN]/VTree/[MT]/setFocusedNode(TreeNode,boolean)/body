@@ -5,8 +5,18 @@
   if (node != null) {
     node.setFocused(true);
   }
-  if (node != null && scrollIntoView) {
-    node.scrollIntoView();
-  }
   focusedNode=node;
+  if (node != null && scrollIntoView) {
+    if (!rendering) {
+      node.scrollIntoView();
+    }
+ else {
+      DeferredCommand.addCommand(new Command(){
+        public void execute(){
+          focusedNode.scrollIntoView();
+        }
+      }
+);
+    }
+  }
 }
