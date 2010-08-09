@@ -10,5 +10,19 @@
  else {
     caleandarPanel.setDate(null);
   }
+  if (currentResolution > RESOLUTION_DAY) {
+    caleandarPanel.setTimeChangeListener(new TimeChangeListener(){
+      public void changed(      int hour,      int min,      int sec,      int msec){
+        Date d=(Date)date.clone();
+        d.setHours(hour);
+        d.setMinutes(min);
+        d.setSeconds(sec);
+        DateTimeService.setMilliseconds(d,msec);
+        caleandarPanel.setDate(d);
+        updateValueFromPanel();
+      }
+    }
+);
+  }
   caleandarPanel.renderCalendar();
 }

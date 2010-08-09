@@ -16,6 +16,20 @@
     }
 );
   }
+  if (currentResolution > RESOLUTION_DAY) {
+    calendar.setTimeChangeListener(new TimeChangeListener(){
+      public void changed(      int hour,      int min,      int sec,      int msec){
+        Date d=(Date)date.clone();
+        d.setHours(hour);
+        d.setMinutes(min);
+        d.setSeconds(sec);
+        DateTimeService.setMilliseconds(d,msec);
+        updateValue(d);
+        buildDate();
+      }
+    }
+);
+  }
   if (readonly) {
     calendarToggle.addStyleName(CLASSNAME + "-button-readonly");
   }
