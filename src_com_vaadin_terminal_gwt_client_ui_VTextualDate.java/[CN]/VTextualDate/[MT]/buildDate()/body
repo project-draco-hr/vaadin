@@ -2,7 +2,16 @@
   removeStyleName(PARSE_ERROR_CLASSNAME);
   String dateText;
   if (date != null) {
-    dateText=DateTimeFormat.getFormat(getFormatString()).format(date);
+    String formatStr=getFormatString();
+    if (formatStr.contains("MMM")) {
+      String monthName=getDateTimeService().getMonth(date.getMonth());
+      if (monthName != null) {
+        monthName=Character.toUpperCase(monthName.charAt(0)) + monthName.substring(1);
+        formatStr=formatStr.replaceAll("[M]{3,}","'" + monthName + "'");
+      }
+    }
+    DateTimeFormat format=DateTimeFormat.getFormat(formatStr);
+    dateText=format.format(date);
   }
  else {
     dateText="";
