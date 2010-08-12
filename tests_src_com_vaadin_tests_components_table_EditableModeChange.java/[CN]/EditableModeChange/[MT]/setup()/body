@@ -1,0 +1,26 @@
+{
+  final Table items=new Table("Items - double-click to edit");
+  items.setSelectable(true);
+  items.addContainerProperty("name",String.class,"");
+  items.addContainerProperty("birthday",Date.class,"");
+  final TableFieldFactory fieldFactory=new ItemFieldFactory();
+  items.setTableFieldFactory(fieldFactory);
+  for (  String name : names) {
+    items.addItem(name);
+    items.getItem(name).getItemProperty("name").setValue(name);
+    items.getItem(name).getItemProperty("birthday").setValue(new Date());
+  }
+  items.addListener(new ItemClickEvent.ItemClickListener(){
+    public void itemClick(    ItemClickEvent event){
+      if (event.isDoubleClick()) {
+        selectionEvent=event;
+        items.setEditable(true);
+      }
+ else       if (items.isEditable()) {
+        items.setEditable(false);
+      }
+    }
+  }
+);
+  addComponent(items);
+}
