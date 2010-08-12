@@ -9,28 +9,30 @@
   if (inCaption && client.hasEventListeners(VTree.this,ITEM_CLICK_EVENT_ID) && (type == Event.ONDBLCLICK || type == Event.ONMOUSEUP)) {
     fireClick(event);
   }
-  if (type == Event.ONCLICK) {
-    if (getElement() == target || ie6compatnode == target) {
-      toggleState();
-    }
- else     if (!readonly && inCaption && selectable) {
-      if (handleClickSelection(event.getCtrlKey() || event.getMetaKey(),event.getShiftKey())) {
-        event.preventDefault();
-      }
-    }
-    DOM.eventCancelBubble(event,true);
-  }
- else   if (type == Event.ONCONTEXTMENU) {
+  if (type == Event.ONCONTEXTMENU) {
     showContextMenu(event);
   }
   if (type == Event.ONMOUSEDOWN) {
-    event.preventDefault();
+    if (!BrowserInfo.get().isIE() && !BrowserInfo.get().isOpera()) {
+      setFocus(true);
+    }
     if (inCaption) {
-      setFocusedNode(this,false);
-      event.stopPropagation();
-      if (!BrowserInfo.get().isIE() && !BrowserInfo.get().isOpera()) {
-        setFocus(true);
+      if (getElement() == target || ie6compatnode == target) {
+        toggleState();
       }
+ else       if (!readonly && selectable) {
+        if (handleClickSelection(event.getCtrlKey() || event.getMetaKey(),event.getShiftKey())) {
+          DeferredCommand.addCommand(new Command(){
+            public void execute(){
+              setFocusedNode(TreeNode.this,BrowserInfo.get().isWebkit());
+            }
+          }
+);
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }
+      event.stopPropagation();
     }
   }
   if (dragMode != 0 || dropHandler != null) {
