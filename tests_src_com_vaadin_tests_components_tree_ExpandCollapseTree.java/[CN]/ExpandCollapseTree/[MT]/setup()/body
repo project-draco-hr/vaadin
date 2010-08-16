@@ -1,0 +1,32 @@
+{
+  getLayout().setSpacing(true);
+  tree.setContainerDataSource(createContainer());
+  tree.setItemCaptionPropertyId("name");
+  tree.setWidth("300px");
+  tree.setImmediate(true);
+  tree.setSelectable(true);
+  tree.setMultiSelect(true);
+  tree.expandItemsRecursively("Item 1");
+  tree.expandItemsRecursively("Item 4");
+  tree.addListener(new Property.ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      if (tree.getValue() instanceof Set) {
+        Set<Object> itemIds=(Set<Object>)tree.getValue();
+        if (itemIds.size() == 0) {
+          valueLbl.setValue("No selection");
+        }
+ else {
+          valueLbl.setValue(itemIds);
+        }
+      }
+ else {
+        valueLbl.setValue(tree.getValue());
+      }
+    }
+  }
+);
+  addComponent(tree);
+  valueLbl.setWidth("300px");
+  valueLbl.setHeight("600px");
+  addComponent(valueLbl);
+}
