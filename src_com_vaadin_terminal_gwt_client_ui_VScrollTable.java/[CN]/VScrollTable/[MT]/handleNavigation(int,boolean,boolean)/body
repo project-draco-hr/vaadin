@@ -36,7 +36,7 @@
     scrollBodyPanel.setHorizontalScrollPosition(scrollBodyPanel.getHorizontalScrollPosition() + scrollingVelocity);
     return true;
   }
-  if (selectMode > SELECT_MODE_NONE && keycode == getNavigationSelectKey()) {
+  if (isSelectable() && keycode == getNavigationSelectKey()) {
     if (selectMode == SELECT_MODE_SINGLE) {
       boolean wasSelected=focusedRow.isSelected();
       deselectAll();
@@ -54,7 +54,7 @@
     int rowHeight=(int)scrollBody.getRowHeight();
     int offset=pageLength * rowHeight - rowHeight;
     scrollBodyPanel.setScrollPosition(scrollBodyPanel.getScrollPosition() + offset);
-    if (selectMode > SELECT_MODE_NONE) {
+    if (isSelectable()) {
       if (!moveFocusDown(pageLength - 2)) {
         final int lastRendered=scrollBody.getLastRendered();
         if (lastRendered == totalRows - 1) {
@@ -75,7 +75,7 @@
     int rowHeight=(int)scrollBody.getRowHeight();
     int offset=pageLength * rowHeight - rowHeight;
     scrollBodyPanel.setScrollPosition(scrollBodyPanel.getScrollPosition() - offset);
-    if (selectMode > SELECT_MODE_NONE) {
+    if (isSelectable()) {
       if (!moveFocusUp(pageLength - 2)) {
         final int firstRendered=scrollBody.getFirstRendered();
         if (firstRendered == 0) {
@@ -93,7 +93,7 @@
     return true;
   }
   if (keycode == getNavigationStartKey()) {
-    if (selectMode > SELECT_MODE_NONE) {
+    if (isSelectable()) {
       final int firstRendered=scrollBody.getFirstRendered();
       boolean focusOnly=ctrl;
       if (firstRendered == 0) {
@@ -110,7 +110,7 @@
     return true;
   }
   if (keycode == getNavigationEndKey()) {
-    if (selectMode > SELECT_MODE_NONE) {
+    if (isSelectable()) {
       final int lastRendered=scrollBody.getLastRendered();
       boolean focusOnly=ctrl;
       if (lastRendered == totalRows - 1) {
