@@ -9,6 +9,10 @@
       client.updateVariable(paintableId,"clickedColKey",colKey,false);
     }
     MouseEventDetails details=new MouseEventDetails(event);
-    client.updateVariable(paintableId,"clickEvent",details.toString(),!(event.getButton() == Event.BUTTON_LEFT && !doubleClick && isSelectable() && immediate));
+    boolean imm=true;
+    if (immediate && event.getButton() == Event.BUTTON_LEFT && !doubleClick && isSelectable() && !isSelected()) {
+      imm=false;
+    }
+    client.updateVariable(paintableId,"clickEvent",details.toString(),imm);
   }
 }
