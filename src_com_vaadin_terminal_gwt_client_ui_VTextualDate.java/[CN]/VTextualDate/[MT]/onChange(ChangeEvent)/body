@@ -1,26 +1,12 @@
 {
   if (!text.getText().equals("")) {
     try {
-      DateTimeFormat format=DateTimeFormat.getFormat(getFormatString());
-      Date newDate;
+      String enteredDate=text.getText();
+      setDate(getDateTimeService().parseDate(enteredDate,getFormatString(),lenient));
       if (lenient) {
-        newDate=format.parse(text.getText());
-        if (newDate != null) {
-          text.setValue(DateTimeFormat.getFormat(getFormatString()).format(newDate),false);
-        }
+        text.setValue(getDateTimeService().formatDate(getDate(),getFormatString()),false);
       }
- else {
-        newDate=format.parseStrict(text.getText());
-      }
-      long stamp=newDate.getTime();
-      if (stamp == 0) {
-        setDate(null);
-        addStyleName(PARSE_ERROR_CLASSNAME);
-      }
- else {
-        setDate(newDate);
-        removeStyleName(PARSE_ERROR_CLASSNAME);
-      }
+      removeStyleName(PARSE_ERROR_CLASSNAME);
     }
  catch (    final Exception e) {
       ClientExceptionHandler.displayError(e.getMessage());
