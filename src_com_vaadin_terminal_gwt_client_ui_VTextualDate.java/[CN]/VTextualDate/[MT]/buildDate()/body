@@ -3,10 +3,15 @@
   String dateText;
   if (date != null) {
     String formatStr=getFormatString();
-    if (formatStr.contains("MMM")) {
-      String monthName=getDateTimeService().getMonth(date.getMonth());
+    if (formatStr.contains("MMMM")) {
+      @SuppressWarnings("deprecation") String monthName=getDateTimeService().getMonth(date.getMonth());
       if (monthName != null) {
-        monthName=Character.toUpperCase(monthName.charAt(0)) + monthName.substring(1);
+        formatStr=formatStr.replaceAll("[M]{4,}","'" + monthName + "'");
+      }
+    }
+    if (formatStr.contains("MMM")) {
+      @SuppressWarnings("deprecation") String monthName=getDateTimeService().getShortMonth(date.getMonth());
+      if (monthName != null) {
         formatStr=formatStr.replaceAll("[M]{3,}","'" + monthName + "'");
       }
     }
