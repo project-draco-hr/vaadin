@@ -1,22 +1,23 @@
 {
   removeStyleName(PARSE_ERROR_CLASSNAME);
   String dateText;
-  if (date != null) {
+  Date currentDate=getDate();
+  if (currentDate != null) {
     String formatStr=getFormatString();
     if (formatStr.contains("MMMM")) {
-      @SuppressWarnings("deprecation") String monthName=getDateTimeService().getMonth(date.getMonth());
+      @SuppressWarnings("deprecation") String monthName=getDateTimeService().getMonth(currentDate.getMonth());
       if (monthName != null) {
         formatStr=formatStr.replaceAll("[M]{4,}","'" + monthName + "'");
       }
     }
     if (formatStr.contains("MMM")) {
-      @SuppressWarnings("deprecation") String monthName=getDateTimeService().getShortMonth(date.getMonth());
+      @SuppressWarnings("deprecation") String monthName=getDateTimeService().getShortMonth(currentDate.getMonth());
       if (monthName != null) {
         formatStr=formatStr.replaceAll("[M]{3,}","'" + monthName + "'");
       }
     }
     DateTimeFormat format=DateTimeFormat.getFormat(formatStr);
-    dateText=format.format(date);
+    dateText=format.format(currentDate);
   }
  else {
     dateText="";
