@@ -1,9 +1,10 @@
 {
-  super.setReadOnly(readOnly);
+  boolean wasReadOnly=isReadOnly();
   if (readOnly) {
-    getElement().setTabIndex(-1);
+    setTabIndex(-1);
   }
- else {
-    getElement().setTabIndex(getTabIndex());
+ else   if (wasReadOnly && !readOnly && getTabIndex() == -1) {
+    setTabIndex(0);
   }
+  super.setReadOnly(readOnly);
 }
