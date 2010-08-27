@@ -1,13 +1,27 @@
 {
   Calendar cal=Calendar.getInstance();
   cal.set(2010,1,1);
+  Label serversideValueLabel=new Label();
   DateField df=new DateField();
   df.setResolution(DateField.RESOLUTION_DAY);
   df.setLocale(locale);
   df.setWidth("300px");
   df.setDateFormat(pattern);
   df.setImmediate(true);
+  String debugId=pattern.replace('/','X');
+  while (usedDebugIds.contains(debugId)) {
+    debugId=debugId + "-";
+  }
+  df.setDebugId(debugId);
+  usedDebugIds.add(debugId);
+  df.setData(new Data(serversideValueLabel,pattern));
   df.setValue(cal.getTime());
+  df.addListener(new Property.ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      updateServerSideLabel((DateField)event.getProperty());
+    }
+  }
+);
   Label patternLabel=new Label(pattern);
   patternLabel.setWidth(null);
   SimpleDateFormat expDateFormat=new SimpleDateFormat(expectedDateFormat,locale);
@@ -18,5 +32,7 @@
   expectedLabel.setWidth(null);
   gridLayout.addComponent(patternLabel);
   gridLayout.addComponent(df);
+  gridLayout.addComponent(serversideValueLabel);
   gridLayout.addComponent(expectedLabel);
+  updateServerSideLabel(df);
 }
