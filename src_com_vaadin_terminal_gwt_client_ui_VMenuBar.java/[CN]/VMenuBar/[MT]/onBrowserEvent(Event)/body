@@ -18,15 +18,29 @@ case Event.ONCLICK:
       if (isEnabled() && targetItem.isEnabled()) {
         itemClick(targetItem);
       }
-    break;
+    if (subMenu) {
+      VMenuBar parent=parentMenu;
+      while (parent.getParentMenu() != null) {
+        parent=parent.getParentMenu();
+      }
+      parent.setFocus(true);
+    }
+  break;
 case Event.ONMOUSEOVER:
-  if (isEnabled() && targetItem.isEnabled()) {
-    itemOver(targetItem);
-  }
+if (isEnabled() && targetItem.isEnabled()) {
+  itemOver(targetItem);
+}
 break;
 case Event.ONMOUSEOUT:
 itemOut(targetItem);
 break;
 }
+}
+ else if (subMenu && DOM.eventGetType(e) == Event.ONCLICK && subMenu) {
+VMenuBar parent=parentMenu;
+while (parent.getParentMenu() != null) {
+parent=parent.getParentMenu();
+}
+parent.setFocus(true);
 }
 }
