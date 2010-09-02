@@ -1,0 +1,17 @@
+{
+  Collection<SelectionRange> newRanges=null;
+  for (Iterator<SelectionRange> iterator=selectedRowRanges.iterator(); iterator.hasNext(); ) {
+    SelectionRange range=iterator.next();
+    if (range.inRange(row)) {
+      Collection<SelectionRange> splitranges=range.split(row);
+      if (newRanges == null) {
+        newRanges=new ArrayList<SelectionRange>();
+      }
+      newRanges.addAll(splitranges);
+      iterator.remove();
+    }
+  }
+  if (newRanges != null) {
+    selectedRowRanges.addAll(newRanges);
+  }
+}

@@ -22,9 +22,13 @@ if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && selectM
   setRowFocus(this);
 }
  else if ((event.getCtrlKey() || event.getMetaKey()) && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+  boolean wasSelected=isSelected();
   toggleSelection();
   setRowFocus(this);
   selectionRangeStart=this;
+  if (wasSelected) {
+    removeRowFromUnsentSelectionRanges(this);
+  }
 }
  else if ((event.getCtrlKey() || event.getMetaKey() && selectMode == SELECT_MODE_SINGLE)) {
   if (!isSelected() || (isSelected() && nullSelectionAllowed)) {
@@ -59,6 +63,7 @@ sendSelectedRows();
 }
 break;
 case Event.ONMOUSEDOWN:
+setRowFocus(this);
 if (dragmode != 0 && event.getButton() == NativeEvent.BUTTON_LEFT) {
 mDown=true;
 VTransferable transferable=new VTransferable();
@@ -81,7 +86,7 @@ for (Iterator<Widget> iterator=scrollBody.iterator(); iterator.hasNext(); ) {
 VScrollTableRow next=(VScrollTableRow)iterator.next();
 Element child=(Element)dragImage.getChild(i++);
 if (!selectedRowKeys.contains("" + next.rowKey)) {
-  child.getStyle().setVisibility(Visibility.HIDDEN);
+child.getStyle().setVisibility(Visibility.HIDDEN);
 }
 }
 }

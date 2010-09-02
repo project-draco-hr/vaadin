@@ -53,6 +53,7 @@
     sortAscending=uidl.getBooleanVariable("sortascending");
     sortColumn=uidl.getStringVariable("sortcolumn");
   }
+  boolean keyboardSelectionOverRowFetchInProgress=false;
   if (uidl.hasVariable("selected")) {
     final Set<String> selectedKeys=uidl.getStringArrayVariableAsSet("selected");
     if (scrollBody != null) {
@@ -60,12 +61,17 @@
       while (iterator.hasNext()) {
         VScrollTableRow row=(VScrollTableRow)iterator.next();
         boolean selected=selectedKeys.contains(row.getKey());
+        if (!selected && unSyncedselectionsBeforeRowFetch != null && unSyncedselectionsBeforeRowFetch.contains(row.getKey())) {
+          selected=true;
+          keyboardSelectionOverRowFetchInProgress=true;
+        }
         if (selected != row.isSelected()) {
           row.toggleSelection();
         }
       }
     }
   }
+  unSyncedselectionsBeforeRowFetch=null;
   if (uidl.hasAttribute("selectmode")) {
     if (uidl.getBooleanAttribute("readonly")) {
       selectMode=Table.SELECT_MODE_NONE;
@@ -162,7 +168,9 @@
   }
   hideScrollPositionAnnotation();
   purgeUnregistryBag();
-  selectionChanged=false;
+  if (!keyboardSelectionOverRowFetchInProgress) {
+    selectionChanged=false;
+  }
   if (selectFirstItemInNextRender) {
     selectFirstRenderedRow(false);
     selectFirstItemInNextRender=false;
@@ -189,14 +197,8 @@
         }
       }
     }
- else {
-      setRowFocus(getRenderedRowByKey(focusedRow.getKey()));
-    }
   }
   setProperTabIndex();
   rendering=false;
   headerChangedDuringUpdate=false;
-  if (focusedRow != null) {
-    ensureRowIsVisible(focusedRow);
-  }
 }

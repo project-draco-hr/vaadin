@@ -4,47 +4,34 @@
     toggleSelection();
     return;
   }
-  int startKey;
-  if (selectionRangeStart != null) {
-    startKey=Integer.valueOf(selectionRangeStart.getKey());
-  }
- else {
-    startKey=Integer.valueOf(focusedRow.getKey());
-  }
-  int endKey=rowKey;
-  if (endKey < startKey) {
-    startKey^=endKey;
-    endKey^=startKey;
-    startKey^=endKey;
+  VScrollTableRow endRow=this;
+  VScrollTableRow startRow=selectionRangeStart;
+  if (startRow == null) {
+    startRow=focusedRow;
+    if (startRow == null) {
+      startRow=(VScrollTableRow)scrollBody.iterator().next();
+      setRowFocus(endRow);
+    }
   }
   if (deselectPrevious) {
     deselectAll();
   }
-  VScrollTableRow startRow=getRenderedRowByKey(String.valueOf(startKey));
-  VScrollTableRow endRow=getRenderedRowByKey(String.valueOf(endKey));
-  if (startRow == null) {
-    startRow=(VScrollTableRow)scrollBody.iterator().next();
-    setRowFocus(endRow);
+  if (!startRow.isBefore(endRow)) {
+    VScrollTableRow tmp=startRow;
+    startRow=endRow;
+    endRow=tmp;
   }
-  if (endRow == null) {
-    setRowFocus(startRow);
-  }
-  Iterator<Widget> rows=scrollBody.iterator();
-  boolean startSelection=false;
-  while (rows.hasNext()) {
-    VScrollTableRow row=(VScrollTableRow)rows.next();
-    if (row == startRow || startSelection) {
-      startSelection=true;
+  SelectionRange range=new SelectionRange(startRow,endRow);
+  for (  Widget w : scrollBody) {
+    VScrollTableRow row=(VScrollTableRow)w;
+    if (range.inRange(row)) {
       if (!row.isSelected()) {
         row.toggleSelection();
       }
       selectedRowKeys.add(row.getKey());
     }
-    if (row == endRow && row != null) {
-      startSelection=false;
-    }
   }
   if (startRow != endRow) {
-    selectedRowRanges.add(new SelectionRange(startKey,endKey));
+    selectedRowRanges.add(range);
   }
 }

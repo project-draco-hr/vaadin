@@ -1,13 +1,11 @@
 {
-  final Object[] keys=selectedRowKeys.toArray();
-  for (int i=0; i < keys.length; i++) {
-    final VScrollTableRow row=getRenderedRowByKey((String)keys[i]);
-    if (row != null && row.isSelected()) {
+  for (  Widget w : scrollBody) {
+    VScrollTableRow row=(VScrollTableRow)w;
+    if (row.isSelected()) {
       row.toggleSelection();
-      removeKeyFromSelectedRange(Integer.parseInt(row.getKey()));
     }
   }
   selectedRowKeys.clear();
   selectedRowRanges.clear();
-  client.updateVariable(paintableId,"clearSelections",true,false);
+  instructServerToForgotPreviousSelections();
 }

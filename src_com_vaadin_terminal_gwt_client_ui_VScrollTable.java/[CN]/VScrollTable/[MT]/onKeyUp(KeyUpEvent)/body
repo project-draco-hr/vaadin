@@ -1,0 +1,16 @@
+{
+  int keyCode=event.getNativeKeyCode();
+  if (isNavigationKey(keyCode)) {
+    if (keyCode == getNavigationDownKey() || keyCode == getNavigationUpKey()) {
+      if (!event.getNativeEvent().getShiftKey() && !event.getNativeEvent().getCtrlKey()) {
+        instructServerToForgotPreviousSelections();
+      }
+      sendSelectedRows();
+    }
+    if (scrollingVelocityTimer != null) {
+      scrollingVelocityTimer.cancel();
+      scrollingVelocityTimer=null;
+      scrollingVelocity=10;
+    }
+  }
+}
