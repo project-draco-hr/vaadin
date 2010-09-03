@@ -52,79 +52,119 @@
     return true;
   }
   if (keycode == getNavigationPageDownKey()) {
-    int rowHeight=(int)scrollBody.getRowHeight();
-    int offset=pageLength * rowHeight - rowHeight;
-    scrollBodyPanel.setScrollPosition(scrollBodyPanel.getScrollPosition() + offset);
     if (isSelectable()) {
-      if (!moveFocusDown(pageLength - 2)) {
-        final int lastRendered=scrollBody.getLastRendered();
-        if (lastRendered == totalRows - 1) {
-          selectLastRenderedRow(false);
+      if (!isFocusAtTheEndOfTable()) {
+        VScrollTableRow lastVisibleRowInViewPort=scrollBody.getRowByRowIndex(firstRowInViewPort + getFullyVisibleRowCount() - 1);
+        if (lastVisibleRowInViewPort != null && lastVisibleRowInViewPort != focusedRow) {
+          setRowFocus(lastVisibleRowInViewPort);
+          selectFocusedRow(ctrl,shift);
+          sendSelectedRows();
         }
  else {
-          selectLastItemInNextRender=true;
+          int indexOfToBeFocused=focusedRow.getIndex() + getFullyVisibleRowCount();
+          if (indexOfToBeFocused >= totalRows) {
+            indexOfToBeFocused=totalRows - 1;
+          }
+          VScrollTableRow toBeFocusedRow=scrollBody.getRowByRowIndex(indexOfToBeFocused);
+          if (toBeFocusedRow != null) {
+            setRowFocus(toBeFocusedRow);
+            selectFocusedRow(ctrl,shift);
+            sendSelectedRows();
+          }
+ else {
+            selectLastItemInNextRender=true;
+            multiselectPending=shift;
+            scrollByPagelenght(1);
+          }
         }
       }
+    }
  else {
-        selectFocusedRow(false,false);
-        sendSelectedRows();
-      }
+      scrollByPagelenght(1);
     }
     return true;
   }
   if (keycode == getNavigationPageUpKey()) {
-    int rowHeight=(int)scrollBody.getRowHeight();
-    int offset=pageLength * rowHeight - rowHeight;
-    scrollBodyPanel.setScrollPosition(scrollBodyPanel.getScrollPosition() - offset);
     if (isSelectable()) {
-      if (!moveFocusUp(pageLength - 2)) {
-        final int firstRendered=scrollBody.getFirstRendered();
-        if (firstRendered == 0) {
-          selectFirstRenderedRow(false);
+      if (!isFocusAtTheBeginningOfTable()) {
+        VScrollTableRow firstVisibleRowInViewPort=scrollBody.getRowByRowIndex(firstRowInViewPort);
+        if (firstVisibleRowInViewPort != null && firstVisibleRowInViewPort != focusedRow) {
+          setRowFocus(firstVisibleRowInViewPort);
+          selectFocusedRow(ctrl,shift);
+          sendSelectedRows();
         }
  else {
-          selectFirstItemInNextRender=true;
+          int indexOfToBeFocused=focusedRow.getIndex() - getFullyVisibleRowCount();
+          if (indexOfToBeFocused < 0) {
+            indexOfToBeFocused=0;
+          }
+          VScrollTableRow toBeFocusedRow=scrollBody.getRowByRowIndex(indexOfToBeFocused);
+          if (toBeFocusedRow != null) {
+            setRowFocus(toBeFocusedRow);
+            selectFocusedRow(ctrl,shift);
+            sendSelectedRows();
+          }
+ else {
+            selectFirstItemInNextRender=true;
+            multiselectPending=shift;
+            scrollByPagelenght(-1);
+          }
         }
       }
+    }
  else {
-        selectFocusedRow(false,false);
-        sendSelectedRows();
-      }
+      scrollByPagelenght(-1);
     }
     return true;
   }
   if (keycode == getNavigationStartKey()) {
+    scrollBodyPanel.setScrollPosition(0);
     if (isSelectable()) {
-      final int firstRendered=scrollBody.getFirstRendered();
-      boolean focusOnly=ctrl;
-      if (firstRendered == 0) {
-        selectFirstRenderedRow(focusOnly);
-      }
- else       if (focusOnly) {
-        focusFirstItemInNextRender=true;
+      if (focusedRow != null && focusedRow.getIndex() == 0) {
+        return false;
       }
  else {
-        selectFirstItemInNextRender=true;
+        VScrollTableRow rowByRowIndex=(VScrollTableRow)scrollBody.iterator().next();
+        if (rowByRowIndex.getIndex() == 0) {
+          setRowFocus(rowByRowIndex);
+          selectFocusedRow(ctrl,shift);
+          sendSelectedRows();
+        }
+ else {
+          if (ctrl) {
+            focusFirstItemInNextRender=true;
+          }
+ else {
+            selectFirstItemInNextRender=true;
+            multiselectPending=shift;
+          }
+        }
       }
     }
-    scrollBodyPanel.setScrollPosition(0);
     return true;
   }
   if (keycode == getNavigationEndKey()) {
+    scrollBodyPanel.setScrollPosition(scrollBody.getOffsetHeight());
     if (isSelectable()) {
       final int lastRendered=scrollBody.getLastRendered();
-      boolean focusOnly=ctrl;
-      if (lastRendered == totalRows - 1) {
-        selectLastRenderedRow(focusOnly);
-      }
- else       if (focusOnly) {
-        focusLastItemInNextRender=true;
+      if (lastRendered + 1 == totalRows) {
+        VScrollTableRow rowByRowIndex=scrollBody.getRowByRowIndex(lastRendered);
+        if (focusedRow != rowByRowIndex) {
+          setRowFocus(rowByRowIndex);
+          selectFocusedRow(ctrl,shift);
+          sendSelectedRows();
+        }
       }
  else {
-        selectLastItemInNextRender=true;
+        if (ctrl) {
+          focusLastItemInNextRender=true;
+        }
+ else {
+          selectLastItemInNextRender=true;
+          multiselectPending=shift;
+        }
       }
     }
-    scrollBodyPanel.setScrollPosition(scrollBody.getOffsetHeight());
     return true;
   }
   return false;

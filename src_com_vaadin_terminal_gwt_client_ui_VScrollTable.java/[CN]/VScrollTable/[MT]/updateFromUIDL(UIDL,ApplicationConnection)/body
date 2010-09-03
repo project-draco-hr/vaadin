@@ -171,22 +171,15 @@
   if (!keyboardSelectionOverRowFetchInProgress) {
     selectionChanged=false;
   }
-  if (selectFirstItemInNextRender) {
-    selectFirstRenderedRow(false);
-    selectFirstItemInNextRender=false;
+  if (selectFirstItemInNextRender || focusFirstItemInNextRender) {
+    selectFirstRenderedRowInViewPort(focusFirstItemInNextRender);
+    selectFirstItemInNextRender=focusFirstItemInNextRender=false;
   }
-  if (focusFirstItemInNextRender) {
-    selectFirstRenderedRow(true);
-    focusFirstItemInNextRender=false;
+  if (selectLastItemInNextRender || focusLastItemInNextRender) {
+    selectLastRenderedRowInViewPort(focusLastItemInNextRender);
+    selectLastItemInNextRender=focusLastItemInNextRender=false;
   }
-  if (selectLastItemInNextRender) {
-    selectLastRenderedRow(false);
-    selectLastItemInNextRender=false;
-  }
-  if (focusLastItemInNextRender) {
-    selectLastRenderedRow(true);
-    focusLastItemInNextRender=false;
-  }
+  multiselectPending=false;
   if (focusedRow != null) {
     if (!focusedRow.isAttached()) {
       focusedRow=null;
