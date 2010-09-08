@@ -1,0 +1,30 @@
+{
+  TestUtils.injectCSS(getMainWindow(),".v-table-cell-content-red{background:red;}.v-table-row-blue{background:blue;}");
+  CellStyleGenerator g=new CellStyleGenerator(){
+    public String getStyle(    Object itemId,    Object propertyId){
+      if (propertyId != null && propertyId.equals("red")) {
+        return "red";
+      }
+ else       if (itemId.equals("blue") && propertyId == null) {
+        return "blue";
+      }
+      return null;
+    }
+  }
+;
+  Table table=new Table();
+  table.addContainerProperty("foo",String.class,"foo");
+  table.addContainerProperty("red",String.class,"red");
+  table.addItem();
+  table.addItem("blue");
+  table.setCellStyleGenerator(g);
+  addComponent(table);
+  table=new Table();
+  table.addContainerProperty("foo",String.class,"foo");
+  table.addContainerProperty("red",String.class,"red");
+  table.addItem();
+  table.addItem("blue");
+  table.setCellStyleGenerator(g);
+  table.setRowHeaderMode(Table.ROW_HEADER_MODE_ID);
+  addComponent(table);
+}
