@@ -1,43 +1,43 @@
 {
   super.updateFromUIDL(uidl,client);
-  caleandarPanel.setShowISOWeekNumbers(isShowISOWeekNumbers());
-  caleandarPanel.setDateTimeService(getDateTimeService());
-  caleandarPanel.setResolution(getCurrentResolution());
+  calendarPanel.setShowISOWeekNumbers(isShowISOWeekNumbers());
+  calendarPanel.setDateTimeService(getDateTimeService());
+  calendarPanel.setResolution(getCurrentResolution());
   Date currentDate=getCurrentDate();
   if (currentDate != null) {
-    caleandarPanel.setDate(new Date(currentDate.getTime()));
+    calendarPanel.setDate(new Date(currentDate.getTime()));
   }
  else {
-    caleandarPanel.setDate(null);
+    calendarPanel.setDate(null);
   }
   if (currentResolution > RESOLUTION_DAY) {
-    caleandarPanel.setTimeChangeListener(new TimeChangeListener(){
+    calendarPanel.setTimeChangeListener(new TimeChangeListener(){
       public void changed(      int hour,      int min,      int sec,      int msec){
         Date d=getDate();
         d.setHours(hour);
         d.setMinutes(min);
         d.setSeconds(sec);
         DateTimeService.setMilliseconds(d,msec);
-        caleandarPanel.setDate(d);
+        calendarPanel.setDate(d);
         updateValueFromPanel();
       }
     }
 );
   }
   if (currentResolution <= RESOLUTION_MONTH) {
-    caleandarPanel.setFocusChangeListener(new FocusChangeListener(){
+    calendarPanel.setFocusChangeListener(new FocusChangeListener(){
       public void focusChanged(      Date date){
-        Date date2=new Date(caleandarPanel.getDate().getTime());
+        Date date2=new Date(calendarPanel.getDate().getTime());
         date2.setYear(date.getYear());
         date2.setMonth(date.getMonth());
-        caleandarPanel.setDate(date2);
+        calendarPanel.setDate(date2);
         updateValueFromPanel();
       }
     }
 );
   }
  else {
-    caleandarPanel.setFocusChangeListener(null);
+    calendarPanel.setFocusChangeListener(null);
   }
-  caleandarPanel.renderCalendar();
+  calendarPanel.renderCalendar();
 }
