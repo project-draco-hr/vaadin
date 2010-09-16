@@ -5,7 +5,12 @@
   popup.setStyleName(VDateField.CLASSNAME + "-popup " + VDateField.CLASSNAME+ "-"+ resolutionToString(currentResolution));
   calendar.setDateTimeService(getDateTimeService());
   calendar.setShowISOWeekNumbers(isShowISOWeekNumbers());
-  calendar.setResolution(currentResolution);
+  if (calendar.getResolution() != currentResolution) {
+    calendar.setResolution(currentResolution);
+    if (calendar.getDate() != null) {
+      calendar.renderCalendar();
+    }
+  }
   calendarToggle.setEnabled(enabled);
   if (currentResolution <= RESOLUTION_MONTH) {
     calendar.setFocusChangeListener(new FocusChangeListener(){
