@@ -13,9 +13,15 @@
       return true;
     }
     if (!DOM.isOrHasChild(getElement(),target)) {
-      Console console=ApplicationConnection.getConsole();
-      if (console instanceof VDebugConsole && DOM.isOrHasChild(((VDebugConsole)console).getElement(),target)) {
-        return true;
+      Widget w=Util.findWidget(target,null);
+      while (w != null) {
+        if (w instanceof VDebugConsole) {
+          return true;
+        }
+ else         if (w instanceof Paintable) {
+          return false;
+        }
+        w=w.getParent();
       }
       return false;
     }
