@@ -1,7 +1,7 @@
 {
   startRequest();
   final String rd=uidl_security_key + VAR_BURST_SEPARATOR + requestData;
-  console.log("Making UIDL Request with params: " + rd);
+  VConsole.log("Making UIDL Request with params: " + rd);
   String uri;
   if (configuration.usePortletURLs()) {
     uri=configuration.getPortletUidlURLBase();
@@ -45,7 +45,7 @@
           }
         }
         public void onResponseReceived(        Request request,        Response response){
-          console.log("Server visit took " + String.valueOf((new Date()).getTime() - requestStartTime.getTime()) + "ms");
+          VConsole.log("Server visit took " + String.valueOf((new Date()).getTime() - requestStartTime.getTime()) + "ms");
           int statusCode=response.getStatusCode();
 switch (statusCode) {
 case 0:
@@ -58,7 +58,7 @@ case 401:
   return;
 case 503:
 int delay=Integer.parseInt(response.getHeader("Retry-After"));
-console.log("503, retrying in " + delay + "msec");
+VConsole.log("503, retrying in " + delay + "msec");
 (new Timer(){
 @Override public void run(){
 activeRequests--;
@@ -93,21 +93,21 @@ handleWhenCSSLoaded(response);
 }
 }
 ).schedule(50);
-console.log("Assuming CSS loading is not complete, " + "postponing render phase. " + "(.v-loading-indicator height == 0)");
+VConsole.log("Assuming CSS loading is not complete, " + "postponing render phase. " + "(.v-loading-indicator height == 0)");
 cssWaits++;
 }
  else {
 handleReceivedJSONMessage(response);
 if (cssWaits >= MAX_CSS_WAITS) {
-console.error("CSS files may have not loaded properly.");
+VConsole.error("CSS files may have not loaded properly.");
 }
 }
 }
 }
 );
 }
- catch (final RequestException e) {
-ClientExceptionHandler.displayError(e);
+ catch (RequestException e) {
+VConsole.error(e);
 endRequest();
 }
 }

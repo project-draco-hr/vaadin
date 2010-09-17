@@ -10,10 +10,10 @@
     showCommunicationError(e.getMessage() + " - Original JSON-text:" + jsonText);
     return;
   }
-  ApplicationConnection.getConsole().log("JSON parsing took " + (new Date().getTime() - start.getTime()) + "ms");
+  VConsole.log("JSON parsing took " + (new Date().getTime() - start.getTime()) + "ms");
   if (json.containsKey("redirect")) {
     String url=json.getValueMap("redirect").getString("url");
-    console.log("redirecting to " + url);
+    VConsole.log("redirecting to " + url);
     redirect(url);
     return;
   }
@@ -72,12 +72,7 @@
       for (int i=0; i < length; i++) {
         try {
           final UIDL change=changes.get(i).cast();
-          try {
-            console.dirUIDL(change);
-          }
- catch (          final Exception e) {
-            ClientExceptionHandler.displayError(e);
-          }
+          VConsole.dirUIDL(change,configuration);
           final UIDL uidl=change.getChildUIDL(0);
           final Paintable paintable=getPaintable(uidl.getId());
           if (paintable != null) {
@@ -86,7 +81,7 @@
           }
  else {
             if (!uidl.getTag().equals(configuration.getEncodedWindowTag())) {
-              ClientExceptionHandler.displayError("Received update for " + uidl.getTag() + ", but there is no such paintable ("+ uidl.getId()+ ") rendered.");
+              VConsole.error("Received update for " + uidl.getTag() + ", but there is no such paintable ("+ uidl.getId()+ ") rendered.");
             }
  else {
               String pid=uidl.getId();
@@ -100,7 +95,7 @@
           }
         }
  catch (        final Throwable e) {
-          ClientExceptionHandler.displayError(e);
+          VConsole.error(e);
         }
       }
       if (json.containsKey("dd")) {
@@ -145,15 +140,15 @@
           applicationRunning=false;
         }
         if (validatingLayouts) {
-          getConsole().printLayoutProblems(meta,ApplicationConnection.this,zeroHeightComponents,zeroWidthComponents);
+          VConsole.printLayoutProblems(meta,ApplicationConnection.this,zeroHeightComponents,zeroWidthComponents);
           zeroHeightComponents=null;
           zeroWidthComponents=null;
           validatingLayouts=false;
         }
       }
       final long prosessingTime=(new Date().getTime()) - start.getTime();
-      console.log(" Processing time was " + String.valueOf(prosessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
-      console.log("Referenced paintables: " + idToPaintableDetail.size());
+      VConsole.log(" Processing time was " + String.valueOf(prosessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
+      VConsole.log("Referenced paintables: " + idToPaintableDetail.size());
       endRequest();
     }
   }
