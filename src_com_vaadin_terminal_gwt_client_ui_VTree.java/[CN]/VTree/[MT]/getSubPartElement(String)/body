@@ -1,0 +1,40 @@
+{
+  if (subPart.startsWith(SUBPART_NODE_PREFIX + "[")) {
+    boolean expandCollapse=false;
+    String[] nodes=subPart.split("/");
+    TreeNode treeNode=null;
+    try {
+      for (      String node : nodes) {
+        if (node.startsWith(SUBPART_NODE_PREFIX)) {
+          node=node.substring(SUBPART_NODE_PREFIX.length() + 1);
+          node=node.substring(0,node.length() - 1);
+          int position=Integer.parseInt(node);
+          if (treeNode == null) {
+            treeNode=getRootNodes().get(position);
+          }
+ else {
+            treeNode=treeNode.getChildren().get(position);
+          }
+        }
+ else         if (node.startsWith(EXPAND_IDENTIFIER)) {
+          expandCollapse=true;
+        }
+      }
+      if (expandCollapse) {
+        if (treeNode.ie6compatnode != null) {
+          return treeNode.ie6compatnode;
+        }
+ else {
+          return treeNode.getElement();
+        }
+      }
+ else {
+        return treeNode.nodeCaptionSpan;
+      }
+    }
+ catch (    Exception e) {
+      return null;
+    }
+  }
+  return null;
+}

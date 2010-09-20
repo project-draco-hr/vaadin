@@ -1,0 +1,28 @@
+{
+  boolean isExpandCollapse=false;
+  if (!getElement().isOrHasChild(subElement)) {
+    return null;
+  }
+  TreeNode treeNode=Util.findWidget(subElement,TreeNode.class);
+  if (treeNode == null) {
+    return null;
+  }
+  if (subElement == treeNode.getElement() || subElement == treeNode.ie6compatnode) {
+    isExpandCollapse=true;
+  }
+  ArrayList<Integer> positions=new ArrayList<Integer>();
+  while (treeNode.getParentNode() != null) {
+    positions.add(0,treeNode.getParentNode().getChildren().indexOf(treeNode));
+    treeNode=treeNode.getParentNode();
+  }
+  positions.add(0,getRootNodes().indexOf(treeNode));
+  String locator="";
+  for (  Integer i : positions) {
+    locator+=SUBPART_NODE_PREFIX + "[" + i+ "]/";
+  }
+  locator=locator.substring(0,locator.length() - 1);
+  if (isExpandCollapse) {
+    locator+="/" + EXPAND_IDENTIFIER;
+  }
+  return locator;
+}
