@@ -1,13 +1,4 @@
 {
-  GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler(){
-    public void onUncaughtException(    Throwable e){
-      Console console=VConsole.getImplementation();
-      if (console != null) {
-        console.error(e.getMessage());
-      }
-    }
-  }
-);
   if (isDebugMode()) {
     VDebugConsole console=GWT.create(VDebugConsole.class);
     console.setQuietMode(isQuietDebugMode());
@@ -17,6 +8,12 @@
  else {
     VConsole.setImplementation((Console)GWT.create(NullConsole.class));
   }
+  GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler(){
+    public void onUncaughtException(    Throwable e){
+      VConsole.getImplementation().error(e.getMessage());
+    }
+  }
+);
   initConfigurations();
   startNextApplication();
 }
