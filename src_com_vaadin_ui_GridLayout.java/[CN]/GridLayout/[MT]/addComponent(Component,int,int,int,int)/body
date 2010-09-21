@@ -13,7 +13,6 @@
     throw new OutOfBoundsException(area);
   }
   checkExistingOverlaps(area);
-  super.addComponent(component);
   final Iterator i=areas.iterator();
   int index=0;
   boolean done=false;
@@ -29,6 +28,14 @@
   if (!done) {
     areas.addLast(area);
     components.addLast(component);
+  }
+  try {
+    super.addComponent(component);
+  }
+ catch (  IllegalArgumentException e) {
+    areas.remove(area);
+    components.remove(component);
+    throw e;
   }
   if (cursorX >= column1 && cursorX <= column2 && cursorY >= row1 && cursorY <= row2) {
     cursorX=column2 + 1;
