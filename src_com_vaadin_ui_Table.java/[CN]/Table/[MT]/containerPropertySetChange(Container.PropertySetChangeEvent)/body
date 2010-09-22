@@ -1,12 +1,15 @@
 {
+  disableContentRefreshing();
   super.containerPropertySetChange(event);
   Collection<?> containerPropertyIds=getContainerDataSource().getContainerPropertyIds();
-  for (Iterator<Object> iterator=visibleColumns.iterator(); iterator.hasNext(); ) {
+  LinkedList<Object> newVisibleColumns=new LinkedList<Object>(visibleColumns);
+  for (Iterator<Object> iterator=newVisibleColumns.iterator(); iterator.hasNext(); ) {
     Object id=iterator.next();
     if (!(containerPropertyIds.contains(id) || columnGenerators.containsKey(id))) {
       iterator.remove();
     }
   }
+  setVisibleColumns(newVisibleColumns.toArray());
   for (Iterator<Object> iterator=collapsedColumns.iterator(); iterator.hasNext(); ) {
     Object id=iterator.next();
     if (!(containerPropertyIds.contains(id) || columnGenerators.containsKey(id))) {
@@ -14,5 +17,5 @@
     }
   }
   resetPageBuffer();
-  refreshRenderedCells();
+  enableContentRefreshing(true);
 }
