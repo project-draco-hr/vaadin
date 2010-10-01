@@ -3,11 +3,12 @@
     throw new Property.ReadOnlyException();
   }
   if (newValue == null || type.isAssignableFrom(newValue.getClass())) {
-    value=newValue;
+    @SuppressWarnings("unchecked") T value=(T)newValue;
+    this.value=value;
   }
  else {
     try {
-      final Constructor constr=getType().getConstructor(new Class[]{String.class});
+      final Constructor<T> constr=getType().getConstructor(new Class[]{String.class});
       value=constr.newInstance(new Object[]{newValue.toString()});
     }
  catch (    final java.lang.Exception e) {
