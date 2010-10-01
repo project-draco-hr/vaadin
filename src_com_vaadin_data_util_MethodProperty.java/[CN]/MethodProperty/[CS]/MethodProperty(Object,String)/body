@@ -18,42 +18,48 @@
         getMethod=beanClass.getMethod("are" + beanPropertyName,new Class[]{});
       }
  catch (      final java.lang.NoSuchMethodException e) {
-        throw new MethodProperty.MethodException("Bean property " + beanPropertyName + " can not be found");
+        throw new MethodException(this,"Bean property " + beanPropertyName + " can not be found");
       }
     }
   }
-  type=getMethod.getReturnType();
+  Class<?> returnType=getMethod.getReturnType();
   setMethod=null;
   try {
-    setMethod=beanClass.getMethod("set" + beanPropertyName,new Class[]{type});
+    setMethod=beanClass.getMethod("set" + beanPropertyName,new Class[]{returnType});
   }
  catch (  final java.lang.NoSuchMethodException skipped) {
   }
-  if (type.isPrimitive()) {
-    if (type.equals(Boolean.TYPE)) {
-      type=Boolean.class;
+  if (returnType.isPrimitive()) {
+    if (returnType.equals(Boolean.TYPE)) {
+      type=(Class<T>)Boolean.class;
     }
- else     if (type.equals(Integer.TYPE)) {
-      type=Integer.class;
+ else     if (returnType.equals(Integer.TYPE)) {
+      type=(Class<T>)Integer.class;
     }
- else     if (type.equals(Float.TYPE)) {
-      type=Float.class;
+ else     if (returnType.equals(Float.TYPE)) {
+      type=(Class<T>)Float.class;
     }
- else     if (type.equals(Double.TYPE)) {
-      type=Double.class;
+ else     if (returnType.equals(Double.TYPE)) {
+      type=(Class<T>)Double.class;
     }
- else     if (type.equals(Byte.TYPE)) {
-      type=Byte.class;
+ else     if (returnType.equals(Byte.TYPE)) {
+      type=(Class<T>)Byte.class;
     }
- else     if (type.equals(Character.TYPE)) {
-      type=Character.class;
+ else     if (returnType.equals(Character.TYPE)) {
+      type=(Class<T>)Character.class;
     }
- else     if (type.equals(Short.TYPE)) {
-      type=Short.class;
+ else     if (returnType.equals(Short.TYPE)) {
+      type=(Class<T>)Short.class;
     }
- else     if (type.equals(Long.TYPE)) {
-      type=Long.class;
+ else     if (returnType.equals(Long.TYPE)) {
+      type=(Class<T>)Long.class;
     }
+ else {
+      throw new MethodException(this,"Bean property " + beanPropertyName + " getter return type must not be void");
+    }
+  }
+ else {
+    type=(Class<T>)returnType;
   }
   setArguments(new Object[]{},new Object[]{null},0);
   readOnly=(setMethod == null);
