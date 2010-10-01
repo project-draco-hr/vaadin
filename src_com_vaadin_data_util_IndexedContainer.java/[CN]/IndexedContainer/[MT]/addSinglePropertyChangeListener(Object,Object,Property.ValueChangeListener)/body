@@ -1,18 +1,18 @@
 {
   if (listener != null) {
     if (singlePropertyValueChangeListeners == null) {
-      singlePropertyValueChangeListeners=new Hashtable();
+      singlePropertyValueChangeListeners=new Hashtable<Object,Map<Object,List<Property.ValueChangeListener>>>();
     }
-    Hashtable propertySetToListenerListMap=(Hashtable)singlePropertyValueChangeListeners.get(propertyId);
+    Map<Object,List<Property.ValueChangeListener>> propertySetToListenerListMap=singlePropertyValueChangeListeners.get(propertyId);
     if (propertySetToListenerListMap == null) {
-      propertySetToListenerListMap=new Hashtable();
+      propertySetToListenerListMap=new Hashtable<Object,List<Property.ValueChangeListener>>();
       singlePropertyValueChangeListeners.put(propertyId,propertySetToListenerListMap);
     }
-    LinkedList listenerList=(LinkedList)propertySetToListenerListMap.get(itemId);
+    List<Property.ValueChangeListener> listenerList=propertySetToListenerListMap.get(itemId);
     if (listenerList == null) {
-      listenerList=new LinkedList();
+      listenerList=new LinkedList<Property.ValueChangeListener>();
       propertySetToListenerListMap.put(itemId,listenerList);
     }
-    listenerList.addLast(listener);
+    listenerList.add(listener);
   }
 }
