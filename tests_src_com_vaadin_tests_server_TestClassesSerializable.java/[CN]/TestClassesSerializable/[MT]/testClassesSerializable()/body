@@ -4,7 +4,7 @@
   for (  String location : rawClasspathEntries) {
     classes.addAll(findServerClasses(location));
   }
-  List<Class> nonSerializableClasses=new ArrayList<Class>();
+  ArrayList<Class<?>> nonSerializableClasses=new ArrayList<Class<?>>();
   for (  String className : classes) {
     Class<?> cls=Class.forName(className);
     if (cls.isAnnotation() || cls.isSynthetic()) {
@@ -16,7 +16,7 @@
   }
   if (!nonSerializableClasses.isEmpty()) {
     String nonSerializableString="";
-    Iterator<Class> it=nonSerializableClasses.iterator();
+    Iterator<Class<?>> it=nonSerializableClasses.iterator();
     nonSerializableString=it.next().getName();
     while (it.hasNext()) {
       nonSerializableString+=", " + it.next().getName();
