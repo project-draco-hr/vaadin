@@ -7,9 +7,9 @@
   if (spacing) {
     target.addAttribute("spacing",spacing);
   }
-  final Iterator areaiterator=areas.iterator();
+  final Iterator<Area> areaiterator=areas.iterator();
   Area area=areaiterator.hasNext() ? (Area)areaiterator.next() : null;
-  final HashMap cellUsed=new HashMap();
+  final HashMap<Integer,Integer> cellUsed=new HashMap<Integer,Integer>();
   int emptyCells=0;
   final String[] alignmentsArray=new String[components.size()];
   final Integer[] columnExpandRatioArray=new Integer[cols];
@@ -78,7 +78,7 @@
         alignmentsArray[index++]=String.valueOf(getComponentAlignment(area.getComponent()).getBitMask());
         target.endTag("gc");
         if (areaiterator.hasNext()) {
-          area=(Area)areaiterator.next();
+          area=areaiterator.next();
         }
  else {
           area=null;
@@ -96,7 +96,7 @@
       }
  else {
         if (cellUsed.containsKey(new Integer(curx))) {
-          final int rowspanDepth=((Integer)cellUsed.get(new Integer(curx))).intValue();
+          final int rowspanDepth=cellUsed.get(new Integer(curx)).intValue();
           if (rowspanDepth >= cury) {
             if (emptyCells > 0) {
               target.startTag("gc");
