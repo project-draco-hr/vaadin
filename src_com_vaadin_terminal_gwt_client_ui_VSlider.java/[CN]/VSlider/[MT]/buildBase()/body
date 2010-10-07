@@ -1,36 +1,31 @@
 {
   final String styleAttribute=vertical ? "height" : "width";
   final String domProperty=vertical ? "offsetHeight" : "offsetWidth";
-  if (size == -1) {
-    final Element p=DOM.getParent(getElement());
-    if (DOM.getElementPropertyInt(p,domProperty) > 50) {
-      if (vertical) {
-        setHeight();
-      }
- else {
-        DOM.setStyleAttribute(base,styleAttribute,"");
-      }
+  final Element p=DOM.getParent(getElement());
+  if (DOM.getElementPropertyInt(p,domProperty) > 50) {
+    if (vertical) {
+      setHeight();
     }
  else {
-      DOM.setStyleAttribute(base,styleAttribute,MIN_SIZE + "px");
-      DeferredCommand.addCommand(new Command(){
-        public void execute(){
-          final Element p=DOM.getParent(getElement());
-          if (DOM.getElementPropertyInt(p,domProperty) > (MIN_SIZE + 5)) {
-            if (vertical) {
-              setHeight();
-            }
- else {
-              DOM.setStyleAttribute(base,styleAttribute,"");
-            }
-            setValue(value,false);
-          }
-        }
-      }
-);
+      DOM.setStyleAttribute(base,styleAttribute,"");
     }
   }
  else {
-    DOM.setStyleAttribute(base,styleAttribute,size + "px");
+    DOM.setStyleAttribute(base,styleAttribute,MIN_SIZE + "px");
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        final Element p=DOM.getParent(getElement());
+        if (DOM.getElementPropertyInt(p,domProperty) > (MIN_SIZE + 5)) {
+          if (vertical) {
+            setHeight();
+          }
+ else {
+            DOM.setStyleAttribute(base,styleAttribute,"");
+          }
+          setValue(value,false);
+        }
+      }
+    }
+);
   }
 }
