@@ -1,19 +1,19 @@
 {
-  int dir;
+  String dirText="V";
   String type;
   if (newLayout instanceof VerticalLayout) {
-    dir=OrderedLayout.ORIENTATION_VERTICAL;
     type="OL";
   }
- else   if (newLayout instanceof OrderedLayout) {
-    dir=OrderedLayout.ORIENTATION_HORIZONTAL;
+ else   if (newLayout instanceof HorizontalLayout) {
+    dirText="H";
     type="OL";
   }
  else {
-    dir=((GridLayout)newLayout).getColumns() == 1 ? OrderedLayout.ORIENTATION_VERTICAL : OrderedLayout.ORIENTATION_HORIZONTAL;
+    if (((GridLayout)newLayout).getColumns() != 1) {
+      dirText="H";
+    }
     type="GL";
   }
-  String dirText=(dir == OrderedLayout.ORIENTATION_HORIZONTAL ? "H" : "V");
   String alignText=align ? "-A" : "";
   String cWidth=componentWidth == null ? "" : " - " + componentWidth;
   Panel p=new Panel(type + "/" + dirText+ alignText+ " "+ w+ "x"+ h+ cWidth,newLayout);
@@ -39,7 +39,7 @@
         }
         p.addComponent(tf);
         if (align) {
-          ((AlignmentHandler)newLayout).setComponentAlignment(tf,OrderedLayout.ALIGNMENT_RIGHT,OrderedLayout.ALIGNMENT_BOTTOM);
+          ((AlignmentHandler)newLayout).setComponentAlignment(tf,Alignment.BOTTOM_RIGHT);
         }
       }
     }
