@@ -1,27 +1,18 @@
 {
   setTheme("tests-tickets");
-  OrderedLayout lo=new OrderedLayout();
+  VerticalLayout lo=new VerticalLayout();
   setMainWindow(new Window("#1710",lo));
   lo.setMargin(true);
   lo.setSpacing(true);
   lo.setWidth("100%");
-  OrderedLayout hidingControls=new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+  HorizontalLayout hidingControls=new HorizontalLayout();
   lo.addComponent(hidingControls);
-  final OrderedLayout orderedLayout=new OrderedLayout();
+  final VerticalLayout orderedLayout=new VerticalLayout();
   LayoutTestingPanel oltp=new LayoutTestingPanel("OrderedLayout",orderedLayout);
   hidingControls.addComponent(new Button("OrderedLayout",new MethodProperty<Boolean>(oltp,"visible")));
   lo.addComponent(oltp);
   orderedLayout.setSpacing(false);
   addFields(orderedLayout);
-  final Button orientationButton=new Button("horizontal orientation",false);
-  orientationButton.addListener(new Property.ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
-      orderedLayout.setOrientation(orientationButton.booleanValue() ? OrderedLayout.ORIENTATION_HORIZONTAL : OrderedLayout.ORIENTATION_VERTICAL);
-    }
-  }
-);
-  orientationButton.setImmediate(true);
-  oltp.controls.addComponent(orientationButton);
   GridLayout grid=new GridLayout(1,1);
   Panel g1tp=new LayoutTestingPanel("Gridlayout with 1 column",grid);
   hidingControls.addComponent(new Button("GridLayout (1col)",new MethodProperty<Boolean>(g1tp,"visible")));
@@ -36,29 +27,29 @@
   lo.addComponent(g2tp);
   grid2.setSpacing(true);
   addFields(grid2);
-  ExpandLayout el=new ExpandLayout();
+  VerticalLayout el=new VerticalLayout();
   Panel elp=new LayoutTestingPanel("ExpandLayout width first component expanded",el);
   hidingControls.addComponent(new Button("ExpandLayout (vertical)",new MethodProperty<Boolean>(elp,"visible")));
   elp.setVisible(false);
-  el.setHeight(700);
+  el.setHeight("700px");
   addFields(el);
   Component firstComponent=el.getComponentIterator().next();
   firstComponent.setSizeFull();
-  el.expand(firstComponent);
+  el.setExpandRatio(firstComponent,1);
   lo.addComponent(elp);
-  ExpandLayout elh=new ExpandLayout(ExpandLayout.ORIENTATION_HORIZONTAL);
+  HorizontalLayout elh=new HorizontalLayout();
   Panel elhp=new LayoutTestingPanel("ExpandLayout width first component expanded; horizontal",elh);
   hidingControls.addComponent(new Button("ExpandLayout (horizontal)",new MethodProperty<Boolean>(elhp,"visible")));
   elhp.setVisible(false);
   elhp.setScrollable(true);
-  elh.setWidth(2000);
-  elh.setHeight(100);
+  elh.setWidth("2000px");
+  elh.setHeight("100px");
   addFields(elh);
   Component firstComponentElh=elh.getComponentIterator().next();
   firstComponentElh.setSizeFull();
-  elh.expand(firstComponentElh);
+  elh.setExpandRatio(firstComponentElh,1);
   lo.addComponent(elhp);
-  OrderedLayout cl=new OrderedLayout();
+  VerticalLayout cl=new VerticalLayout();
   Panel clp=new LayoutTestingPanel("CustomLayout",cl);
   hidingControls.addComponent(new Button("CustomLayout",new MethodProperty<Boolean>(clp,"visible")));
   clp.setVisible(false);
