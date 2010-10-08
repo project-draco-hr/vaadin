@@ -26,11 +26,6 @@
       applicationContext.setResponse(response);
       applicationContext.setPortletConfig(getPortletConfig());
       PortletCommunicationManager applicationManager=applicationContext.getApplicationManager(application);
-      if (response instanceof RenderResponse && applicationManager.dummyURL == null) {
-        ResourceURL dummyURL=((RenderResponse)response).createResourceURL();
-        dummyURL.setResourceID("DUMMY");
-        applicationManager.dummyURL=dummyURL.toString();
-      }
       updateBrowserProperties(applicationContext.getBrowser(),request);
       if (application instanceof PortletRequestListener) {
         ((PortletRequestListener)application).onRequestStart(request,response);
@@ -66,7 +61,7 @@ applicationContext.firePortletEventRequest(application,window,(EventRequest)requ
 applicationContext.firePortletResourceRequest(application,window,(ResourceRequest)request,(ResourceResponse)response);
 }
 if (requestType == RequestType.FILE_UPLOAD) {
-applicationManager.handleFileUpload((ActionRequest)request,(ActionResponse)response);
+applicationManager.handleFileUpload((ResourceRequest)request,(ResourceResponse)response);
 return;
 }
  else if (requestType == RequestType.UIDL) {

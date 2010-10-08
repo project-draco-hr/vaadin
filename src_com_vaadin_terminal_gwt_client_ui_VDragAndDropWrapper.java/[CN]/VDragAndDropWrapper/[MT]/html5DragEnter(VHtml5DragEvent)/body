@@ -2,15 +2,21 @@
   if (dropHandler == null) {
     return true;
   }
-  if (dragLeavPostponed) {
-    dragLeavPostponed=false;
+  try {
+    if (dragLeavPostponed) {
+      dragLeavPostponed=false;
+      return false;
+    }
+    VTransferable transferable=new VTransferable();
+    transferable.setDragSource(this);
+    vaadinDragEvent=VDragAndDropManager.get().startDrag(transferable,event,false);
+    VDragAndDropManager.get().setCurrentDropHandler(getDropHandler());
+    event.preventDefault();
+    event.stopPropagation();
     return false;
   }
-  VTransferable transferable=new VTransferable();
-  transferable.setDragSource(this);
-  vaadinDragEvent=VDragAndDropManager.get().startDrag(transferable,event,false);
-  VDragAndDropManager.get().setCurrentDropHandler(getDropHandler());
-  event.preventDefault();
-  event.stopPropagation();
-  return false;
+ catch (  Exception e) {
+    GWT.getUncaughtExceptionHandler().onUncaughtException(e);
+    return true;
+  }
 }

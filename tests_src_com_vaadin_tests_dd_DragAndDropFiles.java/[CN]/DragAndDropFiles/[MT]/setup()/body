@@ -1,0 +1,58 @@
+{
+  CssLayout cssLayout=new CssLayout(){
+    @Override protected String getCss(    Component c){
+      return "display: block; padding:20px; border: 2px dotted black; background: #aaa;";
+    }
+  }
+;
+  Component l=new Label("Drag file on me");
+  l.setSizeUndefined();
+  cssLayout.addComponent(l);
+  DragAndDropWrapper dragAndDropWrapper=new DragAndDropWrapper(cssLayout);
+  dragAndDropWrapper.setSizeUndefined();
+  dragAndDropWrapper.setDropHandler(new DropHandler(){
+    public AcceptCriterion getAcceptCriterion(){
+      return AcceptAll.get();
+    }
+    public void drop(    DragAndDropEvent event){
+      WrapperTransferable transferable=(WrapperTransferable)event.getTransferable();
+      Html5File[] files=transferable.getFiles();
+      if (files != null) {
+        for (int i=0; i < files.length; i++) {
+          Html5File file=files[i];
+          if (file.getFileSize() > 1024 * 1024) {
+            getMainWindow().showNotification("File " + file.getFileName() + " was too large, not transferred to the server side.");
+            continue;
+          }
+          ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
+          Receiver receiver=new Receiver(){
+            public OutputStream receiveUpload(            String filename,            String MIMEType){
+              System.err.println("receiveUpload " + filename);
+              return new NullOutputStream();
+            }
+          }
+;
+          file.setReceiver(receiver);
+          Html5FileUploadListener listener=new Html5FileUploadListener(){
+            public void uploadStarted(            ReceivingStartedEvent event){
+              getMainWindow().showNotification("Started uploading " + event.getFileName());
+            }
+            public void uploadFinished(            ReceivingEndedEvent event){
+              getMainWindow().showNotification("Finished uploading " + event.getFileName());
+            }
+            public void uploadFailed(            ReceivingFailedEvent event){
+              getMainWindow().showNotification("Failed uploading " + event.getFileName());
+            }
+            public void onProgress(            ReceivingProgressedEvent event){
+              System.err.println("Progress" + event.getBytesReceived());
+            }
+          }
+;
+          file.setUploadListener(listener);
+        }
+      }
+    }
+  }
+);
+  addComponent(dragAndDropWrapper);
+}

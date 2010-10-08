@@ -2,17 +2,23 @@
   if (dropHandler == null) {
     return true;
   }
-  dragLeavPostponed=true;
-  DeferredCommand.addCommand(new Command(){
-    public void execute(){
-      if (dragLeavPostponed && vaadinDragEvent != null && VDragAndDropManager.get().getCurrentDropHandler() == getDropHandler()) {
-        VDragAndDropManager.get().interruptDrag();
+  try {
+    dragLeavPostponed=true;
+    DeferredCommand.addCommand(new Command(){
+      public void execute(){
+        if (dragLeavPostponed && vaadinDragEvent != null && VDragAndDropManager.get().getCurrentDropHandler() == getDropHandler()) {
+          VDragAndDropManager.get().interruptDrag();
+        }
+        dragLeavPostponed=false;
       }
-      dragLeavPostponed=false;
     }
-  }
 );
-  event.preventDefault();
-  event.stopPropagation();
-  return false;
+    event.preventDefault();
+    event.stopPropagation();
+    return false;
+  }
+ catch (  Exception e) {
+    GWT.getUncaughtExceptionHandler().onUncaughtException(e);
+    return true;
+  }
 }

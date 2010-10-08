@@ -2,17 +2,38 @@
   this.client=client;
   super.updateFromUIDL(uidl,client);
   if (!uidl.hasAttribute("cached") && !uidl.hasAttribute("hidden")) {
-    int childCount=uidl.getChildCount();
-    if (childCount > 1) {
-      UIDL childUIDL=uidl.getChildUIDL(1);
+    UIDL acceptCrit=uidl.getChildByTagName("-ac");
+    if (acceptCrit == null) {
+      dropHandler=null;
+    }
+ else {
       if (dropHandler == null) {
         dropHandler=new CustomDropHandler();
       }
-      dropHandler.updateAcceptRules(childUIDL);
+      dropHandler.updateAcceptRules(acceptCrit);
     }
+    Set<String> variableNames=uidl.getVariableNames();
+    for (    String fileId : variableNames) {
+      if (fileId.startsWith("rec-")) {
+        String receiverUrl=uidl.getStringVariable(fileId);
+        fileId=fileId.substring(4);
+        if (fileIdToReveiver == null) {
+          fileIdToReveiver=new HashMap<String,String>();
+        }
+        if ("".equals(receiverUrl)) {
+          Integer id=Integer.parseInt(fileId);
+          int indexOf=fileIds.indexOf(id);
+          if (indexOf != -1) {
+            files.remove(indexOf);
+            fileIds.remove(indexOf);
+          }
+        }
  else {
-      dropHandler=null;
+          fileIdToReveiver.put(fileId,receiverUrl);
+        }
+      }
     }
+    startNextUpload();
     dragStarMode=uidl.getIntAttribute("dragStartMode");
   }
 }

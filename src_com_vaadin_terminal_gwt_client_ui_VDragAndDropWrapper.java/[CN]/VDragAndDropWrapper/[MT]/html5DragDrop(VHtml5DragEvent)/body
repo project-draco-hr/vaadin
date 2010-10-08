@@ -2,33 +2,39 @@
   if (dropHandler == null || !currentlyValid) {
     return true;
   }
-  VTransferable transferable=vaadinDragEvent.getTransferable();
-  JsArrayString types=event.getTypes();
-  for (int i=0; i < types.length(); i++) {
-    String type=types.get(i);
-    if (isAcceptedType(type)) {
-      String data=event.getDataAsText(type);
-      if (data != null) {
-        transferable.setData(type,data);
+  try {
+    VTransferable transferable=vaadinDragEvent.getTransferable();
+    JsArrayString types=event.getTypes();
+    for (int i=0; i < types.length(); i++) {
+      String type=types.get(i);
+      if (isAcceptedType(type)) {
+        String data=event.getDataAsText(type);
+        if (data != null) {
+          transferable.setData(type,data);
+        }
       }
     }
-  }
-  int fileCount=event.getFileCount();
-  if (fileCount > 0) {
-    transferable.setData("filecount",fileCount);
-    for (int i=0; i < fileCount; i++) {
-      final int fileId=filecounter++;
-      final VHtml5File file=event.getFile(i);
-      transferable.setData("fi" + i,"" + fileId);
-      transferable.setData("fn" + i,file.getName());
-      transferable.setData("ft" + i,file.getType());
-      transferable.setData("fs" + i,file.getSize());
-      postFile(fileId,file);
+    int fileCount=event.getFileCount();
+    if (fileCount > 0) {
+      transferable.setData("filecount",fileCount);
+      for (int i=0; i < fileCount; i++) {
+        final int fileId=filecounter++;
+        final VHtml5File file=event.getFile(i);
+        transferable.setData("fi" + i,"" + fileId);
+        transferable.setData("fn" + i,file.getName());
+        transferable.setData("ft" + i,file.getType());
+        transferable.setData("fs" + i,file.getSize());
+        queueFilePost(fileId,file);
+      }
     }
+    VDragAndDropManager.get().endDrag();
+    vaadinDragEvent=null;
+    event.preventDefault();
+    event.stopPropagation();
+    return false;
   }
-  VDragAndDropManager.get().endDrag();
-  vaadinDragEvent=null;
-  event.preventDefault();
-  event.stopPropagation();
-  return false;
+ catch (  Exception e) {
+    GWT.getUncaughtExceptionHandler().onUncaughtException(e);
+    return true;
+  }
 }

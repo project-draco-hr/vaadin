@@ -1,0 +1,14 @@
+{
+  String contentType=request.getContentType();
+  String name=request.getParameter("name");
+  String ownerId=request.getParameter("rec-owner");
+  ReceiverOwner variableOwner=(ReceiverOwner)getVariableOwner(ownerId);
+  Receiver receiver=ownerToNameToReceiver.get(variableOwner).remove(name);
+  ownerToNameToReceiver.get(variableOwner).remove(name);
+  if (contentType.contains("boundary")) {
+    doHandleSimpleMultipartFileUpload(new PortletRequestWrapper(request),new PortletResponseWrapper(response),receiver,variableOwner,contentType.split("boundary=")[1]);
+  }
+ else {
+    doHandleXhrFilePost(new PortletRequestWrapper(request),new PortletResponseWrapper(response),receiver,variableOwner,request.getContentLength());
+  }
+}

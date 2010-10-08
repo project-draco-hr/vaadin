@@ -1,0 +1,18 @@
+{
+  final String filename="unknown";
+  final String mimeType=filename;
+  final InputStream stream=request.getInputStream();
+  try {
+    Component component=(Component)owner;
+    if (component.isReadOnly()) {
+      throw new UploadException("Warning: file upload ignored because the componente was read-only");
+    }
+    streamToReceiver(stream,receiver,owner,filename,mimeType,contentLength);
+  }
+ catch (  Exception e) {
+synchronized (application) {
+      handleChangeVariablesError(application,(Component)owner,e,new HashMap<String,Object>());
+    }
+  }
+  sendUploadResponse(request,response);
+}
