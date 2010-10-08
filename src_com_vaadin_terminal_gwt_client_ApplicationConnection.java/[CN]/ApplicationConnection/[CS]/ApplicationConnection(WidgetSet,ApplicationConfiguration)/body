@@ -16,4 +16,18 @@
   view=new VView();
   view.init(cnf.getRootPanelId());
   showLoadingIndicator();
+  Event.addNativePreviewHandler(new NativePreviewHandler(){
+    public void onPreviewNativeEvent(    NativePreviewEvent event){
+      if (activeRequests <= 0) {
+        return;
+      }
+      if (event.getTypeInt() == Event.ONKEYDOWN) {
+        NativeEvent nativeEvent=event.getNativeEvent();
+        if (nativeEvent.getKeyCode() == KeyCodes.KEY_ESCAPE) {
+          nativeEvent.preventDefault();
+        }
+      }
+    }
+  }
+);
 }
