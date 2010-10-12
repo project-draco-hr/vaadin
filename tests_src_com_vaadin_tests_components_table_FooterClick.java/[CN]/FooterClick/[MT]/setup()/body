@@ -1,5 +1,6 @@
 {
   final Table table=new Table();
+  table.setDebugId("table");
   table.setContainerDataSource(createContainer());
   table.setWidth("400px");
   table.setHeight("400px");
@@ -7,12 +8,12 @@
   table.setFooterVisible(true);
   table.setColumnReorderingAllowed(true);
   table.setColumnFooter(COLUMN1_PROPERTY_ID,"fuu");
-  table.setColumnFooter(COLUMN2_PROPERTY_ID,"bar");
   table.setColumnFooter(COLUMN3_PROPERTY_ID,"fuubar");
   final TextField columnField=new TextField("ProperyId of clicked column");
   table.addListener(new Table.FooterClickListener(){
     public void footerClick(    FooterClickEvent event){
       columnField.setValue(event.getPropertyId());
+      log.log("Clicked on footer: " + event.getPropertyId());
     }
   }
 );
@@ -36,6 +37,7 @@
 );
   addComponent(immediateCheckbox);
   addComponent(columnReorderingCheckbox);
+  addComponent(log);
   addComponent(table);
   addComponent(columnField);
 }
