@@ -1,16 +1,23 @@
 {
+  VConsole.log("dragenter");
   if (dropHandler == null) {
     return true;
   }
   try {
-    if (dragLeavPostponed) {
-      dragLeavPostponed=false;
-      return false;
+    Element elem=event.getEventTarget().cast();
+    if (elem == getElement()) {
+      VConsole.error("top element");
     }
-    VTransferable transferable=new VTransferable();
-    transferable.setDragSource(this);
-    vaadinDragEvent=VDragAndDropManager.get().startDrag(transferable,event,false);
-    VDragAndDropManager.get().setCurrentDropHandler(getDropHandler());
+    if (dragleavetimer != null) {
+      dragleavetimer.cancel();
+      dragleavetimer=null;
+    }
+    if (VDragAndDropManager.get().getCurrentDropHandler() != getDropHandler()) {
+      VTransferable transferable=new VTransferable();
+      transferable.setDragSource(this);
+      vaadinDragEvent=VDragAndDropManager.get().startDrag(transferable,event,false);
+      VDragAndDropManager.get().setCurrentDropHandler(getDropHandler());
+    }
     event.preventDefault();
     event.stopPropagation();
     return false;

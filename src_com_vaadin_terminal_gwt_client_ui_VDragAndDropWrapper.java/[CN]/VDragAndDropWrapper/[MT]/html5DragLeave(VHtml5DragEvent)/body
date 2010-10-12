@@ -3,16 +3,20 @@
     return true;
   }
   try {
-    dragLeavPostponed=true;
-    DeferredCommand.addCommand(new Command(){
-      public void execute(){
-        if (dragLeavPostponed && vaadinDragEvent != null && VDragAndDropManager.get().getCurrentDropHandler() == getDropHandler()) {
+    VConsole.error("drageleave");
+    Element elem=event.getEventTarget().cast();
+    if (elem == getElement()) {
+      VConsole.error("top element");
+    }
+    dragleavetimer=new Timer(){
+      @Override public void run(){
+        if (vaadinDragEvent != null && VDragAndDropManager.get().getCurrentDropHandler() == getDropHandler()) {
           VDragAndDropManager.get().interruptDrag();
         }
-        dragLeavPostponed=false;
       }
     }
-);
+;
+    dragleavetimer.schedule(350);
     event.preventDefault();
     event.stopPropagation();
     return false;
