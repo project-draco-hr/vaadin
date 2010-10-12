@@ -11,7 +11,7 @@
 synchronized (application) {
     if (application.isRunning()) {
       if (window == null) {
-        System.err.println("Warning, could not get window for application with request ID " + request.getRequestID());
+        logger.severe("Warning, could not get window for application with request ID " + request.getRequestID());
         return;
       }
     }
@@ -26,7 +26,7 @@ synchronized (application) {
         ci=(Application.SystemMessages)m.invoke(null,(Object[])null);
       }
  catch (      Exception e2) {
-        e2.printStackTrace();
+        logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e2);
       }
       if (ci != null) {
         String msg=ci.getOutOfSyncMessage();

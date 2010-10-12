@@ -1,7 +1,7 @@
 {
   final Throwable t=event.getThrowable();
   if (t instanceof SocketException) {
-    System.err.println("Warning: SocketException in CommunicationManager." + " Most likely client (browser) closed socket.");
+    logger.warning("SocketException in CommunicationManager." + " Most likely client (browser) closed socket.");
     return;
   }
   Object owner=null;
@@ -25,5 +25,5 @@
       ((AbstractComponent)owner).setComponentError(new SystemError(t));
     }
   }
-  t.printStackTrace();
+  logger.log(Level.SEVERE,"Terminal error:",t);
 }
