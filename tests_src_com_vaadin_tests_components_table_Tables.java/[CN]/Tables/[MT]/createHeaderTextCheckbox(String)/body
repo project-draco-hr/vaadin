@@ -1,0 +1,24 @@
+{
+  LinkedHashMap<String,String> options=new LinkedHashMap<String,String>();
+  options.put("None",null);
+  options.put("Col: {id}","Col: {id}");
+  options.put("Header {id} - every second","Header {id}");
+  createSelectAction("Texts in header",category,options,"None",new Command<Table,String>(){
+    public void execute(    Table c,    String value,    Object data){
+      int nr=0;
+      for (      Object propertyId : c.getContainerPropertyIds()) {
+        nr++;
+        if (value != null && value.equals("Header {id}") && nr % 2 == 0) {
+          c.setColumnHeader(propertyId,null);
+        }
+ else         if (value != null) {
+          c.setColumnHeader(propertyId,value.replace("{id}",propertyId.toString()));
+        }
+ else {
+          c.setColumnHeader(propertyId,null);
+        }
+      }
+    }
+  }
+);
+}

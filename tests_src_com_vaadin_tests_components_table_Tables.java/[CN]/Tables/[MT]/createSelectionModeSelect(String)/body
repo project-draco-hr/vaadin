@@ -1,0 +1,31 @@
+{
+  LinkedHashMap<String,SelectMode> options=new LinkedHashMap<String,SelectMode>();
+  options.put("None",SelectMode.NONE);
+  options.put("Single",SelectMode.SINGLE);
+  options.put("Multi - simple",SelectMode.MULTI_SIMPLE);
+  options.put("Multi - ctrl/shift",SelectMode.MULTI);
+  createSelectAction("Selection Mode",category,options,"Multi - ctrl/shift",new Command<Table,SelectMode>(){
+    public void execute(    Table t,    SelectMode value,    Object data){
+switch (value) {
+case NONE:
+        t.setSelectable(false);
+      break;
+case SINGLE:
+    t.setMultiSelect(false);
+  t.setSelectable(true);
+break;
+case MULTI_SIMPLE:
+t.setSelectable(true);
+t.setMultiSelect(true);
+t.setMultiSelectMode(MultiSelectMode.SIMPLE);
+break;
+case MULTI:
+t.setSelectable(true);
+t.setMultiSelect(true);
+t.setMultiSelectMode(MultiSelectMode.DEFAULT);
+break;
+}
+}
+}
+);
+}
