@@ -19,6 +19,8 @@ case Event.ONCLICK:
   break;
 case Event.ONMOUSEDOWN:
 if (event.getButton() == Event.BUTTON_LEFT) {
+  mousedownX=event.getClientX();
+  mousedownY=event.getClientY();
   disallowNextClick=true;
   clickPending=true;
   setFocus(true);
@@ -50,7 +52,7 @@ break;
 case Event.ONMOUSEOUT:
 Element to=event.getRelatedTarget();
 if (getElement().isOrHasChild(DOM.eventGetTarget(event)) && (to == null || !getElement().isOrHasChild(to))) {
-if (clickPending) {
+if (clickPending && Math.abs(mousedownX - event.getClientX()) < MOVE_THRESHOLD && Math.abs(mousedownY - event.getClientY()) < MOVE_THRESHOLD) {
 onClick();
 break;
 }
