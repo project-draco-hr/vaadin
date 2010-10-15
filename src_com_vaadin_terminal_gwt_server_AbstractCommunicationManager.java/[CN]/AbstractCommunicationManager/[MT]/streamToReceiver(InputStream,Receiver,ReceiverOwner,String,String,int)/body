@@ -5,6 +5,7 @@
   ReceivingController controller=source.getReceivingController(receiver);
   final Application application=getApplication();
   OutputStream out=null;
+  int totalBytes=0;
   try {
     boolean listenProgress;
 synchronized (application) {
@@ -21,14 +22,12 @@ synchronized (application) {
     }
     final byte buffer[]=new byte[MAX_UPLOAD_BUFFER_SIZE];
     int bytesReadToBuffer=0;
-    int totalBytes=0;
-    ReceivingProgressedEventImpl progressEvent=new ReceivingProgressedEventImpl(receiver,filename,type,contentLength);
     while ((bytesReadToBuffer=in.read(buffer)) > 0) {
       out.write(buffer,0,bytesReadToBuffer);
       totalBytes+=bytesReadToBuffer;
       if (listenProgress) {
 synchronized (application) {
-          progressEvent.setBytesReceived(totalBytes);
+          ReceivingProgressedEventImpl progressEvent=new ReceivingProgressedEventImpl(receiver,filename,type,contentLength,totalBytes);
           controller.onProgress(progressEvent);
         }
       }
@@ -48,14 +47,14 @@ synchronized (application) {
     }
  catch (    IOException e1) {
     }
-    ReceivingFailedEvent event=new ReceivingFailedEventImpl(receiver,filename,type,contentLength,e);
+    ReceivingFailedEvent event=new ReceivingFailedEventImpl(receiver,filename,type,contentLength,totalBytes,e);
 synchronized (application) {
       controller.uploadFailed(event);
     }
   }
 catch (  final Exception e) {
 synchronized (application) {
-      ReceivingFailedEvent event=new ReceivingFailedEventImpl(receiver,filename,type,contentLength,e);
+      ReceivingFailedEvent event=new ReceivingFailedEventImpl(receiver,filename,type,contentLength,totalBytes,e);
 synchronized (application) {
         controller.uploadFailed(event);
       }
