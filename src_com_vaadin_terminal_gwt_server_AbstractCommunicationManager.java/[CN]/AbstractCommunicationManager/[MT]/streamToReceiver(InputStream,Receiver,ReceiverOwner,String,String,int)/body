@@ -42,17 +42,14 @@ synchronized (application) {
     }
   }
  catch (  UploadInterruptedException e) {
-    try {
-      out.close();
-    }
- catch (    IOException e1) {
-    }
+    tryToCloseStream(out);
     ReceivingFailedEvent event=new ReceivingFailedEventImpl(receiver,filename,type,contentLength,totalBytes,e);
 synchronized (application) {
       controller.uploadFailed(event);
     }
   }
 catch (  final Exception e) {
+    tryToCloseStream(out);
 synchronized (application) {
       ReceivingFailedEvent event=new ReceivingFailedEventImpl(receiver,filename,type,contentLength,totalBytes,e);
 synchronized (application) {
