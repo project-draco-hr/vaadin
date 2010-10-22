@@ -1,0 +1,69 @@
+{
+  if (args.length < 1) {
+    System.err.println("Invalid number of parameters\n" + "Usage: java -cp .. GenerateManifest <package.jar>");
+    System.exit(1);
+  }
+  String jarFilename=args[0];
+  JarFile jar=null;
+  try {
+    jar=new JarFile(jarFilename);
+  }
+ catch (  IOException e) {
+    System.err.println("Unable to open JAR '" + jarFilename + "'");
+    System.exit(1);
+  }
+  HashSet<String> packages=new HashSet<String>();
+  for (Enumeration<JarEntry> it=jar.entries(); it.hasMoreElements(); ) {
+    JarEntry entry=it.nextElement();
+    if (entry.getName().startsWith("com") && entry.getName().endsWith(".class")) {
+      int lastSlash=entry.getName().lastIndexOf('/');
+      String pkg=entry.getName().substring(0,lastSlash).replace('/','.');
+      packages.add(pkg);
+    }
+  }
+  for (Enumeration<JarEntry> it=jar.entries(); it.hasMoreElements(); ) {
+    JarEntry entry=it.nextElement();
+    if (entry.isDirectory() && entry.getName().startsWith("VAADIN/themes")) {
+      int lastSlash=entry.getName().lastIndexOf('/');
+      String pkg=entry.getName().substring(0,lastSlash).replace('/','.');
+      packages.add(pkg);
+    }
+  }
+  String exportPackage="";
+  String packageArray[]=new String[packages.size()];
+  packages.toArray(packageArray);
+  Arrays.sort(packageArray);
+  for (int i=0; i < packageArray.length; i++) {
+    if (i == 0)     exportPackage=packageArray[i];
+ else     exportPackage+=", " + packageArray[i];
+  }
+  Manifest oldMF=null;
+  try {
+    oldMF=jar.getManifest();
+  }
+ catch (  IOException e) {
+    e.printStackTrace();
+  }
+  Attributes mainAtts=oldMF.getMainAttributes();
+  Vector<String> keys=new Vector<String>(mainAtts.size());
+  for (Iterator<Object> attrit=mainAtts.keySet().iterator(); attrit.hasNext(); ) {
+    Name name=(Name)attrit.next();
+    keys.add(name.toString());
+  }
+  String orderedKeys[]=new String[keys.size()];
+  keys.toArray(orderedKeys);
+  Arrays.sort(orderedKeys);
+  int mvPos=Arrays.binarySearch(orderedKeys,"Manifest-Version");
+  orderedKeys[mvPos]=orderedKeys[0];
+  orderedKeys[0]="Manifest-Version";
+  Arrays.sort(orderedKeys,1,orderedKeys.length - 1);
+  ManifestWriter manifest=new ManifestWriter();
+  for (int i=0; i < orderedKeys.length; i++) {
+    if (orderedKeys[i].equals("Export-Package")) {
+      manifest.writeAttribute(orderedKeys[i],mainAtts.getValue(orderedKeys[i]));
+    }
+  }
+  manifest.writeAttribute("Export-Package",exportPackage);
+  int status=manifest.updateJar(jarFilename);
+  if (status != 0)   System.exit(status);
+}

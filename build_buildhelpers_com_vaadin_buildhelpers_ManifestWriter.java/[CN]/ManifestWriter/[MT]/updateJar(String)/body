@@ -1,0 +1,62 @@
+{
+  int status=0;
+  String newMfPrefix="vaadin-manifest-" + (new Date()).getTime();
+  File newMfFile=null;
+  try {
+    newMfFile=File.createTempFile(newMfPrefix,".mf");
+  }
+ catch (  IOException e) {
+    System.err.println("Creating temp file failed");
+    status=1;
+  }
+  if (status == 0) {
+    FileOutputStream fos=null;
+    try {
+      fos=new FileOutputStream(newMfFile);
+      fos.write(getBytes());
+      fos.close();
+    }
+ catch (    IOException e) {
+      System.err.println("Writing to file '" + newMfFile.getAbsolutePath() + "' failed because: "+ e.getMessage());
+      status=1;
+    }
+  }
+  if (status == 0) {
+    Manifest checkMf=new Manifest();
+    FileInputStream is;
+    try {
+      is=new FileInputStream(newMfFile);
+      checkMf.read(is);
+    }
+ catch (    IOException e) {
+      System.err.println("Reading from file '" + newMfFile.getAbsolutePath() + "' failed because: "+ e.getMessage());
+      status=1;
+    }
+  }
+  if (status == 0) {
+    System.out.println("Updating manifest in JAR " + jarFilename);
+    try {
+      Process process=Runtime.getRuntime().exec(new String[]{"jar","umf",newMfFile.getAbsolutePath(),jarFilename});
+      int exitValue=process.waitFor();
+      if (exitValue != 0) {
+        InputStream jarErr=process.getErrorStream();
+        BufferedReader reader=new BufferedReader(new InputStreamReader(jarErr));
+        while (reader.ready()) {
+          System.err.println("jar: " + reader.readLine());
+        }
+        System.err.println("The 'jar' command returned with exit value " + exitValue);
+        status=1;
+      }
+    }
+ catch (    IOException e) {
+      System.err.println("Failed to execute 'jar' command. " + e.getMessage());
+      status=1;
+    }
+catch (    InterruptedException e) {
+      System.err.println("Execution of 'jar' command was interrupted. " + e.getMessage());
+      status=1;
+    }
+  }
+  if (newMfFile != null)   newMfFile.delete();
+  return status;
+}
