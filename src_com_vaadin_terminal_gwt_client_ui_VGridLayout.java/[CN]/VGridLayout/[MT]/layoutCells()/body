@@ -12,21 +12,22 @@
     }
     x+=columnWidths[i] + spacingPixelsHorizontal;
   }
-  if ("".equals(width)) {
+  if (isUndefinedWidth()) {
     canvas.setWidth((x - spacingPixelsHorizontal) + "px");
   }
  else {
     canvas.setWidth("");
   }
+  if (!isUndefinedHeight() && getOffsetHeight() < marginTopAndBottom) {
+    canvas.setHeight("0px");
+    return;
+  }
   int canvasHeight;
-  if ("".equals(height)) {
+  if (isUndefinedHeight()) {
     canvasHeight=y - spacingPixelsVertical;
   }
- else   if (getOffsetHeight() > marginTopAndBottom) {
-    canvasHeight=getOffsetHeight() - marginTopAndBottom;
-  }
  else {
-    canvasHeight=0;
+    canvasHeight=getOffsetHeight() - marginTopAndBottom;
   }
   canvas.setHeight(canvasHeight + "px");
 }
