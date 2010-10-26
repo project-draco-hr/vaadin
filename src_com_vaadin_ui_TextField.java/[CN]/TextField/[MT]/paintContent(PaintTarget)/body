@@ -1,37 +1,26 @@
 {
-  super.paintContent(target);
   if (isSecret()) {
     target.addAttribute("secret",true);
   }
-  if (getMaxLength() >= 0) {
-    target.addAttribute("maxLength",getMaxLength());
+  final int columns=getColumns();
+  if (columns != 0) {
+    target.addAttribute("cols",String.valueOf(columns));
   }
-  if (inputPrompt != null) {
-    target.addAttribute("prompt",inputPrompt);
+  final int rows=getRows();
+  if (rows != 0) {
+    target.addAttribute("rows",String.valueOf(rows));
+    target.addAttribute("multiline",true);
+    if (!isWordwrap()) {
+      target.addAttribute("wordwrap",false);
+    }
+  }
+  if (getInputPrompt() != null) {
+    target.addAttribute("prompt",getInputPrompt());
   }
   if (selectionPosition != -1) {
     target.addAttribute("selpos",selectionPosition);
     target.addAttribute("sellen",selectionLength);
     selectionPosition=-1;
   }
-  final int columns=getColumns();
-  final int rows=getRows();
-  if (columns != 0) {
-    target.addAttribute("cols",String.valueOf(columns));
-  }
-  if (rows != 0) {
-    target.addAttribute("rows",String.valueOf(rows));
-    target.addAttribute("multiline",true);
-    if (!wordwrap) {
-      target.addAttribute("wordwrap",false);
-    }
-  }
-  String value=getFormattedValue();
-  if (value == null) {
-    value=getNullRepresentation();
-  }
-  if (value == null) {
-    throw new IllegalStateException("Null values are not allowed if the null-representation is null");
-  }
-  target.addVariable(this,"text",value);
+  super.paintContent(target);
 }
