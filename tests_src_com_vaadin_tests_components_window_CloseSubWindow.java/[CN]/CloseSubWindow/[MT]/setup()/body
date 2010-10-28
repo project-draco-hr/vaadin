@@ -1,0 +1,30 @@
+{
+  Button openWindowButton=new Button("Open sub-window");
+  openWindowButton.addListener(new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      Window sub=createClosableSubWindow("Sub-window");
+      getMainWindow().addWindow(sub);
+    }
+  }
+);
+  addComponent(openWindowButton);
+  Button openBrowserWindowButton=new Button("Open browser window");
+  openBrowserWindowButton.addListener(new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      browserWindow=new Window("Window");
+      browserWindow.addComponent(new Label("Close this window"));
+      browserWindow.addListener(new CloseListener(){
+        public void windowClose(        CloseEvent e){
+          getMainWindow().showNotification("Browser window closed");
+        }
+      }
+);
+      addWindow(browserWindow);
+      URL windowUrl=browserWindow.getURL();
+      getMainWindow().open(new ExternalResource(windowUrl),"nativewindow");
+    }
+  }
+);
+  addComponent(openBrowserWindowButton);
+  addComponent(new Button("Poll server"));
+}
