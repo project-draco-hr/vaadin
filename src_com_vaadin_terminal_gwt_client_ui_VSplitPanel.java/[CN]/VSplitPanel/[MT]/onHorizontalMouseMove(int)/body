@@ -11,10 +11,21 @@
     if (newX + getSplitterSize() >= getOffsetWidth()) {
       pos=getOffsetWidth();
     }
-    position=pos / getOffsetWidth() * 100 + "%";
+    if (positionReversed) {
+      pos=getOffsetWidth() - pos;
+    }
+    position=(pos / getOffsetWidth() * 100) + "%";
   }
  else {
-    position=newX + "px";
+    if (positionReversed) {
+      position=(getOffsetWidth() - newX - getSplitterSize()) + "px";
+    }
+ else {
+      position=newX + "px";
+    }
+  }
+  if (positionReversed) {
+    newX=getOffsetWidth() - newX - getSplitterSize();
   }
   setSplitPosition(newX + "px");
   if (origX != newX) {
