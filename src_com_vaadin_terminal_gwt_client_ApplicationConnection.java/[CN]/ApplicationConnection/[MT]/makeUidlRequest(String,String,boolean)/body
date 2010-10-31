@@ -9,28 +9,15 @@
  else {
     uri=getAppUri() + "UIDL" + configuration.getPathInfo();
   }
-  if (repaintAll) {
-    int clientHeight=Window.getClientHeight();
-    int clientWidth=Window.getClientWidth();
-    com.google.gwt.dom.client.Element pe=view.getElement().getParentElement();
-    int offsetHeight=pe.getOffsetHeight();
-    int offsetWidth=pe.getOffsetWidth();
-    int screenWidth=BrowserInfo.get().getScreenWidth();
-    int screenHeight=BrowserInfo.get().getScreenHeight();
-    String token=History.getToken();
-    if (configuration.usePortletURLs()) {
+  uri+=extraParams;
+  if (windowName != null && windowName.length() > 0) {
+    if (uri.contains("?")) {
       uri+="&";
     }
  else {
       uri+="?";
     }
-    uri+="repaintAll=1&" + "sh=" + screenHeight + "&sw="+ screenWidth+ "&cw="+ clientWidth+ "&ch="+ clientHeight+ "&vw="+ offsetWidth+ "&vh="+ offsetHeight+ "&fr="+ token;
-    if (analyzeLayouts) {
-      uri+="&analyzeLayouts=1";
-    }
-  }
-  if (windowName != null && windowName.length() > 0) {
-    uri+=(repaintAll || configuration.usePortletURLs() ? "&" : "?") + "windowName=" + windowName;
+    uri+="windowName=" + windowName;
   }
   if (!forceSync) {
     final RequestBuilder rb=new RequestBuilder(RequestBuilder.POST,uri);
@@ -62,7 +49,7 @@ VConsole.log("503, retrying in " + delay + "msec");
 (new Timer(){
 @Override public void run(){
 activeRequests--;
-makeUidlRequest(requestData,repaintAll,forceSync,analyzeLayouts);
+makeUidlRequest(requestData,extraParams,forceSync);
 }
 }
 ).schedule(delay);
@@ -73,34 +60,25 @@ showCommunicationError("UIDL could not be read from server. Check servlets mappi
 endRequest();
 return;
 }
+final Date start=new Date();
+final String jsonText=response.getText().substring(9,response.getText().length() - 1);
+final ValueMap json;
+try {
+json=parseJSONResponse(jsonText);
+}
+ catch (final Exception e) {
+endRequest();
+showCommunicationError(e.getMessage() + " - Original JSON-text:" + jsonText);
+return;
+}
+VConsole.log("JSON parsing took " + (new Date().getTime() - start.getTime()) + "ms");
 if (applicationRunning) {
-handleReceivedJSONMessage(response);
+handleReceivedJSONMessage(start,jsonText,json);
 }
  else {
 applicationRunning=true;
-handleWhenCSSLoaded(response);
+handleWhenCSSLoaded(jsonText,json);
 ApplicationConfiguration.startNextApplication();
-}
-}
-int cssWaits=0;
-static final int MAX_CSS_WAITS=20;
-private void handleWhenCSSLoaded(final Response response){
-int heightOfLoadElement=DOM.getElementPropertyInt(loadElement,"offsetHeight");
-if (heightOfLoadElement == 0 && cssWaits < MAX_CSS_WAITS) {
-(new Timer(){
-@Override public void run(){
-handleWhenCSSLoaded(response);
-}
-}
-).schedule(50);
-VConsole.log("Assuming CSS loading is not complete, " + "postponing render phase. " + "(.v-loading-indicator height == 0)");
-cssWaits++;
-}
- else {
-handleReceivedJSONMessage(response);
-if (cssWaits >= MAX_CSS_WAITS) {
-VConsole.error("CSS files may have not loaded properly.");
-}
 }
 }
 }
