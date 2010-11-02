@@ -27,7 +27,7 @@
     }
     itemHTML.append(moreItemText);
     moreItem=new CustomMenuItem(itemHTML.toString(),emptyCommand);
-    collapsedRootItems=new VMenuBar(true);
+    collapsedRootItems=new VMenuBar(true,(VMenuBar)client.getPaintable(uidlId));
     moreItem.setSubMenu(collapsedRootItems);
     moreItem.addStyleName(CLASSNAME + "-more-menuitem");
   }
@@ -70,17 +70,12 @@
       }
     }
     currentItem=currentMenu.addItem(itemHTML.toString(),cmd);
-    currentItem.setSeparator(item.hasAttribute("separator"));
-    currentItem.setEnabled(!item.hasAttribute("disabled"));
-    if (item.hasAttribute("style")) {
-      String itemStyle=item.getStringAttribute("style");
-      currentItem.addStyleDependentName(itemStyle);
-    }
+    currentItem.updateFromUIDL(item,client);
     if (item.getChildCount() > 0) {
       menuStack.push(currentMenu);
       iteratorStack.push(itr);
       itr=item.getChildIterator();
-      currentMenu=new VMenuBar(true);
+      currentMenu=new VMenuBar(true,currentMenu);
       if (uidl.hasAttribute("style")) {
         for (        String style : uidl.getStringAttribute("style").split(" ")) {
           currentMenu.addStyleDependentName(style);
