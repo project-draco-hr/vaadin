@@ -1,0 +1,47 @@
+{
+  if (streamVariable == null) {
+    streamVariable=new com.vaadin.terminal.StreamVariable(){
+      private StreamingStartedEvent lastStartedEvent;
+      public boolean listenProgress(){
+        return (progressListeners != null && !progressListeners.isEmpty());
+      }
+      public void onProgress(      StreamingProgressedEvent event){
+        fireUpdateProgress(event.getBytesReceived(),event.getContentLength());
+      }
+      public boolean isInterrupted(){
+        return interrupted;
+      }
+      public OutputStream getOutputStream(){
+        OutputStream receiveUpload=receiver.receiveUpload(lastStartedEvent.getFileName(),lastStartedEvent.getMimeType());
+        lastStartedEvent=null;
+        return receiveUpload;
+      }
+      public void streamingStarted(      StreamingStartedEvent event){
+        startUpload();
+        contentLength=event.getContentLength();
+        fireStarted(event.getFileName(),event.getMimeType());
+        lastStartedEvent=event;
+      }
+      public void streamingFinished(      StreamingEndedEvent event){
+        fireUploadSuccess(event.getFileName(),event.getMimeType(),event.getContentLength());
+        endUpload();
+        requestRepaint();
+      }
+      public void streamingFailed(      StreamingFailedEvent event){
+        Exception exception=event.getException();
+        if (exception instanceof NoInputStreamException) {
+          fireNoInputStream(event.getFileName(),event.getMimeType(),0);
+        }
+ else         if (exception instanceof NoOutputStreamException) {
+          fireNoOutputStream(event.getFileName(),event.getMimeType(),0);
+        }
+ else {
+          fireUploadInterrupted(event.getFileName(),event.getMimeType(),0,exception);
+        }
+        endUpload();
+      }
+    }
+;
+  }
+  return streamVariable;
+}

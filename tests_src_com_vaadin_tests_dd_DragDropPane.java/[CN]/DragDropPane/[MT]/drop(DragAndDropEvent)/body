@@ -54,16 +54,25 @@
     if (files != null) {
       for (      Html5File html5File : files) {
         l.setCaption(html5File.getFileName());
-        html5File.setReceiver(new Receiver(){
-          public OutputStream receiveUpload(          String filename,          String MIMEType){
-            ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream(){
-              @Override public void close() throws IOException {
-                super.close();
-                l.setValue((new String(toByteArray()).substring(0,80) + "..."));
-              }
-            }
-;
+        html5File.setReceiver(new StreamVariable(){
+          ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
+          public OutputStream getOutputStream(){
             return byteArrayOutputStream;
+          }
+          public boolean listenProgress(){
+            return false;
+          }
+          public void onProgress(          StreamingProgressedEvent event){
+          }
+          public void streamingStarted(          StreamingStartedEvent event){
+          }
+          public void streamingFinished(          StreamingEndedEvent event){
+            l.setValue((new String(byteArrayOutputStream.toByteArray()).substring(0,80) + "..."));
+          }
+          public void streamingFailed(          StreamingFailedEvent event){
+          }
+          public boolean isInterrupted(){
+            return false;
           }
         }
 );

@@ -5,13 +5,15 @@
     getDropHandler().getAcceptCriterion().paint(target);
   }
   if (receivers != null && receivers.size() > 0) {
-    for (    String id : receivers.keySet()) {
+    for (Iterator<Entry<String,Html5File>> it=receivers.entrySet().iterator(); it.hasNext(); ) {
+      String id=it.next().getKey();
       Html5File html5File=receivers.get(id);
       if (html5File.getReceiver() != null) {
-        target.addVariable(this,"rec-" + id,html5File.getProxyReceiver());
+        target.addVariable(this,"rec-" + id,new ProxyReceiver(html5File));
       }
  else {
         target.addVariable(this,"rec-" + id,(String)null);
+        it.remove();
       }
     }
   }

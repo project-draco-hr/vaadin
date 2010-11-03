@@ -24,31 +24,31 @@
             getMainWindow().showNotification("File " + file.getFileName() + " was too large, not transferred to the server side.");
             continue;
           }
-          ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
-          Receiver receiver=new Receiver(){
-            public OutputStream receiveUpload(            String filename,            String MIMEType){
-              System.err.println("receiveUpload " + filename);
+          StreamVariable streamVariable=new StreamVariable(){
+            public OutputStream getOutputStream(){
               return new NullOutputStream();
             }
-          }
-;
-          file.setReceiver(receiver);
-          Html5FileUploadListener listener=new Html5FileUploadListener(){
-            public void uploadStarted(            ReceivingStartedEvent event){
-              getMainWindow().showNotification("Started uploading " + event.getFileName());
+            public boolean listenProgress(){
+              return true;
             }
-            public void uploadFinished(            ReceivingEndedEvent event){
-              getMainWindow().showNotification("Finished uploading " + event.getFileName());
-            }
-            public void uploadFailed(            ReceivingFailedEvent event){
-              getMainWindow().showNotification("Failed uploading " + event.getFileName());
-            }
-            public void onProgress(            ReceivingProgressedEvent event){
+            public void onProgress(            StreamingProgressedEvent event){
               System.err.println("Progress" + event.getBytesReceived());
             }
+            public void streamingStarted(            StreamingStartedEvent event){
+              getMainWindow().showNotification("Started uploading " + event.getFileName());
+            }
+            public void streamingFinished(            StreamingEndedEvent event){
+              getMainWindow().showNotification("Finished uploading " + event.getFileName());
+            }
+            public void streamingFailed(            StreamingFailedEvent event){
+              getMainWindow().showNotification("Failed uploading " + event.getFileName());
+            }
+            public boolean isInterrupted(){
+              return false;
+            }
           }
 ;
-          file.setUploadListener(listener);
+          file.setReceiver(streamVariable);
         }
       }
     }
