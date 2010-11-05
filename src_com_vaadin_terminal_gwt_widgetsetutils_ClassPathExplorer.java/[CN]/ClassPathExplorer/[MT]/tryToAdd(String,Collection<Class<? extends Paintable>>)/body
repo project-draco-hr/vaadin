@@ -2,6 +2,7 @@
   PrintStream out=System.out;
   PrintStream err=System.err;
   Throwable errorToShow=null;
+  Level logLevel=null;
   try {
     System.setErr(devnull);
     System.setOut(devnull);
@@ -14,28 +15,26 @@
     }
   }
  catch (  UnsupportedClassVersionError e) {
+    logLevel=Level.INFO;
     errorToShow=e;
   }
 catch (  ClassNotFoundException e) {
-    if (logger.isLoggable(Level.FINE)) {
-      errorToShow=e;
-    }
+    logLevel=Level.FINE;
+    errorToShow=e;
   }
 catch (  LinkageError e) {
-    if (logger.isLoggable(Level.FINE)) {
-      errorToShow=e;
-    }
+    logLevel=Level.FINE;
+    errorToShow=e;
   }
 catch (  Exception e) {
-    if (logger.isLoggable(Level.FINE)) {
-      errorToShow=e;
-    }
+    logLevel=Level.FINE;
+    errorToShow=e;
   }
  finally {
     System.setErr(err);
     System.setOut(out);
   }
-  if (errorToShow != null) {
-    logger.warning("Failed to load class " + fullclassName + ". "+ errorToShow.getClass().getName()+ ": "+ errorToShow.getMessage());
+  if (errorToShow != null && logLevel != null) {
+    logger.log(logLevel,"Failed to load class " + fullclassName + ". "+ errorToShow.getClass().getName()+ ": "+ errorToShow.getMessage());
   }
 }
