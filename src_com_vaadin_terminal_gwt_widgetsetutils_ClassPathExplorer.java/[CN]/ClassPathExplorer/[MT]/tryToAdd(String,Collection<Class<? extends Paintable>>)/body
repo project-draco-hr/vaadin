@@ -1,6 +1,7 @@
 {
   PrintStream out=System.out;
   PrintStream err=System.err;
+  Throwable errorToShow=null;
   try {
     System.setErr(devnull);
     System.setOut(devnull);
@@ -12,15 +13,29 @@
       acceptCriterion.add((Class<? extends AcceptCriterion>)c);
     }
   }
- catch (  ClassNotFoundException e) {
+ catch (  UnsupportedClassVersionError e) {
+    errorToShow=e;
+  }
+catch (  ClassNotFoundException e) {
+    if (logger.isLoggable(Level.FINE)) {
+      errorToShow=e;
+    }
   }
 catch (  LinkageError e) {
+    if (logger.isLoggable(Level.FINE)) {
+      errorToShow=e;
+    }
   }
 catch (  Exception e) {
-    e.printStackTrace();
+    if (logger.isLoggable(Level.FINE)) {
+      errorToShow=e;
+    }
   }
  finally {
     System.setErr(err);
     System.setOut(out);
+  }
+  if (errorToShow != null) {
+    logger.warning("Failed to load class " + fullclassName + ". "+ errorToShow.getClass().getName()+ ": "+ errorToShow.getMessage());
   }
 }
