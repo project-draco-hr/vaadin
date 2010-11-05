@@ -1,8 +1,13 @@
 {
+  logger.info("Searching for paintables..");
+  long start=System.currentTimeMillis();
   Collection<Class<? extends Paintable>> paintables=new HashSet<Class<? extends Paintable>>();
   Set<String> keySet=classpathLocations.keySet();
   for (  String url : keySet) {
+    logger.fine("Searching for paintables in " + classpathLocations.get(url));
     searchForPaintables(classpathLocations.get(url),url,paintables);
   }
+  long end=System.currentTimeMillis();
+  logger.info("Search took " + (end - start) + "ms");
   return paintables;
 }
