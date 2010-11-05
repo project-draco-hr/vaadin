@@ -1,6 +1,13 @@
 {
   int keyCode=event.getNativeKeyCode();
-  if (isNavigationKey(keyCode)) {
+  if (!isFocusable()) {
+    if (scrollingVelocityTimer != null) {
+      scrollingVelocityTimer.cancel();
+      scrollingVelocityTimer=null;
+      scrollingVelocity=10;
+    }
+  }
+ else   if (isNavigationKey(keyCode)) {
     if (keyCode == getNavigationDownKey() || keyCode == getNavigationUpKey()) {
       if (!event.getNativeEvent().getShiftKey() && !event.getNativeEvent().getCtrlKey()) {
         instructServerToForgotPreviousSelections();
