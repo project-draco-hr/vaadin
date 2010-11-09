@@ -1,0 +1,22 @@
+{
+  if (level > subLevels) {
+    return;
+  }
+  parent.removeChildren();
+  for (int i=0; i < subItems; i++) {
+    if (subMenuSeparatorDensity != null && i > 0 && i % subMenuSeparatorDensity == 0) {
+      parent.addSeparator();
+    }
+    MenuItem subMenuItem=parent.addItem("Sub menu " + parent.getId() + "/"+ (i + 1),menuCommand);
+    if (disabledDensity != null && i % disabledDensity == 0) {
+      subMenuItem.setEnabled(false);
+    }
+    if (invisibleDensity != null && i % invisibleDensity == 0) {
+      subMenuItem.setVisible(false);
+    }
+    if (i % subMenuDensity == 0) {
+      subMenuItem.setCommand(null);
+      createSubItems(subMenuItem,level + 1);
+    }
+  }
+}
