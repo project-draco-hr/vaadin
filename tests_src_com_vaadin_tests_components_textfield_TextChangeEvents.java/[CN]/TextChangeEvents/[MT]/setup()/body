@@ -1,0 +1,27 @@
+{
+  TextField tf=new TextField("Default");
+  TextChangeListener inputEventListener=new TextChangeListener(){
+    public void textChange(    TextChangeEvent event){
+      l.log("Text change event for  " + event.getComponent().getCaption() + ", text content currently:'"+ event.getCurrentTextContent()+ "' Cursor at index:"+ event.getCursorPosition());
+    }
+  }
+;
+  tf.addListener(inputEventListener);
+  getLayout().addComponent(tf);
+  TextField eager=new TextField("Eager");
+  eager.addListener(inputEventListener);
+  eager.setTextChangeEventMode(TextChangeEventMode.EAGER);
+  getLayout().addComponent(eager);
+  TextField to=new TextField("Timeout 3s");
+  to.addListener(inputEventListener);
+  to.setTextChangeEventMode(TextChangeEventMode.TIMEOUT);
+  to.setTextChangeTimeout(3000);
+  getLayout().addComponent(to);
+  TextArea ta=new TextArea("Default text area");
+  ta.addListener(inputEventListener);
+  getLayout().addComponent(ta);
+  VaadinDeveloeprNameField vd=new VaadinDeveloeprNameField();
+  vd.addListener(inputEventListener);
+  getLayout().addComponent(vd);
+  getLayout().addComponent(l);
+}

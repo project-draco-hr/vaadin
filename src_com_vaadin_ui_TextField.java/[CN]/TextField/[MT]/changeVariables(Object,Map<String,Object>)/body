@@ -1,0 +1,18 @@
+{
+  if (variables.containsKey(VTextField.VAR_CURSOR)) {
+    Integer object=(Integer)variables.get(VTextField.VAR_CURSOR);
+    lastKnownCursorPosition=object.intValue();
+    textChangeEventPending=true;
+  }
+  if (variables.containsKey(VTextField.VAR_CUR_TEXT)) {
+    handleInputEventTextChange(variables);
+  }
+  changingVariables=true;
+  try {
+    super.changeVariables(source,variables);
+  }
+  finally {
+    changingVariables=false;
+  }
+  firePendingTextChangeEvent();
+}

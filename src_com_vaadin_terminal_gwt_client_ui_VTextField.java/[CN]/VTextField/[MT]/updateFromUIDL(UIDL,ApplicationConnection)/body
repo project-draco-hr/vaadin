@@ -13,6 +13,18 @@
   inputPrompt=uidl.getStringAttribute(ATTR_INPUTPROMPT);
   setMaxLength(uidl.hasAttribute("maxLength") ? uidl.getIntAttribute("maxLength") : -1);
   immediate=uidl.getBooleanAttribute("immediate");
+  listenTextChangeEvents=client.hasEventListeners(this,"ie");
+  if (listenTextChangeEvents) {
+    textChangeEventMode=uidl.getStringAttribute(ATTR_TEXTCHANGE_EVENTMODE);
+    if (textChangeEventMode.equals(TEXTCHANGE_MODE_EAGER)) {
+      textChangeEventTimeout=1;
+    }
+ else {
+      textChangeEventTimeout=uidl.getIntAttribute(ATTR_TEXTCHANGE_TIMEOUT);
+    }
+    sinkEvents(TEXTCHANGE_EVENTS);
+    attachCutEventListener(getElement());
+  }
   if (uidl.hasAttribute("cols")) {
     setColumns(new Integer(uidl.getStringAttribute("cols")).intValue());
   }
@@ -30,7 +42,9 @@
           fieldValue=text;
           removeStyleDependentName(CLASSNAME_PROMPT);
         }
-        setText(fieldValue);
+        if (!getText().equals(fieldValue)) {
+          setText(fieldValue);
+        }
       }
     }
 );
@@ -47,7 +61,7 @@
     }
     setText(fieldValue);
   }
-  valueBeforeEdit=uidl.getStringVariable("text");
+  lastTextChangeString=valueBeforeEdit=uidl.getStringVariable("text");
   if (uidl.hasAttribute("selpos")) {
     final int pos=uidl.getIntAttribute("selpos");
     final int length=uidl.getIntAttribute("sellen");
