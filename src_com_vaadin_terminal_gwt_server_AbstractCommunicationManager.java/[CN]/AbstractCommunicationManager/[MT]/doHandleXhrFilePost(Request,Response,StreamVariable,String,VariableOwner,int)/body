@@ -7,7 +7,10 @@
     if (component.isReadOnly()) {
       throw new UploadException("Warning: file upload ignored because the component was read-only");
     }
-    streamToReceiver(stream,streamVariable,filename,mimeType,contentLength);
+    boolean forgetVariable=streamToReceiver(stream,streamVariable,filename,mimeType,contentLength);
+    if (forgetVariable) {
+      cleanStreamVariable(owner,variableName);
+    }
   }
  catch (  Exception e) {
 synchronized (application) {

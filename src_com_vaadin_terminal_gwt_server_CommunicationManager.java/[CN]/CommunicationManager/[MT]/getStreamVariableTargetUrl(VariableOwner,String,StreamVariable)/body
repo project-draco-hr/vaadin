@@ -13,7 +13,10 @@
   if (streamVariableToSeckey == null) {
     streamVariableToSeckey=new HashMap<StreamVariable,String>();
   }
-  String seckey=UUID.randomUUID().toString();
-  streamVariableToSeckey.put(value,seckey);
+  String seckey=streamVariableToSeckey.get(value);
+  if (seckey == null) {
+    seckey=UUID.randomUUID().toString();
+    streamVariableToSeckey.put(value,seckey);
+  }
   return getApplication().getURL() + AbstractApplicationServlet.UPLOAD_URL_PREFIX + key+ "/"+ seckey;
 }

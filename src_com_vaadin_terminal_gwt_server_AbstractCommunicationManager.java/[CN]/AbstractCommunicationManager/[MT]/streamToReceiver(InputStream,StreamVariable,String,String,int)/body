@@ -5,10 +5,10 @@
   final Application application=getApplication();
   OutputStream out=null;
   int totalBytes=0;
+  StreamingStartEventImpl startedEvent=new StreamingStartEventImpl(filename,type,contentLength);
   try {
     boolean listenProgress;
 synchronized (application) {
-      StreamingStartEvent startedEvent=new StreamingStartEventImpl(filename,type,contentLength);
       streamVariable.streamingStarted(startedEvent);
       out=streamVariable.getOutputStream();
       listenProgress=streamVariable.listenProgress();
@@ -57,4 +57,5 @@ synchronized (application) {
       throw new UploadException(e);
     }
   }
+  return startedEvent.isDisposed();
 }
