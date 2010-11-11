@@ -8,7 +8,7 @@
   try {
     boolean listenProgress;
 synchronized (application) {
-      StreamingStartedEvent startedEvent=new StreamingStartedEventImpl(streamVariable,filename,type,contentLength);
+      StreamingStartEvent startedEvent=new StreamingStartEventImpl(filename,type,contentLength);
       streamVariable.streamingStarted(startedEvent);
       out=streamVariable.getOutputStream();
       listenProgress=streamVariable.listenProgress();
@@ -26,7 +26,7 @@ synchronized (application) {
       totalBytes+=bytesReadToBuffer;
       if (listenProgress) {
 synchronized (application) {
-          StreamingProgressedEventImpl progressEvent=new StreamingProgressedEventImpl(streamVariable,filename,type,contentLength,totalBytes);
+          StreamingProgressEventImpl progressEvent=new StreamingProgressEventImpl(filename,type,contentLength,totalBytes);
           streamVariable.onProgress(progressEvent);
         }
       }
@@ -35,14 +35,14 @@ synchronized (application) {
       }
     }
     out.close();
-    StreamingEndedEvent event=new StremingEndedEventImpl(streamVariable,filename,type,totalBytes);
+    StreamingEndEvent event=new StreamingEndEventImpl(filename,type,totalBytes);
 synchronized (application) {
       streamVariable.streamingFinished(event);
     }
   }
  catch (  UploadInterruptedException e) {
     tryToCloseStream(out);
-    StreamingFailedEvent event=new StreamingFailedEventImpl(streamVariable,filename,type,contentLength,totalBytes,e);
+    StreamingErrorEvent event=new StreamingErrorEventImpl(filename,type,contentLength,totalBytes,e);
 synchronized (application) {
       streamVariable.streamingFailed(event);
     }
@@ -50,7 +50,7 @@ synchronized (application) {
 catch (  final Exception e) {
     tryToCloseStream(out);
 synchronized (application) {
-      StreamingFailedEvent event=new StreamingFailedEventImpl(streamVariable,filename,type,contentLength,totalBytes,e);
+      StreamingErrorEvent event=new StreamingErrorEventImpl(filename,type,contentLength,totalBytes,e);
 synchronized (application) {
         streamVariable.streamingFailed(event);
       }
