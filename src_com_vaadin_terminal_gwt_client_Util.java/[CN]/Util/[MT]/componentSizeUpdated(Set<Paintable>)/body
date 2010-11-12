@@ -1,10 +1,14 @@
 {
-  if (widgets.isEmpty()) {
+  if (paintables.isEmpty()) {
     return;
   }
   Map<Container,Set<Paintable>> childWidgets=new HashMap<Container,Set<Paintable>>();
-  for (  Paintable widget : widgets) {
-    Widget parent=((Widget)widget).getParent();
+  for (  Paintable paintable : paintables) {
+    Widget widget=(Widget)paintable;
+    if (!widget.isAttached()) {
+      continue;
+    }
+    Widget parent=widget.getParent();
     while (parent != null && !(parent instanceof Container)) {
       parent=parent.getParent();
     }
@@ -14,7 +18,7 @@
         set=new HashSet<Paintable>();
         childWidgets.put((Container)parent,set);
       }
-      set.add(widget);
+      set.add(paintable);
     }
   }
   Set<Paintable> parentChanges=new HashSet<Paintable>();
