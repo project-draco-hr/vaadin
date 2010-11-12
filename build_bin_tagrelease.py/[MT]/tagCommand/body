@@ -1,0 +1,23 @@
+def tagCommand(version, changeset):
+    m = re.match('^[0-9]+\\.[0-9]+\\.[0-9]+(\\.\\w+)?$', version)
+    if (not m):
+        print ("Invalid version number '%s'" % version)
+        sys.exit(1)
+    m = re.match('^[0-9]+$', changeset)
+    if (not m):
+        print ("Invalid changeset number '%s'" % changeset)
+        sys.exit(1)
+    svnInfo = getSvnInfo()
+    url = svnInfo['URL']
+    repoRoot = svnInfo['Repository Root']
+    tagUrl = ((repoRoot + '/releases/') + version)
+    versionProperties = readProperties('build/VERSION.properties')
+    bookRepo = versionProperties['manual.repository']
+    if (not re.search('branches/[0-9\\.]+$', bookRepo)):
+        print ("Bad documentation branch '%s' for release." % bookRepo)
+        sys.exit(1)
+    bookTagUrl = ((repoRoot + '/doc/tags/') + version)
+    checkNotTagged(tagUrl)
+    checkNotTagged(bookTagUrl)
+    tag('Vaadin', url, tagUrl, version, changeset)
+    tag('Book of Vaadin', bookRepo, bookTagUrl, version, changeset)
