@@ -1,0 +1,17 @@
+{
+  TestApp app=new TestApp();
+  app.init();
+  Window subWindow=new Window("Sub window");
+  Window mainWindow=app.getMainWindow();
+  mainWindow.addWindow(subWindow);
+  assertEquals(subWindow.getParent(),mainWindow);
+  try {
+    subWindow.removeWindow(subWindow);
+    assertTrue("Remove window did not throw the expected exception",false);
+  }
+ catch (  IllegalArgumentException e) {
+  }
+  assertEquals(subWindow.getParent(),mainWindow);
+  mainWindow.removeWindow(subWindow);
+  assertNull(subWindow.getParent());
+}
