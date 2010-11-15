@@ -1,5 +1,6 @@
 {
   Button openWindowButton=new Button("Open sub-window");
+  openWindowButton.setDebugId("opensub");
   openWindowButton.addListener(new ClickListener(){
     public void buttonClick(    ClickEvent event){
       Window sub=createClosableSubWindow("Sub-window");
@@ -7,24 +8,37 @@
     }
   }
 );
+  addComponent(log);
   addComponent(openWindowButton);
   Button openBrowserWindowButton=new Button("Open browser window");
+  openWindowButton.setDebugId("opennative");
   openBrowserWindowButton.addListener(new ClickListener(){
     public void buttonClick(    ClickEvent event){
       browserWindow=new Window("Window");
-      browserWindow.addComponent(new Label("Close this window"));
+      Button closeButton=new Button("Close this window",new ClickListener(){
+        public void buttonClick(        ClickEvent event){
+          event.getButton().getWindow().executeJavaScript("window.close();");
+        }
+      }
+);
+      browserWindow.addComponent(closeButton);
       browserWindow.addListener(new CloseListener(){
         public void windowClose(        CloseEvent e){
-          getMainWindow().showNotification("Browser window closed");
+          logBrowserWindowClosed();
         }
       }
 );
       addWindow(browserWindow);
       URL windowUrl=browserWindow.getURL();
       getMainWindow().open(new ExternalResource(windowUrl),"nativewindow");
+      if (getBrowser().isOpera()) {
+        logBrowserWindowClosed();
+      }
     }
   }
 );
   addComponent(openBrowserWindowButton);
-  addComponent(new Button("Poll server"));
+  Button pollButton=new Button("Poll server");
+  pollButton.setDebugId("poll");
+  addComponent(pollButton);
 }
