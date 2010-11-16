@@ -31,7 +31,7 @@
   final String text=uidl.hasVariable("text") ? uidl.getStringVariable("text") : null;
   setPrompting(inputPrompt != null && focusedTextField != this && (text == null || text.equals("")));
   if (BrowserInfo.get().isGecko()) {
-    DeferredCommand.addCommand(new Command(){
+    Scheduler.get().scheduleDeferred(new Command(){
       public void execute(){
         String fieldValue;
         if (prompting) {
@@ -65,7 +65,7 @@
   if (uidl.hasAttribute("selpos")) {
     final int pos=uidl.getIntAttribute("selpos");
     final int length=uidl.getIntAttribute("sellen");
-    DeferredCommand.addCommand(new Command(){
+    Scheduler.get().scheduleDeferred(new Command(){
       public void execute(){
         setSelectionRange(pos,length);
       }
