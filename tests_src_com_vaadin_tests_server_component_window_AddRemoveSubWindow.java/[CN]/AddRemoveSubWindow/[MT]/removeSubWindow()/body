@@ -5,13 +5,10 @@
   Window mainWindow=app.getMainWindow();
   mainWindow.addWindow(subWindow);
   assertEquals(subWindow.getParent(),mainWindow);
-  try {
-    subWindow.removeWindow(subWindow);
-    assertTrue("Remove window did not throw the expected exception",false);
-  }
- catch (  IllegalArgumentException e) {
-  }
+  boolean removed=subWindow.removeWindow(subWindow);
+  assertFalse("Window was removed even though it should not have been",removed);
   assertEquals(subWindow.getParent(),mainWindow);
-  mainWindow.removeWindow(subWindow);
+  removed=mainWindow.removeWindow(subWindow);
+  assertTrue("Window was not removed correctly",removed);
   assertNull(subWindow.getParent());
 }
