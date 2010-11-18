@@ -9,15 +9,11 @@
  else {
     uri=getAppUri() + "UIDL" + configuration.getPathInfo();
   }
-  uri+=extraParams;
+  if (extraParams != null && extraParams.length() > 0) {
+    uri=addGetParameters(uri,extraParams);
+  }
   if (windowName != null && windowName.length() > 0) {
-    if (uri.contains("?")) {
-      uri+="&";
-    }
- else {
-      uri+="?";
-    }
-    uri+="windowName=" + windowName;
+    uri=addGetParameters(uri,"windowName=" + windowName);
   }
   if (!forceSync) {
     final RequestBuilder rb=new RequestBuilder(RequestBuilder.POST,uri);
