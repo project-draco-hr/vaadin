@@ -1,0 +1,52 @@
+{
+  initializeContainer(container);
+  Assert.assertEquals(itemPosition,container.indexOfId(itemId));
+  Assert.assertEquals(itemId,container.getIdByIndex(itemPosition));
+  if (testAddEmptyItemAt) {
+    Object addedId=container.addItemAt(itemPosition);
+    Assert.assertEquals(itemPosition,container.indexOfId(addedId));
+    Assert.assertEquals(itemPosition + 1,container.indexOfId(itemId));
+    Assert.assertEquals(addedId,container.getIdByIndex(itemPosition));
+    Assert.assertEquals(itemId,container.getIdByIndex(itemPosition + 1));
+    Object newFirstId=container.addItemAt(0);
+    Assert.assertEquals(0,container.indexOfId(newFirstId));
+    Assert.assertEquals(itemPosition + 2,container.indexOfId(itemId));
+    Assert.assertEquals(newFirstId,container.firstItemId());
+    Assert.assertEquals(newFirstId,container.getIdByIndex(0));
+    Assert.assertEquals(itemId,container.getIdByIndex(itemPosition + 2));
+    Object newLastId=container.addItemAt(container.size());
+    Assert.assertEquals(container.size() - 1,container.indexOfId(newLastId));
+    Assert.assertEquals(itemPosition + 2,container.indexOfId(itemId));
+    Assert.assertEquals(newLastId,container.lastItemId());
+    Assert.assertEquals(newLastId,container.getIdByIndex(container.size() - 1));
+    Assert.assertEquals(itemId,container.getIdByIndex(itemPosition + 2));
+    container.removeItem(addedId);
+    container.removeItem(newFirstId);
+    container.removeItem(newLastId);
+  }
+  if (testAddItemAtWithId) {
+    container.addItemAt(itemPosition,newItemId);
+    Assert.assertEquals(itemPosition,container.indexOfId(newItemId));
+    Assert.assertEquals(itemPosition + 1,container.indexOfId(itemId));
+    Assert.assertEquals(newItemId,container.getIdByIndex(itemPosition));
+    Assert.assertEquals(itemId,container.getIdByIndex(itemPosition + 1));
+    container.removeItem(newItemId);
+    Assert.assertFalse(container.containsId(newItemId));
+    container.addItemAt(0,newItemId);
+    Assert.assertEquals(0,container.indexOfId(newItemId));
+    Assert.assertEquals(itemPosition + 1,container.indexOfId(itemId));
+    Assert.assertEquals(newItemId,container.firstItemId());
+    Assert.assertEquals(newItemId,container.getIdByIndex(0));
+    Assert.assertEquals(itemId,container.getIdByIndex(itemPosition + 1));
+    container.removeItem(newItemId);
+    Assert.assertFalse(container.containsId(newItemId));
+    container.addItemAt(container.size(),newItemId);
+    Assert.assertEquals(container.size() - 1,container.indexOfId(newItemId));
+    Assert.assertEquals(itemPosition,container.indexOfId(itemId));
+    Assert.assertEquals(newItemId,container.lastItemId());
+    Assert.assertEquals(newItemId,container.getIdByIndex(container.size() - 1));
+    Assert.assertEquals(itemId,container.getIdByIndex(itemPosition));
+    container.removeItem(newItemId);
+    Assert.assertFalse(container.containsId(newItemId));
+  }
+}

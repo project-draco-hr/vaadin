@@ -1,0 +1,56 @@
+{
+  new ItemSetChangeListenerTester(){
+    @Override protected void performModification(    BeanItemContainer<ClassName> container){
+      container.addBean(new ClassName("com.example.Test",1111));
+    }
+  }
+.listenerTest();
+  new ItemSetChangeListenerTester(){
+    @Override protected void performModification(    BeanItemContainer<ClassName> container){
+      container.removeItem(nameToBean.get(sampleData[0]));
+    }
+  }
+.listenerTest();
+  new ItemSetChangeListenerTester(){
+    @Override protected void performModification(    BeanItemContainer<ClassName> container){
+      container.removeItem(new ClassName("com.example.Test",1111));
+    }
+  }
+.listenerTest(false);
+  new ItemSetChangeListenerTester(){
+    @Override protected void performModification(    BeanItemContainer<ClassName> container){
+      container.removeAllItems();
+    }
+  }
+.listenerTest();
+  new ItemSetChangeListenerTester(){
+    private int propertyIndex=0;
+    @Override protected void performModification(    BeanItemContainer<ClassName> container){
+      Collection<String> containerPropertyIds=container.getContainerPropertyIds();
+      container.addContainerFilter(new ArrayList<String>(containerPropertyIds).get(propertyIndex++),"a",true,false);
+    }
+  }
+.listenerTest();
+  new ItemSetChangeListenerTester(){
+    @Override protected void performModification(    BeanItemContainer<ClassName> container){
+      container.removeContainerFilters(SIMPLE_NAME);
+    }
+    @Override protected BeanItemContainer<ClassName> prepareContainer(){
+      BeanItemContainer<ClassName> container=super.prepareContainer();
+      container.addContainerFilter(SIMPLE_NAME,"a",true,false);
+      return container;
+    }
+  }
+.listenerTest();
+  new ItemSetChangeListenerTester(){
+    @Override protected void performModification(    BeanItemContainer<ClassName> container){
+      container.removeAllContainerFilters();
+    }
+    @Override protected BeanItemContainer<ClassName> prepareContainer(){
+      BeanItemContainer<ClassName> container=super.prepareContainer();
+      container.addContainerFilter(SIMPLE_NAME,"a",true,false);
+      return container;
+    }
+  }
+.listenerTest();
+}
