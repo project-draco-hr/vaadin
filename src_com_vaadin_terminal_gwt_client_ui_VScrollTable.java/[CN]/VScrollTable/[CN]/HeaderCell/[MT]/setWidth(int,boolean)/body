@@ -3,9 +3,6 @@
     definedWidth=true;
     expandRatio=0;
   }
-  if (width == w) {
-    return;
-  }
   if (width == -1) {
     DOM.setStyleAttribute(captionContainer,"overflow","");
   }
@@ -15,15 +12,16 @@
     setWidth("");
   }
  else {
-    captionContainer.getStyle().setPropertyPx("width",w);
+    int captionContainerWidth=w - sortIndicator.getOffsetWidth() - colResizeWidget.getOffsetWidth();
+    captionContainer.getStyle().setPropertyPx("width",captionContainerWidth);
     if (scrollBody != null) {
-      int tdWidth=width + scrollBody.getCellExtraWidth();
+      int tdWidth=width + getCellExtraWidth();
       setWidth(tdWidth + "px");
     }
  else {
       Scheduler.get().scheduleDeferred(new Command(){
         public void execute(){
-          int tdWidth=width + scrollBody.getCellExtraWidth();
+          int tdWidth=width + getCellExtraWidth();
           setWidth(tdWidth + "px");
         }
       }

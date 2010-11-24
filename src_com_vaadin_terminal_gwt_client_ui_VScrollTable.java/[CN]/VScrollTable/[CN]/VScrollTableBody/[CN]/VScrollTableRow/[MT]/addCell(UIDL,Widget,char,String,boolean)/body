@@ -5,14 +5,11 @@
   if (style != null && !style.equals("")) {
     className+=" " + CLASSNAME + "-cell-content-"+ style;
   }
+  if (sorted) {
+    className+=" " + CLASSNAME + "-cell-content-sorted";
+  }
   td.setClassName(className);
   container.setClassName(CLASSNAME + "-cell-wrapper");
-  if (textIsHTML) {
-    container.setInnerHTML(text);
-  }
- else {
-    container.setInnerText(text);
-  }
   if (align != ALIGN_LEFT) {
 switch (align) {
 case ALIGN_CENTER:
@@ -26,4 +23,8 @@ break;
 }
 td.appendChild(container);
 getElement().appendChild(td);
+w.removeFromParent();
+container.appendChild(w.getElement());
+adopt(w);
+childWidgets.add(w);
 }

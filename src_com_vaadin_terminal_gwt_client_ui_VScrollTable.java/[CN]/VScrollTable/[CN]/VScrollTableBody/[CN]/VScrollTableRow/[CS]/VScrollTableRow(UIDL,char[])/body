@@ -9,7 +9,8 @@
   int col=0;
   int visibleColumnIndex=-1;
   if (showRowHeaders) {
-    addCell(uidl,buildCaptionHtmlSnippet(uidl),aligns[col++],"",true);
+    boolean sorted=tHead.getHeaderCell(col).isSorted();
+    addCell(uidl,buildCaptionHtmlSnippet(uidl),aligns[col++],"",true,sorted);
     visibleColumnIndex++;
   }
   if (uidl.hasAttribute("al")) {
@@ -24,12 +25,13 @@
     if (uidl.hasAttribute("style-" + columnId)) {
       style=uidl.getStringAttribute("style-" + columnId);
     }
+    boolean sorted=tHead.getHeaderCell(col).isSorted();
     if (cell instanceof String) {
-      addCell(uidl,cell.toString(),aligns[col++],style,false);
+      addCell(uidl,cell.toString(),aligns[col++],style,false,sorted);
     }
  else {
       final Paintable cellContent=client.getPaintable((UIDL)cell);
-      addCell(uidl,(Widget)cellContent,aligns[col++],style);
+      addCell(uidl,(Widget)cellContent,aligns[col++],style,sorted);
       paintComponent(cellContent,(UIDL)cell);
     }
   }
