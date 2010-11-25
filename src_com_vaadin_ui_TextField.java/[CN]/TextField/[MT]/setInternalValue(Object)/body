@@ -1,8 +1,16 @@
 {
-  if (changingVariables && !newValue.toString().equals(lastKnownTextContent)) {
-    lastKnownTextContent=newValue.toString();
-    textChangeEventPending=true;
-    firePendingTextChangeEvent();
+  if (changingVariables) {
+    if (newValue == null && lastKnownTextContent != null && !lastKnownTextContent.equals(getNullRepresentation())) {
+      lastKnownTextContent=getNullRepresentation();
+      textChangeEventPending=true;
+    }
+ else     if (newValue != null && !newValue.toString().equals(lastKnownTextContent)) {
+      lastKnownTextContent=newValue.toString();
+      textChangeEventPending=true;
+    }
+    if (textChangeEventPending) {
+      firePendingTextChangeEvent();
+    }
   }
   super.setInternalValue(newValue);
 }
