@@ -1,0 +1,18 @@
+{
+  if (!filters.isEmpty()) {
+    boolean filteringChanged=false;
+    for (Iterator<Filter> iterator=filters.iterator(); iterator.hasNext(); ) {
+      Filter f=iterator.next();
+      if (f.propertyId.equals(propertyId)) {
+        iterator.remove();
+        filteringChanged=true;
+      }
+    }
+    if (filteringChanged) {
+      for (      BeanItem<BT> item : itemIdToItem.values()) {
+        removeValueChangeListener(item,propertyId);
+      }
+      filterAll();
+    }
+  }
+}
