@@ -1,0 +1,25 @@
+{
+  NodeList<TableRowElement> rows=tBodyElement.getRows();
+  if (rows.getLength() == 0) {
+    VScrollTableRow scrollTableRow=new VScrollTableRow();
+    tBodyElement.appendChild(scrollTableRow.getElement());
+    detectExtrawidth();
+    tBodyElement.removeChild(scrollTableRow.getElement());
+  }
+ else {
+    boolean noCells=false;
+    TableRowElement item=rows.getItem(0);
+    TableCellElement firstTD=item.getCells().getItem(0);
+    if (firstTD == null) {
+      noCells=true;
+      VScrollTableRow next=(VScrollTableRow)iterator().next();
+      next.addCell(null,"",ALIGN_LEFT,"",true,tHead.getHeaderCell(0).isSorted());
+      firstTD=item.getCells().getItem(0);
+    }
+    com.google.gwt.dom.client.Element wrapper=firstTD.getFirstChildElement();
+    cellExtraWidth=firstTD.getOffsetWidth() - wrapper.getOffsetWidth();
+    if (noCells) {
+      firstTD.getParentElement().removeChild(firstTD);
+    }
+  }
+}
