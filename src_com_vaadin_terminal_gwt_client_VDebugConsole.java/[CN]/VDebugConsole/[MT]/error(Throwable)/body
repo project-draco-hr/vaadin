@@ -1,4 +1,11 @@
 {
-  error(e.getMessage());
+  if (e instanceof UmbrellaException) {
+    UmbrellaException ue=(UmbrellaException)e;
+    for (    Throwable t : ue.getCauses()) {
+      error(t);
+    }
+    return;
+  }
+  error(Util.getSimpleName(e) + ": " + e.getMessage());
   GWT.log(e.getMessage(),e);
 }
