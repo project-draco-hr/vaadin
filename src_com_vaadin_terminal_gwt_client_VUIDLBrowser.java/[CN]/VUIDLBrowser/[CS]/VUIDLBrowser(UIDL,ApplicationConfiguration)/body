@@ -15,7 +15,11 @@
 );
   addSelectionHandler(new SelectionHandler<TreeItem>(){
     public void onSelection(    SelectionEvent<TreeItem> event){
-      UIDLItem selectedItem=(UIDLItem)event.getSelectedItem();
+      TreeItem item=event.getSelectedItem();
+      if (!(item instanceof UIDLItem)) {
+        return;
+      }
+      UIDLItem selectedItem=(UIDLItem)item;
       List<ApplicationConnection> runningApplications=ApplicationConfiguration.getRunningApplications();
       for (      ApplicationConnection applicationConnection : runningApplications) {
         Paintable paintable=applicationConnection.getPaintable(selectedItem.uidl.getId());
