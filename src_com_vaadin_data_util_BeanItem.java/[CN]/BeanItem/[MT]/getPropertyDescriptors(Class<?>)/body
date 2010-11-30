@@ -1,12 +1,11 @@
 {
   final LinkedHashMap<String,PropertyDescriptor> pdMap=new LinkedHashMap<String,PropertyDescriptor>();
   try {
-    final BeanInfo info=Introspector.getBeanInfo(beanClass);
-    final PropertyDescriptor[] pds=info.getPropertyDescriptors();
-    for (int i=0; i < pds.length; i++) {
-      final Method getMethod=pds[i].getReadMethod();
+    List<PropertyDescriptor> propertyDescriptors=getBeanPropertyDescriptor(beanClass);
+    for (    PropertyDescriptor pd : propertyDescriptors) {
+      final Method getMethod=pd.getReadMethod();
       if ((getMethod != null) && getMethod.getDeclaringClass() != Object.class) {
-        pdMap.put(pds[i].getName(),pds[i]);
+        pdMap.put(pd.getName(),pd);
       }
     }
   }
