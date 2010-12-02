@@ -1,17 +1,9 @@
 {
   if (getMethod == null) {
-    try {
-      String propertyName=propertyId.toString();
-      if (Character.isLowerCase(propertyName.charAt(0))) {
-        final char[] buf=propertyName.toCharArray();
-        buf[0]=Character.toUpperCase(buf[0]);
-        propertyName=new String(buf);
-      }
-      getMethod=getBeanType().getMethod("get" + propertyName,new Class[]{});
+    if (!model.containsKey(propertyId)) {
+      throw new IllegalStateException("Property " + propertyId + " not found");
     }
- catch (    NoSuchMethodException ignored) {
-      throw new IllegalArgumentException();
-    }
+    getMethod=model.get(propertyId).getReadMethod();
   }
   return getMethod;
 }
