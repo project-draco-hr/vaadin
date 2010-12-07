@@ -1,9 +1,12 @@
 {
   DOM.setStyleAttribute(getElement(),"position","relative");
-  int buttonsExtraWidth=Util.measureHorizontalPaddingAndBorder(buttons.getElement(),0);
-  int buttonWidth=Util.getRequiredWidth(buttons) + buttonsExtraWidth;
+  int bordersAndPaddings=Util.measureHorizontalPaddingAndBorder(buttons.getElement(),0);
+  if (BrowserInfo.get().isIE6()) {
+    bordersAndPaddings+=4;
+  }
+  int buttonWidth=Util.getRequiredWidth(buttons);
   int totalWidth=getOffsetWidth();
-  int spaceForSelect=(totalWidth - buttonWidth) / 2;
+  int spaceForSelect=(totalWidth - buttonWidth - bordersAndPaddings) / 2;
   options.setWidth(spaceForSelect + "px");
   if (optionsCaption != null) {
     optionsCaption.setWidth(spaceForSelect + "px");
