@@ -3,6 +3,13 @@
   if (getMaxLength() >= 0) {
     target.addAttribute("maxLength",getMaxLength());
   }
+  final int columns=getColumns();
+  if (columns != 0) {
+    target.addAttribute("cols",String.valueOf(columns));
+  }
+  if (getInputPrompt() != null) {
+    target.addAttribute("prompt",getInputPrompt());
+  }
   String value=getFormattedValue();
   if (value == null) {
     value=getNullRepresentation();
@@ -11,4 +18,13 @@
     throw new IllegalStateException("Null values are not allowed if the null-representation is null");
   }
   target.addVariable(this,"text",value);
+  if (selectionPosition != -1) {
+    target.addAttribute("selpos",selectionPosition);
+    target.addAttribute("sellen",selectionLength);
+    selectionPosition=-1;
+  }
+  if (hasListeners(TextChangeEvent.class)) {
+    target.addAttribute(VTextField.ATTR_TEXTCHANGE_EVENTMODE,getTextChangeEventMode().toString());
+    target.addAttribute(VTextField.ATTR_TEXTCHANGE_TIMEOUT,getTextChangeTimeout());
+  }
 }
