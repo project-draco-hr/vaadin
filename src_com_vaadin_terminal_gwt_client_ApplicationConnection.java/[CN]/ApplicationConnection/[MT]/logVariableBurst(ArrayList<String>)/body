@@ -1,0 +1,28 @@
+{
+  try {
+    VConsole.log("Variable burst to be sent to server:");
+    String curId=null;
+    ArrayList<String[]> vars=new ArrayList<String[]>();
+    for (int i=0; i < pendingVariables.size(); i++) {
+      String value=pendingVariables2.get(i++);
+      String[] split=pendingVariables2.get(i).split(VAR_FIELD_SEPARATOR);
+      String id=split[0];
+      if (curId == null) {
+        curId=id;
+      }
+ else       if (!curId.equals(id)) {
+        printPaintablesVariables(vars,curId);
+        vars.clear();
+        curId=id;
+      }
+      split[0]=value;
+      vars.add(split);
+    }
+    if (!vars.isEmpty()) {
+      printPaintablesVariables(vars,curId);
+    }
+  }
+ catch (  Exception e) {
+    VConsole.error(e);
+  }
+}
