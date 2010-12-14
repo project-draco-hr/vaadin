@@ -1,11 +1,15 @@
 {
+  if (!BrowserInfo.get().isGecko()) {
+    return;
+  }
   if (!enabled) {
     event.preventDefault();
   }
  else   if (hasFocus) {
-    int keyCode=event.getNativeEvent().getKeyCode();
-    if (keyCode == 0) {
-      keyCode=event.getNativeEvent().getCharCode();
+    NativeEvent nativeEvent=event.getNativeEvent();
+    int keyCode=nativeEvent.getKeyCode();
+    if (keyCode == 0 && nativeEvent.getCharCode() == ' ') {
+      keyCode=CHARCODE_SPACE;
     }
     if (handleNavigation(keyCode,event.isControlKeyDown() || event.isMetaKeyDown(),event.isShiftKeyDown())) {
       event.preventDefault();
