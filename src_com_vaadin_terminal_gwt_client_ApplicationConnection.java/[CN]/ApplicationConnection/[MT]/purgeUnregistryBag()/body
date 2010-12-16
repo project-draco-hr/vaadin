@@ -1,6 +1,11 @@
 {
   for (  String id : unregistryBag) {
-    Widget component=(Widget)idToPaintableDetail.get(id).getComponent();
+    ComponentDetail componentDetail=idToPaintableDetail.get(id);
+    if (componentDetail == null) {
+      VConsole.error("ApplicationConnetion tried to unregister component (id=" + id + ") that is never registered (or already unregistered)");
+      return;
+    }
+    Widget component=(Widget)componentDetail.getComponent();
     if (!component.isAttached()) {
       idToPaintableDetail.remove(id);
     }
