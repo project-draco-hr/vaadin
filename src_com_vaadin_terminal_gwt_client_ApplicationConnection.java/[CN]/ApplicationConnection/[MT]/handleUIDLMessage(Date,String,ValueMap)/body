@@ -26,10 +26,12 @@
         JsArray<ValueMap> valueMapArray=json.getJSValueMapArray("locales");
         LocaleService.addLocales(valueMapArray);
       }
+      boolean repaintAll=false;
       ValueMap meta=null;
       if (json.containsKey("meta")) {
         meta=json.getValueMap("meta");
         if (meta.containsKey("repaintAll")) {
+          repaintAll=true;
           view.clear();
           idToPaintableDetail.clear();
           if (meta.containsKey("invalidLayouts")) {
@@ -134,7 +136,12 @@
           validatingLayouts=false;
         }
       }
-      purgeUnregistryBag();
+      if (!repaintAll) {
+        unregistryBag.clear();
+      }
+ else {
+        purgeUnregistryBag();
+      }
       final long prosessingTime=(new Date().getTime()) - start.getTime();
       VConsole.log(" Processing time was " + String.valueOf(prosessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
       VConsole.log("Referenced paintables: " + idToPaintableDetail.size());
