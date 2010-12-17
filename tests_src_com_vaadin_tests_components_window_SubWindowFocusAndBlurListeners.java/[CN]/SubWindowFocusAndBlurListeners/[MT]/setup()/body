@@ -1,0 +1,40 @@
+{
+  final Window window=new Window("Focus test window");
+  window.getContent().setSizeUndefined();
+  window.addComponent(new TextField());
+  window.addListener(new FocusListener(){
+    public void focus(    FocusEvent event){
+      event.getComponent().getWindow().showNotification("Focused window");
+    }
+  }
+);
+  window.addListener(new BlurListener(){
+    public void blur(    BlurEvent event){
+      event.getComponent().getWindow().showNotification("Blurred window");
+    }
+  }
+);
+  window.addActionHandler(new Handler(){
+    private Action[] s=new Action[]{new ShortcutAction("^Save")};
+    public Action[] getActions(    Object target,    Object sender){
+      return s;
+    }
+    public void handleAction(    Action action,    Object sender,    Object target){
+      window.showNotification("Action!");
+    }
+  }
+);
+  Window main=getLayout().getWindow();
+  main.addWindow(window);
+  main.addComponent(new TextField());
+  Button button=new Button("Bring to front (should focus too)",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      window.bringToFront();
+    }
+  }
+);
+  main.addComponent(button);
+  Window window2=new Window("Another window for testing");
+  main.addWindow(window2);
+  window2.setPositionX(50);
+}
