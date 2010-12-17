@@ -2,10 +2,6 @@
   boolean bubble=true;
   if (event != null) {
     final int type=event.getTypeInt();
-    if (type == Event.ONKEYDOWN && shortcutHandler != null) {
-      shortcutHandler.handleKeyboardEvent(event);
-      return;
-    }
     final Element target=DOM.eventGetTarget(event);
     if (client != null && DOM.isOrHasChild(header,target)) {
       client.handleTooltipEvent(event,this);
@@ -30,11 +26,11 @@
       }
     }
     if (type == Event.ONMOUSEDOWN && !DOM.isOrHasChild(contentPanel.getElement(),target)) {
-      Util.focus(contentPanel.getElement());
+      contentPanel.focus();
     }
   }
   if (!bubble) {
-    event.cancelBubble(true);
+    event.stopPropagation();
   }
  else {
     super.onBrowserEvent(event);
