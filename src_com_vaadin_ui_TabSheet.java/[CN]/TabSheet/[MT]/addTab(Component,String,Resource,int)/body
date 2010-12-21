@@ -1,0 +1,31 @@
+{
+  if (c == null) {
+    return null;
+  }
+ else   if (tabs.containsKey(c)) {
+    Tab tab=tabs.get(c);
+    tab.setCaption(caption);
+    tab.setIcon(icon);
+    return tab;
+  }
+ else {
+    if (index >= components.size()) {
+      components.addLast(c);
+    }
+ else     if (index < 0) {
+      components.addFirst(c);
+    }
+ else {
+      components.add(index,c);
+    }
+    Tab tab=new TabSheetTabImpl(caption,icon);
+    tabs.put(c,tab);
+    if (selected == null) {
+      selected=c;
+      fireSelectedTabChange();
+    }
+    super.addComponent(c);
+    requestRepaint();
+    return tab;
+  }
+}
