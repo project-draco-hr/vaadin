@@ -21,10 +21,14 @@
     if (BrowserInfo.get().isIE6()) {
       getElement().getStyle().setProperty("overflow",overflow);
     }
-    int diff=availableWidth - getConsumedWidth();
+    int usedWidth=getConsumedWidth();
+    int diff=availableWidth - usedWidth;
     removeItem(moreItem);
     if (diff < 0) {
-      final int widthNeeded=moreItemWidth - diff;
+      int widthNeeded=usedWidth - availableWidth;
+      if (!morePresent) {
+        widthNeeded+=moreItemWidth;
+      }
       int widthReduced=0;
       while (widthReduced < widthNeeded && getItems().size() > 0) {
         CustomMenuItem collapse=getItems().get(getItems().size() - 1);
