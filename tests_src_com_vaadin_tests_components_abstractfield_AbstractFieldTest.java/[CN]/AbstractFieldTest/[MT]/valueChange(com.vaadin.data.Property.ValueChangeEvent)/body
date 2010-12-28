@@ -12,9 +12,14 @@
   }
   String value="null";
   if (o != null) {
-    value="'" + o.toString() + "'";
     if (o instanceof Date) {
-      value+="(" + ((Date)o).getTime() + ")";
+      Date d=(Date)o;
+      String pattern="MMM d, yyyy HH:mm:ss.SSS";
+      SimpleDateFormat format=new SimpleDateFormat(pattern,new Locale("en","US"));
+      value=format.format(d);
+    }
+ else {
+      value="'" + o.toString() + "'";
     }
   }
   log(event.getClass().getSimpleName() + ", new value: " + value);
