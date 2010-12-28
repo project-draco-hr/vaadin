@@ -3,15 +3,15 @@
     VConsole.log("Variable burst to be sent to server:");
     String curId=null;
     ArrayList<String[]> vars=new ArrayList<String[]>();
-    for (int i=0; i < pendingVariables.size(); i++) {
-      String value=pendingVariables2.get(i++);
-      String[] split=pendingVariables2.get(i).split(VAR_FIELD_SEPARATOR);
+    for (int i=0; i < loggedBurst.size(); i++) {
+      String value=loggedBurst.get(i++);
+      String[] split=loggedBurst.get(i).split(ApplicationConnection.VAR_FIELD_SEPARATOR);
       String id=split[0];
       if (curId == null) {
         curId=id;
       }
  else       if (!curId.equals(id)) {
-        printPaintablesVariables(vars,curId);
+        printPaintablesVariables(vars,curId,c);
         vars.clear();
         curId=id;
       }
@@ -19,7 +19,7 @@
       vars.add(split);
     }
     if (!vars.isEmpty()) {
-      printPaintablesVariables(vars,curId);
+      printPaintablesVariables(vars,curId,c);
     }
   }
  catch (  Exception e) {
