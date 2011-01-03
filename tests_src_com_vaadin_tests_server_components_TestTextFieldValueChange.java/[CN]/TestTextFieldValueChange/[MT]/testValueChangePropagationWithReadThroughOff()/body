@@ -1,0 +1,17 @@
+{
+  final String initialValue="initial";
+  ObjectProperty<String> property=new ObjectProperty<String>(initialValue);
+  getField().setWriteThrough(false);
+  getField().setReadThrough(false);
+  getListener().valueChange(EasyMock.isA(ValueChangeEvent.class));
+  EasyMock.replay(getListener());
+  getField().addListener(getListener());
+  getField().setPropertyDataSource(property);
+  EasyMock.verify(getListener());
+  property.setValue("Foo");
+  EasyMock.verify(getListener());
+  Object value=getField().getValue();
+  boolean isValueEqualToInitial=value.equals(initialValue);
+  Assert.assertTrue(isValueEqualToInitial);
+  EasyMock.verify(getListener());
+}
