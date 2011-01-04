@@ -1,30 +1,42 @@
 {
   final Form form=new Form();
   addComponent(form);
-  @SuppressWarnings("deprecation") ObjectProperty<Date> property=new ObjectProperty<Date>(new Date(2009 - 1900,4 - 1,1));
-  final DateField df=new DateField("Year",property);
+  @SuppressWarnings("deprecation") ObjectProperty property=new ObjectProperty(new Date(2009 - 1900,4 - 1,1));
+  final DateField df=new DateField("Year",property){
+    @Override protected Date handleUnparsableDateString(    String dateString) throws ConversionException {
+      throw new Property.ConversionException("Date format not recognized");
+    }
+  }
+;
   df.setResolution(DateField.RESOLUTION_DAY);
-  df.setReadThrough(false);
-  df.setWriteThrough(false);
-  df.setImmediate(true);
   form.addField("date",df);
+  form.setValidationVisible(true);
+  final ObjectProperty integer=new ObjectProperty("42");
+  final TextField another=new TextField("Another Field",integer);
+  another.addValidator(new IntegerValidator("Not an integer"));
+  form.addField("text",another);
+  form.setWriteThrough(false);
   Button validate=new Button("Validate");
   form.getFooter().addComponent(validate);
   Button commit=new Button("Commit");
   form.getFooter().addComponent(commit);
-  Label value=new Label("Value");
-  addComponent(value);
-  value.setPropertyDataSource(property);
   validate.addListener(new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
-      df.validate();
+      form.validate();
     }
   }
 );
   commit.addListener(new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
-      df.commit();
+      form.commit();
+      System.out.println("Field value: " + ((String)another.getValue()) + ", property value: "+ ((String)integer.getValue()));
     }
   }
 );
+  Label value=new Label("Date Value");
+  addComponent(value);
+  value.setPropertyDataSource(property);
+  Label value2=new Label("Text Value");
+  addComponent(value2);
+  value2.setPropertyDataSource(integer);
 }
