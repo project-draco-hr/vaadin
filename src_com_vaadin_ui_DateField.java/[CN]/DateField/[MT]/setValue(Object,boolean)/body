@@ -1,29 +1,18 @@
 {
-  dateString=null;
+  if (newValue == null && !parsingSucceeded) {
+    setInternalValue(null);
+    notifyFormOfValidityChange();
+    requestRepaint();
+    return;
+  }
   if (newValue == null || newValue instanceof Date) {
-    try {
-      dateString=newValue == null ? null : newValue.toString();
-      if (dateString == null && super.getValue() == null) {
-        requestRepaint();
-      }
- else {
-        super.setValue(newValue,repaintIsNotNeeded);
-      }
-      setComponentError(null);
-      parsingSucceeded=true;
-    }
- catch (    InvalidValueException ive) {
-      parsingSucceeded=false;
-      throw ive;
-    }
+    super.setValue(newValue,repaintIsNotNeeded);
   }
  else {
     try {
       final SimpleDateFormat parser=new SimpleDateFormat();
       final Date val=parser.parse(newValue.toString());
       super.setValue(val,repaintIsNotNeeded);
-      parsingSucceeded=true;
-      dateString=newValue.toString();
     }
  catch (    final ParseException e) {
       parsingSucceeded=false;
