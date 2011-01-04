@@ -1,0 +1,30 @@
+{
+  final Form form=new Form();
+  addComponent(form);
+  @SuppressWarnings("deprecation") ObjectProperty<Date> property=new ObjectProperty<Date>(new Date(2009 - 1900,4 - 1,1));
+  final DateField df=new DateField("Year",property);
+  df.setResolution(DateField.RESOLUTION_DAY);
+  df.setReadThrough(false);
+  df.setWriteThrough(false);
+  df.setImmediate(true);
+  form.addField("date",df);
+  Button validate=new Button("Validate");
+  form.getFooter().addComponent(validate);
+  Button commit=new Button("Commit");
+  form.getFooter().addComponent(commit);
+  Label value=new Label("Value");
+  addComponent(value);
+  value.setPropertyDataSource(property);
+  validate.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      df.validate();
+    }
+  }
+);
+  commit.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      df.commit();
+    }
+  }
+);
+}
