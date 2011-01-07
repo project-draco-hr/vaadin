@@ -1,4 +1,4 @@
-def tagCommand(version, changeset):
+def tagCommand(version, changeset, bookRepo):
     m = re.match('^[0-9]+\\.[0-9]+\\.[0-9]+(\\.\\w+)?$', version)
     if (not m):
         print ("Invalid version number '%s'" % version)
@@ -11,8 +11,6 @@ def tagCommand(version, changeset):
     url = svnInfo['URL']
     repoRoot = svnInfo['Repository Root']
     tagUrl = ((repoRoot + '/releases/') + version)
-    versionProperties = readProperties('build/VERSION.properties')
-    bookRepo = versionProperties['manual.repository']
     if (not re.search('branches/[0-9\\.]+$', bookRepo)):
         print ("Bad documentation branch '%s' for release." % bookRepo)
         sys.exit(1)
