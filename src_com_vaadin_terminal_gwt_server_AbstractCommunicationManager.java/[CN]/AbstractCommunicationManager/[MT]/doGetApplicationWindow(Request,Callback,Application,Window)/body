@@ -12,21 +12,25 @@
   }
   if (window == null && !request.isRunningInPortlet()) {
     String path=callback.getRequestPathInfo(request);
-    if (path != null && path.length() > 0 && !path.equals("/")) {
-      String windowUrlName=null;
-      if (path.charAt(0) == '/') {
-        path=path.substring(1);
-      }
-      final int index=path.indexOf('/');
-      if (index < 0) {
-        windowUrlName=path;
-        path="";
-      }
+    boolean pathMayContainWindowName=path != null && path.length() > 0 && !path.equals("/");
+    if (pathMayContainWindowName) {
+      boolean uidlRequest=path.startsWith("/UIDL");
+      if (!uidlRequest) {
+        String windowUrlName=null;
+        if (path.charAt(0) == '/') {
+          path=path.substring(1);
+        }
+        final int index=path.indexOf('/');
+        if (index < 0) {
+          windowUrlName=path;
+          path="";
+        }
  else {
-        windowUrlName=path.substring(0,index);
-        path=path.substring(index + 1);
+          windowUrlName=path.substring(0,index);
+          path=path.substring(index + 1);
+        }
+        window=application.getWindow(windowUrlName);
       }
-      window=application.getWindow(windowUrlName);
     }
   }
   if (window == null) {
