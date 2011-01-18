@@ -1,0 +1,24 @@
+{
+  int b;
+  if (matchedCount == 0) {
+    b=bufferedByte;
+    bufferedByte=-1;
+  }
+ else {
+    b=boundary[curBoundaryIndex++];
+    if (curBoundaryIndex == matchedCount) {
+      curBoundaryIndex=0;
+      if (bufferedByte != boundary[0]) {
+        matchedCount=0;
+      }
+ else {
+        matchedCount=1;
+        bufferedByte=-1;
+      }
+    }
+  }
+  if (b == -1) {
+    throw new IOException("The multipart stream ended unexpectedly");
+  }
+  return b;
+}
