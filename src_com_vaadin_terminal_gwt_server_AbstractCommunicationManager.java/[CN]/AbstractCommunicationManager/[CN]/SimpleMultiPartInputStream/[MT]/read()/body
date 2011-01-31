@@ -5,24 +5,16 @@
  else   if (bufferedByte >= 0) {
     return getBuffered();
   }
+ else   if (matchedCount != -1) {
+    return matchForBoundary();
+  }
  else {
     int fromActualStream=realInputStream.read();
     if (fromActualStream == -1) {
       throw new IOException("The multipart stream ended unexpectedly");
     }
-    if (boundary[matchedCount] == fromActualStream) {
-      while (true) {
-        matchedCount++;
-        if (matchedCount == boundary.length) {
-          atTheEnd=true;
-          return -1;
-        }
-        fromActualStream=realInputStream.read();
-        if (fromActualStream != boundary[matchedCount]) {
-          bufferedByte=fromActualStream;
-          return getBuffered();
-        }
-      }
+    if (boundary[0] == fromActualStream) {
+      return matchForBoundary();
     }
     return fromActualStream;
   }
