@@ -14,6 +14,14 @@
   Widget w=null;
   if (pid != null) {
     w=(Widget)client.getPaintable(pid);
+    Widget targetParent=findParentWidget(targetElement,w);
+    while (targetParent != w && targetParent != null) {
+      if (targetParent instanceof SubPartAware) {
+        w=targetParent;
+        break;
+      }
+      targetParent=targetParent.getParent();
+    }
   }
   if (w == null) {
     RootPanel rootPanel=RootPanel.get();
