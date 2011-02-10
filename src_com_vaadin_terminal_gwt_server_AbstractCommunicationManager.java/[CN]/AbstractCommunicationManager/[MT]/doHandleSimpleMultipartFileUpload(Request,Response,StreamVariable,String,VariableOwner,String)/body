@@ -1,5 +1,4 @@
 {
-  boundary=CRLF + "--" + boundary+ "--";
   final InputStream inputStream=request.getInputStream();
   int contentLength=request.getContentLength();
   boolean atStart=false;
@@ -21,7 +20,7 @@
       rawMimeType=readLine.split(": ")[1];
     }
   }
-  contentLength-=(boundary.length() + 2);
+  contentLength-=(boundary.length() + CRLF.length() + 2 * DASHDASH.length() + 2);
   InputStream simpleMultiPartReader=new SimpleMultiPartInputStream(inputStream,boundary);
   final String filename=removePath(rawfilename);
   final String mimeType=rawMimeType;
