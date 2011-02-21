@@ -2,7 +2,7 @@
   naviTree=new Tree();
   naviTree.setItemStyleGenerator(new ItemStyleGenerator(){
     public String getStyle(    Object itemId){
-      Class<? extends AbstractComponentTest<?>> cls=(Class<? extends AbstractComponentTest<?>>)itemId;
+      Class<?> cls=(Class<?>)itemId;
       if (!isAbstract(cls)) {
         return "blue";
       }
@@ -13,10 +13,10 @@
   HierarchicalContainer hc=new HierarchicalContainer();
   naviTree.setContainerDataSource(hc);
   DefaultItemSorter sorter=new DefaultItemSorter(){
-    @Override public int compare(    Object o1,    Object o2){
+    @SuppressWarnings("rawtypes") @Override public int compare(    Object o1,    Object o2){
       if (o1 instanceof Class && o2 instanceof Class && o1 != null && o2 != null) {
-        Class c1=(Class)o1;
-        Class c2=(Class)o2;
+        Class<?> c1=(Class)o1;
+        Class<?> c2=(Class)o2;
         boolean a1=isAbstract(c1);
         boolean a2=isAbstract(c2);
         if (a1 && !a2) {
@@ -43,7 +43,7 @@
   }
   naviTree.addListener(new ItemClickListener(){
     public void itemClick(    ItemClickEvent event){
-      Class<? extends AbstractComponentTest<?>> cls=(Class<? extends AbstractComponentTest<?>>)event.getItemId();
+      Class<?> cls=(Class<?>)event.getItemId();
       if (!isAbstract(cls)) {
         String url=baseUrl + cls.getName() + "?restartApplication";
         if (event.getButton() == ItemClickEvent.BUTTON_LEFT) {
