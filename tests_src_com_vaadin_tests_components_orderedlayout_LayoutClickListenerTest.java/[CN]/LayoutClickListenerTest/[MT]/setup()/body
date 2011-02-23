@@ -1,0 +1,42 @@
+{
+  final GridLayout layout=new GridLayout(3,2);
+  layout.addStyleName("border");
+  layout.setSpacing(true);
+  layout.setSizeFull();
+  layout.addComponent(new TextField(null,"Click here"));
+  layout.addComponent(new Link("Click here",null));
+  Select select=new Select(null,Arrays.asList("Click here"));
+  select.select("Click here");
+  layout.addComponent(select);
+  VerticalLayout l1=new VerticalLayout();
+  l1.setMargin(true);
+  l1.addComponent(new Label("This is a label."));
+  l1.addComponent(new TextField(null,"Click here"));
+  l1.addComponent(new Link("Click here",null));
+  TabSheet t=new TabSheet();
+  t.setHeight("200px");
+  t.addTab(l1,"Tab",null);
+  layout.addComponent(t);
+  VerticalLayout nestedLayout=new VerticalLayout();
+  nestedLayout.addComponent(new Label("This is a label."));
+  nestedLayout.addComponent(new TextField(null,"Click here"));
+  nestedLayout.addComponent(new Link("Click here",null));
+  HorizontalLayout nestedLayout2=new HorizontalLayout();
+  nestedLayout2.addComponent(new Label("Deeply nested label"));
+  nestedLayout.addComponent(nestedLayout2);
+  layout.addComponent(nestedLayout);
+  layout.addListener(new LayoutClickListener(){
+    public void layoutClick(    LayoutClickEvent event){
+      Component clickedComponent=event.getClickedComponent();
+      if (clickedComponent == null) {
+        LayoutClickListenerTest.this.addComponent(new Label("The click was not over any component."));
+      }
+ else {
+        String message="The click was over a " + clickedComponent.getClass().getCanonicalName() + " in an immediate child component of type "+ event.getChildComponent().getClass().getCanonicalName();
+        LayoutClickListenerTest.this.addComponent(new Label(message));
+      }
+    }
+  }
+);
+  addComponent(layout);
+}
