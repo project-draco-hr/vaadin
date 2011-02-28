@@ -1,0 +1,20 @@
+{
+  Touch touch=touchevent.getChangedTouches().get(0);
+  final NativeEvent createMouseUpEvent=Document.get().createMouseUpEvent(0,touch.getScreenX(),touch.getScreenY(),touch.getClientX(),touch.getClientY(),false,false,false,false,NativeEvent.BUTTON_LEFT);
+  final NativeEvent createMouseDownEvent=Document.get().createMouseDownEvent(0,touch.getScreenX(),touch.getScreenY(),touch.getClientX(),touch.getClientY(),false,false,false,false,NativeEvent.BUTTON_LEFT);
+  final NativeEvent createMouseClickEvent=Document.get().createClickEvent(0,touch.getScreenX(),touch.getScreenY(),touch.getClientX(),touch.getClientY(),false,false,false,false);
+  final Element target=getElementFromPoint(touch.getClientX(),touch.getClientY());
+  Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+    public void execute(){
+      try {
+        target.dispatchEvent(createMouseDownEvent);
+        target.dispatchEvent(createMouseUpEvent);
+        target.dispatchEvent(createMouseClickEvent);
+      }
+ catch (      Exception e) {
+        VConsole.log("Dough...");
+      }
+    }
+  }
+);
+}

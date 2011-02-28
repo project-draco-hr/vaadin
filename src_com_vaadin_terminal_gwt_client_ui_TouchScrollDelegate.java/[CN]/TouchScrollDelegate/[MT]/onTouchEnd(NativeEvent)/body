@@ -1,0 +1,60 @@
+{
+  handlerRegistration.removeHandler();
+  handlerRegistration=null;
+  if (!moved) {
+    activeScrollDelegate=null;
+    return;
+  }
+  int currentY=origScrollTop + deltaScrollPos;
+  int maxFinalY=getMaxFinalY();
+  int pixelsToMove;
+  int finalY;
+  int duration=-1;
+  if (currentY > maxFinalY) {
+    pixelsToMove=maxFinalY - currentY;
+    finalY=maxFinalY;
+  }
+ else   if (currentY < 0) {
+    pixelsToMove=-currentY;
+    finalY=0;
+  }
+ else {
+    double pixelsPerMs=calculateSpeed();
+    VConsole.log("pxPerMs" + pixelsPerMs);
+    pixelsToMove=(int)(0.5 * pixelsPerMs * pixelsPerMs / FRICTION);
+    if (pixelsPerMs < 0) {
+      pixelsToMove=-pixelsToMove;
+    }
+    finalY=currentY + pixelsToMove;
+    if (finalY > maxFinalY + getMaxOverScroll()) {
+      finalY=getMaxFinalY() + getMaxOverScroll();
+      int fixedPixelsToMove=finalY - currentY;
+      pixelsPerMs=pixelsPerMs * pixelsToMove / fixedPixelsToMove / FRICTION;
+      pixelsToMove=fixedPixelsToMove;
+    }
+ else     if (finalY < 0 - getMaxOverScroll()) {
+      finalY=-getMaxOverScroll();
+      int fixedPixelsToMove=finalY - currentY;
+      pixelsPerMs=pixelsPerMs * pixelsToMove / fixedPixelsToMove / FRICTION;
+      pixelsToMove=fixedPixelsToMove;
+    }
+ else {
+      duration=(int)(Math.abs(pixelsPerMs / DECELERATION));
+    }
+  }
+  if (duration == -1) {
+    duration=getAnimationTimeForDistance(pixelsToMove);
+  }
+  if (duration > MAX_DURATION) {
+    VConsole.log("Max animation time. " + duration);
+    duration=MAX_DURATION;
+  }
+  finalScrollTop=finalY;
+  if (Math.abs(pixelsToMove) < 3 || duration < 20) {
+    VConsole.log("Small 'momentum' " + pixelsToMove + " |  "+ duration+ " Skipping animation,");
+    moveTransformationToScrolloffset();
+    return;
+  }
+  int translateY=-finalY + origScrollTop;
+  translateTo(duration,translateY);
+}

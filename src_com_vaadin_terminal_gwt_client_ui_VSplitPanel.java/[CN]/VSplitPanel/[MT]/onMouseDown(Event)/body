@@ -2,15 +2,15 @@
   if (locked || !isEnabled()) {
     return;
   }
-  final Element trg=DOM.eventGetTarget(event);
+  final Element trg=event.getEventTarget().cast();
   if (trg == splitter || trg == DOM.getChild(splitter,0)) {
     resizing=true;
     DOM.setCapture(getElement());
     origX=DOM.getElementPropertyInt(splitter,"offsetLeft");
     origY=DOM.getElementPropertyInt(splitter,"offsetTop");
-    origMouseX=DOM.eventGetClientX(event);
-    origMouseY=DOM.eventGetClientY(event);
-    DOM.eventCancelBubble(event,true);
-    DOM.eventPreventDefault(event);
+    origMouseX=Util.getTouchOrMouseClientX(event);
+    origMouseY=Util.getTouchOrMouseClientY(event);
+    event.stopPropagation();
+    event.preventDefault();
   }
 }

@@ -1,0 +1,15 @@
+{
+  if (nextEvent < EVENTS_FOR_SPEED_CALC) {
+    VConsole.log("Not enough data for speed calculation");
+    return 0;
+  }
+  int idx=nextEvent % EVENTS_FOR_SPEED_CALC;
+  final int firstPos=yPositions[idx];
+  final Date firstTs=eventTimeStamps[idx];
+  idx+=EVENTS_FOR_SPEED_CALC;
+  idx--;
+  idx=idx % EVENTS_FOR_SPEED_CALC;
+  final int lastPos=yPositions[idx];
+  final Date lastTs=eventTimeStamps[idx];
+  return (firstPos - lastPos) / (double)(lastTs.getTime() - firstTs.getTime());
+}

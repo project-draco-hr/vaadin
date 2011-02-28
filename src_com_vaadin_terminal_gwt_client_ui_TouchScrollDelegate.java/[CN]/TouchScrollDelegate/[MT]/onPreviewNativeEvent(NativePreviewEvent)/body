@@ -1,0 +1,31 @@
+{
+  int typeInt=event.getTypeInt();
+switch (typeInt) {
+case Event.ONTOUCHMOVE:
+    if (!event.isCanceled()) {
+      onTouchMove(event.getNativeEvent());
+      if (moved) {
+        event.cancel();
+      }
+    }
+  break;
+case Event.ONTOUCHEND:
+case Event.ONTOUCHCANCEL:
+if (!event.isCanceled()) {
+  if (moved) {
+    event.cancel();
+  }
+  onTouchEnd(event.getNativeEvent());
+}
+break;
+case Event.ONMOUSEMOVE:
+if (moved) {
+event.cancel();
+}
+break;
+default :
+VConsole.log("Non touch event:" + event.getNativeEvent().getType());
+event.cancel();
+break;
+}
+}

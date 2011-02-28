@@ -1,0 +1,23 @@
+{
+  if (dragStarMode > 0) {
+    VTransferable transferable=new VTransferable();
+    transferable.setDragSource(VDragAndDropWrapper.this);
+    Paintable paintable;
+    Widget w=Util.findWidget((Element)event.getEventTarget().cast(),null);
+    while (w != null && !(w instanceof Paintable)) {
+      w=w.getParent();
+    }
+    paintable=(Paintable)w;
+    transferable.setData("component",paintable);
+    VDragEvent startDrag=VDragAndDropManager.get().startDrag(transferable,event,true);
+    transferable.setData("mouseDown",new MouseEventDetails(event).serialize());
+    if (dragStarMode == WRAPPER) {
+      startDrag.createDragImage(getElement(),true);
+    }
+ else {
+      startDrag.createDragImage(((Widget)paintable).getElement(),true);
+    }
+    return true;
+  }
+  return false;
+}

@@ -1,6 +1,7 @@
 {
 switch (DOM.eventGetType(event)) {
 case Event.ONMOUSEDOWN:
+case Event.ONTOUCHSTART:
     if (!disabled && !readonly) {
       focus();
       feedbackPopup.show();
@@ -9,19 +10,28 @@ case Event.ONMOUSEDOWN:
       DOM.setCapture(getElement());
       DOM.eventPreventDefault(event);
       DOM.eventCancelBubble(event,true);
+      event.stopPropagation();
+      VConsole.log("Slider move start");
     }
   break;
 case Event.ONMOUSEMOVE:
+case Event.ONTOUCHMOVE:
 if (dragging) {
+  VConsole.log("Slider move");
   setValueByEvent(event,false);
   updateFeedbackPosition();
+  event.stopPropagation();
 }
 break;
+case Event.ONTOUCHEND:
+feedbackPopup.hide();
 case Event.ONMOUSEUP:
+VConsole.log("Slider move end");
 dragging=false;
 DOM.setElementProperty(handle,"className",CLASSNAME + "-handle");
 DOM.releaseCapture(getElement());
 setValueByEvent(event,true);
+event.stopPropagation();
 break;
 default :
 break;

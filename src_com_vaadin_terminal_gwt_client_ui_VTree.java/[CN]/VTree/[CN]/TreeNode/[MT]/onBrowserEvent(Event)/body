@@ -24,15 +24,20 @@
     showContextMenu(event);
   }
   if (dragMode != 0 || dropHandler != null) {
-    if (type == Event.ONMOUSEDOWN) {
-      if (nodeCaptionDiv.isOrHasChild(event.getTarget())) {
-        if (dragMode > 0 && event.getButton() == NativeEvent.BUTTON_LEFT) {
-          event.preventDefault();
+    if (type == Event.ONMOUSEDOWN || type == Event.ONTOUCHSTART) {
+      if (nodeCaptionDiv.isOrHasChild((Node)event.getEventTarget().cast())) {
+        if (dragMode > 0 && (type == Event.ONTOUCHSTART || event.getButton() == NativeEvent.BUTTON_LEFT)) {
           mouseDownEvent=event;
+          if (type == Event.ONMOUSEDOWN) {
+            event.preventDefault();
+          }
+ else {
+            event.stopPropagation();
+          }
         }
       }
     }
- else     if (type == Event.ONMOUSEMOVE || type == Event.ONMOUSEOUT) {
+ else     if (type == Event.ONMOUSEMOVE || type == Event.ONMOUSEOUT || type == Event.ONTOUCHMOVE) {
       if (mouseDownEvent != null) {
         VTransferable t=new VTransferable();
         t.setDragSource(VTree.this);

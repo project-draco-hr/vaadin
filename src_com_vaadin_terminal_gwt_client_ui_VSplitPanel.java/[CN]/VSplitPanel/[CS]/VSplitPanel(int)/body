@@ -13,5 +13,39 @@ setWidth(MIN_SIZE + "px");
 setHeight(MIN_SIZE + "px");
 constructDom();
 setOrientation(orientation);
-DOM.sinkEvents(getElement(),(Event.MOUSEEVENTS));
+sinkEvents(Event.MOUSEEVENTS);
+addDomHandler(new TouchCancelHandler(){
+public void onTouchCancel(TouchCancelEvent event){
+VConsole.log("TOUCH CANCEL");
+}
+}
+,TouchCancelEvent.getType());
+addDomHandler(new TouchStartHandler(){
+public void onTouchStart(TouchStartEvent event){
+Node target=event.getTouches().get(0).getTarget().cast();
+if (splitter.isOrHasChild(target)) {
+onMouseDown(Event.as(event.getNativeEvent()));
+}
+ else {
+getTouchScrollDelegate().onTouchStart(event);
+}
+}
+}
+,TouchStartEvent.getType());
+addDomHandler(new TouchMoveHandler(){
+public void onTouchMove(TouchMoveEvent event){
+if (resizing) {
+onMouseMove(Event.as(event.getNativeEvent()));
+}
+}
+}
+,TouchMoveEvent.getType());
+addDomHandler(new TouchEndHandler(){
+public void onTouchEnd(TouchEndEvent event){
+if (resizing) {
+onMouseUp(Event.as(event.getNativeEvent()));
+}
+}
+}
+,TouchEndEvent.getType());
 }

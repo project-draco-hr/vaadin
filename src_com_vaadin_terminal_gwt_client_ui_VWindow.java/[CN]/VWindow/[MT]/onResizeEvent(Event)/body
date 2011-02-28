@@ -2,6 +2,7 @@
   if (resizable) {
 switch (event.getTypeInt()) {
 case Event.ONMOUSEDOWN:
+case Event.ONTOUCHSTART:
       if (!isActive()) {
         bringToFront();
       }
@@ -10,29 +11,27 @@ case Event.ONMOUSEDOWN:
     DOM.setStyleAttribute(resizeBox,"visibility","hidden");
   }
 resizing=true;
-startX=event.getScreenX();
-startY=event.getScreenY();
+startX=Util.getTouchOrMouseClientX(event);
+startY=Util.getTouchOrMouseClientY(event);
 origW=getElement().getOffsetWidth();
 origH=getElement().getOffsetHeight();
 DOM.setCapture(getElement());
 event.preventDefault();
 break;
 case Event.ONMOUSEUP:
-showDraggingCurtain(false);
-if (BrowserInfo.get().isIE()) {
-DOM.setStyleAttribute(resizeBox,"visibility","");
-}
-resizing=false;
-DOM.releaseCapture(getElement());
+case Event.ONTOUCHEND:
 setSize(event,true);
-break;
+case Event.ONTOUCHCANCEL:
+DOM.releaseCapture(getElement());
 case Event.ONLOSECAPTURE:
 showDraggingCurtain(false);
 if (BrowserInfo.get().isIE()) {
 DOM.setStyleAttribute(resizeBox,"visibility","");
 }
 resizing=false;
+break;
 case Event.ONMOUSEMOVE:
+case Event.ONTOUCHMOVE:
 if (resizing) {
 centered=false;
 setSize(event,false);

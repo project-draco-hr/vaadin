@@ -1,101 +1,136 @@
 {
+  VConsole.log("Event of type" + event.getType());
   if (enabled) {
-    int type=event.getTypeInt();
-    Element targetTdOrTr=getEventTargetTdOrTr(event);
+    final int type=event.getTypeInt();
+    final Element targetTdOrTr=getEventTargetTdOrTr(event);
     if (type == Event.ONCONTEXTMENU) {
       showContextMenu(event);
       event.stopPropagation();
       return;
     }
-    if (targetTdOrTr != null) {
+    boolean targetCellOrRowFound=targetTdOrTr != null;
 switch (type) {
 case Event.ONDBLCLICK:
+      if (targetCellOrRowFound) {
         handleClickEvent(event,targetTdOrTr);
-      break;
+      }
+    break;
 case Event.ONMOUSEUP:
+  if (targetCellOrRowFound) {
     mDown=false;
-  handleClickEvent(event,targetTdOrTr);
-scrollBodyPanel.setFocus(true);
-if (event.getButton() == Event.BUTTON_LEFT && isSelectable()) {
-if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
-  toggleShiftSelection(false);
-  setRowFocus(this);
-}
- else if ((event.getCtrlKey() || event.getMetaKey()) && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
-  boolean wasSelected=isSelected();
-  toggleSelection();
-  setRowFocus(this);
-  selectionRangeStart=this;
-  if (wasSelected) {
-    removeRowFromUnsentSelectionRanges(this);
-  }
-}
- else if ((event.getCtrlKey() || event.getMetaKey() && selectMode == SELECT_MODE_SINGLE)) {
-  if (!isSelected() || (isSelected() && nullSelectionAllowed)) {
-    if (!isSelected()) {
-      deselectAll();
+    handleClickEvent(event,targetTdOrTr);
+    scrollBodyPanel.setFocus(true);
+    if (event.getButton() == Event.BUTTON_LEFT && isSelectable()) {
+      if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+        toggleShiftSelection(false);
+        setRowFocus(this);
+      }
+ else       if ((event.getCtrlKey() || event.getMetaKey()) && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+        boolean wasSelected=isSelected();
+        toggleSelection();
+        setRowFocus(this);
+        selectionRangeStart=this;
+        if (wasSelected) {
+          removeRowFromUnsentSelectionRanges(this);
+        }
+      }
+ else       if ((event.getCtrlKey() || event.getMetaKey() && selectMode == SELECT_MODE_SINGLE)) {
+        if (!isSelected() || (isSelected() && nullSelectionAllowed)) {
+          if (!isSelected()) {
+            deselectAll();
+          }
+          toggleSelection();
+          setRowFocus(this);
+        }
+      }
+ else       if (event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+        toggleShiftSelection(true);
+      }
+ else {
+        boolean currentlyJustThisRowSelected=selectedRowKeys.size() == 1 && selectedRowKeys.contains(getKey());
+        if (!currentlyJustThisRowSelected) {
+          if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
+            deselectAll();
+          }
+          toggleSelection();
+        }
+ else         if ((selectMode == SELECT_MODE_SINGLE || multiselectmode == MULTISELECT_MODE_SIMPLE) && nullSelectionAllowed) {
+          toggleSelection();
+        }
+        selectionRangeStart=this;
+        setRowFocus(this);
+      }
+      if (BrowserInfo.get().isIE()) {
+        ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",null);
+      }
+      sendSelectedRows();
     }
-    toggleSelection();
-    setRowFocus(this);
   }
+break;
+case Event.ONTOUCHEND:
+case Event.ONTOUCHCANCEL:
+if (touchStart != null) {
+Util.simulateClickFromTouchEvent(touchStart,this);
+touchStart=null;
 }
- else if (event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
-  toggleShiftSelection(true);
+if (contextTouchTimeout != null) {
+contextTouchTimeout.cancel();
+}
+break;
+case Event.ONTOUCHMOVE:
+if (isSignificantMove(event)) {
+if (dragmode != 0 && touchStart != null && (TouchScrollDelegate.getActiveScrollDelegate() == null)) {
+VConsole.log("Touch move, starting row drag...");
+startRowDrag(touchStart,type,targetTdOrTr);
+VConsole.log("...done.");
+}
+if (contextTouchTimeout != null) {
+contextTouchTimeout.cancel();
+}
+touchStart=null;
+}
+break;
+case Event.ONTOUCHSTART:
+touchStart=event;
+Touch touch=event.getChangedTouches().get(0);
+touchStartX=touch.getClientX();
+touchStartY=touch.getClientY();
+touchStart.preventDefault();
+if (dragmode != 0 || actionKeys != null) {
+new Timer(){
+@Override public void run(){
+TouchScrollDelegate activeScrollDelegate=TouchScrollDelegate.getActiveScrollDelegate();
+if (activeScrollDelegate != null && !activeScrollDelegate.isMoved()) {
+VConsole.log("Cancelled scrolling...");
+activeScrollDelegate.stopScrolling();
 }
  else {
-  boolean currentlyJustThisRowSelected=selectedRowKeys.size() == 1 && selectedRowKeys.contains(getKey());
-  if (!currentlyJustThisRowSelected) {
-    if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
-      deselectAll();
-    }
-    toggleSelection();
-  }
- else   if ((selectMode == SELECT_MODE_SINGLE || multiselectmode == MULTISELECT_MODE_SIMPLE) && nullSelectionAllowed) {
-    toggleSelection();
-  }
-  selectionRangeStart=this;
-  setRowFocus(this);
+touchStart=null;
 }
-if (BrowserInfo.get().isIE()) {
-  ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",null);
 }
-sendSelectedRows();
+}
+.schedule(TOUCHSCROLL_TIMEOUT);
+if (contextTouchTimeout == null && actionKeys != null) {
+contextTouchTimeout=new Timer(){
+@Override public void run(){
+VConsole.log("Timeout contextmenu...");
+if (touchStart != null) {
+showContextMenu(touchStart);
+touchStart=null;
+}
+}
+}
+;
+}
+contextTouchTimeout.cancel();
+contextTouchTimeout.schedule(TOUCH_CONTEXT_MENU_TIMEOUT);
 }
 break;
 case Event.ONMOUSEDOWN:
+if (targetCellOrRowFound) {
 setRowFocus(this);
-if (dragmode != 0 && event.getButton() == NativeEvent.BUTTON_LEFT) {
-mDown=true;
-VTransferable transferable=new VTransferable();
-transferable.setDragSource(VScrollTable.this);
-transferable.setData("itemId","" + rowKey);
-NodeList<TableCellElement> cells=rowElement.getCells();
-for (int i=0; i < cells.getLength(); i++) {
-if (cells.getItem(i).isOrHasChild(targetTdOrTr)) {
-HeaderCell headerCell=tHead.getHeaderCell(i);
-transferable.setData("propertyId",headerCell.cid);
-break;
-}
-}
-VDragEvent ev=VDragAndDropManager.get().startDrag(transferable,event,true);
-if (dragmode == DRAGMODE_MULTIROW && selectMode == SELECT_MODE_MULTI && selectedRowKeys.contains("" + rowKey)) {
-ev.createDragImage((Element)scrollBody.tBodyElement.cast(),true);
-Element dragImage=ev.getDragImage();
-int i=0;
-for (Iterator<Widget> iterator=scrollBody.iterator(); iterator.hasNext(); ) {
-VScrollTableRow next=(VScrollTableRow)iterator.next();
-Element child=(Element)dragImage.getChild(i++);
-if (!selectedRowKeys.contains("" + next.rowKey)) {
-child.getStyle().setVisibility(Visibility.HIDDEN);
-}
-}
-}
- else {
-ev.createDragImage(getElement(),true);
-}
-ensureFocus();
-event.preventDefault();
-event.stopPropagation();
+if (dragmode != 0 && (event.getButton() == NativeEvent.BUTTON_LEFT)) {
+startRowDrag(event,type,targetTdOrTr);
 }
  else if (event.getCtrlKey() || event.getShiftKey() || event.getMetaKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
 ensureFocus();
@@ -105,13 +140,15 @@ if (BrowserInfo.get().isIE()) {
 }
 event.stopPropagation();
 }
+}
 break;
 case Event.ONMOUSEOUT:
+if (targetCellOrRowFound) {
 mDown=false;
+}
 break;
 default :
 break;
-}
 }
 }
 super.onBrowserEvent(event);
