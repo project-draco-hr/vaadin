@@ -1,0 +1,25 @@
+{
+  Element rootElement=((Widget)parent).getElement();
+  while (element != null && element != rootElement) {
+    Paintable paintable=client.getPaintable(element);
+    if (paintable == null) {
+      String ownerPid=VCaption.getCaptionOwnerPid(element);
+      if (ownerPid != null) {
+        paintable=client.getPaintable(ownerPid);
+      }
+    }
+    if (paintable != null) {
+      while (element != null && element != rootElement) {
+        element=(Element)element.getParentElement();
+      }
+      if (element != rootElement) {
+        return null;
+      }
+ else {
+        return paintable;
+      }
+    }
+    element=(Element)element.getParentElement();
+  }
+  return null;
+}
