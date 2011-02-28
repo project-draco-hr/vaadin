@@ -13,12 +13,12 @@
   currentDrag.setCurrentGwtEvent(nativeEvent);
   updateDragImagePosition();
   Element targetElement=Element.as(nativeEvent.getEventTarget());
-  if (dragElement != null && dragElement.isOrHasChild(targetElement)) {
+  if (Util.isTouchEvent(nativeEvent) || (dragElement != null && dragElement.isOrHasChild(targetElement))) {
     String display=dragElement.getStyle().getDisplay();
     dragElement.getStyle().setDisplay(Display.NONE);
     try {
-      int x=nativeEvent.getClientX();
-      int y=nativeEvent.getClientY();
+      int x=Util.getTouchOrMouseClientX(nativeEvent);
+      int y=Util.getTouchOrMouseClientY(nativeEvent);
       targetElement=Util.getElementFromPoint(x,y);
       if (targetElement == null) {
         event.cancel();
@@ -31,6 +31,7 @@ case Event.ONMOUSEOVER:
 case Event.ONMOUSEOUT:
           return;
 case Event.ONMOUSEMOVE:
+case Event.ONTOUCHMOVE:
         VDropHandler findDragTarget=findDragTarget(targetElement);
       if (findDragTarget != currentDropHandler) {
         if (currentDropHandler != null) {
@@ -96,12 +97,14 @@ serverCallback=null;
 }
 break;
 case Event.ONMOUSEMOVE:
+case Event.ONTOUCHMOVE:
 if (currentDropHandler != null) {
 currentDropHandler.dragOver(currentDrag);
 }
 nativeEvent.preventDefault();
 break;
 case Event.ONMOUSEUP:
+case Event.ONTOUCHEND:
 endDrag();
 break;
 default :

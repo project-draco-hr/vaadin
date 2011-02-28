@@ -25,7 +25,8 @@
     }
   }
 ;
-  if (handleDragEvents && Event.as(startEvent).getTypeInt() == Event.ONMOUSEDOWN) {
+  final int eventType=Event.as(startEvent).getTypeInt();
+  if (handleDragEvents && (eventType == Event.ONMOUSEDOWN || eventType == Event.ONTOUCHSTART)) {
     deferredStartRegistration=Event.addNativePreviewHandler(new NativePreviewHandler(){
       public void onPreviewNativeEvent(      NativePreviewEvent event){
         int typeInt=event.getTypeInt();
@@ -52,6 +53,7 @@ if (Node.is(relatedEventTarget) && !dragElement.isOrHasChild(Node.as(relatedEven
 break;
 }
 case Event.ONMOUSEMOVE:
+case Event.ONTOUCHMOVE:
 if (deferredStartRegistration != null) {
 deferredStartRegistration.removeHandler();
 deferredStartRegistration=null;
