@@ -1,14 +1,12 @@
 {
-  if (itemId == null) {
+  if (itemId == null || items.remove(itemId) == null) {
     return false;
   }
-  if (items.remove(itemId) == null) {
+  if (internalRemoveItem(itemId)) {
+    fireContentsChange(-1);
+    return true;
+  }
+ else {
     return false;
   }
-  allItemIds.remove(itemId);
-  if (getFilteredItemIds() != null) {
-    getFilteredItemIds().remove(itemId);
-  }
-  fireContentsChange(-1);
-  return true;
 }

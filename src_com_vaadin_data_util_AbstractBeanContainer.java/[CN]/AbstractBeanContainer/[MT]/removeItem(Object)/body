@@ -1,10 +1,12 @@
 {
-  if (!allItemIds.remove(itemId)) {
+  Item item=getItem(itemId);
+  if (internalRemoveItem(itemId)) {
+    removeAllValueChangeListeners(item);
+    itemIdToItem.remove(itemId);
+    fireItemSetChange();
+    return true;
+  }
+ else {
     return false;
   }
-  removeAllValueChangeListeners(getItem(itemId));
-  itemIdToItem.remove(itemId);
-  getFilteredItemIds().remove(itemId);
-  fireItemSetChange();
-  return true;
 }
