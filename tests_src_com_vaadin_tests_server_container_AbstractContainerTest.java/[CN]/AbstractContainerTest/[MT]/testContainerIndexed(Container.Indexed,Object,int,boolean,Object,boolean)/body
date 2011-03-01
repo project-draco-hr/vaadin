@@ -20,9 +20,10 @@
     Assert.assertEquals(newLastId,container.lastItemId());
     Assert.assertEquals(newLastId,container.getIdByIndex(container.size() - 1));
     Assert.assertEquals(itemId,container.getIdByIndex(itemPosition + 2));
-    container.removeItem(addedId);
-    container.removeItem(newFirstId);
-    container.removeItem(newLastId);
+    Assert.assertTrue(container.removeItem(addedId));
+    Assert.assertTrue(container.removeItem(newFirstId));
+    Assert.assertTrue(container.removeItem(newLastId));
+    Assert.assertFalse("Removing non-existing item should indicate failure",container.removeItem(addedId));
   }
   if (testAddItemAtWithId) {
     container.addItemAt(itemPosition,newItemId);
@@ -30,7 +31,7 @@
     Assert.assertEquals(itemPosition + 1,container.indexOfId(itemId));
     Assert.assertEquals(newItemId,container.getIdByIndex(itemPosition));
     Assert.assertEquals(itemId,container.getIdByIndex(itemPosition + 1));
-    container.removeItem(newItemId);
+    Assert.assertTrue(container.removeItem(newItemId));
     Assert.assertFalse(container.containsId(newItemId));
     container.addItemAt(0,newItemId);
     Assert.assertEquals(0,container.indexOfId(newItemId));
@@ -38,7 +39,7 @@
     Assert.assertEquals(newItemId,container.firstItemId());
     Assert.assertEquals(newItemId,container.getIdByIndex(0));
     Assert.assertEquals(itemId,container.getIdByIndex(itemPosition + 1));
-    container.removeItem(newItemId);
+    Assert.assertTrue(container.removeItem(newItemId));
     Assert.assertFalse(container.containsId(newItemId));
     container.addItemAt(container.size(),newItemId);
     Assert.assertEquals(container.size() - 1,container.indexOfId(newItemId));
@@ -46,7 +47,7 @@
     Assert.assertEquals(newItemId,container.lastItemId());
     Assert.assertEquals(newItemId,container.getIdByIndex(container.size() - 1));
     Assert.assertEquals(itemId,container.getIdByIndex(itemPosition));
-    container.removeItem(newItemId);
+    Assert.assertTrue(container.removeItem(newItemId));
     Assert.assertFalse(container.containsId(newItemId));
   }
 }
