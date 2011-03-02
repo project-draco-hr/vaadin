@@ -1,14 +1,17 @@
 {
-  BeanItemContainer<ClassName> container=prepareContainer();
+  CONTAINERTYPE container=prepareContainer();
   ItemSetChangeListener listener=EasyMock.createStrictMock(ItemSetChangeListener.class);
-  if (expectChangeEvent) {
+  for (int i=0; i < numEventsExpected; ++i) {
     listener.containerItemSetChange(EasyMock.isA(ItemSetChangeEvent.class));
   }
   EasyMock.replay(listener);
-  container.addListener(listener);
+  ((ItemSetChangeNotifier)container).addListener(listener);
   performModification(container);
   EasyMock.verify(listener);
-  container.removeListener(listener);
+  ((ItemSetChangeNotifier)container).removeListener(listener);
+  if (reinitializeContainer) {
+    container=prepareContainer();
+  }
   performModification(container);
   EasyMock.verify(listener);
 }
