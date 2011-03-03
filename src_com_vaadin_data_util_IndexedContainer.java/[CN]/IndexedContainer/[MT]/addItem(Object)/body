@@ -1,16 +1,16 @@
 {
-  if (itemId == null || items.containsKey(itemId)) {
+  Item item=internalAddItemAtEnd(itemId,new IndexedContainerItem(itemId),false);
+  if (item == null) {
     return null;
   }
-  allItemIds.add(itemId);
-  Hashtable<Object,Object> t=new Hashtable<Object,Object>();
-  items.put(itemId,t);
-  addDefaultValues(t);
   if (getFilteredItemIds() != null) {
     if (passesFilters(itemId)) {
       getFilteredItemIds().add(itemId);
+      fireItemAdded(size() - 1,itemId,item);
     }
   }
-  fireContentsChange(allItemIds.size() - 1);
-  return new IndexedContainerItem(itemId);
+ else {
+    fireItemAdded(size() - 1,itemId,item);
+  }
+  return item;
 }

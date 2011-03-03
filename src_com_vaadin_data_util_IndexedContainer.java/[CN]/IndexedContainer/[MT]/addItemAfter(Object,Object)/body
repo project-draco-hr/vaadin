@@ -1,13 +1,10 @@
 {
-  if (previousItemId == null) {
-    return addItemAt(0,newItemId);
-  }
-  int index=-1;
-  if (previousItemId != null) {
-    index=1 + indexOfId(previousItemId);
-    if (index <= 0 || index > size()) {
-      return null;
+  Item item=internalAddItemAfter(previousItemId,newItemId,new IndexedContainerItem(newItemId));
+  if (item != null && getFilteredItemIds() == null) {
+    int position=indexOfId(newItemId);
+    if (position >= 0) {
+      fireItemAdded(position,newItemId,item);
     }
   }
-  return addItemAt(index,newItemId);
+  return item;
 }

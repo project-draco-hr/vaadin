@@ -1,23 +1,10 @@
 {
-  int internalIndex=-1;
-  if (getFilteredItemIds() == null) {
-    internalIndex=index;
+  Item item=internalAddItemAt(index,newItemId,new IndexedContainerItem(newItemId));
+  if (item != null && getFilteredItemIds() == null) {
+    int position=indexOfId(newItemId);
+    if (position >= 0) {
+      fireItemAdded(position,newItemId,item);
+    }
   }
- else   if (index == 0) {
-    internalIndex=0;
-  }
- else   if (index == size()) {
-    Object id=getIdByIndex(index - 1);
-    internalIndex=internalIndexOf(id) + 1;
-  }
- else   if (index > 0 && index < size()) {
-    Object id=getIdByIndex(index);
-    internalIndex=internalIndexOf(id);
-  }
-  if (internalIndex >= 0) {
-    return addItemAtInternalIndex(internalIndex,newItemId);
-  }
- else {
-    return null;
-  }
+  return item;
 }
