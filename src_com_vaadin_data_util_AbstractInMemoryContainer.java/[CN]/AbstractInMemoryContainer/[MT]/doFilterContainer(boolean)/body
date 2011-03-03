@@ -1,0 +1,22 @@
+{
+  if (!hasFilters) {
+    boolean changed=allItemIds.size() != getVisibleItemIds().size();
+    setFilteredItemIds(null);
+    return changed;
+  }
+  List<ITEMIDTYPE> originalFilteredItemIds=getFilteredItemIds();
+  if (originalFilteredItemIds == null) {
+    originalFilteredItemIds=Collections.emptyList();
+  }
+  setFilteredItemIds(new ListSet<ITEMIDTYPE>());
+  boolean equal=true;
+  Iterator<ITEMIDTYPE> origIt=originalFilteredItemIds.iterator();
+  for (final Iterator<ITEMIDTYPE> i=allItemIds.iterator(); i.hasNext(); ) {
+    final ITEMIDTYPE id=i.next();
+    if (passesFilters(id)) {
+      equal=equal && origIt.hasNext() && origIt.next() == id;
+      getFilteredItemIds().add(id);
+    }
+  }
+  return !equal || origIt.hasNext();
+}
