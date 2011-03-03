@@ -1,9 +1,12 @@
 {
+  int origSize=size();
   Item item=getItem(itemId);
   if (internalRemoveItem(itemId)) {
     removeAllValueChangeListeners(item);
     itemIdToItem.remove(itemId);
-    fireItemSetChange();
+    if (size() != origSize) {
+      fireItemSetChange();
+    }
     return true;
   }
  else {

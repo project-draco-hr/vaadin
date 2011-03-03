@@ -7,17 +7,19 @@
     }
     return false;
   }
-  if (getFilteredItemIds() == null) {
-    setFilteredItemIds(new ListSet<Object>());
+  List<Object> originalFilteredItemIds=getFilteredItemIds();
+  if (originalFilteredItemIds == null) {
+    originalFilteredItemIds=Collections.emptyList();
   }
- else {
-    getFilteredItemIds().clear();
-  }
+  setFilteredItemIds(new ListSet<Object>());
+  boolean equal=true;
+  Iterator<?> origIt=originalFilteredItemIds.iterator();
   for (final Iterator<?> i=allItemIds.iterator(); i.hasNext(); ) {
     final Object id=i.next();
     if (passesFilters(id)) {
+      equal=equal && origIt.hasNext() && origIt.next() == id;
       getFilteredItemIds().add(id);
     }
   }
-  return true;
+  return !equal || origIt.hasNext();
 }
