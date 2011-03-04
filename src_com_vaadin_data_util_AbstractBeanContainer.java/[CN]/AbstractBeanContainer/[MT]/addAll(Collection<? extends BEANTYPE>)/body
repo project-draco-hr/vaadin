@@ -1,10 +1,20 @@
 {
+  boolean modified=false;
   for (  BEANTYPE bean : collection) {
     if (bean == null || !getBeanType().isAssignableFrom(bean.getClass())) {
       continue;
     }
     IDTYPE itemId=resolveBeanId(bean);
-    internalAddItemAtEnd(itemId,createBeanItem(bean),false);
+    if (internalAddItemAtEnd(itemId,createBeanItem(bean),false) != null) {
+      modified=true;
+    }
   }
-  filterAll();
+  if (modified) {
+    if (getFilteredItemIds() != null) {
+      filterAll();
+    }
+ else {
+      fireItemSetChange();
+    }
+  }
 }
