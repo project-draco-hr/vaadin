@@ -1,6 +1,10 @@
 {
   itemIdToItem.put(itemId,item);
-  for (  Filter filter : getFilters()) {
-    addValueChangeListener(item,filter.propertyId);
+  for (  ItemFilter filter : getFilters()) {
+    for (    String propertyId : getContainerPropertyIds()) {
+      if (filter.appliesToProperty(propertyId)) {
+        addValueChangeListener(item,propertyId);
+      }
+    }
   }
 }
