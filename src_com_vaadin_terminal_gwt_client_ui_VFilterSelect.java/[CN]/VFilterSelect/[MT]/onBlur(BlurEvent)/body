@@ -1,9 +1,12 @@
 {
   if (BrowserInfo.get().isIE() && preventNextBlurEventInIE) {
     preventNextBlurEventInIE=false;
-    iePreventNextFocus=true;
-    tb.setFocus(true);
-    return;
+    Element focusedElement=Util.getIEFocusedElement();
+    if (getElement().isOrHasChild(focusedElement) || suggestionPopup.getElement().isOrHasChild(focusedElement)) {
+      iePreventNextFocus=true;
+      tb.setFocus(true);
+      return;
+    }
   }
   focused=false;
   if (!readonly) {
