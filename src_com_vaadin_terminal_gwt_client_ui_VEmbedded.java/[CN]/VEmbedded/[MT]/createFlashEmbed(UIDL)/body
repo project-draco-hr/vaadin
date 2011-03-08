@@ -1,0 +1,34 @@
+{
+  addStyleName(CLASSNAME + "-flash");
+  StringBuilder html=new StringBuilder();
+  html.append("<object ");
+  html.append("classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" ");
+  html.append("codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0\" ");
+  html.append("width=\"" + width + "\" ");
+  html.append("height=\"" + height + "\" ");
+  html.append("type=\"application/x-shockwave-flash\" ");
+  html.append(">");
+  Map<String,String> parameters=getParameters(uidl);
+  if (parameters.get("movie") == null) {
+    parameters.put("movie",getSrc(uidl,client));
+  }
+  for (  String name : parameters.keySet()) {
+    html.append("<param ");
+    html.append("name=\"" + escapeAttribute(name) + "\" ");
+    html.append("value=\"" + escapeAttribute(parameters.get(name)) + "\" ");
+    html.append("/>");
+  }
+  html.append("<embed ");
+  html.append("src=\"" + getSrc(uidl,client) + "\" ");
+  html.append("width=\"" + width + "\" ");
+  html.append("height=\"" + height + "\" ");
+  html.append("type=\"application/x-shockwave-flash\" ");
+  for (  String name : parameters.keySet()) {
+    html.append(escapeAttribute(name));
+    html.append("=");
+    html.append("\"" + escapeAttribute(parameters.get(name)) + "\"");
+  }
+  html.append("</embed>");
+  html.append("</object>");
+  return html.toString();
+}
