@@ -2,11 +2,30 @@
   addStyleName(CLASSNAME + "-flash");
   StringBuilder html=new StringBuilder();
   html.append("<object ");
-  html.append("classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" ");
-  html.append("codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0\" ");
+  if (uidl.hasAttribute("classid")) {
+    html.append("classid=\"" + escapeAttribute(uidl.getStringAttribute("classid")) + "\" ");
+  }
+ else {
+    html.append("classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" ");
+  }
+  if (uidl.hasAttribute("codebase")) {
+    html.append("codebase=\"" + escapeAttribute(uidl.getStringAttribute("codebase")) + "\" ");
+  }
+ else {
+    html.append("codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0\" ");
+  }
   html.append("width=\"" + width + "\" ");
   html.append("height=\"" + height + "\" ");
   html.append("type=\"application/x-shockwave-flash\" ");
+  if (uidl.hasAttribute("codetype")) {
+    html.append("codetype=\"" + uidl.getStringAttribute("codetype") + "\" ");
+  }
+  if (uidl.hasAttribute("standby")) {
+    html.append("standby=\"" + uidl.getStringAttribute("standby") + "\" ");
+  }
+  if (uidl.hasAttribute("archive")) {
+    html.append("archive=\"" + uidl.getStringAttribute("archive") + "\" ");
+  }
   html.append(">");
   Map<String,String> parameters=getParameters(uidl);
   if (parameters.get("movie") == null) {
