@@ -1,0 +1,30 @@
+{
+  iconTypeSelect=new ComboBox("Icon container");
+  iconTypeSelect.addItem(TYPE_EMBEDDED);
+  iconTypeSelect.addItem(TYPE_CAPTION);
+  iconTypeSelect.setImmediate(true);
+  iconTypeSelect.setNullSelectionAllowed(false);
+  iconTypeSelect.addListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      updateContainer();
+    }
+  }
+);
+  containerSelect=new ComboBox("Container");
+  for (  Class<? extends ComponentContainer> cc : VaadinClasses.getComponentContainersSupportingUnlimitedNumberOfComponents()) {
+    containerSelect.addItem(cc);
+  }
+  containerSelect.setImmediate(true);
+  containerSelect.addListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      updateContainer();
+    }
+  }
+);
+  addComponent(log);
+  addComponent(iconTypeSelect);
+  addComponent(containerSelect);
+  addComponent(container);
+  iconTypeSelect.setValue(TYPE_CAPTION);
+  containerSelect.setValue(VerticalLayout.class);
+}

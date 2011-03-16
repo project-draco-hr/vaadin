@@ -67,21 +67,7 @@
  else   if (uidl.hasAttribute("mimetype")) {
     final String mime=uidl.getStringAttribute("mimetype");
     if (mime.equals("application/x-shockwave-flash")) {
-      addStyleName(CLASSNAME + "-flash");
-      String html="<object " + "type=\"application/x-shockwave-flash\" " + "width=\"" + width + "\" height=\""+ height+ "\">";
-      Map<String,String> parameters=getParameters(uidl);
-      if (parameters.get("movie") == null) {
-        parameters.put("movie",getSrc(uidl,client));
-      }
-      for (      String name : parameters.keySet()) {
-        html+="<param name=\"" + escapeAttribute(name) + "\" value=\""+ escapeAttribute(parameters.get(name))+ "\"/>";
-      }
-      html+="<embed src=\"" + getSrc(uidl,client) + "\" width=\""+ width+ "\" height=\""+ height+ "\" "+ "type=\"application/x-shockwave-flash\" ";
-      for (      String name : parameters.keySet()) {
-        html+=escapeAttribute(name) + "=\"" + escapeAttribute(parameters.get(name))+ "\" ";
-      }
-      html+="></embed></object>";
-      setHTML(html);
+      setHTML(createFlashEmbed(uidl));
     }
  else     if (mime.equals("image/svg+xml")) {
       addStyleName(CLASSNAME + "-svg");
@@ -102,6 +88,21 @@
       }
       if (height != null) {
         obj.getStyle().setProperty("height","100%");
+      }
+      if (uidl.hasAttribute("classid")) {
+        obj.setAttribute("classid",uidl.getStringAttribute(escapeAttribute("classid")));
+      }
+      if (uidl.hasAttribute("codebase")) {
+        obj.setAttribute("codebase",uidl.getStringAttribute(escapeAttribute("codebase")));
+      }
+      if (uidl.hasAttribute("codetype")) {
+        obj.setAttribute("codetype",uidl.getStringAttribute(escapeAttribute("codetype")));
+      }
+      if (uidl.hasAttribute("archive")) {
+        obj.setAttribute("archive",uidl.getStringAttribute(escapeAttribute("archive")));
+      }
+      if (uidl.hasAttribute("standby")) {
+        obj.setAttribute("standby",uidl.getStringAttribute(escapeAttribute("standby")));
       }
       getElement().appendChild(obj);
     }
