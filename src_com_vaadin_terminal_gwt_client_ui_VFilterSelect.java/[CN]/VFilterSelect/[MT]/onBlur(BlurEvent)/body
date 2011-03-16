@@ -1,4 +1,13 @@
 {
+  if (BrowserInfo.get().isIE() && preventNextBlurEventInIE) {
+    preventNextBlurEventInIE=false;
+    Element focusedElement=Util.getIEFocusedElement();
+    if (getElement().isOrHasChild(focusedElement) || suggestionPopup.getElement().isOrHasChild(focusedElement)) {
+      iePreventNextFocus=true;
+      tb.setFocus(true);
+      return;
+    }
+  }
   focused=false;
   if (!readonly) {
     if (tabPressed) {
