@@ -1,0 +1,31 @@
+{
+  int negative=-1;
+  int zero=0;
+  int positive=1;
+  Item itemNegative=new PropertysetItem();
+  itemNegative.addItemProperty(PROPERTY1,new ObjectProperty<Integer>(negative,Integer.class));
+  Item itemZero=new PropertysetItem();
+  itemZero.addItemProperty(PROPERTY1,new ObjectProperty<Integer>(zero,Integer.class));
+  Item itemPositive=new PropertysetItem();
+  itemPositive.addItemProperty(PROPERTY1,new ObjectProperty<Integer>(positive,Integer.class));
+  Filter equalZero=new Equal(PROPERTY1,zero);
+  Assert.assertFalse(equalZero.passesFilter(null,itemNegative));
+  Assert.assertTrue(equalZero.passesFilter(null,itemZero));
+  Assert.assertFalse(equalZero.passesFilter(null,itemPositive));
+  Filter isPositive=new Greater(PROPERTY1,zero);
+  Assert.assertFalse(isPositive.passesFilter(null,itemNegative));
+  Assert.assertFalse(isPositive.passesFilter(null,itemZero));
+  Assert.assertTrue(isPositive.passesFilter(null,itemPositive));
+  Filter isNegative=new Less(PROPERTY1,zero);
+  Assert.assertTrue(isNegative.passesFilter(null,itemNegative));
+  Assert.assertFalse(isNegative.passesFilter(null,itemZero));
+  Assert.assertFalse(isNegative.passesFilter(null,itemPositive));
+  Filter isNonNegative=new GreaterOrEqual(PROPERTY1,zero);
+  Assert.assertFalse(isNonNegative.passesFilter(null,itemNegative));
+  Assert.assertTrue(isNonNegative.passesFilter(null,itemZero));
+  Assert.assertTrue(isNonNegative.passesFilter(null,itemPositive));
+  Filter isNonPositive=new LessOrEqual(PROPERTY1,zero);
+  Assert.assertTrue(isNonPositive.passesFilter(null,itemNegative));
+  Assert.assertTrue(isNonPositive.passesFilter(null,itemZero));
+  Assert.assertFalse(isNonPositive.passesFilter(null,itemPositive));
+}

@@ -1,0 +1,31 @@
+{
+  Date now=new Date();
+  Date earlier=new Date(now.getTime() - 1);
+  Date later=new Date(now.getTime() + 1);
+  Item itemEarlier=new PropertysetItem();
+  itemEarlier.addItemProperty(PROPERTY1,new ObjectProperty<Date>(earlier,Date.class));
+  Item itemNow=new PropertysetItem();
+  itemNow.addItemProperty(PROPERTY1,new ObjectProperty<Date>(now,Date.class));
+  Item itemLater=new PropertysetItem();
+  itemLater.addItemProperty(PROPERTY1,new ObjectProperty<Date>(later,Date.class));
+  Filter equalNow=new Equal(PROPERTY1,now);
+  Assert.assertFalse(equalNow.passesFilter(null,itemEarlier));
+  Assert.assertTrue(equalNow.passesFilter(null,itemNow));
+  Assert.assertFalse(equalNow.passesFilter(null,itemLater));
+  Filter after=new Greater(PROPERTY1,now);
+  Assert.assertFalse(after.passesFilter(null,itemEarlier));
+  Assert.assertFalse(after.passesFilter(null,itemNow));
+  Assert.assertTrue(after.passesFilter(null,itemLater));
+  Filter before=new Less(PROPERTY1,now);
+  Assert.assertTrue(before.passesFilter(null,itemEarlier));
+  Assert.assertFalse(before.passesFilter(null,itemNow));
+  Assert.assertFalse(before.passesFilter(null,itemLater));
+  Filter afterOrNow=new GreaterOrEqual(PROPERTY1,now);
+  Assert.assertFalse(afterOrNow.passesFilter(null,itemEarlier));
+  Assert.assertTrue(afterOrNow.passesFilter(null,itemNow));
+  Assert.assertTrue(afterOrNow.passesFilter(null,itemLater));
+  Filter beforeOrNow=new LessOrEqual(PROPERTY1,now);
+  Assert.assertTrue(beforeOrNow.passesFilter(null,itemEarlier));
+  Assert.assertTrue(beforeOrNow.passesFilter(null,itemNow));
+  Assert.assertFalse(beforeOrNow.passesFilter(null,itemLater));
+}
