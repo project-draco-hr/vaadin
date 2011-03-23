@@ -12,7 +12,19 @@
   final Server server=new Server();
   final Connector connector=new SelectChannelConnector();
   connector.setPort(port);
-  server.setConnectors(new Connector[]{connector});
+  if (serverArgs.containsKey("withssl")) {
+    final SslSocketConnector sslConnector=new SslSocketConnector();
+    sslConnector.setPort(8444);
+    sslConnector.setTruststore(KEYSTORE);
+    sslConnector.setTrustPassword("password");
+    sslConnector.setKeystore(KEYSTORE);
+    sslConnector.setKeyPassword("password");
+    sslConnector.setPassword("password");
+    server.setConnectors(new Connector[]{connector,sslConnector});
+  }
+ else {
+    server.setConnectors(new Connector[]{connector});
+  }
   final WebAppContext webappcontext=new WebAppContext();
   String path=DevelopmentServerLauncher.class.getPackage().getName().replace(".",File.separator);
   webappcontext.setDefaultsDescriptor(path + File.separator + "jetty-webdefault.xml");
