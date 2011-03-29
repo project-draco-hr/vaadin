@@ -4,20 +4,20 @@
   final Label rawOffsetLabel=new Label("n/a");
   rawOffsetLabel.setCaption("Browser raw offset");
   final Label diffLabel=new Label("n/a");
-  diffLabel.setCaption("Browser/server offset difference");
+  diffLabel.setCaption("Browser to Europe/Helsinki offset difference");
   final Label containsLabel=new Label("n/a");
-  containsLabel.setCaption("Browser TimeZones include server TimeZone");
+  containsLabel.setCaption("Browser could be in Helsinki");
   final Button update=new Button("Get TimeZone from browser",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
-      TimeZone serverTZ=Calendar.getInstance().getTimeZone();
-      int serverOffset=serverTZ.getOffset(new Date().getTime());
+      TimeZone hkiTZ=TimeZone.getTimeZone("Europe/Helsinki");
+      int hkiOffset=hkiTZ.getOffset(new Date().getTime());
       int browserOffset=getBrowser().getTimezoneOffset();
       int browserRawOffset=getBrowser().getRawTimezoneOffset();
       String[] tzs=TimeZone.getAvailableIDs(browserRawOffset);
-      boolean contains=Arrays.asList(tzs).contains(serverTZ.getID());
+      boolean contains=Arrays.asList(tzs).contains(hkiTZ.getID());
       offsetLabel.setValue(String.valueOf(browserOffset));
       rawOffsetLabel.setValue(String.valueOf(browserRawOffset));
-      diffLabel.setValue(String.valueOf(browserOffset - serverOffset));
+      diffLabel.setValue(String.valueOf(browserOffset - hkiOffset));
       containsLabel.setValue(contains ? "Yes" : "No");
     }
   }
