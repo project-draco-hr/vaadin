@@ -1,34 +1,15 @@
 {
   if (pageLength != 0 && options.size() > pageLength) {
-    int first=currentPage * pageLength;
-    int last=first + pageLength;
-    if (needNullSelectOption) {
-      if (currentPage > 0) {
-        first--;
-      }
-      last--;
+    int indexToEnsureInView=-1;
+    Object selection=getValue();
+    if (isScrollToSelectedItem() && !optionRequest && !isMultiSelect()&& selection != null) {
+      indexToEnsureInView=options.indexOf(selection);
     }
-    if (options.size() < last) {
-      last=options.size();
-    }
-    if (!optionRequest) {
-      if (!isMultiSelect()) {
-        Object selection=getValue();
-        if (selection != null) {
-          int index=options.indexOf(selection);
-          if (index != -1 && (index < first || index >= last)) {
-            int newPage=(index + (needNullSelectOption ? 1 : 0)) / pageLength;
-            currentPage=newPage;
-            return sanitetizeList(options,needNullSelectOption);
-          }
-        }
-      }
-    }
-    if (first >= last && currentPage > 0) {
-      currentPage-=(first - last + pageLength) / pageLength;
-      return sanitetizeList(options,needNullSelectOption);
-    }
-    return options.subList(first,last);
+    int size=options.size();
+    currentPage=adjustCurrentPage(currentPage,needNullSelectOption,indexToEnsureInView,size);
+    int first=getFirstItemIndexOnCurrentPage(needNullSelectOption,size);
+    int last=getLastItemIndexOnCurrentPage(needNullSelectOption,size,first);
+    return options.subList(first,last + 1);
   }
  else {
     return options;

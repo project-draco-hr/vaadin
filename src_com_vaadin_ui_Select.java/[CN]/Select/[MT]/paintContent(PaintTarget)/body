@@ -41,9 +41,14 @@
     currentPage=0;
     filterstring="";
   }
-  List<?> options=getFilteredOptions();
   boolean nullFilteredOut=filterstring != null && !"".equals(filterstring) && filteringMode != FILTERINGMODE_OFF;
-  options=sanitetizeList(options,needNullSelectOption && !nullFilteredOut);
+  boolean nullOptionVisible=needNullSelectOption && !nullFilteredOut;
+  List<?> options=getOptionsWithFilter(nullOptionVisible);
+  if (null == options) {
+    options=getFilteredOptions();
+    filteredSize=options.size();
+    options=sanitetizeList(options,nullOptionVisible);
+  }
   final boolean paintNullSelection=needNullSelectOption && currentPage == 0 && !nullFilteredOut;
   if (paintNullSelection) {
     target.startTag("so");
@@ -78,8 +83,8 @@
   }
   target.endTag("options");
   target.addAttribute("totalitems",size() + (needNullSelectOption ? 1 : 0));
-  if (filteredOptions != null) {
-    target.addAttribute("totalMatches",filteredOptions.size() + (needNullSelectOption && !nullFilteredOut ? 1 : 0));
+  if (filteredSize > 0 || nullOptionVisible) {
+    target.addAttribute("totalMatches",filteredSize + (nullOptionVisible ? 1 : 0));
   }
   target.addVariable(this,"selected",selectedKeys);
   if (isNewItemsAllowed()) {
