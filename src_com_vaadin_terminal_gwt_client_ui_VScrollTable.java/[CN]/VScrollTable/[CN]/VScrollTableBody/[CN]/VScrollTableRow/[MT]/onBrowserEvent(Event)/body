@@ -15,51 +15,50 @@ case Event.ONDBLCLICK:
 case Event.ONMOUSEUP:
     mDown=false;
   handleClickEvent(event,targetTdOrTr);
-scrollBodyPanel.setFocus(true);
 if (event.getButton() == Event.BUTTON_LEFT && isSelectable()) {
-if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
-  toggleShiftSelection(false);
-  setRowFocus(this);
-}
- else if ((event.getCtrlKey() || event.getMetaKey()) && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
-  boolean wasSelected=isSelected();
-  toggleSelection();
-  setRowFocus(this);
-  selectionRangeStart=this;
-  if (wasSelected) {
-    removeRowFromUnsentSelectionRanges(this);
-  }
-}
- else if ((event.getCtrlKey() || event.getMetaKey() && selectMode == SELECT_MODE_SINGLE)) {
-  if (!isSelected() || (isSelected() && nullSelectionAllowed)) {
-    if (!isSelected()) {
-      deselectAll();
-    }
-    toggleSelection();
+  if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+    toggleShiftSelection(false);
     setRowFocus(this);
   }
-}
- else if (event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
-  toggleShiftSelection(true);
-}
- else {
-  boolean currentlyJustThisRowSelected=selectedRowKeys.size() == 1 && selectedRowKeys.contains(getKey());
-  if (!currentlyJustThisRowSelected) {
-    if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
-      deselectAll();
+ else   if ((event.getCtrlKey() || event.getMetaKey()) && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+    boolean wasSelected=isSelected();
+    toggleSelection();
+    setRowFocus(this);
+    selectionRangeStart=this;
+    if (wasSelected) {
+      removeRowFromUnsentSelectionRanges(this);
     }
-    toggleSelection();
   }
- else   if ((selectMode == SELECT_MODE_SINGLE || multiselectmode == MULTISELECT_MODE_SIMPLE) && nullSelectionAllowed) {
-    toggleSelection();
+ else   if ((event.getCtrlKey() || event.getMetaKey() && selectMode == SELECT_MODE_SINGLE)) {
+    if (!isSelected() || (isSelected() && nullSelectionAllowed)) {
+      if (!isSelected()) {
+        deselectAll();
+      }
+      toggleSelection();
+      setRowFocus(this);
+    }
   }
-  selectionRangeStart=this;
-  setRowFocus(this);
-}
-if (BrowserInfo.get().isIE()) {
-  ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",null);
-}
-sendSelectedRows();
+ else   if (event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+    toggleShiftSelection(true);
+  }
+ else {
+    boolean currentlyJustThisRowSelected=selectedRowKeys.size() == 1 && selectedRowKeys.contains(getKey());
+    if (!currentlyJustThisRowSelected) {
+      if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
+        deselectAll();
+      }
+      toggleSelection();
+    }
+ else     if ((selectMode == SELECT_MODE_SINGLE || multiselectmode == MULTISELECT_MODE_SIMPLE) && nullSelectionAllowed) {
+      toggleSelection();
+    }
+    selectionRangeStart=this;
+    setRowFocus(this);
+  }
+  if (BrowserInfo.get().isIE()) {
+    ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",null);
+  }
+  sendSelectedRows();
 }
 break;
 case Event.ONMOUSEDOWN:
@@ -86,7 +85,7 @@ for (Iterator<Widget> iterator=scrollBody.iterator(); iterator.hasNext(); ) {
 VScrollTableRow next=(VScrollTableRow)iterator.next();
 Element child=(Element)dragImage.getChild(i++);
 if (!selectedRowKeys.contains("" + next.rowKey)) {
-child.getStyle().setVisibility(Visibility.HIDDEN);
+  child.getStyle().setVisibility(Visibility.HIDDEN);
 }
 }
 }
@@ -108,6 +107,34 @@ event.stopPropagation();
 break;
 case Event.ONMOUSEOUT:
 mDown=false;
+break;
+case Event.ONKEYDOWN:
+if (!enabled) {
+event.preventDefault();
+}
+ else {
+if (handleNavigation(event.getKeyCode(),event.getCtrlKey() || event.getMetaKey(),event.getShiftKey())) {
+navKeyDown=true;
+event.preventDefault();
+}
+startScrollingVelocityTimer();
+}
+break;
+case Event.ONKEYUP:
+int keyCode=event.getKeyCode();
+if (!isFocusable()) {
+cancelScrollingVelocityTimer();
+}
+ else if (isNavigationKey(keyCode)) {
+if (keyCode == getNavigationDownKey() || keyCode == getNavigationUpKey()) {
+if (!event.getShiftKey() && !event.getCtrlKey()) {
+instructServerToForgetPreviousSelections();
+}
+sendSelectedRows();
+}
+cancelScrollingVelocityTimer();
+navKeyDown=false;
+}
 break;
 default :
 break;
