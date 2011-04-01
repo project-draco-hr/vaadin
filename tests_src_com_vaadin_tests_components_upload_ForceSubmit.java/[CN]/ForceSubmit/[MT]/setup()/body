@@ -1,0 +1,28 @@
+{
+  final Upload u;
+  u=new Upload("Upload",this);
+  u.setButtonCaption(null);
+  addComponent(u);
+  u.addListener(new Upload.FinishedListener(){
+    public void uploadFinished(    FinishedEvent event){
+      String filename=event.getFilename();
+      long length=event.getLength();
+      getMainWindow().showNotification("Done. Filename : " + filename + " Lenght: "+ length);
+    }
+  }
+);
+  u.addListener(new Upload.FailedListener(){
+    public void uploadFailed(    FailedEvent event){
+      getMainWindow().showNotification("Failed. No file selected?");
+    }
+  }
+);
+  Button button=new Button("I'm an external button (not the uploads builtin), hit me to start upload.");
+  button.addListener(new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      u.submitUpload();
+    }
+  }
+);
+  addComponent(button);
+}
