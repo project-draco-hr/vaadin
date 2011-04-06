@@ -1,0 +1,19 @@
+{
+  if (!BrowserInfo.get().isGecko()) {
+    return;
+  }
+  NativeEvent event=keyPressEvent.getNativeEvent();
+  if (!enabled) {
+    event.preventDefault();
+  }
+ else {
+    int keyCode=event.getKeyCode();
+    if (keyCode == 0 && event.getCharCode() == ' ') {
+      keyCode=CHARCODE_SPACE;
+    }
+    if (handleNavigation(keyCode,event.getCtrlKey() || event.getMetaKey(),event.getShiftKey())) {
+      event.preventDefault();
+    }
+    startScrollingVelocityTimer();
+  }
+}

@@ -108,34 +108,6 @@ break;
 case Event.ONMOUSEOUT:
 mDown=false;
 break;
-case Event.ONKEYDOWN:
-if (!enabled) {
-event.preventDefault();
-}
- else {
-if (handleNavigation(event.getKeyCode(),event.getCtrlKey() || event.getMetaKey(),event.getShiftKey())) {
-navKeyDown=true;
-event.preventDefault();
-}
-startScrollingVelocityTimer();
-}
-break;
-case Event.ONKEYUP:
-int keyCode=event.getKeyCode();
-if (!isFocusable()) {
-cancelScrollingVelocityTimer();
-}
- else if (isNavigationKey(keyCode)) {
-if (keyCode == getNavigationDownKey() || keyCode == getNavigationUpKey()) {
-if (!event.getShiftKey() && !event.getCtrlKey()) {
-instructServerToForgetPreviousSelections();
-}
-sendSelectedRows();
-}
-cancelScrollingVelocityTimer();
-navKeyDown=false;
-}
-break;
 default :
 break;
 }
