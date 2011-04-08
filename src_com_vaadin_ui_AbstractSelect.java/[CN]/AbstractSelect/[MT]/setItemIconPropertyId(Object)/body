@@ -1,9 +1,15 @@
 {
-  if ((propertyId != null) && Resource.class.isAssignableFrom(getType(propertyId))) {
+  if (propertyId == null) {
+    itemIconPropertyId=null;
+  }
+ else   if (!getContainerPropertyIds().contains(propertyId)) {
+    throw new IllegalArgumentException("Property id not found in the container");
+  }
+ else   if (Resource.class.isAssignableFrom(getType(propertyId))) {
     itemIconPropertyId=propertyId;
   }
  else {
-    itemIconPropertyId=null;
+    throw new IllegalArgumentException("Property id must be assignable to Resource");
   }
   requestRepaint();
 }
