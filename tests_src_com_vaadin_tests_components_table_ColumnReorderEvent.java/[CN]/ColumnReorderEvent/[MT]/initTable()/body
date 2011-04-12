@@ -1,0 +1,31 @@
+{
+  final Table table=new Table();
+  table.setWidth("100%");
+  table.setImmediate(true);
+  IndexedContainer idx=new IndexedContainer();
+  idx.addContainerProperty("firstname",String.class,null);
+  idx.addContainerProperty("lastname",String.class,null);
+  Item i=idx.addItem(1);
+  i.getItemProperty("firstname").setValue("John");
+  i.getItemProperty("lastname").setValue("Johnson");
+  i=idx.addItem(2);
+  i.getItemProperty("firstname").setValue("Jane");
+  i.getItemProperty("lastname").setValue("Janeine");
+  for (int index=3; index < ROWS; index++) {
+    i=idx.addItem(index);
+    i.getItemProperty("firstname").setValue("Jane");
+    i.getItemProperty("lastname").setValue("Janeine");
+  }
+  idx.addContainerProperty("property",String.class,"foobar");
+  table.setContainerDataSource(idx);
+  table.setColumnHeader("firstname","FirstName");
+  table.setColumnHeader("lastname","LastName");
+  table.addListener(new Table.ColumnReorderListener(){
+    public void columnReorder(    com.vaadin.ui.Table.ColumnReorderEvent event){
+      order.setValue(aToString(table.getVisibleColumns()));
+    }
+  }
+);
+  table.setColumnReorderingAllowed(true);
+  return table;
+}
