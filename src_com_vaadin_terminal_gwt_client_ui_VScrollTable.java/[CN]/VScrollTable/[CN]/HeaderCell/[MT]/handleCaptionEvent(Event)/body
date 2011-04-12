@@ -1,16 +1,22 @@
 {
 switch (DOM.eventGetType(event)) {
+case Event.ONTOUCHSTART:
 case Event.ONMOUSEDOWN:
     if (columnReordering) {
+      if (event.getTypeInt() == Event.ONTOUCHSTART) {
+        event.stopPropagation();
+      }
       dragging=true;
       moved=false;
       colIndex=getColIndexByKey(cid);
       DOM.setCapture(getElement());
       headerX=tHead.getAbsoluteLeft();
-      DOM.eventPreventDefault(event);
+      event.preventDefault();
     }
   break;
 case Event.ONMOUSEUP:
+case Event.ONTOUCHEND:
+case Event.ONTOUCHCANCEL:
 if (columnReordering) {
   dragging=false;
   DOM.releaseCapture(getElement());
@@ -25,6 +31,10 @@ if (columnReordering) {
         reOrderColumn(cid,closestSlot);
       }
     }
+  }
+  if (Util.isTouchEvent(event)) {
+    event.preventDefault();
+    event.stopPropagation();
   }
 }
 if (!moved) {
@@ -44,16 +54,25 @@ if (sortable) {
   rowRequestHandler.run();
 }
 fireHeaderClickedEvent(event);
+if (Util.isTouchEvent(event)) {
+  event.preventDefault();
+  event.stopPropagation();
+}
 break;
 }
 break;
+case Event.ONTOUCHMOVE:
 case Event.ONMOUSEMOVE:
 if (dragging) {
+if (event.getTypeInt() == Event.ONTOUCHMOVE) {
+event.stopPropagation();
+}
 if (!moved) {
 createFloatingCopy();
 moved=true;
 }
-final int x=DOM.eventGetClientX(event) + DOM.getElementPropertyInt(tHead.hTableWrapper,"scrollLeft");
+final int clientX=Util.getTouchOrMouseClientX(event);
+final int x=clientX + tHead.hTableWrapper.getScrollLeft();
 int slotX=headerX;
 closestSlot=colIndex;
 int closestDistance=-1;
@@ -74,7 +93,7 @@ closestSlot=i;
 }
 }
 tHead.focusSlot(closestSlot);
-updateFloatingCopysPosition(DOM.eventGetClientX(event),-1);
+updateFloatingCopysPosition(clientX,-1);
 }
 break;
 default :
