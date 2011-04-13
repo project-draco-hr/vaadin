@@ -3,11 +3,24 @@
     handlerRegistration.removeHandler();
     handlerRegistration=null;
   }
+  boolean sendTransferableToServer=false;
   if (currentDropHandler != null) {
     if (doDrop) {
-      boolean sendTransferableToServer=currentDropHandler.drop(currentDrag);
+      sendTransferableToServer=currentDropHandler.drop(currentDrag);
       if (sendTransferableToServer) {
         doRequest(DragEventType.DROP);
+        final Paintable dragSource=currentDrag.getTransferable().getDragSource();
+        final ApplicationConnection client=currentDropHandler.getApplicationConnection();
+        Scheduler.get().scheduleFixedDelay(new RepeatingCommand(){
+          public boolean execute(){
+            if (!client.hasActiveRequest()) {
+              removeActiveSourceClassname(dragSource);
+              return false;
+            }
+            return true;
+          }
+        }
+,30);
       }
     }
  else {
@@ -17,6 +30,9 @@
     currentDropHandler=null;
     serverCallback=null;
     visitId=0;
+  }
+  if (!sendTransferableToServer && currentDrag != null) {
+    removeActiveSourceClassname(currentDrag.getTransferable().getDragSource());
   }
   currentDrag=null;
   clearDragElement();

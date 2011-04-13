@@ -6,6 +6,7 @@
   final Command startDrag=new Command(){
     public void execute(){
       isStarted=true;
+      addActiveDragSourceStyleName();
       VDropHandler dh=null;
       if (startEvent != null) {
         dh=findDragTarget(Element.as(currentDrag.getCurrentGwtEvent().getEventTarget()));
@@ -22,6 +23,10 @@
         }
       }
       Event.setCapture(RootPanel.getBodyElement());
+    }
+    private void addActiveDragSourceStyleName(){
+      Paintable dragSource=currentDrag.getTransferable().getDragSource();
+      ((Widget)dragSource).addStyleName(ACTIVE_DRAG_SOURCE_STYLENAME);
     }
   }
 ;
