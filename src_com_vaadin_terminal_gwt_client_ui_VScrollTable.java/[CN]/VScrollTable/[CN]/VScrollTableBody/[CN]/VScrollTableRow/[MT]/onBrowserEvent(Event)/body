@@ -62,6 +62,7 @@ if (event.getButton() == Event.BUTTON_LEFT && isSelectable()) {
 }
 break;
 case Event.ONMOUSEDOWN:
+ensureFocus();
 setRowFocus(this);
 if (dragmode != 0 && event.getButton() == NativeEvent.BUTTON_LEFT) {
 mDown=true;
@@ -85,19 +86,17 @@ for (Iterator<Widget> iterator=scrollBody.iterator(); iterator.hasNext(); ) {
 VScrollTableRow next=(VScrollTableRow)iterator.next();
 Element child=(Element)dragImage.getChild(i++);
 if (!selectedRowKeys.contains("" + next.rowKey)) {
-  child.getStyle().setVisibility(Visibility.HIDDEN);
+child.getStyle().setVisibility(Visibility.HIDDEN);
 }
 }
 }
  else {
 ev.createDragImage(getElement(),true);
 }
-ensureFocus();
 event.preventDefault();
 event.stopPropagation();
 }
  else if (event.getCtrlKey() || event.getShiftKey() || event.getMetaKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
-ensureFocus();
 event.preventDefault();
 if (BrowserInfo.get().isIE()) {
 ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",applyDisableTextSelectionIEHack());
@@ -107,12 +106,6 @@ event.stopPropagation();
 break;
 case Event.ONMOUSEOUT:
 mDown=false;
-break;
-case Event.ONFOCUS:
-onFocus(null);
-break;
-case Event.ONBLUR:
-onBlur(null);
 break;
 default :
 break;
