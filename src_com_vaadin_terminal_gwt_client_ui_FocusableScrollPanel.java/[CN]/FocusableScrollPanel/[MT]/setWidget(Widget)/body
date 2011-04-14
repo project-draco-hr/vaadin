@@ -1,0 +1,23 @@
+{
+  super.setWidget(w);
+  if (useFakeFocusElement()) {
+    if (focusElement.getParentElement() == null) {
+      Style style=focusElement.getStyle();
+      if (BrowserInfo.get().isIE6()) {
+        style.setOverflow(Overflow.HIDDEN);
+        style.setHeight(0,Unit.PX);
+        style.setWidth(0,Unit.PX);
+        style.setPosition(Position.ABSOLUTE);
+        addScrollHandler(this);
+      }
+ else {
+        style.setPosition(Position.FIXED);
+        style.setTop(0,Unit.PX);
+        style.setLeft(0,Unit.PX);
+      }
+      getElement().appendChild(focusElement);
+      DOM.sinkEvents((com.google.gwt.user.client.Element)focusElement.cast(),Event.FOCUSEVENTS);
+      getElement().setPropertyObject("tabIndex",null);
+    }
+  }
+}
