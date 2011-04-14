@@ -191,8 +191,17 @@
       if (SELECT_MODE_SINGLE == selectMode && selectedRowKeys.size() > 0) {
         String selectedRowKey=selectedRowKeys.iterator().next();
         if (selectedRowKey != null) {
-          setRowFocus(getRenderedRowByKey(selectedRowKey));
+          VScrollTableRow renderedRow=getRenderedRowByKey(selectedRowKey);
+          if (renderedRow == null) {
+            setRowFocus(scrollBody.getRowByRowIndex(firstRowInViewPort));
+          }
+ else {
+            setRowFocus(renderedRow);
+          }
         }
+      }
+ else {
+        setRowFocus(scrollBody.getRowByRowIndex(firstRowInViewPort));
       }
     }
   }
@@ -204,9 +213,6 @@
   HeaderCell oldSortedHeader=tHead.getHeaderCell(oldSortColumn);
   if (oldSortedHeader != null) {
     oldSortedHeader.resizeCaptionContainer();
-  }
-  if (sortColumn != null && !sortColumn.equals("null") && oldSortColumn != sortColumn) {
-    setRowFocus(scrollBody.getRowByRowIndex(firstRowInViewPort));
   }
   rendering=false;
   headerChangedDuringUpdate=false;
