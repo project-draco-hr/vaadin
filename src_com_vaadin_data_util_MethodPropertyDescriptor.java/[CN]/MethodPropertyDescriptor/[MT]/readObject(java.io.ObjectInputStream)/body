@@ -1,0 +1,31 @@
+{
+  in.defaultReadObject();
+  try {
+    @SuppressWarnings("unchecked") Class<BT> class1=(Class<BT>)SerializerHelper.readClass(in);
+    propertyType=class1;
+    String name=(String)in.readObject();
+    Class<?> writeMethodClass=SerializerHelper.readClass(in);
+    Class<?>[] paramTypes=SerializerHelper.readClassArray(in);
+    if (name != null) {
+      writeMethod=writeMethodClass.getMethod(name,paramTypes);
+    }
+ else {
+      writeMethod=null;
+    }
+    name=(String)in.readObject();
+    Class<?> readMethodClass=SerializerHelper.readClass(in);
+    paramTypes=SerializerHelper.readClassArray(in);
+    if (name != null) {
+      readMethod=readMethodClass.getMethod(name,paramTypes);
+    }
+ else {
+      readMethod=null;
+    }
+  }
+ catch (  SecurityException e) {
+    logger.log(Level.SEVERE,"Internal deserialization error",e);
+  }
+catch (  NoSuchMethodException e) {
+    logger.log(Level.SEVERE,"Internal deserialization error",e);
+  }
+}

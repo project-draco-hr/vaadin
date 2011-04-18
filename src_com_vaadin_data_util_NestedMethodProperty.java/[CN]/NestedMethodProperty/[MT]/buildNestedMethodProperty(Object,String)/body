@@ -1,0 +1,44 @@
+{
+  List<Method> getMethods=new ArrayList<Method>();
+  String lastSimplePropertyName=propertyName;
+  Class<?> lastClass=instance.getClass();
+  Class<?> propertyClass=instance.getClass();
+  String[] simplePropertyNames=propertyName.split("\\.");
+  if (propertyName.endsWith(".") || 0 == simplePropertyNames.length) {
+    throw new MethodException(null,"Invalid property name '" + propertyName + "'");
+  }
+  for (int i=0; i < simplePropertyNames.length; i++) {
+    String simplePropertyName=simplePropertyNames[i].trim();
+    if (simplePropertyName.length() > 0) {
+      lastSimplePropertyName=simplePropertyName;
+      lastClass=propertyClass;
+      try {
+        Method getter=initGetterMethod(simplePropertyName,propertyClass);
+        propertyClass=getter.getReturnType();
+        getMethods.add(getter);
+      }
+ catch (      final java.lang.NoSuchMethodException e) {
+        throw new MethodException(null,"Bean property '" + simplePropertyName + "' not found");
+      }
+    }
+ else {
+      throw new MethodException(null,"Empty or invalid bean property identifier in '" + propertyName + "'");
+    }
+  }
+  Method lastGetMethod=getMethods.get(getMethods.size() - 1);
+  Class<?> type=lastGetMethod.getReturnType();
+  Method setMethod=null;
+  try {
+    if (Character.isLowerCase(lastSimplePropertyName.charAt(0))) {
+      final char[] buf=lastSimplePropertyName.toCharArray();
+      buf[0]=Character.toUpperCase(buf[0]);
+      lastSimplePropertyName=new String(buf);
+    }
+    setMethod=lastClass.getMethod("set" + lastSimplePropertyName,new Class[]{type});
+  }
+ catch (  final NoSuchMethodException skipped) {
+  }
+  NestedMethodProperty<T> property=new NestedMethodProperty<T>((Class<T>)convertPrimitiveType(type),instance,propertyName,lastGetMethod,setMethod);
+  property.getMethods=getMethods;
+  return property;
+}

@@ -7,20 +7,10 @@
   }
   getMethod=null;
   try {
-    getMethod=beanClass.getMethod("get" + beanPropertyName,new Class[]{});
+    getMethod=initGetterMethod(beanPropertyName,beanClass);
   }
  catch (  final java.lang.NoSuchMethodException ignored) {
-    try {
-      getMethod=beanClass.getMethod("is" + beanPropertyName,new Class[]{});
-    }
- catch (    final java.lang.NoSuchMethodException ignoredAsWell) {
-      try {
-        getMethod=beanClass.getMethod("are" + beanPropertyName,new Class[]{});
-      }
- catch (      final java.lang.NoSuchMethodException e) {
-        throw new MethodException(this,"Bean property " + beanPropertyName + " can not be found");
-      }
-    }
+    throw new MethodException(this,"Bean property " + beanPropertyName + " can not be found");
   }
   Class<?> returnType=getMethod.getReturnType();
   setMethod=null;
@@ -30,31 +20,8 @@
  catch (  final java.lang.NoSuchMethodException skipped) {
   }
   if (returnType.isPrimitive()) {
-    if (returnType.equals(Boolean.TYPE)) {
-      type=(Class<T>)Boolean.class;
-    }
- else     if (returnType.equals(Integer.TYPE)) {
-      type=(Class<T>)Integer.class;
-    }
- else     if (returnType.equals(Float.TYPE)) {
-      type=(Class<T>)Float.class;
-    }
- else     if (returnType.equals(Double.TYPE)) {
-      type=(Class<T>)Double.class;
-    }
- else     if (returnType.equals(Byte.TYPE)) {
-      type=(Class<T>)Byte.class;
-    }
- else     if (returnType.equals(Character.TYPE)) {
-      type=(Class<T>)Character.class;
-    }
- else     if (returnType.equals(Short.TYPE)) {
-      type=(Class<T>)Short.class;
-    }
- else     if (returnType.equals(Long.TYPE)) {
-      type=(Class<T>)Long.class;
-    }
- else {
+    type=(Class<T>)convertPrimitiveType(returnType);
+    if (type.isPrimitive()) {
       throw new MethodException(this,"Bean property " + beanPropertyName + " getter return type must not be void");
     }
   }

@@ -1,0 +1,16 @@
+{
+  final LinkedHashMap<String,VaadinPropertyDescriptor<BT>> pdMap=new LinkedHashMap<String,VaadinPropertyDescriptor<BT>>();
+  try {
+    List<PropertyDescriptor> propertyDescriptors=getBeanPropertyDescriptor(beanClass);
+    for (    PropertyDescriptor pd : propertyDescriptors) {
+      final Method getMethod=pd.getReadMethod();
+      if ((getMethod != null) && getMethod.getDeclaringClass() != Object.class) {
+        VaadinPropertyDescriptor<BT> vaadinPropertyDescriptor=new MethodPropertyDescriptor(pd.getName(),pd.getPropertyType(),pd.getReadMethod(),pd.getWriteMethod());
+        pdMap.put(pd.getName(),vaadinPropertyDescriptor);
+      }
+    }
+  }
+ catch (  final java.beans.IntrospectionException ignored) {
+  }
+  return pdMap;
+}

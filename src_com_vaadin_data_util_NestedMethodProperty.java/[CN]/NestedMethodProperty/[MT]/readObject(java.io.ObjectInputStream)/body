@@ -1,0 +1,17 @@
+{
+  in.defaultReadObject();
+  getMethods=new ArrayList<Method>();
+  Class<?> propertyClass=getInstance().getClass();
+  String[] simplePropertyNames=propertyName.split("\\.");
+  for (int i=0; i < simplePropertyNames.length; i++) {
+    String simplePropertyName=simplePropertyNames[i].trim();
+    try {
+      Method getter=initGetterMethod(simplePropertyName,propertyClass);
+      propertyClass=getter.getReturnType();
+      getMethods.add(getter);
+    }
+ catch (    final java.lang.NoSuchMethodException e) {
+      throw new InvalidObjectException("Bean property '" + simplePropertyName + "' not found");
+    }
+  }
+}

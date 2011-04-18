@@ -1,15 +1,10 @@
 {
   this.bean=bean;
-  LinkedHashMap<String,PropertyDescriptor> pds=getPropertyDescriptors(bean.getClass());
+  LinkedHashMap<String,VaadinPropertyDescriptor<BT>> pds=getPropertyDescriptors((Class<BT>)bean.getClass());
   for (  Object id : propertyIds) {
-    PropertyDescriptor pd=pds.get(id);
+    VaadinPropertyDescriptor<BT> pd=pds.get(id);
     if (pd != null) {
-      final String name=pd.getName();
-      final Method getMethod=pd.getReadMethod();
-      final Method setMethod=pd.getWriteMethod();
-      final Class<?> type=pd.getPropertyType();
-      final Property p=new MethodProperty<Object>(type,bean,getMethod,setMethod);
-      addItemProperty(name,p);
+      addItemProperty(pd.getName(),pd.createProperty(bean));
     }
   }
 }

@@ -1,11 +1,12 @@
 {
   Method method=BeanItem.class.getDeclaredMethod("getPropertyDescriptors",Class.class);
   method.setAccessible(true);
-  LinkedHashMap<String,PropertyDescriptor> propertyDescriptors=(LinkedHashMap<String,PropertyDescriptor>)method.invoke(null,MySubInterface.class);
+  LinkedHashMap<String,VaadinPropertyDescriptor<Class>> propertyDescriptors=(LinkedHashMap<String,VaadinPropertyDescriptor<Class>>)method.invoke(null,MySubInterface.class);
   Assert.assertEquals(4,propertyDescriptors.size());
   Assert.assertTrue(propertyDescriptors.containsKey("sub"));
   Assert.assertTrue(propertyDescriptors.containsKey("super1"));
   Assert.assertTrue(propertyDescriptors.containsKey("super2"));
   Assert.assertTrue(propertyDescriptors.containsKey("override"));
-  Assert.assertNotNull(propertyDescriptors.get("override").getWriteMethod());
+  MethodProperty<?> property=(MethodProperty<?>)propertyDescriptors.get("override").createProperty(getClass());
+  Assert.assertFalse(property.isReadOnly());
 }

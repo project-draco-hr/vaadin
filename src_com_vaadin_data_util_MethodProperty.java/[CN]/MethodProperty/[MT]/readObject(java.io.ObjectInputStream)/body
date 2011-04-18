@@ -7,17 +7,19 @@
     setArgs=(Object[])in.readObject();
     getArgs=(Object[])in.readObject();
     String name=(String)in.readObject();
+    Class<T> setMethodClass=(Class<T>)SerializerHelper.readClass(in);
     Class<?>[] paramTypes=SerializerHelper.readClassArray(in);
     if (name != null) {
-      setMethod=instance.getClass().getMethod(name,paramTypes);
+      setMethod=setMethodClass.getMethod(name,paramTypes);
     }
  else {
       setMethod=null;
     }
     name=(String)in.readObject();
+    Class<T> getMethodClass=(Class<T>)SerializerHelper.readClass(in);
     paramTypes=SerializerHelper.readClassArray(in);
     if (name != null) {
-      getMethod=instance.getClass().getMethod(name,paramTypes);
+      getMethod=getMethodClass.getMethod(name,paramTypes);
     }
  else {
       getMethod=null;

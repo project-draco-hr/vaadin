@@ -1,0 +1,10 @@
+{
+  BeanContainer<String,Person> container=new BeanContainer<String,Person>(Person.class);
+  container.setBeanIdResolver(new PersonNameResolver());
+  container.addBean(new Person("John"));
+  Assert.assertEquals("John",container.getContainerProperty("John","name").getValue());
+  Assert.assertTrue(container.removeContainerProperty("name"));
+  Assert.assertNull(container.getContainerProperty("John","name"));
+  Assert.assertNotNull(container.getItem("John"));
+  Assert.assertNull(container.getItem("John").getItemProperty("name"));
+}

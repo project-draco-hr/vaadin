@@ -1,11 +1,13 @@
 {
+  VaadinPropertyDescriptor<BEANTYPE> pd=model.get(propertyId);
+  if (null == pd) {
+    throw new IllegalStateException("Property " + propertyId + " not found");
+  }
   try {
-    return (IDTYPE)getGetter().invoke(bean);
+    Property property=pd.createProperty(bean);
+    return (IDTYPE)property.getValue();
   }
- catch (  IllegalAccessException e) {
-    throw new IllegalArgumentException(e);
-  }
-catch (  InvocationTargetException e) {
+ catch (  MethodException e) {
     throw new IllegalArgumentException(e);
   }
 }
