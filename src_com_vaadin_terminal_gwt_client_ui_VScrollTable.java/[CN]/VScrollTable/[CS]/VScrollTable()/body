@@ -1,15 +1,16 @@
 {
   scrollBodyPanel.setStyleName(CLASSNAME + "-body-wrapper");
-  if (BrowserInfo.get().isGecko()) {
-    scrollBodyPanel.addKeyPressHandler(this);
-  }
- else {
-    scrollBodyPanel.addKeyDownHandler(this);
-  }
-  scrollBodyPanel.addKeyUpHandler(this);
   scrollBodyPanel.addFocusHandler(this);
   scrollBodyPanel.addBlurHandler(this);
   scrollBodyPanel.addScrollHandler(this);
+  scrollBodyPanel.setStyleName(CLASSNAME + "-body");
+  if (BrowserInfo.get().isGecko()) {
+    scrollBodyPanel.addKeyPressHandler(navKeyPressHandler);
+  }
+ else {
+    scrollBodyPanel.addKeyDownHandler(navKeyDownHandler);
+  }
+  scrollBodyPanel.addKeyUpHandler(navKeyUpHandler);
   scrollBodyPanel.sinkEvents(Event.TOUCHEVENTS);
   scrollBodyPanel.addDomHandler(new TouchStartHandler(){
     public void onTouchStart(    TouchStartEvent event){
@@ -17,7 +18,6 @@
     }
   }
 ,TouchStartEvent.getType());
-  scrollBodyPanel.setStyleName(CLASSNAME + "-body");
   setStyleName(CLASSNAME);
   add(tHead);
   add(scrollBodyPanel);

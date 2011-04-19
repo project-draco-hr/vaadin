@@ -18,7 +18,6 @@ case Event.ONMOUSEUP:
   if (targetCellOrRowFound) {
     mDown=false;
     handleClickEvent(event,targetTdOrTr);
-    scrollBodyPanel.setFocus(true);
     if (event.getButton() == Event.BUTTON_LEFT && isSelectable()) {
       if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
         toggleShiftSelection(false);
@@ -124,11 +123,11 @@ break;
 case Event.ONMOUSEDOWN:
 if (targetCellOrRowFound) {
 setRowFocus(this);
+ensureFocus();
 if (dragmode != 0 && (event.getButton() == NativeEvent.BUTTON_LEFT)) {
 startRowDrag(event,type,targetTdOrTr);
 }
  else if (event.getCtrlKey() || event.getShiftKey() || event.getMetaKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
-ensureFocus();
 event.preventDefault();
 if (BrowserInfo.get().isIE()) {
 ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",applyDisableTextSelectionIEHack());
