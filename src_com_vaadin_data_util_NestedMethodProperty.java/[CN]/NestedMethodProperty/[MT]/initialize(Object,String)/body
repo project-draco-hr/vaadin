@@ -5,7 +5,7 @@
   Class<?> propertyClass=instance.getClass();
   String[] simplePropertyNames=propertyName.split("\\.");
   if (propertyName.endsWith(".") || 0 == simplePropertyNames.length) {
-    throw new MethodException(null,"Invalid property name '" + propertyName + "'");
+    throw new IllegalArgumentException("Invalid property name '" + propertyName + "'");
   }
   for (int i=0; i < simplePropertyNames.length; i++) {
     String simplePropertyName=simplePropertyNames[i].trim();
@@ -13,16 +13,16 @@
       lastSimplePropertyName=simplePropertyName;
       lastClass=propertyClass;
       try {
-        Method getter=initGetterMethod(simplePropertyName,propertyClass);
+        Method getter=MethodProperty.initGetterMethod(simplePropertyName,propertyClass);
         propertyClass=getter.getReturnType();
         getMethods.add(getter);
       }
  catch (      final java.lang.NoSuchMethodException e) {
-        throw new MethodException(null,"Bean property '" + simplePropertyName + "' not found");
+        throw new IllegalArgumentException("Bean property '" + simplePropertyName + "' not found",e);
       }
     }
  else {
-      throw new MethodException(null,"Empty or invalid bean property identifier in '" + propertyName + "'");
+      throw new IllegalArgumentException("Empty or invalid bean property identifier in '" + propertyName + "'");
     }
   }
   Method lastGetMethod=getMethods.get(getMethods.size() - 1);
@@ -38,7 +38,8 @@
   }
  catch (  final NoSuchMethodException skipped) {
   }
-  NestedMethodProperty<T> property=new NestedMethodProperty<T>((Class<T>)convertPrimitiveType(type),instance,propertyName,lastGetMethod,setMethod);
-  property.getMethods=getMethods;
-  return property;
+  this.type=MethodProperty.convertPrimitiveType(type);
+  this.propertyName=propertyName;
+  this.getMethods=getMethods;
+  this.setMethod=setMethod;
 }
