@@ -1,0 +1,29 @@
+{
+  final Object[] inventory=new Object[]{new InventoryObject("root",0.0,true),new InventoryObject("+5 Quarterstaff (blessed)",3.5,false),new InventoryObject("+3 Elven Dagger (blessed)",0.2,false),new InventoryObject("+5 Helmet (greased)",1.5,false),new Object[]{new InventoryObject("Sack",0.2,true),new InventoryObject("Pick-Axe",2.5,false),new InventoryObject("Lock Pick",0.1,false),new InventoryObject("Tinning Kit",0.5,false),new InventoryObject("Potion of Healing (blessed)",0.7,false)},new Object[]{new InventoryObject("Bag of Holding",0.1,true),new InventoryObject("Magic Marker",0.05,false),new InventoryObject("Can of Grease (blessed)",0.5,false)},new Object[]{new InventoryObject("Chest",10.0,true),new InventoryObject("Scroll of Identify",0.1,false),new InventoryObject("Scroll of Genocide",0.1,false),new InventoryObject("Towel",0.3,false),new Object[]{new InventoryObject("Large Box",8.0,true),new InventoryObject("Figurine of Vaadin",0.4,false),new InventoryObject("Expensive Camera",1.5,false)},new InventoryObject("Tin Opener",0.02,false)}};
+  HierarchicalContainer container=new HierarchicalContainer();
+  new Object(){
+    public void put(    Object[] data,    Object parent,    HierarchicalContainer container){
+      for (int i=1; i < data.length; i++) {
+        BeanItem<InventoryObject> item;
+        if (data[i].getClass() == InventoryObject.class) {
+          InventoryObject object=(InventoryObject)data[i];
+          item=new BeanItem<InventoryObject>(object);
+          container.addItem(item);
+          container.setParent(item,parent);
+          container.setChildrenAllowed(item,false);
+        }
+ else {
+          Object[] sub=(Object[])data[i];
+          InventoryObject object=(InventoryObject)sub[0];
+          item=new BeanItem<InventoryObject>(object);
+          container.addItem(item);
+          container.setParent(item,parent);
+          put(sub,item,container);
+        }
+        inventoryStore.put(item.getBean().getName(),item.getBean());
+      }
+    }
+  }
+.put(inventory,null,container);
+  return container;
+}
