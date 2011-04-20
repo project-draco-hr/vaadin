@@ -1,5 +1,5 @@
 {
-  if (changingVariables) {
+  if (changingVariables && !textChangeEventPending) {
     if (newValue == null && lastKnownTextContent != null && !lastKnownTextContent.equals(getNullRepresentation())) {
       lastKnownTextContent=getNullRepresentation();
       textChangeEventPending=true;
@@ -8,9 +8,7 @@
       lastKnownTextContent=newValue.toString();
       textChangeEventPending=true;
     }
-    if (textChangeEventPending) {
-      firePendingTextChangeEvent();
-    }
+    firePendingTextChangeEvent();
   }
   super.setInternalValue(newValue);
 }
