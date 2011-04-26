@@ -16,9 +16,10 @@
     client.updateVariable(id,"width",w,false);
     client.updateVariable(id,"height",h,immediate);
   }
-  if (client != null) {
-    client.handleComponentRelativeSize((Widget)layout);
-    client.runDescendentsLayout((HasWidgets)layout);
+  if (updateVariables || !resizeLazy) {
+    updateContentsSize();
   }
-  Util.runWebkitOverflowAutoFix(contentPanel.getElement());
+ else {
+    delayedContentsSizeUpdater.trigger();
+  }
 }

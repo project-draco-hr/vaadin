@@ -15,7 +15,34 @@
     }
   }
 );
+  resizeListenerCheckBox=new CheckBox("Resize listener");
+  resizeListenerCheckBox.setImmediate(true);
+  resizeListenerCheckBox.addListener(new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      if (resizeListenerCheckBox.booleanValue()) {
+        subWindow.addListener(resizeListener);
+        mainWindow.addListener(resizeListener);
+      }
+ else {
+        subWindow.removeListener(resizeListener);
+        mainWindow.removeListener(resizeListener);
+      }
+    }
+  }
+);
+  immediateCheckBox=new CheckBox("Windows immediate");
+  immediateCheckBox.setImmediate(true);
+  immediateCheckBox.addListener(new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      mainWindow.setImmediate(immediateCheckBox.booleanValue());
+      subWindow.setImmediate(immediateCheckBox.booleanValue());
+    }
+  }
+);
   mainWindow.addComponent(lazyMode);
+  mainWindow.addComponent(resizeListenerCheckBox);
+  mainWindow.addComponent(immediateCheckBox);
+  mainWindow.addComponent(log);
   mainWindow.addComponent(new Label("<br/><br/>",Label.CONTENT_XHTML));
   mainWindow.addComponent(new Label(LoremIpsum.get(10000)));
   setLazy(false);
