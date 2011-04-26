@@ -1,7 +1,7 @@
 {
   startRequest();
-  final String rd=uidlSecurityKey + VAR_BURST_SEPARATOR + requestData;
-  VConsole.log("Making UIDL Request with params: " + rd);
+  final String payload=uidlSecurityKey + VAR_BURST_SEPARATOR + requestData;
+  VConsole.log("Making UIDL Request with params: " + payload);
   String uri;
   if (configuration.usePortletURLs()) {
     uri=configuration.getPortletUidlURLBase();
@@ -15,79 +15,5 @@
   if (windowName != null && windowName.length() > 0) {
     uri=addGetParameters(uri,"windowName=" + windowName);
   }
-  if (!forceSync) {
-    final RequestBuilder rb=new RequestBuilder(RequestBuilder.POST,uri);
-    rb.setHeader("Content-Type","text/plain;charset=utf-8");
-    try {
-      rb.sendRequest(rd,new RequestCallback(){
-        public void onError(        Request request,        Throwable exception){
-          showCommunicationError(exception.getMessage());
-          endRequest();
-          if (!applicationRunning) {
-            ApplicationConfiguration.startNextApplication();
-          }
-        }
-        public void onResponseReceived(        Request request,        Response response){
-          VConsole.log("Server visit took " + String.valueOf((new Date()).getTime() - requestStartTime.getTime()) + "ms");
-          int statusCode=response.getStatusCode();
-switch (statusCode) {
-case 0:
-            showCommunicationError("Invalid status code 0 (server down?)");
-          endRequest();
-        return;
-case 401:
-      showAuthenticationError("");
-    endRequest();
-  return;
-case 503:
-int delay=Integer.parseInt(response.getHeader("Retry-After"));
-VConsole.log("503, retrying in " + delay + "msec");
-(new Timer(){
-@Override public void run(){
-activeRequests--;
-makeUidlRequest(requestData,extraParams,forceSync);
-}
-}
-).schedule(delay);
-return;
-}
-if ((statusCode / 100) == 4) {
-showCommunicationError("UIDL could not be read from server. Check servlets mappings. Error code: " + statusCode);
-endRequest();
-return;
-}
-final Date start=new Date();
-final String jsonText=response.getText().substring(9,response.getText().length() - 1);
-final ValueMap json;
-try {
-json=parseJSONResponse(jsonText);
-}
- catch (final Exception e) {
-endRequest();
-showCommunicationError(e.getMessage() + " - Original JSON-text:" + jsonText);
-return;
-}
-VConsole.log("JSON parsing took " + (new Date().getTime() - start.getTime()) + "ms");
-if (applicationRunning) {
-handleReceivedJSONMessage(start,jsonText,json);
-}
- else {
-applicationRunning=true;
-handleWhenCSSLoaded(jsonText,json);
-ApplicationConfiguration.startNextApplication();
-}
-}
-}
-);
-}
- catch (RequestException e) {
-VConsole.error(e);
-endRequest();
-}
-}
- else {
-SynchronousXHR syncXHR=(SynchronousXHR)SynchronousXHR.create();
-syncXHR.synchronousPost(uri + "&" + PARAM_UNLOADBURST+ "=1",rd);
-endRequest();
-}
+  doUidlRequest(uri,payload,forceSync);
 }
