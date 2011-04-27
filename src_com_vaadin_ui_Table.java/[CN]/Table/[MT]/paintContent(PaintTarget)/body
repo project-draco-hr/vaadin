@@ -73,7 +73,7 @@
   if (colheads) {
     target.addAttribute("colheaders",true);
   }
-  if (getRowHeaderMode() != ROW_HEADER_MODE_HIDDEN) {
+  if (rowHeadersAreEnabled()) {
     target.addAttribute("rowheaders",true);
   }
   target.addAttribute("colfooters",columnFootersVisible);
@@ -196,6 +196,12 @@
     target.addVariable(this,"collapsedcolumns",collapsedkeys);
   }
   target.startTag("visiblecolumns");
+  if (rowHeadersAreEnabled()) {
+    target.startTag("column");
+    target.addAttribute("cid",ROW_HEADER_COLUMN_ID);
+    paintColumnWidth(target,MAGIC_ROW_HEADER_ID);
+    target.endTag("column");
+  }
   int i=0;
   for (final Iterator<Object> it=visibleColumns.iterator(); it.hasNext(); i++) {
     final Object columnId=it.next();
@@ -220,14 +226,7 @@
       if (!ALIGN_LEFT.equals(getColumnAlignment(columnId))) {
         target.addAttribute("align",getColumnAlignment(columnId));
       }
-      if (columnWidths.containsKey(columnId)) {
-        if (getColumnWidth(columnId) > -1) {
-          target.addAttribute("width",String.valueOf(getColumnWidth(columnId)));
-        }
- else {
-          target.addAttribute("er",getColumnExpandRatio(columnId));
-        }
-      }
+      paintColumnWidth(target,columnId);
       target.endTag("column");
     }
   }
