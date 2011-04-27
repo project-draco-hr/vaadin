@@ -47,8 +47,13 @@
       final Object itemId=itemIdMapper.get(st.nextToken());
       final Action action=(Action)actionMapper.get(st.nextToken());
       if (action != null && containsId(itemId) && actionHandlers != null) {
-        for (final Iterator<Action.Handler> i=actionHandlers.iterator(); i.hasNext(); ) {
-          i.next().handleAction(action,this,itemId);
+        for (        Handler ah : actionHandlers) {
+          ah.handleAction(action,this,itemId);
+        }
+      }
+ else       if (action != null && actionHandlers != null && itemId == null) {
+        for (        Handler ah : actionHandlers) {
+          ah.handleAction(action,this,null);
         }
       }
     }
