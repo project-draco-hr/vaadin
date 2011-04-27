@@ -77,6 +77,21 @@
     target.addAttribute("rowheaders",true);
   }
   target.addAttribute("colfooters",columnFootersVisible);
+  final Set<Action> actionSet=new LinkedHashSet<Action>();
+  if (actionHandlers != null) {
+    final ArrayList<String> keys=new ArrayList<String>();
+    for (final Iterator<Handler> ahi=actionHandlers.iterator(); ahi.hasNext(); ) {
+      final Action[] aa=(ahi.next()).getActions(null,this);
+      if (aa != null) {
+        for (int ai=0; ai < aa.length; ai++) {
+          final String key=actionMapper.key(aa[ai]);
+          actionSet.add(aa[ai]);
+          keys.add(key);
+        }
+      }
+    }
+    target.addAttribute("alb",keys.toArray());
+  }
   final Collection<?> sortables=getSortableContainerPropertyIds();
   final ArrayList<String> visibleColOrder=new ArrayList<String>();
   for (final Iterator<Object> it=visibleColumns.iterator(); it.hasNext(); ) {
@@ -86,7 +101,6 @@
     }
   }
   target.addAttribute("vcolorder",visibleColOrder.toArray());
-  final Set<Action> actionSet=new LinkedHashSet<Action>();
   final boolean selectable=isSelectable();
   final boolean[] iscomponent=new boolean[visibleColumns.size()];
   int iscomponentIndex=0;
