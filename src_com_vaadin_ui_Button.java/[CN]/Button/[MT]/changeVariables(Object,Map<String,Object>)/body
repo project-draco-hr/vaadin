@@ -6,12 +6,22 @@
     if (isSwitchMode()) {
       if (newValue != null && !newValue.equals(oldValue) && !isReadOnly()) {
         setValue(newValue);
-        fireClick(MouseEventDetails.deSerialize((String)variables.get("mousedetails")));
+        if (variables.containsKey("mousedetails")) {
+          fireClick(MouseEventDetails.deSerialize((String)variables.get("mousedetails")));
+        }
+ else {
+          fireClick();
+        }
       }
     }
  else {
       if (newValue.booleanValue()) {
-        fireClick(MouseEventDetails.deSerialize((String)variables.get("mousedetails")));
+        if (variables.containsKey("mousedetails")) {
+          fireClick(MouseEventDetails.deSerialize((String)variables.get("mousedetails")));
+        }
+ else {
+          fireClick();
+        }
       }
       if (null == oldValue || oldValue.booleanValue()) {
         setValue(Boolean.FALSE);
