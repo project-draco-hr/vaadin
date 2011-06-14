@@ -1,0 +1,23 @@
+{
+  HierarchicalContainer c=new HierarchicalContainer();
+  c.addItem("root");
+  assertEquals(false,c.hasChildren("root"));
+  c.addItem("child");
+  c.setParent("child","root");
+  assertEquals(true,c.hasChildren("root"));
+  c.addContainerFilter(new Filter(){
+    public boolean passesFilter(    Object itemId,    Item item) throws UnsupportedOperationException {
+      return true;
+    }
+    public boolean appliesToProperty(    Object propertyId){
+      return true;
+    }
+  }
+);
+  c.removeItem("child");
+  assertFalse(c.containsId("child"));
+  assertNull(c.getChildren("root"));
+  assertNull(c.getChildren("child"));
+  assertFalse(c.hasChildren("child"));
+  assertFalse(c.hasChildren("root"));
+}
