@@ -2,163 +2,46 @@
   if (getParent() == null) {
     return;
   }
-  if (isContentRefreshesEnabled) {
-    HashSet<Property> oldListenedProperties=listenedProperties;
-    HashSet<Component> oldVisibleComponents=visibleComponents;
-    listenedProperties=new HashSet<Property>();
-    visibleComponents=new HashSet<Component>();
-    final Object[] colids=getVisibleColumns();
-    final int cols=colids.length;
-    final int pagelen=getPageLength();
-    int firstIndex=getCurrentPageFirstItemIndex();
-    int rows, totalRows;
-    rows=totalRows=size();
-    if (rows > 0 && firstIndex >= 0) {
-      rows-=firstIndex;
-    }
-    if (pagelen > 0 && pagelen < rows) {
-      rows=pagelen;
-    }
-    if (lastToBeRenderedInClient - firstToBeRenderedInClient > 0) {
-      rows=lastToBeRenderedInClient - firstToBeRenderedInClient + 1;
-    }
-    Object id;
-    if (firstToBeRenderedInClient >= 0) {
-      if (firstToBeRenderedInClient < totalRows) {
-        firstIndex=firstToBeRenderedInClient;
-      }
- else {
-        firstIndex=totalRows - 1;
-      }
-    }
- else {
-      firstToBeRenderedInClient=firstIndex;
-    }
-    if (totalRows > 0) {
-      if (rows + firstIndex > totalRows) {
-        rows=totalRows - firstIndex;
-      }
-    }
- else {
-      rows=0;
-    }
-    Object[][] cells=new Object[cols + CELL_FIRSTCOL][rows];
-    if (rows == 0) {
-      pageBuffer=cells;
-      unregisterPropertiesAndComponents(oldListenedProperties,oldVisibleComponents);
-      requestRepaint();
-      return;
-    }
-    if (items instanceof Container.Indexed) {
-      id=getIdByIndex(firstIndex);
-    }
- else {
-      id=firstItemId();
-      for (int i=0; i < firstIndex; i++) {
-        id=nextItemId(id);
-      }
-    }
-    final int headmode=getRowHeaderMode();
-    final boolean[] iscomponent=new boolean[cols];
-    for (int i=0; i < cols; i++) {
-      iscomponent[i]=columnGenerators.containsKey(colids[i]) || Component.class.isAssignableFrom(getType(colids[i]));
-    }
-    int firstIndexNotInCache;
-    if (pageBuffer != null && pageBuffer[CELL_ITEMID].length > 0) {
-      firstIndexNotInCache=pageBufferFirstIndex + pageBuffer[CELL_ITEMID].length;
-    }
- else {
-      firstIndexNotInCache=-1;
-    }
-    int filledRows=0;
-    for (int i=0; i < rows && id != null; i++) {
-      cells[CELL_ITEMID][i]=id;
-      cells[CELL_KEY][i]=itemIdMapper.key(id);
-      if (headmode != ROW_HEADER_MODE_HIDDEN) {
-switch (headmode) {
-case ROW_HEADER_MODE_INDEX:
-          cells[CELL_HEADER][i]=String.valueOf(i + firstIndex + 1);
-        break;
-default :
-      cells[CELL_HEADER][i]=getItemCaption(id);
+  if (!isContentRefreshesEnabled) {
+    return;
   }
-  cells[CELL_ICON][i]=getItemIcon(id);
-}
-if (cols > 0) {
-  for (int j=0; j < cols; j++) {
-    if (isColumnCollapsed(colids[j])) {
-      continue;
-    }
-    Property p=null;
-    Object value="";
-    boolean isGenerated=columnGenerators.containsKey(colids[j]);
-    if (!isGenerated) {
-      p=getContainerProperty(id,colids[j]);
-    }
-    int index=firstIndex + i;
-    if (p != null || isGenerated) {
-      if (index < firstIndexNotInCache && index >= pageBufferFirstIndex) {
-        int indexInOldBuffer=index - pageBufferFirstIndex;
-        value=pageBuffer[CELL_FIRSTCOL + j][indexInOldBuffer];
-        if (!isGenerated && iscomponent[j] || !(value instanceof Component)) {
-          listenProperty(p,oldListenedProperties);
-        }
-      }
- else {
-        if (isGenerated) {
-          ColumnGenerator cg=columnGenerators.get(colids[j]);
-          value=cg.generateCell(this,id,colids[j]);
-        }
- else         if (iscomponent[j]) {
-          value=p.getValue();
-          listenProperty(p,oldListenedProperties);
-        }
- else         if (p != null) {
-          value=getPropertyValue(id,colids[j],p);
-          if (!(value instanceof Component)) {
-            listenProperty(p,oldListenedProperties);
-          }
-        }
- else {
-          value=getPropertyValue(id,colids[j],null);
-        }
-      }
-    }
-    if (value instanceof Component) {
-      if (oldVisibleComponents == null || !oldVisibleComponents.contains(value)) {
-        ((Component)value).setParent(this);
-      }
-      visibleComponents.add((Component)value);
-    }
-    cells[CELL_FIRSTCOL + j][i]=value;
+  listenedProperties=new HashSet<Property>();
+  visibleComponents=new HashSet<Component>();
+  final int pagelen=getPageLength();
+  int firstIndex=getCurrentPageFirstItemIndex();
+  int rows, totalRows;
+  rows=totalRows=size();
+  if (rows > 0 && firstIndex >= 0) {
+    rows-=firstIndex;
   }
-}
-if (items instanceof Container.Indexed) {
-  int index=firstIndex + i + 1;
-  if (index < totalRows) {
-    id=getIdByIndex(index);
+  if (pagelen > 0 && pagelen < rows) {
+    rows=pagelen;
+  }
+  if (lastToBeRenderedInClient - firstToBeRenderedInClient > 0) {
+    rows=lastToBeRenderedInClient - firstToBeRenderedInClient + 1;
+  }
+  if (firstToBeRenderedInClient >= 0) {
+    if (firstToBeRenderedInClient < totalRows) {
+      firstIndex=firstToBeRenderedInClient;
+    }
+ else {
+      firstIndex=totalRows - 1;
+    }
   }
  else {
-    id=null;
+    firstToBeRenderedInClient=firstIndex;
   }
-}
+  if (totalRows > 0) {
+    if (rows + firstIndex > totalRows) {
+      rows=totalRows - firstIndex;
+    }
+  }
  else {
-  id=nextItemId(id);
-}
-filledRows++;
-}
-if (filledRows != cells[0].length) {
-final Object[][] temp=new Object[cells.length][filledRows];
-for (int i=0; i < cells.length; i++) {
-  for (int j=0; j < filledRows; j++) {
-    temp[i][j]=cells[i][j];
+    rows=0;
   }
-}
-cells=temp;
-}
-pageBufferFirstIndex=firstIndex;
-pageBuffer=cells;
-unregisterPropertiesAndComponents(oldListenedProperties,oldVisibleComponents);
-requestRepaint();
-}
+  pageBuffer=getVisibleCellsNoCache(firstIndex,rows);
+  if (rows > 0) {
+    pageBufferFirstIndex=firstIndex;
+  }
+  requestRepaint();
 }

@@ -1,0 +1,37 @@
+{
+  target.startTag("visiblecolumns");
+  if (rowHeadersAreEnabled()) {
+    target.startTag("column");
+    target.addAttribute("cid",ROW_HEADER_COLUMN_KEY);
+    paintColumnWidth(target,ROW_HEADER_FAKE_PROPERTY_ID);
+    target.endTag("column");
+  }
+  final Collection<?> sortables=getSortableContainerPropertyIds();
+  for (  Object colId : visibleColumns) {
+    if (colId != null) {
+      target.startTag("column");
+      target.addAttribute("cid",columnIdMap.key(colId));
+      final String head=getColumnHeader(colId);
+      target.addAttribute("caption",(head != null ? head : ""));
+      final String foot=getColumnFooter(colId);
+      target.addAttribute("fcaption",(foot != null ? foot : ""));
+      if (isColumnCollapsed(colId)) {
+        target.addAttribute("collapsed",true);
+      }
+      if (areColumnHeadersEnabled()) {
+        if (getColumnIcon(colId) != null) {
+          target.addAttribute("icon",getColumnIcon(colId));
+        }
+        if (sortables.contains(colId)) {
+          target.addAttribute("sortable",true);
+        }
+      }
+      if (!ALIGN_LEFT.equals(getColumnAlignment(colId))) {
+        target.addAttribute("align",getColumnAlignment(colId));
+      }
+      paintColumnWidth(target,colId);
+      target.endTag("column");
+    }
+  }
+  target.endTag("visiblecolumns");
+}

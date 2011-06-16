@@ -1,0 +1,15 @@
+{
+  final boolean[] isComponent=new boolean[visibleColumns.size()];
+  int isComponentIndex=0;
+  for (final Iterator<Object> it=visibleColumns.iterator(); it.hasNext() && isComponentIndex < isComponent.length; ) {
+    final Object columnId=it.next();
+    if (columnGenerators.containsKey(columnId)) {
+      isComponent[isComponentIndex++]=true;
+    }
+ else {
+      final Class<?> colType=getType(columnId);
+      isComponent[isComponentIndex++]=colType != null && Component.class.isAssignableFrom(colType);
+    }
+  }
+  return isComponent;
+}

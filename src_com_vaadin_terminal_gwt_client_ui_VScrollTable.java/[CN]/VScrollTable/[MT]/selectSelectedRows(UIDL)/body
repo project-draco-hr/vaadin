@@ -1,0 +1,22 @@
+{
+  boolean keyboardSelectionOverRowFetchInProgress=false;
+  if (uidl.hasVariable("selected")) {
+    final Set<String> selectedKeys=uidl.getStringArrayVariableAsSet("selected");
+    if (scrollBody != null) {
+      Iterator<Widget> iterator=scrollBody.iterator();
+      while (iterator.hasNext()) {
+        VScrollTableRow row=(VScrollTableRow)iterator.next();
+        boolean selected=selectedKeys.contains(row.getKey());
+        if (!selected && unSyncedselectionsBeforeRowFetch != null && unSyncedselectionsBeforeRowFetch.contains(row.getKey())) {
+          selected=true;
+          keyboardSelectionOverRowFetchInProgress=true;
+        }
+        if (selected != row.isSelected()) {
+          row.toggleSelection();
+        }
+      }
+    }
+  }
+  unSyncedselectionsBeforeRowFetch=null;
+  return keyboardSelectionOverRowFetchInProgress;
+}

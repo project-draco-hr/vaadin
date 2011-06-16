@@ -1,0 +1,33 @@
+{
+  aligns=tHead.getColumnAlignments();
+  final Iterator<?> it=rowData.getChildIterator();
+  if (firstIndex == lastRendered + 1) {
+    while (it.hasNext()) {
+      final VScrollTableRow row=prepareRow((UIDL)it.next());
+      addRow(row);
+      lastRendered++;
+    }
+    fixSpacers();
+  }
+ else   if (firstIndex + rows == firstRendered) {
+    final VScrollTableRow[] rowArray=new VScrollTableRow[rows];
+    int i=rows;
+    while (it.hasNext()) {
+      i--;
+      rowArray[i]=prepareRow((UIDL)it.next());
+    }
+    for (i=0; i < rows; i++) {
+      addRowBeforeFirstRendered(rowArray[i]);
+      firstRendered--;
+    }
+  }
+ else {
+    int realIx=firstIndex - firstRendered;
+    while (it.hasNext()) {
+      insertRowAt(prepareRow((UIDL)it.next()),realIx);
+      lastRendered++;
+      realIx++;
+    }
+    fixSpacers();
+  }
+}

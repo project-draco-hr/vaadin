@@ -1,0 +1,26 @@
+{
+  final boolean[] iscomponent=findCellsWithComponents();
+  target.startTag("rows");
+  int start=0;
+  if (reqFirstRowToPaint != -1 && firstToBeRenderedInClient != -1) {
+    start=reqFirstRowToPaint - firstToBeRenderedInClient;
+  }
+  int end=cells[0].length;
+  if (reqRowsToPaint != -1) {
+    end=start + reqRowsToPaint;
+  }
+  if (lastToBeRenderedInClient != -1 && lastToBeRenderedInClient < end) {
+    end=lastToBeRenderedInClient + 1;
+  }
+  if (start > cells[CELL_ITEMID].length || start < 0) {
+    start=0;
+  }
+  for (int indexInRowbuffer=start; indexInRowbuffer < end; indexInRowbuffer++) {
+    final Object itemId=cells[CELL_ITEMID][indexInRowbuffer];
+    if (shouldHideNullSelectionItem()) {
+      continue;
+    }
+    paintRow(target,cells,isEditable(),actionSet,iscomponent,indexInRowbuffer,itemId);
+  }
+  target.endTag("rows");
+}

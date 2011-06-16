@@ -1,0 +1,14 @@
+{
+  final int optimalFirstRow=(int)(firstRowInViewPort - pageLength * cache_rate);
+  boolean cont=true;
+  while (cont && scrollBody.getLastRendered() > optimalFirstRow && scrollBody.getFirstRendered() < optimalFirstRow) {
+    cont=scrollBody.unlinkRow(true);
+  }
+  final int optimalLastRow=(int)(firstRowInViewPort + pageLength + pageLength * cache_rate);
+  cont=true;
+  while (cont && scrollBody.getLastRendered() > optimalLastRow) {
+    cont=scrollBody.unlinkRow(false);
+  }
+  scrollBody.fixSpacers();
+  scrollBody.restoreRowVisibility();
+}

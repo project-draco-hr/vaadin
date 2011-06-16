@@ -1,0 +1,22 @@
+{
+  final boolean[] iscomponent=findCellsWithComponents();
+  int firstIx=getFirstAddedItemIndex();
+  int count=getAddedRowCount();
+  target.startTag("prows");
+  target.addAttribute("firstprowix",firstIx);
+  target.addAttribute("numprows",count);
+  if (!shouldHideAddedRows()) {
+    Object[][] cells=getVisibleCellsNoCache(firstIx,count);
+    for (int indexInRowbuffer=0; indexInRowbuffer < count; indexInRowbuffer++) {
+      final Object itemId=cells[CELL_ITEMID][indexInRowbuffer];
+      if (shouldHideNullSelectionItem()) {
+        continue;
+      }
+      paintRow(target,cells,isEditable(),actionSet,iscomponent,indexInRowbuffer,itemId);
+    }
+  }
+ else {
+    target.addAttribute("hide",true);
+  }
+  target.endTag("prows");
+}

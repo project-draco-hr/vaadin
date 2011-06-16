@@ -1,0 +1,23 @@
+{
+  LinkedList<String> selectedKeys=new LinkedList<String>();
+  if (isMultiSelect()) {
+    HashSet<?> sel=new HashSet<Object>((Set<?>)getValue());
+    Collection<?> vids=getVisibleItemIds();
+    for (Iterator<?> it=vids.iterator(); it.hasNext(); ) {
+      Object id=it.next();
+      if (sel.contains(id)) {
+        selectedKeys.add(itemIdMapper.key(id));
+      }
+    }
+  }
+ else {
+    Object value=getValue();
+    if (value == null) {
+      value=getNullSelectionItemId();
+    }
+    if (value != null) {
+      selectedKeys.add(itemIdMapper.key(value));
+    }
+  }
+  return selectedKeys.toArray(new String[selectedKeys.size()]);
+}

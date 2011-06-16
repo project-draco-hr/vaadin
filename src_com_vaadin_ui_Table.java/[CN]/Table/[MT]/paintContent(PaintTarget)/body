@@ -1,236 +1,26 @@
 {
-  if (getTabIndex() > 0) {
-    target.addAttribute("tabindex",getTabIndex());
-  }
-  if (dragMode != TableDragMode.NONE) {
-    target.addAttribute("dragmode",dragMode.ordinal());
-  }
-  if (multiSelectMode != MultiSelectMode.DEFAULT) {
-    target.addAttribute("multiselectmode",multiSelectMode.ordinal());
-  }
-  final Object[] colids=getVisibleColumns();
-  final int cols=colids.length;
-  final int first=getCurrentPageFirstItemIndex();
-  int total=size();
-  final int pagelen=getPageLength();
-  final int colHeadMode=getColumnHeaderMode();
-  final boolean colheads=colHeadMode != COLUMN_HEADER_MODE_HIDDEN;
+  final Set<Action> actionSet=findAndPaintBodyActions(target);
   final Object[][] cells=getVisibleCells();
-  final boolean iseditable=isEditable();
-  int rows;
-  if (reqRowsToPaint >= 0) {
-    rows=reqRowsToPaint;
-  }
- else {
-    rows=cells[0].length;
-    if (alwaysRecalculateColumnWidths) {
-      target.addAttribute("recalcWidths",true);
-    }
-  }
-  if (!isNullSelectionAllowed() && getNullSelectionItemId() != null && containsId(getNullSelectionItemId())) {
+  int rows=findNumRowsToPaint(target,cells);
+  int total=size();
+  if (shouldHideNullSelectionItem()) {
     total--;
     rows--;
   }
-  LinkedList<String> selectedKeys=new LinkedList<String>();
-  if (isMultiSelect()) {
-    HashSet<?> sel=new HashSet<Object>((Set<?>)getValue());
-    Collection<?> vids=getVisibleItemIds();
-    for (Iterator<?> it=vids.iterator(); it.hasNext(); ) {
-      Object id=it.next();
-      if (sel.contains(id)) {
-        selectedKeys.add(itemIdMapper.key(id));
-      }
-    }
+  paintTableAttributes(target,rows,total);
+  paintVisibleColumnOrder(target);
+  if (isPartialRowUpdate()) {
+    paintPartialRowUpdate(target,actionSet);
   }
  else {
-    Object value=getValue();
-    if (value == null) {
-      value=getNullSelectionItemId();
-    }
-    if (value != null) {
-      selectedKeys.add(itemIdMapper.key(value));
-    }
+    paintRows(target,cells,actionSet);
   }
-  if (isSelectable()) {
-    target.addAttribute("selectmode",(isMultiSelect() ? "multi" : "single"));
-  }
- else {
-    target.addAttribute("selectmode","none");
-  }
-  if (cacheRate != CACHE_RATE_DEFAULT) {
-    target.addAttribute("cr",cacheRate);
-  }
-  target.addAttribute("cols",cols);
-  target.addAttribute("rows",rows);
-  if (!isNullSelectionAllowed()) {
-    target.addAttribute("nsa",false);
-  }
-  target.addAttribute("firstrow",(reqFirstRowToPaint >= 0 ? reqFirstRowToPaint : firstToBeRenderedInClient));
-  target.addAttribute("totalrows",total);
-  if (pagelen != 0) {
-    target.addAttribute("pagelength",pagelen);
-  }
-  if (colheads) {
-    target.addAttribute("colheaders",true);
-  }
-  if (rowHeadersAreEnabled()) {
-    target.addAttribute("rowheaders",true);
-  }
-  target.addAttribute("colfooters",columnFootersVisible);
-  final Set<Action> actionSet=new LinkedHashSet<Action>();
-  if (actionHandlers != null) {
-    final ArrayList<String> keys=new ArrayList<String>();
-    for (    Handler ah : actionHandlers) {
-      final Action[] aa=ah.getActions(null,this);
-      if (aa != null) {
-        for (int ai=0; ai < aa.length; ai++) {
-          final String key=actionMapper.key(aa[ai]);
-          actionSet.add(aa[ai]);
-          keys.add(key);
-        }
-      }
-    }
-    target.addAttribute("alb",keys.toArray());
-  }
-  final Collection<?> sortables=getSortableContainerPropertyIds();
-  final ArrayList<String> visibleColOrder=new ArrayList<String>();
-  for (final Iterator<Object> it=visibleColumns.iterator(); it.hasNext(); ) {
-    final Object columnId=it.next();
-    if (!isColumnCollapsed(columnId)) {
-      visibleColOrder.add(columnIdMap.key(columnId));
-    }
-  }
-  target.addAttribute("vcolorder",visibleColOrder.toArray());
-  final boolean selectable=isSelectable();
-  final boolean[] iscomponent=new boolean[visibleColumns.size()];
-  int iscomponentIndex=0;
-  for (final Iterator<Object> it=visibleColumns.iterator(); it.hasNext() && iscomponentIndex < iscomponent.length; ) {
-    final Object columnId=it.next();
-    if (columnGenerators.containsKey(columnId)) {
-      iscomponent[iscomponentIndex++]=true;
-    }
- else {
-      final Class<?> colType=getType(columnId);
-      iscomponent[iscomponentIndex++]=colType != null && Component.class.isAssignableFrom(colType);
-    }
-  }
-  target.startTag("rows");
-  int start=0;
-  if (reqFirstRowToPaint != -1 && firstToBeRenderedInClient != -1) {
-    start=reqFirstRowToPaint - firstToBeRenderedInClient;
-  }
-  int end=cells[0].length;
-  if (reqRowsToPaint != -1) {
-    end=start + reqRowsToPaint;
-  }
-  if (lastToBeRenderedInClient != -1 && lastToBeRenderedInClient < end) {
-    end=lastToBeRenderedInClient + 1;
-  }
-  if (start > cells[CELL_ITEMID].length || start < 0) {
-    start=0;
-  }
-  for (int indexInRowbuffer=start; indexInRowbuffer < end; indexInRowbuffer++) {
-    final Object itemId=cells[CELL_ITEMID][indexInRowbuffer];
-    if (!isNullSelectionAllowed() && getNullSelectionItemId() != null && itemId == getNullSelectionItemId()) {
-      continue;
-    }
-    paintRow(target,cells,iseditable,actionSet,iscomponent,indexInRowbuffer,itemId);
-  }
-  target.endTag("rows");
-  if (selectable) {
-    target.addVariable(this,"selected",selectedKeys.toArray(new String[selectedKeys.size()]));
-  }
-  if (first != 0 || getPageLength() > 0) {
-    target.addVariable(this,"firstvisible",first);
-  }
-  if (getContainerDataSource() instanceof Container.Sortable) {
-    target.addVariable(this,"sortcolumn",columnIdMap.key(sortContainerPropertyId));
-    target.addVariable(this,"sortascending",sortAscending);
-  }
-  reqFirstRowToPaint=-1;
-  reqRowsToPaint=-1;
-  containerChangeToBeRendered=false;
-  target.addVariable(this,"reqrows",reqRowsToPaint);
-  target.addVariable(this,"reqfirstrow",reqFirstRowToPaint);
-  if (!actionSet.isEmpty()) {
-    target.addVariable(this,"action","");
-    target.startTag("actions");
-    for (final Iterator<Action> it=actionSet.iterator(); it.hasNext(); ) {
-      final Action a=it.next();
-      target.startTag("action");
-      if (a.getCaption() != null) {
-        target.addAttribute("caption",a.getCaption());
-      }
-      if (a.getIcon() != null) {
-        target.addAttribute("icon",a.getIcon());
-      }
-      target.addAttribute("key",actionMapper.key(a));
-      target.endTag("action");
-    }
-    target.endTag("actions");
-  }
-  if (columnReorderingAllowed) {
-    final String[] colorder=new String[visibleColumns.size()];
-    int i=0;
-    for (final Iterator<Object> it=visibleColumns.iterator(); it.hasNext() && i < colorder.length; ) {
-      colorder[i++]=columnIdMap.key(it.next());
-    }
-    target.addVariable(this,"columnorder",colorder);
-  }
-  if (columnCollapsingAllowed) {
-    final HashSet<Object> ccs=new HashSet<Object>();
-    for (final Iterator<Object> i=visibleColumns.iterator(); i.hasNext(); ) {
-      final Object o=i.next();
-      if (isColumnCollapsed(o)) {
-        ccs.add(o);
-      }
-    }
-    final String[] collapsedkeys=new String[ccs.size()];
-    int nextColumn=0;
-    for (final Iterator<Object> it=visibleColumns.iterator(); it.hasNext() && nextColumn < collapsedkeys.length; ) {
-      final Object columnId=it.next();
-      if (isColumnCollapsed(columnId)) {
-        collapsedkeys[nextColumn++]=columnIdMap.key(columnId);
-      }
-    }
-    target.addVariable(this,"collapsedcolumns",collapsedkeys);
-  }
-  target.startTag("visiblecolumns");
-  if (rowHeadersAreEnabled()) {
-    target.startTag("column");
-    target.addAttribute("cid",ROW_HEADER_COLUMN_KEY);
-    paintColumnWidth(target,ROW_HEADER_FAKE_PROPERTY_ID);
-    target.endTag("column");
-  }
-  int i=0;
-  for (final Iterator<Object> it=visibleColumns.iterator(); it.hasNext(); i++) {
-    final Object columnId=it.next();
-    if (columnId != null) {
-      target.startTag("column");
-      target.addAttribute("cid",columnIdMap.key(columnId));
-      final String head=getColumnHeader(columnId);
-      target.addAttribute("caption",(head != null ? head : ""));
-      final String foot=getColumnFooter(columnId);
-      target.addAttribute("fcaption",(foot != null ? foot : ""));
-      if (isColumnCollapsed(columnId)) {
-        target.addAttribute("collapsed",true);
-      }
-      if (colheads) {
-        if (getColumnIcon(columnId) != null) {
-          target.addAttribute("icon",getColumnIcon(columnId));
-        }
-        if (sortables.contains(columnId)) {
-          target.addAttribute("sortable",true);
-        }
-      }
-      if (!ALIGN_LEFT.equals(getColumnAlignment(columnId))) {
-        target.addAttribute("align",getColumnAlignment(columnId));
-      }
-      paintColumnWidth(target,columnId);
-      target.endTag("column");
-    }
-  }
-  target.endTag("visiblecolumns");
+  paintSorting(target);
+  resetVariablesAndPageBuffer(target);
+  paintActions(target,actionSet);
+  paintColumnOrder(target);
+  paintAvailableColumns(target);
+  paintVisibleColumns(target);
   if (dropHandler != null) {
     dropHandler.getAcceptCriterion().paint(target);
   }
