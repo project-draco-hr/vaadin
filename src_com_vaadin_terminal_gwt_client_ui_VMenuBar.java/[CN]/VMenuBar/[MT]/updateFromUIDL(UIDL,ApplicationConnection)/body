@@ -27,7 +27,9 @@
       moreItemText="&#x25BA;";
     }
     itemHTML.append(moreItemText);
-    moreItem=new CustomMenuItem(itemHTML.toString(),emptyCommand);
+    moreItem=GWT.create(CustomMenuItem.class);
+    moreItem.setHTML(itemHTML.toString());
+    moreItem.setCommand(emptyCommand);
     collapsedRootItems=new VMenuBar(true,(VMenuBar)client.getPaintable(uidlId));
     moreItem.setSubMenu(collapsedRootItems);
     moreItem.addStyleName(CLASSNAME + "-more-menuitem");
@@ -40,28 +42,13 @@
   while (itr.hasNext()) {
     UIDL item=(UIDL)itr.next();
     CustomMenuItem currentItem=null;
-    String itemText=item.getStringAttribute("text");
     final int itemId=item.getIntAttribute("id");
     boolean itemHasCommand=item.hasAttribute("command");
-    StringBuffer itemHTML=new StringBuffer();
+    boolean itemIsCheckable=item.hasAttribute(ATTRIBUTE_CHECKED);
+    String itemHTML=buildItemHTML(item);
     Command cmd=null;
-    if (item.hasAttribute("separator")) {
-      itemHTML.append("<span>---</span>");
-    }
- else {
-      if (item.getChildCount() > 0) {
-        String bgStyle="";
-        if (submenuIcon != null) {
-          bgStyle=" style=\"background-image: url(" + submenuIcon + "); text-indent: -999px; width: 1em;\"";
-        }
-        itemHTML.append("<span class=\"" + CLASSNAME + "-submenu-indicator\""+ bgStyle+ ">&#x25BA;</span>");
-      }
-      itemHTML.append("<span class=\"" + CLASSNAME + "-menuitem-caption\">");
-      if (item.hasAttribute("icon")) {
-        itemHTML.append("<img src=\"" + client.translateVaadinUri(item.getStringAttribute("icon")) + "\" class=\""+ Icon.CLASSNAME+ "\" alt=\"\" />");
-      }
-      itemHTML.append(Util.escapeHTML(itemText) + "</span>");
-      if (itemHasCommand) {
+    if (!item.hasAttribute("separator")) {
+      if (itemHasCommand || itemIsCheckable) {
         cmd=new Command(){
           public void execute(){
             hostReference.onMenuClick(itemId);
@@ -85,6 +72,16 @@
       currentItem.setSubMenu(currentMenu);
     }
     while (!itr.hasNext() && !iteratorStack.empty()) {
+      boolean hasCheckableItem=false;
+      for (      CustomMenuItem menuItem : currentMenu.getItems()) {
+        hasCheckableItem=hasCheckableItem || menuItem.isCheckable();
+      }
+      if (hasCheckableItem) {
+        currentMenu.addStyleDependentName("check-column");
+      }
+ else {
+        currentMenu.removeStyleDependentName("check-column");
+      }
       itr=iteratorStack.pop();
       currentMenu=menuStack.pop();
     }
