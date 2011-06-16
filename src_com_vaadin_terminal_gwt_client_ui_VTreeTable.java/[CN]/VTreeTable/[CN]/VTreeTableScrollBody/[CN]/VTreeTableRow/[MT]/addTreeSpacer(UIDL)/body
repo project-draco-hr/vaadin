@@ -1,0 +1,26 @@
+{
+  if (cellShowsTreeHierarchy(getElement().getChildCount() - 1)) {
+    Element container=(Element)getElement().getLastChild().getFirstChild();
+    if (rowUidl.hasAttribute("icon")) {
+      ImageElement icon=Document.get().createImageElement();
+      icon.setClassName("v-icon");
+      icon.setAlt("icon");
+      icon.setSrc(client.translateVaadinUri(rowUidl.getStringAttribute("icon")));
+      container.insertFirst(icon);
+    }
+    String classname="v-treetable-treespacer";
+    if (rowUidl.getBooleanAttribute("ca")) {
+      canHaveChildren=true;
+      open=rowUidl.getBooleanAttribute("open");
+      classname+=open ? " v-treetable-node-open" : " v-treetable-node-closed";
+    }
+    treeSpacer=Document.get().createSpanElement();
+    treeSpacer.setClassName(classname);
+    container.insertFirst(treeSpacer);
+    depth=rowUidl.hasAttribute("depth") ? rowUidl.getIntAttribute("depth") : 0;
+    setIdent();
+    isTreeCellAdded=true;
+    return true;
+  }
+  return false;
+}

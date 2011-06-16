@@ -1,0 +1,26 @@
+{
+  boolean inView=false;
+  Object inPageId=getCurrentPageFirstItemId();
+  for (int i=0; inPageId != null && i < getPageLength(); i++) {
+    if (inPageId.equals(itemId)) {
+      inView=true;
+      break;
+    }
+    inPageId=nextItemId(inPageId);
+    i++;
+  }
+  if (!inView) {
+    setCurrentPageFirstItemId(itemId);
+  }
+  if (isSelectable()) {
+    if (isMultiSelect()) {
+      setValue(Collections.singleton(itemId));
+    }
+ else {
+      setValue(itemId);
+    }
+  }
+ else {
+    setFocusedRow(itemId);
+  }
+}

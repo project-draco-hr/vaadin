@@ -1,0 +1,39 @@
+{
+  VTreeTableRow focusedRow=(VTreeTableRow)getFocusedRow();
+  if (focusedRow != null) {
+    if (focusedRow.canHaveChildren && ((keycode == KeyCodes.KEY_RIGHT && !focusedRow.open) || (keycode == KeyCodes.KEY_LEFT && focusedRow.open))) {
+      if (!ctrl) {
+        client.updateVariable(paintableId,"selectCollapsed",true,false);
+      }
+      sendToggleCollapsedUpdate(focusedRow.getKey());
+      return true;
+    }
+ else     if (keycode == KeyCodes.KEY_RIGHT && focusedRow.open) {
+      VTreeTableScrollBody body=(VTreeTableScrollBody)focusedRow.getParent();
+      Iterator<Widget> iterator=body.iterator();
+      VTreeTableRow next=null;
+      while (iterator.hasNext()) {
+        next=(VTreeTableRow)iterator.next();
+        if (next == focusedRow) {
+          next=(VTreeTableRow)iterator.next();
+          break;
+        }
+      }
+      if (next != null) {
+        if (next.depth > focusedRow.depth) {
+          selectionPending=true;
+          return super.handleNavigation(getNavigationDownKey(),ctrl,shift);
+        }
+      }
+ else {
+        selectionPending=true;
+        return super.handleNavigation(getNavigationDownKey(),ctrl,shift);
+      }
+    }
+ else     if (keycode == KeyCodes.KEY_LEFT) {
+      client.updateVariable(paintableId,"focusParent",focusedRow.getKey(),true);
+      return true;
+    }
+  }
+  return super.handleNavigation(keycode,ctrl,shift);
+}
