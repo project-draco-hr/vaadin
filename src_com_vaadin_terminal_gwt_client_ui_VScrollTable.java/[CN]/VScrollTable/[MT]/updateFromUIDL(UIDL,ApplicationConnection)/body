@@ -55,22 +55,24 @@
   }
  else {
     UIDL rowData=uidl.getChildByTagName("rows");
-    if (!recalcWidths && initializedAndAttached) {
-      updateBody(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
-      if (headerChangedDuringUpdate) {
-        lazyAdjustColumnWidths.schedule(1);
-      }
- else {
-        Scheduler.get().scheduleDeferred(new Command(){
-          public void execute(){
-            Util.runWebkitOverflowAutoFix(scrollBodyPanel.getElement());
-          }
+    if (rowData != null) {
+      if (!recalcWidths && initializedAndAttached) {
+        updateBody(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
+        if (headerChangedDuringUpdate) {
+          lazyAdjustColumnWidths.schedule(1);
         }
-);
-      }
-    }
  else {
-      initializeRows(uidl,rowData);
+          Scheduler.get().scheduleDeferred(new Command(){
+            public void execute(){
+              Util.runWebkitOverflowAutoFix(scrollBodyPanel.getElement());
+            }
+          }
+);
+        }
+      }
+ else {
+        initializeRows(uidl,rowData);
+      }
     }
   }
   if (selectMode == Table.SELECT_MODE_NONE) {

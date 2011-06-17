@@ -1,0 +1,36 @@
+{
+  Container.Hierarchical c=new HierarchicalContainer();
+  populateContainer(c,properties,items);
+  if (items <= roots) {
+    return c;
+  }
+  int firstLevel=(int)Math.ceil(Math.sqrt(items / roots * 2.0));
+  int secondLevel=firstLevel / 2;
+  while (roots * (1 + 2 + (firstLevel - 2) * secondLevel) < items) {
+    secondLevel++;
+  }
+  List<Object> itemIds=new ArrayList<Object>(c.getItemIds());
+  int nextItemId=roots;
+  for (int rootIndex=0; rootIndex < roots; rootIndex++) {
+    Object rootItemId=itemIds.get(rootIndex);
+    c.setParent(rootItemId,null);
+    for (int firstLevelIndex=0; firstLevelIndex < firstLevel; firstLevelIndex++) {
+      if (nextItemId >= items) {
+        break;
+      }
+      Object firstLevelItemId=itemIds.get(nextItemId++);
+      c.setParent(firstLevelItemId,rootItemId);
+      if (firstLevelIndex < 2) {
+        continue;
+      }
+      for (int secondLevelIndex=0; secondLevelIndex < secondLevel; secondLevelIndex++) {
+        if (nextItemId >= items) {
+          break;
+        }
+        Object secondLevelItemId=itemIds.get(nextItemId++);
+        c.setParent(secondLevelItemId,firstLevelItemId);
+      }
+    }
+  }
+  return c;
+}

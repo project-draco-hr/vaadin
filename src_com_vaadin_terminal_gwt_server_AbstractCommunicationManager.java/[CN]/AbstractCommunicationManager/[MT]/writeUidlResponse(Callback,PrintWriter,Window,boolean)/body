@@ -2,13 +2,13 @@
   outWriter.print("\"changes\":[");
   ArrayList<Paintable> paintables=null;
   List<InvalidLayout> invalidComponentRelativeSizes=null;
-  JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
+  JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!isRepaintAll());
   OpenWindowCache windowCache=currentlyOpenWindowsInClient.get(window.getName());
   if (windowCache == null) {
     windowCache=new OpenWindowCache();
     currentlyOpenWindowsInClient.put(window.getName(),windowCache);
   }
-  if (repaintAll) {
+  if (isRepaintAll()) {
     paintables=new ArrayList<Paintable>();
     paintables.add(window);
     locales=null;
@@ -83,7 +83,7 @@
   outWriter.print("]");
   outWriter.print(", \"meta\" : {");
   boolean metaOpen=false;
-  if (repaintAll) {
+  if (isRepaintAll()) {
     metaOpen=true;
     outWriter.write("\"repaintAll\":true");
     if (analyzeLayouts) {
@@ -123,7 +123,7 @@ catch (  InvocationTargetException e) {
   }
   if (ci != null && ci.getSessionExpiredMessage() == null && ci.getSessionExpiredCaption() == null && ci.isSessionExpiredNotificationEnabled()) {
     int newTimeoutInterval=getTimeoutInterval();
-    if (repaintAll || (timeoutInterval != newTimeoutInterval)) {
+    if (isRepaintAll() || (timeoutInterval != newTimeoutInterval)) {
       String escapedURL=ci.getSessionExpiredURL() == null ? "" : ci.getSessionExpiredURL().replace("/","\\/");
       if (metaOpen) {
         outWriter.write(",");
@@ -191,4 +191,5 @@ catch (  InvocationTargetException e) {
   if (dragAndDropService != null) {
     dragAndDropService.printJSONResponse(outWriter);
   }
+  setRepaintAll(false);
 }
