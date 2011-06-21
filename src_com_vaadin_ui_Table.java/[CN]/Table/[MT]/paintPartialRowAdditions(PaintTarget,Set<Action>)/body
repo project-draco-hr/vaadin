@@ -3,6 +3,11 @@
   int firstIx=getFirstAddedItemIndex();
   int count=getAddedRowCount();
   target.startTag("prows");
+  int maxRows=(int)(getPageLength() * getCacheRate());
+  if (!shouldHideAddedRows() && count > maxRows) {
+    count=maxRows + 1;
+    target.addAttribute("delbelow",true);
+  }
   target.addAttribute("firstprowix",firstIx);
   target.addAttribute("numprows",count);
   if (!shouldHideAddedRows()) {

@@ -38,22 +38,5 @@
     }
     fixSpacers();
   }
-  int reactFirstRow=(int)(firstRowInViewPort - pageLength * cache_react_rate);
-  int reactLastRow=(int)(firstRowInViewPort + pageLength + pageLength * cache_react_rate);
-  if (reactFirstRow < 0) {
-    reactFirstRow=0;
-  }
-  if (reactLastRow >= totalRows) {
-    reactLastRow=totalRows - 1;
-  }
-  if (lastRendered < reactLastRow) {
-    rowRequestHandler.setReqFirstRow(lastRendered + 1);
-    rowRequestHandler.setReqRows(reactLastRow - lastRendered);
-    rowRequestHandler.deferRowFetch(1);
-  }
- else   if (scrollBody.getFirstRendered() > reactFirstRow) {
-    rowRequestHandler.setReqFirstRow(reactFirstRow);
-    rowRequestHandler.setReqRows(firstRendered - reactFirstRow);
-    rowRequestHandler.deferRowFetch(1);
-  }
+  ensureCacheFilled();
 }
