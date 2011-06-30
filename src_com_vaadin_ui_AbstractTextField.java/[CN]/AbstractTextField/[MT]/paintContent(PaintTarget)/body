@@ -17,7 +17,14 @@
   if (value == null) {
     throw new IllegalStateException("Null values are not allowed if the null-representation is null");
   }
-  target.addVariable(this,"text",value);
+  if (requestRepaintInTextChangeEvent && !valueChangeInTextChangeEvent) {
+    target.addVariable(this,"text",lastKnownTextContent);
+  }
+ else {
+    target.addVariable(this,"text",value);
+  }
+  requestRepaintInTextChangeEvent=false;
+  valueChangeInTextChangeEvent=false;
   if (selectionPosition != -1) {
     target.addAttribute("selpos",selectionPosition);
     target.addAttribute("sellen",selectionLength);
