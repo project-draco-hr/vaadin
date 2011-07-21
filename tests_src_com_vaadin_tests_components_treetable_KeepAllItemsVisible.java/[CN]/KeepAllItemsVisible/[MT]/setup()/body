@@ -1,0 +1,39 @@
+{
+  getMainWindow().getContent().setHeight(null);
+  final TreeTable tt=new TreeTable();
+  tt.setWidth("400px");
+  tt.addContainerProperty(CAPTION,String.class,"");
+  for (int i=0; i < 20; i++) {
+    String id="Root " + i;
+    Item item=tt.addItem(id);
+    item.getItemProperty(CAPTION).setValue(id);
+    addChildren(tt,id,5,2);
+  }
+  tt.setSelectable(true);
+  tt.setImmediate(true);
+  tt.addListener((ExpandListener)this);
+  tt.addListener((CollapseListener)this);
+  tt.addListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      recalculatePageLength(tt);
+      tt.requestRepaint();
+    }
+  }
+);
+  addComponent(tt);
+  recalculatePageLength(tt);
+  Button b=new Button("Set pagelength to 10",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      tt.setPageLength(10);
+    }
+  }
+);
+  addComponent(b);
+  b=new Button("Set pagelength to 20",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      tt.setPageLength(20);
+    }
+  }
+);
+  addComponent(b);
+}
