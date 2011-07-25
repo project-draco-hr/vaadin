@@ -4,7 +4,10 @@
     final Element targetTdOrTr=getEventTargetTdOrTr(event);
     if (type == Event.ONCONTEXTMENU) {
       showContextMenu(event);
-      event.stopPropagation();
+      if (enabled && (actionKeys != null || client.hasEventListeners(VScrollTable.this,ITEM_CLICK_EVENT_ID))) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
       return;
     }
     boolean targetCellOrRowFound=targetTdOrTr != null;
