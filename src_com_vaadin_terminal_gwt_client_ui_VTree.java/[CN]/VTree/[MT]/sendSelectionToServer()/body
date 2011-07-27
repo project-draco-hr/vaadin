@@ -1,4 +1,15 @@
 {
-  client.updateVariable(paintableId,"selected",selectedIds.toArray(new String[selectedIds.size()]),immediate);
-  selectionHasChanged=false;
+  Command command=new Command(){
+    public void execute(){
+      client.updateVariable(paintableId,"selected",selectedIds.toArray(new String[selectedIds.size()]),immediate);
+      selectionHasChanged=false;
+    }
+  }
+;
+  if (BrowserInfo.get().isWebkit()) {
+    Scheduler.get().scheduleDeferred(command);
+  }
+ else {
+    command.execute();
+  }
 }
