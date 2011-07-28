@@ -15,9 +15,15 @@
   final MouseEventDetails details=new MouseEventDetails(evt);
   ScheduledCommand command=new ScheduledCommand(){
     public void execute(){
-      boolean imm=!immediate || !selectable || (!isNullSelectionAllowed && isSelected() && selectedIds.size() == 1);
-      client.updateVariable(paintableId,"clickedKey",key,false);
-      client.updateVariable(paintableId,"clickEvent",details.toString(),imm);
+      if (details.getButton() == 0) {
+        boolean imm=!immediate || !selectable || (!isNullSelectionAllowed && isSelected() && selectedIds.size() == 1);
+        client.updateVariable(paintableId,"clickedKey",key,false);
+        client.updateVariable(paintableId,"clickEvent",details.toString(),imm);
+      }
+ else {
+        client.updateVariable(paintableId,"clickedKey",key,false);
+        client.updateVariable(paintableId,"clickEvent",details.toString(),immediate);
+      }
     }
   }
 ;
