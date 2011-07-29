@@ -10,24 +10,17 @@
         String importFilename=strLine.split("\"")[1];
         File importFile=new File(THEME_DIR + themeName + "/"+ folder+ "/"+ importFilename);
         if (importFile.isFile()) {
-          processCSSFile(importFile,folder,themeName,combinedCss,inheritedFile);
+          String currentFolder=folder;
+          if (importFilename.contains("/")) {
+            currentFolder=currentFolder + "/" + importFilename.substring(0,importFilename.lastIndexOf("/"));
+          }
+          processCSSFile(importFile,currentFolder,themeName,combinedCss,inheritedFile);
         }
  else {
           System.out.println("File not found for @import statement " + THEME_DIR + themeName+ "/"+ folder+ "/"+ importFilename);
         }
       }
-      String urlPrefix="";
-      if (inheritedFile) {
-        urlPrefix="../" + themeName + "/";
-      }
-      if (strLine.indexOf("url(/") > 0) {
-      }
- else       if (strLine.indexOf("url(../") > 0) {
-        strLine=strLine.replaceAll("url\\(../",("url\\(" + urlPrefix));
-      }
- else {
-        strLine=strLine.replaceAll("url\\(",("url\\(" + urlPrefix + folder+ "/"));
-      }
+      strLine=updateUrls(folder,themeName,inheritedFile,strLine);
       if (!strLine.startsWith("@import")) {
         combinedCss.append(strLine);
         combinedCss.append("\n");
