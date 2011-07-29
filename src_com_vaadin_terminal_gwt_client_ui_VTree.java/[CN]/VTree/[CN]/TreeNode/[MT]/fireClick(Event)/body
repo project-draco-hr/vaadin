@@ -15,15 +15,15 @@
   final MouseEventDetails details=new MouseEventDetails(evt);
   ScheduledCommand command=new ScheduledCommand(){
     public void execute(){
-      if (details.getButton() == 0) {
-        boolean imm=!immediate || !selectable || (!isNullSelectionAllowed && isSelected() && selectedIds.size() == 1);
-        client.updateVariable(paintableId,"clickedKey",key,false);
-        client.updateVariable(paintableId,"clickEvent",details.toString(),imm);
+      boolean sendClickEventNow=true;
+      if (details.getButton() == NativeEvent.BUTTON_LEFT && immediate && selectable) {
+        sendClickEventNow=false;
+        if (isSelected() && selectedIds.size() == 1 && !isNullSelectionAllowed) {
+          sendClickEventNow=true;
+        }
       }
- else {
-        client.updateVariable(paintableId,"clickedKey",key,false);
-        client.updateVariable(paintableId,"clickEvent",details.toString(),immediate);
-      }
+      client.updateVariable(paintableId,"clickedKey",key,false);
+      client.updateVariable(paintableId,"clickEvent",details.toString(),sendClickEventNow);
     }
   }
 ;
