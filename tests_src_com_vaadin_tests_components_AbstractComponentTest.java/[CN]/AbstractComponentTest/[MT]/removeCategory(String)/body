@@ -1,0 +1,15 @@
+{
+  if (!hasCategory(categoryId)) {
+    throw new IllegalArgumentException("Category '" + categoryId + "' does not exist");
+  }
+  MenuItem item=getCategoryMenuItem(categoryId);
+  Object[] children=item.getChildren().toArray();
+  for (  Object child : children) {
+    if (menuItemToCategory.containsKey(child)) {
+      removeCategory(menuItemToCategory.get(child));
+    }
+  }
+  item.getParent().removeChild(item);
+  categoryToMenuItem.remove(categoryId);
+  menuItemToCategory.remove(item);
+}

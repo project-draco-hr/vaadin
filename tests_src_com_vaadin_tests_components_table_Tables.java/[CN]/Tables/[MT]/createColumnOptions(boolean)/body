@@ -1,0 +1,24 @@
+{
+  if (!init && !hasCategory(CATEGORY_COLUMNS)) {
+    return;
+  }
+  long start=System.currentTimeMillis();
+  if (!init) {
+    removeCategory(CATEGORY_COLUMNS);
+  }
+  for (  Object id : getComponent().getContainerPropertyIds()) {
+    String name=id.toString();
+    createCategory(name,CATEGORY_COLUMNS);
+    createColumnOption(name,id);
+  }
+  for (int i=0; i < generatedColumnNextNr; i++) {
+    String id=generatedColumnId + i;
+    String name=id;
+    if (getTestComponents().get(0).getColumnGenerator(id) != null) {
+      createCategory(name,CATEGORY_COLUMNS);
+      createColumnOption(name,id);
+    }
+  }
+  long end=System.currentTimeMillis();
+  System.err.println("Create options took " + (end - start) + "ms");
+}
