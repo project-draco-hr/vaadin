@@ -1,11 +1,12 @@
 {
   requestThemeName=request.getParameter("theme");
   maxInactiveInterval=request.getSession().getMaxInactiveInterval();
+  boolean repaintAll;
   final OutputStream out;
-  setRepaintAll(request.getParameter(GET_PARAM_REPAINT_ALL) != null);
+  repaintAll=(request.getParameter(GET_PARAM_REPAINT_ALL) != null);
   out=response.getOutputStream();
   boolean analyzeLayouts=false;
-  if (isRepaintAll()) {
+  if (repaintAll) {
     analyzeLayouts=(request.getParameter(GET_PARAM_ANALYZE_LAYOUTS) != null);
   }
   final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
@@ -37,9 +38,9 @@ synchronized (application) {
           return;
         }
       }
-      setRepaintAll(true);
+      repaintAll=true;
     }
-    paintAfterVariableChanges(request,response,callback,outWriter,window,analyzeLayouts);
+    paintAfterVariableChanges(request,response,callback,repaintAll,outWriter,window,analyzeLayouts);
     if (closingWindowName != null) {
       currentlyOpenWindowsInClient.remove(closingWindowName);
       closingWindowName=null;
