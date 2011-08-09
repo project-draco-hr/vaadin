@@ -3,12 +3,18 @@
   for (final Iterator<?> it=uidl.getChildIterator(); it.hasNext(); ) {
     final UIDL opUidl=(UIDL)it.next();
     CheckBox op;
+    String caption=opUidl.getStringAttribute("caption");
     if (isMultiselect()) {
       op=new VCheckBox();
-      op.setText(opUidl.getStringAttribute("caption"));
+      if (htmlItems) {
+        op.setHTML(caption);
+      }
+ else {
+        op.setText(caption);
+      }
     }
  else {
-      op=new RadioButton(id,opUidl.getStringAttribute("caption"));
+      op=new RadioButton(id,caption,htmlItems);
       op.setStyleName("v-radiobutton");
     }
     op.addStyleName(CLASSNAME_OPTION);
