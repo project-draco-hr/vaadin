@@ -1,0 +1,10 @@
+{
+  debug("Removing row with id: " + row.getId().getId()[0].toString());
+  if (executeUpdate(sqlGenerator.generateDeleteQuery(getTableName(),primaryKeyColumns,versionColumn,row)) == 1) {
+    return true;
+  }
+  if (versionColumn != null) {
+    throw new OptimisticLockException("Someone else changed the row that was being deleted.",row.getId());
+  }
+  return false;
+}

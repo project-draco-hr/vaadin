@@ -1,0 +1,14 @@
+{
+  Map<String,Object> rowIdentifiers=new HashMap<String,Object>();
+  for (  Object id : item.getItemPropertyIds()) {
+    ColumnProperty cp=(ColumnProperty)item.getItemProperty(id);
+    if ((this instanceof MSSQLGenerator || this instanceof OracleGenerator) && cp.getPropertyId().equalsIgnoreCase("rownum")) {
+      continue;
+    }
+    Object value=cp.getValue() == null ? null : cp.getValue();
+    if (!cp.isReadOnlyChangeAllowed() || cp.isVersionColumn()) {
+      rowIdentifiers.put(cp.getPropertyId(),value);
+    }
+  }
+  return rowIdentifiers;
+}

@@ -1,0 +1,17 @@
+{
+  if (!initialized) {
+    initializeConnections();
+  }
+  if (availableConnections.isEmpty()) {
+    if (reservedConnections.size() < maxConnections) {
+      availableConnections.add(createConnection());
+    }
+ else {
+      throw new SQLException("Connection limit has been reached.");
+    }
+  }
+  Connection c=availableConnections.iterator().next();
+  availableConnections.remove(c);
+  reservedConnections.add(c);
+  return c;
+}

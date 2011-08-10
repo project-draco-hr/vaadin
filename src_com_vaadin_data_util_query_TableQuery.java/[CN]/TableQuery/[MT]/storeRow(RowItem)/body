@@ -1,0 +1,21 @@
+{
+  if (row == null) {
+    throw new IllegalArgumentException("Row argument must be non-null.");
+  }
+  StatementHelper sh;
+  int result=0;
+  if (row.getId() instanceof TemporaryRowId) {
+    setVersionColumnFlagInProperty(row);
+    sh=sqlGenerator.generateInsertQuery(tableName,row);
+    result=executeUpdateReturnKeys(sh,row);
+  }
+ else {
+    setVersionColumnFlagInProperty(row);
+    sh=sqlGenerator.generateUpdateQuery(tableName,row);
+    result=executeUpdate(sh);
+  }
+  if (versionColumn != null && result == 0) {
+    throw new OptimisticLockException("Someone else changed the row that was being updated.",row.getId());
+  }
+  return result;
+}

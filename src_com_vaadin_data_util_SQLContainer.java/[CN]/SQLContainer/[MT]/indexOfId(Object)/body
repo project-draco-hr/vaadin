@@ -1,0 +1,36 @@
+{
+  for (int ix=0; ix < addedItems.size(); ix++) {
+    RowItem item=addedItems.get(ix);
+    if (item.getId().equals(itemId)) {
+      if (itemPassesFilters(item)) {
+        updateCount();
+        return size + ix;
+      }
+ else {
+        return -1;
+      }
+    }
+  }
+  if (!containsId(itemId)) {
+    return -1;
+  }
+  if (cachedItems.isEmpty()) {
+    getPage();
+  }
+  int size=size();
+  boolean wrappedAround=false;
+  while (!wrappedAround) {
+    for (    Integer i : itemIndexes.keySet()) {
+      if (itemIndexes.get(i).equals(itemId)) {
+        return i;
+      }
+    }
+    int nextIndex=(currentOffset / (pageLength * CACHE_RATIO) + 1) * (pageLength * CACHE_RATIO);
+    if (nextIndex >= size) {
+      wrappedAround=true;
+      nextIndex=0;
+    }
+    updateOffsetAndCache(nextIndex);
+  }
+  return -1;
+}

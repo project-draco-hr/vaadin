@@ -1,0 +1,8 @@
+{
+  StatementHelper sh=mockedStatementHelper("%lle",18,65,"Pelle","Virtanen");
+  ArrayList<Filter> filters=new ArrayList<Filter>();
+  filters.add(new Or(new And(new Like("NAME","%lle"),new Or(new Less("AGE",18),new Greater("AGE",65))),new Equal("NAME","Pelle")));
+  filters.add(new Equal("LASTNAME","Virtanen"));
+  Assert.assertEquals(" WHERE ((\"NAME\" LIKE ? AND (\"AGE\" < ? OR \"AGE\" > ?)) OR \"NAME\" = ?) AND \"LASTNAME\" = ?",QueryBuilder.getWhereStringForFilters(filters,sh));
+  EasyMock.verify(sh);
+}

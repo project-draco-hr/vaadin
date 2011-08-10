@@ -1,0 +1,22 @@
+{
+  if (tableName == null || tableName.trim().equals("")) {
+    throw new IllegalArgumentException("Table name must be given.");
+  }
+  toSelect=toSelect == null ? "*" : toSelect;
+  StatementHelper sh=new StatementHelper();
+  StringBuffer query=new StringBuffer();
+  query.append("SELECT " + toSelect + " FROM ").append(SQLUtil.escapeSQL(tableName));
+  if (filters != null) {
+    query.append(QueryBuilder.getWhereStringForFilters(filters,sh));
+  }
+  if (orderBys != null) {
+    for (    OrderBy o : orderBys) {
+      generateOrderBy(query,o,orderBys.indexOf(o) == 0);
+    }
+  }
+  if (pagelength != 0) {
+    generateLimits(query,offset,pagelength);
+  }
+  sh.setQueryString(query.toString());
+  return sh;
+}

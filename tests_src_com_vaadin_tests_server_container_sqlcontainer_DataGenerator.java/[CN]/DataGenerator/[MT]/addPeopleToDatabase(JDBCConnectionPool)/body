@@ -1,0 +1,39 @@
+{
+  Connection conn=connectionPool.reserveConnection();
+  Statement statement=conn.createStatement();
+  try {
+    statement.execute("drop table PEOPLE");
+    if (AllTests.db == DB.ORACLE) {
+      statement.execute("drop sequence people_seq");
+    }
+  }
+ catch (  SQLException e) {
+    conn.rollback();
+  }
+  statement.execute(AllTests.peopleFirst);
+  if (AllTests.peopleSecond != null) {
+    statement.execute(AllTests.peopleSecond);
+  }
+  if (AllTests.db == DB.ORACLE) {
+    statement.execute(AllTests.peopleThird);
+  }
+  if (AllTests.db == DB.MSSQL) {
+    statement.executeUpdate("insert into people values('Ville', '23')");
+    statement.executeUpdate("insert into people values('Kalle', '7')");
+    statement.executeUpdate("insert into people values('Pelle', '18')");
+    statement.executeUpdate("insert into people values('B??rje', '64')");
+  }
+ else {
+    statement.executeUpdate("insert into people values(default, 'Ville', '23')");
+    statement.executeUpdate("insert into people values(default, 'Kalle', '7')");
+    statement.executeUpdate("insert into people values(default, 'Pelle', '18')");
+    statement.executeUpdate("insert into people values(default, 'B??rje', '64')");
+  }
+  statement.close();
+  statement=conn.createStatement();
+  ResultSet rs=statement.executeQuery("select * from PEOPLE");
+  Assert.assertTrue(rs.next());
+  statement.close();
+  conn.commit();
+  connectionPool.releaseConnection(conn);
+}

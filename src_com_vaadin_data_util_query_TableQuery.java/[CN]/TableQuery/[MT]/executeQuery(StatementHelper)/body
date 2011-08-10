@@ -1,0 +1,13 @@
+{
+  Connection c=null;
+  if (transactionOpen && activeConnection != null) {
+    c=activeConnection;
+  }
+ else {
+    throw new SQLException("No active transaction!");
+  }
+  PreparedStatement pstmt=c.prepareStatement(sh.getQueryString());
+  sh.setParameterValuesToStatement(pstmt);
+  debug("DB -> " + sh.getQueryString());
+  return pstmt.executeQuery();
+}

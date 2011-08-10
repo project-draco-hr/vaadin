@@ -1,0 +1,24 @@
+{
+  TableQuery query=new TableQuery("people",connectionPool,AllTests.sqlGen);
+  SQLContainer container=new SQLContainer(query);
+  Assert.assertEquals(4,container.size());
+  Assert.assertEquals("B??rje",container.getContainerProperty(container.lastItemId(),"NAME").getValue());
+  Object id1=container.addItem();
+  container.getContainerProperty(id1,"NAME").setValue("Palle");
+  Object id2=container.addItem();
+  container.getContainerProperty(id2,"NAME").setValue("Bengt");
+  container.addContainerFilter(new Like("NAME","%lle"));
+  Assert.assertEquals(4,container.size());
+  Assert.assertEquals("Ville",container.getContainerProperty(container.getIdByIndex(0),"NAME").getValue());
+  Assert.assertEquals("Kalle",container.getContainerProperty(container.getIdByIndex(1),"NAME").getValue());
+  Assert.assertEquals("Pelle",container.getContainerProperty(container.getIdByIndex(2),"NAME").getValue());
+  Assert.assertEquals("Palle",container.getContainerProperty(container.getIdByIndex(3),"NAME").getValue());
+  Assert.assertNull(container.getIdByIndex(4));
+  Assert.assertNull(container.nextItemId(container.getIdByIndex(3)));
+  Assert.assertFalse(container.containsId(id2));
+  Assert.assertFalse(container.getItemIds().contains(id2));
+  Assert.assertNull(container.getItem(id2));
+  Assert.assertEquals(-1,container.indexOfId(id2));
+  Assert.assertNotSame(id2,container.lastItemId());
+  Assert.assertSame(id1,container.lastItemId());
+}

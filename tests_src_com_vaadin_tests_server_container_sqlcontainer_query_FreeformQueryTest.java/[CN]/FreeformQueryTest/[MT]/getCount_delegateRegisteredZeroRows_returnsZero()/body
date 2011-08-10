@@ -1,0 +1,10 @@
+{
+  DataGenerator.createGarbage(connectionPool);
+  FreeformQuery query=new FreeformQuery("SELECT * FROM GARBAGE",Arrays.asList("ID"),connectionPool);
+  FreeformQueryDelegate delegate=EasyMock.createMock(FreeformQueryDelegate.class);
+  EasyMock.expect(delegate.getCountQuery()).andReturn("SELECT COUNT(*) FROM GARBAGE");
+  EasyMock.replay(delegate);
+  query.setDelegate(delegate);
+  Assert.assertEquals(0,query.getCount());
+  EasyMock.verify(delegate);
+}

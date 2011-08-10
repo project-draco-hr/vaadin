@@ -1,0 +1,26 @@
+{
+  if (activeConnection == null) {
+    throw new SQLException("No active transaction!");
+  }
+  String query=queryString;
+  if (delegate != null) {
+    if (delegate instanceof FreeformStatementDelegate) {
+      try {
+        StatementHelper sh=((FreeformStatementDelegate)delegate).getQueryStatement(offset,pagelength);
+        PreparedStatement pstmt=activeConnection.prepareStatement(sh.getQueryString());
+        sh.setParameterValuesToStatement(pstmt);
+        return pstmt.executeQuery();
+      }
+ catch (      UnsupportedOperationException e) {
+      }
+    }
+    try {
+      query=delegate.getQueryString(offset,pagelength);
+    }
+ catch (    UnsupportedOperationException e) {
+    }
+  }
+  Statement statement=activeConnection.createStatement();
+  ResultSet rs=statement.executeQuery(query);
+  return rs;
+}

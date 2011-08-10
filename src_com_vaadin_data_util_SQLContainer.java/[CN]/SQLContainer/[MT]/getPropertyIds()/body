@@ -1,0 +1,68 @@
+{
+  propertyIds.clear();
+  propertyTypes.clear();
+  delegate.setFilters(null);
+  delegate.setOrderBy(null);
+  ResultSet rs=null;
+  ResultSetMetaData rsmd=null;
+  try {
+    delegate.beginTransaction();
+    rs=delegate.getResults(0,1);
+    boolean resultExists=rs.next();
+    rsmd=rs.getMetaData();
+    Class<?> type=null;
+    for (int i=1; i <= rsmd.getColumnCount(); i++) {
+      if (!isColumnIdentifierValid(rsmd.getColumnLabel(i))) {
+        continue;
+      }
+      String colName=rsmd.getColumnLabel(i);
+      if (!propertyIds.contains(colName)) {
+        propertyIds.add(colName);
+      }
+      if (resultExists && rs.getObject(i) != null) {
+        type=rs.getObject(i).getClass();
+      }
+ else {
+        try {
+          type=Class.forName(rsmd.getColumnClassName(i));
+        }
+ catch (        Exception e) {
+          debug(e,null);
+          type=Object.class;
+        }
+      }
+      boolean readOnly=rsmd.isAutoIncrement(i) || rsmd.isReadOnly(i);
+      if (delegate instanceof TableQuery && rsmd.getColumnLabel(i).equals(((TableQuery)delegate).getVersionColumn())) {
+        readOnly=true;
+      }
+      propertyReadOnly.put(colName,readOnly);
+      propertyNullable.put(colName,rsmd.isNullable(i) == ResultSetMetaData.columnNullable);
+      propertyTypes.put(colName,type);
+    }
+    rs.getStatement().close();
+    rs.close();
+    delegate.commit();
+    debug(null,"Property IDs fetched.");
+  }
+ catch (  SQLException e) {
+    debug(e,null);
+    try {
+      delegate.rollback();
+    }
+ catch (    SQLException e1) {
+      debug(e1,null);
+    }
+    try {
+      if (rs != null) {
+        if (rs.getStatement() != null) {
+          rs.getStatement().close();
+        }
+        rs.close();
+      }
+    }
+ catch (    SQLException e1) {
+      debug(e1,null);
+    }
+    throw e;
+  }
+}

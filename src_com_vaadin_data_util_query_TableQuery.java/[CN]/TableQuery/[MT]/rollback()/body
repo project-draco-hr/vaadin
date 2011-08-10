@@ -1,0 +1,11 @@
+{
+  if (transactionOpen && activeConnection != null) {
+    debug("DB -> rollback");
+    activeConnection.rollback();
+    connectionPool.releaseConnection(activeConnection);
+  }
+ else {
+    throw new SQLException("No active transaction");
+  }
+  transactionOpen=false;
+}

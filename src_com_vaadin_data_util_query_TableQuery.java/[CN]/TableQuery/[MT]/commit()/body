@@ -1,0 +1,20 @@
+{
+  if (transactionOpen && activeConnection != null) {
+    debug("DB -> commit");
+    activeConnection.commit();
+    connectionPool.releaseConnection(activeConnection);
+  }
+ else {
+    throw new SQLException("No active transaction");
+  }
+  transactionOpen=false;
+  RowIdChangeEvent[] unFiredEvents=bufferedEvents.toArray(new RowIdChangeEvent[]{});
+  bufferedEvents.clear();
+  if (rowIdChangeListeners != null && !rowIdChangeListeners.isEmpty()) {
+    for (    RowIdChangeListener r : rowIdChangeListeners) {
+      for (      RowIdChangeEvent e : unFiredEvents) {
+        r.rowIdChange(e);
+      }
+    }
+  }
+}

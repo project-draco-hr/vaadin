@@ -1,0 +1,17 @@
+{
+  if (refdCont == null) {
+    throw new IllegalArgumentException("Referenced SQLContainer can not be null.");
+  }
+  Reference r=references.get(refdCont);
+  if (r == null) {
+    throw new IllegalArgumentException("Reference to the given SQLContainer not defined.");
+  }
+  try {
+    getContainerProperty(itemId,r.getReferencingColumn()).setValue(refdCont.getContainerProperty(refdItemId,r.getReferencedColumn()));
+    return true;
+  }
+ catch (  Exception e) {
+    debug(e,"Setting referenced item failed.");
+    return false;
+  }
+}

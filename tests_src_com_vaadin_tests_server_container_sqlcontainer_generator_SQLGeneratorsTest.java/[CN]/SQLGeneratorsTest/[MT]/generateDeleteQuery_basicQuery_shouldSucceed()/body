@@ -1,0 +1,10 @@
+{
+  if (AllTests.sqlGen instanceof MSSQLGenerator || AllTests.sqlGen instanceof OracleGenerator) {
+    return;
+  }
+  SQLGenerator sg=AllTests.sqlGen;
+  TableQuery query=new TableQuery("people",connectionPool,AllTests.sqlGen);
+  SQLContainer container=new SQLContainer(query);
+  StatementHelper sh=sg.generateDeleteQuery("people",query.getPrimaryKeyColumns(),null,(RowItem)container.getItem(container.getItemIds().iterator().next()));
+  Assert.assertEquals("DELETE FROM people WHERE \"ID\" = ?",sh.getQueryString());
+}

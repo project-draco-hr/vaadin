@@ -1,0 +1,38 @@
+{
+  try {
+    Map<String,Object> values=new HashMap<String,Object>();
+    ResultSetMetaData rsmd=genKeys.getMetaData();
+    int colCount=rsmd.getColumnCount();
+    if (genKeys.next()) {
+      for (int i=1; i <= colCount; i++) {
+        values.put(rsmd.getColumnName(i),genKeys.getObject(i));
+      }
+    }
+    List<Object> newRowId=new ArrayList<Object>();
+    if (values.size() == 1) {
+      if (primaryKeyColumns.size() == 1) {
+        newRowId.add(values.get(values.keySet().iterator().next()));
+      }
+ else {
+        for (        String s : primaryKeyColumns) {
+          if (!((ColumnProperty)row.getItemProperty(s)).isReadOnlyChangeAllowed()) {
+            newRowId.add(values.get(values.keySet().iterator().next()));
+          }
+ else {
+            newRowId.add(values.get(s));
+          }
+        }
+      }
+    }
+ else {
+      for (      String s : primaryKeyColumns) {
+        newRowId.add(values.get(s));
+      }
+    }
+    return new RowId(newRowId.toArray());
+  }
+ catch (  Exception e) {
+    debug("Failed to fetch key values on insert: " + e.getMessage());
+    return null;
+  }
+}

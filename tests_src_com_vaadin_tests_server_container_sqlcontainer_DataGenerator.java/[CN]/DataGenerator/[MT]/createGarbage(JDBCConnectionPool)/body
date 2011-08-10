@@ -1,0 +1,20 @@
+{
+  Connection conn=connectionPool.reserveConnection();
+  Statement statement=conn.createStatement();
+  try {
+    statement.execute("drop table GARBAGE");
+    if (AllTests.db == DB.ORACLE) {
+      statement.execute("drop sequence garbage_seq");
+    }
+  }
+ catch (  SQLException e) {
+    conn.rollback();
+  }
+  statement.execute(AllTests.createGarbage);
+  if (AllTests.db == DB.ORACLE) {
+    statement.execute(AllTests.createGarbageSecond);
+    statement.execute(AllTests.createGarbageThird);
+  }
+  conn.commit();
+  connectionPool.releaseConnection(conn);
+}

@@ -1,0 +1,47 @@
+{
+  if (!containsId(itemId)) {
+    return false;
+  }
+  for (  RowItem item : addedItems) {
+    if (item.getId().equals(itemId)) {
+      addedItems.remove(item);
+      fireContentsChange();
+      return true;
+    }
+  }
+  if (autoCommit) {
+    Item i=getItem(itemId);
+    if (i == null) {
+      return false;
+    }
+    try {
+      delegate.beginTransaction();
+      boolean success=delegate.removeRow((RowItem)i);
+      delegate.commit();
+      refresh();
+      if (notificationsEnabled) {
+        CacheFlushNotifier.notifyOfCacheFlush(this);
+      }
+      if (success) {
+        debug(null,"Row removed from DB...");
+      }
+      return success;
+    }
+ catch (    SQLException e) {
+      debug(e,null);
+      try {
+        delegate.rollback();
+      }
+ catch (      SQLException ee) {
+        debug(ee,null);
+      }
+      return false;
+    }
+  }
+ else {
+    removedItems.put((RowId)itemId,(RowItem)getItem(itemId));
+    cachedItems.remove(itemId);
+    refresh();
+    return true;
+  }
+}

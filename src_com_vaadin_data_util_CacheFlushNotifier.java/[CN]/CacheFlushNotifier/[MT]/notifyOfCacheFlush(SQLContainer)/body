@@ -1,0 +1,22 @@
+{
+  removeDeadReferences();
+  for (  WeakReference<SQLContainer> wr : allInstances) {
+    if (wr.get() != null) {
+      SQLContainer wrc=wr.get();
+      if (wrc == null) {
+        continue;
+      }
+      if (wrc.equals(c)) {
+        continue;
+      }
+      QueryDelegate wrQd=wrc.getQueryDelegate();
+      QueryDelegate qd=c.getQueryDelegate();
+      if (wrQd instanceof TableQuery && qd instanceof TableQuery && ((TableQuery)wrQd).getTableName().equals(((TableQuery)qd).getTableName())) {
+        wrc.refresh();
+      }
+ else       if (wrQd instanceof FreeformQuery && qd instanceof FreeformQuery && ((FreeformQuery)wrQd).getQueryString().equals(((FreeformQuery)qd).getQueryString())) {
+        wrc.refresh();
+      }
+    }
+  }
+}

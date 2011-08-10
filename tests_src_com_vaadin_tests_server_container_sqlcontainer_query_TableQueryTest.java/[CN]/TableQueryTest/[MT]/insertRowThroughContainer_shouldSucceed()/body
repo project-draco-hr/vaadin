@@ -1,0 +1,13 @@
+{
+  TableQuery tQuery=new TableQuery("people",connectionPool,AllTests.sqlGen);
+  tQuery.setVersionColumn("ID");
+  SQLContainer container=new SQLContainer(tQuery);
+  container.setAutoCommit(false);
+  Object item=container.addItem();
+  Assert.assertNotNull(item);
+  Assert.assertEquals(4,tQuery.getCount());
+  Assert.assertEquals(5,container.size());
+  container.commit();
+  Assert.assertEquals(5,tQuery.getCount());
+  Assert.assertEquals(5,container.size());
+}

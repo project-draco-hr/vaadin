@@ -1,0 +1,12 @@
+{
+  if (AllTests.sqlGen instanceof MSSQLGenerator || AllTests.sqlGen instanceof OracleGenerator) {
+    return;
+  }
+  SQLGenerator sg=new DefaultSQLGenerator();
+  TableQuery query=new TableQuery("people",connectionPool);
+  SQLContainer container=new SQLContainer(query);
+  RowItem ri=(RowItem)container.getItem(container.getItemIds().iterator().next());
+  ri.getItemProperty("NAME").setValue("Viljami");
+  StatementHelper sh=sg.generateUpdateQuery("people",ri);
+  Assert.assertTrue("UPDATE people SET \"NAME\" = ?, \"AGE\" = ? WHERE \"ID\" = ?".equals(sh.getQueryString()) || "UPDATE people SET \"AGE\" = ?, \"NAME\" = ? WHERE \"ID\" = ?".equals(sh.getQueryString()));
+}

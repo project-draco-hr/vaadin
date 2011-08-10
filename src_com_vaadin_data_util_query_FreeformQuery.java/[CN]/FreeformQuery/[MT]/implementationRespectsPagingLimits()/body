@@ -1,0 +1,22 @@
+{
+  if (delegate == null) {
+    return false;
+  }
+  if (delegate instanceof FreeformStatementDelegate) {
+    try {
+      StatementHelper sh=((FreeformStatementDelegate)delegate).getCountStatement();
+      if (sh != null && sh.getQueryString() != null && sh.getQueryString().length() > 0) {
+        return true;
+      }
+    }
+ catch (    UnsupportedOperationException e) {
+    }
+  }
+  try {
+    String queryString=delegate.getQueryString(0,50);
+    return queryString != null && queryString.length() > 0;
+  }
+ catch (  UnsupportedOperationException e) {
+    return false;
+  }
+}

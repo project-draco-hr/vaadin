@@ -1,0 +1,22 @@
+{
+  TableQuery tQuery=new TableQuery("people",connectionPool,AllTests.sqlGen);
+  List<OrderBy> orderBys=Arrays.asList(new OrderBy("NAME",true));
+  tQuery.setOrderBy(orderBys);
+  tQuery.beginTransaction();
+  ResultSet rs;
+  rs=tQuery.getResults(0,0);
+  Assert.assertTrue(rs.next());
+  Assert.assertEquals(3 + offset,rs.getInt(1));
+  Assert.assertEquals("B??rje",rs.getString(2));
+  Assert.assertTrue(rs.next());
+  Assert.assertEquals(1 + offset,rs.getInt(1));
+  Assert.assertEquals("Kalle",rs.getString(2));
+  Assert.assertTrue(rs.next());
+  Assert.assertEquals(2 + offset,rs.getInt(1));
+  Assert.assertEquals("Pelle",rs.getString(2));
+  Assert.assertTrue(rs.next());
+  Assert.assertEquals(0 + offset,rs.getInt(1));
+  Assert.assertEquals("Ville",rs.getString(2));
+  Assert.assertFalse(rs.next());
+  tQuery.commit();
+}

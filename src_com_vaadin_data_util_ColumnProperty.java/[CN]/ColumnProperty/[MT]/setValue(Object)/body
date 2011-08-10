@@ -1,0 +1,41 @@
+{
+  if (newValue == null && !nullable) {
+    throw new NotNullableException("Null values are not allowed for this property.");
+  }
+  if (readOnly) {
+    throw new ReadOnlyException("Cannot set value for read-only property.");
+  }
+  boolean isDateProperty=Time.class.equals(getType()) || Date.class.equals(getType()) || Timestamp.class.equals(getType());
+  if (newValue != null) {
+    if (isDateProperty) {
+      long millis=0;
+      if (newValue instanceof java.util.Date) {
+        millis=((java.util.Date)newValue).getTime();
+        if (Time.class.equals(getType())) {
+          newValue=new Time(millis);
+        }
+ else         if (Date.class.equals(getType())) {
+          newValue=new Date(millis);
+        }
+ else         if (Timestamp.class.equals(getType())) {
+          newValue=new Timestamp(millis);
+        }
+      }
+    }
+    if (!getType().isAssignableFrom(newValue.getClass())) {
+      try {
+        final Constructor<?> constr=getType().getConstructor(new Class[]{String.class});
+        newValue=constr.newInstance(new Object[]{newValue.toString()});
+      }
+ catch (      Exception e) {
+        throw new ConversionException(e);
+      }
+    }
+    if (newValue.equals(value)) {
+      return;
+    }
+  }
+  changedValue=newValue;
+  owner.getContainer().itemChangeNotification(owner);
+  modified=true;
+}

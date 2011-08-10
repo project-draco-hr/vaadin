@@ -1,0 +1,15 @@
+{
+  Connection conn=connectionPool.reserveConnection();
+  Statement statement=conn.createStatement();
+  if (AllTests.db == DB.MSSQL) {
+    statement.executeUpdate("insert into people values('Bengt', 30)");
+  }
+ else {
+    statement.executeUpdate("insert into people values(default, 'Bengt', 30)");
+  }
+  statement.close();
+  conn.commit();
+  connectionPool.releaseConnection(conn);
+  SQLContainer container=new SQLContainer(new TableQuery("people",connectionPool,AllTests.sqlGen));
+  Assert.assertEquals(5,container.size());
+}

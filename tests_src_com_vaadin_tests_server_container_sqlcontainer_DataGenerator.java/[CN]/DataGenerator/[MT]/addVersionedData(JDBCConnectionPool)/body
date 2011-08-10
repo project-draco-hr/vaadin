@@ -1,0 +1,30 @@
+{
+  Connection conn=connectionPool.reserveConnection();
+  Statement statement=conn.createStatement();
+  try {
+    statement.execute("DROP TABLE VERSIONED");
+    if (AllTests.db == DB.ORACLE) {
+      statement.execute("drop sequence versioned_seq");
+      statement.execute("drop sequence versioned_version");
+    }
+  }
+ catch (  SQLException e) {
+    conn.rollback();
+  }
+  for (  String stmtString : AllTests.versionStatements) {
+    statement.execute(stmtString);
+  }
+  if (AllTests.db == DB.MSSQL) {
+    statement.executeUpdate("insert into VERSIONED values('Junk', default)");
+  }
+ else {
+    statement.executeUpdate("insert into VERSIONED values(default, 'Junk', default)");
+  }
+  statement.close();
+  statement=conn.createStatement();
+  ResultSet rs=statement.executeQuery("select * from VERSIONED");
+  Assert.assertTrue(rs.next());
+  statement.close();
+  conn.commit();
+  connectionPool.releaseConnection(conn);
+}

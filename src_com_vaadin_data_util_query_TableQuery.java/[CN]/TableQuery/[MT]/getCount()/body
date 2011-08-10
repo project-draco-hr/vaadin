@@ -1,0 +1,18 @@
+{
+  debug("Fetching count...");
+  StatementHelper sh=sqlGenerator.generateSelectQuery(tableName,filters,null,0,0,"COUNT(*)");
+  boolean shouldCloseTransaction=false;
+  if (!transactionOpen) {
+    shouldCloseTransaction=true;
+    beginTransaction();
+  }
+  ResultSet r=executeQuery(sh);
+  r.next();
+  int count=r.getInt(1);
+  r.getStatement().close();
+  r.close();
+  if (shouldCloseTransaction) {
+    commit();
+  }
+  return count;
+}

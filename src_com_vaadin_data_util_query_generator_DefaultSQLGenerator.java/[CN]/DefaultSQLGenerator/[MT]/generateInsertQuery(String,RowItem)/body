@@ -1,0 +1,36 @@
+{
+  if (tableName == null || tableName.trim().equals("")) {
+    throw new IllegalArgumentException("Table name must be given.");
+  }
+  if (item == null) {
+    throw new IllegalArgumentException("New item must be given.");
+  }
+  if (!(item.getId() instanceof TemporaryRowId)) {
+    throw new IllegalArgumentException("Cannot generate an insert query for item already in database.");
+  }
+  StatementHelper sh=new StatementHelper();
+  StringBuffer query=new StringBuffer();
+  query.append("INSERT INTO ").append(tableName).append(" (");
+  Map<String,Object> columnToValueMap=generateColumnToValueMap(item);
+  boolean first=true;
+  for (  String column : columnToValueMap.keySet()) {
+    if (!first) {
+      query.append(", ");
+    }
+    query.append(QueryBuilder.quote(column));
+    first=false;
+  }
+  query.append(") VALUES (");
+  first=true;
+  for (  String column : columnToValueMap.keySet()) {
+    if (!first) {
+      query.append(", ");
+    }
+    query.append("?");
+    sh.addParameterValue(columnToValueMap.get(column),item.getItemProperty(column).getType());
+    first=false;
+  }
+  query.append(")");
+  sh.setQueryString(query.toString());
+  return sh;
+}

@@ -1,0 +1,45 @@
+{
+  if (tableName == null || tableName.trim().equals("")) {
+    throw new IllegalArgumentException("Table name must be given.");
+  }
+  offset=pagelength > 1 ? ++offset : offset;
+  pagelength=pagelength > 1 ? --pagelength : pagelength;
+  toSelect=toSelect == null ? "*" : toSelect;
+  StatementHelper sh=new StatementHelper();
+  StringBuffer query=new StringBuffer();
+  if ("COUNT(*)".equalsIgnoreCase(toSelect)) {
+    query.append(String.format("SELECT COUNT(*) AS %s FROM (SELECT * FROM %s",QueryBuilder.quote("rowcount"),tableName));
+    if (filters != null && !filters.isEmpty()) {
+      query.append(QueryBuilder.getWhereStringForFilters(filters,sh));
+    }
+    query.append(") AS t");
+    sh.setQueryString(query.toString());
+    return sh;
+  }
+  if (offset == 0 && pagelength == 0) {
+    query.append("SELECT ").append(toSelect).append(" FROM ").append(tableName);
+    if (filters != null) {
+      query.append(QueryBuilder.getWhereStringForFilters(filters,sh));
+    }
+    if (orderBys != null) {
+      for (      OrderBy o : orderBys) {
+        generateOrderBy(query,o,orderBys.indexOf(o) == 0);
+      }
+    }
+    sh.setQueryString(query.toString());
+    return sh;
+  }
+  query.append("SELECT * FROM (SELECT row_number() OVER (");
+  if (orderBys != null) {
+    for (    OrderBy o : orderBys) {
+      generateOrderBy(query,o,orderBys.indexOf(o) == 0);
+    }
+  }
+  query.append(") AS rownum, " + toSelect + " FROM ").append(tableName);
+  if (filters != null) {
+    query.append(QueryBuilder.getWhereStringForFilters(filters,sh));
+  }
+  query.append(") AS a WHERE a.rownum BETWEEN ").append(offset).append(" AND ").append(Integer.toString(offset + pagelength));
+  sh.setQueryString(query.toString());
+  return sh;
+}

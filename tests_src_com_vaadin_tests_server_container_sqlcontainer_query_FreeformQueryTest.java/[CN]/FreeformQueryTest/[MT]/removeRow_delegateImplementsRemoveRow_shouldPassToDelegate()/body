@@ -1,0 +1,13 @@
+{
+  FreeformQuery query=new FreeformQuery("SELECT * FROM people",Arrays.asList("ID"),connectionPool);
+  FreeformQueryDelegate delegate=EasyMock.createMock(FreeformQueryDelegate.class);
+  EasyMock.expect(delegate.removeRow(EasyMock.isA(Connection.class),EasyMock.isA(RowItem.class))).andReturn(true);
+  SQLContainer container=EasyMock.createNiceMock(SQLContainer.class);
+  EasyMock.replay(delegate,container);
+  query.setDelegate(delegate);
+  query.beginTransaction();
+  RowItem row=new RowItem(container,new RowId(new Object[]{1}),null);
+  query.removeRow(row);
+  query.commit();
+  EasyMock.verify(delegate,container);
+}

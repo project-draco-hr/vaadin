@@ -1,0 +1,13 @@
+{
+  Connection c=EasyMock.createMock(Connection.class);
+  c.getAutoCommit();
+  EasyMock.expectLastCall().andReturn(false);
+  c.rollback();
+  EasyMock.expectLastCall().andThrow(new SQLException("Rollback failed"));
+  c.close();
+  EasyMock.expectLastCall().atLeastOnce();
+  EasyMock.replay(c);
+  connectionPool.reserveConnection();
+  connectionPool.releaseConnection(c);
+  EasyMock.verify(c);
+}

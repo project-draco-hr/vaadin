@@ -1,0 +1,43 @@
+{
+  if (autoCommit) {
+    try {
+      delegate.beginTransaction();
+      boolean success=true;
+      for (      Object id : getItemIds()) {
+        if (!delegate.removeRow((RowItem)getItem(id))) {
+          success=false;
+        }
+      }
+      if (success) {
+        delegate.commit();
+        debug(null,"All rows removed from DB...");
+        refresh();
+        if (notificationsEnabled) {
+          CacheFlushNotifier.notifyOfCacheFlush(this);
+        }
+      }
+ else {
+        delegate.rollback();
+      }
+      return success;
+    }
+ catch (    SQLException e) {
+      debug(e,null);
+      try {
+        delegate.rollback();
+      }
+ catch (      SQLException ee) {
+        debug(ee,null);
+      }
+      return false;
+    }
+  }
+ else {
+    for (    Object id : getItemIds()) {
+      removedItems.put((RowId)id,(RowItem)getItem(id));
+      cachedItems.remove(id);
+    }
+    refresh();
+    return true;
+  }
+}

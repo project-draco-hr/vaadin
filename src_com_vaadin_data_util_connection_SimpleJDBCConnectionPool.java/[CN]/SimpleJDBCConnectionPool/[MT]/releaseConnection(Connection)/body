@@ -1,0 +1,21 @@
+{
+  if (conn == null || !initialized) {
+    return;
+  }
+  try {
+    if (!conn.getAutoCommit()) {
+      conn.rollback();
+    }
+  }
+ catch (  SQLException e) {
+    try {
+      conn.close();
+    }
+ catch (    SQLException e1) {
+    }
+    reservedConnections.remove(conn);
+    return;
+  }
+  reservedConnections.remove(conn);
+  availableConnections.add(conn);
+}

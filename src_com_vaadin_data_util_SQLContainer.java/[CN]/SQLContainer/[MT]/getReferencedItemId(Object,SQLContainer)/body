@@ -1,0 +1,15 @@
+{
+  if (refdCont == null) {
+    throw new IllegalArgumentException("Referenced SQLContainer can not be null.");
+  }
+  Reference r=references.get(refdCont);
+  if (r == null) {
+    throw new IllegalArgumentException("Reference to the given SQLContainer not defined.");
+  }
+  Object refKey=getContainerProperty(itemId,r.getReferencingColumn()).getValue();
+  refdCont.removeAllContainerFilters();
+  refdCont.addContainerFilter(new Equal(r.getReferencedColumn(),refKey));
+  Object toReturn=refdCont.firstItemId();
+  refdCont.removeAllContainerFilters();
+  return toReturn;
+}

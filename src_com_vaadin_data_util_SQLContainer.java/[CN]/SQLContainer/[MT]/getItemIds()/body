@@ -1,0 +1,50 @@
+{
+  updateCount();
+  ArrayList<RowId> ids=new ArrayList<RowId>();
+  ResultSet rs=null;
+  try {
+    delegate.beginTransaction();
+    rs=delegate.getResults(0,0);
+    List<String> pKeys=delegate.getPrimaryKeyColumns();
+    while (rs.next()) {
+      RowId id=null;
+      if (pKeys.isEmpty()) {
+        id=new ReadOnlyRowId(rs.getRow());
+      }
+ else {
+        Object[] itemId=new Object[pKeys.size()];
+        for (int i=0; i < pKeys.size(); i++) {
+          itemId[i]=rs.getObject(pKeys.get(i));
+        }
+        id=new RowId(itemId);
+      }
+      if (id != null && !removedItems.containsKey(id)) {
+        ids.add(id);
+      }
+    }
+    rs.getStatement().close();
+    rs.close();
+    delegate.commit();
+  }
+ catch (  SQLException e) {
+    debug(e,null);
+    try {
+      delegate.rollback();
+    }
+ catch (    SQLException e1) {
+      debug(e1,null);
+    }
+    try {
+      rs.getStatement().close();
+      rs.close();
+    }
+ catch (    SQLException e1) {
+      debug(e1,null);
+    }
+    throw new RuntimeException("Failed to fetch item indexes.",e);
+  }
+  for (  RowItem item : getFilteredAddedItems()) {
+    ids.add(item.getId());
+  }
+  return Collections.unmodifiableCollection(ids);
+}

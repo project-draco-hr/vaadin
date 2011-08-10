@@ -1,0 +1,19 @@
+{
+  TableQuery tQuery=new TableQuery("people",connectionPool,AllTests.sqlGen);
+  SQLContainer container=new SQLContainer(tQuery);
+  Object id=container.addItem();
+  RowItem row=(RowItem)container.getItem(id);
+  row.getItemProperty("NAME").setValue("R2D2");
+  row.getItemProperty("AGE").setValue(123);
+  tQuery.beginTransaction();
+  tQuery.storeRow(row);
+  tQuery.commit();
+  Connection conn=connectionPool.reserveConnection();
+  PreparedStatement stmt=conn.prepareStatement("SELECT * FROM PEOPLE WHERE \"NAME\" = ?");
+  stmt.setString(1,"R2D2");
+  ResultSet rs=stmt.executeQuery();
+  Assert.assertTrue(rs.next());
+  rs.close();
+  stmt.close();
+  connectionPool.releaseConnection(conn);
+}

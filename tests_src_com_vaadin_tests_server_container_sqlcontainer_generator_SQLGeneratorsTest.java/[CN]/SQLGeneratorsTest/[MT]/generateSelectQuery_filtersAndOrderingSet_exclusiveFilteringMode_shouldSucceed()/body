@@ -1,0 +1,8 @@
+{
+  SQLGenerator sg=new DefaultSQLGenerator();
+  List<Filter> f=new ArrayList<Filter>();
+  f.add(new Or(new Like("name","%lle"),new Like("name","vi%")));
+  List<OrderBy> ob=Arrays.asList(new OrderBy("name",true));
+  StatementHelper sh=sg.generateSelectQuery("TABLE",f,ob,0,0,null);
+  Assert.assertEquals(sh.getQueryString(),"SELECT * FROM TABLE WHERE (\"name\" LIKE ? " + "OR \"name\" LIKE ?) ORDER BY \"name\" ASC");
+}

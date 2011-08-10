@@ -1,0 +1,32 @@
+{
+  if (autoCommit) {
+    try {
+      delegate.beginTransaction();
+      if (delegate.storeRow(changedItem) == 0) {
+        delegate.rollback();
+        refresh();
+        throw new ConcurrentModificationException("Item with the ID '" + changedItem.getId() + "' has been externally modified.");
+      }
+      delegate.commit();
+      if (notificationsEnabled) {
+        CacheFlushNotifier.notifyOfCacheFlush(this);
+      }
+      debug(null,"Row updated to DB...");
+    }
+ catch (    SQLException e) {
+      debug(e,null);
+      try {
+        delegate.rollback();
+      }
+ catch (      SQLException ee) {
+        debug(e,null);
+      }
+      throw new RuntimeException(e);
+    }
+  }
+ else {
+    if (!(changedItem.getId() instanceof TemporaryRowId) && !modifiedItems.contains(changedItem)) {
+      modifiedItems.add(changedItem);
+    }
+  }
+}

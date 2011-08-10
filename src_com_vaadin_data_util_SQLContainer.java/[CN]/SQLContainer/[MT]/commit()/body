@@ -1,0 +1,36 @@
+{
+  try {
+    debug(null,"Commiting changes through delegate...");
+    delegate.beginTransaction();
+    for (    RowItem item : removedItems.values()) {
+      if (!delegate.removeRow(item)) {
+        throw new SQLException("Removal failed for row with ID: " + item.getId());
+      }
+    }
+    for (    RowItem item : modifiedItems) {
+      if (delegate.storeRow(item) > 0) {
+        item.commit();
+      }
+ else {
+        delegate.rollback();
+        refresh();
+        throw new ConcurrentModificationException("Item with the ID '" + item.getId() + "' has been externally modified.");
+      }
+    }
+    for (    RowItem item : addedItems) {
+      delegate.storeRow(item);
+    }
+    delegate.commit();
+    removedItems.clear();
+    addedItems.clear();
+    modifiedItems.clear();
+    refresh();
+    if (notificationsEnabled) {
+      CacheFlushNotifier.notifyOfCacheFlush(this);
+    }
+  }
+ catch (  SQLException e) {
+    delegate.rollback();
+    throw e;
+  }
+}

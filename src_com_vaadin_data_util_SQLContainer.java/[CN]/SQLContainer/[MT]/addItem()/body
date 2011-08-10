@@ -1,0 +1,42 @@
+{
+  Object emptyKey[]=new Object[delegate.getPrimaryKeyColumns().size()];
+  RowId itemId=new TemporaryRowId(emptyKey);
+  List<ColumnProperty> itemProperties=new ArrayList<ColumnProperty>();
+  for (  String propertyId : propertyIds) {
+    itemProperties.add(new ColumnProperty(propertyId,propertyReadOnly.get(propertyId),!propertyReadOnly.get(propertyId),propertyNullable.get(propertyId),null,getType(propertyId)));
+  }
+  RowItem newRowItem=new RowItem(this,itemId,itemProperties);
+  if (autoCommit) {
+    try {
+      if (delegate instanceof TableQuery) {
+        itemId=((TableQuery)delegate).storeRowImmediately(newRowItem);
+      }
+ else {
+        delegate.beginTransaction();
+        delegate.storeRow(newRowItem);
+        delegate.commit();
+      }
+      refresh();
+      if (notificationsEnabled) {
+        CacheFlushNotifier.notifyOfCacheFlush(this);
+      }
+      debug(null,"Row added to DB...");
+      return itemId;
+    }
+ catch (    SQLException e) {
+      debug(e,null);
+      try {
+        delegate.rollback();
+      }
+ catch (      SQLException ee) {
+        debug(ee,null);
+      }
+      return null;
+    }
+  }
+ else {
+    addedItems.add(newRowItem);
+    fireContentsChange();
+    return itemId;
+  }
+}

@@ -1,0 +1,22 @@
+{
+  TableQuery tQuery=new TableQuery("people",connectionPool,AllTests.sqlGen);
+  tQuery.setVersionColumn("ID");
+  SQLContainer container=new SQLContainer(tQuery);
+  container.setAutoCommit(false);
+  Assert.assertEquals(4,container.size());
+  List<Filter> filters=new ArrayList<Filter>();
+  filters.add(new Equal("NAME","Viljami"));
+  tQuery.setFilters(filters);
+  Assert.assertEquals(0,tQuery.getCount());
+  tQuery.setFilters(null);
+  Object item=container.getItem(container.getItemIds().iterator().next());
+  Assert.assertNotNull(item);
+  RowItem ri=(RowItem)item;
+  Assert.assertNotNull(ri.getItemProperty("NAME"));
+  ri.getItemProperty("NAME").setValue("Viljami");
+  container.commit();
+  Assert.assertEquals(4,tQuery.getCount());
+  Assert.assertEquals(4,container.size());
+  tQuery.setFilters(filters);
+  Assert.assertEquals(1,tQuery.getCount());
+}

@@ -1,0 +1,8 @@
+{
+  SQLGenerator sg=new OracleGenerator();
+  List<Filter> f=new ArrayList<Filter>();
+  f.add(new Or(new Like("name","%lle"),new Like("name","vi%")));
+  List<OrderBy> ob=Arrays.asList(new OrderBy("name",true));
+  StatementHelper sh=sg.generateSelectQuery("TABLE",f,ob,4,8,"NAME, ID");
+  Assert.assertEquals(sh.getQueryString(),"SELECT * FROM (SELECT x.*, ROWNUM AS \"rownum\" FROM" + " (SELECT NAME, ID FROM TABLE WHERE (\"name\" LIKE ?" + " OR \"name\" LIKE ?) "+ "ORDER BY \"name\" ASC) x) WHERE \"rownum\" BETWEEN 5 AND 12");
+}

@@ -1,0 +1,33 @@
+{
+  Connection c=null;
+  PreparedStatement pstmt=null;
+  ResultSet genKeys=null;
+  try {
+    if (transactionOpen && activeConnection != null) {
+      c=activeConnection;
+    }
+ else {
+      c=connectionPool.reserveConnection();
+    }
+    pstmt=c.prepareStatement(sh.getQueryString(),primaryKeyColumns.toArray(new String[0]));
+    sh.setParameterValuesToStatement(pstmt);
+    debug("DB -> " + sh.getQueryString());
+    int result=pstmt.executeUpdate();
+    genKeys=pstmt.getGeneratedKeys();
+    RowId newId=getNewRowId(row,genKeys);
+    bufferedEvents.add(new RowIdChangeEvent(row.getId(),newId));
+    return result;
+  }
+  finally {
+    if (genKeys != null) {
+      genKeys.close();
+    }
+    if (pstmt != null) {
+      pstmt.clearParameters();
+      pstmt.close();
+    }
+    if (!transactionOpen) {
+      connectionPool.releaseConnection(c);
+    }
+  }
+}

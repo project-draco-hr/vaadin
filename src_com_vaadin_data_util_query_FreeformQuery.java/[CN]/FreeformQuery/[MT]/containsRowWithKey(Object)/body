@@ -1,0 +1,44 @@
+{
+  String query=null;
+  boolean contains=false;
+  if (delegate != null) {
+    if (delegate instanceof FreeformStatementDelegate) {
+      try {
+        StatementHelper sh=((FreeformStatementDelegate)delegate).getContainsRowQueryStatement(keys);
+        Connection c=getConnection();
+        PreparedStatement pstmt=c.prepareStatement(sh.getQueryString());
+        sh.setParameterValuesToStatement(pstmt);
+        ResultSet rs=pstmt.executeQuery();
+        contains=rs.next();
+        rs.close();
+        pstmt.clearParameters();
+        pstmt.close();
+        releaseConnection(c);
+        return contains;
+      }
+ catch (      UnsupportedOperationException e) {
+      }
+    }
+    try {
+      query=delegate.getContainsRowQueryString(keys);
+    }
+ catch (    UnsupportedOperationException e) {
+      query=modifyWhereClause(keys);
+    }
+  }
+ else {
+    query=modifyWhereClause(keys);
+  }
+  Connection conn=getConnection();
+  try {
+    Statement statement=conn.createStatement();
+    ResultSet rs=statement.executeQuery(query);
+    contains=rs.next();
+    rs.close();
+    statement.close();
+  }
+  finally {
+    releaseConnection(conn);
+  }
+  return contains;
+}

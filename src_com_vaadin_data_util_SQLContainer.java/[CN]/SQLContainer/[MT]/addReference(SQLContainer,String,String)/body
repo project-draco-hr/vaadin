@@ -1,0 +1,15 @@
+{
+  if (refdCont == null) {
+    throw new IllegalArgumentException("Referenced SQLContainer can not be null.");
+  }
+  if (!getContainerPropertyIds().contains(refingCol)) {
+    throw new IllegalArgumentException("Given referencing column name is invalid." + " Please ensure that this container" + " contains a property ID named: "+ refingCol);
+  }
+  if (!refdCont.getContainerPropertyIds().contains(refdCol)) {
+    throw new IllegalArgumentException("Given referenced column name is invalid." + " Please ensure that the referenced container" + " contains a property ID named: "+ refdCol);
+  }
+  if (references.keySet().contains(refdCont)) {
+    throw new IllegalArgumentException("An SQLContainer instance can only be referenced once.");
+  }
+  references.put(refdCont,new Reference(refdCont,refingCol,refdCol));
+}

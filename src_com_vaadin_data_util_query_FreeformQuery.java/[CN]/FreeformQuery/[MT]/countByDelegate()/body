@@ -1,0 +1,41 @@
+{
+  int count=-1;
+  if (delegate == null) {
+    return count;
+  }
+  if (delegate instanceof FreeformStatementDelegate) {
+    try {
+      StatementHelper sh=((FreeformStatementDelegate)delegate).getCountStatement();
+      Connection c=getConnection();
+      PreparedStatement pstmt=c.prepareStatement(sh.getQueryString());
+      sh.setParameterValuesToStatement(pstmt);
+      ResultSet rs=pstmt.executeQuery();
+      rs.next();
+      count=rs.getInt(1);
+      rs.close();
+      pstmt.clearParameters();
+      pstmt.close();
+      releaseConnection(c);
+      return count;
+    }
+ catch (    UnsupportedOperationException e) {
+    }
+  }
+  try {
+    String countQuery=delegate.getCountQuery();
+    if (countQuery != null) {
+      Connection conn=getConnection();
+      Statement statement=conn.createStatement();
+      ResultSet rs=statement.executeQuery(countQuery);
+      rs.next();
+      count=rs.getInt(1);
+      rs.close();
+      statement.close();
+      releaseConnection(conn);
+      return count;
+    }
+  }
+ catch (  UnsupportedOperationException e) {
+  }
+  return count;
+}

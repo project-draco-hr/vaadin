@@ -1,0 +1,91 @@
+{
+  updateCount();
+  ResultSet rs=null;
+  ResultSetMetaData rsmd=null;
+  cachedItems.clear();
+  itemIndexes.clear();
+  try {
+    try {
+      delegate.setOrderBy(sorters);
+    }
+ catch (    UnsupportedOperationException e) {
+      debug(e,null);
+    }
+    delegate.beginTransaction();
+    rs=delegate.getResults(currentOffset,pageLength * CACHE_RATIO);
+    rsmd=rs.getMetaData();
+    List<String> pKeys=delegate.getPrimaryKeyColumns();
+    ColumnProperty cp=null;
+    int rowCount=currentOffset;
+    if (!delegate.implementationRespectsPagingLimits()) {
+      rowCount=currentOffset=0;
+      setPageLengthInternal(size);
+    }
+    while (rs.next()) {
+      List<ColumnProperty> itemProperties=new ArrayList<ColumnProperty>();
+      Object[] itemId=new Object[pKeys.size()];
+      for (int i=0; i < pKeys.size(); i++) {
+        itemId[i]=rs.getObject(pKeys.get(i));
+      }
+      RowId id=null;
+      if (pKeys.isEmpty()) {
+        id=new ReadOnlyRowId(rs.getRow());
+      }
+ else {
+        id=new RowId(itemId);
+      }
+      List<String> propertiesToAdd=new ArrayList<String>(propertyIds);
+      if (!removedItems.containsKey(id)) {
+        for (int i=1; i <= rsmd.getColumnCount(); i++) {
+          if (!isColumnIdentifierValid(rsmd.getColumnLabel(i))) {
+            continue;
+          }
+          String colName=rsmd.getColumnLabel(i);
+          Object value=rs.getObject(i);
+          Class<?> type=value != null ? value.getClass() : Object.class;
+          if (value == null) {
+            for (            String propName : propertyTypes.keySet()) {
+              if (propName.equals(rsmd.getColumnLabel(i))) {
+                type=propertyTypes.get(propName);
+                break;
+              }
+            }
+          }
+          if (propertiesToAdd.contains(colName)) {
+            cp=new ColumnProperty(colName,propertyReadOnly.get(colName),!propertyReadOnly.get(colName),propertyNullable.get(colName),value,type);
+            itemProperties.add(cp);
+            propertiesToAdd.remove(colName);
+          }
+        }
+        itemIndexes.put(rowCount,id);
+        cachedItems.put(id,new RowItem(this,id,itemProperties));
+        rowCount++;
+      }
+    }
+    rs.getStatement().close();
+    rs.close();
+    delegate.commit();
+    debug(null,"Fetched " + pageLength * CACHE_RATIO + " rows starting from " + currentOffset);
+  }
+ catch (  SQLException e) {
+    debug(e,null);
+    try {
+      delegate.rollback();
+    }
+ catch (    SQLException e1) {
+      debug(e1,null);
+    }
+    try {
+      if (rs != null) {
+        if (rs.getStatement() != null) {
+          rs.getStatement().close();
+          rs.close();
+        }
+      }
+    }
+ catch (    SQLException e1) {
+      debug(e1,null);
+    }
+    throw new RuntimeException("Failed to fetch page.",e);
+  }
+}

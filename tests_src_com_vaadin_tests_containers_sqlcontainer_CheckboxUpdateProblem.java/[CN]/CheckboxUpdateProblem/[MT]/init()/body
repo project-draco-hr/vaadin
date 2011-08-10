@@ -1,0 +1,24 @@
+{
+  setMainWindow(new Window("Test window"));
+  horizontalSplit.setSizeFull();
+  testList=new Table();
+  horizontalSplit.setFirstComponent(testList);
+  testList.setSizeFull();
+  testList.setContainerDataSource(databaseHelper.getTestContainer());
+  testList.setSelectable(true);
+  testList.setImmediate(true);
+  testList.addListener(this);
+  databaseHelper.getTestContainer().addListener(new ItemSetChangeListener(){
+    public void containerItemSetChange(    ItemSetChangeEvent event){
+      Object selected=testList.getValue();
+      if (selected != null) {
+        testForm.setItemDataSource(testList.getItem(selected));
+      }
+    }
+  }
+);
+  testForm=new TestForm();
+  testForm.setItemDataSource(null);
+  horizontalSplit.setSecondComponent(testForm);
+  getMainWindow().setContent(horizontalSplit);
+}

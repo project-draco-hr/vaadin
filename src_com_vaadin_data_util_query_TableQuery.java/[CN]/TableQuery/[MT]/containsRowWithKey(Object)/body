@@ -1,0 +1,34 @@
+{
+  ArrayList<Filter> filtersAndKeys=new ArrayList<Filter>();
+  if (filters != null) {
+    filtersAndKeys.addAll(filters);
+  }
+  int ix=0;
+  for (  String colName : primaryKeyColumns) {
+    filtersAndKeys.add(new Equal(colName,keys[ix]));
+    ix++;
+  }
+  StatementHelper sh=sqlGenerator.generateSelectQuery(tableName,filtersAndKeys,orderBys,0,0,"*");
+  boolean shouldCloseTransaction=false;
+  if (!transactionOpen) {
+    shouldCloseTransaction=true;
+    beginTransaction();
+  }
+  ResultSet rs=null;
+  try {
+    rs=executeQuery(sh);
+    boolean contains=rs.next();
+    return contains;
+  }
+  finally {
+    if (rs != null) {
+      if (rs.getStatement() != null) {
+        rs.getStatement().close();
+      }
+      rs.close();
+    }
+    if (shouldCloseTransaction) {
+      commit();
+    }
+  }
+}

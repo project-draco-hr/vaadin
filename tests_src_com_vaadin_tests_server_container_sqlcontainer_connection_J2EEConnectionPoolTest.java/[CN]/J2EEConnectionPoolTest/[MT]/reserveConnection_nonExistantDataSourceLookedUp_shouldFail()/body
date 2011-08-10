@@ -1,0 +1,11 @@
+{
+  System.setProperty("java.naming.factory.initial","com.vaadin.addon.sqlcontainer.connection.MockInitialContextFactory");
+  Context context=EasyMock.createMock(Context.class);
+  context.lookup("foo");
+  EasyMock.expectLastCall().andThrow(new NamingException("fail"));
+  MockInitialContextFactory.setMockContext(context);
+  EasyMock.replay(context);
+  J2EEConnectionPool pool=new J2EEConnectionPool("foo");
+  Connection c=pool.reserveConnection();
+  EasyMock.verify(context);
+}

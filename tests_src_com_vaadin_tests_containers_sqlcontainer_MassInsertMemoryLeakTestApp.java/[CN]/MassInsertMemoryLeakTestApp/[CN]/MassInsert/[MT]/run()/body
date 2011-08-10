@@ -1,0 +1,32 @@
+{
+  JDBCConnectionPool pool=getConnectionPool();
+  if (pool != null) {
+    try {
+      int cents=100;
+      for (int cent=0; cent < cents; cent++) {
+        TableQuery q=new TableQuery("AUTHOR",pool);
+        q.setVersionColumn("ID");
+        SQLContainer c=new SQLContainer(q);
+        for (int i=0; i < 100; i++) {
+          Object id=c.addItem();
+          c.getContainerProperty(id,"FIRST_NAMES").setValue(getRandonName());
+          c.getContainerProperty(id,"LAST_NAME").setValue(getRandonName());
+        }
+        c.commit();
+synchronized (MassInsertMemoryLeakTestApp.this) {
+          proggress.setValue(new Float((1.0f * cent) / cents));
+          proggress.setCaption("" + 100 * cent + " rows inserted");
+        }
+      }
+    }
+ catch (    SQLException e) {
+      getMainWindow().showNotification("SQLException while processing",e.getLocalizedMessage());
+      e.printStackTrace();
+    }
+  }
+synchronized (MassInsertMemoryLeakTestApp.this) {
+    proggress.setVisible(false);
+    proggress.setPollingInterval(0);
+    process.setEnabled(true);
+  }
+}
