@@ -2,10 +2,19 @@
   if (event.getTypeInt() == Event.ONCLICK) {
     final Element target=DOM.eventGetTarget(event);
     if (target == up || target == DOM.getChild(up,0)) {
-      filterOptions(currentPage - 1,lastFilter);
+      lazyPageScroller.scrollUp();
     }
  else     if (target == down || target == DOM.getChild(down,0)) {
-      filterOptions(currentPage + 1,lastFilter);
+      lazyPageScroller.scrollDown();
+    }
+  }
+ else   if (event.getTypeInt() == Event.ONMOUSEWHEEL) {
+    int velocity=event.getMouseWheelVelocityY();
+    if (velocity > 0) {
+      lazyPageScroller.scrollDown();
+    }
+ else {
+      lazyPageScroller.scrollUp();
     }
   }
   handleMouseDownEvent(event);
