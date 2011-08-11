@@ -18,17 +18,20 @@ case Event.ONCLICK:
     }
   break;
 case Event.ONMOUSEDOWN:
+if (DOM.isOrHasChild(getElement(),DOM.eventGetTarget(event))) {
+  setHovering(true);
+}
 if (event.getButton() == Event.BUTTON_LEFT) {
-  mousedownX=event.getClientX();
-  mousedownY=event.getClientY();
-  disallowNextClick=true;
-  clickPending=true;
-  setFocus(true);
-  DOM.setCapture(getElement());
-  isCapturing=true;
-  if (BrowserInfo.get().isIE() || BrowserInfo.get().isOpera()) {
-    addStyleName(CLASSNAME_PRESSED);
-  }
+mousedownX=event.getClientX();
+mousedownY=event.getClientY();
+disallowNextClick=true;
+clickPending=true;
+setFocus(true);
+DOM.setCapture(getElement());
+isCapturing=true;
+if (BrowserInfo.get().isIE() || BrowserInfo.get().isOpera()) {
+  addStyleName(CLASSNAME_PRESSED);
+}
 }
 break;
 case Event.ONMOUSEUP:
@@ -62,13 +65,6 @@ if (isCapturing) {
 setHovering(false);
 if (BrowserInfo.get().isIE() || BrowserInfo.get().isOpera()) {
 removeStyleName(CLASSNAME_PRESSED);
-}
-}
-break;
-case Event.ONMOUSEOVER:
-if (DOM.isOrHasChild(getElement(),DOM.eventGetTarget(event))) {
-setHovering(true);
-if (isCapturing) {
 }
 }
 break;
