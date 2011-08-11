@@ -1,0 +1,15 @@
+{
+  final VNotification notification=GWT.create(VNotification.class);
+  notification.delayMsec=delayMsec;
+  if (BrowserInfo.get().isTouchDevice()) {
+    new Timer(){
+      @Override public void run(){
+        if (notification.isAttached()) {
+          notification.fade();
+        }
+      }
+    }
+.schedule(notification.delayMsec + TOUCH_DEVICE_IDLE_DELAY);
+  }
+  return notification;
+}
