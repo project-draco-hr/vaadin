@@ -2,28 +2,28 @@
   if (keycode == KeyCodes.KEY_TAB || keycode == KeyCodes.KEY_SHIFT) {
     return false;
   }
-  if (selectMode == SELECT_MODE_NONE && keycode == getNavigationDownKey()) {
+  if (!isSelectable() && keycode == getNavigationDownKey()) {
     scrollBodyPanel.setScrollPosition(scrollBodyPanel.getScrollPosition() + scrollingVelocity);
     return true;
   }
  else   if (keycode == getNavigationDownKey()) {
-    if (selectMode == SELECT_MODE_MULTI && moveFocusDown()) {
+    if (isMultiSelectModeAny() && moveFocusDown()) {
       selectFocusedRow(ctrl,shift);
     }
- else     if (selectMode == SELECT_MODE_SINGLE && !shift && moveFocusDown()) {
+ else     if (isSingleSelectMode() && !shift && moveFocusDown()) {
       selectFocusedRow(ctrl,shift);
     }
     return true;
   }
-  if (selectMode == SELECT_MODE_NONE && keycode == getNavigationUpKey()) {
+  if (!isSelectable() && keycode == getNavigationUpKey()) {
     scrollBodyPanel.setScrollPosition(scrollBodyPanel.getScrollPosition() - scrollingVelocity);
     return true;
   }
  else   if (keycode == getNavigationUpKey()) {
-    if (selectMode == SELECT_MODE_MULTI && moveFocusUp()) {
+    if (isMultiSelectModeAny() && moveFocusUp()) {
       selectFocusedRow(ctrl,shift);
     }
- else     if (selectMode == SELECT_MODE_SINGLE && !shift && moveFocusUp()) {
+ else     if (isSingleSelectMode() && !shift && moveFocusUp()) {
       selectFocusedRow(ctrl,shift);
     }
     return true;
@@ -37,7 +37,7 @@
     return true;
   }
   if (isSelectable() && keycode == getNavigationSelectKey()) {
-    if (selectMode == SELECT_MODE_SINGLE) {
+    if (isSingleSelectMode()) {
       boolean wasSelected=focusedRow.isSelected();
       deselectAll();
       if (!wasSelected || !nullSelectionAllowed) {

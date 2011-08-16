@@ -25,11 +25,11 @@ case Event.ONMOUSEUP:
     mDown=false;
     handleClickEvent(event,targetTdOrTr);
     if (event.getButton() == Event.BUTTON_LEFT && isSelectable()) {
-      if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+      if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && isMultiSelectModeDefault()) {
         toggleShiftSelection(false);
         setRowFocus(this);
       }
- else       if ((event.getCtrlKey() || event.getMetaKey()) && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+ else       if ((event.getCtrlKey() || event.getMetaKey()) && isMultiSelectModeDefault()) {
         boolean wasSelected=isSelected();
         toggleSelection();
         setRowFocus(this);
@@ -38,7 +38,7 @@ case Event.ONMOUSEUP:
           removeRowFromUnsentSelectionRanges(this);
         }
       }
- else       if ((event.getCtrlKey() || event.getMetaKey() && selectMode == SELECT_MODE_SINGLE)) {
+ else       if ((event.getCtrlKey() || event.getMetaKey()) && isSingleSelectMode()) {
         if (!isSelected() || (isSelected() && nullSelectionAllowed)) {
           if (!isSelected()) {
             deselectAll();
@@ -47,18 +47,18 @@ case Event.ONMOUSEUP:
           setRowFocus(this);
         }
       }
- else       if (event.getShiftKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+ else       if (event.getShiftKey() && isMultiSelectModeDefault()) {
         toggleShiftSelection(true);
       }
  else {
         boolean currentlyJustThisRowSelected=selectedRowKeys.size() == 1 && selectedRowKeys.contains(getKey());
         if (!currentlyJustThisRowSelected) {
-          if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
+          if (isMultiSelectModeDefault()) {
             deselectAll();
           }
           toggleSelection();
         }
- else         if ((selectMode == SELECT_MODE_SINGLE || multiselectmode == MULTISELECT_MODE_SIMPLE) && nullSelectionAllowed) {
+ else         if ((isSingleSelectMode() || isMultiSelectModeSimple()) && nullSelectionAllowed) {
           toggleSelection();
         }
         selectionRangeStart=this;
@@ -133,7 +133,7 @@ ensureFocus();
 if (dragmode != 0 && (event.getButton() == NativeEvent.BUTTON_LEFT)) {
 startRowDrag(event,type,targetTdOrTr);
 }
- else if (event.getCtrlKey() || event.getShiftKey() || event.getMetaKey() && selectMode == SELECT_MODE_MULTI && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+ else if (event.getCtrlKey() || event.getShiftKey() || event.getMetaKey() && isMultiSelectModeDefault()) {
 event.preventDefault();
 if (BrowserInfo.get().isIE()) {
 ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",getPreventTextSelectionIEHack());
