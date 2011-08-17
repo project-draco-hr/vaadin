@@ -1,0 +1,19 @@
+{
+  List<VScrollTableRow> rowsToDelete=new ArrayList<VScrollTableRow>();
+  for (int ix=firstIndex; ix < firstIndex + rows; ix++) {
+    VScrollTableRow row=getRowByRowIndex(ix);
+    if (row != null) {
+      rowsToDelete.add(row);
+    }
+  }
+  RowCollapseAnimation anim=new RowCollapseAnimation(rowsToDelete){
+    @Override protected void onComplete(){
+      super.onComplete();
+      unlinkRows(firstIndex,rows);
+      discardRowsOutsideCacheWindow();
+      ensureCacheFilled();
+    }
+  }
+;
+  anim.run(150);
+}

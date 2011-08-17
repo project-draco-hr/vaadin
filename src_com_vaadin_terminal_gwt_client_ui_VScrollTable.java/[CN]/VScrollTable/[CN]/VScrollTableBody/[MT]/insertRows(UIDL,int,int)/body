@@ -1,10 +1,12 @@
 {
   aligns=tHead.getColumnAlignments();
   final Iterator<?> it=rowData.getChildIterator();
+  List<VScrollTableRow> insertedRows=new ArrayList<VScrollTableRow>();
   if (firstIndex == lastRendered + 1) {
     while (it.hasNext()) {
       final VScrollTableRow row=prepareRow((UIDL)it.next());
       addRow(row);
+      insertedRows.add(row);
       lastRendered++;
     }
     fixSpacers();
@@ -18,16 +20,20 @@
     }
     for (i=0; i < rows; i++) {
       addRowBeforeFirstRendered(rowArray[i]);
+      insertedRows.add(rowArray[i]);
       firstRendered--;
     }
   }
  else {
     int realIx=firstIndex - firstRendered;
     while (it.hasNext()) {
-      insertRowAt(prepareRow((UIDL)it.next()),realIx);
+      VScrollTableRow row=prepareRow((UIDL)it.next());
+      insertRowAt(row,realIx);
+      insertedRows.add(row);
       lastRendered++;
       realIx++;
     }
     fixSpacers();
   }
+  return insertedRows;
 }
