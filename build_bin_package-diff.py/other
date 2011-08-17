@@ -11,7 +11,7 @@ pin.close()
 latestversion = latestdata[0].strip()
 latestpath = latestdata[1].strip()
 latestURL = (((downloadsite + '/') + latestpath) + '/')
-latestfilename = ('vaadin-%s.zip' % latestversion)
+latestfilename = ('vaadin-%s.jar' % latestversion)
 latestpackage = (latestURL + latestfilename)
 locallatestpackage = ('/tmp/%s' % latestfilename)
 print ('Latest version:      %s' % latestversion)
@@ -24,22 +24,11 @@ except OSError:
     print ('Downloading latest release package %s to %s' % (latestpackage, locallatestpackage))
     wgetcmd = ('wget -q -O %s %s' % (locallatestpackage, latestpackage))
     command(wgetcmd)
-latestfiles = listZipFiles(locallatestpackage)
 builtversion = sys.argv[1]
-builtpackage = ('build/result/vaadin-%s.zip' % builtversion)
-builtfiles = listZipFiles(builtpackage)
-print '\n--------------------------------------------------------------------------------\nVaadin ZIP differences'
-newfiles = diffFiles(builtfiles, latestfiles)
-print ('\n%d new files:' % len(newfiles))
-for item in newfiles:
-    print item
-removed = diffFiles(latestfiles, builtfiles)
-print ('\n%d removed files:' % len(removed))
-for item in removed:
-    print item
+builtpackage = ('build/result/vaadin-%s/WebContent/vaadin-%s.jar' % (builtversion, builtversion))
 print '\n--------------------------------------------------------------------------------\nVaadin JAR differences'
-latestJarFiles = listZipVaadinJarFiles(locallatestpackage, latestversion)
-builtJarFiles = listZipVaadinJarFiles(builtpackage, builtversion)
+latestJarFiles = listJarFiles(locallatestpackage)
+builtJarFiles = listJarFiles(builtpackage)
 newfiles = diffFiles(builtJarFiles, latestJarFiles)
 print ('\n%d new files:' % len(newfiles))
 for item in newfiles:
