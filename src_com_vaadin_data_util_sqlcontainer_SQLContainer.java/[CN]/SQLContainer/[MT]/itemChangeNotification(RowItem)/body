@@ -11,15 +11,15 @@
       if (notificationsEnabled) {
         CacheFlushNotifier.notifyOfCacheFlush(this);
       }
-      debug(null,"Row updated to DB...");
+      logger.log(Level.INFO,"Row updated to DB...");
     }
  catch (    SQLException e) {
-      debug(e,null);
+      logger.log(Level.WARNING,"itemChangeNotification failed, rolling back...",e);
       try {
         delegate.rollback();
       }
  catch (      SQLException ee) {
-        debug(e,null);
+        logger.log(Level.SEVERE,"Rollback failed",e);
       }
       throw new RuntimeException(e);
     }

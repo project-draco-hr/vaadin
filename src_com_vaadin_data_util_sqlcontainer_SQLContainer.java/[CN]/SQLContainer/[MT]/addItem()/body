@@ -20,16 +20,16 @@
       if (notificationsEnabled) {
         CacheFlushNotifier.notifyOfCacheFlush(this);
       }
-      debug(null,"Row added to DB...");
+      logger.log(Level.INFO,"Row added to DB...");
       return itemId;
     }
  catch (    SQLException e) {
-      debug(e,null);
+      logger.log(Level.WARNING,"Failed to add row to DB. Rolling back.",e);
       try {
         delegate.rollback();
       }
  catch (      SQLException ee) {
-        debug(ee,null);
+        logger.log(Level.SEVERE,"Failed to roll back row addition",e);
       }
       return null;
     }

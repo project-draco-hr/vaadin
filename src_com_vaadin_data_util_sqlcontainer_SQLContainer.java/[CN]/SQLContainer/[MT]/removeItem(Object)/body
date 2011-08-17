@@ -23,17 +23,17 @@
         CacheFlushNotifier.notifyOfCacheFlush(this);
       }
       if (success) {
-        debug(null,"Row removed from DB...");
+        logger.log(Level.INFO,"Row removed from DB...");
       }
       return success;
     }
  catch (    SQLException e) {
-      debug(e,null);
+      logger.log(Level.WARNING,"Failed to remove row, rolling back",e);
       try {
         delegate.rollback();
       }
  catch (      SQLException ee) {
-        debug(ee,null);
+        logger.log(Level.SEVERE,"Failed to rollback row removal",ee);
       }
       return false;
     }
