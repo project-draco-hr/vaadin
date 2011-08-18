@@ -1,33 +1,16 @@
 {
-  TabSheetCaption c=tb.getTab(index);
-  if (c == null) {
-    c=new TabSheetCaption();
-    tb.addTab(c);
+  Tab tab=tb.getTab(index);
+  if (tab == null) {
+    tab=tb.addTab();
   }
-  c.updateCaption(tabUidl);
-  String styleName=tabUidl.getStringAttribute(TAB_STYLE_NAME);
-  String oldStyleName=tabStyles.get(index);
-  Element td=(Element)tb.tr.getChild(index);
-  if (styleName != null && styleName.length() != 0) {
-    if (!styleName.equals(oldStyleName)) {
-      if (oldStyleName != null && oldStyleName.length() != 0) {
-        td.removeClassName(ITEMCELL_CLASSNAME + "-" + oldStyleName);
-      }
-      td.addClassName(ITEMCELL_CLASSNAME + "-" + styleName);
-      tabStyles.set(index,styleName);
-    }
-  }
- else   if (oldStyleName != null) {
-    td.removeClassName(ITEMCELL_CLASSNAME + "-" + oldStyleName);
-    tabStyles.set(index,null);
-  }
-  c.setHidden(hidden);
+  tab.updateFromUIDL(tabUidl);
+  tab.setEnabledOnServer((!disabledTabKeys.contains(tabKeys.get(index))));
+  tab.setHiddenOnServer(hidden);
   if (scrolledOutOfView(index)) {
     hidden=true;
   }
-  tb.setVisible(index,!hidden);
-  c.setWidth(c.getRequiredWidth() + "px");
-  captions.put("" + index,c);
+  tab.setVisible(!hidden);
+  tab.recalculateCaptionWidth();
   UIDL tabContentUIDL=null;
   Paintable tabContent=null;
   if (tabUidl.getChildCount() > 0) {
