@@ -1,13 +1,16 @@
 {
   if (tBodyMeasurementsDone) {
-    NodeList<TableRowElement> rows=tBodyElement.getRows();
-    if (rows.getLength() == 0) {
+    if (renderedRows.isEmpty()) {
       return 0;
     }
- else {
-      com.google.gwt.dom.client.Element wrapperdiv=rows.getItem(0).getCells().getItem(columnIndex).getFirstChildElement();
-      return wrapperdiv.getOffsetWidth();
+    for (    Widget row : renderedRows) {
+      if (!(row instanceof VScrollTableGeneratedRow)) {
+        TableRowElement tr=row.getElement().cast();
+        Element wrapperdiv=tr.getCells().getItem(columnIndex).getFirstChildElement().cast();
+        return wrapperdiv.getOffsetWidth();
+      }
     }
+    return 0;
   }
  else {
     return 0;

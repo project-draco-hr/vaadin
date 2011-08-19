@@ -1,0 +1,25 @@
+{
+  final Iterator<?> cells=uidl.getChildIterator();
+  while (cells.hasNext()) {
+    final Object cell=cells.next();
+    visibleColumnIndex++;
+    String columnId=visibleColOrder[visibleColumnIndex];
+    String style="";
+    if (uidl.hasAttribute("style-" + columnId)) {
+      style=uidl.getStringAttribute("style-" + columnId);
+    }
+    String description=null;
+    if (uidl.hasAttribute("descr-" + columnId)) {
+      description=uidl.getStringAttribute("descr-" + columnId);
+    }
+    boolean sorted=tHead.getHeaderCell(col).isSorted();
+    if (cell instanceof String) {
+      addCell(uidl,cell.toString(),aligns[col++],style,isRenderCellsAsHtml(),sorted,description);
+    }
+ else {
+      final Paintable cellContent=client.getPaintable((UIDL)cell);
+      addCell(uidl,(Widget)cellContent,aligns[col++],style,sorted);
+      paintComponent(cellContent,(UIDL)cell);
+    }
+  }
+}

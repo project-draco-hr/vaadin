@@ -1,10 +1,18 @@
 {
-  NodeList<TableRowElement> rows2=tBodyElement.getRows();
-  final int rows=rows2.getLength();
-  for (int i=0; i < rows; i++) {
-    TableRowElement row=rows2.getItem(i);
-    TableCellElement cell=row.getCells().getItem(colIndex);
-    cell.getFirstChildElement().getStyle().setPropertyPx("width",w);
-    cell.getStyle().setPropertyPx("width",w);
+  for (  Widget row : renderedRows) {
+    TableRowElement tr=row.getElement().cast();
+    TableCellElement cell=tr.getCells().getItem(colIndex);
+    boolean spanned=false;
+    if (row instanceof VScrollTableGeneratedRow) {
+      spanned=((VScrollTableGeneratedRow)row).isSpanColumns();
+    }
+    if (!spanned) {
+      cell.getFirstChildElement().getStyle().setPropertyPx("width",w);
+      cell.getStyle().setPropertyPx("width",w);
+    }
+ else     if (colIndex == 0) {
+      cell.getFirstChildElement().getStyle().clearProperty("width");
+      cell.getStyle().clearProperty("width");
+    }
   }
 }

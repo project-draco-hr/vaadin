@@ -48,45 +48,59 @@ default :
 }
 cells[CELL_ICON][i]=getItemIcon(id);
 }
+GeneratedRow generatedRow=rowGenerator != null ? rowGenerator.generateRow(this,id) : null;
+cells[CELL_GENERATED_ROW][i]=generatedRow;
 for (int j=0; j < cols; j++) {
 if (isColumnCollapsed(colids[j])) {
   continue;
 }
 Property p=null;
 Object value="";
-boolean isGenerated=columnGenerators.containsKey(colids[j]);
+boolean isGeneratedRow=generatedRow != null;
+boolean isGeneratedColumn=columnGenerators.containsKey(colids[j]);
+boolean isGenerated=isGeneratedRow || isGeneratedColumn;
 if (!isGenerated) {
   p=getContainerProperty(id,colids[j]);
 }
-int index=firstIndex + i;
-if (p != null || isGenerated) {
-  if (index < firstIndexNotInCache && index >= pageBufferFirstIndex) {
-    int indexInOldBuffer=index - pageBufferFirstIndex;
-    value=pageBuffer[CELL_FIRSTCOL + j][indexInOldBuffer];
-    if (!isGenerated && iscomponent[j] || !(value instanceof Component)) {
-      listenProperty(p,oldListenedProperties);
-    }
+if (isGeneratedRow) {
+  if (generatedRow.isSpanColumns() && j > 0) {
+    value=null;
   }
+ else   if (generatedRow.getText().length > j) {
+    value=generatedRow.getText()[j];
+  }
+}
  else {
-    if (isGenerated) {
-      ColumnGenerator cg=columnGenerators.get(colids[j]);
-      value=cg.generateCell(this,id,colids[j]);
-      if (value != null && !(value instanceof Component) && !(value instanceof String)) {
-        value=value.toString();
-      }
-    }
- else     if (iscomponent[j]) {
-      value=p.getValue();
-      listenProperty(p,oldListenedProperties);
-    }
- else     if (p != null) {
-      value=getPropertyValue(id,colids[j],p);
-      if (!(value instanceof Component)) {
+  int index=firstIndex + i;
+  if (p != null || isGenerated) {
+    int indexInOldBuffer=index - pageBufferFirstIndex;
+    if (index < firstIndexNotInCache && index >= pageBufferFirstIndex && pageBuffer[CELL_GENERATED_ROW][indexInOldBuffer] == null) {
+      value=pageBuffer[CELL_FIRSTCOL + j][indexInOldBuffer];
+      if (!isGeneratedColumn && iscomponent[j] || !(value instanceof Component)) {
         listenProperty(p,oldListenedProperties);
       }
     }
  else {
-      value=getPropertyValue(id,colids[j],null);
+      if (isGeneratedColumn) {
+        ColumnGenerator cg=columnGenerators.get(colids[j]);
+        value=cg.generateCell(this,id,colids[j]);
+        if (value != null && !(value instanceof Component) && !(value instanceof String)) {
+          value=value.toString();
+        }
+      }
+ else       if (iscomponent[j]) {
+        value=p.getValue();
+        listenProperty(p,oldListenedProperties);
+      }
+ else       if (p != null) {
+        value=getPropertyValue(id,colids[j],p);
+        if (!(value instanceof Component)) {
+          listenProperty(p,oldListenedProperties);
+        }
+      }
+ else {
+        value=getPropertyValue(id,colids[j],null);
+      }
     }
   }
 }
