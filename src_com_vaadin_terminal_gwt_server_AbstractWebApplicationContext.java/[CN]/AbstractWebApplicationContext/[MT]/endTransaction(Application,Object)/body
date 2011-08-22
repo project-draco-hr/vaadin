@@ -1,16 +1,18 @@
 {
   LinkedList<Exception> exceptions=null;
+  ArrayList<TransactionListener> currentListeners;
 synchronized (listeners) {
-    for (    TransactionListener listener : listeners) {
-      try {
-        listener.transactionEnd(application,request);
+    currentListeners=new ArrayList<TransactionListener>(listeners);
+  }
+  for (  TransactionListener listener : currentListeners) {
+    try {
+      listener.transactionEnd(application,request);
+    }
+ catch (    final RuntimeException t) {
+      if (exceptions == null) {
+        exceptions=new LinkedList<Exception>();
       }
- catch (      final RuntimeException t) {
-        if (exceptions == null) {
-          exceptions=new LinkedList<Exception>();
-        }
-        exceptions.add(t);
-      }
+      exceptions.add(t);
     }
   }
   if (exceptions != null) {
