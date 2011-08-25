@@ -3,19 +3,26 @@
   for (final Iterator<?> it=uidl.getChildIterator(); it.hasNext(); ) {
     final UIDL opUidl=(UIDL)it.next();
     CheckBox op;
-    String caption=opUidl.getStringAttribute("caption");
+    String itemHtml=opUidl.getStringAttribute("caption");
+    if (!htmlContentAllowed) {
+      itemHtml=Util.escapeHTML(itemHtml);
+    }
+    String icon=opUidl.getStringAttribute("icon");
+    if (icon != null && icon.length() != 0) {
+      String iconUrl=client.translateVaadinUri(icon);
+      itemHtml="<img src=\"" + iconUrl + "\" class=\""+ Icon.CLASSNAME+ "\" alt=\"\" />"+ itemHtml;
+    }
     if (isMultiselect()) {
       op=new VCheckBox();
-      if (htmlContentAllowed) {
-        op.setHTML(caption);
-      }
- else {
-        op.setText(caption);
-      }
+      op.setHTML(itemHtml);
     }
  else {
-      op=new RadioButton(id,caption,htmlContentAllowed);
+      op=new RadioButton(id,itemHtml,true);
       op.setStyleName("v-radiobutton");
+    }
+    if (icon != null && icon.length() != 0) {
+      Util.sinkOnloadForImages(op.getElement());
+      op.addHandler(iconLoadHandler,LoadEvent.getType());
     }
     op.addStyleName(CLASSNAME_OPTION);
     op.setValue(opUidl.getBooleanAttribute("selected"));
