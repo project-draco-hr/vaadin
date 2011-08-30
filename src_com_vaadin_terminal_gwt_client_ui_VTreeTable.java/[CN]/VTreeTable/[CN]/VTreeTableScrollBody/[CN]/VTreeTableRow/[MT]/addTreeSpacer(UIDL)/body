@@ -15,6 +15,11 @@
       classname+=open ? " v-treetable-node-open" : " v-treetable-node-closed";
     }
     treeSpacer=Document.get().createSpanElement();
+    if (BrowserInfo.get().isIE6()) {
+      SpanElement ieSpacerHolder=Document.get().createSpanElement();
+      ieSpacerHolder.addClassName("v-treetable-spacer-ie");
+      treeSpacer.insertFirst(ieSpacerHolder);
+    }
     treeSpacer.setClassName(classname);
     container.insertFirst(treeSpacer);
     depth=rowUidl.hasAttribute("depth") ? rowUidl.getIntAttribute("depth") : 0;
