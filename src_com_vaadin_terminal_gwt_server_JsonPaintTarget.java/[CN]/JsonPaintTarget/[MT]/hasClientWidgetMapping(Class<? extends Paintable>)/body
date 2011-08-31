@@ -2,45 +2,28 @@
   try {
     return class1.isAnnotationPresent(ClientWidget.class);
   }
- catch (  RuntimeException e) {
-    if (e.getStackTrace()[0].getClassName().equals("org.glassfish.web.loader.WebappClassLoader")) {
-      String name=class1.getName().replace('.',File.separatorChar) + ".class";
-      try {
-        InputStream stream=class1.getClassLoader().getResourceAsStream(name);
-        BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(stream));
-        try {
-          String line;
-          boolean atSourcefile=false;
-          while ((line=bufferedReader.readLine()) != null) {
-            if (line.startsWith("SourceFile")) {
-              atSourcefile=true;
-            }
-            if (atSourcefile) {
-              if (line.contains("ClientWidget")) {
-                return true;
-              }
-            }
-          }
-        }
- catch (        IOException e1) {
-          logger.log(Level.SEVERE,"An error occurred while finding widget mapping.",e1);
-        }
- finally {
-          try {
-            bufferedReader.close();
-          }
- catch (          IOException e1) {
-            logger.log(Level.SEVERE,"Could not close reader.",e1);
-          }
-        }
+ catch (  NoClassDefFoundError e) {
+    StringWriter writer=new StringWriter();
+    e.printStackTrace(new PrintWriter(writer));
+    String stacktrace=writer.toString();
+    if (stacktrace.contains("com.ibm.oti.reflect.AnnotationParser.parseClass")) {
+      if (bytecodeContainsClientWidgetAnnotation(class1)) {
+        return true;
       }
- catch (      Throwable e2) {
-        logger.log(Level.SEVERE,"An error occurred while finding widget mapping.",e2);
-      }
-      return false;
     }
  else {
       throw e;
     }
   }
+catch (  RuntimeException e) {
+    if (e.getStackTrace()[0].getClassName().equals("org.glassfish.web.loader.WebappClassLoader")) {
+      if (bytecodeContainsClientWidgetAnnotation(class1)) {
+        return true;
+      }
+    }
+ else {
+      throw e;
+    }
+  }
+  return false;
 }
