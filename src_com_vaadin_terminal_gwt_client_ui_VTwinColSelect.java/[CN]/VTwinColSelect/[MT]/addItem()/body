@@ -1,24 +1,5 @@
 {
-  final boolean[] sel=getItemsToAdd();
-  for (int i=0; i < sel.length; i++) {
-    if (sel[i]) {
-      final int optionIndex=i - (sel.length - options.getItemCount());
-      selectedKeys.add(options.getValue(optionIndex));
-      final String text=options.getItemText(optionIndex);
-      final String value=options.getValue(optionIndex);
-      selections.addItem(text,value);
-      selections.setItemSelected(selections.getItemCount() - 1,true);
-      options.removeItem(optionIndex);
-      if (options.getItemCount() > 0) {
-        options.setItemSelected(optionIndex > 0 ? optionIndex - 1 : 0,true);
-      }
-    }
-  }
-  if (options.getItemCount() == 0) {
-    selections.setFocus(true);
-  }
- else {
-    options.setFocus(true);
-  }
+  Set<String> movedItems=moveSelectedItems(options,selections);
+  selectedKeys.addAll(movedItems);
   client.updateVariable(id,"selected",selectedKeys.toArray(new String[selectedKeys.size()]),isImmediate());
 }
