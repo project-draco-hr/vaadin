@@ -1,3 +1,11 @@
 {
-  return internalAddItemAtEnd(itemId,new IndexedContainerItem(itemId),true);
+  Item item=internalAddItemAtEnd(itemId,new IndexedContainerItem(itemId),false);
+  if (!isFiltered()) {
+    fireItemAdded(size() - 1,itemId,item);
+  }
+ else   if (passesFilters(itemId)) {
+    getFilteredItemIds().add(itemId);
+    fireItemAdded(size() - 1,itemId,item);
+  }
+  return item;
 }
