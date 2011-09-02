@@ -8,7 +8,6 @@
     rendering=false;
     return;
   }
-  rowRequestHandler.cancel();
   enabled=!uidl.hasAttribute("disabled");
   if (BrowserInfo.get().isIE8() && !enabled) {
     scrollBodyPanel.getElement().getStyle().setPosition(Position.STATIC);
@@ -57,12 +56,14 @@
   UIDL partialRowAdditions=uidl.getChildByTagName("prows");
   UIDL partialRowUpdates=uidl.getChildByTagName("urows");
   if (partialRowUpdates != null || partialRowAdditions != null) {
+    rowRequestHandler.cancel();
     updateRowsInBody(partialRowUpdates);
     addAndRemoveRows(partialRowAdditions);
   }
  else {
     UIDL rowData=uidl.getChildByTagName("rows");
     if (rowData != null) {
+      rowRequestHandler.cancel();
       if (!recalcWidths && initializedAndAttached) {
         updateBody(rowData,uidl.getIntAttribute("firstrow"),uidl.getIntAttribute("rows"));
         if (headerChangedDuringUpdate) {
@@ -103,7 +104,7 @@
   }
   multiselectPending=false;
   if (focusedRow != null) {
-    if (!focusedRow.isAttached()) {
+    if (!focusedRow.isAttached() && !rowRequestHandler.isRunning()) {
       focusRowFromBody();
     }
   }
