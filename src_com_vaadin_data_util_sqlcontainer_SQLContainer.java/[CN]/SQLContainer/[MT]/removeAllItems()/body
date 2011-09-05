@@ -31,6 +31,16 @@
       }
       return false;
     }
+catch (    OptimisticLockException e) {
+      logger.log(Level.WARNING,"removeAllItems() failed, rolling back",e);
+      try {
+        delegate.rollback();
+      }
+ catch (      SQLException ee) {
+        logger.log(Level.SEVERE,"Failed to roll back",ee);
+      }
+      throw e;
+    }
   }
  else {
     for (    Object id : getItemIds()) {

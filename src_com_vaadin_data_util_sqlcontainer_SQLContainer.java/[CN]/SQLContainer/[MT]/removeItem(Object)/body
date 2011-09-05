@@ -37,6 +37,16 @@
       }
       return false;
     }
+catch (    OptimisticLockException e) {
+      logger.log(Level.WARNING,"Failed to remove row, rolling back",e);
+      try {
+        delegate.rollback();
+      }
+ catch (      SQLException ee) {
+        logger.log(Level.SEVERE,"Failed to rollback row removal",ee);
+      }
+      throw e;
+    }
   }
  else {
     removedItems.put((RowId)itemId,(RowItem)getItem(itemId));
