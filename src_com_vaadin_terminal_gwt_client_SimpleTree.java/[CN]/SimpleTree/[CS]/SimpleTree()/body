@@ -1,0 +1,39 @@
+{
+  setElement(Document.get().createDivElement());
+  Style style=getElement().getStyle();
+  style.setProperty("whiteSpace","nowrap");
+  style.setPadding(3,Unit.PX);
+  style=handle.getStyle();
+  style.setDisplay(Display.NONE);
+  style.setProperty("textAlign","center");
+  style.setWidth(10,Unit.PX);
+  style.setCursor(Cursor.POINTER);
+  style.setBorderStyle(BorderStyle.SOLID);
+  style.setBorderColor("grey");
+  style.setBorderWidth(1,Unit.PX);
+  style.setMarginRight(3,Unit.PX);
+  style.setProperty("border-radius","4px");
+  handle.setInnerHTML("+");
+  getElement().appendChild(handle);
+  getElement().appendChild(text);
+  style=children.getStyle();
+  style.setPaddingLeft(20,Unit.PX);
+  style.setDisplay(Display.NONE);
+  getElement().appendChild(children);
+  addDomHandler(new ClickHandler(){
+    public void onClick(    ClickEvent event){
+      if (event.getNativeEvent().getEventTarget().cast() == handle) {
+        if (children.getStyle().getDisplay().intern() == Display.NONE.getCssName()) {
+          open(event.getNativeEvent().getShiftKey());
+        }
+ else {
+          close();
+        }
+      }
+ else       if (event.getNativeEvent().getEventTarget().cast() == text) {
+        select(event);
+      }
+    }
+  }
+,ClickEvent.getType());
+}

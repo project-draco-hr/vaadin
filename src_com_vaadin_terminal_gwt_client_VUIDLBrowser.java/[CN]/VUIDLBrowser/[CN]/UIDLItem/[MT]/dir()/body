@@ -1,6 +1,5 @@
 {
-  TreeItem temp=getChild(0);
-  removeItem(temp);
+  remove(0);
   String nodeName=uidl.getTag();
   try {
     Integer.parseInt(nodeName);
@@ -30,7 +29,7 @@
   }
   setText(nodeName);
   try {
-    TreeItem tmp=null;
+    SimpleTree tmp=null;
     Set<String> variableNames=uidl.getVariableNames();
     for (    String name : variableNames) {
       String value="";
@@ -53,12 +52,12 @@
         }
       }
       if (tmp == null) {
-        tmp=new TreeItem("variables");
+        tmp=new SimpleTree("variables");
       }
       tmp.addItem(name + "=" + value);
     }
     if (tmp != null) {
-      addItem(tmp);
+      tmp.add(tmp);
     }
   }
  catch (  final Exception e) {
@@ -68,11 +67,20 @@
     final Object child=i.next();
     try {
       final UIDL c=(UIDL)child;
-      final TreeItem childItem=new UIDLItem(c,conf);
-      addItem(childItem);
+      final UIDLItem childItem=new UIDLItem(c,conf);
+      add(childItem);
     }
  catch (    final Exception e) {
       addItem(child.toString());
     }
+  }
+  if (highlightedPid != null && highlightedPid.equals(uidl.getId())) {
+    getElement().getStyle().setBackgroundColor("#fdd");
+    Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+      public void execute(){
+        getElement().scrollIntoView();
+      }
+    }
+);
   }
 }

@@ -1,0 +1,35 @@
+{
+  final String pid=valueMap.getString("id");
+  final Paintable paintable=ac.getPaintable(pid);
+  SimpleTree errorNode=new SimpleTree();
+  VerticalPanel errorDetails=new VerticalPanel();
+  errorDetails.add(new Label(Util.getSimpleName(paintable) + " id: " + pid));
+  if (valueMap.containsKey("heightMsg")) {
+    errorDetails.add(new Label("Height problem: " + valueMap.getString("heightMsg")));
+  }
+  if (valueMap.containsKey("widthMsg")) {
+    errorDetails.add(new Label("Width problem: " + valueMap.getString("widthMsg")));
+  }
+  final CheckBox emphasisInUi=new CheckBox("Emphasize component in UI");
+  emphasisInUi.addClickHandler(new ClickHandler(){
+    public void onClick(    ClickEvent event){
+      if (paintable != null) {
+        Element element2=((Widget)paintable).getElement();
+        Widget.setStyleName(element2,"invalidlayout",emphasisInUi.getValue());
+      }
+    }
+  }
+);
+  errorDetails.add(emphasisInUi);
+  errorNode.add(errorDetails);
+  if (valueMap.containsKey("subErrors")) {
+    HTML l=new HTML("<em>Expand this node to show problems that may be dependent on this problem.</em>");
+    errorDetails.add(l);
+    JsArray<ValueMap> suberrors=valueMap.getJSValueMapArray("subErrors");
+    for (int i=0; i < suberrors.length(); i++) {
+      ValueMap value=suberrors.get(i);
+      printLayoutError(value,errorNode,ac);
+    }
+  }
+  root.add(errorNode);
+}

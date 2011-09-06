@@ -11,14 +11,23 @@
     sinkEvents(Event.MOUSEEVENTS);
     panel.setStyleName("v-debug-console-content");
     caption.setInnerHTML("Debug window");
+    caption.getStyle().setHeight(25,Unit.PX);
     caption.setTitle(help);
     show();
     setToDefaultSizeAndPos();
     actions=new HorizontalPanel();
+    Style style=actions.getElement().getStyle();
+    style.setPosition(Position.ABSOLUTE);
+    style.setBackgroundColor("grey");
+    style.setRight(0,Unit.PX);
+    style.setHeight(25,Unit.PX);
+    style.setTop(0,Unit.PX);
     actions.add(clear);
     actions.add(restart);
     actions.add(forceLayout);
     actions.add(analyzeLayout);
+    actions.add(highlight);
+    highlight.setTitle("Select a component and print details about it to the server log and client side console.");
     actions.add(savePosition);
     savePosition.setTitle("Saves the position and size of debug console to a cookie");
     actions.add(autoScroll);
@@ -106,6 +115,15 @@
       public void onClick(      ClickEvent event){
         String pos=getAbsoluteLeft() + "," + getAbsoluteTop()+ ","+ getOffsetWidth()+ ","+ getOffsetHeight()+ ","+ autoScroll.getValue();
         Cookies.setCookie(POS_COOKIE_NAME,pos);
+      }
+    }
+);
+    highlight.addClickHandler(new ClickHandler(){
+      public void onClick(      ClickEvent event){
+        final Label label=new Label("--");
+        log("<i>Use mouse to select a component or click ESC to exit highlight mode.</i>");
+        panel.add(label);
+        highlightModeRegistration=Event.addNativePreviewHandler(new HighlightModeHandler(label));
       }
     }
 );

@@ -1,32 +1,5 @@
 {
   this.conf=conf;
-  this.uidl=uidl;
-  DOM.setStyleAttribute(getElement(),"position","");
-  final UIDLItem root=new UIDLItem(this.uidl,conf);
-  addItem(root);
-  addOpenHandler(new OpenHandler<TreeItem>(){
-    public void onOpen(    OpenEvent<TreeItem> event){
-      TreeItem item=event.getTarget();
-      if (item.getChildCount() == 1 && item.getChild(0).getText().equals("LOADING")) {
-        ((UIDLItem)item).dir();
-      }
-    }
-  }
-);
-  addSelectionHandler(new SelectionHandler<TreeItem>(){
-    public void onSelection(    SelectionEvent<TreeItem> event){
-      TreeItem item=event.getSelectedItem();
-      if (!(item instanceof UIDLItem)) {
-        return;
-      }
-      UIDLItem selectedItem=(UIDLItem)item;
-      List<ApplicationConnection> runningApplications=ApplicationConfiguration.getRunningApplications();
-      for (      ApplicationConnection applicationConnection : runningApplications) {
-        Paintable paintable=applicationConnection.getPaintable(selectedItem.uidl.getId());
-        highlight(paintable);
-      }
-    }
-  }
-);
-  addMouseOutHandler(VUIDLBrowser.this);
+  final UIDLItem root=new UIDLItem(uidl,conf);
+  add(root);
 }
