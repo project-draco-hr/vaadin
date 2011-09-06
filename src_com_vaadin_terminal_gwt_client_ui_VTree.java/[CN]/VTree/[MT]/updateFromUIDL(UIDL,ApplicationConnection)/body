@@ -19,6 +19,7 @@
     bodyActionKeys=uidl.getStringArrayAttribute("alb");
   }
   body.clear();
+  keyToNode.clear();
   TreeNode childTree=null;
   UIDL childUidl=null;
   for (final Iterator<?> i=uidl.getChildIterator(); i.hasNext(); ) {
@@ -54,6 +55,12 @@
     multiSelectMode=uidl.getIntAttribute("multiselectmode");
   }
   selectedIds=uidl.getStringArrayVariableAsSet("selected");
+  if (lastSelection != null) {
+    lastSelection=keyToNode.get(lastSelection.key);
+  }
+  if (focusedNode != null) {
+    setFocusedNode(keyToNode.get(focusedNode.key));
+  }
   if (lastSelection == null && focusedNode == null && !selectedIds.isEmpty()) {
     setFocusedNode(keyToNode.get(selectedIds.iterator().next()));
     focusedNode.setFocused(false);
