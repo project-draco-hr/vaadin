@@ -1,0 +1,37 @@
+{
+  int allocated=dimensions[spanStartIndex];
+  for (int i=1; i < spanSize; i++) {
+    allocated+=spacingSize + dimensions[spanStartIndex + i];
+  }
+  if (allocated < size) {
+    int neededExtraSpace=size - allocated;
+    int allocatedExtraSpace=0;
+    int totalExpansion=0;
+    for (int i=0; i < spanSize; i++) {
+      int itemIndex=spanStartIndex + i;
+      totalExpansion+=expansionRatios[itemIndex];
+    }
+    for (int i=0; i < spanSize; i++) {
+      int itemIndex=spanStartIndex + i;
+      int expansion;
+      if (totalExpansion == 0) {
+        expansion=neededExtraSpace / spanSize;
+      }
+ else {
+        expansion=neededExtraSpace * expansionRatios[itemIndex] / totalExpansion;
+      }
+      dimensions[itemIndex]+=expansion;
+      allocatedExtraSpace+=expansion;
+    }
+    if (neededExtraSpace > allocatedExtraSpace) {
+      for (int i=0; i < spanSize; i++) {
+        int itemIndex=spanStartIndex + i;
+        dimensions[itemIndex]+=1;
+        allocatedExtraSpace+=1;
+        if (neededExtraSpace == allocatedExtraSpace) {
+          break;
+        }
+      }
+    }
+  }
+}
