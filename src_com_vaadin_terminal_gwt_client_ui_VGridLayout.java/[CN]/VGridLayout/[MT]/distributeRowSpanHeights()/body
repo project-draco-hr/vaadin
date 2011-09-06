@@ -2,29 +2,7 @@
   for (  SpanList list : rowSpans) {
     for (    Cell cell : list.cells) {
       int height=cell.hasRelativeHeight() ? 0 : cell.getHeight();
-      int allocated=rowHeights[cell.row];
-      for (int i=1; i < cell.rowspan; i++) {
-        allocated+=spacingPixelsVertical + rowHeights[cell.row + i];
-      }
-      if (allocated < height) {
-        int neededExtraSpace=height - allocated;
-        int spaceForColunms=neededExtraSpace / cell.rowspan;
-        for (int i=0; i < cell.rowspan; i++) {
-          int row=cell.row + i;
-          rowHeights[row]+=spaceForColunms;
-          neededExtraSpace-=spaceForColunms;
-        }
-        if (neededExtraSpace > 0) {
-          for (int i=0; i < cell.rowspan; i++) {
-            int row=cell.row + i;
-            rowHeights[row]+=1;
-            neededExtraSpace-=1;
-            if (neededExtraSpace == 0) {
-              break;
-            }
-          }
-        }
-      }
+      distributeSpanSize(rowHeights,cell.row,cell.rowspan,spacingPixelsVertical,height);
     }
   }
 }
