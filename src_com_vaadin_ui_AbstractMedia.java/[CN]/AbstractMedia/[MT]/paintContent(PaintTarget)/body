@@ -1,0 +1,24 @@
+{
+  super.paintContent(target);
+  target.addAttribute(VMediaBase.ATTR_CONTROLS,isShowControls());
+  if (getAltText() != null) {
+    target.addAttribute(VMediaBase.ATTR_ALT_TEXT,getAltText());
+  }
+  target.addAttribute(VMediaBase.ATTR_HTML,isHtmlContentAllowed());
+  target.addAttribute(VMediaBase.ATTR_AUTOPLAY,isAutoplay());
+  for (  Resource r : getSources()) {
+    target.startTag(VMediaBase.TAG_SOURCE);
+    target.addAttribute(VMediaBase.ATTR_RESOURCE,r);
+    target.addAttribute(VMediaBase.ATTR_RESOURCE_TYPE,r.getMIMEType());
+    target.endTag(VMediaBase.TAG_SOURCE);
+  }
+  target.addAttribute(VMediaBase.ATTR_MUTED,isMuted());
+  if (play) {
+    target.addAttribute(VMediaBase.ATTR_PLAY,true);
+    play=false;
+  }
+  if (pause) {
+    target.addAttribute(VMediaBase.ATTR_PAUSE,true);
+    pause=false;
+  }
+}

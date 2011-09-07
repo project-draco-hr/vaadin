@@ -1,0 +1,21 @@
+{
+  if (client.updateComponent(this,uidl,true)) {
+    return;
+  }
+  this.client=client;
+  media.setControls(shouldShowControls(uidl));
+  media.setAutoplay(shouldAutoplay(uidl));
+  media.setMuted(isMediaMuted(uidl));
+  for (int ix=0; ix < uidl.getChildCount(); ix++) {
+    UIDL child=uidl.getChildUIDL(ix);
+    if (TAG_SOURCE.equals(child.getTag())) {
+      Element src=Document.get().createElement("source").cast();
+      src.setAttribute("src",getSourceUrl(child));
+      src.setAttribute("type",getSourceType(child));
+      media.appendChild(src);
+    }
+  }
+  setAltText(uidl);
+  evalPauseCommand(uidl);
+  evalPlayCommand(uidl);
+}
