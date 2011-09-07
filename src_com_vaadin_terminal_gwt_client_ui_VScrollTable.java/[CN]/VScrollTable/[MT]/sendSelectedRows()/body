@@ -1,28 +1,3 @@
 {
-  if (!selectionChanged) {
-    return;
-  }
-  selectionChanged=false;
-  if (isMultiSelectModeDefault()) {
-    Set<String> ranges=new HashSet<String>();
-    for (    SelectionRange range : selectedRowRanges) {
-      ranges.add(range.toString());
-    }
-    client.updateVariable(paintableId,"selectedRanges",ranges.toArray(new String[selectedRowRanges.size()]),false);
-    for (Iterator<String> iterator=selectedRowKeys.iterator(); iterator.hasNext(); ) {
-      String key=iterator.next();
-      VScrollTableRow renderedRowByKey=getRenderedRowByKey(key);
-      if (renderedRowByKey != null) {
-        for (        SelectionRange range : selectedRowRanges) {
-          if (range.inRange(renderedRowByKey)) {
-            iterator.remove();
-          }
-        }
-      }
- else {
-        iterator.remove();
-      }
-    }
-  }
-  client.updateVariable(paintableId,"selected",selectedRowKeys.toArray(new String[selectedRowKeys.size()]),immediate);
+  sendSelectedRows(immediate);
 }
