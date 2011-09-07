@@ -1,0 +1,62 @@
+{
+  final Log log=new Log(5);
+  IndexedContainer container=new IndexedContainer();
+  container.addContainerProperty(COL_A,TextField.class,null);
+  container.addContainerProperty(COL_B,String.class,"");
+  Item it=container.addItem("a");
+  final ObjectProperty<String> valA=new ObjectProperty<String>("orgVal");
+  final TextField fieldA=new TextField(valA){
+    @Override public void setPropertyDataSource(    Property newDataSource){
+      super.setPropertyDataSource(newDataSource);
+      if (newDataSource == null) {
+        log.log("Embedded field property data source cleared");
+      }
+ else {
+        log.log("Embedded field property data source set");
+      }
+    }
+  }
+;
+  it.getItemProperty(COL_A).setValue(fieldA);
+  it.getItemProperty(COL_B).setValue("Some text here");
+  final Table table=new Table("",container);
+  table.setColumnCollapsingAllowed(true);
+  table.setTableFieldFactory(new DefaultFieldFactory(){
+    @Override public Field createField(    Container container,    Object itemId,    Object propertyId,    Component uiContext){
+      if (COL_B.equals(propertyId)) {
+        Field field=new TextField(){
+          @Override public void setPropertyDataSource(          Property newDataSource){
+            super.setPropertyDataSource(newDataSource);
+            if (newDataSource == null) {
+              log.log("Edit field property data source cleared");
+            }
+ else {
+              log.log("Edit field property data source set");
+            }
+          }
+        }
+;
+        field.setCaption(createCaptionByPropertyId(propertyId));
+        return field;
+      }
+ else {
+        return super.createField(container,itemId,propertyId,uiContext);
+      }
+    }
+  }
+);
+  addComponent(log);
+  addComponent(table);
+  addComponent(new Button("Switch column collapse",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      table.setColumnCollapsed(COL_A,!table.isColumnCollapsed(COL_A));
+    }
+  }
+));
+  addComponent(new Button("Switch editable",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      table.setEditable(!table.isEditable());
+    }
+  }
+));
+}
