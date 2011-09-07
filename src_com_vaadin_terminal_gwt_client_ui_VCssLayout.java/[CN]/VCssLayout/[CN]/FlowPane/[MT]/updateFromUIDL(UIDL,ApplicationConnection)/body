@@ -1,30 +1,31 @@
 {
   this.client=client;
-  final ArrayList<Widget> oldWidgets=new ArrayList<Widget>();
+  final Collection<Widget> oldWidgets=new HashSet<Widget>();
   for (final Iterator<Widget> iterator=iterator(); iterator.hasNext(); ) {
     oldWidgets.add(iterator.next());
   }
-  clear();
   ValueMap mapAttribute=null;
   if (uidl.hasAttribute("css")) {
     mapAttribute=uidl.getMapAttribute("css");
   }
+  lastIndex=0;
   for (final Iterator<Object> i=uidl.getChildIterator(); i.hasNext(); ) {
     final UIDL r=(UIDL)i.next();
     final Paintable child=client.getPaintable(r);
-    if (oldWidgets.contains(child)) {
+    final Widget widget=(Widget)child;
+    if (widget.getParent() == this) {
       oldWidgets.remove(child);
       VCaption vCaption=widgetToCaption.get(child);
       if (vCaption != null) {
-        add(vCaption);
+        addOrMove(vCaption,lastIndex++);
         oldWidgets.remove(vCaption);
       }
     }
-    add((Widget)child);
+    addOrMove(widget,lastIndex++);
     if (mapAttribute != null && mapAttribute.containsKey(r.getId())) {
       String css=null;
       try {
-        Style style=((Widget)child).getElement().getStyle();
+        Style style=widget.getElement().getStyle();
         css=mapAttribute.getString(r.getId());
         String[] cssRules=css.split(";");
         for (int j=0; j < cssRules.length; j++) {
@@ -46,10 +47,14 @@
     }
   }
   for (  Widget w : oldWidgets) {
+    remove(w);
     if (w instanceof Paintable) {
       final Paintable p=(Paintable)w;
       client.unregisterPaintable(p);
     }
-    widgetToCaption.remove(w);
+    VCaption vCaption=widgetToCaption.remove(w);
+    if (vCaption != null) {
+      remove(vCaption);
+    }
   }
 }
