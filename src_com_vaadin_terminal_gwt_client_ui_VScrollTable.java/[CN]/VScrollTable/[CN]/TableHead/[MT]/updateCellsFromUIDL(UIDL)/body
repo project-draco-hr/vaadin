@@ -1,6 +1,7 @@
 {
   Iterator<?> it=uidl.getChildIterator();
   HashSet<String> updated=new HashSet<String>();
+  boolean refreshContentWidths=false;
   while (it.hasNext()) {
     final UIDL col=(UIDL)it.next();
     final String cid=col.getStringAttribute("cid");
@@ -43,7 +44,13 @@
       if (width < c.getMinWidth()) {
         width=c.getMinWidth();
       }
-      c.setWidth(width,true);
+      if (width != c.getWidth() && scrollBody != null) {
+        setColWidth(getColIndexByKey(c.cid),width,true);
+        refreshContentWidths=true;
+      }
+ else {
+        c.setWidth(width,true);
+      }
     }
  else     if (recalcWidths) {
       c.setUndefinedWidth();
@@ -57,6 +64,9 @@
         headerChangedDuringUpdate=true;
       }
     }
+  }
+  if (refreshContentWidths) {
+    triggerLazyColumnAdjustment(true);
   }
   for (Iterator<String> cit=availableCells.keySet().iterator(); cit.hasNext(); ) {
     String cid=cit.next();
