@@ -37,7 +37,9 @@
     suggestionPopup.menu.clearItems();
   }
   final UIDL options=uidl.getChildUIDL(0);
-  totalMatches=uidl.getIntAttribute("totalMatches");
+  if (uidl.hasAttribute("totalMatches")) {
+    totalMatches=uidl.getIntAttribute("totalMatches");
+  }
   String captions=inputPrompt;
   for (final Iterator<?> i=options.getChildIterator(); i.hasNext(); ) {
     final UIDL optionUidl=(UIDL)i.next();
@@ -45,8 +47,11 @@
     currentSuggestions.add(suggestion);
     if (optionUidl.hasAttribute("selected")) {
       if (!filtering || popupOpenerClicked) {
-        setPromptingOff(suggestion.getReplacementString());
-        selectedOptionKey="" + suggestion.getOptionKey();
+        String newSelectedOptionKey=Integer.toString(suggestion.getOptionKey());
+        if (!newSelectedOptionKey.equals(selectedOptionKey) || suggestion.getReplacementString().equals(tb.getText())) {
+          setPromptingOff(suggestion.getReplacementString());
+          selectedOptionKey=newSelectedOptionKey;
+        }
       }
       currentSuggestion=suggestion;
       setSelectedItemIcon(suggestion.getIconUri());

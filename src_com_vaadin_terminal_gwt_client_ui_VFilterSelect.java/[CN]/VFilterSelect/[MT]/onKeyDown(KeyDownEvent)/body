@@ -1,6 +1,17 @@
 {
   if (enabled && !readonly) {
-    if (suggestionPopup.isAttached()) {
+    if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      if (suggestionPopup.isAttached()) {
+        filterOptions(currentPage);
+      }
+      if (currentSuggestions.size() == 1 && !allowNewItem) {
+        suggestionPopup.menu.selectItem(suggestionPopup.menu.getItems().get(0));
+      }
+      suggestionPopup.menu.doSelectedItemAction();
+      event.stopPropagation();
+      return;
+    }
+ else     if (suggestionPopup.isAttached()) {
       popupKeyDown(event);
     }
  else {
