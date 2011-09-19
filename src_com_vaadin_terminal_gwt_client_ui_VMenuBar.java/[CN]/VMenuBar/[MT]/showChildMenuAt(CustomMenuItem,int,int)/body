@@ -21,6 +21,27 @@
       left=shadowSpace;
     }
   }
+  int availableHeight=RootPanel.getBodyElement().getOffsetHeight() - top - shadowSpace;
+  int missingHeight=popup.getOffsetHeight() - availableHeight;
+  if (missingHeight > 0) {
+    int moveUpBy=Math.min(top - shadowSpace,missingHeight);
+    top-=moveUpBy;
+    missingHeight-=moveUpBy;
+    availableHeight+=moveUpBy;
+    if (missingHeight > 0) {
+      int contentWidth=visibleChildMenu.getOffsetWidth();
+      Style style=popup.getElement().getStyle();
+      style.setHeight(availableHeight,Unit.PX);
+      style.setOverflowY(Overflow.SCROLL);
+      if (BrowserInfo.get().isIE6()) {
+        style.setPaddingRight(Util.getNativeScrollbarSize(),Unit.PX);
+      }
+ else {
+        style.setWidth(contentWidth + Util.getNativeScrollbarSize(),Unit.PX);
+      }
+      popup.updateShadowSizeAndPosition();
+    }
+  }
   popup.setPopupPosition(left,top);
   if (BrowserInfo.get().isIE7()) {
     popup.getElement().getStyle().setProperty("zoom","");
