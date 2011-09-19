@@ -1,4 +1,11 @@
 {
+  if (collapseRequest || focusParentResponsePending) {
+    if (pendingNavigationEvents.size() < 10) {
+      PendingNavigationEvent pendingNavigationEvent=new PendingNavigationEvent(keycode,ctrl,shift);
+      pendingNavigationEvents.add(pendingNavigationEvent);
+    }
+    return true;
+  }
   VTreeTableRow focusedRow=(VTreeTableRow)getFocusedRow();
   if (focusedRow != null) {
     if (focusedRow.canHaveChildren && ((keycode == KeyCodes.KEY_RIGHT && !focusedRow.open) || (keycode == KeyCodes.KEY_LEFT && focusedRow.open))) {
@@ -33,6 +40,7 @@
     }
  else     if (keycode == KeyCodes.KEY_LEFT) {
       client.updateVariable(paintableId,"focusParent",focusedRow.getKey(),true);
+      focusParentResponsePending=true;
       return true;
     }
   }

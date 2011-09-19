@@ -27,5 +27,13 @@
   if (uidl.hasAttribute("focusedRow")) {
     String key=uidl.getStringAttribute("focusedRow");
     setRowFocus(getRenderedRowByKey(key));
+    focusParentResponsePending=false;
+  }
+ else   if (uidl.hasAttribute("clearFocusPending")) {
+    focusParentResponsePending=false;
+  }
+  while (!collapseRequest && !focusParentResponsePending && !pendingNavigationEvents.isEmpty()) {
+    PendingNavigationEvent event=pendingNavigationEvents.removeFirst();
+    handleNavigation(event.keycode,event.ctrl,event.shift);
   }
 }
