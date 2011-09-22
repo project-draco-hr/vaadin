@@ -4,15 +4,22 @@
   int cacheIx=firstIndex - pageBufferFirstIndex;
   unregisterComponentsAndPropertiesInRows(firstIndex,rows);
   int newCachedRowCount=totalRows < totalCachedRows ? totalRows : totalCachedRows;
-  int firstAppendedRow=newCachedRowCount - rows;
-  Object[][] cells=getVisibleCellsNoCache(firstAppendedRow,rows,false);
+  int firstAppendedRow=newCachedRowCount > rows ? newCachedRowCount - rows : firstIndex;
+  int rowsToAdd=rows;
+  if (rowsToAdd > totalCachedRows - firstAppendedRow) {
+    rowsToAdd=totalCachedRows - firstAppendedRow;
+  }
+  if (rowsToAdd > totalRows - (firstAppendedRow + pageBufferFirstIndex)) {
+    rowsToAdd=totalRows - (firstAppendedRow + pageBufferFirstIndex);
+  }
+  Object[][] cells=getVisibleCellsNoCache(firstAppendedRow,rowsToAdd,false);
   Object[][] newPageBuffer=new Object[pageBuffer.length][newCachedRowCount];
   for (int ix=0; ix < newCachedRowCount; ix++) {
     for (int i=0; i < pageBuffer.length; i++) {
-      if (ix >= newCachedRowCount - rows) {
-        newPageBuffer[i][ix]=cells[i][ix - (newCachedRowCount - rows)];
+      if (ix >= firstAppendedRow) {
+        newPageBuffer[i][ix]=cells[i][ix - firstAppendedRow];
       }
- else       if (ix >= cacheIx) {
+ else       if (ix >= cacheIx && ix + rows < totalCachedRows) {
         newPageBuffer[i][ix]=pageBuffer[i][ix + rows];
       }
  else {
