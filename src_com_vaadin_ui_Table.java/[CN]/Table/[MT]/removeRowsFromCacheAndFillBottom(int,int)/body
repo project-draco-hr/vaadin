@@ -5,13 +5,8 @@
   unregisterComponentsAndPropertiesInRows(firstIndex,rows);
   int newCachedRowCount=totalRows < totalCachedRows ? totalRows : totalCachedRows;
   int firstAppendedRow=newCachedRowCount > rows ? newCachedRowCount - rows : firstIndex;
-  int rowsToAdd=rows;
-  if (rowsToAdd > totalCachedRows - firstAppendedRow) {
-    rowsToAdd=totalCachedRows - firstAppendedRow;
-  }
-  if (rowsToAdd > totalRows - (firstAppendedRow + pageBufferFirstIndex)) {
-    rowsToAdd=totalRows - (firstAppendedRow + pageBufferFirstIndex);
-  }
+  int rowsToAdd=Math.min(rows,totalCachedRows - firstAppendedRow);
+  rowsToAdd=Math.min(rowsToAdd,totalRows - (firstAppendedRow + pageBufferFirstIndex));
   Object[][] cells=getVisibleCellsNoCache(firstAppendedRow,rowsToAdd,false);
   Object[][] newPageBuffer=new Object[pageBuffer.length][newCachedRowCount];
   for (int ix=0; ix < newCachedRowCount; ix++) {
