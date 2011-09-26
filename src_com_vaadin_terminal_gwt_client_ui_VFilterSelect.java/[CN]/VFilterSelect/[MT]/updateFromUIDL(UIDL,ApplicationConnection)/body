@@ -4,10 +4,12 @@
   readonly=uidl.hasAttribute("readonly");
   enabled=!uidl.hasAttribute("disabled");
   tb.setEnabled(enabled);
-  tb.setReadOnly(readonly);
+  tb.setReadOnly(readonly || !textInputEnabled);
   if (client.updateComponent(this,uidl,true)) {
     return;
   }
+  boolean noTextInput=uidl.hasAttribute(ATTR_NO_TEXT_INPUT) && uidl.getBooleanAttribute(ATTR_NO_TEXT_INPUT);
+  setTextInputEnabled(!noTextInput);
   if (uidl.hasAttribute("tabindex")) {
     tb.setTabIndex(uidl.getIntAttribute("tabindex"));
   }
