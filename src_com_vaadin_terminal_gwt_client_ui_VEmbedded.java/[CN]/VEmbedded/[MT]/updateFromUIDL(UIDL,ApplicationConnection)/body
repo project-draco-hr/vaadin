@@ -52,12 +52,10 @@
  else     if (type.equals("browser")) {
       addStyleName(CLASSNAME + "-browser");
       if (browserElement == null) {
-        setHTML("<iframe width=\"100%\" height=\"100%\" frameborder=\"0\" allowTransparency=\"true\" src=\"" + getSrc(uidl,client) + "\" name=\""+ uidl.getId()+ "\"></iframe>");
+        setHTML("<iframe width=\"100%\" height=\"100%\" frameborder=\"0\"" + " allowTransparency=\"true\" src=\"\"" + " name=\"" + uidl.getId() + "\"></iframe>");
         browserElement=DOM.getFirstChild(getElement());
       }
- else {
-        DOM.setElementAttribute(browserElement,"src",getSrc(uidl,client));
-      }
+      DOM.setElementAttribute(browserElement,"src",getSrc(uidl,client));
       clearBrowserElement=false;
     }
  else {
@@ -67,6 +65,7 @@
  else   if (uidl.hasAttribute("mimetype")) {
     final String mime=uidl.getStringAttribute("mimetype");
     if (mime.equals("application/x-shockwave-flash")) {
+      addStyleName(CLASSNAME + "-flash");
       setHTML(createFlashEmbed(uidl));
     }
  else     if (mime.equals("image/svg+xml")) {
@@ -90,19 +89,19 @@
         obj.getStyle().setProperty("height","100%");
       }
       if (uidl.hasAttribute("classid")) {
-        obj.setAttribute("classid",uidl.getStringAttribute(escapeAttribute("classid")));
+        obj.setAttribute("classid",Util.escapeAttribute(uidl.getStringAttribute("classid")));
       }
       if (uidl.hasAttribute("codebase")) {
-        obj.setAttribute("codebase",uidl.getStringAttribute(escapeAttribute("codebase")));
+        obj.setAttribute("codebase",Util.escapeAttribute(uidl.getStringAttribute("codebase")));
       }
       if (uidl.hasAttribute("codetype")) {
-        obj.setAttribute("codetype",uidl.getStringAttribute(escapeAttribute("codetype")));
+        obj.setAttribute("codetype",Util.escapeAttribute(uidl.getStringAttribute("codetype")));
       }
       if (uidl.hasAttribute("archive")) {
-        obj.setAttribute("archive",uidl.getStringAttribute(escapeAttribute("archive")));
+        obj.setAttribute("archive",Util.escapeAttribute(uidl.getStringAttribute("archive")));
       }
       if (uidl.hasAttribute("standby")) {
-        obj.setAttribute("standby",uidl.getStringAttribute(escapeAttribute("standby")));
+        obj.setAttribute("standby",Util.escapeAttribute(uidl.getStringAttribute("standby")));
       }
       getElement().appendChild(obj);
     }
