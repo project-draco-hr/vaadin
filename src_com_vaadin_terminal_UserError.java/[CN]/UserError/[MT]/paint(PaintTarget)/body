@@ -17,15 +17,17 @@
   }
 switch (mode) {
 case CONTENT_TEXT:
-    target.addText(msg);
+    target.addText(AbstractApplicationServlet.safeEscapeForHtml(msg));
   break;
 case CONTENT_UIDL:
 target.addUIDL(msg);
 break;
 case CONTENT_PREFORMATTED:
-target.startTag("pre");
+target.addText("<pre>" + AbstractApplicationServlet.safeEscapeForHtml(msg) + "</pre>");
+break;
+case CONTENT_XHTML:
 target.addText(msg);
-target.endTag("pre");
+break;
 }
 target.endTag("error");
 }

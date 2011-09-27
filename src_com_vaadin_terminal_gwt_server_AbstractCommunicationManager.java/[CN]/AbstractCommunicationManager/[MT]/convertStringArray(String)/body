@@ -1,13 +1,14 @@
 {
-  StringTokenizer tokenizer=new StringTokenizer(strValue,VAR_ARRAYITEM_SEPARATOR,true);
+  final String arrayItemSeparator=String.valueOf(VAR_ARRAYITEM_SEPARATOR);
+  StringTokenizer tokenizer=new StringTokenizer(strValue,arrayItemSeparator,true);
   List<String> tokens=new ArrayList<String>();
-  String prevToken=VAR_ARRAYITEM_SEPARATOR;
+  String prevToken=arrayItemSeparator;
   while (tokenizer.hasMoreTokens()) {
     String token=tokenizer.nextToken();
-    if (!VAR_ARRAYITEM_SEPARATOR.equals(token)) {
-      tokens.add(token);
+    if (!arrayItemSeparator.equals(token)) {
+      tokens.add(decodeVariableValue(token));
     }
- else     if (VAR_ARRAYITEM_SEPARATOR.equals(prevToken)) {
+ else     if (arrayItemSeparator.equals(prevToken)) {
       tokens.add("");
     }
     prevToken=token;
