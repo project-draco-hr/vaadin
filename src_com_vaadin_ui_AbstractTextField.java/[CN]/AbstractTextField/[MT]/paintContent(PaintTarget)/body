@@ -17,6 +17,10 @@
   if (value == null) {
     throw new IllegalStateException("Null values are not allowed if the null-representation is null");
   }
+  if (localValueChanged || target.isFullRepaint()) {
+    target.addAttribute(VTextField.ATTR_TEXT_CHANGED,true);
+    localValueChanged=false;
+  }
   target.addVariable(this,"text",value);
   if (selectionPosition != -1) {
     target.addAttribute("selpos",selectionPosition);
