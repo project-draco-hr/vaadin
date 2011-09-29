@@ -1,0 +1,57 @@
+{
+  FreeformQueryDelegate delegate=EasyMock.createMock(FreeformQueryDelegate.class);
+  EasyMock.expect(delegate.storeRow(EasyMock.isA(Connection.class),EasyMock.isA(RowItem.class))).andAnswer(new IAnswer<Integer>(){
+    public Integer answer() throws Throwable {
+      Connection conn=(Connection)EasyMock.getCurrentArguments()[0];
+      RowItem item=(RowItem)EasyMock.getCurrentArguments()[1];
+      Statement statement=conn.createStatement();
+      statement.executeUpdate("UPDATE people SET \"NAME\"='" + item.getItemProperty("NAME").getValue() + "' WHERE \"ID\"="+ item.getItemProperty("ID").getValue());
+      statement.close();
+      conn.commit();
+      connectionPool.releaseConnection(conn);
+      return 1;
+    }
+  }
+).anyTimes();
+  EasyMock.expect(delegate.getQueryString(EasyMock.anyInt(),EasyMock.anyInt())).andAnswer(new IAnswer<String>(){
+    public String answer() throws Throwable {
+      Object[] args=EasyMock.getCurrentArguments();
+      int offset=(Integer)(args[0]);
+      int limit=(Integer)(args[1]);
+      if (AllTests.db == DB.MSSQL) {
+        int start=offset + 1;
+        int end=offset + limit + 1;
+        String q="SELECT * FROM (SELECT row_number() OVER" + " ( ORDER BY \"ID\" ASC) AS rownum, * FROM people)" + " AS a WHERE a.rownum BETWEEN " + start + " AND "+ end;
+        return q;
+      }
+ else       if (AllTests.db == DB.ORACLE) {
+        int start=offset + 1;
+        int end=offset + limit + 1;
+        String q="SELECT * FROM (SELECT x.*, ROWNUM AS r FROM" + " (SELECT * FROM people ORDER BY \"ID\" ASC) x) " + " WHERE r BETWEEN " + start + " AND "+ end;
+        return q;
+      }
+ else {
+        return "SELECT * FROM people LIMIT " + limit + " OFFSET "+ offset;
+      }
+    }
+  }
+).anyTimes();
+  delegate.setFilters(null);
+  EasyMock.expectLastCall().anyTimes();
+  delegate.setFilters(EasyMock.isA(List.class));
+  EasyMock.expectLastCall().anyTimes();
+  delegate.setOrderBy(null);
+  EasyMock.expectLastCall().anyTimes();
+  delegate.setOrderBy(EasyMock.isA(List.class));
+  EasyMock.expectLastCall().anyTimes();
+  EasyMock.expect(delegate.getCountQuery()).andThrow(new UnsupportedOperationException()).anyTimes();
+  FreeformQuery query=new FreeformQuery("SELECT * FROM people",connectionPool,"ID");
+  query.setDelegate(delegate);
+  EasyMock.replay(delegate);
+  SQLContainer container=new SQLContainer(query);
+  Object last=container.lastItemId();
+  container.getContainerProperty(last,"NAME").setValue("Donald");
+  container.commit();
+  Assert.assertEquals("Donald",container.getContainerProperty(container.lastItemId(),"NAME").getValue());
+  EasyMock.verify(delegate);
+}

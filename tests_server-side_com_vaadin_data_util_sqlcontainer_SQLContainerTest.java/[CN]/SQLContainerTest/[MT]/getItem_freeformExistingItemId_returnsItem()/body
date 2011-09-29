@@ -1,0 +1,12 @@
+{
+  SQLContainer container=new SQLContainer(new FreeformQuery("SELECT * FROM people",connectionPool,"ID"));
+  Item item;
+  if (AllTests.db == DB.ORACLE) {
+    item=container.getItem(new RowId(new Object[]{new BigDecimal(0 + offset)}));
+  }
+ else {
+    item=container.getItem(new RowId(new Object[]{0 + offset}));
+  }
+  Assert.assertNotNull(item);
+  Assert.assertEquals("Ville",item.getItemProperty("NAME").getValue());
+}

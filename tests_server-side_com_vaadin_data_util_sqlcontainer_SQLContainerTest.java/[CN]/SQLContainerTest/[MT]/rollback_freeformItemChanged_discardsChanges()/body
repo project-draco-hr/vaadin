@@ -1,0 +1,7 @@
+{
+  SQLContainer container=new SQLContainer(new FreeformQuery("SELECT * FROM people",connectionPool,"ID"));
+  Object last=container.lastItemId();
+  container.getContainerProperty(last,"NAME").setValue("foo");
+  container.rollback();
+  Assert.assertFalse("foo".equals(container.getContainerProperty(container.lastItemId(),"NAME").getValue()));
+}

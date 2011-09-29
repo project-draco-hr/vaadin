@@ -1,0 +1,11 @@
+{
+  ColumnProperty cp=new ColumnProperty("NAME",false,true,true,"Ville",String.class);
+  SQLContainer container=EasyMock.createMock(SQLContainer.class);
+  RowItem owner=new RowItem(container,new RowId(new Object[]{1}),Arrays.asList(cp));
+  container.itemChangeNotification(owner);
+  EasyMock.replay(container);
+  cp.setValue("Kalle");
+  Assert.assertEquals("Kalle",cp.getValue());
+  Assert.assertTrue(cp.isModified());
+  EasyMock.verify(container);
+}

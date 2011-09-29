@@ -1,0 +1,15 @@
+{
+  Connection conn=connectionPool.reserveConnection();
+  Statement statement=conn.createStatement();
+  if (AllTests.db == DB.MSSQL) {
+    statement.executeUpdate("insert into people values('Bengt', '42')");
+  }
+ else {
+    statement.executeUpdate("insert into people values(default, 'Bengt', '42')");
+  }
+  statement.close();
+  conn.commit();
+  connectionPool.releaseConnection(conn);
+  SQLContainer container=new SQLContainer(new FreeformQuery("SELECT * FROM people",connectionPool,"ID"));
+  Assert.assertEquals(5,container.size());
+}
