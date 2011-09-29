@@ -20,7 +20,8 @@
   paintableId=uidl.getStringAttribute("id");
   immediate=uidl.getBooleanAttribute("immediate");
   final int newTotalRows=uidl.getIntAttribute("totalrows");
-  if (newTotalRows != totalRows) {
+  boolean totalRowsChanged=newTotalRows != totalRows;
+  if (totalRowsChanged) {
     if (scrollBody != null) {
       if (totalRows == 0) {
         tHead.clear();
@@ -164,7 +165,7 @@
     if (headerChangedDuringUpdate) {
       lazyAdjustColumnWidths.schedule(1);
     }
- else {
+ else     if (!isScrollPositionVisible() || totalRowsChanged || lastRenderedHeight != scrollBody.getOffsetHeight()) {
       Scheduler.get().scheduleDeferred(new Command(){
         public void execute(){
           Util.runWebkitOverflowAutoFix(scrollBodyPanel.getElement());
@@ -221,6 +222,7 @@
   if (oldSortedHeader != null) {
     tHead.resizeCaptionContainer(oldSortedHeader);
   }
+  lastRenderedHeight=scrollBody.getOffsetHeight();
   rendering=false;
   headerChangedDuringUpdate=false;
 }
