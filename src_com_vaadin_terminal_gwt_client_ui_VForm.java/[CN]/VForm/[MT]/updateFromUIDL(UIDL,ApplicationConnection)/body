@@ -8,23 +8,23 @@
   }
   boolean legendEmpty=true;
   if (uidl.hasAttribute("caption")) {
-    DOM.setInnerText(caption,uidl.getStringAttribute("caption"));
+    caption.setInnerText(uidl.getStringAttribute("caption"));
     legendEmpty=false;
   }
  else {
-    DOM.setInnerText(caption,"");
+    caption.setInnerText("");
   }
   if (uidl.hasAttribute("icon")) {
     if (icon == null) {
       icon=new Icon(client);
-      DOM.insertChild(legend,icon.getElement(),0);
+      legend.insertFirst(icon.getElement());
     }
     icon.setUri(uidl.getStringAttribute("icon"));
     legendEmpty=false;
   }
  else {
     if (icon != null) {
-      DOM.removeChild(legend,icon.getElement());
+      legend.removeChild(icon.getElement());
     }
   }
   if (legendEmpty) {
@@ -42,10 +42,12 @@
     errorMessage.setVisible(false);
   }
   if (uidl.hasAttribute("description")) {
-    DOM.setInnerHTML(desc,uidl.getStringAttribute("description"));
+    desc.setInnerHTML(uidl.getStringAttribute("description"));
+    fieldSet.insertFirst(desc);
   }
  else {
-    DOM.setInnerHTML(desc,"");
+    fieldSet.removeChild(desc);
+    desc.setInnerHTML("");
   }
   updateSize();
   if (uidl.getChildCount() > 1 && !uidl.getChildUIDL(1).getTag().equals("actions")) {
