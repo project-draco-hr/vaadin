@@ -18,7 +18,9 @@
   this.client=client;
   paintableId=uidl.getStringAttribute("id");
   immediate=uidl.getBooleanAttribute("immediate");
+  int previousTotalRows=totalRows;
   updateTotalRows(uidl);
+  boolean totalRowsChanged=(totalRows != previousTotalRows);
   updateDragMode(uidl);
   updateSelectionProperties(uidl);
   if (uidl.hasAttribute("alb")) {
@@ -69,7 +71,7 @@
         if (headerChangedDuringUpdate) {
           triggerLazyColumnAdjustment(true);
         }
- else {
+ else         if (!isScrollPositionVisible() || totalRowsChanged || lastRenderedHeight != scrollBody.getOffsetHeight()) {
           Scheduler.get().scheduleDeferred(new Command(){
             public void execute(){
               Util.runWebkitOverflowAutoFix(scrollBodyPanel.getElement());
@@ -111,6 +113,7 @@
   tabIndex=uidl.hasAttribute("tabindex") ? uidl.getIntAttribute("tabindex") : 0;
   setProperTabIndex();
   resizeSortedColumnForSortIndicator();
+  lastRenderedHeight=scrollBody.getOffsetHeight();
   rendering=false;
   headerChangedDuringUpdate=false;
 }
