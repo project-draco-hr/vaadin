@@ -43,11 +43,15 @@
   }
   if (uidl.hasAttribute("description")) {
     desc.setInnerHTML(uidl.getStringAttribute("description"));
-    fieldSet.insertFirst(desc);
+    if (desc.getParentElement() == null) {
+      fieldSet.insertFirst(desc);
+    }
   }
  else {
-    fieldSet.removeChild(desc);
     desc.setInnerHTML("");
+    if (desc.getParentElement() != null) {
+      fieldSet.removeChild(desc);
+    }
   }
   updateSize();
   if (uidl.getChildCount() > 1 && !uidl.getChildUIDL(1).getTag().equals("actions")) {
