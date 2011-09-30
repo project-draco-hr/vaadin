@@ -1,0 +1,15 @@
+{
+  SQLContainer container=new SQLContainer(new FreeformQuery("SELECT * FROM people",connectionPool,"ID"));
+  Logger logger=Logger.getLogger(SQLContainer.class.getName());
+  logger.addHandler(new Handler(){
+    @Override public void publish(    LogRecord record){
+      Assert.fail("No messages should be logged");
+    }
+    @Override public void flush(){
+    }
+    @Override public void close() throws SecurityException {
+    }
+  }
+);
+  Assert.assertFalse(container.containsId(new Object()));
+}
