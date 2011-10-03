@@ -1,0 +1,19 @@
+{
+  List<Class<? extends T>> classes=findClasses(baseClass,basePackage,ignoredPackages);
+  List<Class<? extends T>> classesNoTests=new ArrayList<Class<? extends T>>();
+  for (  Class<? extends T> clazz : classes) {
+    if (!clazz.getName().contains("Test")) {
+      boolean testPresent=false;
+      for (      Method method : clazz.getMethods()) {
+        if (method.isAnnotationPresent(Test.class)) {
+          testPresent=true;
+          break;
+        }
+      }
+      if (!testPresent) {
+        classesNoTests.add(clazz);
+      }
+    }
+  }
+  return classesNoTests;
+}
