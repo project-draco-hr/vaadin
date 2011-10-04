@@ -2,25 +2,17 @@
   if (this.width.equals(width)) {
     return;
   }
+  this.width=width;
   if (width != null && !"".equals(width)) {
     super.setWidth(width);
-    int innerPixels=Util.getRequiredWidth(this) - getBorderWidth();
+    int innerPixels=getOffsetWidth() - getBorderWidth();
     if (innerPixels < 0) {
-      final String deferredWidth=width;
-      Scheduler.get().scheduleDeferred(new ScheduledCommand(){
-        public void execute(){
-          setWidth(deferredWidth);
-        }
-      }
-);
-      return;
+      innerPixels=0;
     }
-    this.width=width;
     setContentWidth(innerPixels);
     triggerLazyColumnAdjustment(false);
   }
  else {
-    this.width=width;
     super.setWidth("");
     sizeInit();
     triggerLazyColumnAdjustment(false);
