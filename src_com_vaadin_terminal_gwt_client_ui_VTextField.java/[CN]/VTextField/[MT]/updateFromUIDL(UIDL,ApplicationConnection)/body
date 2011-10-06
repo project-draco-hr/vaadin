@@ -1,5 +1,4 @@
 {
-  boolean firstPaint=(this.client == null);
   this.client=client;
   id=uidl.getId();
   if (client.updateComponent(this,uidl,true)) {
@@ -32,13 +31,7 @@
   if (uidl.hasAttribute("cols")) {
     setColumns(new Integer(uidl.getStringAttribute("cols")).intValue());
   }
-  final String text;
-  if (uidl.hasVariable("text") && (firstPaint || (uidl.hasAttribute(ATTR_TEXT_CHANGED) && uidl.getBooleanAttribute(ATTR_TEXT_CHANGED)))) {
-    text=uidl.getStringVariable("text");
-  }
- else {
-    text=prompting ? null : getText();
-  }
+  final String text=uidl.hasVariable("text") ? uidl.getStringVariable("text") : null;
   setPrompting(inputPrompt != null && focusedTextField != this && (text == null || text.equals("")));
   if (BrowserInfo.get().isFF3()) {
     Scheduler.get().scheduleDeferred(new Command(){
