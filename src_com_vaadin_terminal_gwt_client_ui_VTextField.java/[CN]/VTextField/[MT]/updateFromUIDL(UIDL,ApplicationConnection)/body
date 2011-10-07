@@ -31,40 +31,10 @@
   if (uidl.hasAttribute("cols")) {
     setColumns(new Integer(uidl.getStringAttribute("cols")).intValue());
   }
-  final String text=uidl.hasVariable("text") ? uidl.getStringVariable("text") : null;
-  setPrompting(inputPrompt != null && focusedTextField != this && (text == null || text.equals("")));
-  if (BrowserInfo.get().isFF3()) {
-    Scheduler.get().scheduleDeferred(new Command(){
-      public void execute(){
-        String fieldValue;
-        if (prompting) {
-          fieldValue=isReadOnly() ? "" : inputPrompt;
-          addStyleDependentName(CLASSNAME_PROMPT);
-        }
- else {
-          fieldValue=text;
-          removeStyleDependentName(CLASSNAME_PROMPT);
-        }
-        if (!getText().equals(fieldValue)) {
-          setText(fieldValue);
-        }
-      }
-    }
-);
+  final String text=uidl.getStringVariable("text");
+  if (!(uidl.getBooleanAttribute(ATTR_NO_VALUE_CHANGE_BETWEEN_PAINTS) && valueBeforeEdit != null && text.equals(valueBeforeEdit))) {
+    updateFieldContent(text);
   }
- else {
-    String fieldValue;
-    if (prompting) {
-      fieldValue=isReadOnly() ? "" : inputPrompt;
-      addStyleDependentName(CLASSNAME_PROMPT);
-    }
- else {
-      fieldValue=text;
-      removeStyleDependentName(CLASSNAME_PROMPT);
-    }
-    setText(fieldValue);
-  }
-  lastTextChangeString=valueBeforeEdit=uidl.getStringVariable("text");
   if (uidl.hasAttribute("selpos")) {
     final int pos=uidl.getIntAttribute("selpos");
     final int length=uidl.getIntAttribute("sellen");

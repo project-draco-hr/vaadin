@@ -1,0 +1,35 @@
+{
+  setPrompting(inputPrompt != null && focusedTextField != this && (text.equals("")));
+  if (BrowserInfo.get().isFF3()) {
+    Scheduler.get().scheduleDeferred(new Command(){
+      public void execute(){
+        String fieldValue;
+        if (prompting) {
+          fieldValue=isReadOnly() ? "" : inputPrompt;
+          addStyleDependentName(CLASSNAME_PROMPT);
+        }
+ else {
+          fieldValue=text;
+          removeStyleDependentName(CLASSNAME_PROMPT);
+        }
+        if (!getText().equals(fieldValue)) {
+          setText(fieldValue);
+        }
+      }
+    }
+);
+  }
+ else {
+    String fieldValue;
+    if (prompting) {
+      fieldValue=isReadOnly() ? "" : inputPrompt;
+      addStyleDependentName(CLASSNAME_PROMPT);
+    }
+ else {
+      fieldValue=text;
+      removeStyleDependentName(CLASSNAME_PROMPT);
+    }
+    setText(fieldValue);
+  }
+  lastTextChangeString=valueBeforeEdit=text;
+}
