@@ -1,9 +1,18 @@
 {
-  HorizontalLayout l=new HorizontalLayout();
-  l.setSpacing(true);
-  l.addComponent(createTree());
-  Tree connectors=createTree();
-  connectors.addStyleName(BaseTheme.TREE_CONNECTORS);
-  l.addComponent(connectors);
-  addComponent(l);
+  CheckBox cb=new CheckBox("Connectors");
+  cb.setValue(false);
+  cb.setImmediate(true);
+  cb.addListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      if ((Boolean)event.getProperty().getValue()) {
+        tree.addStyleName(BaseTheme.TREE_CONNECTORS);
+      }
+ else {
+        tree.removeStyleName(BaseTheme.TREE_CONNECTORS);
+      }
+    }
+  }
+);
+  addComponent(cb);
+  addComponent(tree);
 }
