@@ -1,6 +1,14 @@
 {
-  if (!suppressValueChangePropagation && (isReadThrough() && !isModified())) {
-    setInternalValue(event.getProperty().getValue());
-    fireValueChange(false);
+  if (isReadThrough()) {
+    if (committingValueToDataSource) {
+      boolean propertyNotifiesOfTheBufferedValue=event.getProperty().getValue() == value || (value != null && value.equals(event.getProperty().getValue()));
+      if (!propertyNotifiesOfTheBufferedValue) {
+        readValueFromProperty(event);
+        valueWasModifiedByDataSourceDuringCommit=true;
+      }
+    }
+ else     if (!isModified()) {
+      readValueFromProperty(event);
+    }
   }
 }

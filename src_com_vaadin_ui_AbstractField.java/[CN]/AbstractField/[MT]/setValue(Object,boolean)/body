@@ -16,9 +16,10 @@
     }
     setInternalValue(newValue);
     modified=dataSource != null;
+    valueWasModifiedByDataSourceDuringCommit=false;
     if (isWriteThrough() && dataSource != null && (isInvalidCommitted() || isValid())) {
       try {
-        suppressValueChangePropagation=true;
+        committingValueToDataSource=true;
         dataSource.setValue(newValue);
         modified=false;
       }
@@ -28,13 +29,18 @@
         throw currentBufferedSourceException;
       }
  finally {
-        suppressValueChangePropagation=false;
+        committingValueToDataSource=false;
       }
     }
     if (currentBufferedSourceException != null) {
       currentBufferedSourceException=null;
       requestRepaint();
     }
-    fireValueChange(repaintIsNotNeeded);
+    if (!valueWasModifiedByDataSourceDuringCommit) {
+      fireValueChange(repaintIsNotNeeded);
+    }
+ else {
+      valueWasModifiedByDataSourceDuringCommit=false;
+    }
   }
 }
