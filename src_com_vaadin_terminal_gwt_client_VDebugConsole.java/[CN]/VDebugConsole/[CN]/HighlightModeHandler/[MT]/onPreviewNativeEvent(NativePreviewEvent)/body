@@ -12,6 +12,9 @@
     }
     for (    ApplicationConnection a : ApplicationConfiguration.getRunningApplications()) {
       Paintable paintable=Util.getPaintableForElement(a,a.getView(),eventTarget);
+      if (paintable == null) {
+        paintable=Util.getPaintableForElement(a,RootPanel.get(),eventTarget);
+      }
       if (paintable != null) {
         String pid=a.getPid(paintable);
         VUIDLBrowser.highlight(paintable);
@@ -32,6 +35,9 @@
     Element eventTarget=Util.getElementFromPoint(event.getNativeEvent().getClientX(),event.getNativeEvent().getClientY());
     for (    ApplicationConnection a : ApplicationConfiguration.getRunningApplications()) {
       Paintable paintable=Util.getPaintableForElement(a,a.getView(),eventTarget);
+      if (paintable == null) {
+        paintable=Util.getPaintableForElement(a,RootPanel.get(),eventTarget);
+      }
       if (paintable != null) {
         a.highlightComponent(paintable);
         return;
