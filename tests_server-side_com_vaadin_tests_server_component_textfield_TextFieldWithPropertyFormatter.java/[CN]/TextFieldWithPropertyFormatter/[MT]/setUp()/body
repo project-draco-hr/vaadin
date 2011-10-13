@@ -1,0 +1,34 @@
+{
+  super.setUp();
+  field=new TextField();
+  formatter=new PropertyFormatter(){
+    @Override public Object parse(    String formattedValue) throws Exception {
+      assertEquals(INPUT_VALUE,formattedValue);
+      return PARSED_VALUE;
+    }
+    @Override public String format(    Object value){
+      return FORMATTED_VALUE;
+    }
+  }
+;
+  property=new ObjectProperty<String>(ORIGINAL_VALUE);
+  formatter.setPropertyDataSource(property);
+  field.setPropertyDataSource(formatter);
+  listener=new Property.ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      listenerCalled++;
+      assertEquals(1,listenerCalled);
+      assertEquals(FORMATTED_VALUE,event.getProperty().getValue());
+    }
+  }
+;
+  field.addListener(listener);
+  field.addListener(new Paintable.RepaintRequestListener(){
+    public void repaintRequested(    RepaintRequestEvent event){
+      repainted++;
+    }
+  }
+);
+  listenerCalled=0;
+  repainted=0;
+}
