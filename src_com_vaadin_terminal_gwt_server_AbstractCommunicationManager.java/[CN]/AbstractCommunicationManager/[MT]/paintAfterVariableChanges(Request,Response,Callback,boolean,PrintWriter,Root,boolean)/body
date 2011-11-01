@@ -1,0 +1,34 @@
+{
+  if (repaintAll) {
+    makeAllPaintablesDirty(root);
+  }
+  if (!application.isRunning()) {
+    endApplication(request,response,application);
+    return;
+  }
+  openJsonMessage(outWriter,response);
+  Object writeSecurityTokenFlag=request.getAttribute(WRITE_SECURITY_TOKEN_FLAG);
+  if (writeSecurityTokenFlag != null) {
+    String seckey=(String)request.getSession().getAttribute(ApplicationConnection.UIDL_SECURITY_TOKEN_ID);
+    if (seckey == null) {
+      seckey=UUID.randomUUID().toString();
+      request.getSession().setAttribute(ApplicationConnection.UIDL_SECURITY_TOKEN_ID,seckey);
+    }
+    outWriter.print("\"" + ApplicationConnection.UIDL_SECURITY_TOKEN_ID + "\":\"");
+    outWriter.print(seckey);
+    outWriter.print("\",");
+  }
+  if (root.getName().equals(closingWindowName)) {
+    outWriter.print("\"changes\":[]");
+  }
+ else {
+    Root newRoot=doGetApplicationWindow(request,callback,application,root);
+    if (newRoot != root) {
+      root=newRoot;
+      repaintAll=true;
+    }
+    writeUidlResponce(callback,repaintAll,outWriter,root,analyzeLayouts);
+  }
+  closeJsonMessage(outWriter);
+  outWriter.close();
+}

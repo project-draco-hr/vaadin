@@ -1,0 +1,90 @@
+{
+  String requestWidgetset=(String)request.getAttribute(REQUEST_WIDGETSET);
+  String sharedWidgetset=(String)request.getAttribute(REQUEST_SHARED_WIDGETSET);
+  if (requestWidgetset == null && sharedWidgetset == null) {
+    requestWidgetset=getApplicationOrSystemProperty(PARAMETER_WIDGETSET,DEFAULT_WIDGETSET);
+  }
+  String widgetset;
+  String widgetsetBasePath;
+  if (requestWidgetset != null) {
+    widgetset=requestWidgetset;
+    widgetsetBasePath=getWebApplicationsStaticFileLocation(request);
+  }
+ else {
+    widgetset=sharedWidgetset;
+    widgetsetBasePath=getStaticFilesLocation(request);
+  }
+  widgetset=stripSpecialChars(widgetset);
+  final String widgetsetFilePath=widgetsetBasePath + "/" + WIDGETSET_DIRECTORY_PATH+ widgetset+ "/"+ widgetset+ ".nocache.js?"+ new Date().getTime();
+  Application.SystemMessages systemMessages=null;
+  try {
+    systemMessages=getSystemMessages();
+  }
+ catch (  SystemMessageException e) {
+    throw new ServletException("CommunicationError!",e);
+  }
+  page.write("<script type=\"text/javascript\">\n");
+  page.write("//<![CDATA[\n");
+  page.write("if(!vaadin || !vaadin.vaadinConfigurations) {\n " + "if(!vaadin) { var vaadin = {}} \n" + "vaadin.vaadinConfigurations = {};\n"+ "if (!vaadin.themesLoaded) { vaadin.themesLoaded = {}; }\n");
+  if (!isProductionMode()) {
+    page.write("vaadin.debug = true;\n");
+  }
+  page.write("document.write('<iframe tabIndex=\"-1\" id=\"__gwt_historyFrame\" " + "style=\"position:absolute;width:0;height:0;border:0;overflow:" + "hidden;\" src=\"javascript:false\"></iframe>');\n");
+  page.write("document.write(\"<script language='javascript' src='" + widgetsetFilePath + "'><\\/script>\");\n}\n");
+  page.write("vaadin.vaadinConfigurations[\"" + appId + "\"] = {");
+  page.write("appUri:'" + appUrl + "', ");
+  if (isStandalone()) {
+    page.write("standalone: true, ");
+  }
+  page.write("themeUri:");
+  page.write(themeUri != null ? "\"" + themeUri + "\"" : "null");
+  page.write(", versionInfo : {vaadinVersion:\"");
+  page.write(VERSION);
+  page.write("\",applicationVersion:\"");
+  page.write(JsonPaintTarget.escapeJSON(application.getVersion()));
+  page.write("\"}");
+  if (systemMessages != null) {
+    String caption=systemMessages.getCommunicationErrorCaption();
+    if (caption != null) {
+      caption="\"" + JsonPaintTarget.escapeJSON(caption) + "\"";
+    }
+    String message=systemMessages.getCommunicationErrorMessage();
+    if (message != null) {
+      message="\"" + JsonPaintTarget.escapeJSON(message) + "\"";
+    }
+    String url=systemMessages.getCommunicationErrorURL();
+    if (url != null) {
+      url="\"" + JsonPaintTarget.escapeJSON(url) + "\"";
+    }
+    page.write(",\"comErrMsg\": {" + "\"caption\":" + caption + ","+ "\"message\" : "+ message+ ","+ "\"url\" : "+ url+ "}");
+    caption=systemMessages.getAuthenticationErrorCaption();
+    if (caption != null) {
+      caption="\"" + JsonPaintTarget.escapeJSON(caption) + "\"";
+    }
+    message=systemMessages.getAuthenticationErrorMessage();
+    if (message != null) {
+      message="\"" + JsonPaintTarget.escapeJSON(message) + "\"";
+    }
+    url=systemMessages.getAuthenticationErrorURL();
+    if (url != null) {
+      url="\"" + JsonPaintTarget.escapeJSON(url) + "\"";
+    }
+    page.write(",\"authErrMsg\": {" + "\"caption\":" + caption + ","+ "\"message\" : "+ message+ ","+ "\"url\" : "+ url+ "}");
+  }
+  page.write("};\n//]]>\n</script>\n");
+  if (themeName != null) {
+    page.write("<script type=\"text/javascript\">\n");
+    page.write("//<![CDATA[\n");
+    page.write("if(!vaadin.themesLoaded['" + themeName + "']) {\n");
+    page.write("var stylesheet = document.createElement('link');\n");
+    page.write("stylesheet.setAttribute('rel', 'stylesheet');\n");
+    page.write("stylesheet.setAttribute('type', 'text/css');\n");
+    page.write("stylesheet.setAttribute('href', '" + themeUri + "/styles.css');\n");
+    page.write("document.getElementsByTagName('head')[0].appendChild(stylesheet);\n");
+    page.write("vaadin.themesLoaded['" + themeName + "'] = true;\n}\n");
+    page.write("//]]>\n</script>\n");
+  }
+  page.write("<script type=\"text/javascript\">\n");
+  page.write("//<![CDATA[\n");
+  page.write("setTimeout('if (typeof " + widgetset.replace('.','_') + " == \"undefined\") {alert(\"Failed to load the widgetset: "+ widgetsetFilePath+ "\")};',15000);\n"+ "//]]>\n</script>\n");
+}

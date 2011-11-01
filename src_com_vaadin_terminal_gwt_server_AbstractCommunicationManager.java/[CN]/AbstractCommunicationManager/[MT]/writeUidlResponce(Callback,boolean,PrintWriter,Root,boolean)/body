@@ -1,0 +1,195 @@
+{
+  outWriter.print("\"changes\":[");
+  ArrayList<Paintable> paintables=null;
+  List<InvalidLayout> invalidComponentRelativeSizes=null;
+  JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
+  OpenWindowCache windowCache=currentlyOpenWindowsInClient.get(root.getName());
+  if (windowCache == null) {
+    windowCache=new OpenWindowCache();
+    currentlyOpenWindowsInClient.put(root.getName(),windowCache);
+  }
+  if (repaintAll) {
+    paintables=new ArrayList<Paintable>();
+    paintables.add(root);
+    locales=null;
+    requireLocale(application.getLocale().toString());
+  }
+ else {
+    for (Iterator<Paintable> it=paintableIdMap.keySet().iterator(); it.hasNext(); ) {
+      Component p=(Component)it.next();
+      if (p.getApplication() == null) {
+        unregisterPaintable(p);
+        idPaintableMap.remove(paintableIdMap.get(p));
+        it.remove();
+        dirtyPaintables.remove(p);
+      }
+    }
+    paintables=getDirtyVisibleComponents(root);
+  }
+  if (paintables != null) {
+    Collections.sort(paintables,new Comparator<Paintable>(){
+      public int compare(      Paintable o1,      Paintable o2){
+        Component c1=(Component)o1;
+        Component c2=(Component)o2;
+        int d1=0;
+        while (c1.getParent() != null) {
+          d1++;
+          c1=c1.getParent();
+        }
+        int d2=0;
+        while (c2.getParent() != null) {
+          d2++;
+          c2=c2.getParent();
+        }
+        if (d1 < d2) {
+          return -1;
+        }
+        if (d1 > d2) {
+          return 1;
+        }
+        return 0;
+      }
+    }
+);
+    for (final Iterator<Paintable> i=paintables.iterator(); i.hasNext(); ) {
+      final Paintable p=i.next();
+      if (p instanceof Root) {
+        final Root r=(Root)p;
+        if (r.getTerminal() == null) {
+          r.setTerminal(application.getRoot().getTerminal());
+        }
+      }
+      if (paintTarget.needsToBePainted(p)) {
+        paintTarget.startTag("change");
+        paintTarget.addAttribute("format","uidl");
+        final String pid=getPaintableId(p);
+        paintTarget.addAttribute("pid",pid);
+        p.paint(paintTarget);
+        paintTarget.endTag("change");
+      }
+      paintablePainted(p);
+      if (analyzeLayouts) {
+        Window w=(Window)p;
+        invalidComponentRelativeSizes=ComponentSizeValidator.validateComponentRelativeSizes(w.getContent(),null,null);
+      }
+    }
+  }
+  paintTarget.close();
+  outWriter.print("]");
+  outWriter.print(", \"meta\" : {");
+  boolean metaOpen=false;
+  if (repaintAll) {
+    metaOpen=true;
+    outWriter.write("\"repaintAll\":true");
+    if (analyzeLayouts) {
+      outWriter.write(", \"invalidLayouts\":");
+      outWriter.write("[");
+      if (invalidComponentRelativeSizes != null) {
+        boolean first=true;
+        for (        InvalidLayout invalidLayout : invalidComponentRelativeSizes) {
+          if (!first) {
+            outWriter.write(",");
+          }
+ else {
+            first=false;
+          }
+          invalidLayout.reportErrors(outWriter,this,System.err);
+        }
+      }
+      outWriter.write("]");
+    }
+    if (highLightedPaintable != null) {
+      outWriter.write(", \"hl\":\"");
+      outWriter.write(paintableIdMap.get(highLightedPaintable));
+      outWriter.write("\"");
+      highLightedPaintable=null;
+    }
+  }
+  SystemMessages ci=null;
+  try {
+    Method m=application.getClass().getMethod("getSystemMessages",(Class[])null);
+    ci=(Application.SystemMessages)m.invoke(null,(Object[])null);
+  }
+ catch (  NoSuchMethodException e) {
+    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+  }
+catch (  IllegalArgumentException e) {
+    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+  }
+catch (  IllegalAccessException e) {
+    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+  }
+catch (  InvocationTargetException e) {
+    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+  }
+  if (ci != null && ci.getSessionExpiredMessage() == null && ci.getSessionExpiredCaption() == null && ci.isSessionExpiredNotificationEnabled()) {
+    int newTimeoutInterval=getTimeoutInterval();
+    if (repaintAll || (timeoutInterval != newTimeoutInterval)) {
+      String escapedURL=ci.getSessionExpiredURL() == null ? "" : ci.getSessionExpiredURL().replace("/","\\/");
+      if (metaOpen) {
+        outWriter.write(",");
+      }
+      outWriter.write("\"timedRedirect\":{\"interval\":" + (newTimeoutInterval + 15) + ",\"url\":\""+ escapedURL+ "\"}");
+      metaOpen=true;
+    }
+    timeoutInterval=newTimeoutInterval;
+  }
+  outWriter.print("}, \"resources\" : {");
+  int resourceIndex=0;
+  for (final Iterator<Object> i=paintTarget.getUsedResources().iterator(); i.hasNext(); ) {
+    final String resource=(String)i.next();
+    InputStream is=null;
+    try {
+      is=callback.getThemeResourceAsStream(getTheme(root),resource);
+    }
+ catch (    final Exception e) {
+      logger.log(Level.FINER,"Failed to get theme resource stream.",e);
+    }
+    if (is != null) {
+      outWriter.print((resourceIndex++ > 0 ? ", " : "") + "\"" + resource+ "\" : ");
+      final StringBuffer layout=new StringBuffer();
+      try {
+        final InputStreamReader r=new InputStreamReader(is,"UTF-8");
+        final char[] buffer=new char[20000];
+        int charsRead=0;
+        while ((charsRead=r.read(buffer)) > 0) {
+          layout.append(buffer,0,charsRead);
+        }
+        r.close();
+      }
+ catch (      final java.io.IOException e) {
+        logger.log(Level.INFO,"Resource transfer failed",e);
+      }
+      outWriter.print("\"" + JsonPaintTarget.escapeJSON(layout.toString()) + "\"");
+    }
+ else {
+      logger.severe("CustomLayout not found: " + resource);
+    }
+  }
+  outWriter.print("}");
+  Collection<Class<? extends Paintable>> usedPaintableTypes=paintTarget.getUsedPaintableTypes();
+  boolean typeMappingsOpen=false;
+  for (  Class<? extends Paintable> class1 : usedPaintableTypes) {
+    if (windowCache.cache(class1)) {
+      if (!typeMappingsOpen) {
+        typeMappingsOpen=true;
+        outWriter.print(", \"typeMappings\" : { ");
+      }
+ else {
+        outWriter.print(" , ");
+      }
+      String canonicalName=class1.getCanonicalName();
+      outWriter.print("\"");
+      outWriter.print(canonicalName);
+      outWriter.print("\" : ");
+      outWriter.print(getTagForType(class1));
+    }
+  }
+  if (typeMappingsOpen) {
+    outWriter.print(" }");
+  }
+  printLocaleDeclarations(outWriter);
+  if (dragAndDropService != null) {
+    dragAndDropService.printJSONResponse(outWriter);
+  }
+}

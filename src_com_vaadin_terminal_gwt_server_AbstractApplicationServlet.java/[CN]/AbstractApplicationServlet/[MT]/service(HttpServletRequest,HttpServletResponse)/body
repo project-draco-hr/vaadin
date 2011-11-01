@@ -37,29 +37,22 @@
       return;
     }
  else     if (requestType == RequestType.UIDL) {
-      Window window=applicationManager.getApplicationWindow(request,this,application,null);
-      applicationManager.handleUidlRequest(request,response,this,window);
+      Root root=applicationManager.getApplicationRoot(request,this,application,null);
+      applicationManager.handleUidlRequest(request,response,this,root);
       return;
     }
     if (!application.isRunning()) {
       endApplication(request,response,application);
       return;
     }
-    Window window=getApplicationWindow(request,applicationManager,application);
-    if (window == null) {
+    Root root=getApplicationRoot(request,applicationManager,application);
+    if (root == null) {
       throw new ServletException(ERROR_NO_WINDOW_FOUND);
     }
-    if (window.getTerminal() == null) {
-      window.setTerminal(webApplicationContext.getBrowser());
+    if (root.getTerminal() == null) {
+      root.setTerminal(webApplicationContext.getBrowser());
     }
-    final Map<String,String[]> parameters=request.getParameterMap();
-    if (window != null && parameters != null) {
-      window.handleParameters(parameters);
-    }
-    if (handleURI(applicationManager,window,request,response)) {
-      return;
-    }
-    writeAjaxPage(request,response,window,application);
+    writeAjaxPage(request,response,root,application);
   }
  catch (  final SessionExpiredException e) {
     handleServiceSessionExpired(request,response);

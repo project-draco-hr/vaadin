@@ -1,8 +1,4 @@
 {
-  final String name=getName();
-  target.addAttribute("name",name == null ? "" : name);
-  final String theme=getTheme();
-  target.addAttribute("theme",theme == null ? "" : theme);
   if (modal) {
     target.addAttribute("modal",true);
   }
@@ -27,9 +23,6 @@
     target.addAttribute("scrollTo",scrollIntoView);
     scrollIntoView=null;
   }
-  if (getApplication() != null && this == getApplication().getMainWindow()) {
-    target.addAttribute("main",true);
-  }
   if (getContent() != null) {
     if (getContent().getHeightUnits() == Sizeable.UNITS_PERCENTAGE) {
       target.addAttribute("layoutRelativeHeight",true);
@@ -38,64 +31,12 @@
       target.addAttribute("layoutRelativeWidth",true);
     }
   }
-synchronized (openList) {
-    if (!openList.isEmpty()) {
-      for (final Iterator<OpenResource> i=openList.iterator(); i.hasNext(); ) {
-        (i.next()).paintContent(target);
-      }
-      openList.clear();
-    }
-  }
   super.paintContent(target);
-  if (jsExecQueue != null) {
-    for (    String script : jsExecQueue) {
-      target.startTag("execJS");
-      target.addAttribute("script",script);
-      target.endTag("execJS");
-    }
-    jsExecQueue=null;
-  }
   target.addVariable(this,"positionx",getPositionX());
   target.addVariable(this,"positiony",getPositionY());
   target.addVariable(this,"close",false);
-  if (getParent() == null) {
-    for (final Iterator<Window> i=subwindows.iterator(); i.hasNext(); ) {
-      final Window w=i.next();
-      w.paint(target);
-    }
-  }
- else {
-    target.addAttribute("sub",true);
-  }
-  if (notifications != null) {
-    target.startTag("notifications");
-    for (final Iterator<Notification> it=notifications.iterator(); it.hasNext(); ) {
-      final Notification n=it.next();
-      target.startTag("notification");
-      if (n.getCaption() != null) {
-        target.addAttribute("caption",n.getCaption());
-      }
-      if (n.getMessage() != null) {
-        target.addAttribute("message",n.getMessage());
-      }
-      if (n.getIcon() != null) {
-        target.addAttribute("icon",n.getIcon());
-      }
-      if (!n.isHtmlContentAllowed()) {
-        target.addAttribute(VView.NOTIFICATION_HTML_CONTENT_NOT_ALLOWED,true);
-      }
-      target.addAttribute("position",n.getPosition());
-      target.addAttribute("delay",n.getDelayMsec());
-      if (n.getStyleName() != null) {
-        target.addAttribute("style",n.getStyleName());
-      }
-      target.endTag("notification");
-    }
-    target.endTag("notifications");
-    notifications=null;
-  }
   if (pendingFocus != null) {
-    if (pendingFocus.getWindow() == this || (pendingFocus.getWindow() != null && pendingFocus.getWindow().getParent() == this)) {
+    if (pendingFocus.getRoot() == this || (pendingFocus.getRoot() != null && pendingFocus.getRoot().getParent() == this)) {
       target.addAttribute("focused",pendingFocus);
     }
     pendingFocus=null;
