@@ -1,3 +1,13 @@
 {
   content.paint(target);
+  for (final Iterator<Window> i=windows.iterator(); i.hasNext(); ) {
+    final Window w=i.next();
+    w.paint(target);
+  }
+  if (pendingFocus != null) {
+    if (pendingFocus.getRoot() == this || (pendingFocus.getRoot() != null && pendingFocus.getRoot().getParent() == this)) {
+      target.addAttribute("focused",pendingFocus);
+    }
+    pendingFocus=null;
+  }
 }
