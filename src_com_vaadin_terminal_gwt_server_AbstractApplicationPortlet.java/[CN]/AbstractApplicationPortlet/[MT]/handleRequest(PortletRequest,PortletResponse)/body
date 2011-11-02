@@ -1,0 +1,104 @@
+{
+  RequestType requestType=getRequestType(request);
+  if (requestType == RequestType.UNKNOWN) {
+    handleUnknownRequest(request,response);
+  }
+ else   if (requestType == RequestType.DUMMY) {
+    ((ResourceResponse)response).setContentType("text/html");
+    final OutputStream out=((ResourceResponse)response).getPortletOutputStream();
+    final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
+    outWriter.print("<html><body>dummy page</body></html>");
+    outWriter.close();
+  }
+ else   if (requestType == RequestType.STATIC_FILE) {
+    serveStaticResources((ResourceRequest)request,(ResourceResponse)response);
+  }
+ else {
+    Application application=null;
+    boolean transactionStarted=false;
+    boolean requestStarted=false;
+    try {
+      application=findApplicationInstance(request,requestType);
+      if (application == null) {
+        return;
+      }
+      PortletApplicationContext2 applicationContext=getApplicationContext(request.getPortletSession());
+      applicationContext.setResponse(response);
+      applicationContext.setPortletConfig(getPortletConfig());
+      PortletCommunicationManager applicationManager=applicationContext.getApplicationManager(application);
+      updateBrowserProperties(applicationContext.getBrowser(),request);
+      if (application instanceof PortletRequestListener) {
+        ((PortletRequestListener)application).onRequestStart(request,response);
+        requestStarted=true;
+      }
+      startApplication(request,application,applicationContext);
+      applicationContext.startTransaction(application,request);
+      transactionStarted=true;
+      Root root=null;
+synchronized (application) {
+        if (application.isRunning()) {
+switch (requestType) {
+case FILE_UPLOAD:
+            break;
+case APPLICATION_RESOURCE:
+          root=application.getRoot();
+        break;
+default :
+      root=applicationManager.getApplicationRoot(request,this,application,null);
+  }
+}
+}
+if (request instanceof RenderRequest) {
+applicationContext.firePortletRenderRequest(application,root,(RenderRequest)request,(RenderResponse)response);
+}
+ else if (request instanceof ActionRequest) {
+applicationContext.firePortletActionRequest(application,root,(ActionRequest)request,(ActionResponse)response);
+}
+ else if (request instanceof EventRequest) {
+applicationContext.firePortletEventRequest(application,root,(EventRequest)request,(EventResponse)response);
+}
+ else if (request instanceof ResourceRequest) {
+applicationContext.firePortletResourceRequest(application,root,(ResourceRequest)request,(ResourceResponse)response);
+}
+if (requestType == RequestType.FILE_UPLOAD) {
+applicationManager.handleFileUpload((ResourceRequest)request,(ResourceResponse)response);
+return;
+}
+ else if (requestType == RequestType.UIDL) {
+if (isRepaintAll(request)) {
+  checkWidgetsetVersion(request);
+}
+applicationManager.handleUidlRequest((ResourceRequest)request,(ResourceResponse)response,this,root);
+return;
+}
+ else {
+if (!application.isRunning()) {
+  endApplication(request,response,application);
+  return;
+}
+handleOtherRequest(request,response,requestType,application,root,applicationContext,applicationManager);
+}
+}
+ catch (final SessionExpiredException e) {
+logger.finest("A user session has expired");
+}
+catch (final GeneralSecurityException e) {
+logger.fine("General security exception, the security key was probably incorrect.");
+}
+catch (final Throwable e) {
+handleServiceException(request,response,application,e);
+}
+ finally {
+try {
+if (transactionStarted) {
+  ((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
+}
+}
+  finally {
+if (requestStarted) {
+  ((PortletRequestListener)application).onRequestEnd(request,response);
+}
+}
+}
+}
+}
