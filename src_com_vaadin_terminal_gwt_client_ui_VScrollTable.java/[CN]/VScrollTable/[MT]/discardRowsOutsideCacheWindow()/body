@@ -1,14 +1,16 @@
 {
-  final int optimalFirstRow=(int)(firstRowInViewPort - pageLength * cache_rate);
-  boolean cont=true;
-  while (cont && scrollBody.getLastRendered() > optimalFirstRow && scrollBody.getFirstRendered() < optimalFirstRow) {
-    cont=scrollBody.unlinkRow(true);
+  int firstRowToKeep=(int)(firstRowInViewPort - pageLength * cache_rate);
+  int lastRowToKeep=(int)(firstRowInViewPort + pageLength + pageLength * cache_rate);
+  debug("Client side calculated cache rows to keep: " + firstRowToKeep + "-"+ lastRowToKeep);
+  if (serverCacheFirst != -1) {
+    firstRowToKeep=serverCacheFirst;
+    lastRowToKeep=serverCacheLast;
+    debug("Server cache rows that override: " + serverCacheFirst + "-"+ serverCacheLast);
+    if (firstRowToKeep < scrollBody.getFirstRendered() || lastRowToKeep > scrollBody.getLastRendered()) {
+      debug("*** Server wants us to keep " + serverCacheFirst + "-"+ serverCacheLast+ " but we only have rows "+ scrollBody.getFirstRendered()+ "-"+ scrollBody.getLastRendered()+ " rendered!");
+    }
   }
-  final int optimalLastRow=(int)(firstRowInViewPort + pageLength + pageLength * cache_rate);
-  cont=true;
-  while (cont && scrollBody.getLastRendered() > optimalLastRow) {
-    cont=scrollBody.unlinkRow(false);
-  }
+  discardCacheRows(firstRowToKeep,lastRowToKeep);
   scrollBody.fixSpacers();
   scrollBody.restoreRowVisibility();
 }

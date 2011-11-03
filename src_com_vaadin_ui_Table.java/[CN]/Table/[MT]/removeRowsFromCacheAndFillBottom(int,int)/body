@@ -1,28 +1,36 @@
 {
   int totalCachedRows=pageBuffer[CELL_ITEMID].length;
   int totalRows=size();
-  int cacheIx=firstIndex - pageBufferFirstIndex;
-  unregisterComponentsAndPropertiesInRows(firstIndex,rows);
-  int newCachedRowCount=totalRows < totalCachedRows ? totalRows : totalCachedRows;
-  int firstAppendedRow=newCachedRowCount > rows ? newCachedRowCount - rows : firstIndex;
-  int rowsToAdd=Math.min(rows,totalCachedRows - firstAppendedRow);
-  rowsToAdd=Math.min(rowsToAdd,totalRows - (firstAppendedRow + pageBufferFirstIndex));
-  if (rowsToAdd <= 0) {
-    return;
+  int firstIndexInPageBuffer=firstIndex - pageBufferFirstIndex;
+  if (firstIndexInPageBuffer + rows > totalCachedRows) {
+    rows=totalCachedRows - firstIndexInPageBuffer;
   }
-  Object[][] cells=getVisibleCellsNoCache(firstAppendedRow,rowsToAdd,false);
+  unregisterComponentsAndPropertiesInRows(firstIndex,rows);
+  int newCachedRowCount=totalCachedRows;
+  if (newCachedRowCount + pageBufferFirstIndex > totalRows) {
+    newCachedRowCount=totalRows - pageBufferFirstIndex;
+  }
+  int firstAppendedRowInPageBuffer=totalCachedRows - rows;
+  int firstAppendedRow=firstAppendedRowInPageBuffer + pageBufferFirstIndex;
+  int maxRowsToRender=(totalRows - firstAppendedRow);
+  int rowsToAdd=rows;
+  if (rowsToAdd > maxRowsToRender) {
+    rowsToAdd=maxRowsToRender;
+  }
+  Object[][] cells=null;
+  if (rowsToAdd > 0) {
+    cells=getVisibleCellsNoCache(firstAppendedRow,rowsToAdd,false);
+  }
   Object[][] newPageBuffer=new Object[pageBuffer.length][newCachedRowCount];
-  for (int ix=0; ix < newCachedRowCount; ix++) {
-    for (int i=0; i < pageBuffer.length; i++) {
-      if (ix >= firstAppendedRow) {
-        newPageBuffer[i][ix]=cells[i][ix - firstAppendedRow];
-      }
- else       if (ix >= cacheIx && ix + rows < totalCachedRows) {
-        newPageBuffer[i][ix]=pageBuffer[i][ix + rows];
-      }
- else {
-        newPageBuffer[i][ix]=pageBuffer[i][ix];
-      }
+  for (int i=0; i < pageBuffer.length; i++) {
+    for (int row=0; row < firstIndexInPageBuffer; row++) {
+      newPageBuffer[i][row]=pageBuffer[i][row];
+    }
+    for (int row=firstIndexInPageBuffer; row < firstAppendedRowInPageBuffer; row++) {
+      newPageBuffer[i][row]=pageBuffer[i][row + rows];
+    }
+    for (int row=firstAppendedRowInPageBuffer; row < newCachedRowCount; row++) {
+      newPageBuffer[i][row]=cells[i][row - firstAppendedRowInPageBuffer];
     }
   }
   pageBuffer=newPageBuffer;
