@@ -25,17 +25,15 @@
     }
   }
   Object[][] newPageBuffer=new Object[pageBuffer.length][newCachedRowCount];
-  for (int ix=0; ix < newCachedRowCount; ix++) {
-    for (int i=0; i < pageBuffer.length; i++) {
-      if (ix >= firstIndexInPageBuffer && ix < firstIndexInPageBuffer + rows) {
-        newPageBuffer[i][ix]=cells[i][ix - firstIndexInPageBuffer];
-      }
- else       if (ix >= firstIndexInPageBuffer + rows) {
-        newPageBuffer[i][ix]=pageBuffer[i][ix - rows];
-      }
- else {
-        newPageBuffer[i][ix]=pageBuffer[i][ix];
-      }
+  for (int i=0; i < pageBuffer.length; i++) {
+    for (int row=0; row < firstIndexInPageBuffer; row++) {
+      newPageBuffer[i][row]=pageBuffer[i][row];
+    }
+    for (int row=firstIndexInPageBuffer; row < firstIndexInPageBuffer + rows; row++) {
+      newPageBuffer[i][row]=cells[i][row - firstIndexInPageBuffer];
+    }
+    for (int row=firstIndexInPageBuffer + rows; row < newCachedRowCount; row++) {
+      newPageBuffer[i][row]=pageBuffer[i][row - rows];
     }
   }
   pageBuffer=newPageBuffer;
