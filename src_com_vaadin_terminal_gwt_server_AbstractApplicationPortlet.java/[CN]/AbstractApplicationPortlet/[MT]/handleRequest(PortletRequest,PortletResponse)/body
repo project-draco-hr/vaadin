@@ -25,6 +25,7 @@
       if (application == null) {
         return;
       }
+      Application.setCurrentApplication(application);
       PortletApplicationContext2 applicationContext=getApplicationContext(request.getPortletSession());
       applicationContext.setResponse(response);
       applicationContext.setPortletConfig(getPortletConfig());
@@ -97,8 +98,13 @@ try {
   }
 }
   finally {
-  if (requestStarted) {
-    ((PortletRequestListener)application).onRequestEnd(request,response);
+  try {
+    if (requestStarted) {
+      ((PortletRequestListener)application).onRequestEnd(request,response);
+    }
+  }
+  finally {
+    Application.setCurrentApplication(null);
   }
 }
 }

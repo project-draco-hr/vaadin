@@ -25,6 +25,7 @@
     if (application == null) {
       return;
     }
+    Application.setCurrentApplication(application);
     WebApplicationContext webApplicationContext=getApplicationContext(request.getSession());
     CommunicationManager applicationManager=webApplicationContext.getApplicationManager(application,this);
     updateBrowserProperties(webApplicationContext.getBrowser(),request);
@@ -76,8 +77,13 @@ catch (  final Throwable e) {
       }
     }
   finally {
-      if (requestStarted) {
-        ((HttpServletRequestListener)application).onRequestEnd(request,response);
+      try {
+        if (requestStarted) {
+          ((HttpServletRequestListener)application).onRequestEnd(request,response);
+        }
+      }
+  finally {
+        Application.setCurrentApplication(null);
       }
     }
   }
