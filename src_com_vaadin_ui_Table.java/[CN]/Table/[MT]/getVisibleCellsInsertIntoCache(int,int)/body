@@ -1,30 +1,48 @@
 {
-  Object[][] cells=getVisibleCellsNoCache(firstIndex,rows,false);
+  logger.finest("Insert " + rows + " rows at index "+ firstIndex+ " to existing page buffer requested");
+  int minPageBufferIndex=getCurrentPageFirstItemIndex() - (int)(getPageLength() * getCacheRate());
+  if (minPageBufferIndex < 0) {
+    minPageBufferIndex=0;
+  }
+  int maxPageBufferIndex=getCurrentPageFirstItemIndex() + (int)(getPageLength() * (1 + getCacheRate()));
+  int maxBufferSize=maxPageBufferIndex - minPageBufferIndex;
+  if (getPageLength() == 0) {
+    maxBufferSize=pageBuffer[0].length + rows;
+  }
   int currentlyCachedRowCount=pageBuffer[CELL_ITEMID].length;
-  int lastCachedRow=currentlyCachedRowCount - rows;
-  int cacheIx=firstIndex - pageBufferFirstIndex;
-  unregisterComponentsAndPropertiesInRows(lastCachedRow + 1,currentlyCachedRowCount - lastCachedRow);
+  int firstIndexInPageBuffer=firstIndex - pageBufferFirstIndex;
+  if (firstIndexInPageBuffer + rows > maxBufferSize) {
+    rows=maxBufferSize - firstIndexInPageBuffer;
+  }
+  int firstCacheRowToRemoveInPageBuffer=firstIndexInPageBuffer;
+  int numberOfOldRowsAfterInsertedRows=maxBufferSize - firstIndexInPageBuffer - rows;
+  if (numberOfOldRowsAfterInsertedRows > 0) {
+    firstCacheRowToRemoveInPageBuffer+=numberOfOldRowsAfterInsertedRows;
+  }
+  if (firstCacheRowToRemoveInPageBuffer <= currentlyCachedRowCount) {
+    unregisterComponentsAndPropertiesInRows(firstCacheRowToRemoveInPageBuffer + pageBufferFirstIndex,currentlyCachedRowCount - firstCacheRowToRemoveInPageBuffer + pageBufferFirstIndex);
+  }
   int newCachedRowCount=currentlyCachedRowCount;
-  if (pageLength == 0 || currentlyCachedRowCount < pageLength) {
+  if (maxBufferSize == 0 || currentlyCachedRowCount < maxBufferSize) {
     newCachedRowCount=currentlyCachedRowCount + rows;
-    if (pageLength > 0 && newCachedRowCount > pageLength) {
-      newCachedRowCount=pageLength;
+    if (maxBufferSize > 0 && newCachedRowCount > maxBufferSize) {
+      newCachedRowCount=maxBufferSize;
     }
   }
+  Object[][] cells=getVisibleCellsNoCache(firstIndex,rows,false);
   Object[][] newPageBuffer=new Object[pageBuffer.length][newCachedRowCount];
-  for (int ix=0; ix < newCachedRowCount; ix++) {
-    for (int i=0; i < pageBuffer.length; i++) {
-      if (ix >= cacheIx && ix < cacheIx + rows) {
-        newPageBuffer[i][ix]=cells[i][ix - cacheIx];
-      }
- else       if (ix >= cacheIx + rows) {
-        newPageBuffer[i][ix]=pageBuffer[i][ix - rows];
-      }
- else {
-        newPageBuffer[i][ix]=pageBuffer[i][ix];
-      }
+  for (int i=0; i < pageBuffer.length; i++) {
+    for (int row=0; row < firstIndexInPageBuffer; row++) {
+      newPageBuffer[i][row]=pageBuffer[i][row];
+    }
+    for (int row=firstIndexInPageBuffer; row < firstIndexInPageBuffer + rows; row++) {
+      newPageBuffer[i][row]=cells[i][row - firstIndexInPageBuffer];
+    }
+    for (int row=firstIndexInPageBuffer + rows; row < newCachedRowCount; row++) {
+      newPageBuffer[i][row]=pageBuffer[i][row - rows];
     }
   }
   pageBuffer=newPageBuffer;
+  logger.finest("Page Buffer now contains " + pageBuffer[CELL_ITEMID].length + " rows ("+ pageBufferFirstIndex+ "-"+ (pageBufferFirstIndex + pageBuffer[CELL_ITEMID].length - 1)+ ")");
   return cells;
 }

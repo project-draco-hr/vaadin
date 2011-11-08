@@ -1,0 +1,27 @@
+{
+  int firstDiscarded=-1, lastDiscarded=-1;
+  boolean cont=true;
+  while (cont && scrollBody.getLastRendered() > optimalFirstRow && scrollBody.getFirstRendered() < optimalFirstRow) {
+    if (firstDiscarded == -1) {
+      firstDiscarded=scrollBody.getFirstRendered();
+    }
+    cont=scrollBody.unlinkRow(true);
+  }
+  if (firstDiscarded != -1) {
+    lastDiscarded=scrollBody.getFirstRendered() - 1;
+    debug("Discarded rows " + firstDiscarded + "-"+ lastDiscarded);
+  }
+  firstDiscarded=lastDiscarded=-1;
+  cont=true;
+  while (cont && scrollBody.getLastRendered() > optimalLastRow) {
+    if (lastDiscarded == -1) {
+      lastDiscarded=scrollBody.getLastRendered();
+    }
+    cont=scrollBody.unlinkRow(false);
+  }
+  if (lastDiscarded != -1) {
+    firstDiscarded=scrollBody.getLastRendered() + 1;
+    debug("Discarded rows " + firstDiscarded + "-"+ lastDiscarded);
+  }
+  debug("Now in cache: " + scrollBody.getFirstRendered() + "-"+ scrollBody.getLastRendered());
+}
