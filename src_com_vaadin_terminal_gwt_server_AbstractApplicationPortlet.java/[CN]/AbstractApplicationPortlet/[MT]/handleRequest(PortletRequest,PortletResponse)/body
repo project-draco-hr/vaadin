@@ -1,4 +1,5 @@
 {
+  AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
   RequestType requestType=getRequestType(request);
   if (requestType == RequestType.UNKNOWN) {
     handleUnknownRequest(request,response);
@@ -43,7 +44,7 @@ case FILE_UPLOAD:
 case APPLICATION_RESOURCE:
           break;
 default :
-        root=applicationManager.getApplicationRoot(request,this,application,null);
+        root=applicationManager.getApplicationRoot(request,portletWrapper,application,null);
     }
   }
 }
@@ -67,7 +68,7 @@ if (requestType == RequestType.FILE_UPLOAD) {
   if (isRepaintAll(request)) {
     checkWidgetsetVersion(request);
   }
-  applicationManager.handleUidlRequest((ResourceRequest)request,(ResourceResponse)response,this,root);
+  applicationManager.handleUidlRequest((ResourceRequest)request,(ResourceResponse)response,portletWrapper,root);
   return;
 }
  else {
