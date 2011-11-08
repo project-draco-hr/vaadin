@@ -1,4 +1,5 @@
 {
+  AbstractApplicationServletWrapper servletWrapper=new AbstractApplicationServletWrapper(this);
   RequestType requestType=getRequestType(request);
   if (!ensureCookiesEnabled(requestType,request,response)) {
     return;
@@ -37,8 +38,8 @@
       return;
     }
  else     if (requestType == RequestType.UIDL) {
-      Root root=applicationManager.getApplicationRoot(request,this,application,null);
-      applicationManager.handleUidlRequest(request,response,this,root);
+      Root root=applicationManager.getApplicationRoot(request,this,servletWrapper,application,null);
+      applicationManager.handleUidlRequest(request,response,this,servletWrapper,root);
       return;
     }
     if (!application.isRunning()) {
@@ -48,7 +49,7 @@
     if (applicationManager.handleApplicationRequest(request,response,this)) {
       return;
     }
-    Root root=getApplicationRoot(request,applicationManager,application);
+    Root root=getApplicationRoot(request,applicationManager,servletWrapper,application);
     if (root == null) {
       throw new ServletException(ERROR_NO_WINDOW_FOUND);
     }
