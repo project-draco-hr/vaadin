@@ -1,5 +1,7 @@
 {
   AbstractApplicationServletWrapper servletWrapper=new AbstractApplicationServletWrapper(this);
+  WrappedHttpServletRequest wrappedRequest=new WrappedHttpServletRequest(request,this);
+  WrappedHttpServletResponse wrappedResponse=new WrappedHttpServletResponse(response);
   RequestType requestType=getRequestType(request);
   if (!ensureCookiesEnabled(requestType,request,response)) {
     return;
@@ -34,22 +36,22 @@
     webApplicationContext.startTransaction(application,request);
     transactionStarted=true;
     if (requestType == RequestType.FILE_UPLOAD) {
-      applicationManager.handleFileUpload(request,response,this);
+      applicationManager.handleFileUpload(wrappedRequest,wrappedResponse);
       return;
     }
  else     if (requestType == RequestType.UIDL) {
-      Root root=applicationManager.getApplicationRoot(request,this,servletWrapper,application,null);
-      applicationManager.handleUidlRequest(request,response,this,servletWrapper,root);
+      Root root=applicationManager.getApplicationRoot(wrappedRequest,servletWrapper,application,null);
+      applicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,servletWrapper,root);
       return;
     }
     if (!application.isRunning()) {
       endApplication(request,response,application);
       return;
     }
-    if (applicationManager.handleApplicationRequest(request,response,this)) {
+    if (applicationManager.handleApplicationRequest(wrappedRequest,wrappedResponse)) {
       return;
     }
-    Root root=getApplicationRoot(request,applicationManager,servletWrapper,application);
+    Root root=getApplicationRoot(wrappedRequest,applicationManager,servletWrapper,application);
     if (root == null) {
       throw new ServletException(ERROR_NO_WINDOW_FOUND);
     }

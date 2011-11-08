@@ -1,5 +1,5 @@
 {
-  String pathInfo=request.getPathInfo();
+  String pathInfo=request.getRequestPathInfo();
   int startOfData=pathInfo.indexOf(AbstractApplicationServlet.UPLOAD_URL_PREFIX) + AbstractApplicationServlet.UPLOAD_URL_PREFIX.length();
   String uppUri=pathInfo.substring(startOfData);
   String[] parts=uppUri.split("/",3);
@@ -10,11 +10,11 @@
   if (secKey.equals(parts[2])) {
     VariableOwner source=getVariableOwner(paintableId);
     String contentType=request.getContentType();
-    if (request.getContentType().contains("boundary")) {
-      doHandleSimpleMultipartFileUpload(new WrappedHttpServletRequest(request,servlet),new WrappedHttpServletResponse(response),streamVariable,variableName,source,contentType.split("boundary=")[1]);
+    if (contentType.contains("boundary")) {
+      doHandleSimpleMultipartFileUpload(request,response,streamVariable,variableName,source,contentType.split("boundary=")[1]);
     }
  else {
-      doHandleXhrFilePost(new WrappedHttpServletRequest(request,servlet),new WrappedHttpServletResponse(response),streamVariable,variableName,source,request.getContentLength());
+      doHandleXhrFilePost(request,response,streamVariable,variableName,source,request.getContentLength());
     }
   }
  else {

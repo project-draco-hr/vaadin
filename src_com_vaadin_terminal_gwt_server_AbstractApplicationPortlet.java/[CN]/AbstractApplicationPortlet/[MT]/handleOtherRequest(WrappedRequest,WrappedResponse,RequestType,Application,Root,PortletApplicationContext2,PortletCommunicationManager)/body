@@ -7,11 +7,13 @@
   }
   if (requestType == RequestType.APPLICATION_RESOURCE) {
     if (!applicationManager.handleApplicationRequest(request,response)) {
-      response.setProperty(ResourceResponse.HTTP_STATUS_CODE,"404");
+      response.setStatus(404);
     }
   }
  else   if (requestType == RequestType.RENDER) {
-    writeAjaxPage((RenderRequest)request,(RenderResponse)response,root,application);
+    PortletRequest portletRequest=((WrappedPortletRequest)request).getPortletRequest();
+    PortletResponse portletResponse=((WrappedPortletResponse)response).getPortletResponse();
+    writeAjaxPage((RenderRequest)portletRequest,(RenderResponse)portletResponse,root,application);
   }
  else   if (requestType == RequestType.EVENT) {
   }

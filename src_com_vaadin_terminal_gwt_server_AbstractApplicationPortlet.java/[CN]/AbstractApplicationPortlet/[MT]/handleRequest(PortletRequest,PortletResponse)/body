@@ -1,5 +1,7 @@
 {
   AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
+  WrappedPortletRequest wrappedRequest=new WrappedPortletRequest(request);
+  WrappedPortletResponse wrappedResponse=new WrappedPortletResponse(response);
   RequestType requestType=getRequestType(request);
   if (requestType == RequestType.UNKNOWN) {
     handleUnknownRequest(request,response);
@@ -44,7 +46,7 @@ case FILE_UPLOAD:
 case APPLICATION_RESOURCE:
           break;
 default :
-        root=applicationManager.getApplicationRoot(request,portletWrapper,application,null);
+        root=applicationManager.getApplicationRoot(wrappedRequest,portletWrapper,application,null);
     }
   }
 }
@@ -61,14 +63,14 @@ if (request instanceof RenderRequest) {
   applicationContext.firePortletResourceRequest(application,root,(ResourceRequest)request,(ResourceResponse)response);
 }
 if (requestType == RequestType.FILE_UPLOAD) {
-  applicationManager.handleFileUpload((ResourceRequest)request,(ResourceResponse)response);
+  applicationManager.handleFileUpload(wrappedRequest,wrappedResponse);
   return;
 }
  else if (requestType == RequestType.UIDL) {
   if (isRepaintAll(request)) {
     checkWidgetsetVersion(request);
   }
-  applicationManager.handleUidlRequest((ResourceRequest)request,(ResourceResponse)response,portletWrapper,root);
+  applicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,portletWrapper,root);
   return;
 }
  else {
@@ -76,7 +78,7 @@ if (requestType == RequestType.FILE_UPLOAD) {
     endApplication(request,response,application);
     return;
   }
-  handleOtherRequest(request,response,requestType,application,root,applicationContext,applicationManager);
+  handleOtherRequest(wrappedRequest,wrappedResponse,requestType,application,root,applicationContext,applicationManager);
 }
 }
  catch (final SessionExpiredException e) {
