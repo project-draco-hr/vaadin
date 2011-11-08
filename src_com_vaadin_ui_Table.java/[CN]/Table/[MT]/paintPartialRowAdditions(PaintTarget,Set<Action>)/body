@@ -3,15 +3,13 @@
   int firstIx=getFirstAddedItemIndex();
   int count=getAddedRowCount();
   target.startTag("prows");
-  int maxRows=(int)(getPageLength() * getCacheRate());
-  if (!shouldHideAddedRows() && count > maxRows) {
-    count=maxRows + 1;
-    target.addAttribute("delbelow",true);
-  }
-  target.addAttribute("firstprowix",firstIx);
-  target.addAttribute("numprows",count);
   if (!shouldHideAddedRows()) {
+    logger.finest("Paint rows for add. Index: " + firstIx + ", count: "+ count+ ".");
     Object[][] cells=getVisibleCellsInsertIntoCache(firstIx,count);
+    if (cells[0].length < count) {
+      target.addAttribute("delbelow",true);
+      count=cells[0].length;
+    }
     for (int indexInRowbuffer=0; indexInRowbuffer < count; indexInRowbuffer++) {
       final Object itemId=cells[CELL_ITEMID][indexInRowbuffer];
       if (shouldHideNullSelectionItem()) {
@@ -21,8 +19,11 @@
     }
   }
  else {
+    logger.finest("Paint rows for remove. Index: " + firstIx + ", count: "+ count+ ".");
     removeRowsFromCacheAndFillBottom(firstIx,count);
     target.addAttribute("hide",true);
   }
+  target.addAttribute("firstprowix",firstIx);
+  target.addAttribute("numprows",count);
   target.endTag("prows");
 }

@@ -1,0 +1,57 @@
+{
+  setTheme("reindeer-tests");
+  Button b=new Button("Show first");
+  addComponent(b);
+  b.addListener(new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      log.log("First visible item id is: " + treeTable.getCurrentPageFirstItemId());
+    }
+  }
+);
+  NativeSelect cacheRateSelect=new NativeSelect("Cache rate");
+  cacheRateSelect.setImmediate(true);
+  cacheRateSelect.setNullSelectionAllowed(false);
+  cacheRateSelect.addItem(new Integer(0));
+  cacheRateSelect.addItem(new Integer(1));
+  cacheRateSelect.addItem(new Integer(2));
+  cacheRateSelect.setValue(2);
+  cacheRateSelect.addListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      treeTable.setCacheRate((Integer)event.getProperty().getValue());
+    }
+  }
+);
+  addComponent(cacheRateSelect);
+  treeTable=new TreeTable();
+  treeTable.addStyleName("table-equal-rowheight");
+  testBeanContainer=new BeanItemContainer<TestBean>(TestBean.class);
+  Map<String,Integer> hasChildren=new HashMap<String,Integer>();
+  hasChildren.put("1",5);
+  hasChildren.put("3",10);
+  hasChildren.put("5",20);
+  hasChildren.put("6",7);
+  hasChildren.put("7",1);
+  hasChildren.put("40",20);
+  hasChildren.put("99",20);
+  treeTable.setContainerDataSource(createContainer(100,hasChildren));
+  treeTable.addGeneratedColumn("col3",new Col3ColumnGenerator());
+  treeTable.addListener(new ExpandListener(){
+    public void nodeExpand(    ExpandEvent event){
+      logExpandCollapse(event.getItemId(),"expanded");
+    }
+  }
+);
+  treeTable.addListener(new CollapseListener(){
+    public void nodeCollapse(    CollapseEvent event){
+      logExpandCollapse(event.getItemId(),"collapsed");
+    }
+  }
+);
+  treeTable.setColumnHeaders(columnHeaders);
+  treeTable.setVisibleColumns(visibleColumns);
+  treeTable.setColumnWidth("col1",150);
+  treeTable.setColumnWidth("col2",50);
+  treeTable.setHeight("430px");
+  addComponent(log);
+  addComponent(treeTable);
+}
