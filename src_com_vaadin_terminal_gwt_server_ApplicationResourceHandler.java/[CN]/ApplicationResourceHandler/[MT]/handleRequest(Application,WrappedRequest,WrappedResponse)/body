@@ -1,0 +1,16 @@
+{
+  String requestPath=request.getRequestPathInfo();
+  Matcher resourceMatcher=APP_RESOURCE_PATTERN.matcher(requestPath);
+  if (resourceMatcher.matches()) {
+    ApplicationResource resource=application.getResource(resourceMatcher.group(1));
+    if (resource != null) {
+      DownloadStream stream=resource.getStream();
+      if (stream != null) {
+        stream.setCacheTime(resource.getCacheTime());
+        serveResource(stream,response);
+        return true;
+      }
+    }
+  }
+  return false;
+}

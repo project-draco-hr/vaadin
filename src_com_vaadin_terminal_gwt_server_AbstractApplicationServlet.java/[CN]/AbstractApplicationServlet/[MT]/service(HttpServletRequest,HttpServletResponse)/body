@@ -33,7 +33,7 @@
     webApplicationContext.startTransaction(application,request);
     transactionStarted=true;
     if (requestType == RequestType.FILE_UPLOAD) {
-      applicationManager.handleFileUpload(request,response);
+      applicationManager.handleFileUpload(request,response,this);
       return;
     }
  else     if (requestType == RequestType.UIDL) {
@@ -45,7 +45,7 @@
       endApplication(request,response,application);
       return;
     }
-    if (application.handleRequest(new WrappedHttpServletRequest(request),new WrappedHttpServletResponse(response))) {
+    if (applicationManager.handleApplicationRequest(request,response,this)) {
       return;
     }
     Root root=getApplicationRoot(request,applicationManager,application);

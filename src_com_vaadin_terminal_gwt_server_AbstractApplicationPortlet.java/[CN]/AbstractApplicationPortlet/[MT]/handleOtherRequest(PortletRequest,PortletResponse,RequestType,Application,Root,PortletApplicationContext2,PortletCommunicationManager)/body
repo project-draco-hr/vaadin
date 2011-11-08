@@ -6,7 +6,9 @@
     root.setTerminal(applicationContext.getBrowser());
   }
   if (requestType == RequestType.APPLICATION_RESOURCE) {
-    handleURI(applicationManager,root,(ResourceRequest)request,(ResourceResponse)response);
+    if (!applicationManager.handleApplicationRequest(request,response)) {
+      response.setProperty(ResourceResponse.HTTP_STATUS_CODE,"404");
+    }
   }
  else   if (requestType == RequestType.RENDER) {
     writeAjaxPage((RenderRequest)request,(RenderResponse)response,root,application);

@@ -8,4 +8,32 @@
     }
   }
 ));
+  ApplicationResource resource=new ApplicationResource(){
+    public String getMIMEType(){
+      return "text/plain";
+    }
+    public DownloadStream getStream(){
+      try {
+        return new DownloadStream(new ByteArrayInputStream("Roots".getBytes("UTF-8")),getMIMEType(),getFilename());
+      }
+ catch (      UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    public String getFilename(){
+      return "roots.txt";
+    }
+    public long getCacheTime(){
+      return 60 * 60 * 1000;
+    }
+    public int getBufferSize(){
+      return 0;
+    }
+    public Application getApplication(){
+      return MyRootLayout.this.getApplication();
+    }
+  }
+;
+  getApplication().addResource(resource);
+  addComponent(new Link("Resource",resource));
 }
