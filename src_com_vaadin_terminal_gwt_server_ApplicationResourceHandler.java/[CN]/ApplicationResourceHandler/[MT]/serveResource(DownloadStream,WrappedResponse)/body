@@ -9,17 +9,7 @@
     OutputStream out=null;
     try {
       response.setContentType(stream.getContentType());
-      final long cacheTime=stream.getCacheTime();
-      if (cacheTime <= 0) {
-        response.setHeader("Cache-Control","no-cache");
-        response.setHeader("Pragma","no-cache");
-        response.setHeader("Expires",HTTP_DATE_FORMAT.format(new Date(0)));
-      }
- else {
-        response.setHeader("Cache-Control","max-age=" + cacheTime / 1000);
-        response.setHeader("Expires",HTTP_DATE_FORMAT.format(new Date(System.currentTimeMillis() + cacheTime)));
-        response.setHeader("Pragma","cache");
-      }
+      response.setCacheTime(stream.getCacheTime());
       final Iterator<String> i=stream.getParameterNames();
       if (i != null) {
         while (i.hasNext()) {
