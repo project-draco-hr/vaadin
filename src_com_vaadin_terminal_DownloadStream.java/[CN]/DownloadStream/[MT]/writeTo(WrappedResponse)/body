@@ -1,28 +1,28 @@
 {
-  if (stream.getParameter("Location") != null) {
+  if (getParameter("Location") != null) {
     response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-    response.setHeader("Location",stream.getParameter("Location"));
+    response.setHeader("Location",getParameter("Location"));
     return;
   }
-  final InputStream data=stream.getStream();
+  final InputStream data=getStream();
   if (data != null) {
     OutputStream out=null;
     try {
-      response.setContentType(stream.getContentType());
-      response.setCacheTime(stream.getCacheTime());
-      final Iterator<String> i=stream.getParameterNames();
+      response.setContentType(getContentType());
+      response.setCacheTime(getCacheTime());
+      final Iterator<String> i=getParameterNames();
       if (i != null) {
         while (i.hasNext()) {
           final String param=i.next();
-          response.setHeader(param,stream.getParameter(param));
+          response.setHeader(param,getParameter(param));
         }
       }
-      String contentDispositionValue=stream.getParameter("Content-Disposition");
+      String contentDispositionValue=getParameter("Content-Disposition");
       if (contentDispositionValue == null) {
-        contentDispositionValue="filename=\"" + stream.getFileName() + "\"";
+        contentDispositionValue="filename=\"" + getFileName() + "\"";
         response.setHeader("Content-Disposition",contentDispositionValue);
       }
-      int bufferSize=stream.getBufferSize();
+      int bufferSize=getBufferSize();
       if (bufferSize <= 0 || bufferSize > Constants.MAX_BUFFER_SIZE) {
         bufferSize=Constants.DEFAULT_BUFFER_SIZE;
       }
@@ -39,8 +39,8 @@
       }
     }
   finally {
-      AbstractCommunicationManager.tryToCloseStream(out);
-      AbstractCommunicationManager.tryToCloseStream(data);
+      tryToCloseStream(out);
+      tryToCloseStream(data);
     }
   }
 }
