@@ -1,0 +1,17 @@
+{
+  String rootIdString=request.getParameter(ApplicationConnection.ROOT_ID_PARAMETER);
+  Root root;
+synchronized (this) {
+    if (rootIdString == null) {
+      root=createRoot(request);
+      root.setApplication(this);
+      root.init(request);
+      roots.put(Integer.valueOf(nextRootId++),root);
+    }
+ else {
+      Integer rootId=new Integer(rootIdString);
+      root=roots.get(rootId);
+    }
+  }
+  return root;
+}
