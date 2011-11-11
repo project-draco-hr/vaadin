@@ -1,7 +1,7 @@
 {
-  property=new Property(){
+  property=new Property<BigDecimal>(){
     private BigDecimal value;
-    public Object getValue(){
+    public BigDecimal getValue(){
       return value;
     }
     public void setValue(    Object newValue) throws ReadOnlyException, ConversionException {
@@ -15,7 +15,7 @@
         throw new ConversionException();
       }
     }
-    public Class<?> getType(){
+    public Class<BigDecimal> getType(){
       return BigDecimal.class;
     }
     public boolean isReadOnly(){
@@ -25,12 +25,12 @@
     }
   }
 ;
-  formatter=new PropertyFormatter(property){
+  formatter=new PropertyFormatter<BigDecimal>(property){
     private final DecimalFormat df=new DecimalFormat("#,##0.00",new DecimalFormatSymbols(new Locale("en","UK")));
 {
       df.setParseBigDecimal(true);
     }
-    @Override public String format(    Object value){
+    @Override public String format(    BigDecimal value){
       final String retVal;
       if (value == null) {
         retVal="";
@@ -40,7 +40,7 @@
       }
       return retVal;
     }
-    @Override public Object parse(    String formattedValue) throws Exception {
+    @Override public BigDecimal parse(    String formattedValue) throws Exception {
       if (formattedValue != null && formattedValue.trim().length() != 0) {
         BigDecimal value=(BigDecimal)df.parse(formattedValue);
         value=value.setScale(2,BigDecimal.ROUND_HALF_UP);
