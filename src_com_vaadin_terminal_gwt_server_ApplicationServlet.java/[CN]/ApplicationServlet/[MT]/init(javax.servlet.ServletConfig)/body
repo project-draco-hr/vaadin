@@ -2,7 +2,10 @@
   super.init(servletConfig);
   final String applicationClassName=servletConfig.getInitParameter("application");
   if (applicationClassName == null) {
-    throw new ServletException("Application not specified in servlet parameters");
+    String rootLayoutParam=servletConfig.getInitParameter("rootLayout");
+    verifyRootLayoutClass(rootLayoutParam);
+    applicationClass=Application.class;
+    return;
   }
   try {
     applicationClass=(Class<? extends Application>)getClassLoader().loadClass(applicationClassName);

@@ -1,0 +1,21 @@
+{
+  if (className == null) {
+    throw new ServletException("rootLayout servlet parameter not defined");
+  }
+  try {
+    Class<?> rootLayoutClass=getClassLoader().loadClass(className);
+    if (!RootLayout.class.isAssignableFrom(rootLayoutClass)) {
+      throw new ServletException(className + " does not implement RootLayout");
+    }
+    rootLayoutClass.getConstructor();
+  }
+ catch (  ClassNotFoundException e) {
+    throw new ServletException("rootLayout class could not be loaded",e);
+  }
+catch (  SecurityException e) {
+    throw new ServletException("Could not access rootLayout class",e);
+  }
+catch (  NoSuchMethodException e) {
+    throw new ServletException(className + " doesn't have a public no-args constructor");
+  }
+}
