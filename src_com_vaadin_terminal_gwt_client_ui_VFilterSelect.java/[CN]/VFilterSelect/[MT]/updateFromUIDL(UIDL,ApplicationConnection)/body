@@ -78,26 +78,19 @@
   if (waitingForFilteringReponse && lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) {
     suggestionPopup.showSuggestions(currentSuggestions,currentPage,totalMatches);
     waitingForFilteringReponse=false;
-    if (!popupOpenerClicked && lastIndex != -1) {
-      MenuItem activeMenuItem;
-      if (lastIndex == 0) {
-        int lastItem=pageLength - 1;
-        List<MenuItem> items=suggestionPopup.menu.getItems();
-        if (lastItem >= items.size()) {
-          lastItem=items.size() - 1;
-        }
-        activeMenuItem=items.get(lastItem);
-        suggestionPopup.menu.selectItem(activeMenuItem);
+    if (!popupOpenerClicked && selectPopupItemWhenResponseIsReceived != Select.NONE) {
+      if (selectPopupItemWhenResponseIsReceived == Select.LAST) {
+        suggestionPopup.menu.selectLastItem();
       }
  else {
-        activeMenuItem=suggestionPopup.menu.getItems().get(0);
-        suggestionPopup.menu.selectItem(activeMenuItem);
+        suggestionPopup.menu.selectFirstItem();
       }
+      MenuItem activeMenuItem=suggestionPopup.menu.getSelectedItem();
       setTextboxText(activeMenuItem.getText());
       tb.setSelectionRange(lastFilter.length(),activeMenuItem.getText().length() - lastFilter.length());
-      lastIndex=-1;
+      selectPopupItemWhenResponseIsReceived=Select.NONE;
     }
-    if (selectItemWhenReponseIsReceived) {
+    if (updateSelectionWhenReponseIsReceived) {
       suggestionPopup.menu.doPostFilterSelectedItemAction();
     }
   }
