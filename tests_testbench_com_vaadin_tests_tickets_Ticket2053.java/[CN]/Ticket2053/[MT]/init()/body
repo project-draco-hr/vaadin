@@ -1,5 +1,5 @@
 {
-  final Window main=new Window("#2053");
+  final Root main=new Root("#2053");
   setMainWindow(main);
   Button nothing=new Button("Do nothing");
   main.addComponent(nothing);
@@ -7,7 +7,7 @@
   Button add=new Button("Add a window",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
       final String name="Child " + (++childs);
-      Window c=new Window(name);
+      Root c=new Root(name);
       c.addListener(new Window.CloseListener(){
         public void windowClose(        CloseEvent e){
           main.addComponent(new Label(name + " closed"));
@@ -15,7 +15,7 @@
       }
 );
       addWindow(c);
-      main.open(new ExternalResource(c.getURL()),"_new");
+      main.open(new ExternalResource(getWindowUrl(c)),"_new");
       main.addComponent(new Label(name + " opened"));
       final TextField tf=new TextField("Non immediate textfield");
       c.addComponent(tf);

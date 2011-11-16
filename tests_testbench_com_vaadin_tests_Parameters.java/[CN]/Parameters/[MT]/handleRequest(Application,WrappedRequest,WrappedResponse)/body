@@ -1,0 +1,19 @@
+{
+  context.setValue("Context not available");
+  relative.setValue(request.getRequestPathInfo());
+  params.removeAllItems();
+  Map<String,String[]> parameters=request.getParameterMap();
+  for (final Iterator<String> i=parameters.keySet().iterator(); i.hasNext(); ) {
+    final String name=i.next();
+    final String[] values=parameters.get(name);
+    String v="";
+    for (int j=0; j < values.length; j++) {
+      if (v.length() > 0) {
+        v+=", ";
+      }
+      v+="'" + values[j] + "'";
+    }
+    params.addItem(new Object[]{name,v},name);
+  }
+  return false;
+}
