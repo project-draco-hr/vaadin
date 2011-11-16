@@ -43,6 +43,14 @@
     target.addAttribute("scrollTo",scrollIntoView);
     scrollIntoView=null;
   }
+synchronized (openList) {
+    if (!openList.isEmpty()) {
+      for (final Iterator<OpenResource> i=openList.iterator(); i.hasNext(); ) {
+        (i.next()).paintContent(target);
+      }
+      openList.clear();
+    }
+  }
   if (pendingFocus != null) {
     if (pendingFocus.getRoot() == this || (pendingFocus.getRoot() != null && pendingFocus.getRoot().getParent() == this)) {
       target.addAttribute("focused",pendingFocus);
