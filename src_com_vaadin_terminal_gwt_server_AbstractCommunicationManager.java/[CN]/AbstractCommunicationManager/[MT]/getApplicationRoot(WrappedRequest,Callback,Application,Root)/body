@@ -1,3 +1,15 @@
 {
-  return application.getRoot(request);
+  String rootIdString=request.getParameter(ApplicationConnection.ROOT_ID_PARAMETER);
+  Root root=null;
+synchronized (application) {
+    if (rootIdString != null) {
+      int rootId=Integer.parseInt(rootIdString);
+      root=application.getRootById(rootId);
+    }
+    if (root == null) {
+      root=application.getRoot(request);
+    }
+  }
+  Root.setCurrentRoot(root);
+  return root;
 }
