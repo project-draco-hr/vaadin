@@ -1,0 +1,21 @@
+{
+  if (className == null) {
+    throw new ServletException(Application.ROOT_PARAMETER + " servlet parameter not defined");
+  }
+  try {
+    Class<?> rootClass=getClassLoader().loadClass(className);
+    if (!Root.class.isAssignableFrom(rootClass)) {
+      throw new ServletException(className + " does not implement Root");
+    }
+    rootClass.getConstructor();
+  }
+ catch (  ClassNotFoundException e) {
+    throw new ServletException(className + " could not be loaded",e);
+  }
+catch (  SecurityException e) {
+    throw new ServletException("Could not access " + className + " class",e);
+  }
+catch (  NoSuchMethodException e) {
+    throw new ServletException(className + " doesn't have a public no-args constructor");
+  }
+}
