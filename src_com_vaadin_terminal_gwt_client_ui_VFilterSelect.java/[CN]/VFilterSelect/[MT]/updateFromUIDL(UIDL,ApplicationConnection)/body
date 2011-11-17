@@ -34,7 +34,7 @@
   allowNewItem=uidl.hasAttribute("allownewitem");
   lastNewItemString=null;
   currentSuggestions.clear();
-  if (!waitingForFilteringReponse) {
+  if (!waitingForFilteringResponse) {
     currentSuggestion=null;
     suggestionPopup.menu.clearItems();
   }
@@ -48,7 +48,7 @@
     final FilterSelectSuggestion suggestion=new FilterSelectSuggestion(optionUidl);
     currentSuggestions.add(suggestion);
     if (optionUidl.hasAttribute("selected")) {
-      if (!waitingForFilteringReponse || popupOpenerClicked) {
+      if (!waitingForFilteringResponse || popupOpenerClicked) {
         String newSelectedOptionKey=Integer.toString(suggestion.getOptionKey());
         if (!newSelectedOptionKey.equals(selectedOptionKey) || suggestion.getReplacementString().equals(tb.getText())) {
           setPromptingOff(suggestion.getReplacementString());
@@ -63,8 +63,8 @@
     }
     captions+=Util.escapeHTML(suggestion.getReplacementString());
   }
-  if ((!waitingForFilteringReponse || popupOpenerClicked) && uidl.hasVariable("selected") && uidl.getStringArrayVariable("selected").length == 0) {
-    if (!waitingForFilteringReponse || !popupOpenerClicked) {
+  if ((!waitingForFilteringResponse || popupOpenerClicked) && uidl.hasVariable("selected") && uidl.getStringArrayVariable("selected").length == 0) {
+    if (!waitingForFilteringResponse || !popupOpenerClicked) {
       if (!focused) {
         prompting=false;
         setPromptingOn();
@@ -75,9 +75,9 @@
     }
     selectedOptionKey=null;
   }
-  if (waitingForFilteringReponse && lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) {
+  if (waitingForFilteringResponse && lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) {
     suggestionPopup.showSuggestions(currentSuggestions,currentPage,totalMatches);
-    waitingForFilteringReponse=false;
+    waitingForFilteringResponse=false;
     if (!popupOpenerClicked && selectPopupItemWhenResponseIsReceived != Select.NONE) {
       if (selectPopupItemWhenResponseIsReceived == Select.LAST) {
         suggestionPopup.menu.selectLastItem();
