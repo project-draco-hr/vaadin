@@ -1,6 +1,15 @@
 {
   try {
-    final Application application=getApplicationClass().newInstance();
+    final Class<? extends Application> applicationClass=getApplicationClass();
+    if (Root.class.isAssignableFrom(applicationClass)) {
+      return new Application(){
+        @Override protected String getRootClassName(        WrappedRequest request){
+          return applicationClass.getCanonicalName();
+        }
+      }
+;
+    }
+    final Application application=applicationClass.newInstance();
     return application;
   }
  catch (  final IllegalAccessException e) {
