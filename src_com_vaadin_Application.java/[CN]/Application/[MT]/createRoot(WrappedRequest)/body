@@ -1,20 +1,16 @@
 {
-  Object rootClassNameObj=properties.get(ROOT_PARAMETER);
-  if (rootClassNameObj instanceof String) {
-    String rootClassName=(String)rootClassNameObj;
+  String rootClassName=getRootClassName(request);
+  try {
+    Class<? extends Root> rootClass=Class.forName(rootClassName).asSubclass(Root.class);
     try {
-      Class<? extends Root> rootClass=Class.forName(rootClassName).asSubclass(Root.class);
-      try {
-        Root root=rootClass.newInstance();
-        return root;
-      }
- catch (      Exception e) {
-        throw new RuntimeException("Could not instantiate root class " + rootClassName,e);
-      }
+      Root root=rootClass.newInstance();
+      return root;
     }
- catch (    ClassNotFoundException e) {
-      throw new RuntimeException("Could not load root class " + rootClassName,e);
+ catch (    Exception e) {
+      throw new RuntimeException("Could not instantiate root class " + rootClassName,e);
     }
   }
-  throw new RuntimeException("No " + ROOT_PARAMETER + " defined in web.xml");
+ catch (  ClassNotFoundException e) {
+    throw new RuntimeException("Could not load root class " + rootClassName,e);
+  }
 }
