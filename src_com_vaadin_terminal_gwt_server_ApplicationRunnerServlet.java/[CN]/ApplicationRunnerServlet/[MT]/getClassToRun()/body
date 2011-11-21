@@ -1,0 +1,26 @@
+{
+  Class<?> appClass=null;
+  String baseName=getApplicationRunnerApplicationClassName(request.get());
+  try {
+    appClass=getClass().getClassLoader().loadClass(baseName);
+    return appClass;
+  }
+ catch (  Exception e) {
+    if (defaultPackages != null) {
+      for (int i=0; i < defaultPackages.length; i++) {
+        try {
+          appClass=getClass().getClassLoader().loadClass(defaultPackages[i] + "." + baseName);
+        }
+ catch (        ClassNotFoundException ee) {
+        }
+catch (        Exception e2) {
+          logger.log(Level.FINE,"Failed to find application class in the default package.",e2);
+        }
+        if (appClass != null) {
+          return appClass;
+        }
+      }
+    }
+  }
+  throw new ClassNotFoundException();
+}

@@ -1,26 +1,12 @@
 {
-  Class<? extends Application> appClass=null;
-  String baseName=getApplicationRunnerApplicationClassName(request.get());
-  try {
-    appClass=(Class<? extends Application>)getClass().getClassLoader().loadClass(baseName);
-    return appClass;
+  Class<?> classToRun=getClassToRun();
+  if (Root.class.isAssignableFrom(classToRun)) {
+    return RootRunnerApplication.class;
   }
- catch (  Exception e) {
-    if (defaultPackages != null) {
-      for (int i=0; i < defaultPackages.length; i++) {
-        try {
-          appClass=(Class<? extends Application>)getClass().getClassLoader().loadClass(defaultPackages[i] + "." + baseName);
-        }
- catch (        ClassNotFoundException ee) {
-        }
-catch (        Exception e2) {
-          logger.log(Level.FINE,"Failed to find application class in the default package.",e2);
-        }
-        if (appClass != null) {
-          return appClass;
-        }
-      }
-    }
+ else   if (Application.class.isAssignableFrom(classToRun)) {
+    return classToRun.asSubclass(Application.class);
   }
-  throw new ClassNotFoundException();
+ else {
+    throw new ClassCastException(classToRun.getCanonicalName() + " is not an Application nor a Root");
+  }
 }

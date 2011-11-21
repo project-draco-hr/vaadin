@@ -1,16 +1,15 @@
 {
   try {
-    final Class<? extends Application> applicationClass=getApplicationClass();
-    if (Root.class.isAssignableFrom(applicationClass)) {
-      return new Application(){
-        @Override protected String getRootClassName(        WrappedRequest request){
-          return applicationClass.getCanonicalName();
-        }
-      }
-;
+    final Class<?> classToRun=getClassToRun();
+    if (Root.class.isAssignableFrom(classToRun)) {
+      return new RootRunnerApplication(classToRun);
     }
-    final Application application=applicationClass.newInstance();
-    return application;
+ else     if (Application.class.isAssignableFrom(classToRun)) {
+      return (Application)classToRun.newInstance();
+    }
+ else {
+      throw new ServletException(classToRun.getCanonicalName() + " is neither an Application nor a Root");
+    }
   }
  catch (  final IllegalAccessException e) {
     throw new ServletException(e);
