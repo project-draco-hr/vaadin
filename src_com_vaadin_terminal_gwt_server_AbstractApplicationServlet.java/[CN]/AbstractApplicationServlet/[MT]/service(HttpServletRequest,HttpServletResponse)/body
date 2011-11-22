@@ -42,6 +42,9 @@
     }
  else     if (requestType == RequestType.UIDL) {
       Root root=applicationManager.getApplicationRoot(wrappedRequest,application);
+      if (root == null) {
+        throw new ServletException(ERROR_NO_WINDOW_FOUND);
+      }
       applicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,servletWrapper,root);
       return;
     }
@@ -52,11 +55,6 @@
     if (applicationManager.handleApplicationRequest(wrappedRequest,wrappedResponse)) {
       return;
     }
-    Root root=applicationManager.getApplicationRoot(wrappedRequest,application);
-    if (root == null) {
-      throw new ServletException(ERROR_NO_WINDOW_FOUND);
-    }
-    writeAjaxPage(request,response,root,application);
   }
  catch (  final SessionExpiredException e) {
     handleServiceSessionExpired(request,response);
