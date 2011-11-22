@@ -1,11 +1,16 @@
 {
   getContainerStrategy().toggleChildVisibility(itemId);
   setCurrentPageFirstItemIndex(getCurrentPageFirstItemIndex(),false);
-  requestRepaint();
   if (isCollapsed(itemId)) {
     fireCollapseEvent(itemId);
   }
  else {
     fireExpandEvent(itemId);
+  }
+  if (containerSupportsPartialUpdates) {
+    requestRepaint();
+  }
+ else {
+    refreshRowCache();
   }
 }

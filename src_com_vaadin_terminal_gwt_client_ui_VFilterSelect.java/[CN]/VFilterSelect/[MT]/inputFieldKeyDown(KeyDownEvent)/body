@@ -4,16 +4,19 @@ case KeyCodes.KEY_DOWN:
 case KeyCodes.KEY_UP:
 case KeyCodes.KEY_PAGEDOWN:
 case KeyCodes.KEY_PAGEUP:
-    if (!suggestionPopup.isAttached()) {
-      filterOptions(-1,"");
-      lastFilter="";
-      tb.selectAll();
-    }
-  break;
-case KeyCodes.KEY_TAB:
-if (suggestionPopup.isAttached()) {
-  filterOptions(currentPage,tb.getText());
+    filterOptions(-1,"");
+  lastFilter="";
+tb.selectAll();
+break;
+case KeyCodes.KEY_ENTER:
+if (!allowNewItem) {
+return;
 }
+if (currentSuggestion != null && tb.getText().equals(currentSuggestion.getReplacementString())) {
+return;
+}
+suggestionPopup.menu.doSelectedItemAction();
+event.stopPropagation();
 break;
 }
 }
