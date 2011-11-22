@@ -1,0 +1,25 @@
+{
+  Root mainWindow=getMainWindow();
+  mainWindow.setSizeUndefined();
+  mainWindow.getContent().setSizeUndefined();
+  mainWindow.setImmediate(true);
+  CheckBox lazyCheckBox=new CheckBox("Lazy resize",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      boolean resizeLazy=Boolean.TRUE == event.getButton().getValue();
+      getMainWindow().setResizeLazy(resizeLazy);
+      log.log("Resize lazy: " + resizeLazy);
+    }
+  }
+);
+  lazyCheckBox.setValue(Boolean.FALSE);
+  lazyCheckBox.setImmediate(true);
+  addComponent(lazyCheckBox);
+  addComponent(log);
+  mainWindow.addListener(new Window.ResizeListener(){
+    public void windowResized(    ResizeEvent e){
+      Window window=e.getWindow();
+      log.log("Resize event: " + window.getWidth() + " x "+ window.getHeight());
+    }
+  }
+);
+}

@@ -2,11 +2,13 @@
 switch (event.getNativeKeyCode()) {
 case KeyCodes.KEY_DOWN:
     suggestionPopup.selectNextItem();
-  DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
+  suggestionPopup.menu.setKeyboardSelectedItem(suggestionPopup.menu.getSelectedItem());
+DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
 event.stopPropagation();
 break;
 case KeyCodes.KEY_UP:
 suggestionPopup.selectPrevItem();
+suggestionPopup.menu.setKeyboardSelectedItem(suggestionPopup.menu.getSelectedItem());
 DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
 event.stopPropagation();
 break;
@@ -23,10 +25,29 @@ filterOptions(currentPage - 1,lastFilter);
 event.stopPropagation();
 break;
 case KeyCodes.KEY_TAB:
-if (suggestionPopup.isAttached()) {
-tabPressed=true;
+tabPressedWhenPopupOpen=true;
 filterOptions(currentPage);
+break;
+case KeyCodes.KEY_ESCAPE:
+reset();
+event.stopPropagation();
+break;
+case KeyCodes.KEY_ENTER:
+if (suggestionPopup.menu.getKeyboardSelectedItem() == null) {
+if (!allowNewItem) {
+if (currentSuggestions.size() == 1) {
+onSuggestionSelected(currentSuggestions.get(0));
 }
+}
+ else {
+suggestionPopup.menu.doSelectedItemAction();
+}
+}
+ else {
+currentSuggestion=((FilterSelectSuggestion)suggestionPopup.menu.getKeyboardSelectedItem().getCommand());
+onSuggestionSelected(currentSuggestion);
+}
+event.stopPropagation();
 break;
 }
 }
