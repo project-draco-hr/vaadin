@@ -1,33 +1,31 @@
 {
-  String widgetset=getApplicationOrSystemProperty(PARAMETER_WIDGETSET,DEFAULT_WIDGETSET);
-  String widgetsetBasePath=getWebApplicationsStaticFileLocation(request);
-  widgetset=stripSpecialChars(widgetset);
-  final String widgetsetFilePath=widgetsetBasePath + "/" + WIDGETSET_DIRECTORY_PATH+ widgetset+ "/"+ widgetset+ ".nocache.js?"+ new Date().getTime();
-  Application.SystemMessages systemMessages=null;
-  try {
-    systemMessages=getSystemMessages();
+  Application application=root.getApplication();
+  String widgetset=application.getWidgetsetForRoot(root);
+  if (widgetset == null) {
+    widgetset=getApplicationOrSystemProperty(request,AbstractApplicationServlet.PARAMETER_WIDGETSET,AbstractApplicationServlet.DEFAULT_WIDGETSET);
   }
- catch (  SystemMessageException e) {
-    throw new ServletException("CommunicationError!",e);
-  }
+  String widgetsetBasePath=request.getStaticFileLocation();
+  widgetset=AbstractApplicationServlet.stripSpecialChars(widgetset);
+  final String widgetsetFilePath=widgetsetBasePath + "/" + AbstractApplicationServlet.WIDGETSET_DIRECTORY_PATH+ widgetset+ "/"+ widgetset+ ".nocache.js?"+ System.currentTimeMillis();
+  Application.SystemMessages systemMessages=AbstractApplicationServlet.getSystemMessages(application.getClass());
   page.write("<script type=\"text/javascript\">\n");
   page.write("//<![CDATA[\n");
   page.write("if(!vaadin || !vaadin.vaadinConfigurations) {\n " + "if(!vaadin) { var vaadin = {}} \n" + "vaadin.vaadinConfigurations = {};\n"+ "if (!vaadin.themesLoaded) { vaadin.themesLoaded = {}; }\n");
-  if (!isProductionMode()) {
+  if (!application.isProductionMode()) {
     page.write("vaadin.debug = true;\n");
   }
   page.write("document.write('<iframe tabIndex=\"-1\" id=\"__gwt_historyFrame\" " + "style=\"position:absolute;width:0;height:0;border:0;overflow:" + "hidden;\" src=\"javascript:false\"></iframe>');\n");
   page.write("document.write(\"<script language='javascript' src='" + widgetsetFilePath + "'><\\/script>\");\n}\n");
   page.write("vaadin.vaadinConfigurations[\"" + appId + "\"] = {");
   page.write("appUri:'" + appUrl + "', ");
-  page.write(ApplicationConnection.ROOT_ID_PARAMETER + ": " + rootId+ ", ");
+  page.write(ApplicationConnection.ROOT_ID_PARAMETER + ": " + root.getRootId()+ ", ");
   if (isStandalone()) {
     page.write("standalone: true, ");
   }
   page.write("themeUri:");
   page.write(themeUri != null ? "\"" + themeUri + "\"" : "null");
   page.write(", versionInfo : {vaadinVersion:\"");
-  page.write(VERSION);
+  page.write(AbstractApplicationServlet.VERSION);
   page.write("\",applicationVersion:\"");
   page.write(JsonPaintTarget.escapeJSON(application.getVersion()));
   page.write("\"}");
