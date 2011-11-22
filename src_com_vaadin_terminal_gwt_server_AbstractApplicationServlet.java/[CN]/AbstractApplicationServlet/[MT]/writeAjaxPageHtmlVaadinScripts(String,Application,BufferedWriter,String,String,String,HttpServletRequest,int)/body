@@ -1,19 +1,6 @@
 {
-  String requestWidgetset=(String)request.getAttribute(REQUEST_WIDGETSET);
-  String sharedWidgetset=(String)request.getAttribute(REQUEST_SHARED_WIDGETSET);
-  if (requestWidgetset == null && sharedWidgetset == null) {
-    requestWidgetset=getApplicationOrSystemProperty(PARAMETER_WIDGETSET,DEFAULT_WIDGETSET);
-  }
-  String widgetset;
-  String widgetsetBasePath;
-  if (requestWidgetset != null) {
-    widgetset=requestWidgetset;
-    widgetsetBasePath=getWebApplicationsStaticFileLocation(request);
-  }
- else {
-    widgetset=sharedWidgetset;
-    widgetsetBasePath=getStaticFilesLocation(request);
-  }
+  String widgetset=getApplicationOrSystemProperty(PARAMETER_WIDGETSET,DEFAULT_WIDGETSET);
+  String widgetsetBasePath=getWebApplicationsStaticFileLocation(request);
   widgetset=stripSpecialChars(widgetset);
   final String widgetsetFilePath=widgetsetBasePath + "/" + WIDGETSET_DIRECTORY_PATH+ widgetset+ "/"+ widgetset+ ".nocache.js?"+ new Date().getTime();
   Application.SystemMessages systemMessages=null;

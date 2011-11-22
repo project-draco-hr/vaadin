@@ -1,8 +1,4 @@
 {
-  boolean fragment=(request.getAttribute(REQUEST_FRAGMENT) != null);
-  if (fragment) {
-    request.setAttribute(Application.class.getName(),application);
-  }
   final BufferedWriter page=new BufferedWriter(new OutputStreamWriter(response.getOutputStream(),"UTF-8"));
   String title=((root.getCaption() == null) ? "Vaadin 6" : root.getCaption());
   String appUrl=getApplicationUrl(request).getPath();
@@ -11,12 +7,10 @@
   }
   String themeName=getThemeForRoot(request,root);
   String themeUri=getThemeUri(themeName,request);
-  if (!fragment) {
-    setAjaxPageHeaders(response);
-    writeAjaxPageHtmlHeadStart(page,request);
-    writeAjaxPageHtmlHeader(page,title,themeUri,request);
-    writeAjaxPageHtmlBodyStart(page,request);
-  }
+  setAjaxPageHeaders(response);
+  writeAjaxPageHtmlHeadStart(page,request);
+  writeAjaxPageHtmlHeader(page,title,themeUri,request);
+  writeAjaxPageHtmlBodyStart(page,request);
   String appId=appUrl;
   if ("".equals(appUrl)) {
     appId="ROOT";
@@ -37,13 +31,7 @@
     themeClass="v-theme-" + getDefaultTheme().replaceAll("[^a-zA-Z0-9]","");
   }
   String classNames="v-app " + themeClass + " "+ appClass;
-  String divStyle=null;
-  if (request.getAttribute(REQUEST_APPSTYLE) != null) {
-    divStyle="style=\"" + request.getAttribute(REQUEST_APPSTYLE) + "\"";
-  }
-  writeAjaxPageHtmlMainDiv(page,appId,classNames,divStyle,request);
-  if (!fragment) {
-    page.write("</body>\n</html>\n");
-  }
+  writeAjaxPageHtmlMainDiv(page,appId,classNames,request);
+  page.write("</body>\n</html>\n");
   page.close();
 }
