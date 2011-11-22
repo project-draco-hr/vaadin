@@ -10,35 +10,4 @@
 );
   addComponent(log);
   addComponent(openWindowButton);
-  Button openBrowserWindowButton=new Button("Open browser window");
-  openWindowButton.setDebugId("opennative");
-  openBrowserWindowButton.addListener(new ClickListener(){
-    public void buttonClick(    ClickEvent event){
-      browserWindow=new Root("Window");
-      Button closeButton=new Button("Close this window",new ClickListener(){
-        public void buttonClick(        ClickEvent event){
-          event.getButton().getRoot().executeJavaScript("window.close();");
-        }
-      }
-);
-      browserWindow.addComponent(closeButton);
-      browserWindow.addListener(new CloseListener(){
-        public void windowClose(        CloseEvent e){
-          logBrowserWindowClosed();
-        }
-      }
-);
-      addWindow(browserWindow);
-      URL windowUrl=getWindowUrl(browserWindow);
-      getMainWindow().open(new ExternalResource(windowUrl),"nativewindow");
-      if (getBrowser().isOpera()) {
-        logBrowserWindowClosed();
-      }
-    }
-  }
-);
-  addComponent(openBrowserWindowButton);
-  Button pollButton=new Button("Poll server");
-  pollButton.setDebugId("poll");
-  addComponent(pollButton);
 }
