@@ -1,8 +1,17 @@
 {
-  if (this == c.getParent() && index > components.indexOf(c)) {
-    index--;
+  if (c.getParent() == this) {
+    if (index > components.indexOf(c)) {
+      index--;
+    }
+    removeComponent(c);
   }
-  super.addComponent(c);
   components.add(index,c);
-  requestRepaint();
+  try {
+    super.addComponent(c);
+    requestRepaint();
+  }
+ catch (  IllegalArgumentException e) {
+    components.remove(c);
+    throw e;
+  }
 }

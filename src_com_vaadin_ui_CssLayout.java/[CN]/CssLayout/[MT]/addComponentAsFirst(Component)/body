@@ -1,5 +1,14 @@
 {
-  super.addComponent(c);
+  if (c.getParent() == this) {
+    removeComponent(c);
+  }
   components.addFirst(c);
-  requestRepaint();
+  try {
+    super.addComponent(c);
+    requestRepaint();
+  }
+ catch (  IllegalArgumentException e) {
+    components.remove(c);
+    throw e;
+  }
 }
