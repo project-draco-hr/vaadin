@@ -4,31 +4,11 @@
     setEnabled(false);
   }
   if (!isReadOnly() && variables.containsKey("state")) {
-    final Boolean newValue=(Boolean)variables.get("state");
-    final Boolean oldValue=getValue();
-    if (isSwitchMode()) {
-      if (newValue != null && !newValue.equals(oldValue) && !isReadOnly()) {
-        setValue(newValue);
-        if (variables.containsKey("mousedetails")) {
-          fireClick(MouseEventDetails.deSerialize((String)variables.get("mousedetails")));
-        }
- else {
-          fireClick();
-        }
-      }
+    if (variables.containsKey("mousedetails")) {
+      fireClick(MouseEventDetails.deSerialize((String)variables.get("mousedetails")));
     }
  else {
-      if (newValue.booleanValue()) {
-        if (variables.containsKey("mousedetails")) {
-          fireClick(MouseEventDetails.deSerialize((String)variables.get("mousedetails")));
-        }
- else {
-          fireClick();
-        }
-      }
-      if (null == oldValue || oldValue.booleanValue()) {
-        setValue(Boolean.FALSE);
-      }
+      fireClick();
     }
   }
   if (variables.containsKey(FocusEvent.EVENT_ID)) {

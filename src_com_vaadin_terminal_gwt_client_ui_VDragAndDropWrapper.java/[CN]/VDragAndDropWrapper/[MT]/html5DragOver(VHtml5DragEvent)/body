@@ -8,16 +8,18 @@
   }
   vaadinDragEvent.setCurrentGwtEvent(event);
   getDropHandler().dragOver(vaadinDragEvent);
-  if (BrowserInfo.get().isWebkit()) {
-    String s=event.getEffectAllowed();
-    if ("all".equals(s) || s.contains("opy")) {
-      event.setDragEffect("copy");
-    }
- else {
-      event.setDragEffect(s);
-    }
+  String s=event.getEffectAllowed();
+  if ("all".equals(s) || s.contains("opy")) {
+    event.setDropEffect("copy");
   }
-  event.preventDefault();
-  event.stopPropagation();
+ else {
+    event.setDropEffect(s);
+  }
+  try {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+ catch (  Exception e) {
+  }
   return false;
 }

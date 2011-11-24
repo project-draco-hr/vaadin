@@ -1,23 +1,19 @@
 {
   if (enabled && !readonly) {
-    if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-      if (suggestionPopup.isAttached()) {
-        filterOptions(currentPage);
-      }
- else       if (currentSuggestion != null && tb.getText().equals(currentSuggestion.getReplacementString())) {
-        return;
-      }
-      if (currentSuggestions.size() == 1 && !allowNewItem) {
-        suggestionPopup.menu.selectItem(suggestionPopup.menu.getItems().get(0));
-      }
-      suggestionPopup.menu.doSelectedItemAction();
+    int keyCode=event.getNativeKeyCode();
+    debug("key down: " + keyCode);
+    if (waitingForFilteringResponse && navigationKeyCodes.contains(keyCode)) {
+      debug("Ignoring " + keyCode + " because we are waiting for a filtering response");
+      DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
       event.stopPropagation();
       return;
     }
- else     if (suggestionPopup.isAttached()) {
+    if (suggestionPopup.isAttached()) {
+      debug("Keycode " + keyCode + " target is popup");
       popupKeyDown(event);
     }
  else {
+      debug("Keycode " + keyCode + " target is text field");
       inputFieldKeyDown(event);
     }
   }
