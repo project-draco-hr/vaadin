@@ -1,6 +1,9 @@
 {
-  if (unstartedApplications.size() > 0) {
-    ApplicationConnection a=unstartedApplications.remove(0);
+  String applicationId=getNextUnstartedApplicationId(GWT.getModuleName());
+  if (applicationId != null) {
+    ApplicationConfiguration appConf=getConfigFromDOM(applicationId);
+    ApplicationConnection a=GWT.create(ApplicationConnection.class);
+    a.init(widgetSet,appConf);
     a.start();
     runningApplications.add(a);
     return true;

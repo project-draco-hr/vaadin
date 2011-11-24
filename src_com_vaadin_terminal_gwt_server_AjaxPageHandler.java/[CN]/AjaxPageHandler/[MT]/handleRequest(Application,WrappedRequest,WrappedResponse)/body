@@ -1,9 +1,14 @@
 {
   Root root=application.getRoot(request);
   if (root == null) {
-    writeError(response,null);
+    writeError(response,new Throwable("No Root found"));
     return true;
   }
-  writeAjaxPage(request,response,root);
+  try {
+    writeAjaxPage(request,response,root);
+  }
+ catch (  JSONException e) {
+    writeError(response,e);
+  }
   return true;
 }
