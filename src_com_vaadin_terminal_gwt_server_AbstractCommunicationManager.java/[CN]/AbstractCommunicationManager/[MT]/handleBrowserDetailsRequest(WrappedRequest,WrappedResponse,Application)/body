@@ -1,0 +1,19 @@
+{
+  CombinedRequest combinedRequest=application.getCombinedRequest(request);
+  try {
+    Root root=application.getRootForRequest(combinedRequest);
+    String widgetset=AJAX_PAGE_HANDLER.getWidgetsetForRoot(combinedRequest,root);
+    String theme=AJAX_PAGE_HANDLER.getThemeForRoot(combinedRequest,root);
+    String themeUri=AJAX_PAGE_HANDLER.getThemeUri(theme,combinedRequest);
+    JSONObject params=new JSONObject();
+    params.put("widgetset",widgetset);
+    params.put("themeUri",themeUri);
+    response.getWriter().write(params.toString());
+  }
+ catch (  RootRequiresMoreInformation e) {
+    throw new RuntimeException(e);
+  }
+catch (  JSONException e) {
+    e.printStackTrace();
+  }
+}

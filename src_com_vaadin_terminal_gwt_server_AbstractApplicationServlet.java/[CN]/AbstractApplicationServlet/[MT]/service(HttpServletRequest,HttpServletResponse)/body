@@ -41,11 +41,15 @@
       return;
     }
  else     if (requestType == RequestType.UIDL) {
-      Root root=applicationManager.getApplicationRoot(wrappedRequest,application);
+      Root root=application.getRootForRequest(wrappedRequest);
       if (root == null) {
         throw new ServletException(ERROR_NO_WINDOW_FOUND);
       }
       applicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,servletWrapper,root);
+      return;
+    }
+ else     if (requestType == RequestType.BROWSER_DETAILS) {
+      applicationManager.handleBrowserDetailsRequest(wrappedRequest,wrappedResponse,application);
       return;
     }
     if (!application.isRunning()) {

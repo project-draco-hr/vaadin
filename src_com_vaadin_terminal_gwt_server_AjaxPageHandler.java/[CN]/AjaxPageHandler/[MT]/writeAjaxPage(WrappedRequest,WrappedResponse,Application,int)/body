@@ -1,0 +1,39 @@
+{
+  final BufferedWriter page=new BufferedWriter(new OutputStreamWriter(response.getOutputStream(),"UTF-8"));
+  Root root=Root.getCurrentRoot();
+  String title=((root == null || root.getCaption() == null) ? "Vaadin " + AbstractApplicationServlet.VERSION_MAJOR : root.getCaption());
+  String appUrl=application.getURL().getPath();
+  if (appUrl.endsWith("/")) {
+    appUrl=appUrl.substring(0,appUrl.length() - 1);
+  }
+  String themeName=getThemeForRoot(request,root);
+  String themeUri=getThemeUri(themeName,request);
+  setAjaxPageHeaders(response);
+  writeAjaxPageHtmlHeadStart(page,request);
+  writeAjaxPageHtmlHeader(page,title,themeUri,request);
+  writeAjaxPageHtmlBodyStart(page,request);
+  String appId=appUrl;
+  if ("".equals(appUrl)) {
+    appId="ROOT";
+  }
+  appId=appId.replaceAll("[^a-zA-Z0-9]","");
+  int hashCode=appId.hashCode();
+  if (hashCode < 0) {
+    hashCode=-hashCode;
+  }
+  appId=appId + "-" + hashCode;
+  String widgetset=getWidgetsetForRoot(request,root);
+  writeAjaxPageHtmlVaadinScripts(page,appUrl,themeUri,appId,request,application,rootId,widgetset);
+  String appClass="v-app-" + getApplicationCSSClassName(application);
+  String themeClass="";
+  if (themeName != null) {
+    themeClass="v-theme-" + themeName.replaceAll("[^a-zA-Z0-9]","");
+  }
+ else {
+    themeClass="v-theme-" + AbstractApplicationServlet.getDefaultTheme().replaceAll("[^a-zA-Z0-9]","");
+  }
+  String classNames="v-app " + themeClass + " "+ appClass;
+  writeAjaxPageHtmlMainDiv(page,appId,classNames,request);
+  page.write("</body>\n</html>\n");
+  page.close();
+}

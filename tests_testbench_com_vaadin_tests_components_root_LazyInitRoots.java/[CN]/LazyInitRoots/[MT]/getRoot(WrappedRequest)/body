@@ -1,0 +1,20 @@
+{
+  if (request.getParameter("lazyCreate") != null) {
+    BrowserDetails browserDetails=request.getBrowserDetails();
+    if (browserDetails == null) {
+      throw new RootRequiresMoreInformation();
+    }
+ else {
+      VerticalLayout content=new VerticalLayout();
+      content.addComponent(new Label(browserDetails.getUriFragmet()));
+      return new Root(content);
+    }
+  }
+ else {
+    VerticalLayout content=new VerticalLayout();
+    Link lazyCreateLink=new Link("Open lazyCreate root",new ExternalResource(getURL() + "?lazyCreate"));
+    lazyCreateLink.setTargetName("_blank");
+    content.addComponent(lazyCreateLink);
+    return new Root(content);
+  }
+}

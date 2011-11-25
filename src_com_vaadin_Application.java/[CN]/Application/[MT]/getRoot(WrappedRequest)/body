@@ -1,6 +1,16 @@
 {
-  Root root=createRoot(request);
-  registerRoot(root);
-  root.init(request);
-  return root;
+  String rootClassName=getRootClassName(request);
+  try {
+    Class<? extends Root> rootClass=Class.forName(rootClassName).asSubclass(Root.class);
+    try {
+      Root root=rootClass.newInstance();
+      return root;
+    }
+ catch (    Exception e) {
+      throw new RuntimeException("Could not instantiate root class " + rootClassName,e);
+    }
+  }
+ catch (  ClassNotFoundException e) {
+    throw new RuntimeException("Could not load root class " + rootClassName,e);
+  }
 }

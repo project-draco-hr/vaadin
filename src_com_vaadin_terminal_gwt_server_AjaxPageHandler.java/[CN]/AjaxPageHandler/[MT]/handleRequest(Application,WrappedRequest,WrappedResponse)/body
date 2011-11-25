@@ -1,11 +1,18 @@
 {
-  Root root=application.getRoot(request);
-  if (root == null) {
-    writeError(response,new Throwable("No Root found"));
-    return true;
+  int rootId;
+  try {
+    Root root=application.getRootForRequest(request);
+    if (root == null) {
+      writeError(response,new Throwable("No Root found"));
+      return true;
+    }
+    rootId=root.getRootId();
+  }
+ catch (  RootRequiresMoreInformation e) {
+    rootId=application.registerPendingRoot(request);
   }
   try {
-    writeAjaxPage(request,response,root);
+    writeAjaxPage(request,response,application,rootId);
   }
  catch (  JSONException e) {
     writeError(response,e);
