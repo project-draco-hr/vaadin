@@ -1,11 +1,8 @@
 {
   if (dataSource != null) {
-    Object newValue;
+    T newFieldValue;
     try {
-      newValue=dataSource.getValue();
-      if (String.class == getType() && newValue != null) {
-        newValue=newValue.toString();
-      }
+      newFieldValue=convertFromDataSource(getDataSourceValue());
       if (currentBufferedSourceException != null) {
         currentBufferedSourceException=null;
         requestRepaint();
@@ -17,9 +14,9 @@
       throw currentBufferedSourceException;
     }
     final boolean wasModified=isModified();
-    modified=false;
-    if ((newValue == null && value != null) || (newValue != null && !newValue.equals(value))) {
-      setInternalValue(newValue);
+    setModified(false);
+    if (!equals(newFieldValue,value)) {
+      setInternalValue(newFieldValue);
       fireValueChange(false);
     }
  else     if (wasModified) {

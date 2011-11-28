@@ -1,0 +1,17 @@
+{
+  if (valueConverter != null) {
+    return valueConverter.convertFromTargetToSource(fieldValue,getLocale());
+  }
+  if (fieldValue == null) {
+    return null;
+  }
+  if (getPropertyDataSource() != null) {
+    if (getPropertyDataSource().getType().isAssignableFrom(fieldValue.getClass())) {
+      return fieldValue;
+    }
+ else {
+      throw new Converter.ConversionException("Unable to convert value of type " + fieldValue.getClass().getName() + " to "+ getPropertyDataSource().getType()+ ". No value converter is set and the types are not compatible.");
+    }
+  }
+  throw new Converter.ConversionException("Unable to convert value of type " + fieldValue.getClass().getName() + " to "+ getType()+ ". No value converter is set and the types are not compatible.");
+}

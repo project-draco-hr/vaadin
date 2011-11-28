@@ -1,5 +1,5 @@
 {
-  if ((newValue == null && value != null) || (newValue != null && !newValue.equals(value))) {
+  if (!equals(newFieldValue,value)) {
     if (isReadOnly()) {
       throw new Property.ReadOnlyException();
     }
@@ -10,18 +10,18 @@
       final Collection<Validator> v=getValidators();
       if (v != null) {
         for (final Iterator<Validator> i=v.iterator(); i.hasNext(); ) {
-          (i.next()).validate(newValue);
+          (i.next()).validate(newFieldValue);
         }
       }
     }
-    setInternalValue(newValue);
-    modified=dataSource != null;
+    setInternalValue(newFieldValue);
+    setModified(dataSource != null);
     valueWasModifiedByDataSourceDuringCommit=false;
     if (isWriteThrough() && dataSource != null && (isInvalidCommitted() || isValid())) {
       try {
         committingValueToDataSource=true;
-        ((Property)dataSource).setValue(newValue);
-        modified=false;
+        getPropertyDataSource().setValue(convertToDataSource(newFieldValue));
+        setModified(false);
       }
  catch (      final Throwable e) {
         currentBufferedSourceException=new Buffered.SourceException(this,e);

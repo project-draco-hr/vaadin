@@ -1,11 +1,11 @@
 {
   if (dataSource != null && !dataSource.isReadOnly()) {
     if ((isInvalidCommitted() || isValid())) {
-      final T newValue=getValue();
+      final T fieldValue=getFieldValue();
       try {
         valueWasModifiedByDataSourceDuringCommit=false;
         committingValueToDataSource=true;
-        ((Property)dataSource).setValue(newValue);
+        getPropertyDataSource().setValue(convertToDataSource(fieldValue));
       }
  catch (      final Throwable e) {
         currentBufferedSourceException=new Buffered.SourceException(this,e);
@@ -21,8 +21,8 @@
     }
   }
   boolean repaintNeeded=false;
-  if (modified) {
-    modified=false;
+  if (isModified()) {
+    setModified(false);
     repaintNeeded=true;
   }
   if (currentBufferedSourceException != null) {
