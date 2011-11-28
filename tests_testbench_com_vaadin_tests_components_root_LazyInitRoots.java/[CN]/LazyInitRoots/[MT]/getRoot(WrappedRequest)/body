@@ -5,16 +5,22 @@
       throw new RootRequiresMoreInformation();
     }
  else {
-      VerticalLayout content=new VerticalLayout();
-      content.addComponent(new Label(browserDetails.getUriFragmet()));
-      return new Root(content);
+      Root root=new Root();
+      root.getContent().addComponent(new Label("Lazy create root: " + browserDetails.getUriFragmet()));
+      return root;
     }
+  }
+ else   if (request.getParameter("lazyInit") != null) {
+    return new LazyInitRoot();
   }
  else {
     VerticalLayout content=new VerticalLayout();
-    Link lazyCreateLink=new Link("Open lazyCreate root",new ExternalResource(getURL() + "?lazyCreate"));
+    Link lazyCreateLink=new Link("Open lazyCreate root",new ExternalResource(getURL() + "?lazyCreate#lazyCreate"));
     lazyCreateLink.setTargetName("_blank");
     content.addComponent(lazyCreateLink);
+    Link lazyInitLink=new Link("Open lazyInit root",new ExternalResource(getURL() + "?lazyInit#lazyInit"));
+    lazyInitLink.setTargetName("_blank");
+    content.addComponent(lazyInitLink);
     return new Root(content);
   }
 }
