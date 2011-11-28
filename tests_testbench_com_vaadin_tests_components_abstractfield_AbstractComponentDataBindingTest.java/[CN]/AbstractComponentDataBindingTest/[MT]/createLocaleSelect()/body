@@ -1,0 +1,19 @@
+{
+  ComboBox cb=new ComboBox("Locale");
+  cb.addContainerProperty(CAPTION,String.class,"");
+  cb.setItemCaptionPropertyId(CAPTION);
+  cb.setNullSelectionAllowed(false);
+  for (  Locale l : Locale.getAvailableLocales()) {
+    Item i=cb.addItem(l);
+    i.getItemProperty(CAPTION).setValue(l.getDisplayName(Locale.ENGLISH));
+  }
+  ((Container.Sortable)cb.getContainerDataSource()).sort(new Object[]{CAPTION},new boolean[]{true});
+  cb.setImmediate(true);
+  cb.addListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      updateLocale((Locale)localeSelect.getValue());
+    }
+  }
+);
+  return cb;
+}
