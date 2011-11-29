@@ -14,10 +14,11 @@
     VerticalLayout vl=new VerticalLayout();
     filterString=new TextField("Filter string:","1");
     vl.addComponent(filterString);
-    final CheckBox cb=new CheckBox("Filter on value",new Button.ClickListener(){
-      public void buttonClick(      ClickEvent event){
+    final CheckBox cb=new CheckBox("Filter on value");
+    cb.addListener(new ValueChangeListener(){
+      public void valueChange(      ValueChangeEvent event){
         container.removeAllContainerFilters();
-        if (((CheckBox)event.getSource()).booleanValue()) {
+        if ((Boolean)((CheckBox)event.getProperty()).getValue()) {
           container.addContainerFilter("value",filterString.getValue().toString(),false,false);
         }
       }
