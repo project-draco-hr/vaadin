@@ -5,13 +5,17 @@
   if (fieldValue == null) {
     return null;
   }
+  Class<?> type;
   if (getPropertyDataSource() != null) {
-    if (getPropertyDataSource().getType().isAssignableFrom(fieldValue.getClass())) {
-      return fieldValue;
-    }
- else {
-      throw new Converter.ConversionException("Unable to convert value of type " + fieldValue.getClass().getName() + " to "+ getPropertyDataSource().getType()+ ". No value converter is set and the types are not compatible.");
-    }
+    type=getPropertyDataSource().getType();
   }
-  throw new Converter.ConversionException("Unable to convert value of type " + fieldValue.getClass().getName() + " to "+ getType()+ ". No value converter is set and the types are not compatible.");
+ else {
+    type=getType();
+  }
+  if (type.isAssignableFrom(fieldValue.getClass())) {
+    return fieldValue;
+  }
+ else {
+    throw new Converter.ConversionException("Unable to convert value of type " + fieldValue.getClass().getName() + " to "+ type.getName()+ ". No value converter is set and the types are not compatible.");
+  }
 }
