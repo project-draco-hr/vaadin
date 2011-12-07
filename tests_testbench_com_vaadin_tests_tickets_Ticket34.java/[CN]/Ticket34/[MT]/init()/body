@@ -1,17 +1,15 @@
 {
   buildViews(new String[]{"main","view2","view3"});
-  reader=new UriFragmentUtility();
-  reader.addListener(new UriFragmentUtility.FragmentChangedListener(){
-    public void fragmentChanged(    FragmentChangedEvent event){
-      getMainWindow().showNotification("Fragment now: " + event.getUriFragmentUtility().getFragment());
-      setView(event.getUriFragmentUtility().getFragment());
-    }
-  }
-);
   mainLayout=new VerticalLayout();
   mainLayout.setSizeFull();
   final Root mainWin=new Root("Test app for URI fragment management/reading",mainLayout);
   setMainWindow(mainWin);
-  mainLayout.addComponent(reader);
+  mainWin.addListener(new Root.FragmentChangedListener(){
+    public void fragmentChanged(    FragmentChangedEvent event){
+      getMainWindow().showNotification("Fragment now: " + event.getFragment());
+      setView(event.getFragment());
+    }
+  }
+);
   setView("main");
 }

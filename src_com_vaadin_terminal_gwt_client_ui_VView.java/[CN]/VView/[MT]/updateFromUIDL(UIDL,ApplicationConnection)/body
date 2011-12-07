@@ -156,5 +156,15 @@
     Util.runWebkitOverflowAutoFix(getElement());
   }
   scrollIntoView(uidl);
+  if (uidl.hasAttribute(FRAGMENT_VARIABLE)) {
+    currentFragment=uidl.getStringAttribute(FRAGMENT_VARIABLE);
+    if (!currentFragment.equals(History.getToken())) {
+      History.newItem(currentFragment,true);
+    }
+  }
+ else {
+    currentFragment=History.getToken();
+    client.updateVariable(id,FRAGMENT_VARIABLE,currentFragment,false);
+  }
   rendering=false;
 }
