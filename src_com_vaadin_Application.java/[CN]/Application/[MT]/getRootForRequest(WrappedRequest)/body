@@ -5,27 +5,46 @@
   }
   Integer rootId=getRootId(request);
 synchronized (this) {
-    PendingRootRequest pendingRootRequest=pendingRoots.remove(rootId);
+    boolean preserveRootState=preserverRootStateOnRefresh();
+    BrowserDetails browserDetails=request.getBrowserDetails();
+    if (browserDetails != null) {
+      pendingRoots.remove(rootId);
+      if (preserveRootState) {
+        Integer retainedRootId=retainOnRefreshRoots.get(browserDetails.getWindowName());
+        if (retainedRootId != null) {
+          rootId=retainedRootId;
+        }
+      }
+    }
     root=roots.get(rootId);
     if (root == null) {
+      if (preserveRootState && browserDetails == null && !retainOnRefreshRoots.isEmpty()) {
+        throw new RootRequiresMoreInformation();
+      }
       root=getRoot(request);
       if (root.getApplication() == null) {
         root.setApplication(this);
       }
       if (root.getRootId() < 0) {
-        int id=(rootId != null ? rootId.intValue() : nextRootId++);
-        root.setRootId(id);
-        roots.put(Integer.valueOf(root.getRootId()),root);
-        if (pendingRootRequest == null && root.getClass().isAnnotationPresent(RootInitRequiresBrowserDetals.class)) {
-          pendingRoots.put(Integer.valueOf(id),new PendingRootRequest(request));
+        if (rootId == null) {
+          rootId=Integer.valueOf(nextRootId++);
         }
- else {
-          root.doInit(request);
-        }
+        root.setRootId(rootId.intValue());
+        roots.put(rootId,root);
       }
     }
- else     if (pendingRootRequest != null) {
-      root.doInit(request);
+    if (!initedRoots.contains(rootId)) {
+      boolean initRequiresBrowserDetails=preserveRootState || root.getClass().isAnnotationPresent(RootInitRequiresBrowserDetals.class);
+      if (initRequiresBrowserDetails && browserDetails == null) {
+        pendingRoots.put(rootId,new PendingRootRequest(request));
+      }
+ else {
+        if (preserveRootState) {
+          retainOnRefreshRoots.put(browserDetails.getWindowName(),rootId);
+        }
+        root.doInit(request);
+        initedRoots.add(rootId);
+      }
     }
   }
   Root.setCurrentRoot(root);
