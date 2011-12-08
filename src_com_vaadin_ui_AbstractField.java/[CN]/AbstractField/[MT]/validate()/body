@@ -1,45 +1,29 @@
 {
-  if (isEmpty()) {
-    if (isRequired()) {
-      throw new Validator.EmptyValueException(requiredError);
-    }
- else {
-      return;
-    }
+  if (isRequired() && isEmpty()) {
+    throw new Validator.EmptyValueException(requiredError);
   }
   if (validators == null) {
     return;
   }
-  Validator.InvalidValueException firstError=null;
-  LinkedList<InvalidValueException> errors=null;
   final Object fieldValue=getFieldValue();
-  for (final Iterator<Validator> i=validators.iterator(); i.hasNext(); ) {
+  List<InvalidValueException> validationExceptions=null;
+  for (  Validator v : validators) {
     try {
-      (i.next()).validate(fieldValue);
+      v.validate(fieldValue);
     }
  catch (    final Validator.InvalidValueException e) {
-      if (firstError == null) {
-        firstError=e;
+      if (validationExceptions == null) {
+        validationExceptions=new ArrayList<InvalidValueException>();
       }
- else {
-        if (errors == null) {
-          errors=new LinkedList<InvalidValueException>();
-          errors.add(firstError);
-        }
-        errors.add(e);
-      }
+      validationExceptions.add(e);
     }
   }
-  if (firstError == null) {
+  if (validationExceptions == null) {
     return;
   }
-  if (errors == null) {
-    throw firstError;
+  if (validationExceptions.size() == 1) {
+    throw validationExceptions.get(0);
   }
-  final Validator.InvalidValueException[] exceptions=new Validator.InvalidValueException[errors.size()];
-  int index=0;
-  for (final Iterator<InvalidValueException> i=errors.iterator(); i.hasNext(); ) {
-    exceptions[index++]=i.next();
-  }
-  throw new Validator.InvalidValueException(null,exceptions);
+  InvalidValueException[] exceptionArray=validationExceptions.toArray(new InvalidValueException[validationExceptions.size()]);
+  throw new Validator.InvalidValueException(null,exceptionArray);
 }
