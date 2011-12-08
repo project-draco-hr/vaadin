@@ -1,0 +1,35 @@
+{
+  final Table table=new Table((immediate ? "I" : "i") + (selectable ? "S" : "s") + (listenClicks ? "C" : "c")+ (listenValueChanges ? "V" : "v"));
+  final Label clickLabel=new Label("Click?");
+  final Label valueChangeLabel=new Label("Value?");
+  table.addContainerProperty("foo",String.class,null);
+  for (int i=0; i < 3; i++) {
+    table.addItem("item" + i).getItemProperty("foo").setValue("An item " + i);
+  }
+  table.setImmediate(immediate);
+  table.setSelectable(selectable);
+  table.setWidth("100px");
+  table.setHeight("100px");
+  if (listenClicks) {
+    table.addListener(new ItemClickListener(){
+      public void itemClick(      ItemClickEvent event){
+        table.requestRepaint();
+        clickLabel.setValue("Click " + event.getItemId());
+      }
+    }
+);
+  }
+  if (listenValueChanges) {
+    table.addListener(new ValueChangeListener(){
+      public void valueChange(      ValueChangeEvent event){
+        valueChangeLabel.setValue("Value " + event.getProperty());
+      }
+    }
+);
+  }
+  Layout result=new VerticalLayout();
+  result.addComponent(table);
+  result.addComponent(clickLabel);
+  result.addComponent(valueChangeLabel);
+  return result;
+}
