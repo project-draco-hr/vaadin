@@ -1,0 +1,34 @@
+{
+  CheckBox cb=new CheckBox();
+  cb.setValueConverter(new Converter<Boolean,Boolean>(){
+    public Boolean convertFromTargetToSource(    Boolean value,    Locale locale){
+      assertNotNull(value);
+      return value;
+    }
+    public Boolean convertFromSourceToTarget(    Boolean value,    Locale locale){
+      if (value == null) {
+        return false;
+      }
+      return value;
+    }
+    public Class<Boolean> getSourceType(){
+      return Boolean.class;
+    }
+    public Class<Boolean> getTargetType(){
+      return Boolean.class;
+    }
+  }
+);
+  MethodProperty<Person> property=new MethodProperty<Person>(paulaBean,"deceased");
+  cb.setPropertyDataSource(property);
+  assertNull(property.getValue());
+  assertEquals(Boolean.FALSE,cb.getValue());
+  Boolean newDmValue=cb.getValueConverter().convertFromSourceToTarget(cb.getValue(),new Locale("fi","FI"));
+  assertEquals(Boolean.FALSE,newDmValue);
+  cb.setValue(true);
+  assertEquals(Boolean.TRUE,cb.getValue());
+  assertEquals(Boolean.TRUE,property.getValue());
+  cb.setValue(false);
+  assertEquals(Boolean.FALSE,cb.getValue());
+  assertEquals(Boolean.FALSE,property.getValue());
+}

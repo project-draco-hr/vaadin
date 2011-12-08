@@ -10,16 +10,26 @@
   mainWin.addComponent(f);
   f.setWriteThrough(false);
   f.setReadThrough(false);
-  Button commit=new Button("Commit",f,"commit");
-  Button discard=new Button("Discard",f,"discard");
+  Button commit=new Button("Commit",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      f.commit();
+    }
+  }
+);
+  Button discard=new Button("Discard",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      f.discard();
+    }
+  }
+);
   HorizontalLayout ol=new HorizontalLayout();
   ol.setHeight("3em");
   ol.addComponent(commit);
   ol.setComponentAlignment(commit,Alignment.TOP_RIGHT);
   ol.addComponent(discard);
   f.setFooter(ol);
-  f.getField("zip").addValidator(new IsInteger());
-  f.getField("zip").setDescription("Jepjep");
+  f.getField("zip").addValidator(new IntegerValidator("'{0}' is not a number"));
+  ((AbstractComponent)f.getField("zip")).setDescription("Jepjep");
   ((AbstractComponent)f.getField("zip")).setIcon(new ThemeResource("../runo/icons/16/folder.png"));
   f.getField("state").addValidator(new IsValidState());
   f.getField("name").setRequired(true);

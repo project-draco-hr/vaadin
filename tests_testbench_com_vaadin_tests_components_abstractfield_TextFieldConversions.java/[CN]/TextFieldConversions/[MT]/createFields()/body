@@ -1,0 +1,25 @@
+{
+  dataType=new ComboBox("Data type");
+  dataType.setImmediate(true);
+  dataType.addItem(Long.class);
+  dataType.addItem(Integer.class);
+  dataType.addItem(Double.class);
+  dataType.addItem(Date.class);
+  dataType.addItem(String.class);
+  dataType.addListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      tf.setPropertyDataSource(new ObjectProperty<Object>(o,(Class<Object>)dataType.getValue()));
+    }
+  }
+);
+  addComponent(dataType);
+  tf=new TextField("TextField");
+  addComponent(tf);
+  tf.setErrorHandler(new ComponentErrorHandler(){
+    public boolean handleComponentError(    ComponentErrorEvent event){
+      tf.setComponentError(new UserError("Invalid value"));
+      return true;
+    }
+  }
+);
+}

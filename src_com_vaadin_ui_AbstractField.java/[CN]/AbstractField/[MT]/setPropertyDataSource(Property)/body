@@ -1,5 +1,5 @@
 {
-  final Object oldValue=value;
+  final Object oldValue=getInternalValue();
   if (dataSource != null && Property.ValueChangeNotifier.class.isAssignableFrom(dataSource.getClass())) {
     ((Property.ValueChangeNotifier)dataSource).removeListener(this);
   }
@@ -7,15 +7,22 @@
     ((Property.ReadOnlyStatusChangeNotifier)dataSource).removeListener(this);
   }
   dataSource=newDataSource;
+  if (newDataSource == null) {
+    setValueConverter(null);
+  }
+ else   if (!isValueConverterType(newDataSource.getType())) {
+    setValueConverterFromFactory(newDataSource.getType());
+  }
   try {
     if (dataSource != null) {
-      setInternalValue(String.class == getType() ? dataSource.toString() : dataSource.getValue());
+      T fieldValue=convertFromDataSource(getDataSourceValue());
+      setInternalValue(fieldValue);
     }
-    modified=false;
+    setModified(false);
   }
  catch (  final Throwable e) {
     currentBufferedSourceException=new Buffered.SourceException(this,e);
-    modified=true;
+    setModified(true);
   }
   if (dataSource instanceof Property.ValueChangeNotifier) {
     ((Property.ValueChangeNotifier)dataSource).addListener(this);
@@ -31,6 +38,7 @@
       }
     }
   }
+  T value=getInternalValue();
   if ((value != oldValue) && ((value != null && !value.equals(oldValue)) || value == null)) {
     fireValueChange(false);
   }

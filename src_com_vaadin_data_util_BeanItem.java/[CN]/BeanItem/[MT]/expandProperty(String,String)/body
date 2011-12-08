@@ -1,0 +1,13 @@
+{
+  Set<String> subPropertySet=new HashSet<String>(Arrays.asList(subPropertyIds));
+  if (0 == subPropertyIds.length) {
+    Class<?> propertyType=getItemProperty(propertyId).getType();
+    Map<String,?> pds=getPropertyDescriptors(propertyType);
+    subPropertySet.addAll(pds.keySet());
+  }
+  for (  String subproperty : subPropertySet) {
+    String qualifiedPropertyId=propertyId + "." + subproperty;
+    addItemProperty(qualifiedPropertyId,new NestedMethodProperty<Object>(getBean(),qualifiedPropertyId));
+  }
+  removeItemProperty(propertyId);
+}

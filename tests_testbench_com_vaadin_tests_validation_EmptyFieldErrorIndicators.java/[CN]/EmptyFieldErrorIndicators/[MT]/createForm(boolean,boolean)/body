@@ -1,16 +1,11 @@
 {
   final Form form=new Form(){
-    @Override public void addField(    Object propertyId,    Field field){
+    @Override public void addField(    Object propertyId,    Field<?> field){
       super.addField(propertyId,field);
       field.setRequired(required);
       field.setRequiredError("Missing required value!");
       if (failValidator && !(field instanceof Button)) {
-        field.addValidator(new AbstractValidator("Validation error"){
-          public boolean isValid(          Object value){
-            return false;
-          }
-        }
-);
+        field.addValidator(new AlwaysFailValidator());
       }
     }
   }

@@ -1,0 +1,21 @@
+{
+  if (valueConverter != null) {
+    return valueConverter.convertFromTargetToSource(fieldValue,getLocale());
+  }
+  if (fieldValue == null) {
+    return null;
+  }
+  Class<?> type;
+  if (getPropertyDataSource() != null) {
+    type=getPropertyDataSource().getType();
+  }
+ else {
+    type=getType();
+  }
+  if (type.isAssignableFrom(fieldValue.getClass())) {
+    return fieldValue;
+  }
+ else {
+    throw new Converter.ConversionException("Unable to convert value of type " + fieldValue.getClass().getName() + " to "+ type.getName()+ ". No value converter is set and the types are not compatible.");
+  }
+}

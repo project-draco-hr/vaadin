@@ -1,0 +1,25 @@
+{
+  TextField tf=new TextField();
+  tf.setValueConverter(new Converter<String,String>(){
+    public String convertFromTargetToSource(    String value,    Locale locale){
+      return value;
+    }
+    public String convertFromSourceToTarget(    String value,    Locale locale){
+      return value;
+    }
+    public Class<String> getSourceType(){
+      return String.class;
+    }
+    public Class<String> getTargetType(){
+      return String.class;
+    }
+  }
+);
+  tf.setPropertyDataSource(new MethodProperty<Person>(paulaBean,"firstName"));
+  assertEquals("Paula",tf.getValue());
+  assertEquals("Paula",tf.getPropertyDataSource().getValue());
+  tf.setValue("abc");
+  assertEquals("abc",tf.getValue());
+  assertEquals("abc",tf.getPropertyDataSource().getValue());
+  assertEquals("abc",paulaBean.getFirstName());
+}
