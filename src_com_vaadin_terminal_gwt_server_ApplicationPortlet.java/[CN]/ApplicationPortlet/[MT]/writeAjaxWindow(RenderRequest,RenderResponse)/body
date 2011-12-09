@@ -1,0 +1,52 @@
+{
+  response.setContentType("text/html");
+  if (app != null) {
+    PortletSession sess=request.getPortletSession();
+    PortletApplicationContext ctx=PortletApplicationContext.getApplicationContext(sess);
+    PortletRequestDispatcher dispatcher=sess.getPortletContext().getRequestDispatcher("/" + app);
+    try {
+      PortalContext portalCtx=request.getPortalContext();
+      boolean isLifeRay=portalCtx.getPortalInfo().toLowerCase().contains("liferay");
+      request.setAttribute(ApplicationServlet.REQUEST_FRAGMENT,"true");
+      String portalTheme=getPortalProperty(Constants.PORTAL_PARAMETER_VAADIN_THEME,portalCtx);
+      String portalWidgetset=getPortalProperty(Constants.PORTAL_PARAMETER_VAADIN_WIDGETSET,portalCtx);
+      String portalResourcePath=getPortalProperty(Constants.PORTAL_PARAMETER_VAADIN_RESOURCE_PATH,portalCtx);
+      if (portalResourcePath != null) {
+        request.setAttribute(ApplicationServlet.REQUEST_VAADIN_STATIC_FILE_PATH,portalResourcePath);
+      }
+      if (portletWidgetset != null) {
+        request.setAttribute(ApplicationServlet.REQUEST_WIDGETSET,portletWidgetset);
+      }
+      if (portalWidgetset != null) {
+        request.setAttribute(ApplicationServlet.REQUEST_SHARED_WIDGETSET,portalWidgetset);
+      }
+      if (style != null) {
+        request.setAttribute(ApplicationServlet.REQUEST_APPSTYLE,style);
+      }
+      if (portalTheme != null && portalResourcePath != null) {
+        request.setAttribute(ApplicationServlet.REQUEST_DEFAULT_THEME,portalTheme);
+        String defaultThemeUri=null;
+        defaultThemeUri=portalResourcePath + "/" + AbstractApplicationServlet.THEME_DIRECTORY_PATH+ portalTheme;
+        OutputStream out=response.getPortletOutputStream();
+        String loadDefaultTheme=("<script type=\"text/javascript\">\n" + "if(!vaadin) { var vaadin = {} } \n" + "if(!vaadin.themesLoaded) { vaadin.themesLoaded = {} } \n"+ "if(!vaadin.themesLoaded['" + portalTheme + "']) {\n"+ "var stylesheet = document.createElement('link');\n"+ "stylesheet.setAttribute('rel', 'stylesheet');\n"+ "stylesheet.setAttribute('type', 'text/css');\n"+ "stylesheet.setAttribute('href', '"+ defaultThemeUri+ "/styles.css');\n"+ "document.getElementsByTagName('head')[0].appendChild(stylesheet);\n"+ "vaadin.themesLoaded['"+ portalTheme+ "'] = true;\n}\n"+ "</script>\n");
+        out.write(loadDefaultTheme.getBytes());
+      }
+      dispatcher.include(request,response);
+      if (isLifeRay) {
+        OutputStream out=response.getPortletOutputStream();
+        String lifeRaySessionHearbeatHack=("<script type=\"text/javascript\">" + "if(!vaadin.postRequestHooks) {" + "    vaadin.postRequestHooks = {};"+ "}"+ "vaadin.postRequestHooks.liferaySessionHeartBeat = function() {"+ "    if (Liferay && Liferay.Session && Liferay.Session.setCookie) {"+ "        Liferay.Session.setCookie();"+ "    }"+ "};"+ "</script>");
+        out.write(lifeRaySessionHearbeatHack.getBytes());
+      }
+    }
+ catch (    PortletException e) {
+      PrintWriter out=response.getWriter();
+      out.print("<h1>Servlet include failed!</h1>");
+      Logger.getLogger(AbstractApplicationPortlet.class.getName()).log(Level.WARNING,"Servlet include failed",e);
+      ctx.setPortletApplication(this,null);
+      return;
+    }
+    Application app=(Application)request.getAttribute(Application.class.getName());
+    ctx.setPortletApplication(this,app);
+    ctx.firePortletRenderRequest(this,request,response);
+  }
+}

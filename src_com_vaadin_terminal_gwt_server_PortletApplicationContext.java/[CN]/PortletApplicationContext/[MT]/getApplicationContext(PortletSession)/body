@@ -1,0 +1,22 @@
+{
+  WebApplicationContext cx=(WebApplicationContext)session.getAttribute(WebApplicationContext.class.getName(),PortletSession.APPLICATION_SCOPE);
+  if (cx == null) {
+    cx=new PortletApplicationContext();
+  }
+  if (!(cx instanceof PortletApplicationContext)) {
+    PortletApplicationContext pcx=new PortletApplicationContext();
+    pcx.applications.addAll(cx.applications);
+    cx.applications.clear();
+    pcx.browser=cx.browser;
+    cx.browser=null;
+    pcx.listeners=cx.listeners;
+    cx.listeners=null;
+    pcx.session=cx.session;
+    cx=pcx;
+  }
+  if (((PortletApplicationContext)cx).portletSession == null) {
+    ((PortletApplicationContext)cx).portletSession=session;
+  }
+  session.setAttribute(WebApplicationContext.class.getName(),cx,PortletSession.APPLICATION_SCOPE);
+  return (PortletApplicationContext)cx;
+}

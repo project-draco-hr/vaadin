@@ -17,13 +17,13 @@
 switch (type) {
 case Event.ONDBLCLICK:
       if (targetCellOrRowFound) {
-        handleClickEvent(event,targetTdOrTr);
+        handleClickEvent(event,targetTdOrTr,true);
       }
     break;
 case Event.ONMOUSEUP:
   if (targetCellOrRowFound) {
     mDown=false;
-    handleClickEvent(event,targetTdOrTr);
+    boolean clickEventSent=handleClickEvent(event,targetTdOrTr,false);
     if (event.getButton() == Event.BUTTON_LEFT && isSelectable()) {
       if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && isMultiSelectModeDefault()) {
         toggleShiftSelection(false);
@@ -67,7 +67,10 @@ case Event.ONMOUSEUP:
       if (BrowserInfo.get().isIE()) {
         ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",null);
       }
-      sendSelectedRows();
+      sendSelectedRows(false);
+    }
+    if (immediate || clickEventSent) {
+      client.sendPendingVariableChanges();
     }
   }
 break;

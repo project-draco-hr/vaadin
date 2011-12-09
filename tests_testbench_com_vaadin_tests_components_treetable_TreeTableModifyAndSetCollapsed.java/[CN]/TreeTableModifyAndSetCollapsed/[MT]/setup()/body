@@ -1,0 +1,28 @@
+{
+  final HierarchicalContainer container=new HierarchicalContainer();
+  container.addContainerProperty("value",String.class,"");
+  final TreeTable tt=new TreeTable(null,container);
+  tt.setSizeFull();
+  int parentId=counter++;
+  Item parent=container.addItem(parentId);
+  tt.setCollapsed(parentId,false);
+  parent.getItemProperty("value").setValue("parent " + (counter++) + "");
+  addComponent(tt);
+  Button repopulate=new Button("Repopulate",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      container.removeAllItems();
+      int parentId=counter++;
+      Item parent=container.addItem(parentId);
+      tt.setCollapsed(parentId,false);
+      parent.getItemProperty("value").setValue("parent " + (counter++) + "");
+      for (int i=0; i < 4; i++) {
+        int childId=counter++;
+        Item child=container.addItem(childId);
+        child.getItemProperty("value").setValue(childId + "");
+        container.setParent(childId,parentId);
+      }
+    }
+  }
+);
+  addComponent(repopulate);
+}
