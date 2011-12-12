@@ -1,6 +1,16 @@
 {
   AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
-  WrappedPortletRequest wrappedRequest=new WrappedPortletRequest(request);
+  WrappedPortletRequest wrappedRequest;
+  String portalInfo=request.getPortalContext().getPortalInfo().toLowerCase();
+  if (portalInfo.contains("liferay")) {
+    wrappedRequest=new WrappedLiferayRequest(request);
+  }
+ else   if (portalInfo.contains("gatein")) {
+    wrappedRequest=new WrappedGateinRequest(request);
+  }
+ else {
+    wrappedRequest=new WrappedPortletRequest(request);
+  }
   WrappedPortletResponse wrappedResponse=new WrappedPortletResponse(response);
   RequestType requestType=getRequestType(request);
   if (requestType == RequestType.UNKNOWN) {
@@ -21,7 +31,7 @@
     boolean transactionStarted=false;
     boolean requestStarted=false;
     try {
-      application=findApplicationInstance(request,requestType);
+      application=findApplicationInstance(wrappedRequest,requestType);
       if (application == null) {
         return;
       }
@@ -30,7 +40,7 @@
       applicationContext.setResponse(response);
       applicationContext.setPortletConfig(getPortletConfig());
       PortletCommunicationManager applicationManager=applicationContext.getApplicationManager(application);
-      updateBrowserProperties(applicationContext.getBrowser(),request);
+      applicationContext.getBrowser().updateRequestDetails(wrappedRequest);
       if (application instanceof PortletRequestListener) {
         ((PortletRequestListener)application).onRequestStart(request,response);
         requestStarted=true;
@@ -69,7 +79,7 @@ if (requestType == RequestType.FILE_UPLOAD) {
 }
  else if (requestType == RequestType.UIDL) {
   if (isRepaintAll(request)) {
-    checkWidgetsetVersion(request);
+    checkWidgetsetVersion(wrappedRequest);
   }
   applicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,portletWrapper,root);
   return;
