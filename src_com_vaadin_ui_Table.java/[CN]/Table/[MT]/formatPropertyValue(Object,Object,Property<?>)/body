@@ -7,7 +7,10 @@
     converter=getConverter(colId);
   }
  else {
-    converter=(Converter<Object,String>)Application.getConverterFactory().createConverter(property.getType(),String.class);
+    Application app=Application.getCurrentApplication();
+    if (app != null) {
+      converter=(Converter<Object,String>)app.getConverterFactory().createConverter(property.getType(),String.class);
+    }
   }
   Object value=property.getValue();
   if (converter != null) {
