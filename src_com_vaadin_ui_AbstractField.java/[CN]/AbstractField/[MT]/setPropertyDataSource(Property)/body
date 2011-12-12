@@ -16,9 +16,12 @@
       setInternalValue(fieldValue);
     }
     setModified(false);
+    if (getCurrentBufferedSourceException() != null) {
+      setCurrentBufferedSourceException(null);
+    }
   }
  catch (  final Throwable e) {
-    currentBufferedSourceException=new Buffered.SourceException(this,e);
+    setCurrentBufferedSourceException(new Buffered.SourceException(this,e));
     setModified(true);
   }
   if (dataSource instanceof Property.ValueChangeNotifier) {
