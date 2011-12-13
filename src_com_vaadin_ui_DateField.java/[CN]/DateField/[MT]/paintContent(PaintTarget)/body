@@ -14,29 +14,16 @@
   target.addAttribute("parsable",uiHasValidDateString);
   final Calendar calendar=getCalendar();
   final Date currentDate=getValue();
-  for (int r=resolution; r <= largestModifiable; r++) {
-switch (r) {
-case RESOLUTION_MSEC:
-      target.addVariable(this,"msec",currentDate != null ? calendar.get(Calendar.MILLISECOND) : -1);
-    break;
-case RESOLUTION_SEC:
-  target.addVariable(this,"sec",currentDate != null ? calendar.get(Calendar.SECOND) : -1);
-break;
-case RESOLUTION_MIN:
-target.addVariable(this,"min",currentDate != null ? calendar.get(Calendar.MINUTE) : -1);
-break;
-case RESOLUTION_HOUR:
-target.addVariable(this,"hour",currentDate != null ? calendar.get(Calendar.HOUR_OF_DAY) : -1);
-break;
-case RESOLUTION_DAY:
-target.addVariable(this,"day",currentDate != null ? calendar.get(Calendar.DAY_OF_MONTH) : -1);
-break;
-case RESOLUTION_MONTH:
-target.addVariable(this,"month",currentDate != null ? calendar.get(Calendar.MONTH) + 1 : -1);
-break;
-case RESOLUTION_YEAR:
-target.addVariable(this,"year",currentDate != null ? calendar.get(Calendar.YEAR) : -1);
-break;
-}
-}
+  for (  Resolution res : Resolution.values()) {
+    if (res.compareTo(resolution) >= 0) {
+      int value=-1;
+      if (currentDate != null) {
+        value=calendar.get(calendarFieldForResolution.get(res));
+        if (res == Resolution.MONTH) {
+          value++;
+        }
+      }
+      target.addVariable(this,variableNameForResolution.get(res),value);
+    }
+  }
 }
