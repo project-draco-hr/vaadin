@@ -1,0 +1,16 @@
+{
+  BeanValidationValidator validator=new BeanValidationValidator(beanClass,String.valueOf(propertyId));
+  PropertyDescriptor constraintsForProperty=validator.validator.getConstraintsForClass(beanClass).getConstraintsForProperty(propertyId.toString());
+  if (constraintsForProperty != null) {
+    int nonNotNullValidators=constraintsForProperty.getConstraintDescriptors().size();
+    if (validator.isRequired()) {
+      field.setRequired(true);
+      field.setRequiredError(validator.getRequiredMessage());
+      nonNotNullValidators--;
+    }
+    if (nonNotNullValidators > 0) {
+      field.addValidator(validator);
+    }
+  }
+  return validator;
+}

@@ -1,0 +1,54 @@
+{
+  BeanDescriptor beanDesc=validator.getConstraintsForClass(beanClass);
+  PropertyDescriptor desc=beanDesc.getConstraintsForProperty(propertyName);
+  if (desc == null) {
+    return null;
+  }
+  Iterator<ConstraintDescriptor<?>> it=desc.getConstraintDescriptors().iterator();
+  List<String> exceptions=new ArrayList<String>();
+  while (it.hasNext()) {
+    final ConstraintDescriptor<?> d=it.next();
+    Annotation a=d.getAnnotation();
+    boolean skip=false;
+    if (an != null && an.length > 0) {
+      skip=true;
+      for (      Class<? extends Annotation> t : an) {
+        if (t == a.annotationType()) {
+          skip=false;
+          break;
+        }
+      }
+    }
+    if (!skip) {
+      String messageTemplate=null;
+      try {
+        Method m=a.getClass().getMethod("message");
+        messageTemplate=(String)m.invoke(a);
+      }
+ catch (      Exception ex) {
+        throw new InvalidValueException("Annotation must have message attribute");
+      }
+      String msg=factory.getMessageInterpolator().interpolate(messageTemplate,new Context(){
+        public Object getValidatedValue(){
+          return value;
+        }
+        public ConstraintDescriptor<?> getConstraintDescriptor(){
+          return d;
+        }
+      }
+,locale);
+      exceptions.add(msg);
+    }
+  }
+  if (exceptions.size() > 0) {
+    StringBuilder b=new StringBuilder();
+    for (int i=0; i < exceptions.size(); i++) {
+      if (i != 0) {
+        b.append("<br/>");
+      }
+      b.append(exceptions.get(i));
+    }
+    return b.toString();
+  }
+  return null;
+}
