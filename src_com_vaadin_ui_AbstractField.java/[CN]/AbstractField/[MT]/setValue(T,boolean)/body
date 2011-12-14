@@ -3,16 +3,11 @@
     if (isReadOnly()) {
       throw new Property.ReadOnlyException();
     }
-    if (repaintIsNotNeeded && (isRequired() || getValidators() != null)) {
+    if (repaintIsNotNeeded && (isRequired() || getValidators() != null || getValueConverter() != null)) {
       repaintIsNotNeeded=false;
     }
     if (!isInvalidAllowed()) {
-      final Collection<Validator> v=getValidators();
-      if (v != null) {
-        for (final Iterator<Validator> i=v.iterator(); i.hasNext(); ) {
-          (i.next()).validate(newFieldValue);
-        }
-      }
+      validate(newFieldValue);
     }
     setInternalValue(newFieldValue);
     setModified(dataSource != null);

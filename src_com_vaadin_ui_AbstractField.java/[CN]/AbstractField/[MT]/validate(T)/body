@@ -1,0 +1,30 @@
+{
+  Object valueToValidate=fieldValue;
+  if (getValueConverter() != null) {
+    try {
+      valueToValidate=getValueConverter().convertFromTargetToSource(fieldValue,getLocale());
+    }
+ catch (    Exception e) {
+      throw new InvalidValueException(e.getMessage());
+    }
+  }
+  List<InvalidValueException> validationExceptions=new ArrayList<InvalidValueException>();
+  if (validators != null) {
+    for (    Validator v : validators) {
+      try {
+        v.validate(valueToValidate);
+      }
+ catch (      final Validator.InvalidValueException e) {
+        validationExceptions.add(e);
+      }
+    }
+  }
+  if (validationExceptions.isEmpty()) {
+    return;
+  }
+  if (validationExceptions.size() == 1) {
+    throw validationExceptions.get(0);
+  }
+  InvalidValueException[] exceptionArray=validationExceptions.toArray(new InvalidValueException[validationExceptions.size()]);
+  throw new Validator.InvalidValueException(null,exceptionArray);
+}

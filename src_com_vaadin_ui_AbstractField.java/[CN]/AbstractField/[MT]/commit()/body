@@ -1,11 +1,10 @@
 {
   if (dataSource != null && !dataSource.isReadOnly()) {
     if ((isInvalidCommitted() || isValid())) {
-      final T fieldValue=getFieldValue();
       try {
         valueWasModifiedByDataSourceDuringCommit=false;
         committingValueToDataSource=true;
-        getPropertyDataSource().setValue(convertToDataSource(fieldValue));
+        getPropertyDataSource().setValue(getConvertedFieldValue());
       }
  catch (      final Throwable e) {
         SourceException sourceException=new Buffered.SourceException(this,e);

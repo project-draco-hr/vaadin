@@ -2,28 +2,5 @@
   if (isRequired() && isEmpty()) {
     throw new Validator.EmptyValueException(requiredError);
   }
-  if (validators == null) {
-    return;
-  }
-  final Object fieldValue=getFieldValue();
-  List<InvalidValueException> validationExceptions=null;
-  for (  Validator v : validators) {
-    try {
-      v.validate(fieldValue);
-    }
- catch (    final Validator.InvalidValueException e) {
-      if (validationExceptions == null) {
-        validationExceptions=new ArrayList<InvalidValueException>();
-      }
-      validationExceptions.add(e);
-    }
-  }
-  if (validationExceptions == null) {
-    return;
-  }
-  if (validationExceptions.size() == 1) {
-    throw validationExceptions.get(0);
-  }
-  InvalidValueException[] exceptionArray=validationExceptions.toArray(new InvalidValueException[validationExceptions.size()]);
-  throw new Validator.InvalidValueException(null,exceptionArray);
+  validate(getFieldValue());
 }
