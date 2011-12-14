@@ -3,9 +3,11 @@
   CombinedRequest combinedRequest=application.getCombinedRequest(request);
   try {
     Root root=application.getRootForRequest(combinedRequest);
-    String widgetset=ajaxPageHandler.getWidgetsetForRoot(combinedRequest,root);
-    String theme=ajaxPageHandler.getThemeForRoot(combinedRequest,root);
-    String themeUri=ajaxPageHandler.getThemeUri(theme,combinedRequest);
+    AjaxPageHandler ajaxPageHandler=getAjaxPageHandler();
+    AjaxPageContext context=ajaxPageHandler.createContext(combinedRequest,response,application,root.getRootId());
+    String widgetset=context.getWidgetsetName();
+    String theme=context.getThemeName();
+    String themeUri=ajaxPageHandler.getThemeUri(context,theme);
     JSONObject params=new JSONObject();
     params.put("widgetset",widgetset);
     params.put("themeUri",themeUri);

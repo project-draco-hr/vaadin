@@ -1,0 +1,21 @@
+{
+  Writer page=context.getWriter();
+  String style=getMainDivStyle(context);
+  String themeName=context.getThemeName();
+  String appClass="v-app-" + getApplicationCSSClassName(context.getApplication());
+  String themeClass="";
+  if (themeName != null) {
+    themeClass="v-theme-" + themeName.replaceAll("[^a-zA-Z0-9]","");
+  }
+ else {
+    themeClass="v-theme-" + AbstractApplicationServlet.getDefaultTheme().replaceAll("[^a-zA-Z0-9]","");
+  }
+  String classNames="v-app " + themeClass + " "+ appClass;
+  if (style != null && style.length() != 0) {
+    style=" style=\"" + style + "\"";
+  }
+  page.write("<div id=\"" + context.getAppId() + "\" class=\""+ classNames+ "\""+ style+ ">");
+  page.write("<div class=\"v-app-loading\"></div>");
+  page.write("</div>\n");
+  page.write("<noscript>" + getNoScriptMessage() + "</noscript>");
+}
