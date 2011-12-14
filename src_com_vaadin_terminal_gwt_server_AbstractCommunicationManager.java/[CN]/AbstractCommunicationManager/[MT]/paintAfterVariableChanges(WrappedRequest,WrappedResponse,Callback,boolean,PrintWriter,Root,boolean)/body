@@ -9,14 +9,7 @@
   openJsonMessage(outWriter,response);
   Object writeSecurityTokenFlag=request.getAttribute(WRITE_SECURITY_TOKEN_FLAG);
   if (writeSecurityTokenFlag != null) {
-    String seckey=(String)request.getSessionAttribute(ApplicationConnection.UIDL_SECURITY_TOKEN_ID);
-    if (seckey == null) {
-      seckey=UUID.randomUUID().toString();
-      request.setSessionAttribute(ApplicationConnection.UIDL_SECURITY_TOKEN_ID,seckey);
-    }
-    outWriter.print("\"" + ApplicationConnection.UIDL_SECURITY_TOKEN_ID + "\":\"");
-    outWriter.print(seckey);
-    outWriter.print("\",");
+    outWriter.print(getSecurityKeyUIDL(request));
   }
   writeUidlResponce(callback,repaintAll,outWriter,root,analyzeLayouts);
   closeJsonMessage(outWriter);
