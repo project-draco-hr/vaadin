@@ -1,14 +1,27 @@
 {
+  boolean sendUIDL=Root.getCurrentRoot() == null;
   CombinedRequest combinedRequest=application.getCombinedRequest(request);
   try {
     Root root=application.getRootForRequest(combinedRequest);
-    String widgetset=AJAX_PAGE_HANDLER.getWidgetsetForRoot(combinedRequest,root);
-    String theme=AJAX_PAGE_HANDLER.getThemeForRoot(combinedRequest,root);
-    String themeUri=AJAX_PAGE_HANDLER.getThemeUri(theme,combinedRequest);
+    String widgetset=ajaxPageHandler.getWidgetsetForRoot(combinedRequest,root);
+    String theme=ajaxPageHandler.getThemeForRoot(combinedRequest,root);
+    String themeUri=ajaxPageHandler.getThemeUri(theme,combinedRequest);
     JSONObject params=new JSONObject();
     params.put("widgetset",widgetset);
     params.put("themeUri",themeUri);
     params.put(ApplicationConnection.ROOT_ID_PARAMETER,root.getRootId());
+    if (sendUIDL) {
+      this.makeAllPaintablesDirty(root);
+      StringWriter sWriter=new StringWriter();
+      PrintWriter pWriter=new PrintWriter(sWriter);
+      pWriter.print("{");
+      if (isXSRFEnabled(application)) {
+        pWriter.print(getSecurityKeyUIDL(combinedRequest));
+      }
+      writeUidlResponce(null,true,pWriter,root,false);
+      pWriter.print("}");
+      params.put("uidl",sWriter.toString());
+    }
     response.getWriter().write(params.toString());
   }
  catch (  RootRequiresMoreInformation e) {

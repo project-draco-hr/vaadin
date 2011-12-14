@@ -3,10 +3,10 @@
     checkForPendingVariableBursts();
     runPostRequestHooks(configuration.getRootPanelId());
   }
-  activeRequests--;
+  decrementActiveRequests();
   Scheduler.get().scheduleDeferred(new Command(){
     public void execute(){
-      if (activeRequests == 0) {
+      if (!hasActiveRequest()) {
         hideLoadingIndicator();
       }
     }
