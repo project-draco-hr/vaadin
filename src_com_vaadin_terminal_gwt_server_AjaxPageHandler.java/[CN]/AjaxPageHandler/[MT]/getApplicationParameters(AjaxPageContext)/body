@@ -15,18 +15,7 @@
     appConfig.put("initPending",true);
   }
  else {
-    AbstractCommunicationManager manager=getCommunicationManager();
-    Root root=Root.getCurrentRoot();
-    manager.makeAllPaintablesDirty(root);
-    StringWriter sWriter=new StringWriter();
-    PrintWriter pWriter=new PrintWriter(sWriter);
-    pWriter.print("{");
-    if (manager.isXSRFEnabled(application)) {
-      pWriter.print(manager.getSecurityKeyUIDL(context.getRequest()));
-    }
-    manager.writeUidlResponce(null,true,pWriter,root,false);
-    pWriter.print("}");
-    appConfig.put("uidl",sWriter.toString());
+    appConfig.put("uidl",getInitialUIDL(context.getRequest(),context.getRoot()));
   }
   return appConfig;
 }

@@ -13,16 +13,8 @@
     params.put("themeUri",themeUri);
     params.put(ApplicationConnection.ROOT_ID_PARAMETER,root.getRootId());
     if (sendUIDL) {
-      makeAllPaintablesDirty(root);
-      StringWriter sWriter=new StringWriter();
-      PrintWriter pWriter=new PrintWriter(sWriter);
-      pWriter.print("{");
-      if (isXSRFEnabled(application)) {
-        pWriter.print(getSecurityKeyUIDL(combinedRequest));
-      }
-      writeUidlResponce(null,true,pWriter,root,false);
-      pWriter.print("}");
-      params.put("uidl",sWriter.toString());
+      String initialUIDL=getInitialUIDL(combinedRequest,root);
+      params.put("uidl",initialUIDL);
     }
     response.getWriter().write(params.toString());
   }
