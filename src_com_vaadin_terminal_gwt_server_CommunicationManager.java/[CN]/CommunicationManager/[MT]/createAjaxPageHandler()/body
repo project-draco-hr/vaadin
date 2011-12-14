@@ -1,0 +1,38 @@
+{
+  return new AjaxPageHandler(){
+    @Override protected String getApplicationId(    AjaxPageContext context){
+      String appUrl=getAppUri(context);
+      String appId=appUrl;
+      if ("".equals(appUrl)) {
+        appId="ROOT";
+      }
+      appId=appId.replaceAll("[^a-zA-Z0-9]","");
+      int hashCode=appId.hashCode();
+      if (hashCode < 0) {
+        hashCode=-hashCode;
+      }
+      appId=appId + "-" + hashCode;
+      return appId;
+    }
+    @Override protected String getAppUri(    AjaxPageContext context){
+      Application application=context.getApplication();
+      URL url=application.getURL();
+      String appUrl=url.getPath();
+      if (appUrl.endsWith("/")) {
+        appUrl=appUrl.substring(0,appUrl.length() - 1);
+      }
+      return appUrl;
+    }
+    @Override public String getThemeName(    AjaxPageContext context){
+      String themeName=context.getRequest().getParameter(AbstractApplicationServlet.URL_PARAMETER_THEME);
+      if (themeName == null) {
+        themeName=super.getThemeName(context);
+      }
+      return themeName;
+    }
+    @Override protected AbstractCommunicationManager getCommunicationManager(){
+      return CommunicationManager.this;
+    }
+  }
+;
+}
