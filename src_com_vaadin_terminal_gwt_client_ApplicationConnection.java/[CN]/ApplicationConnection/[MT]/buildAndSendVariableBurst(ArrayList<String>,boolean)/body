@@ -22,5 +22,13 @@
       req.append(VAR_BURST_SEPARATOR);
     }
   }
-  makeUidlRequest(req.toString(),"",forceSync);
+  String extraParams;
+  if (!getConfiguration().isBrowserDetailsSent()) {
+    extraParams=getNativeBrowserDetailsParameters(getConfiguration().getRootPanelId());
+    getConfiguration().setBrowserDetailsSent();
+  }
+ else {
+    extraParams="";
+  }
+  makeUidlRequest(req.toString(),extraParams,forceSync);
 }
