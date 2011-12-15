@@ -1,0 +1,24 @@
+{
+  PropertyDescriptor pd;
+  try {
+    pd=new PropertyDescriptor(field.getName(),object.getClass());
+    Method getter=pd.getReadMethod();
+    if (getter != null) {
+      return getter.invoke(object,(Object[])null);
+    }
+  }
+ catch (  Exception e) {
+  }
+  try {
+    if (!field.isAccessible()) {
+      field.setAccessible(true);
+    }
+    return field.get(object);
+  }
+ catch (  IllegalArgumentException e) {
+    throw new FormBuilderException("Could not get value for field '" + field.getName() + "'",e.getCause());
+  }
+catch (  IllegalAccessException e) {
+    throw new FormBuilderException("Access denied while assigning built component to field '" + field.getName() + "' in "+ object.getClass().getName(),e);
+  }
+}
