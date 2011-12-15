@@ -7,4 +7,16 @@
     String fragment=(String)variables.get(VView.FRAGMENT_VARIABLE);
     setFragment(fragment,true);
   }
+  boolean sendResizeEvent=false;
+  if (variables.containsKey("height")) {
+    browserWindowHeight=((Integer)variables.get("height")).intValue();
+    sendResizeEvent=true;
+  }
+  if (variables.containsKey("width")) {
+    browserWindowWidth=((Integer)variables.get("width")).intValue();
+    sendResizeEvent=true;
+  }
+  if (sendResizeEvent) {
+    fireEvent(new BrowserWindowResizeEvent(this,browserWindowWidth,browserWindowHeight));
+  }
 }
