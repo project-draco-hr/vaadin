@@ -7,18 +7,17 @@
     dateString=newDateString;
     boolean hasChanges=false;
     Map<Resolution,Integer> calendarFieldChanges=new HashMap<DateField.Resolution,Integer>();
-    for (    Resolution r : Resolution.values()) {
+    for (    Resolution r : Resolution.getResolutionsHigherOrEqualTo(resolution)) {
       String variableName=variableNameForResolution.get(r);
-      Integer value=0;
       if (variables.containsKey(variableName)) {
-        value=(Integer)variables.get(variableName);
+        Integer value=(Integer)variables.get(variableName);
         if (r == Resolution.MONTH) {
           value--;
         }
-      }
-      if (value >= 0) {
-        hasChanges=true;
-        calendarFieldChanges.put(r,value);
+        if (value >= 0) {
+          hasChanges=true;
+          calendarFieldChanges.put(r,value);
+        }
       }
     }
     if (!hasChanges) {
@@ -26,16 +25,12 @@
     }
  else {
       final Calendar cal=getCalendar();
-      cal.set(Calendar.MILLISECOND,0);
       for (int r=Resolution.YEAR.ordinal(); r >= 0; r--) {
         Resolution res=Resolution.values()[r];
-        Integer newValue=0;
-        if (res.compareTo(resolution) >= 0) {
-          if (calendarFieldChanges.containsKey(res)) {
-            newValue=calendarFieldChanges.get(res);
-          }
+        if (calendarFieldChanges.containsKey(res)) {
+          Integer newValue=calendarFieldChanges.get(res);
+          cal.set(res.getCalendarField(),newValue);
         }
-        cal.set(calendarFieldForResolution.get(res),newValue);
       }
       newDate=cal.getTime();
     }
