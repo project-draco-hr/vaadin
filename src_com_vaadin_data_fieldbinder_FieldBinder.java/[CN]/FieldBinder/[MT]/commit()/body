@@ -1,14 +1,28 @@
 {
+  if (!isFieldsBuffered()) {
+    return;
+  }
+  for (  Field<?> f : fieldToPropertyId.keySet()) {
+    ((TransactionalProperty<?>)f.getPropertyDataSource()).startTransaction();
+  }
   try {
     firePreCommitEvent();
     for (    Field<?> f : fieldToPropertyId.keySet()) {
       f.commit();
     }
     firePostCommitEvent();
+    for (    Field<?> f : fieldToPropertyId.keySet()) {
+      ((TransactionalProperty<?>)f.getPropertyDataSource()).commit();
+    }
   }
- catch (  CommitException e) {
-  }
-catch (  Exception e) {
+ catch (  Exception e) {
+    for (    Field<?> f : fieldToPropertyId.keySet()) {
+      try {
+        ((TransactionalProperty<?>)f.getPropertyDataSource()).rollback();
+      }
+ catch (      Exception rollbackException) {
+      }
+    }
     throw new CommitException("Commit failed",e);
   }
 }

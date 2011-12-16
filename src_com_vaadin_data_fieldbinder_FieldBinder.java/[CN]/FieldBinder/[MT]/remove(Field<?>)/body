@@ -3,7 +3,11 @@
   if (propertyId == null) {
     throw new BindException("The given field is not part of this FieldBinder");
   }
-  if (field.getPropertyDataSource() == getItemProperty(propertyId)) {
+  Property fieldDataSource=field.getPropertyDataSource();
+  if (fieldDataSource instanceof TransactionalPropertyWrapper) {
+    fieldDataSource=((TransactionalPropertyWrapper)fieldDataSource).getWrappedProperty();
+  }
+  if (fieldDataSource == getItemProperty(propertyId)) {
     field.setPropertyDataSource(null);
   }
   fieldToPropertyId.remove(field);
