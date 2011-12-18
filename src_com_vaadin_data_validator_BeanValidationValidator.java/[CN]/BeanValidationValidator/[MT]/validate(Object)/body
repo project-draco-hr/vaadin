@@ -14,19 +14,10 @@
   }
   Set<?> violations=validator.validateValue(beanClass,propertyName,convertedValue);
   if (violations.size() > 0) {
-    final Object finalValue=convertedValue;
     List<String> exceptions=new ArrayList<String>();
     for (    Object v : violations) {
       final ConstraintViolation<?> violation=(ConstraintViolation<?>)v;
-      String msg=factory.getMessageInterpolator().interpolate(violation.getMessageTemplate(),new Context(){
-        public ConstraintDescriptor<?> getConstraintDescriptor(){
-          return violation.getConstraintDescriptor();
-        }
-        public Object getValidatedValue(){
-          return finalValue;
-        }
-      }
-,locale);
+      String msg=factory.getMessageInterpolator().interpolate(violation.getMessageTemplate(),new SimpleContext(convertedValue,violation.getConstraintDescriptor()),locale);
       exceptions.add(msg);
     }
     StringBuilder b=new StringBuilder();

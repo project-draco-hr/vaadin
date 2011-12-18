@@ -28,15 +28,7 @@
  catch (      Exception ex) {
         throw new InvalidValueException("Annotation must have message attribute");
       }
-      String msg=factory.getMessageInterpolator().interpolate(messageTemplate,new Context(){
-        public Object getValidatedValue(){
-          return value;
-        }
-        public ConstraintDescriptor<?> getConstraintDescriptor(){
-          return d;
-        }
-      }
-,locale);
+      String msg=factory.getMessageInterpolator().interpolate(messageTemplate,new SimpleContext(value,d),locale);
       exceptions.add(msg);
     }
   }
