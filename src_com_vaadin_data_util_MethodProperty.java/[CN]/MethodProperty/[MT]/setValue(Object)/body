@@ -2,7 +2,9 @@
   if (isReadOnly()) {
     throw new Property.ReadOnlyException();
   }
-  Object value=convertValue(newValue,type);
-  invokeSetMethod(value);
+  if (newValue != null && !type.isAssignableFrom(newValue.getClass())) {
+    throw new Property.ConversionException("Invalid value type for ObjectProperty.");
+  }
+  invokeSetMethod((T)newValue);
   fireValueChange();
 }
