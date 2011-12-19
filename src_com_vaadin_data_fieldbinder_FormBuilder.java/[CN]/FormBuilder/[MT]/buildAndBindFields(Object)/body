@@ -1,3 +1,46 @@
 {
-  buildAndBindFields(object,false);
+  Class<?> objectClass=object.getClass();
+  for (  java.lang.reflect.Field f : objectClass.getDeclaredFields()) {
+    PropertyId propertyIdAnnotation=f.getAnnotation(PropertyId.class);
+    if (!Field.class.isAssignableFrom(f.getType())) {
+      continue;
+    }
+    Class<? extends Field> fieldType=(Class<? extends Field>)f.getType();
+    Object propertyId=null;
+    if (propertyIdAnnotation != null) {
+      propertyId=propertyIdAnnotation.value();
+    }
+ else {
+      propertyId=f.getName();
+    }
+    Class<?> propertyType;
+    try {
+      propertyType=fieldBinder.getPropertyType(propertyId);
+    }
+ catch (    BindException e) {
+      continue;
+    }
+    Field<?> builtField;
+    try {
+      builtField=(Field<?>)ReflectTools.getJavaFieldValue(object,f);
+    }
+ catch (    Exception e) {
+      continue;
+    }
+    if (builtField == null) {
+      Caption captionAnnotation=f.getAnnotation(Caption.class);
+      String caption;
+      if (captionAnnotation != null) {
+        caption=captionAnnotation.value();
+      }
+ else {
+        caption=DefaultFieldFactory.createCaptionByPropertyId(propertyId);
+      }
+      builtField=build(caption,propertyType,fieldType);
+      ReflectTools.setJavaFieldValue(object,f,builtField);
+    }
+    if (builtField != null) {
+      fieldBinder.bind(builtField,propertyId);
+    }
+  }
 }
