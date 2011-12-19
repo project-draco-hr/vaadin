@@ -1,0 +1,40 @@
+{
+  boolean includeInterfaces=false;
+  StringBuilder header=new StringBuilder();
+  header.append("digraph finite_state_machine {\n" + "        rankdir=BT;\n" + "        dpi=\"150\";\n"+ "                ratio=\"0.25\";\n");
+  StringBuilder sb=new StringBuilder();
+  Set<Class> classesAndParents=new HashSet<Class>();
+  for (  Class<?> cls : classes) {
+    addClassAndParents(classesAndParents,cls,packageToInclude);
+  }
+  Set<Class> interfaces=new HashSet<Class>();
+  for (  Object cls : classesAndParents.toArray()) {
+    for (    Class<?> c : ((Class)cls).getInterfaces()) {
+      addClassAndParentInterfaces(classesAndParents,c,packageToInclude);
+    }
+  }
+  for (  Class<?> c : classesAndParents) {
+    appendClass(sb,c,c.getSuperclass(),packageToInclude,includeInterfaces);
+    for (    Class ci : c.getInterfaces()) {
+      appendClass(sb,c,ci,packageToInclude,includeInterfaces);
+    }
+  }
+  header.append("    node [shape = ellipse, style=\"dotted\"] ");
+  for (  Class c : classesAndParents) {
+    if (!c.isInterface() && Modifier.isAbstract(c.getModifiers())) {
+      header.append(c.getSimpleName() + " ");
+    }
+  }
+  if (includeInterfaces) {
+    System.out.print("    node [shape = ellipse, style=\"solid\"] ");
+    for (    Class c : classesAndParents) {
+      if (c.isInterface()) {
+        header.append(c.getSimpleName() + " ");
+      }
+    }
+    header.append(";\n");
+  }
+  header.append(";\n");
+  header.append("    node [shape = rectangle, style=\"solid\"];\n");
+  return header.toString() + sb.toString() + "}";
+}
