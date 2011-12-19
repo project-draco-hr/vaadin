@@ -1,16 +1,9 @@
 {
   super.init(servletConfig);
-  final String applicationClassName=servletConfig.getInitParameter("application");
-  if (applicationClassName == null) {
-    String rootParam=servletConfig.getInitParameter(Application.ROOT_PARAMETER);
-    verifyRootClass(rootParam);
-    applicationClass=Application.class;
-    return;
-  }
   try {
-    applicationClass=(Class<? extends Application>)getClassLoader().loadClass(applicationClassName);
+    applicationClass=ServletPortletHelper.getApplicationClass(servletConfig.getInitParameter("application"),servletConfig.getInitParameter(Application.ROOT_PARAMETER),getClassLoader());
   }
- catch (  final ClassNotFoundException e) {
-    throw new ServletException("Failed to load application class: " + applicationClassName);
+ catch (  ApplicationClassException e) {
+    throw new ServletException(e);
   }
 }
