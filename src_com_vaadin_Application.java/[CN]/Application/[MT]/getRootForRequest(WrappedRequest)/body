@@ -5,22 +5,20 @@
   }
   Integer rootId=getRootId(request);
 synchronized (this) {
-    boolean preserveRootState=preserveRootStateOnRefresh();
+    RootPreserveStrategy rootPreserveStrategy=getRootPreserveStrategy();
     BrowserDetails browserDetails=request.getBrowserDetails();
     if (browserDetails != null) {
       pendingRoots.remove(rootId);
-      if (preserveRootState) {
-        Integer retainedRootId=retainOnRefreshRoots.get(browserDetails.getWindowName());
-        if (retainedRootId != null) {
-          rootId=retainedRootId;
-        }
-      }
     }
     root=roots.get(rootId);
-    if (root == null) {
-      if (preserveRootState && browserDetails == null && !retainOnRefreshRoots.isEmpty()) {
-        throw new RootRequiresMoreInformation();
+    if (root == null && rootPreserveStrategy != null) {
+      Integer retainedRootId=rootPreserveStrategy.getPreservedRootForRequest(request);
+      if (retainedRootId != null) {
+        rootId=retainedRootId;
+        root=roots.get(rootId);
       }
+    }
+    if (root == null) {
       root=getRoot(request);
       if (root.getApplication() == null) {
         root.setApplication(this);
@@ -34,13 +32,13 @@ synchronized (this) {
       }
     }
     if (!initedRoots.contains(rootId)) {
-      boolean initRequiresBrowserDetails=preserveRootState || root.getClass().isAnnotationPresent(RootInitRequiresBrowserDetals.class);
+      boolean initRequiresBrowserDetails=(rootPreserveStrategy != null && rootPreserveStrategy.reqsterRequiresBrowserDetails()) || root.getClass().isAnnotationPresent(RootInitRequiresBrowserDetals.class);
       if (initRequiresBrowserDetails && browserDetails == null) {
         pendingRoots.put(rootId,new PendingRootRequest(request));
       }
  else {
-        if (preserveRootState) {
-          retainOnRefreshRoots.put(browserDetails.getWindowName(),rootId);
+        if (rootPreserveStrategy != null) {
+          rootPreserveStrategy.registerRoot(root,request);
         }
         root.doInit(request);
         initedRoots.add(rootId);
