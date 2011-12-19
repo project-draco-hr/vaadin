@@ -1,0 +1,45 @@
+{
+  addComponent(log);
+  final BeanFieldBinder<PersonWithBeanValidationAnnotations> binder=new BeanFieldBinder<PersonWithBeanValidationAnnotations>(PersonWithBeanValidationAnnotations.class);
+  FormBuilder builder=new FormBuilder(binder);
+  builder.buildAndBindFields(this);
+  addComponent(firstName);
+  addComponent(lastName);
+  addComponent(email);
+  addComponent(age);
+  addComponent(sex);
+  addComponent(deceased);
+  Button commitButton=new Button("Commit",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      String msg="Commit succesful";
+      try {
+        binder.commit();
+      }
+ catch (      CommitException e) {
+        msg="Commit failed: " + e.getMessage();
+      }
+      Root.getCurrentRoot().showNotification(msg);
+      log.log(msg);
+    }
+  }
+);
+  Button discardButton=new Button("Discard",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      binder.discard();
+      log.log("Discarded changes");
+    }
+  }
+);
+  Button showBean=new Button("Show bean values",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      log.log(getPerson(binder).toString());
+    }
+  }
+);
+  addComponent(commitButton);
+  addComponent(discardButton);
+  addComponent(showBean);
+  sex.setPageLength(0);
+  PersonWithBeanValidationAnnotations p=new PersonWithBeanValidationAnnotations("John","Doe","john@doe.com",64,Sex.MALE,new Address("John street",11223,"John's town",Country.USA));
+  binder.setItemDataSource(new BeanItem<PersonWithBeanValidationAnnotations>(p));
+}
