@@ -1,10 +1,10 @@
 {
-  Set<?> violations=validator.validateValue(beanClass,propertyName,value);
+  Set<?> violations=getJavaxBeanValidator().validateValue(beanClass,propertyName,value);
   if (violations.size() > 0) {
     List<String> exceptions=new ArrayList<String>();
     for (    Object v : violations) {
       final ConstraintViolation<?> violation=(ConstraintViolation<?>)v;
-      String msg=factory.getMessageInterpolator().interpolate(violation.getMessageTemplate(),new SimpleContext(value,violation.getConstraintDescriptor()),locale);
+      String msg=getJavaxBeanValidatorFactory().getMessageInterpolator().interpolate(violation.getMessageTemplate(),new SimpleContext(value,violation.getConstraintDescriptor()),locale);
       exceptions.add(msg);
     }
     StringBuilder b=new StringBuilder();
