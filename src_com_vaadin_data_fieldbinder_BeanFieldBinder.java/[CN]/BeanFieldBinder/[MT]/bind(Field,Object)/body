@@ -1,12 +1,11 @@
 {
-  try {
-    super.bind(field,propertyId);
-  }
- catch (  BindException e) {
-    if (getItemDataSource() != null && field.getPropertyDataSource() == null) {
-      Property p=new NestedMethodProperty(getItemDataSource().getBean(),(String)propertyId);
-      getItemDataSource().addItemProperty(propertyId,p);
-      super.bind(field,propertyId);
+  if (getItemDataSource() != null) {
+    try {
+      getItemProperty(propertyId);
+    }
+ catch (    BindException e) {
+      getItemDataSource().addNestedProperty((String)propertyId);
     }
   }
+  super.bind(field,propertyId);
 }
