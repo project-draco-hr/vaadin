@@ -52,44 +52,50 @@
 synchronized (application) {
         if (application.isRunning()) {
 switch (requestType) {
-case FILE_UPLOAD:
+case BROWSER_DETAILS:
             break;
-case APPLICATION_RESOURCE:
+case FILE_UPLOAD:
           break;
+case APPLICATION_RESOURCE:
+        break;
 default :
-        root=application.getRootForRequest(wrappedRequest);
-    }
+      root=application.getRootForRequest(wrappedRequest);
   }
+}
 }
 if (request instanceof RenderRequest) {
-  applicationContext.firePortletRenderRequest(application,root,(RenderRequest)request,(RenderResponse)response);
+applicationContext.firePortletRenderRequest(application,root,(RenderRequest)request,(RenderResponse)response);
 }
  else if (request instanceof ActionRequest) {
-  applicationContext.firePortletActionRequest(application,root,(ActionRequest)request,(ActionResponse)response);
+applicationContext.firePortletActionRequest(application,root,(ActionRequest)request,(ActionResponse)response);
 }
  else if (request instanceof EventRequest) {
-  applicationContext.firePortletEventRequest(application,root,(EventRequest)request,(EventResponse)response);
+applicationContext.firePortletEventRequest(application,root,(EventRequest)request,(EventResponse)response);
 }
  else if (request instanceof ResourceRequest) {
-  applicationContext.firePortletResourceRequest(application,root,(ResourceRequest)request,(ResourceResponse)response);
+applicationContext.firePortletResourceRequest(application,root,(ResourceRequest)request,(ResourceResponse)response);
 }
 if (requestType == RequestType.FILE_UPLOAD) {
-  applicationManager.handleFileUpload(wrappedRequest,wrappedResponse);
-  return;
+applicationManager.handleFileUpload(wrappedRequest,wrappedResponse);
+return;
+}
+ else if (requestType == RequestType.BROWSER_DETAILS) {
+applicationManager.handleBrowserDetailsRequest(wrappedRequest,wrappedResponse,application);
+return;
 }
  else if (requestType == RequestType.UIDL) {
-  if (isRepaintAll(request)) {
-    checkWidgetsetVersion(wrappedRequest);
-  }
-  applicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,portletWrapper,root);
-  return;
+if (isRepaintAll(request)) {
+  checkWidgetsetVersion(wrappedRequest);
+}
+applicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,portletWrapper,root);
+return;
 }
  else {
-  if (!application.isRunning()) {
-    endApplication(request,response,application);
-    return;
-  }
-  handleOtherRequest(wrappedRequest,wrappedResponse,requestType,application,applicationContext,applicationManager);
+if (!application.isRunning()) {
+  endApplication(request,response,application);
+  return;
+}
+handleOtherRequest(wrappedRequest,wrappedResponse,requestType,application,applicationContext,applicationManager);
 }
 }
  catch (final SessionExpiredException e) {
@@ -103,20 +109,20 @@ handleServiceException(request,response,application,e);
 }
  finally {
 try {
-  if (transactionStarted) {
-    ((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
+if (transactionStarted) {
+  ((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
+}
+}
+  finally {
+try {
+  if (requestStarted) {
+    ((PortletRequestListener)application).onRequestEnd(request,response);
   }
 }
   finally {
-  try {
-    if (requestStarted) {
-      ((PortletRequestListener)application).onRequestEnd(request,response);
-    }
-  }
-  finally {
-    Root.setCurrentRoot(null);
-    Application.setCurrentApplication(null);
-  }
+  Root.setCurrentRoot(null);
+  Application.setCurrentApplication(null);
+}
 }
 }
 }
