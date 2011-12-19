@@ -1,6 +1,11 @@
 {
   if (valueConverter != null) {
-    return valueConverter.convertFromTargetToSource(fieldValue,getLocale());
+    try {
+      return valueConverter.convertFromTargetToSource(fieldValue,getLocale());
+    }
+ catch (    com.vaadin.data.util.converter.Converter.ConversionException e) {
+      throw new ConversionException(getValueConversionError(valueConverter.getSourceType()));
+    }
   }
   if (fieldValue == null) {
     return null;
@@ -16,6 +21,6 @@
     return fieldValue;
   }
  else {
-    throw new Converter.ConversionException("Unable to convert value of type " + fieldValue.getClass().getName() + " to "+ type.getName()+ ". No value converter is set and the types are not compatible.");
+    throw new Converter.ConversionException(getValueConversionError(type));
   }
 }
