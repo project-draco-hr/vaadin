@@ -1,22 +1,17 @@
 {
-  tf.setCaption("Text field");
-  tf.setValue("So we have some text to select");
-  tf.setWidth("400px");
   FormLayout fl=new FormLayout();
   Panel panel=new Panel(fl);
   panel.setCaption("Hackers panel");
   CheckBox ml=new CheckBox("Multiline");
   ml.setImmediate(true);
   ml.addListener(new Property.ValueChangeListener(){
-    @SuppressWarnings("deprecation") public void valueChange(    ValueChangeEvent event){
-      if (tf.getHeight() < 0) {
-        tf.setHeight("50px");
+    public void valueChange(    ValueChangeEvent event){
+      if (tf.getApplication() == null) {
+        replaceComponent(ta,tf);
       }
  else {
-        tf.setSizeUndefined();
-        tf.setRows(0);
+        replaceComponent(tf,ta);
       }
-      tf.setWidth("400px");
     }
   }
 );
@@ -36,8 +31,8 @@
   b=new Button("select");
   b.addListener(new ClickListener(){
     public void buttonClick(    ClickEvent event){
-      int startPos=Integer.parseInt((String)start.getValue());
-      int lenght=Integer.parseInt((String)length.getValue());
+      int startPos=Integer.parseInt(start.getValue());
+      int lenght=Integer.parseInt(length.getValue());
       tf.setSelectionRange(startPos,lenght);
     }
   }
@@ -51,7 +46,7 @@
   b=new Button("set");
   b.addListener(new ClickListener(){
     public void buttonClick(    ClickEvent event){
-      int startPos=Integer.parseInt((String)pos.getValue());
+      int startPos=Integer.parseInt(pos.getValue());
       tf.setCursorPosition(startPos);
     }
   }
