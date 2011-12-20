@@ -1,11 +1,12 @@
 {
-  final Root w=super.getWindow(name);
+  final LegacyWindow w=super.getWindow(name);
   if (w != null) {
     return w;
   }
   if (name != null && name.startsWith("mainwin-")) {
     final String postfix=name.substring("mainwin-".length());
-    final Root ww=new Root("Window: " + postfix);
+    final LegacyWindow ww=new LegacyWindow("Window: " + postfix);
+    ww.setName(name);
     ww.addComponent(new Label("This is a application-level window opened with name: " + name));
     ww.addComponent(new Button("Click me",new Button.ClickListener(){
       int state=0;
@@ -14,7 +15,7 @@
       }
     }
 ));
-    addWindow(ww,name);
+    addWindow(ww);
     return ww;
   }
   return null;
