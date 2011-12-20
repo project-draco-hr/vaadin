@@ -52,15 +52,22 @@
 synchronized (application) {
         if (application.isRunning()) {
 switch (requestType) {
-case BROWSER_DETAILS:
-            break;
-case FILE_UPLOAD:
+case RENDER:
+            try {
+              root=application.getRootForRequest(wrappedRequest);
+            }
+ catch (            RootRequiresMoreInformation e) {
+            }
           break;
-case APPLICATION_RESOURCE:
+case BROWSER_DETAILS:
         break;
+case FILE_UPLOAD:
+      break;
+case APPLICATION_RESOURCE:
+    break;
 default :
-      root=application.getRootForRequest(wrappedRequest);
-  }
+  root=application.getRootForRequest(wrappedRequest);
+}
 }
 }
 if (request instanceof RenderRequest) {
@@ -85,15 +92,15 @@ return;
 }
  else if (requestType == RequestType.UIDL) {
 if (isRepaintAll(request)) {
-  checkWidgetsetVersion(wrappedRequest);
+checkWidgetsetVersion(wrappedRequest);
 }
 applicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,portletWrapper,root);
 return;
 }
  else {
 if (!application.isRunning()) {
-  endApplication(request,response,application);
-  return;
+endApplication(request,response,application);
+return;
 }
 handleOtherRequest(wrappedRequest,wrappedResponse,requestType,application,applicationContext,applicationManager);
 }
@@ -110,18 +117,18 @@ handleServiceException(request,response,application,e);
  finally {
 try {
 if (transactionStarted) {
-  ((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
+((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
 }
 }
   finally {
 try {
-  if (requestStarted) {
-    ((PortletRequestListener)application).onRequestEnd(request,response);
-  }
+if (requestStarted) {
+((PortletRequestListener)application).onRequestEnd(request,response);
+}
 }
   finally {
-  Root.setCurrentRoot(null);
-  Application.setCurrentApplication(null);
+Root.setCurrentRoot(null);
+Application.setCurrentApplication(null);
 }
 }
 }
