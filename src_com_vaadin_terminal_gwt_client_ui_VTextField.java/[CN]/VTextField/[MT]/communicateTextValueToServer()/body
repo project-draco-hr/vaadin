@@ -4,9 +4,12 @@
     text="";
   }
   if (!text.equals(getLastCommunicatedString())) {
+    if (text.equals(valueBeforeEdit)) {
+      client.sendPendingVariableChanges();
+    }
+ else {
+      client.updateVariable(id,VAR_CUR_TEXT,text,true);
+    }
     lastTextChangeString=text;
-    client.updateVariable(id,VAR_CUR_TEXT,text,true);
-    return true;
   }
-  return false;
 }

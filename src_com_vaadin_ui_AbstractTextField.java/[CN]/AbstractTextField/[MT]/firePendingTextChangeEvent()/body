@@ -1,6 +1,12 @@
 {
-  if (textChangeEventPending) {
+  if (textChangeEventPending && !isFiringTextChangeEvent) {
+    isFiringTextChangeEvent=true;
     textChangeEventPending=false;
-    fireEvent(new TextChangeEventImpl(this));
+    try {
+      fireEvent(new TextChangeEventImpl(this));
+    }
+  finally {
+      isFiringTextChangeEvent=false;
+    }
   }
 }
