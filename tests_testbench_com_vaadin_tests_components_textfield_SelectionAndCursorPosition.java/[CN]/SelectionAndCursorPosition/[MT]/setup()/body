@@ -6,11 +6,13 @@
   ml.setImmediate(true);
   ml.addListener(new Property.ValueChangeListener(){
     public void valueChange(    ValueChangeEvent event){
-      if (tf.getApplication() == null) {
-        replaceComponent(ta,tf);
+      if (textField.getApplication() == null) {
+        replaceComponent(textArea,textField);
+        activeComponent=textField;
       }
  else {
-        replaceComponent(tf,ta);
+        replaceComponent(textField,textArea);
+        activeComponent=textArea;
       }
     }
   }
@@ -19,7 +21,7 @@
   Button b=new Button("Select all ( selectAll() )");
   b.addListener(new ClickListener(){
     public void buttonClick(    ClickEvent event){
-      tf.selectAll();
+      activeComponent.selectAll();
     }
   }
 );
@@ -33,7 +35,7 @@
     public void buttonClick(    ClickEvent event){
       int startPos=Integer.parseInt(start.getValue());
       int lenght=Integer.parseInt(length.getValue());
-      tf.setSelectionRange(startPos,lenght);
+      activeComponent.setSelectionRange(startPos,lenght);
     }
   }
 );
@@ -47,7 +49,7 @@
   b.addListener(new ClickListener(){
     public void buttonClick(    ClickEvent event){
       int startPos=Integer.parseInt(pos.getValue());
-      tf.setCursorPosition(startPos);
+      activeComponent.setCursorPosition(startPos);
     }
   }
 );
@@ -55,6 +57,6 @@
   setCursorPosition.addComponent(b);
   setCursorPosition.setCaption("Set cursor position ( setCursorPosition(int pos) )");
   fl.addComponent(setCursorPosition);
-  getLayout().addComponent(tf);
+  getLayout().addComponent(textField);
   getLayout().addComponent(panel);
 }
