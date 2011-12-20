@@ -37,7 +37,18 @@
         caption=DefaultFieldFactory.createCaptionByPropertyId(propertyId);
       }
       builtField=build(caption,propertyType,fieldType);
-      ReflectTools.setJavaFieldValue(object,f,builtField);
+      try {
+        ReflectTools.setJavaFieldValue(object,f,builtField);
+      }
+ catch (      IllegalArgumentException e) {
+        throw new BuildException("Could not assign value to field '" + f.getName() + "'",e);
+      }
+catch (      IllegalAccessException e) {
+        throw new BuildException("Could not assign value to field '" + f.getName() + "'",e);
+      }
+catch (      InvocationTargetException e) {
+        throw new BuildException("Could not assign value to field '" + f.getName() + "'",e);
+      }
     }
     if (builtField != null) {
       fieldBinder.bind(builtField,propertyId);

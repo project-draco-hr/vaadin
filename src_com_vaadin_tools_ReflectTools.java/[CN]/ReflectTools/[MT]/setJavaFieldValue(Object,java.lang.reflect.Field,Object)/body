@@ -4,32 +4,13 @@
     pd=new PropertyDescriptor(field.getName(),object.getClass());
     Method setter=pd.getWriteMethod();
     if (setter != null) {
-      try {
-        setter.invoke(object,value);
-      }
- catch (      IllegalArgumentException e) {
-        throw new FormBuilderException("Could not assign value to field '" + field.getName() + "'",e);
-      }
-catch (      IllegalAccessException e) {
-        throw new FormBuilderException("Access denied while assigning value to field using " + setter.getName() + " in "+ object.getClass().getName(),e);
-      }
-catch (      InvocationTargetException e) {
-        throw new FormBuilderException("Could not assign value to field '" + field.getName() + "'",e.getCause());
-      }
+      setter.invoke(object,value);
     }
   }
  catch (  IntrospectionException e1) {
   }
-  try {
-    if (!field.isAccessible()) {
-      field.setAccessible(true);
-    }
-    field.set(object,value);
+  if (!field.isAccessible()) {
+    field.setAccessible(true);
   }
- catch (  IllegalArgumentException e) {
-    throw new FormBuilderException("Could not assign value to field '" + field.getName() + "'",e.getCause());
-  }
-catch (  IllegalAccessException e) {
-    throw new FormBuilderException("Access denied while assigning value to field '" + field.getName() + "' in "+ object.getClass().getName(),e);
-  }
+  field.set(object,value);
 }

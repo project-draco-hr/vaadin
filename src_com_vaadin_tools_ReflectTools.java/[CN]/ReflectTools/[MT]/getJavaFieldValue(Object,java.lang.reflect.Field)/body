@@ -7,18 +7,10 @@
       return getter.invoke(object,(Object[])null);
     }
   }
- catch (  Exception e) {
+ catch (  IntrospectionException e1) {
   }
-  try {
-    if (!field.isAccessible()) {
-      field.setAccessible(true);
-    }
-    return field.get(object);
+  if (!field.isAccessible()) {
+    field.setAccessible(true);
   }
- catch (  IllegalArgumentException e) {
-    throw new FormBuilderException("Could not get value for field '" + field.getName() + "'",e.getCause());
-  }
-catch (  IllegalAccessException e) {
-    throw new FormBuilderException("Access denied while assigning built component to field '" + field.getName() + "' in "+ object.getClass().getName(),e);
-  }
+  return field.get(object);
 }
