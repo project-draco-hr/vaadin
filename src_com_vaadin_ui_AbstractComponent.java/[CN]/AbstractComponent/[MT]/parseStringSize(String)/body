@@ -1,54 +1,26 @@
 {
-  float[] values={-1,UNITS_PIXELS};
   if (s == null) {
-    return values;
+    return null;
   }
   s=s.trim();
   if ("".equals(s)) {
-    return values;
+    return null;
   }
+  float size=0;
+  Unit unit=null;
   Matcher matcher=sizePattern.matcher(s);
   if (matcher.find()) {
-    values[0]=Float.parseFloat(matcher.group(1));
-    if (values[0] < 0) {
-      values[0]=-1;
+    size=Float.parseFloat(matcher.group(1));
+    if (size < 0) {
+      size=-1;
     }
  else {
-      String unit=matcher.group(3);
-      if (unit == null) {
-        values[1]=UNITS_PIXELS;
-      }
- else       if (unit.equals("px")) {
-        values[1]=UNITS_PIXELS;
-      }
- else       if (unit.equals("%")) {
-        values[1]=UNITS_PERCENTAGE;
-      }
- else       if (unit.equals("em")) {
-        values[1]=UNITS_EM;
-      }
- else       if (unit.equals("ex")) {
-        values[1]=UNITS_EX;
-      }
- else       if (unit.equals("in")) {
-        values[1]=UNITS_INCH;
-      }
- else       if (unit.equals("cm")) {
-        values[1]=UNITS_CM;
-      }
- else       if (unit.equals("mm")) {
-        values[1]=UNITS_MM;
-      }
- else       if (unit.equals("pt")) {
-        values[1]=UNITS_POINTS;
-      }
- else       if (unit.equals("pc")) {
-        values[1]=UNITS_PICAS;
-      }
+      String symbol=matcher.group(3);
+      unit=Unit.getUnitFromSymbol(symbol);
     }
   }
  else {
     throw new IllegalArgumentException("Invalid size argument: \"" + s + "\" (should match "+ sizePattern.pattern()+ ")");
   }
-  return values;
+  return new Size(size,unit);
 }
