@@ -23,13 +23,7 @@
       }
     }
     if (!getType().isAssignableFrom(newValue.getClass())) {
-      try {
-        final Constructor<?> constr=getType().getConstructor(new Class[]{String.class});
-        newValue=constr.newInstance(new Object[]{newValue.toString()});
-      }
- catch (      Exception e) {
-        throw new ConversionException(e);
-      }
+      throw new IllegalArgumentException("Illegal value type for ColumnProperty");
     }
     if (isValueAlreadySet(newValue)) {
       return;

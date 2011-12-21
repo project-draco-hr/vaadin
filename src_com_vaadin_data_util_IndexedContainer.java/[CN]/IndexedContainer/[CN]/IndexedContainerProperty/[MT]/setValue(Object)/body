@@ -7,13 +7,7 @@
     propertySet.put(propertyId,newValue);
   }
  else {
-    try {
-      final Constructor<?> constr=getType().getConstructor(new Class[]{String.class});
-      propertySet.put(propertyId,constr.newInstance(new Object[]{newValue.toString()}));
-    }
- catch (    final java.lang.Exception e) {
-      throw new Property.ConversionException("Conversion for value '" + newValue + "' of class "+ newValue.getClass().getName()+ " to "+ getType().getName()+ " failed",e);
-    }
+    throw new IllegalArgumentException("Value is of invalid type, " + getType().getName() + " expected");
   }
   if (isPropertyFiltered(propertyId)) {
     filterAll();
