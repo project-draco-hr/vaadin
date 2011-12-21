@@ -1,20 +1,20 @@
 {
   CheckBox cb=new CheckBox();
   cb.setConverter(new Converter<Boolean,Boolean>(){
-    public Boolean convertFromTargetToSource(    Boolean value,    Locale locale){
+    public Boolean convertToModel(    Boolean value,    Locale locale){
       assertNotNull(value);
       return value;
     }
-    public Boolean convertFromSourceToTarget(    Boolean value,    Locale locale){
+    public Boolean convertToPresentation(    Boolean value,    Locale locale){
       if (value == null) {
         return false;
       }
       return value;
     }
-    public Class<Boolean> getSourceType(){
+    public Class<Boolean> getModelType(){
       return Boolean.class;
     }
-    public Class<Boolean> getTargetType(){
+    public Class<Boolean> getPresentationType(){
       return Boolean.class;
     }
   }
@@ -23,7 +23,7 @@
   cb.setPropertyDataSource(property);
   assertEquals(Boolean.FALSE,property.getValue());
   assertEquals(Boolean.FALSE,cb.getValue());
-  Boolean newDmValue=cb.getConverter().convertFromSourceToTarget(cb.getValue(),new Locale("fi","FI"));
+  Boolean newDmValue=cb.getConverter().convertToPresentation(cb.getValue(),new Locale("fi","FI"));
   assertEquals(Boolean.FALSE,newDmValue);
   cb.setValue(true);
   assertEquals(Boolean.TRUE,cb.getValue());
