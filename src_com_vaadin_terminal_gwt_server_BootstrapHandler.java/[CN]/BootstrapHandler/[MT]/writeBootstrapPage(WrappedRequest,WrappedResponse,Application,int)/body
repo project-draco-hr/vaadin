@@ -1,0 +1,18 @@
+{
+  BootstrapContext context=createContext(request,response,application,rootId);
+  DeploymentConfiguration deploymentConfiguration=request.getDeploymentConfiguration();
+  boolean standalone=deploymentConfiguration.isStandalone(request);
+  if (standalone) {
+    setBootstrapPageHeaders(context);
+    writeBootstrapPageHtmlHeadStart(context);
+    writeBootstrapPageHtmlHeader(context);
+    writeBootstrapPageHtmlBodyStart(context);
+  }
+  writeBootstrapPageHtmlVaadinScripts(context);
+  writeBootstrapPageHtmlMainDiv(context);
+  Writer page=context.getWriter();
+  if (standalone) {
+    page.write("</body>\n</html>\n");
+  }
+  page.close();
+}
