@@ -1,0 +1,15 @@
+{
+  if (beanValidationImplementationAvailable != null) {
+    return beanValidationImplementationAvailable;
+  }
+  try {
+    Class<?> validationClass=Class.forName("javax.validation.Validation");
+    Method buildFactoryMethod=validationClass.getMethod("buildDefaultValidatorFactory");
+    Object factory=buildFactoryMethod.invoke(null);
+    beanValidationImplementationAvailable=(factory != null);
+  }
+ catch (  Exception e) {
+    beanValidationImplementationAvailable=false;
+  }
+  return beanValidationImplementationAvailable;
+}
