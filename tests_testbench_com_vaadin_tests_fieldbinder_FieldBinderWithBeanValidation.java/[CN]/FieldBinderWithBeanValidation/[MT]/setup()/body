@@ -1,8 +1,7 @@
 {
   addComponent(log);
-  final BeanFieldGroup<PersonWithBeanValidationAnnotations> binder=new BeanFieldGroup<PersonWithBeanValidationAnnotations>(PersonWithBeanValidationAnnotations.class);
-  FormBuilder builder=new FormBuilder(binder);
-  builder.buildAndBindFields(this);
+  final BeanFieldGroup<PersonWithBeanValidationAnnotations> fieldGroup=new BeanFieldGroup<PersonWithBeanValidationAnnotations>(PersonWithBeanValidationAnnotations.class);
+  fieldGroup.buildAndBindMemberFields(this);
   addComponent(firstName);
   addComponent(lastName);
   addComponent(email);
@@ -13,7 +12,7 @@
     public void buttonClick(    ClickEvent event){
       String msg="Commit succesful";
       try {
-        binder.commit();
+        fieldGroup.commit();
       }
  catch (      CommitException e) {
         msg="Commit failed: " + e.getMessage();
@@ -25,14 +24,14 @@
 );
   Button discardButton=new Button("Discard",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
-      binder.discard();
+      fieldGroup.discard();
       log.log("Discarded changes");
     }
   }
 );
   Button showBean=new Button("Show bean values",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
-      log.log(getPerson(binder).toString());
+      log.log(getPerson(fieldGroup).toString());
     }
   }
 );
@@ -41,5 +40,5 @@
   addComponent(showBean);
   sex.setPageLength(0);
   PersonWithBeanValidationAnnotations p=new PersonWithBeanValidationAnnotations("John","Doe","john@doe.com",64,Sex.MALE,new Address("John street",11223,"John's town",Country.USA));
-  binder.setItemDataSource(new BeanItem<PersonWithBeanValidationAnnotations>(p));
+  fieldGroup.setItemDataSource(new BeanItem<PersonWithBeanValidationAnnotations>(p));
 }

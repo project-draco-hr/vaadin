@@ -1,31 +1,3 @@
 {
-  Class<?> objectClass=objectWithMemberFields.getClass();
-  for (  java.lang.reflect.Field f : objectClass.getDeclaredFields()) {
-    if (!Field.class.isAssignableFrom(f.getType())) {
-      continue;
-    }
-    PropertyId propertyIdAnnotation=f.getAnnotation(PropertyId.class);
-    Class<? extends Field> fieldType=(Class<? extends Field>)f.getType();
-    Object propertyId=null;
-    if (propertyIdAnnotation != null) {
-      propertyId=propertyIdAnnotation.value();
-    }
- else {
-      propertyId=f.getName();
-    }
-    Class<?> propertyType;
-    try {
-      propertyType=getPropertyType(propertyId);
-    }
- catch (    BindException e) {
-      continue;
-    }
-    try {
-      Field<?> field=(Field<?>)ReflectTools.getJavaFieldValue(objectWithMemberFields,f);
-      bind(field,propertyId);
-    }
- catch (    Exception e) {
-      continue;
-    }
-  }
+  buildAndBindMemberFields(objectWithMemberFields,false);
 }
