@@ -5,14 +5,24 @@
   }
   Integer rootId=getRootId(request);
 synchronized (this) {
-    RootPreserveStrategy rootPreserveStrategy=getRootPreserveStrategy();
     BrowserDetails browserDetails=request.getBrowserDetails();
     if (browserDetails != null) {
       pendingRoots.remove(rootId);
     }
     root=roots.get(rootId);
-    if (root == null && rootPreserveStrategy != null) {
-      Integer retainedRootId=rootPreserveStrategy.getPreservedRootForRequest(request);
+    boolean preserveRoot=isRootPreserved();
+    if (root == null && preserveRoot) {
+      if (retainOnRefreshRoots.isEmpty()) {
+        return null;
+      }
+      Integer retainedRootId;
+      if (browserDetails == null) {
+        throw new RootRequiresMoreInformationException();
+      }
+ else {
+        String windowName=browserDetails.getWindowName();
+        retainedRootId=retainOnRefreshRoots.get(windowName);
+      }
       if (retainedRootId != null) {
         rootId=retainedRootId;
         root=roots.get(rootId);
@@ -32,13 +42,14 @@ synchronized (this) {
       }
     }
     if (!initedRoots.contains(rootId)) {
-      boolean initRequiresBrowserDetails=(rootPreserveStrategy != null && rootPreserveStrategy.reqsterRequiresBrowserDetails()) || root.getClass().isAnnotationPresent(RootInitRequiresBrowserDetails.class);
+      boolean initRequiresBrowserDetails=preserveRoot || root.getClass().isAnnotationPresent(RootInitRequiresBrowserDetails.class);
       if (initRequiresBrowserDetails && browserDetails == null) {
         pendingRoots.put(rootId,new PendingRootRequest(request));
       }
  else {
-        if (rootPreserveStrategy != null) {
-          rootPreserveStrategy.registerRoot(root,request);
+        if (preserveRoot) {
+          String windowName=request.getBrowserDetails().getWindowName();
+          retainOnRefreshRoots.put(windowName,rootId);
         }
         root.doInit(request);
         initedRoots.add(rootId);
