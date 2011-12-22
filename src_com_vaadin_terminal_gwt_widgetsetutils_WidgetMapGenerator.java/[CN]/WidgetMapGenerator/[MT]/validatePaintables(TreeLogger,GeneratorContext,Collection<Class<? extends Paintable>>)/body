@@ -2,9 +2,9 @@
   TypeOracle typeOracle=context.getTypeOracle();
   for (Iterator<Class<? extends Paintable>> iterator=paintablesHavingWidgetAnnotation.iterator(); iterator.hasNext(); ) {
     Class<? extends Paintable> class1=iterator.next();
-    ClientWidget annotation=class1.getAnnotation(ClientWidget.class);
-    if (typeOracle.findType(annotation.value().getName()) == null) {
-      logger.log(Type.WARN,"Widget class " + annotation.value().getName() + " was not found. The component "+ class1.getName()+ " will not be included in the widgetset.");
+    Class<? extends com.vaadin.terminal.gwt.client.Paintable> clientClass=getClientClass(class1);
+    if (typeOracle.findType(clientClass.getName()) == null) {
+      logger.log(Type.WARN,"Widget class " + clientClass.getName() + " was not found. The component "+ class1.getName()+ " will not be included in the widgetset.");
       iterator.remove();
     }
   }
