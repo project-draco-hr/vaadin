@@ -6,7 +6,8 @@
   Integer rootId=getRootId(request);
 synchronized (this) {
     BrowserDetails browserDetails=request.getBrowserDetails();
-    if (browserDetails != null) {
+    boolean hasBrowserDetails=browserDetails != null && browserDetails.getUriFragment() != null;
+    if (hasBrowserDetails) {
       pendingRoots.remove(rootId);
     }
     root=roots.get(rootId);
@@ -16,7 +17,7 @@ synchronized (this) {
         return null;
       }
       Integer retainedRootId;
-      if (browserDetails == null) {
+      if (!hasBrowserDetails) {
         throw new RootRequiresMoreInformationException();
       }
  else {
@@ -43,7 +44,7 @@ synchronized (this) {
     }
     if (!initedRoots.contains(rootId)) {
       boolean initRequiresBrowserDetails=preserveRoot || !root.getClass().isAnnotationPresent(EagerInit.class);
-      if (initRequiresBrowserDetails && browserDetails == null) {
+      if (initRequiresBrowserDetails && !hasBrowserDetails) {
         pendingRoots.put(rootId,new PendingRootRequest(request));
       }
  else {
