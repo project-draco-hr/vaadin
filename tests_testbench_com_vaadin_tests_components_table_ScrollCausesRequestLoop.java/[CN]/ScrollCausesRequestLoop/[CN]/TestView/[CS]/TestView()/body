@@ -1,0 +1,19 @@
+{
+  Table table=new Table();
+  List<Person> data=createData();
+  BeanItemContainer<Person> container=new BeanItemContainer<Person>(Person.class,data){
+    @Override public Person getIdByIndex(    int index){
+      try {
+        Thread.sleep(50);
+      }
+ catch (      InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new RuntimeException(e);
+      }
+      return super.getIdByIndex(index);
+    }
+  }
+;
+  table.setContainerDataSource(container);
+  addComponent(table);
+}
