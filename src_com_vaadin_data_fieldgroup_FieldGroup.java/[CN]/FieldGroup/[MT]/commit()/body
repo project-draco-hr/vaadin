@@ -3,7 +3,7 @@
     return;
   }
   for (  Field<?> f : fieldToPropertyId.keySet()) {
-    ((TransactionalProperty<?>)f.getPropertyDataSource()).startTransaction();
+    ((Property.Transactional<?>)f.getPropertyDataSource()).startTransaction();
   }
   try {
     firePreCommitEvent();
@@ -12,13 +12,13 @@
     }
     firePostCommitEvent();
     for (    Field<?> f : fieldToPropertyId.keySet()) {
-      ((TransactionalProperty<?>)f.getPropertyDataSource()).commit();
+      ((Property.Transactional<?>)f.getPropertyDataSource()).commit();
     }
   }
  catch (  Exception e) {
     for (    Field<?> f : fieldToPropertyId.keySet()) {
       try {
-        ((TransactionalProperty<?>)f.getPropertyDataSource()).rollback();
+        ((Property.Transactional<?>)f.getPropertyDataSource()).rollback();
       }
  catch (      Exception rollbackException) {
       }
