@@ -11,22 +11,20 @@ synchronized (this) {
       pendingRoots.remove(rootId);
     }
     root=roots.get(rootId);
-    boolean preserveRoot=isRootPreserved();
-    if (root == null && preserveRoot) {
-      if (retainOnRefreshRoots.isEmpty()) {
-        return null;
-      }
-      Integer retainedRootId;
-      if (!hasBrowserDetails) {
-        throw new RootRequiresMoreInformationException();
-      }
+    if (root == null && isRootPreserved()) {
+      if (!retainOnRefreshRoots.isEmpty()) {
+        Integer retainedRootId;
+        if (!hasBrowserDetails) {
+          throw new RootRequiresMoreInformationException();
+        }
  else {
-        String windowName=browserDetails.getWindowName();
-        retainedRootId=retainOnRefreshRoots.get(windowName);
-      }
-      if (retainedRootId != null) {
-        rootId=retainedRootId;
-        root=roots.get(rootId);
+          String windowName=browserDetails.getWindowName();
+          retainedRootId=retainOnRefreshRoots.get(windowName);
+        }
+        if (retainedRootId != null) {
+          rootId=retainedRootId;
+          root=roots.get(rootId);
+        }
       }
     }
     if (root == null) {
@@ -43,17 +41,17 @@ synchronized (this) {
       }
     }
     if (!initedRoots.contains(rootId)) {
-      boolean initRequiresBrowserDetails=preserveRoot || !root.getClass().isAnnotationPresent(EagerInit.class);
+      boolean initRequiresBrowserDetails=isRootPreserved() || !root.getClass().isAnnotationPresent(EagerInit.class);
       if (initRequiresBrowserDetails && !hasBrowserDetails) {
         pendingRoots.put(rootId,new PendingRootRequest(request));
       }
  else {
-        if (preserveRoot) {
+        root.doInit(request);
+        initedRoots.add(rootId);
+        if (isRootPreserved()) {
           String windowName=request.getBrowserDetails().getWindowName();
           retainOnRefreshRoots.put(windowName,rootId);
         }
-        root.doInit(request);
-        initedRoots.add(rootId);
       }
     }
   }
