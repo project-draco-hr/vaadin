@@ -1,15 +1,14 @@
 {
-  int rootId;
+  Integer rootId=null;
   try {
     Root root=application.getRootForRequest(request);
     if (root == null) {
       writeError(response,new Throwable("No Root found"));
       return true;
     }
-    rootId=root.getRootId();
+    rootId=Integer.valueOf(root.getRootId());
   }
  catch (  RootRequiresMoreInformationException e) {
-    rootId=application.registerPendingRoot(request);
   }
   try {
     writeBootstrapPage(request,response,application,rootId);
