@@ -1,13 +1,13 @@
 {
   if (request.getParameter("lazyCreate") != null) {
-    final BrowserDetails browserDetails=request.getBrowserDetails();
+    BrowserDetails browserDetails=request.getBrowserDetails();
     if (browserDetails == null || browserDetails.getUriFragment() == null) {
       throw new RootRequiresMoreInformationException();
     }
  else {
       Root root=new Root(){
         @Override protected void init(        WrappedRequest request){
-          addComponent(new Label("Lazy create root: " + browserDetails.getUriFragment()));
+          addComponent(getRequestInfo("LazyCreateRoot",request));
         }
       }
 ;
@@ -20,6 +20,7 @@
  else {
     Root root=new Root(){
       @Override protected void init(      WrappedRequest request){
+        addComponent(getRequestInfo("NormalRoot",request));
         Link lazyCreateLink=new Link("Open lazyCreate root",new ExternalResource(getURL() + "?lazyCreate#lazyCreate"));
         lazyCreateLink.setTargetName("_blank");
         addComponent(lazyCreateLink);
