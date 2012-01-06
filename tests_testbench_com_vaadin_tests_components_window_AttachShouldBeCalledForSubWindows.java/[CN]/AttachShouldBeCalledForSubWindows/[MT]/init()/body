@@ -1,0 +1,35 @@
+{
+  Window mainWindow=new Window(){
+    @Override public void attach(){
+      log(this);
+      super.attach();
+    }
+    @Override public void addWindow(    Window w){
+      log.log("Adding sub window");
+      super.addWindow(w);
+      log.log("Sub window added");
+    }
+  }
+;
+  mainWindow.setCaption("Main window");
+  mainWindow.addComponent(log);
+  mainWindow.getContent().setSizeFull();
+  Label label=new Label("This is the main app"){
+    @Override public void attach(){
+      log(this);
+      super.attach();
+    }
+  }
+;
+  mainWindow.addComponent(label);
+  Window loginWindow=createSubWindow();
+  if (addSubWindowBeforeMainWindow) {
+    mainWindow.addWindow(loginWindow);
+  }
+  log.log("Setting main window");
+  setMainWindow(mainWindow);
+  log.log("Main window set");
+  if (!addSubWindowBeforeMainWindow) {
+    mainWindow.addWindow(loginWindow);
+  }
+}
