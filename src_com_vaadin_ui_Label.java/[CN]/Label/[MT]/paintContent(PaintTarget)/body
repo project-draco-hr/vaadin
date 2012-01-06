@@ -1,30 +1,7 @@
 {
-  if (contentMode != CONTENT_TEXT) {
-    target.addAttribute("mode",CONTENT_MODE_NAME[contentMode]);
+  String uidlName=contentMode.getUidlName();
+  if (uidlName != null) {
+    target.addAttribute("mode",uidlName);
   }
-  if (contentMode == CONTENT_TEXT) {
-    target.addText(getStringValue());
-  }
- else   if (contentMode == CONTENT_UIDL) {
-    target.addUIDL(getStringValue());
-  }
- else   if (contentMode == CONTENT_XHTML) {
-    target.startTag("data");
-    target.addXMLSection("div",getStringValue(),"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
-    target.endTag("data");
-  }
- else   if (contentMode == CONTENT_PREFORMATTED) {
-    target.startTag("pre");
-    target.addText(getStringValue());
-    target.endTag("pre");
-  }
- else   if (contentMode == CONTENT_XML) {
-    target.addXMLSection("data",getStringValue(),null);
-  }
- else   if (contentMode == CONTENT_RAW) {
-    target.startTag("data");
-    target.addAttribute("escape",false);
-    target.addText(getStringValue());
-    target.endTag("data");
-  }
+  contentMode.paintText(getStringValue(),target);
 }

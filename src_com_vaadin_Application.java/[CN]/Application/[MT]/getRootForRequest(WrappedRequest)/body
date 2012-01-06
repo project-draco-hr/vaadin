@@ -7,9 +7,6 @@
 synchronized (this) {
     BrowserDetails browserDetails=request.getBrowserDetails();
     boolean hasBrowserDetails=browserDetails != null && browserDetails.getUriFragment() != null;
-    if (hasBrowserDetails) {
-      pendingRoots.remove(rootId);
-    }
     root=roots.get(rootId);
     if (root == null && isRootPreserved()) {
       if (!retainOnRefreshRoots.isEmpty()) {
@@ -42,10 +39,7 @@ synchronized (this) {
     }
     if (!initedRoots.contains(rootId)) {
       boolean initRequiresBrowserDetails=isRootPreserved() || !root.getClass().isAnnotationPresent(EagerInit.class);
-      if (initRequiresBrowserDetails && !hasBrowserDetails) {
-        pendingRoots.put(rootId,new PendingRootRequest(request));
-      }
- else {
+      if (!initRequiresBrowserDetails || hasBrowserDetails) {
         root.doInit(request);
         initedRoots.add(rootId);
         if (isRootPreserved()) {
