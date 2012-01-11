@@ -1,10 +1,10 @@
 {
-  TestUtils.injectCSS(getMainWindow(),".showBorders {border: 1px solid black};");
+  TestUtils.injectCSS(getMainWindow(),".sampleChild, .theLayout {border: 1px solid black;}" + ".theLayout > div > div:first-child {background: aqua;}" + ".theLayout > div > div:first-child + div {background: yellow;}"+ ".theLayout > div > div:first-child + div + div {background: lightgrey;}");
   currentLayout=new HorizontalLayout();
   for (int i=0; i < 3; i++) {
     currentLayout.addComponent(new SampleChild());
   }
-  HorizontalLayout sizeBar=new HorizontalLayout();
+  sizeBar=new HorizontalLayout();
   sizeBar.setSpacing(true);
   sizeBar.addComponent(createSimpleSelector("Layout width",new ValueChangeListener(){
     public void valueChange(    ValueChangeEvent event){
@@ -18,6 +18,18 @@
     }
   }
 ,dimensionValues));
+  sizeBar.addComponent(createSimpleSelector("Spacing",new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      currentLayout.setSpacing(Boolean.parseBoolean(event.getProperty().getValue().toString()));
+    }
+  }
+,"false","true"));
+  sizeBar.addComponent(createSimpleSelector("Margin",new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      currentLayout.setMargin(Boolean.parseBoolean(event.getProperty().getValue().toString()));
+    }
+  }
+,"false","true"));
   sizeBar.addComponent(createSimpleSelector("Direction",new ValueChangeListener(){
     public void valueChange(    ValueChangeEvent event){
       Object value=event.getProperty().getValue();
@@ -31,7 +43,7 @@
       while (currentLayout.getComponentCount() > 0) {
         newLayout.addComponent(currentLayout.getComponent(0));
       }
-      newLayout.setStyleName("showBorders");
+      newLayout.setStyleName("theLayout");
       newLayout.setHeight(currentLayout.getHeight(),currentLayout.getHeightUnits());
       newLayout.setWidth(currentLayout.getWidth(),currentLayout.getWidthUnits());
       getLayout().replaceComponent(currentLayout,newLayout);
@@ -39,10 +51,84 @@
     }
   }
 ,"Horizontal","Vertical"));
+  HorizontalLayout caseBar=new HorizontalLayout();
+  caseBar.addComponent(new Button("Undefined without relative",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      resetState();
+      setChildState(1,0,2);
+    }
+  }
+));
+  caseBar.addComponent(new Button("Undefined with relative",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      resetState();
+      setChildState(1,0,4);
+    }
+  }
+));
+  caseBar.addComponent(new Button("Fixed with overflow",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      resetState();
+      setState(sizeBar,0,2);
+      setState(sizeBar,3,1);
+    }
+  }
+));
+  caseBar.addComponent(new Button("Fixed with extra space",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      resetState();
+      setState(sizeBar,0,3);
+      setState(sizeBar,3,1);
+      setChildState(1,0,2);
+    }
+  }
+));
+  caseBar.addComponent(new Button("Expand with alignment",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      resetState();
+      setState(sizeBar,0,3);
+      setState(sizeBar,1,2);
+      setChildState(1,3,1);
+      setChildState(1,4,6);
+    }
+  }
+));
+  caseBar.addComponent(new Button("Multiple expands",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      resetState();
+      setState(sizeBar,0,3);
+      setState(sizeBar,1,2);
+      setChildState(1,0,2);
+      for (int i=0; i < 2; i++) {
+        setChildState(i,3,1);
+        setChildState(i,4,5);
+      }
+    }
+  }
+));
+  caseBar.addComponent(new Button("Fixed + relative height",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      resetState();
+      setState(sizeBar,1,4);
+      setChildState(0,1,2);
+      setChildState(1,1,4);
+    }
+  }
+));
+  caseBar.addComponent(new Button("Undefined + relative height",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      resetState();
+      setChildState(0,1,2);
+      setChildState(1,1,4);
+    }
+  }
+));
+  caseBar.setSpacing(true);
+  addComponent(caseBar);
   addComponent(sizeBar);
   addComponent(currentLayout);
   getLayout().setSpacing(true);
-  getMainWindow().getContent().setSizeFull();
+  getLayout().getParent().setSizeFull();
   getLayout().setSizeFull();
   getLayout().setExpandRatio(currentLayout,1);
 }
