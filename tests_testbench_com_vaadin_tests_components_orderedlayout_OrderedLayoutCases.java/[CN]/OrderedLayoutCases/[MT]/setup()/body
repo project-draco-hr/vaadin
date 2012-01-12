@@ -1,0 +1,48 @@
+{
+  TestUtils.injectCSS(getMainWindow(),".showBorders {border: 1px solid black};");
+  currentLayout=new HorizontalLayout();
+  for (int i=0; i < 3; i++) {
+    currentLayout.addComponent(new SampleChild());
+  }
+  HorizontalLayout sizeBar=new HorizontalLayout();
+  sizeBar.setSpacing(true);
+  sizeBar.addComponent(createSimpleSelector("Layout width",new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      currentLayout.setWidth(event.getProperty().getValue().toString());
+    }
+  }
+,dimensionValues));
+  sizeBar.addComponent(createSimpleSelector("Layout height",new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      currentLayout.setHeight(event.getProperty().getValue().toString());
+    }
+  }
+,dimensionValues));
+  sizeBar.addComponent(createSimpleSelector("Direction",new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      Object value=event.getProperty().getValue();
+      AbstractOrderedLayout newLayout;
+      if (value.equals("Horizontal")) {
+        newLayout=new HorizontalLayout();
+      }
+ else {
+        newLayout=new VerticalLayout();
+      }
+      while (currentLayout.getComponentCount() > 0) {
+        newLayout.addComponent(currentLayout.getComponent(0));
+      }
+      newLayout.setStyleName("showBorders");
+      newLayout.setHeight(currentLayout.getHeight(),currentLayout.getHeightUnits());
+      newLayout.setWidth(currentLayout.getWidth(),currentLayout.getWidthUnits());
+      getLayout().replaceComponent(currentLayout,newLayout);
+      currentLayout=newLayout;
+    }
+  }
+,"Horizontal","Vertical"));
+  addComponent(sizeBar);
+  addComponent(currentLayout);
+  getLayout().setSpacing(true);
+  getMainWindow().getContent().setSizeFull();
+  getLayout().setSizeFull();
+  getLayout().setExpandRatio(currentLayout,1);
+}
