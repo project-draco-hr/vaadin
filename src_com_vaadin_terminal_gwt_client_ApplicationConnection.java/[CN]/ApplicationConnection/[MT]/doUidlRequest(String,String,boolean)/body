@@ -39,9 +39,9 @@ return;
 }
 String contentType=response.getHeader("Content-Type");
 if (contentType == null || !contentType.startsWith("application/json")) {
-MatchResult refreshToken=RegExp.compile(UIDL_REFRESH_TOKEN + "(:\\s*(.*?))?(\\s|$)").exec(response.getText());
-if (refreshToken != null) {
-redirect(refreshToken.getGroup(2));
+MatchResult redirectUri=RegExp.compile(UIDL_REDIRECT_TOKEN + ":\\s*(.*?)(\\s|$)").exec(response.getText());
+if (redirectUri != null) {
+redirect(redirectUri.getGroup(1));
 return;
 }
 }
