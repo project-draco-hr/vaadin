@@ -52,32 +52,6 @@
     FocusWidget fw=(FocusWidget)component;
     fw.setEnabled(enabled);
   }
-  StringBuffer styleBuf=new StringBuffer();
-  final String primaryName=component.getStylePrimaryName();
-  styleBuf.append(primaryName);
-  if (!enabled) {
-    styleBuf.append(" ");
-    styleBuf.append(DISABLED_CLASSNAME);
-  }
-  if (uidl.getBooleanAttribute("readonly")) {
-    styleBuf.append(" ");
-    styleBuf.append("v-readonly");
-  }
-  if (uidl.hasAttribute("style")) {
-    final String[] styles=uidl.getStringAttribute("style").split(" ");
-    for (int i=0; i < styles.length; i++) {
-      styleBuf.append(" ");
-      styleBuf.append(primaryName);
-      styleBuf.append("-");
-      styleBuf.append(styles[i]);
-      styleBuf.append(" ");
-      styleBuf.append(styles[i]);
-    }
-  }
-  if (uidl.hasAttribute("modified") && component instanceof Field) {
-    styleBuf.append(" ");
-    styleBuf.append(MODIFIED_CLASSNAME);
-  }
   TooltipInfo tooltipInfo=componentDetail.getTooltipInfo(null);
   if (uidl.hasAttribute(ATTRIBUTE_DESCRIPTION)) {
     tooltipInfo.setTitle(uidl.getStringAttribute(ATTRIBUTE_DESCRIPTION));
@@ -87,19 +61,11 @@
   }
   if (uidl.hasAttribute(ATTRIBUTE_ERROR)) {
     tooltipInfo.setErrorUidl(uidl.getErrors());
-    styleBuf.append(" ");
-    styleBuf.append(primaryName);
-    styleBuf.append(ERROR_CLASSNAME_EXT);
   }
  else {
     tooltipInfo.setErrorUidl(null);
   }
-  if (uidl.hasAttribute("required")) {
-    styleBuf.append(" ");
-    styleBuf.append(primaryName);
-    styleBuf.append(REQUIRED_CLASSNAME_EXT);
-  }
-  component.setStyleName(styleBuf.toString());
+  component.setStyleName(getStyleName(component.getStylePrimaryName(),uidl,component instanceof Field));
   if (manageCaption) {
     final Container parent=Util.getLayout(component);
     if (parent != null) {

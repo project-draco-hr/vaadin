@@ -37,6 +37,15 @@ showCommunicationError("UIDL could not be read from server. Check servlets mappi
 endRequest();
 return;
 }
+String contentType=response.getHeader("Content-Type");
+if (contentType == null || !contentType.startsWith("application/json")) {
+MatchResult refreshToken=RegExp.compile(UIDL_REFRESH_TOKEN + "(:\\s*(.*?))?(\\s|$)").exec(response.getText());
+if (refreshToken != null) {
+redirect(refreshToken.getGroup(2));
+VConsole.log("*** REDIRECT : " + refreshToken.getGroup(2));
+return;
+}
+}
 final Date start=new Date();
 final String jsonText=response.getText().substring(9,response.getText().length() - 1);
 final ValueMap json;
