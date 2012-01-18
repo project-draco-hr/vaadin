@@ -1,0 +1,16 @@
+{
+  VPaintableWidget paintable=(VPaintableWidget)VPaintableMap.get(c).getPaintable(id);
+  if (paintable != null) {
+    VConsole.log("\t" + id + " ("+ paintable.getClass()+ ") :");
+    for (    MethodInvocation invocation : invocations) {
+      String formattedParams=invocation.getParameters();
+      if (ApplicationConnection.UPDATE_VARIABLE_METHOD.equals(invocation.getMethodName())) {
+        String[] split=invocation.getParameters().split(String.valueOf(ApplicationConnection.VAR_FIELD_SEPARATOR),3);
+        if (split.length == 3) {
+          formattedParams=split[0] + " (" + split[1]+ ")"+ " : "+ split[2];
+        }
+      }
+      VConsole.log("\t\t" + invocation.getMethodName() + "("+ formattedParams+ ")");
+    }
+  }
+}

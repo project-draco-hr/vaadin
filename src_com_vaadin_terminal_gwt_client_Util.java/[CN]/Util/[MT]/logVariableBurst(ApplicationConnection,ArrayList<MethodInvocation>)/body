@@ -1,0 +1,25 @@
+{
+  try {
+    VConsole.log("Variable burst to be sent to server:");
+    String curId=null;
+    ArrayList<MethodInvocation> invocations=new ArrayList<MethodInvocation>();
+    for (int i=0; i < loggedBurst.size(); i++) {
+      String id=loggedBurst.get(i).getPaintableId();
+      if (curId == null) {
+        curId=id;
+      }
+ else       if (!curId.equals(id)) {
+        printPaintablesInvocations(invocations,curId,c);
+        invocations.clear();
+        curId=id;
+      }
+      invocations.add(loggedBurst.get(i));
+    }
+    if (!invocations.isEmpty()) {
+      printPaintablesInvocations(invocations,curId,c);
+    }
+  }
+ catch (  Exception e) {
+    VConsole.error(e);
+  }
+}

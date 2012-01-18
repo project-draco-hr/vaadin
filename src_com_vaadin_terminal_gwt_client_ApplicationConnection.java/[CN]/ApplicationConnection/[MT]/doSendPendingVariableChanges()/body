@@ -1,14 +1,13 @@
 {
   if (applicationRunning) {
     if (hasActiveRequest()) {
-      if (pendingVariables.size() > 0 || pendingVariableBursts.size() == 0) {
-        ArrayList<String> burst=(ArrayList<String>)pendingVariables.clone();
-        pendingVariableBursts.add(burst);
-        pendingVariables.clear();
+      if (pendingInvocations.size() > 0 || pendingBursts.size() == 0) {
+        pendingBursts.add(pendingInvocations);
+        pendingInvocations=new ArrayList<MethodInvocation>();
       }
     }
  else {
-      buildAndSendVariableBurst(pendingVariables,false);
+      buildAndSendVariableBurst(pendingInvocations,false);
     }
   }
 }

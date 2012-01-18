@@ -1,0 +1,34 @@
+{
+  final StringBuffer req=new StringBuffer();
+  while (!pendingInvocations.isEmpty()) {
+    if (ApplicationConfiguration.isDebugMode()) {
+      Util.logVariableBurst(this,pendingInvocations);
+    }
+    for (int i=0; i < pendingInvocations.size(); i++) {
+      if (i > 0) {
+        req.append(VAR_RECORD_SEPARATOR);
+      }
+      MethodInvocation invocation=pendingInvocations.get(i);
+      req.append(invocation.getPaintableId());
+      req.append(VAR_FIELD_SEPARATOR);
+      req.append(invocation.getMethodName());
+      req.append(VAR_FIELD_SEPARATOR);
+      req.append(invocation.getParameters());
+    }
+    pendingInvocations.clear();
+    if (forceSync && !pendingBursts.isEmpty()) {
+      pendingInvocations=pendingBursts.get(0);
+      pendingBursts.remove(0);
+      req.append(VAR_BURST_SEPARATOR);
+    }
+  }
+  String extraParams;
+  if (!getConfiguration().isBrowserDetailsSent()) {
+    extraParams=getNativeBrowserDetailsParameters(getConfiguration().getRootPanelId());
+    getConfiguration().setBrowserDetailsSent();
+  }
+ else {
+    extraParams="";
+  }
+  makeUidlRequest(req.toString(),extraParams,forceSync);
+}
