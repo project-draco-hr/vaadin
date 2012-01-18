@@ -3,12 +3,13 @@
   if (paintable != null) {
     VConsole.log("\t" + id + " ("+ paintable.getClass()+ ") :");
     for (    MethodInvocation invocation : invocations) {
-      String formattedParams=invocation.getParameters();
-      if (ApplicationConnection.UPDATE_VARIABLE_METHOD.equals(invocation.getMethodName())) {
-        String[] split=invocation.getParameters().split(String.valueOf(ApplicationConnection.VAR_FIELD_SEPARATOR),3);
-        if (split.length == 3) {
-          formattedParams=split[0] + " (" + split[1]+ ")"+ " : "+ split[2];
-        }
+      String[] parameters=invocation.getParameters();
+      String formattedParams=null;
+      if (ApplicationConnection.UPDATE_VARIABLE_METHOD.equals(invocation.getMethodName()) && parameters.length == 3) {
+        formattedParams=parameters[0] + " (" + parameters[1]+ ")"+ " : "+ parameters[2];
+      }
+      if (null == formattedParams) {
+        formattedParams=(null != parameters) ? parameters.toString() : null;
       }
       VConsole.log("\t\t" + invocation.getMethodName() + "("+ formattedParams+ ")");
     }

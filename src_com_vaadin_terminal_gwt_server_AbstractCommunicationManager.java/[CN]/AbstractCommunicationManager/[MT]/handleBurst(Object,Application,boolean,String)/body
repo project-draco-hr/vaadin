@@ -1,71 +1,70 @@
 {
-  final String[] tmp=burst.split(String.valueOf(VAR_RECORD_SEPARATOR));
-  final String[][] variableRecords=new String[tmp.length][5];
-  for (int i=0; i < tmp.length; i++) {
-    variableRecords[i]=tmp[i].split(String.valueOf(VAR_FIELD_SEPARATOR),5);
-  }
-  for (int i=0; i < variableRecords.length; i++) {
-    String[] variable=variableRecords[i];
-    String[] nextVariable=null;
-    if (i + 1 < variableRecords.length) {
-      nextVariable=variableRecords[i + 1];
-    }
-    final VariableOwner owner=getVariableOwner(variable[VAR_PID]);
-    final String methodName=variable[VAR_METHOD];
-    if (!ApplicationConnection.UPDATE_VARIABLE_METHOD.equals(methodName)) {
-      continue;
-    }
-    if (owner != null && owner.isEnabled()) {
-      Map<String,Object> m;
-      if (nextVariable != null && variable[VAR_PID].equals(nextVariable[VAR_PID])) {
-        m=new HashMap<String,Object>();
-        m.put(variable[VAR_VARNAME],convertVariableValue(variable[VAR_TYPE].charAt(0),variable[VAR_VALUE]));
+  try {
+    List<MethodInvocation> invocations=parseInvocations(burst);
+    for (int i=0; i < invocations.size(); i++) {
+      MethodInvocation invocation=invocations.get(i);
+      MethodInvocation nextInvocation=null;
+      if (i + 1 < invocations.size()) {
+        nextInvocation=invocations.get(i + 1);
       }
- else {
-        m=Collections.singletonMap(variable[VAR_VARNAME],convertVariableValue(variable[VAR_TYPE].charAt(0),variable[VAR_VALUE]));
-      }
-      while (nextVariable != null && variable[VAR_PID].equals(nextVariable[VAR_PID])) {
-        i++;
-        variable=nextVariable;
-        if (i + 1 < variableRecords.length) {
-          nextVariable=variableRecords[i + 1];
+      final VariableOwner owner=getVariableOwner(invocation.getPaintableId());
+      final String methodName=invocation.getMethodName();
+      if (owner != null && owner.isEnabled()) {
+        if (!ApplicationConnection.UPDATE_VARIABLE_METHOD.equals(methodName)) {
+          continue;
         }
+        VariableChange change=new VariableChange(invocation);
+        Map<String,Object> m=new HashMap<String,Object>();
+        m.put(change.getName(),convertVariableValue(change.getType(),change.getValue()));
+        while (nextInvocation != null && invocation.getPaintableId().equals(nextInvocation.getPaintableId())) {
+          change=new VariableChange(invocation);
+          m.put(change.getName(),convertVariableValue(change.getType(),change.getValue()));
+          i++;
+          invocation=nextInvocation;
+          if (i + 1 < invocations.size()) {
+            nextInvocation=invocations.get(i + 1);
+          }
  else {
-          nextVariable=null;
+            nextInvocation=null;
+          }
         }
-        m.put(variable[VAR_VARNAME],convertVariableValue(variable[VAR_TYPE].charAt(0),variable[VAR_VALUE]));
-      }
-      try {
-        changeVariables(source,owner,m);
-      }
- catch (      Exception e) {
-        if (owner instanceof Component) {
-          handleChangeVariablesError(app,(Component)owner,e,m);
+        try {
+          changeVariables(source,owner,m);
         }
+ catch (        Exception e) {
+          if (owner instanceof Component) {
+            handleChangeVariablesError(app,(Component)owner,e,m);
+          }
  else {
-          throw new RuntimeException(e);
+            throw new RuntimeException(e);
+          }
         }
       }
-    }
  else {
-      if ("close".equals(variable[VAR_VARNAME]) && "true".equals(variable[VAR_VALUE])) {
+        VariableChange change=new VariableChange(invocation);
+        if ("close".equals(change.getName()) && "true".equals(change.getValue())) {
+          continue;
+        }
+        String msg="Warning: Ignoring RPC call for ";
+        if (owner != null) {
+          msg+="disabled component " + owner.getClass();
+          String caption=((Component)owner).getCaption();
+          if (caption != null) {
+            msg+=", caption=" + caption;
+          }
+        }
+ else {
+          msg+="non-existent component, VAR_PID=" + invocation.getPaintableId();
+          success=false;
+        }
+        logger.warning(msg);
         continue;
       }
-      String msg="Warning: Ignoring variable change for ";
-      if (owner != null) {
-        msg+="disabled component " + owner.getClass();
-        String caption=((Component)owner).getCaption();
-        if (caption != null) {
-          msg+=", caption=" + caption;
-        }
-      }
- else {
-        msg+="non-existent component, VAR_PID=" + variable[VAR_PID];
-        success=false;
-      }
-      logger.warning(msg);
-      continue;
     }
+  }
+ catch (  JSONException e) {
+    logger.warning("Unable to parse RPC call from the client: " + e.getMessage());
+    throw new RuntimeException(e);
   }
   return success;
 }

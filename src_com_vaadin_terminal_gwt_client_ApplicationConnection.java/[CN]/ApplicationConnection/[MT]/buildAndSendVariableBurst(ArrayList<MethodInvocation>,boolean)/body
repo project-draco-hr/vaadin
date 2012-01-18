@@ -4,17 +4,19 @@
     if (ApplicationConfiguration.isDebugMode()) {
       Util.logVariableBurst(this,pendingInvocations);
     }
-    for (int i=0; i < pendingInvocations.size(); i++) {
-      if (i > 0) {
-        req.append(VAR_RECORD_SEPARATOR);
+    JSONArray reqJson=new JSONArray();
+    for (    MethodInvocation invocation : pendingInvocations) {
+      JSONArray invocationJson=new JSONArray();
+      invocationJson.set(0,new JSONString(invocation.getPaintableId()));
+      invocationJson.set(1,new JSONString(invocation.getMethodName()));
+      JSONArray paramJson=new JSONArray();
+      for (int i=0; i < invocation.getParameters().length; ++i) {
+        paramJson.set(i,new JSONString(invocation.getParameters()[i]));
       }
-      MethodInvocation invocation=pendingInvocations.get(i);
-      req.append(invocation.getPaintableId());
-      req.append(VAR_FIELD_SEPARATOR);
-      req.append(invocation.getMethodName());
-      req.append(VAR_FIELD_SEPARATOR);
-      req.append(invocation.getParameters());
+      invocationJson.set(2,paramJson);
+      reqJson.set(reqJson.size(),invocationJson);
     }
+    req.append(reqJson.toString());
     pendingInvocations.clear();
     if (forceSync && !pendingBursts.isEmpty()) {
       pendingInvocations=pendingBursts.get(0);

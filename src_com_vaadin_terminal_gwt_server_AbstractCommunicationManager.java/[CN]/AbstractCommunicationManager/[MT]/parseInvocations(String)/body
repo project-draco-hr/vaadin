@@ -1,0 +1,17 @@
+{
+  JSONArray invocationsJson=new JSONArray(burst);
+  ArrayList<MethodInvocation> invocations=new ArrayList<MethodInvocation>();
+  for (int i=0; i < invocationsJson.length(); ++i) {
+    JSONArray invocationJson=invocationsJson.getJSONArray(i);
+    String paintableId=invocationJson.getString(0);
+    String methodName=invocationJson.getString(1);
+    JSONArray parametersJson=invocationJson.getJSONArray(2);
+    String[] parameters=new String[parametersJson.length()];
+    for (int j=0; j < parametersJson.length(); ++j) {
+      parameters[j]=parametersJson.getString(j);
+    }
+    MethodInvocation invocation=new MethodInvocation(paintableId,methodName,parameters);
+    invocations.add(invocation);
+  }
+  return invocations;
+}
