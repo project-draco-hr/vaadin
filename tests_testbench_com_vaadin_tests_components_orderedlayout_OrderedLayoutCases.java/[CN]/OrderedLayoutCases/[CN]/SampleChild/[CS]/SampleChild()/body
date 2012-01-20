@@ -1,0 +1,66 @@
+{
+  setStyleName("showBorders");
+  addComponent(createSimpleSelector("Child width",new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      setWidth(event.getProperty().getValue().toString());
+    }
+  }
+,dimensionValues));
+  addComponent(createSimpleSelector("Child height",new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      setHeight(event.getProperty().getValue().toString());
+    }
+  }
+,dimensionValues));
+  addComponent(createSimpleSelector("Caption",new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      String value=event.getProperty().getValue().toString();
+      if (value.length() == 0) {
+        setCaption(null);
+      }
+ else       if (value.equals("Long")) {
+        setCaption("A rather long caption just to see what happens");
+      }
+ else {
+        setCaption(value);
+      }
+    }
+  }
+,"","Short","Long"));
+  addComponent(createSimpleSelector("Expand ratio",new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      AbstractOrderedLayout parent=(AbstractOrderedLayout)getParent();
+      if (parent == null) {
+        return;
+      }
+      String value=event.getProperty().getValue().toString();
+      parent.setExpandRatio(SampleChild.this,Float.parseFloat(value));
+    }
+  }
+,"0","1","2"));
+  List<String> alignmentValues=new ArrayList<String>();
+  Field[] fields=Alignment.class.getDeclaredFields();
+  for (  Field field : fields) {
+    if (field.getType() == Alignment.class) {
+      alignmentValues.add(field.getName());
+    }
+  }
+  addComponent(createSimpleSelector("Alignment",new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      String value=event.getProperty().getValue().toString();
+      AlignmentHandler parent=(AlignmentHandler)getParent();
+      if (parent == null) {
+        return;
+      }
+      try {
+        Field field=Alignment.class.getDeclaredField(value);
+        Alignment alignment=(Alignment)field.get(null);
+        parent.setComponentAlignment(SampleChild.this,alignment);
+      }
+ catch (      Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+,alignmentValues,"TOP_LEFT"));
+}
