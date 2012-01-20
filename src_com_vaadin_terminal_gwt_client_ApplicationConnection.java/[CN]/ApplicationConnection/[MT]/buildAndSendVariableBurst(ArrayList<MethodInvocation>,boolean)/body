@@ -11,12 +11,12 @@
       invocationJson.set(1,new JSONString(invocation.getMethodName()));
       JSONArray paramJson=new JSONArray();
       for (int i=0; i < invocation.getParameters().length; ++i) {
-        paramJson.set(i,new JSONString(invocation.getParameters()[i]));
+        paramJson.set(i,JsonEncoder.encode(invocation.getParameters()[i],getPaintableMap()));
       }
       invocationJson.set(2,paramJson);
       reqJson.set(reqJson.size(),invocationJson);
     }
-    req.append(reqJson.toString());
+    req.append(escapeBurstContents(reqJson.toString()));
     pendingInvocations.clear();
     if (forceSync && !pendingBursts.isEmpty()) {
       pendingInvocations=pendingBursts.get(0);

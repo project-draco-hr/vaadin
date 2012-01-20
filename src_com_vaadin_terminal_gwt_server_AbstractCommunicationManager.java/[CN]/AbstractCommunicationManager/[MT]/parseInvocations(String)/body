@@ -6,9 +6,9 @@
     String paintableId=invocationJson.getString(0);
     String methodName=invocationJson.getString(1);
     JSONArray parametersJson=invocationJson.getJSONArray(2);
-    String[] parameters=new String[parametersJson.length()];
+    Object[] parameters=new Object[parametersJson.length()];
     for (int j=0; j < parametersJson.length(); ++j) {
-      parameters[j]=parametersJson.getString(j);
+      parameters[j]=JsonDecoder.convertVariableValue(parametersJson.getJSONArray(j),this);
     }
     MethodInvocation invocation=new MethodInvocation(paintableId,methodName,parameters);
     invocations.add(invocation);

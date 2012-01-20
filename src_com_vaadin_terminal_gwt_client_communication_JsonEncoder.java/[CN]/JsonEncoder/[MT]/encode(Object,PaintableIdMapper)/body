@@ -1,0 +1,45 @@
+{
+  char type=getTransportType(value);
+  Object encodedValue=null;
+  if (null == value) {
+    return combineTypeAndValue(VTYPE_UNDEFINED,JSONNull.getInstance());
+  }
+ else   if (value instanceof String[]) {
+    String[] array=(String[])value;
+    JSONArray jsonArray=new JSONArray();
+    for (int i=0; i < array.length; ++i) {
+      jsonArray.set(i,new JSONString(array[i]));
+    }
+    return combineTypeAndValue(VTYPE_STRINGARRAY,jsonArray);
+  }
+ else   if (value instanceof String) {
+    return combineTypeAndValue(VTYPE_STRING,new JSONString((String)value));
+  }
+ else   if (value instanceof Boolean) {
+    return combineTypeAndValue(VTYPE_BOOLEAN,JSONBoolean.getInstance((Boolean)value));
+  }
+ else   if (value instanceof Object[]) {
+    Object[] array=(Object[])value;
+    JSONArray jsonArray=new JSONArray();
+    for (int i=0; i < array.length; ++i) {
+      jsonArray.set(i,encode(array[i],paintableMapper));
+    }
+    return combineTypeAndValue(VTYPE_ARRAY,jsonArray);
+  }
+ else   if (value instanceof Map) {
+    Map<String,Object> map=(Map<String,Object>)value;
+    JSONObject jsonMap=new JSONObject();
+    for (    String mapKey : map.keySet()) {
+      Object mapValue=map.get(mapKey);
+      jsonMap.put(mapKey,encode(mapValue,paintableMapper));
+    }
+    return combineTypeAndValue(VTYPE_MAP,jsonMap);
+  }
+ else   if (value instanceof Paintable) {
+    Paintable paintable=(Paintable)value;
+    return combineTypeAndValue(VTYPE_PAINTABLE,new JSONString(paintableMapper.getPid(paintable)));
+  }
+ else {
+    return combineTypeAndValue(getTransportType(value),new JSONString(String.valueOf(value)));
+  }
+}
