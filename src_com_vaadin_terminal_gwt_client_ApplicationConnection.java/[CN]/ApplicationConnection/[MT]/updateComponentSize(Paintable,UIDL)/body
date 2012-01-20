@@ -1,0 +1,29 @@
+{
+  String w=uidl.hasAttribute("width") ? uidl.getStringAttribute("width") : "";
+  String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : "";
+  float relativeWidth=Util.parseRelativeSize(w);
+  float relativeHeight=Util.parseRelativeSize(h);
+  if (relativeHeight >= 0.0 || relativeWidth >= 0.0) {
+    FloatSize relativeSize=new FloatSize(relativeWidth,relativeHeight);
+    if (paintableMap.getRelativeSize(paintable) == null && paintableMap.getOffsetSize(paintable) != null) {
+      relativeSizeChanges.add(paintable);
+    }
+    paintableMap.setRelativeSize(paintable,relativeSize);
+  }
+ else   if (relativeHeight < 0.0 && relativeWidth < 0.0) {
+    if (paintableMap.getRelativeSize(paintable) != null) {
+      relativeSizeChanges.add(paintable);
+    }
+    paintableMap.setRelativeSize(paintable,null);
+  }
+  Widget component=paintableMap.getWidget(paintable);
+  if (relativeHeight < 0.0) {
+    component.setHeight(h);
+  }
+  if (relativeWidth < 0.0) {
+    component.setWidth(w);
+  }
+  if (relativeHeight >= 0.0 || relativeWidth >= 0.0) {
+    handleComponentRelativeSize(paintable);
+  }
+}

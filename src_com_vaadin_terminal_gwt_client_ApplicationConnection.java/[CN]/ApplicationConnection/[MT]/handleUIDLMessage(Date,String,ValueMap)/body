@@ -34,7 +34,7 @@
         if (meta.containsKey("repaintAll")) {
           repaintAll=true;
           view.clear();
-          idToPaintableDetail.clear();
+          getPaintableMap().clear();
           if (meta.containsKey("invalidLayouts")) {
             validatingLayouts=true;
             zeroWidthComponents=new HashSet<Paintable>();
@@ -64,10 +64,10 @@
         try {
           final UIDL change=changes.get(i).cast();
           final UIDL uidl=change.getChildUIDL(0);
-          final Paintable paintable=getPaintable(uidl.getId());
+          final Paintable paintable=paintableMap.getPaintable(uidl.getId());
           if (paintable != null) {
             paintable.updateFromUIDL(uidl,ApplicationConnection.this);
-            updatedWidgets.add(idToPaintableDetail.get(uidl.getId()).getComponent());
+            updatedWidgets.add(paintable);
           }
  else {
             if (!uidl.getTag().equals(configuration.getEncodedWindowTag())) {
@@ -75,11 +75,10 @@
             }
  else {
               String pid=uidl.getId();
-              if (!idToPaintableDetail.containsKey(pid)) {
-                registerPaintable(pid,view);
+              if (!paintableMap.hasPaintable(pid)) {
+                paintableMap.registerPaintable(pid,view);
               }
-              ComponentDetail cd=idToPaintableDetail.get(pid);
-              cd.registerEventListenersFromUIDL(uidl);
+              paintableMap.registerEventListenersFromUIDL(pid,uidl);
               view.updateFromUIDL(uidl,ApplicationConnection.this);
             }
           }
@@ -95,13 +94,12 @@
       updatedWidgets.addAll(relativeSizeChanges);
       sizeUpdatedWidgets.addAll(componentCaptionSizeChanges);
       for (      Paintable paintable : updatedWidgets) {
-        ComponentDetail detail=idToPaintableDetail.get(getPid(paintable));
-        Widget widget=(Widget)paintable;
-        Size oldSize=detail.getOffsetSize();
+        Widget widget=paintableMap.getWidget(paintable);
+        Size oldSize=paintableMap.getOffsetSize(paintable);
         Size newSize=new Size(widget.getOffsetWidth(),widget.getOffsetHeight());
         if (oldSize == null || !oldSize.equals(newSize)) {
           sizeUpdatedWidgets.add(paintable);
-          detail.setOffsetSize(newSize);
+          paintableMap.setOffsetSize(paintable,newSize);
         }
       }
       Util.componentSizeUpdated(sizeUpdatedWidgets);
@@ -137,14 +135,14 @@
         }
       }
       if (repaintAll) {
-        unregistryBag.clear();
+        paintableMap.purgeUnregistryBag(false);
       }
  else {
-        purgeUnregistryBag();
+        paintableMap.purgeUnregistryBag(true);
       }
       final long prosessingTime=(new Date().getTime()) - start.getTime();
       VConsole.log(" Processing time was " + String.valueOf(prosessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
-      VConsole.log("Referenced paintables: " + idToPaintableDetail.size());
+      VConsole.log("Referenced paintables: " + paintableMap.size());
       endRequest();
     }
   }
