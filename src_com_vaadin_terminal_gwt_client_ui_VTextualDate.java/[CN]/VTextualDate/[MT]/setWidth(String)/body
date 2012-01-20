@@ -1,5 +1,5 @@
 {
-  if (!"".equals(newWidth) && (width == null || !newWidth.equals(width))) {
+  if (!"".equals(newWidth) && (isUndefinedWidth() || !newWidth.equals(width))) {
     if (BrowserInfo.get().isIE6()) {
       DOM.setElementProperty(text.getElement(),"size","1");
     }
@@ -12,14 +12,12 @@
     }
   }
  else {
-    if ("".equals(newWidth) && width != null && !"".equals(width)) {
+    if ("".equals(newWidth) && !isUndefinedWidth()) {
       if (BrowserInfo.get().isIE6()) {
         DOM.setElementProperty(text.getElement(),"size","");
       }
       super.setWidth("");
-      needLayout=true;
-      iLayout();
-      needLayout=false;
+      iLayout(true);
       width=null;
     }
   }
