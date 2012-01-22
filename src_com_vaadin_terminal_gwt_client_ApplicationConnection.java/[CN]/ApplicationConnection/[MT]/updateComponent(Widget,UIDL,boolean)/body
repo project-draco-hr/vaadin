@@ -1,5 +1,5 @@
 {
-  Paintable paintable=paintableMap.getPaintable(component);
+  VPaintableWidget paintable=paintableMap.getPaintable(component);
   String pid=paintableMap.getPid(paintable);
   if (pid == null) {
     VConsole.error("Trying to update an unregistered component: " + Util.getSimpleName(component));
@@ -16,7 +16,7 @@
     if (wasVisible && manageCaption) {
       final Container parent=Util.getLayout(component);
       if (parent != null) {
-        parent.updateCaption((Paintable)component,uidl);
+        parent.updateCaption(paintable,uidl);
       }
     }
   }
@@ -26,19 +26,6 @@
   if (!visible) {
     paintableMap.setOffsetSize(paintable,null);
     return true;
-  }
-  if (!widgetSet.isCorrectImplementation(component,uidl,configuration)) {
-    final Widget w=(Widget)widgetSet.createWidget(uidl,configuration);
-    if (w.getClass() != component.getClass()) {
-      final Container parent=Util.getLayout(component);
-      if (parent != null) {
-        parent.replaceChildComponent(component,w);
-        paintableMap.unregisterPaintable(paintable);
-        paintableMap.registerPaintable(uidl.getId(),(Paintable)w);
-        ((Paintable)w).updateFromUIDL(uidl,this);
-        return true;
-      }
-    }
   }
   boolean enabled=!uidl.getBooleanAttribute("disabled");
   if (uidl.hasAttribute("tabindex") && component instanceof Focusable) {
@@ -99,7 +86,7 @@
   if (manageCaption) {
     final Container parent=Util.getLayout(component);
     if (parent != null) {
-      parent.updateCaption((Paintable)component,uidl);
+      parent.updateCaption(paintable,uidl);
     }
   }
   updateComponentSize(paintable,uidl);

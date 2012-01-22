@@ -3,15 +3,18 @@
   for (i=0; i < getRowCount(); i++) {
     Widget candidate=getWidget(i,COLUMN_WIDGET);
     if (oldComponent == candidate) {
-      Caption oldCap=componentToCaption.get(oldComponent);
-      final Caption newCap=new Caption((Paintable)newComponent,client,null);
+      VPaintableMap paintableMap=VPaintableMap.get(client);
+      VPaintableWidget oldPaintable=paintableMap.getPaintable(oldComponent);
+      VPaintableWidget newPaintable=paintableMap.getPaintable(newComponent);
+      Caption oldCap=widgetToCaption.get(oldComponent);
+      final Caption newCap=new Caption(newPaintable,client,null);
       newCap.addClickHandler(this);
       newCap.setStyleName(oldCap.getStyleName());
-      componentToCaption.put((Paintable)newComponent,newCap);
-      ErrorFlag error=componentToError.get(newComponent);
+      widgetToCaption.put(newComponent,newCap);
+      ErrorFlag error=widgetToError.get(newComponent);
       if (error == null) {
         error=new ErrorFlag();
-        componentToError.put((Paintable)newComponent,error);
+        widgetToError.put(newComponent,error);
       }
       setWidget(i,COLUMN_CAPTION,newCap);
       setWidget(i,COLUMN_ERRORFLAG,error);

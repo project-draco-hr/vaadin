@@ -17,14 +17,16 @@
     final UIDL uidlForChild=(UIDL)i.next();
     if (uidlForChild.getTag().equals("location")) {
       final String location=uidlForChild.getStringAttribute("name");
-      final Paintable child=client.getPaintable(uidlForChild.getChildUIDL(0));
+      UIDL childUIDL=uidlForChild.getChildUIDL(0);
+      final VPaintableWidget childPaintable=client.getPaintable(childUIDL);
+      Widget childWidget=childPaintable.getWidgetForPaintable();
       try {
-        setWidget((Widget)child,location);
-        child.updateFromUIDL(uidlForChild.getChildUIDL(0),client);
+        setWidget(childWidget,location);
+        childPaintable.updateFromUIDL(childUIDL,client);
       }
  catch (      final IllegalArgumentException e) {
       }
-      oldWidgets.remove(child);
+      oldWidgets.remove(childWidget);
     }
   }
   for (Iterator<Widget> iterator=oldWidgets.iterator(); iterator.hasNext(); ) {

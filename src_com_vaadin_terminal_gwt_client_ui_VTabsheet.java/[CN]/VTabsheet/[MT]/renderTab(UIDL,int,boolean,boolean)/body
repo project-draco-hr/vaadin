@@ -12,15 +12,17 @@
   tab.setVisible(!hidden);
   tab.recalculateCaptionWidth();
   UIDL tabContentUIDL=null;
-  Paintable tabContent=null;
+  VPaintableWidget tabContentPaintable=null;
+  Widget tabContentWidget=null;
   if (tabUidl.getChildCount() > 0) {
     tabContentUIDL=tabUidl.getChildUIDL(0);
-    tabContent=client.getPaintable(tabContentUIDL);
+    tabContentPaintable=client.getPaintable(tabContentUIDL);
+    tabContentWidget=tabContentPaintable.getWidgetForPaintable();
   }
-  if (tabContent != null) {
-    int oldIndex=tp.getWidgetIndex((Widget)tabContent);
+  if (tabContentPaintable != null) {
+    int oldIndex=tp.getWidgetIndex(tabContentWidget);
     if (oldIndex != -1 && oldIndex != index) {
-      tp.insert((Widget)tabContent,index);
+      tp.insert(tabContentWidget,index);
     }
   }
  else {
@@ -37,10 +39,10 @@
   }
  else {
     if (tabContentUIDL != null) {
-      if (tp.getWidgetIndex((Widget)tabContent) < 0) {
-        tp.insert((Widget)tabContent,index);
+      if (tp.getWidgetIndex(tabContentWidget) < 0) {
+        tp.insert(tabContentWidget,index);
       }
-      tabContent.updateFromUIDL(tabContentUIDL,client);
+      tabContentPaintable.updateFromUIDL(tabContentUIDL,client);
     }
  else     if (tp.getWidgetCount() <= index) {
       tp.add(new PlaceHolder());

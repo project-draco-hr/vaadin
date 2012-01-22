@@ -1,0 +1,21 @@
+{
+  Widget widget=paintable.getWidgetForPaintable();
+  VCaption caption=widgetToCaption.get(widget);
+  if (VCaption.isNeeded(uidl)) {
+    if (caption == null) {
+      caption=new VCaption(paintable,client);
+      widgetToCaption.put(widget,caption);
+      insert(caption,getWidgetIndex(widget));
+      lastIndex++;
+    }
+ else     if (!caption.isAttached()) {
+      insert(caption,getWidgetIndex(widget));
+      lastIndex++;
+    }
+    caption.updateCaption(uidl);
+  }
+ else   if (caption != null) {
+    remove(caption);
+    widgetToCaption.remove(widget);
+  }
+}

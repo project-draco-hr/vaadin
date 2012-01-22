@@ -11,11 +11,11 @@
   lastIndex=0;
   for (final Iterator<Object> i=uidl.getChildIterator(); i.hasNext(); ) {
     final UIDL r=(UIDL)i.next();
-    final Paintable child=client.getPaintable(r);
-    final Widget widget=(Widget)child;
+    final VPaintableWidget child=client.getPaintable(r);
+    final Widget widget=child.getWidgetForPaintable();
     if (widget.getParent() == this) {
-      oldWidgets.remove(child);
-      VCaption vCaption=widgetToCaption.get(child);
+      oldWidgets.remove(widget);
+      VCaption vCaption=widgetToCaption.get(widget);
       if (vCaption != null) {
         addOrMove(vCaption,lastIndex++);
         oldWidgets.remove(vCaption);
@@ -48,8 +48,9 @@
   }
   for (  Widget w : oldWidgets) {
     remove(w);
-    if (w instanceof Paintable) {
-      final Paintable p=(Paintable)w;
+    VPaintableMap paintableMap=VPaintableMap.get(client);
+    if (paintableMap.isPaintable(w)) {
+      final VPaintableWidget p=VPaintableMap.get(client).getPaintable(w);
       client.unregisterPaintable(p);
     }
     VCaption vCaption=widgetToCaption.remove(w);

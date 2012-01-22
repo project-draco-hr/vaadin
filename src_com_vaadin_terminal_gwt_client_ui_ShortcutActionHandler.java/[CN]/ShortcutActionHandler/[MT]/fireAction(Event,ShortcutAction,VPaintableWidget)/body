@@ -1,0 +1,34 @@
+{
+  final Element et=DOM.eventGetTarget(event);
+  if (target == null) {
+    Widget w=Util.findWidget(et,null);
+    VPaintableMap paintableMap=VPaintableMap.get(client);
+    while (w != null && !paintableMap.isPaintable(w)) {
+      w=w.getParent();
+    }
+    target=paintableMap.getPaintable(w);
+  }
+  final VPaintableWidget finalTarget=target;
+  event.preventDefault();
+  if (finalTarget instanceof BeforeShortcutActionListener) {
+    ((BeforeShortcutActionListener)finalTarget).onBeforeShortcutAction(event);
+  }
+ else {
+    shakeTarget(et);
+    Scheduler.get().scheduleDeferred(new Command(){
+      public void execute(){
+        shakeTarget(et);
+      }
+    }
+);
+  }
+  Scheduler.get().scheduleDeferred(new Command(){
+    public void execute(){
+      if (finalTarget != null) {
+        client.updateVariable(paintableId,"actiontarget",finalTarget,false);
+      }
+      client.updateVariable(paintableId,"action",a.getKey(),true);
+    }
+  }
+);
+}

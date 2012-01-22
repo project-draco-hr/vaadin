@@ -1,21 +1,15 @@
 {
-  Element rootElement=((Widget)parent).getElement();
+  Element rootElement=parent.getWidgetForPaintable().getElement();
   while (element != null && element != rootElement) {
-    Paintable paintable=PaintableMap.get(client).getPaintable(element);
+    VPaintableWidget paintable=VPaintableMap.get(client).getPaintable(element);
     if (paintable == null) {
       String ownerPid=VCaption.getCaptionOwnerPid(element);
       if (ownerPid != null) {
-        paintable=PaintableMap.get(client).getPaintable(ownerPid);
+        paintable=(VPaintableWidget)VPaintableMap.get(client).getPaintable(ownerPid);
       }
     }
-    if (paintable != null) {
-      try {
-        if (parent.hasChildComponent((Widget)paintable)) {
-          return paintable;
-        }
-      }
- catch (      ClassCastException e) {
-      }
+    if (paintable != null && parent.hasChildComponent(paintable.getWidgetForPaintable())) {
+      return paintable;
     }
     element=(Element)element.getParentElement();
   }

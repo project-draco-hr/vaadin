@@ -7,15 +7,16 @@
   this.client=client;
   final UIDL child=uidl.getChildUIDL(0);
   if (child != null) {
-    final Paintable p=client.getPaintable(child);
-    if (p != getWidget()) {
+    final VPaintableWidget paintable=client.getPaintable(child);
+    Widget widget=paintable.getWidgetForPaintable();
+    if (widget != getWidget()) {
       if (getWidget() != null) {
-        client.unregisterPaintable((Paintable)getWidget());
+        client.unregisterPaintable(VPaintableMap.get(client).getPaintable(getWidget()));
         clear();
       }
-      setWidget((Widget)p);
+      setWidget(widget);
     }
-    p.updateFromUIDL(child,client);
+    paintable.updateFromUIDL(child,client);
   }
   boolean updateDynamicSize=updateDynamicSize();
   if (updateDynamicSize) {

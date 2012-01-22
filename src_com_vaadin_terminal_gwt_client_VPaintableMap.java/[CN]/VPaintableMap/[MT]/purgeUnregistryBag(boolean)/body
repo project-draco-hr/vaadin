@@ -1,0 +1,21 @@
+{
+  if (unregisterPaintables) {
+    for (    String pid : unregistryBag) {
+      VPaintable paintable=getPaintable(pid);
+      if (paintable == null) {
+        VConsole.error("Tried to unregister component (id=" + pid + ") that is never registered (or already unregistered)");
+        continue;
+      }
+      Widget widget=null;
+      if (paintable instanceof VPaintableWidget) {
+        widget=((VPaintableWidget)paintable).getWidgetForPaintable();
+      }
+      if (widget == null || !widget.isAttached()) {
+        idToComponentDetail.remove(pid);
+        idToPaintable.remove(pid);
+        paintableToId.remove(paintable);
+      }
+    }
+  }
+  unregistryBag.clear();
+}

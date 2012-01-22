@@ -15,14 +15,14 @@
   int pos=0;
   for (final Iterator<Object> it=uidl.getChildIterator(); it.hasNext(); ) {
     final UIDL childUIDL=(UIDL)it.next();
-    final Paintable child=client.getPaintable(childUIDL);
-    Widget widget=(Widget)child;
+    final VPaintableWidget childPaintable=client.getPaintable(childUIDL);
+    Widget widget=childPaintable.getWidgetForPaintable();
     ChildComponentContainer childComponentContainer=getComponentContainer(widget);
     if (childComponentContainer == null) {
-      childComponentContainer=createChildContainer(widget);
+      childComponentContainer=createChildContainer(childPaintable);
     }
  else {
-      childComponentContainer.setWidget(widget);
+      childComponentContainer.setPaintable(childPaintable);
     }
     addOrMoveChild(childComponentContainer,pos++);
     if (!Util.isCached(childUIDL)) {

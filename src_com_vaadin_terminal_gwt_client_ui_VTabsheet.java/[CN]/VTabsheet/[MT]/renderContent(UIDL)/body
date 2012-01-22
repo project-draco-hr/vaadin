@@ -1,23 +1,24 @@
 {
-  final Paintable content=client.getPaintable(contentUIDL);
+  final VPaintableWidget content=client.getPaintable(contentUIDL);
   if (tp.getWidgetCount() > activeTabIndex) {
     Widget old=tp.getWidget(activeTabIndex);
     if (old != content) {
       tp.remove(activeTabIndex);
-      if (old instanceof Paintable) {
-        client.unregisterPaintable((Paintable)old);
+      VPaintableMap paintableMap=VPaintableMap.get(client);
+      if (paintableMap.isPaintable(old)) {
+        paintableMap.unregisterPaintable(paintableMap.getPaintable(old));
       }
-      tp.insert((Widget)content,activeTabIndex);
+      tp.insert(content.getWidgetForPaintable(),activeTabIndex);
     }
   }
  else {
-    tp.add((Widget)content);
+    tp.add(content.getWidgetForPaintable());
   }
   tp.showWidget(activeTabIndex);
   VTabsheet.this.iLayout();
-  (content).updateFromUIDL(contentUIDL,client);
+  content.updateFromUIDL(contentUIDL,client);
   if (contentUIDL.getBooleanAttribute("cached")) {
-    client.handleComponentRelativeSize((Widget)content);
+    client.handleComponentRelativeSize(content.getWidgetForPaintable());
   }
   updateOpenTabSize();
   VTabsheet.this.removeStyleDependentName("loading");

@@ -1,0 +1,22 @@
+{
+  VCaptionWrapper wrapper=paintableToCaptionWrapper.get(paintable);
+  Widget widget=paintable.getWidgetForPaintable();
+  if (VCaption.isNeeded(uidl)) {
+    if (wrapper == null) {
+      final String loc=getLocation(widget);
+      super.remove(widget);
+      wrapper=new VCaptionWrapper(paintable,client);
+      super.add(wrapper,locationToElement.get(loc));
+      paintableToCaptionWrapper.put(paintable,wrapper);
+    }
+    wrapper.updateCaption(uidl);
+  }
+ else {
+    if (wrapper != null) {
+      final String loc=getLocation(widget);
+      super.remove(wrapper);
+      super.add(widget,locationToElement.get(loc));
+      paintableToCaptionWrapper.remove(paintable);
+    }
+  }
+}
