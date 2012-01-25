@@ -14,7 +14,15 @@
  else   if (contains(days,subElement)) {
     Day day=Util.findWidget(subElement,Day.class);
     if (day != null) {
-      return SUBPART_DAY + day.getDay();
+      Date date=day.getDate();
+      int id=date.getDate();
+      if (date.getMonth() < displayedMonth.getMonth()) {
+        id-=DateTimeService.getNumberOfDaysInMonth(date);
+      }
+ else       if (date.getMonth() > displayedMonth.getMonth()) {
+        id+=DateTimeService.getNumberOfDaysInMonth(displayedMonth);
+      }
+      return SUBPART_DAY + id;
     }
   }
  else   if (time != null) {
