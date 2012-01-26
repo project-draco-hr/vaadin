@@ -2,12 +2,12 @@
   if (dragStartMode == WRAPPER || dragStartMode == COMPONENT) {
     VTransferable transferable=new VTransferable();
     transferable.setDragSource(VDragAndDropWrapper.this);
-    Paintable paintable;
-    Widget w=Util.findWidget((Element)event.getEventTarget().cast(),null);
-    while (w != null && !(w instanceof Paintable)) {
-      w=w.getParent();
+    Widget widget=Util.findWidget((Element)event.getEventTarget().cast(),null);
+    VPaintableMap vPaintableMap=VPaintableMap.get(client);
+    while (widget != null && !vPaintableMap.isPaintable(widget)) {
+      widget=widget.getParent();
     }
-    paintable=(Paintable)w;
+    VPaintableWidget paintable=vPaintableMap.getPaintable(widget);
     transferable.setData("component",paintable);
     VDragEvent dragEvent=VDragAndDropManager.get().startDrag(transferable,event,true);
     transferable.setData("mouseDown",new MouseEventDetails(event).serialize());
@@ -15,7 +15,7 @@
       dragEvent.createDragImage(getElement(),true);
     }
  else {
-      dragEvent.createDragImage(((Widget)paintable).getElement(),true);
+      dragEvent.createDragImage(widget.getElement(),true);
     }
     return true;
   }

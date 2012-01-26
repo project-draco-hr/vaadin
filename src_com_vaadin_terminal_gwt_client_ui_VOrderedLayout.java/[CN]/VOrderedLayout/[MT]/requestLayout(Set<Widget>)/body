@@ -1,0 +1,14 @@
+{
+  for (  Widget p : children) {
+    ChildComponentContainer componentContainer=getComponentContainer(p);
+    componentContainer.updateWidgetSize();
+    componentContainer.updateCaptionSize();
+  }
+  Size sizeBefore=new Size(activeLayoutSize.getWidth(),activeLayoutSize.getHeight());
+  recalculateLayoutAndComponentSizes();
+  boolean sameSize=(sizeBefore.equals(activeLayoutSize));
+  if (!sameSize) {
+    client.runDescendentsLayout(this);
+  }
+  return sameSize;
+}

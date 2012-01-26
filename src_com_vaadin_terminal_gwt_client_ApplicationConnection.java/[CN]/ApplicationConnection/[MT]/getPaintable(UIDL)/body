@@ -1,12 +1,8 @@
 {
-  final String id=uidl.getId();
-  Paintable w=getPaintable(id);
-  if (w != null) {
-    return w;
+  final String pid=uidl.getId();
+  if (!paintableMap.hasPaintable(pid)) {
+    VPaintableWidget p=widgetSet.createWidget(uidl,configuration);
+    paintableMap.registerPaintable(pid,p);
   }
- else {
-    w=widgetSet.createWidget(uidl,configuration);
-    registerPaintable(id,w);
-    return w;
-  }
+  return (VPaintableWidget)paintableMap.getPaintable(pid);
 }

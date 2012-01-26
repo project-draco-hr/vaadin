@@ -1,15 +1,16 @@
 {
-  final Paintable newPntbl=client.getPaintable(contentUidl);
-  if (getPaintable() == null) {
-    add((Widget)newPntbl,content);
-    paintables.add(newPntbl);
+  final VPaintableWidget newPntbl=client.getPaintable(contentUidl);
+  Widget newWidget=newPntbl.getWidgetForPaintable();
+  if (getChildWidget() == null) {
+    add(newWidget,content);
+    widgets.add(newWidget);
   }
- else   if (getPaintable() != newPntbl) {
-    replacePaintable(newPntbl);
+ else   if (getChildWidget() != newWidget) {
+    replaceWidget(newWidget);
   }
   newPntbl.updateFromUIDL(contentUidl,client);
   if (contentUidl.getBooleanAttribute("cached")) {
-    client.handleComponentRelativeSize((Widget)newPntbl);
+    client.handleComponentRelativeSize(newPntbl.getWidgetForPaintable());
   }
   if (isOpen() && isDynamicHeight()) {
     setHeightFromWidget();

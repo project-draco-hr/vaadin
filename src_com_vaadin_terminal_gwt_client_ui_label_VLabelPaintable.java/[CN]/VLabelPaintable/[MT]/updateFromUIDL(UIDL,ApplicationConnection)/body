@@ -1,0 +1,43 @@
+{
+  if (client.updateComponent(getWidgetForPaintable(),uidl,true)) {
+    return;
+  }
+  this.client=client;
+  boolean sinkOnloads=false;
+  final String mode=uidl.getStringAttribute("mode");
+  if (mode == null || "text".equals(mode)) {
+    getWidgetForPaintable().setText(uidl.getChildString(0));
+  }
+ else   if ("pre".equals(mode)) {
+    PreElement preElement=Document.get().createPreElement();
+    preElement.setInnerText(uidl.getChildUIDL(0).getChildString(0));
+    getWidgetForPaintable().setHTML("");
+    getWidgetForPaintable().getElement().appendChild(preElement);
+  }
+ else   if ("uidl".equals(mode)) {
+    getWidgetForPaintable().setHTML(uidl.getChildrenAsXML());
+  }
+ else   if ("xhtml".equals(mode)) {
+    UIDL content=uidl.getChildUIDL(0).getChildUIDL(0);
+    if (content.getChildCount() > 0) {
+      getWidgetForPaintable().setHTML(content.getChildString(0));
+    }
+ else {
+      getWidgetForPaintable().setHTML("");
+    }
+    sinkOnloads=true;
+  }
+ else   if ("xml".equals(mode)) {
+    getWidgetForPaintable().setHTML(uidl.getChildUIDL(0).getChildString(0));
+  }
+ else   if ("raw".equals(mode)) {
+    getWidgetForPaintable().setHTML(uidl.getChildUIDL(0).getChildString(0));
+    sinkOnloads=true;
+  }
+ else {
+    getWidgetForPaintable().setText("");
+  }
+  if (sinkOnloads) {
+    Util.sinkOnloadForImages(getWidgetForPaintable().getElement());
+  }
+}

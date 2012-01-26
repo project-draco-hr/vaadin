@@ -1,12 +1,12 @@
 {
   Collection<Class<?>> deferredWidgets=new LinkedList<Class<?>>();
-  sourceWriter.println("public void ensureInstantiator(Class<? extends Paintable> classType) {");
+  sourceWriter.println("public void ensureInstantiator(Class<? extends " + paintableClassName + "> classType) {");
   sourceWriter.println("if(!instmap.containsKey(classType)){");
   boolean first=true;
   ArrayList<Class<? extends Paintable>> lazyLoadedWidgets=new ArrayList<Class<? extends Paintable>>();
-  HashSet<Class<? extends com.vaadin.terminal.gwt.client.Paintable>> widgetsWithInstantiator=new HashSet<Class<? extends com.vaadin.terminal.gwt.client.Paintable>>();
+  HashSet<Class<? extends com.vaadin.terminal.gwt.client.VPaintableWidget>> widgetsWithInstantiator=new HashSet<Class<? extends com.vaadin.terminal.gwt.client.VPaintableWidget>>();
   for (  Class<? extends Paintable> class1 : paintablesHavingWidgetAnnotation) {
-    Class<? extends com.vaadin.terminal.gwt.client.Paintable> clientClass=getClientClass(class1);
+    Class<? extends com.vaadin.terminal.gwt.client.VPaintableWidget> clientClass=getClientClass(class1);
     if (widgetsWithInstantiator.contains(clientClass)) {
       continue;
     }
@@ -20,7 +20,7 @@
       first=false;
     }
     sourceWriter.print("if( classType == " + clientClass.getName() + ".class) {");
-    String instantiator="new WidgetInstantiator() {\n public Paintable get() {\n return GWT.create(" + clientClass.getName() + ".class );\n}\n}\n";
+    String instantiator="new WidgetInstantiator() {\n public " + paintableClassName + " get() {\n return GWT.create("+ clientClass.getName()+ ".class );\n}\n}\n";
     LoadStyle loadStyle=getLoadStyle(class1);
     if (loadStyle != LoadStyle.EAGER) {
       sourceWriter.print("ApplicationConfiguration.startWidgetLoading();\n" + "GWT.runAsync( \n" + "new WidgetLoader() { void addInstantiator() {instmap.put(" + clientClass.getName() + ".class,"+ instantiator+ ");}});\n");
@@ -41,7 +41,7 @@
   }
   sourceWriter.println("}");
   sourceWriter.println("}");
-  sourceWriter.println("public Class<? extends Paintable>[] getDeferredLoadedWidgets() {");
+  sourceWriter.println("public Class<? extends " + paintableClassName + ">[] getDeferredLoadedWidgets() {");
   sourceWriter.println("return new Class[] {");
   first=true;
   for (  Class<?> class2 : deferredWidgets) {
@@ -50,14 +50,14 @@
     }
     first=false;
     ClientWidget annotation=class2.getAnnotation(ClientWidget.class);
-    Class<? extends com.vaadin.terminal.gwt.client.Paintable> value=annotation.value();
+    Class<? extends com.vaadin.terminal.gwt.client.VPaintableWidget> value=annotation.value();
     sourceWriter.print(value.getName() + ".class");
   }
   sourceWriter.println("};");
   sourceWriter.println("}");
-  sourceWriter.println("public Paintable instantiate(Class<? extends Paintable> classType) {");
+  sourceWriter.println("public " + paintableClassName + " instantiate(Class<? extends "+ paintableClassName+ "> classType) {");
   sourceWriter.indent();
-  sourceWriter.println("Paintable p = super.instantiate(classType); if(p!= null) return p;");
+  sourceWriter.println(paintableClassName + " p = super.instantiate(classType); if(p!= null) return p;");
   sourceWriter.println("return instmap.get(classType).get();");
   sourceWriter.outdent();
   sourceWriter.println("}");

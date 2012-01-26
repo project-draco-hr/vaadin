@@ -34,11 +34,11 @@
         if (meta.containsKey("repaintAll")) {
           repaintAll=true;
           view.clear();
-          idToPaintableDetail.clear();
+          getPaintableMap().clear();
           if (meta.containsKey("invalidLayouts")) {
             validatingLayouts=true;
-            zeroWidthComponents=new HashSet<Paintable>();
-            zeroHeightComponents=new HashSet<Paintable>();
+            zeroWidthComponents=new HashSet<VPaintableWidget>();
+            zeroHeightComponents=new HashSet<VPaintableWidget>();
           }
         }
         if (meta.containsKey("timedRedirect")) {
@@ -56,7 +56,7 @@
         redirectTimer.schedule(1000 * sessionExpirationInterval);
       }
       JsArray<ValueMap> changes=json.getJSValueMapArray("changes");
-      ArrayList<Paintable> updatedWidgets=new ArrayList<Paintable>();
+      ArrayList<VPaintableWidget> updatedVPaintableWidgets=new ArrayList<VPaintableWidget>();
       relativeSizeChanges.clear();
       componentCaptionSizeChanges.clear();
       int length=changes.length();
@@ -64,10 +64,10 @@
         try {
           final UIDL change=changes.get(i).cast();
           final UIDL uidl=change.getChildUIDL(0);
-          final Paintable paintable=getPaintable(uidl.getId());
+          final VPaintableWidget paintable=(VPaintableWidget)paintableMap.getPaintable(uidl.getId());
           if (paintable != null) {
             paintable.updateFromUIDL(uidl,ApplicationConnection.this);
-            updatedWidgets.add(idToPaintableDetail.get(uidl.getId()).getComponent());
+            updatedVPaintableWidgets.add(paintable);
           }
  else {
             if (!uidl.getTag().equals(configuration.getEncodedWindowTag())) {
@@ -75,11 +75,10 @@
             }
  else {
               String pid=uidl.getId();
-              if (!idToPaintableDetail.containsKey(pid)) {
-                registerPaintable(pid,view);
+              if (!paintableMap.hasPaintable(pid)) {
+                paintableMap.registerPaintable(pid,view);
               }
-              ComponentDetail cd=idToPaintableDetail.get(pid);
-              cd.registerEventListenersFromUIDL(uidl);
+              paintableMap.registerEventListenersFromUIDL(pid,uidl);
               view.updateFromUIDL(uidl,ApplicationConnection.this);
             }
           }
@@ -91,17 +90,16 @@
       if (json.containsKey("dd")) {
         VDragAndDropManager.get().handleServerResponse(json.getValueMap("dd"));
       }
-      Set<Paintable> sizeUpdatedWidgets=new HashSet<Paintable>();
-      updatedWidgets.addAll(relativeSizeChanges);
+      Set<Widget> sizeUpdatedWidgets=new HashSet<Widget>();
+      updatedVPaintableWidgets.addAll(relativeSizeChanges);
       sizeUpdatedWidgets.addAll(componentCaptionSizeChanges);
-      for (      Paintable paintable : updatedWidgets) {
-        ComponentDetail detail=idToPaintableDetail.get(getPid(paintable));
-        Widget widget=(Widget)paintable;
-        Size oldSize=detail.getOffsetSize();
+      for (      VPaintableWidget paintable : updatedVPaintableWidgets) {
+        Widget widget=paintable.getWidgetForPaintable();
+        Size oldSize=paintableMap.getOffsetSize(paintable);
         Size newSize=new Size(widget.getOffsetWidth(),widget.getOffsetHeight());
         if (oldSize == null || !oldSize.equals(newSize)) {
-          sizeUpdatedWidgets.add(paintable);
-          detail.setOffsetSize(newSize);
+          sizeUpdatedWidgets.add(widget);
+          paintableMap.setOffsetSize(paintable,newSize);
         }
       }
       Util.componentSizeUpdated(sizeUpdatedWidgets);
@@ -137,14 +135,14 @@
         }
       }
       if (repaintAll) {
-        unregistryBag.clear();
+        paintableMap.purgeUnregistryBag(false);
       }
  else {
-        purgeUnregistryBag();
+        paintableMap.purgeUnregistryBag(true);
       }
       final long prosessingTime=(new Date().getTime()) - start.getTime();
       VConsole.log(" Processing time was " + String.valueOf(prosessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
-      VConsole.log("Referenced paintables: " + idToPaintableDetail.size());
+      VConsole.log("Referenced paintables: " + paintableMap.size());
       endRequest();
     }
   }

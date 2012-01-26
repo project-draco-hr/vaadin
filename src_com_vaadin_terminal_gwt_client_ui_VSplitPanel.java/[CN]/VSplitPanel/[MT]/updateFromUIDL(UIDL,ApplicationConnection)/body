@@ -20,22 +20,24 @@
   setStylenames();
   position=uidl.getStringAttribute("position");
   setSplitPosition(position);
-  final Paintable newFirstChild=client.getPaintable(uidl.getChildUIDL(0));
-  final Paintable newSecondChild=client.getPaintable(uidl.getChildUIDL(1));
+  final VPaintableWidget newFirstChildPaintable=client.getPaintable(uidl.getChildUIDL(0));
+  final VPaintableWidget newSecondChildPaintable=client.getPaintable(uidl.getChildUIDL(1));
+  Widget newFirstChild=newFirstChildPaintable.getWidgetForPaintable();
+  Widget newSecondChild=newSecondChildPaintable.getWidgetForPaintable();
   if (firstChild != newFirstChild) {
     if (firstChild != null) {
-      client.unregisterPaintable((Paintable)firstChild);
+      client.unregisterPaintable(VPaintableMap.get(client).getPaintable(firstChild));
     }
-    setFirstWidget((Widget)newFirstChild);
+    setFirstWidget(newFirstChild);
   }
   if (secondChild != newSecondChild) {
     if (secondChild != null) {
-      client.unregisterPaintable((Paintable)secondChild);
+      client.unregisterPaintable(VPaintableMap.get(client).getPaintable(secondChild));
     }
-    setSecondWidget((Widget)newSecondChild);
+    setSecondWidget(newSecondChild);
   }
-  newFirstChild.updateFromUIDL(uidl.getChildUIDL(0),client);
-  newSecondChild.updateFromUIDL(uidl.getChildUIDL(1),client);
+  newFirstChildPaintable.updateFromUIDL(uidl.getChildUIDL(0),client);
+  newSecondChildPaintable.updateFromUIDL(uidl.getChildUIDL(1),client);
   renderInformation.updateSize(getElement());
   client.runDescendentsLayout(this);
   rendering=false;

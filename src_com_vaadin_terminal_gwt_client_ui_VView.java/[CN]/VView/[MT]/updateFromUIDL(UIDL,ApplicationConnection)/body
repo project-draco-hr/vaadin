@@ -67,16 +67,16 @@
     return;
   }
   UIDL childUidl=uidl.getChildUIDL(childIndex);
-  final Paintable lo=client.getPaintable(childUidl);
+  final VPaintableWidget lo=client.getPaintable(childUidl);
   if (layout != null) {
     if (layout != lo) {
       client.unregisterPaintable(layout);
-      setWidget((Widget)lo);
+      setWidget(lo.getWidgetForPaintable());
       layout=lo;
     }
   }
  else {
-    setWidget((Widget)lo);
+    setWidget(lo.getWidgetForPaintable());
     layout=lo;
   }
   layout.updateFromUIDL(childUidl,client);
@@ -103,7 +103,7 @@
       }
     }
  else {
-      final Paintable w=client.getPaintable(childUidl);
+      final VPaintableWidget w=client.getPaintable(childUidl);
       if (subWindows.contains(w)) {
         removedSubWindows.remove(w);
       }
@@ -122,7 +122,8 @@
   if (uidl.hasAttribute("focused")) {
     Scheduler.get().scheduleDeferred(new Command(){
       public void execute(){
-        final Paintable toBeFocused=uidl.getPaintableAttribute("focused",connection);
+        VPaintableWidget paintable=(VPaintableWidget)uidl.getPaintableAttribute("focused",connection);
+        final Widget toBeFocused=paintable.getWidgetForPaintable();
         if (toBeFocused instanceof com.google.gwt.user.client.ui.Focusable) {
           final com.google.gwt.user.client.ui.Focusable toBeFocusedWidget=(com.google.gwt.user.client.ui.Focusable)toBeFocused;
           toBeFocusedWidget.setFocus(true);

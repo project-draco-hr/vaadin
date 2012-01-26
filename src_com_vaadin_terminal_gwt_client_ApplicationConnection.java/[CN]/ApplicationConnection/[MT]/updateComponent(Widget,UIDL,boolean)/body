@@ -1,18 +1,14 @@
 {
-  String pid=getPid(component.getElement());
+  VPaintableWidget paintable=paintableMap.getPaintable(component);
+  String pid=paintableMap.getPid(paintable);
   if (pid == null) {
     VConsole.error("Trying to update an unregistered component: " + Util.getSimpleName(component));
-    return true;
-  }
-  ComponentDetail componentDetail=idToPaintableDetail.get(pid);
-  if (componentDetail == null) {
-    VConsole.error("ComponentDetail not found for " + Util.getSimpleName(component) + " with PID "+ pid+ ". This should not happen.");
     return true;
   }
   if (uidl.getBooleanAttribute("cached")) {
     return true;
   }
-  componentDetail.registerEventListenersFromUIDL(uidl);
+  paintableMap.registerEventListenersFromUIDL(pid,uidl);
   boolean visible=!uidl.getBooleanAttribute("invisible");
   boolean wasVisible=component.isVisible();
   component.setVisible(visible);
@@ -20,7 +16,7 @@
     if (wasVisible && manageCaption) {
       final Container parent=Util.getLayout(component);
       if (parent != null) {
-        parent.updateCaption((Paintable)component,uidl);
+        parent.updateCaption(paintable,uidl);
       }
     }
   }
@@ -28,21 +24,8 @@
     DOM.setElementProperty(component.getElement(),"id",uidl.getId().substring(5));
   }
   if (!visible) {
-    componentDetail.setOffsetSize(null);
+    paintableMap.setOffsetSize(paintable,null);
     return true;
-  }
-  if (!widgetSet.isCorrectImplementation(component,uidl,configuration)) {
-    final Widget w=(Widget)widgetSet.createWidget(uidl,configuration);
-    if (w.getClass() != component.getClass()) {
-      final Container parent=Util.getLayout(component);
-      if (parent != null) {
-        parent.replaceChildComponent(component,w);
-        unregisterPaintable((Paintable)component);
-        registerPaintable(uidl.getId(),(Paintable)w);
-        ((Paintable)w).updateFromUIDL(uidl,this);
-        return true;
-      }
-    }
   }
   boolean enabled=!uidl.getBooleanAttribute("disabled");
   if (uidl.hasAttribute("tabindex") && component instanceof Focusable) {
@@ -78,7 +61,7 @@
     styleBuf.append(" ");
     styleBuf.append(MODIFIED_CLASSNAME);
   }
-  TooltipInfo tooltipInfo=componentDetail.getTooltipInfo(null);
+  TooltipInfo tooltipInfo=paintableMap.getTooltipInfo(paintable,null);
   if (uidl.hasAttribute(ATTRIBUTE_DESCRIPTION)) {
     tooltipInfo.setTitle(uidl.getStringAttribute(ATTRIBUTE_DESCRIPTION));
   }
@@ -103,9 +86,9 @@
   if (manageCaption) {
     final Container parent=Util.getLayout(component);
     if (parent != null) {
-      parent.updateCaption((Paintable)component,uidl);
+      parent.updateCaption(paintable,uidl);
     }
   }
-  updateComponentSize(componentDetail,uidl);
+  updateComponentSize(paintable,uidl);
   return false;
 }

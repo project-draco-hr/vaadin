@@ -78,10 +78,11 @@
   layoutCells();
   for (  Widget w : nonRenderedWidgets.keySet()) {
     ChildComponentContainer childComponentContainer=widgetToComponentContainer.get(w);
-    paintableToCell.remove(w);
+    widgetToCell.remove(w);
     widgetToComponentContainer.remove(w);
     childComponentContainer.removeFromParent();
-    client.unregisterPaintable((Paintable)w);
+    VPaintableMap paintableMap=VPaintableMap.get(client);
+    paintableMap.unregisterPaintable(paintableMap.getPaintable(w));
   }
   nonRenderedWidgets=null;
   rendering=false;
