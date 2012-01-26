@@ -1,0 +1,24 @@
+{
+  if (target.hasTagName("TD")) {
+    Element container=target.getFirstChildElement().cast();
+    Element widget=container.getFirstChildElement().cast();
+    boolean containsWidget=false;
+    for (    Widget w : childWidgets) {
+      if (widget == w.getElement()) {
+        containsWidget=true;
+        break;
+      }
+    }
+    if (!containsWidget) {
+      if (VPaintableMap.get(client).getWidgetTooltipInfo(VScrollTable.this,target) != null) {
+        client.handleWidgetTooltipEvent(event,VScrollTable.this,target);
+      }
+ else {
+        client.handleWidgetTooltipEvent(event,VScrollTable.this,target.getParentElement());
+      }
+    }
+  }
+ else {
+    client.handleWidgetTooltipEvent(event,VScrollTable.this,target);
+  }
+}

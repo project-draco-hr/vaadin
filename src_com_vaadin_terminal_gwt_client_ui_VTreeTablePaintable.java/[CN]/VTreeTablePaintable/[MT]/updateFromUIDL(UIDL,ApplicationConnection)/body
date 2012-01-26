@@ -1,0 +1,42 @@
+{
+  FocusableScrollPanel widget=null;
+  int scrollPosition=0;
+  if (getWidgetForPaintable().collapseRequest) {
+    widget=(FocusableScrollPanel)getWidgetForPaintable().getWidget(1);
+    scrollPosition=widget.getScrollPosition();
+  }
+  getWidgetForPaintable().animationsEnabled=uidl.getBooleanAttribute("animate");
+  getWidgetForPaintable().colIndexOfHierarchy=uidl.hasAttribute(ATTRIBUTE_HIERARCHY_COLUMN_INDEX) ? uidl.getIntAttribute(ATTRIBUTE_HIERARCHY_COLUMN_INDEX) : 0;
+  int oldTotalRows=getWidgetForPaintable().getTotalRows();
+  super.updateFromUIDL(uidl,client);
+  if (getWidgetForPaintable().collapseRequest) {
+    if (getWidgetForPaintable().collapsedRowKey != null && getWidgetForPaintable().scrollBody != null) {
+      VScrollTableRow row=getWidgetForPaintable().getRenderedRowByKey(getWidgetForPaintable().collapsedRowKey);
+      if (row != null) {
+        getWidgetForPaintable().setRowFocus(row);
+        getWidgetForPaintable().focus();
+      }
+    }
+    int scrollPosition2=widget.getScrollPosition();
+    if (scrollPosition != scrollPosition2) {
+      widget.setScrollPosition(scrollPosition);
+    }
+    getWidgetForPaintable().onScroll(null);
+  }
+  if (getWidgetForPaintable().collapseRequest || (!uidl.hasAttribute("pagelength") && getWidgetForPaintable().getTotalRows() != oldTotalRows)) {
+    getWidgetForPaintable().triggerLazyColumnAdjustment(true);
+    getWidgetForPaintable().collapseRequest=false;
+  }
+  if (uidl.hasAttribute("focusedRow")) {
+    String key=uidl.getStringAttribute("focusedRow");
+    getWidgetForPaintable().setRowFocus(getWidgetForPaintable().getRenderedRowByKey(key));
+    getWidgetForPaintable().focusParentResponsePending=false;
+  }
+ else   if (uidl.hasAttribute("clearFocusPending")) {
+    getWidgetForPaintable().focusParentResponsePending=false;
+  }
+  while (!getWidgetForPaintable().collapseRequest && !getWidgetForPaintable().focusParentResponsePending && !getWidgetForPaintable().pendingNavigationEvents.isEmpty()) {
+    PendingNavigationEvent event=getWidgetForPaintable().pendingNavigationEvents.removeFirst();
+    getWidgetForPaintable().handleNavigation(event.keycode,event.ctrl,event.shift);
+  }
+}
