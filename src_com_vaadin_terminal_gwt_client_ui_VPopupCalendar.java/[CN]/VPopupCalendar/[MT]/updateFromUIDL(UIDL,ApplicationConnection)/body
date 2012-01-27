@@ -1,8 +1,11 @@
 {
   boolean lastReadOnlyState=readonly;
+  boolean lastEnabledState=isEnabled();
   parsable=uidl.getBooleanAttribute("parsable");
   super.updateFromUIDL(uidl,client);
-  popup.setStyleName(VDateField.CLASSNAME + "-popup " + VDateField.CLASSNAME+ "-"+ resolutionToString(currentResolution));
+  String popupStyleNames=ApplicationConnection.getStyleName(POPUP_PRIMARY_STYLE_NAME,uidl,false);
+  popupStyleNames+=" " + VDateField.CLASSNAME + "-"+ resolutionToString(currentResolution);
+  popup.setStyleName(popupStyleNames);
   calendar.setDateTimeService(getDateTimeService());
   calendar.setShowISOWeekNumbers(isShowISOWeekNumbers());
   if (calendar.getResolution() != currentResolution) {
@@ -51,7 +54,7 @@
  else {
     calendarToggle.removeStyleName(CLASSNAME + "-button-readonly");
   }
-  if (lastReadOnlyState != readonly) {
+  if (lastReadOnlyState != readonly || lastEnabledState != isEnabled()) {
     updateWidth();
   }
   calendarToggle.setEnabled(true);
