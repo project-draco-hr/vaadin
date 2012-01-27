@@ -34,40 +34,56 @@
       days.setHTML(headerRow,firstWeekdayColumn + i,"");
     }
   }
-  final Date tmp=new Date();
-  final Date today=new Date(tmp.getYear(),tmp.getMonth(),tmp.getDate());
+  int dayOfMonthSelected=-1;
+  int dayOfMonthToday=-1;
+  boolean initiallyNull=value == null;
+  if (!initiallyNull && value.getMonth() == focusedDate.getMonth() && value.getYear() == focusedDate.getYear()) {
+    dayOfMonthSelected=value.getDate();
+  }
+  final Date today=new Date();
+  if (today.getMonth() == focusedDate.getMonth() && today.getYear() == focusedDate.getYear()) {
+    dayOfMonthToday=today.getDate();
+  }
   final int startWeekDay=getDateTimeService().getStartWeekDay(focusedDate);
-  final Date curr=(Date)focusedDate.clone();
-  curr.setDate(-startWeekDay);
+  final int daysInMonth=DateTimeService.getNumberOfDaysInMonth(focusedDate);
+  int dayCount=0;
+  final Date curr=new Date(focusedDate.getTime());
   for (int weekOfMonth=1; weekOfMonth < 7; weekOfMonth++) {
+    boolean weekNumberProcessed[]=new boolean[]{false,false,false,false,false,false,false};
     for (int dayOfWeek=0; dayOfWeek < 7; dayOfWeek++) {
-      Day day=new Day((Date)curr.clone());
-      if (curr.equals(value)) {
-        day.addStyleDependentName(CN_SELECTED);
-        selectedDay=day;
-      }
-      if (curr.equals(today)) {
-        day.addStyleDependentName(CN_TODAY);
-      }
-      if (curr.equals(focusedDate)) {
-        focusedDay=day;
-        focusedRow=weekOfMonth;
-        if (hasFocus) {
-          day.addStyleDependentName(CN_FOCUSED);
+      if (!(weekOfMonth == 1 && dayOfWeek < startWeekDay)) {
+        if (dayCount >= daysInMonth) {
+          break;
+        }
+        final int dayOfMonth=++dayCount;
+        curr.setDate(dayCount);
+        Day day=new Day(dayOfMonth);
+        if (dayOfMonthSelected == dayOfMonth) {
+          day.addStyleDependentName(CN_SELECTED);
+          selectedDay=day;
+        }
+        if (dayOfMonthToday == dayOfMonth) {
+          day.addStyleDependentName(CN_TODAY);
+        }
+        if (dayOfMonth == focusedDate.getDate()) {
+          focusedDay=day;
+          focusedRow=weekOfMonth;
+          if (hasFocus) {
+            day.addStyleDependentName(CN_FOCUSED);
+          }
+        }
+        days.setWidget(weekOfMonth,firstWeekdayColumn + dayOfWeek,day);
+        if (!weekNumberProcessed[weekOfMonth]) {
+          days.getCellFormatter().setVisible(weekOfMonth,weekColumn,isShowISOWeekNumbers());
+          if (isShowISOWeekNumbers()) {
+            final String baseCssClass=VDateField.CLASSNAME + "-calendarpanel-weeknumber";
+            String weekCssClass=baseCssClass;
+            int weekNumber=DateTimeService.getISOWeekNumber(curr);
+            days.setHTML(weekOfMonth,0,"<span class=\"" + weekCssClass + "\""+ ">"+ weekNumber+ "</span>");
+            weekNumberProcessed[weekOfMonth]=true;
+          }
         }
       }
-      if (curr.getMonth() != focusedDate.getMonth()) {
-        day.addStyleDependentName(CN_OFFMONTH);
-      }
-      days.setWidget(weekOfMonth,firstWeekdayColumn + dayOfWeek,day);
-      days.getCellFormatter().setVisible(weekOfMonth,weekColumn,isShowISOWeekNumbers());
-      if (isShowISOWeekNumbers()) {
-        final String baseCssClass=VDateField.CLASSNAME + "-calendarpanel-weeknumber";
-        String weekCssClass=baseCssClass;
-        int weekNumber=DateTimeService.getISOWeekNumber(curr);
-        days.setHTML(weekOfMonth,0,"<span class=\"" + weekCssClass + "\""+ ">"+ weekNumber+ "</span>");
-      }
-      curr.setDate(curr.getDate() + 1);
     }
   }
 }
