@@ -36,9 +36,9 @@
   }
   final Date tmp=new Date();
   final Date today=new Date(tmp.getYear(),tmp.getMonth(),tmp.getDate());
-  final int startWeekDay=getDateTimeService().getStartWeekDay(focusedDate);
-  final Date curr=(Date)focusedDate.clone();
-  curr.setDate(-startWeekDay);
+  final int startWeekDay=getDateTimeService().getStartWeekDay(displayedMonth);
+  final Date curr=(Date)displayedMonth.clone();
+  curr.setDate(1 - startWeekDay);
   for (int weekOfMonth=1; weekOfMonth < 7; weekOfMonth++) {
     for (int dayOfWeek=0; dayOfWeek < 7; dayOfWeek++) {
       Day day=new Day((Date)curr.clone());
@@ -56,7 +56,7 @@
           day.addStyleDependentName(CN_FOCUSED);
         }
       }
-      if (curr.getMonth() != focusedDate.getMonth()) {
+      if (curr.getMonth() != displayedMonth.getMonth()) {
         day.addStyleDependentName(CN_OFFMONTH);
       }
       days.setWidget(weekOfMonth,firstWeekdayColumn + dayOfWeek,day);
