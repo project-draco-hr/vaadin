@@ -1,0 +1,16 @@
+{
+  Assert.assertTrue("Directory " + srcDir + " does not exist",srcDir.exists());
+  for (  File f : srcDir.listFiles()) {
+    if (f.isDirectory()) {
+      validateFiles(f,missing,validator,suffix);
+    }
+ else     if (f.getName().endsWith(suffix)) {
+      try {
+        validator.validateFile(f);
+      }
+ catch (      Throwable t) {
+        missing.add(f.getPath());
+      }
+    }
+  }
+}
