@@ -1,0 +1,36 @@
+{
+  final VerticalLayout mainLayout=new VerticalLayout();
+  mainLayout.setSizeFull();
+  HorizontalLayout buttonBar=new HorizontalLayout();
+  buttonBar.setSizeUndefined();
+  Button first=new Button("First layout");
+  Button second=new Button("Second layout");
+  first.setDebugId("FirstButton");
+  second.setDebugId("SecondButton");
+  buttonBar.addComponent(first);
+  buttonBar.addComponent(second);
+  mainLayout.addComponent(buttonBar);
+  final HorizontalLayout firstLayout=buildTestLayout(true);
+  final HorizontalLayout secondLayout=buildTestLayout(false);
+  mainLayout.addComponent(firstLayout);
+  mainLayout.setExpandRatio(firstLayout,1);
+  first.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      if (mainLayout.getComponent(1).equals(secondLayout)) {
+        mainLayout.replaceComponent(secondLayout,firstLayout);
+        mainLayout.setExpandRatio(firstLayout,1);
+      }
+    }
+  }
+);
+  second.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      if (mainLayout.getComponent(1).equals(firstLayout)) {
+        mainLayout.replaceComponent(firstLayout,secondLayout);
+        mainLayout.setExpandRatio(secondLayout,1);
+      }
+    }
+  }
+);
+  return mainLayout;
+}

@@ -1,0 +1,66 @@
+{
+  Widget component=paintable.getWidgetForPaintable();
+  String pid=paintableMap.getPid(paintable);
+  if (pid == null) {
+    VConsole.error("Trying to update an unregistered component: " + Util.getSimpleName(component));
+    return true;
+  }
+  if (uidl.getBooleanAttribute("cached")) {
+    return true;
+  }
+  paintableMap.registerEventListenersFromUIDL(pid,uidl);
+  boolean visible=!uidl.getBooleanAttribute("invisible");
+  boolean wasVisible=component.isVisible();
+  component.setVisible(visible);
+  if (wasVisible != visible) {
+    if (wasVisible && manageCaption) {
+      final Container parent=Util.getLayout(component);
+      if (parent != null) {
+        parent.updateCaption(paintable,uidl);
+      }
+    }
+  }
+  if (configuration.useDebugIdInDOM() && uidl.getId().startsWith("PID_S")) {
+    DOM.setElementProperty(component.getElement(),"id",uidl.getId().substring(5));
+  }
+  if (!visible) {
+    paintableMap.setOffsetSize(paintable,null);
+    return true;
+  }
+  boolean enabled=!uidl.getBooleanAttribute("disabled");
+  if (uidl.hasAttribute("tabindex") && component instanceof Focusable) {
+    ((Focusable)component).setTabIndex(uidl.getIntAttribute("tabindex"));
+  }
+  if (component instanceof FocusWidget) {
+    FocusWidget fw=(FocusWidget)component;
+    fw.setEnabled(enabled);
+  }
+  component.setStyleName(getStyleName(component.getStylePrimaryName(),uidl,component instanceof Field));
+  TooltipInfo tooltipInfo=paintableMap.getTooltipInfo(paintable,null);
+  if (uidl.hasAttribute(ATTRIBUTE_DESCRIPTION)) {
+    tooltipInfo.setTitle(uidl.getStringAttribute(ATTRIBUTE_DESCRIPTION));
+  }
+ else {
+    tooltipInfo.setTitle(null);
+  }
+  if (manageCaption) {
+    final Container parent=Util.getLayout(component);
+    if (parent != null) {
+      parent.updateCaption(paintable,uidl);
+    }
+  }
+  if (uidl.hasAttribute(ATTRIBUTE_ERROR)) {
+    tooltipInfo.setErrorUidl(uidl.getErrors());
+  }
+ else {
+    tooltipInfo.setErrorUidl(null);
+  }
+  if (manageCaption) {
+    final Container parent=Util.getLayout(component);
+    if (parent != null) {
+      parent.updateCaption(paintable,uidl);
+    }
+  }
+  updateComponentSize(paintable,uidl);
+  return false;
+}
