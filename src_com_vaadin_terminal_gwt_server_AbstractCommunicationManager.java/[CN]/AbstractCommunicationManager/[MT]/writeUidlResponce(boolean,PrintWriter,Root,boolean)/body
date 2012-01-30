@@ -1,13 +1,5 @@
 {
-  outWriter.print("\"changes\":[");
   ArrayList<Paintable> paintables=null;
-  List<InvalidLayout> invalidComponentRelativeSizes=null;
-  JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
-  OpenWindowCache windowCache=currentlyOpenWindowsInClient.get(Integer.valueOf(root.getRootId()));
-  if (windowCache == null) {
-    windowCache=new OpenWindowCache();
-    currentlyOpenWindowsInClient.put(Integer.valueOf(root.getRootId()),windowCache);
-  }
   if (repaintAll) {
     paintables=new ArrayList<Paintable>();
     paintables.add(root);
@@ -54,6 +46,16 @@
       }
     }
 );
+  }
+  outWriter.print("\"changes\":[");
+  List<InvalidLayout> invalidComponentRelativeSizes=null;
+  JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
+  OpenWindowCache windowCache=currentlyOpenWindowsInClient.get(Integer.valueOf(root.getRootId()));
+  if (windowCache == null) {
+    windowCache=new OpenWindowCache();
+    currentlyOpenWindowsInClient.put(Integer.valueOf(root.getRootId()),windowCache);
+  }
+  if (paintables != null) {
     for (final Iterator<Paintable> i=paintables.iterator(); i.hasNext(); ) {
       final Paintable p=i.next();
       if (paintTarget.needsToBePainted(p)) {

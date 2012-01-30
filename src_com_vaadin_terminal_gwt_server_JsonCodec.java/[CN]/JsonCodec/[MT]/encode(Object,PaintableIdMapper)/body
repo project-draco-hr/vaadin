@@ -1,0 +1,43 @@
+{
+  if (null == value) {
+    return combineTypeAndValue(JsonEncoder.VTYPE_UNDEFINED,JSONObject.NULL);
+  }
+ else   if (value instanceof String[]) {
+    String[] array=(String[])value;
+    JSONArray jsonArray=new JSONArray();
+    for (int i=0; i < array.length; ++i) {
+      jsonArray.put(array[i]);
+    }
+    return combineTypeAndValue(JsonEncoder.VTYPE_STRINGARRAY,jsonArray);
+  }
+ else   if (value instanceof String) {
+    return combineTypeAndValue(JsonEncoder.VTYPE_STRING,value);
+  }
+ else   if (value instanceof Boolean) {
+    return combineTypeAndValue(JsonEncoder.VTYPE_BOOLEAN,value);
+  }
+ else   if (value instanceof Object[]) {
+    Object[] array=(Object[])value;
+    JSONArray jsonArray=new JSONArray();
+    for (int i=0; i < array.length; ++i) {
+      jsonArray.put(encode(array[i],idMapper));
+    }
+    return combineTypeAndValue(JsonEncoder.VTYPE_ARRAY,jsonArray);
+  }
+ else   if (value instanceof Map) {
+    Map<String,Object> map=(Map<String,Object>)value;
+    JSONObject jsonMap=new JSONObject();
+    for (    String mapKey : map.keySet()) {
+      Object mapValue=map.get(mapKey);
+      jsonMap.put(mapKey,encode(mapValue,idMapper));
+    }
+    return combineTypeAndValue(JsonEncoder.VTYPE_MAP,jsonMap);
+  }
+ else   if (value instanceof Paintable) {
+    Paintable paintable=(Paintable)value;
+    return combineTypeAndValue(JsonEncoder.VTYPE_PAINTABLE,idMapper.getPaintableId(paintable));
+  }
+ else {
+    return combineTypeAndValue(getTransportType(value),String.valueOf(value));
+  }
+}
