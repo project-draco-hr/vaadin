@@ -1,0 +1,35 @@
+{
+  FastStringSet changed=FastStringSet.create();
+  for (  VPaintableWidget paintableWidget : paintableWidgets) {
+    Widget widget=paintableWidget.getWidgetForPaintable();
+    if (paintableWidget instanceof VMeasuringOrderedLayout) {
+      VMeasuringOrderedLayout hasCaptions=(VMeasuringOrderedLayout)paintableWidget;
+      Collection<VCaption> childCaptions=hasCaptions.getChildCaptions();
+      for (      VCaption vCaption : childCaptions) {
+        VPaintableWidget captionOwner=vCaption.getOwner();
+        MeasureManager.MeasuredSize measuredSize=paintableMap.getMeasuredSize(captionOwner);
+        int captionHeight=vCaption.getOffsetHeight();
+        int captionWidth=vCaption.getOffsetWidth();
+        if (captionHeight == 0 || captionWidth == 0) {
+          if (!Util.isAttachedAndDisplayed(vCaption)) {
+            continue;
+          }
+        }
+        measuredSize.setCaptionHeight(captionHeight);
+        measuredSize.setCaptionWidth(captionWidth);
+        if (measuredSize.isDirty()) {
+          changed.add(paintableMap.getPid(captionOwner));
+          measuredSize.setDirty(false);
+        }
+      }
+    }
+    MeasureManager.MeasuredSize measuredSize=paintableMap.getMeasuredSize(paintableWidget);
+    measuredSize.setWidth(widget.getOffsetWidth());
+    measuredSize.setHeight(widget.getOffsetHeight());
+    if (measuredSize.isDirty()) {
+      changed.add(paintableMap.getPid(paintableWidget));
+      measuredSize.setDirty(false);
+    }
+  }
+  return changed;
+}

@@ -58,6 +58,7 @@
       JsArray<ValueMap> changes=json.getJSValueMapArray("changes");
       ArrayList<VPaintableWidget> updatedVPaintableWidgets=new ArrayList<VPaintableWidget>();
       componentCaptionSizeChanges.clear();
+      Duration updateDuration=new Duration();
       int length=changes.length();
       for (int i=0; i < length; i++) {
         try {
@@ -89,18 +90,8 @@
       if (json.containsKey("dd")) {
         VDragAndDropManager.get().handleServerResponse(json.getValueMap("dd"));
       }
-      Set<Widget> sizeUpdatedWidgets=new HashSet<Widget>();
-      sizeUpdatedWidgets.addAll(componentCaptionSizeChanges);
-      for (      VPaintableWidget paintable : updatedVPaintableWidgets) {
-        Widget widget=paintable.getWidgetForPaintable();
-        Size oldSize=paintableMap.getOffsetSize(paintable);
-        Size newSize=new Size(widget.getOffsetWidth(),widget.getOffsetHeight());
-        if (oldSize == null || !oldSize.equals(newSize)) {
-          sizeUpdatedWidgets.add(widget);
-          paintableMap.setOffsetSize(paintable,newSize);
-        }
-      }
-      Util.componentSizeUpdated(sizeUpdatedWidgets);
+      VConsole.log("updateFromUidl: " + updateDuration.elapsedMillis() + " ms");
+      doLayout(false);
       if (meta != null) {
         if (meta.containsKey("appError")) {
           ValueMap error=meta.getValueMap("appError");

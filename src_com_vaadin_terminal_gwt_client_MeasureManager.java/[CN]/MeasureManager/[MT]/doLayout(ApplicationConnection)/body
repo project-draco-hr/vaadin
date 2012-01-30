@@ -1,0 +1,76 @@
+{
+  VPaintableMap paintableMap=client.getPaintableMap();
+  VPaintableWidget[] paintableWidgets=paintableMap.getRegisteredPaintableWidgets();
+  int passes=0;
+  long start=System.currentTimeMillis();
+  while (true) {
+    long passStart=System.currentTimeMillis();
+    passes++;
+    long measureStart=System.currentTimeMillis();
+    FastStringSet changedSet=findChangedWidgets(paintableWidgets,paintableMap);
+    JsArrayString changed=changedSet.dump();
+    long measureEnd=System.currentTimeMillis();
+    VConsole.log("Measure in " + (measureEnd - measureStart) + " ms");
+    if (changed.length() == 0) {
+      VConsole.log("No more changes in pass " + passes);
+      break;
+    }
+    if (passes > 100) {
+      VConsole.log("Aborting layout");
+      break;
+    }
+    FastStringSet affectedContainers=FastStringSet.create();
+    for (int i=0; i < changed.length(); i++) {
+      VPaintableWidget paintable=(VPaintableWidget)paintableMap.getPaintable(changed.get(i));
+      VPaintableWidget parentPaintable=getParentPaintable(paintable,paintableMap);
+      if (parentPaintable instanceof Container) {
+        affectedContainers.add(paintableMap.getPid(parentPaintable));
+      }
+    }
+    long layoutStart=System.currentTimeMillis();
+    for (int i=0; i < changed.length(); i++) {
+      String pid=changed.get(i);
+      VPaintableWidget paintable=(VPaintableWidget)paintableMap.getPaintable(pid);
+      if (!affectedContainers.contains(pid)) {
+        Widget widget=paintable.getWidgetForPaintable();
+        if (widget instanceof RequiresResize) {
+          ((RequiresResize)widget).onResize();
+        }
+      }
+    }
+    JsArrayString affectedPids=affectedContainers.dump();
+    for (int i=0; i < affectedPids.length(); i++) {
+      String containerPid=affectedPids.get(i);
+      VPaintableWidget container=(VPaintableWidget)paintableMap.getPaintable(containerPid);
+      Collection<VPaintableWidget> children=getChildren(container,client);
+      HashSet<Widget> changedChildren=new HashSet<Widget>();
+      for (      VPaintableWidget child : children) {
+        if (changedSet.contains(paintableMap.getPid(child))) {
+          changedChildren.add(child.getWidgetForPaintable());
+        }
+      }
+      ((Container)container).requestLayout(changedChildren);
+    }
+    long layoutEnd=System.currentTimeMillis();
+    VConsole.log(affectedPids.length() + " requestLayout invocations in " + (layoutEnd - layoutStart)+ "ms");
+    long passEnd=System.currentTimeMillis();
+    StringBuilder b=new StringBuilder();
+    b.append(changed.length());
+    b.append(" changed widgets in pass ");
+    b.append(passes);
+    b.append(" in ");
+    b.append((passEnd - passStart));
+    b.append(" ms: ");
+    if (changed.length() < 10) {
+      for (int i=0; i < changed.length(); i++) {
+        if (i != 0) {
+          b.append(", ");
+        }
+        b.append(changed.get(i));
+      }
+    }
+    VConsole.log(b.toString());
+  }
+  long end=System.currentTimeMillis();
+  VConsole.log("Total layout time: " + (end - start) + "ms");
+}
