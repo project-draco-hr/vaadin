@@ -1,15 +1,13 @@
 {
-  final Iterator<?> it=c.getChildIterator();
+  final Iterator<?> it=uidl.getChildIterator();
   while (it.hasNext()) {
     final UIDL action=(UIDL)it.next();
     final String key=action.getStringAttribute("key");
     final String caption=action.getStringAttribute("caption");
-    actionMap.put(key + "_c",caption);
+    String iconUrl=null;
     if (action.hasAttribute("icon")) {
-      actionMap.put(key + "_i",client.translateVaadinUri(action.getStringAttribute("icon")));
+      iconUrl=getConnection().translateVaadinUri(action.getStringAttribute("icon"));
     }
- else {
-      actionMap.remove(key + "_i");
-    }
+    getWidgetForPaintable().registerAction(key,caption,iconUrl);
   }
 }

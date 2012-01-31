@@ -9,10 +9,10 @@
     return;
   }
   if (target == nodeCaptionSpan) {
-    client.handleTooltipEvent(event,VTree.this,key);
+    client.handleWidgetTooltipEvent(event,VTree.this,key);
   }
   final boolean inCaption=target == nodeCaptionSpan || (icon != null && target == icon.getElement());
-  if (inCaption && client.hasEventListeners(VTree.this,ITEM_CLICK_EVENT_ID) && (type == Event.ONDBLCLICK || type == Event.ONMOUSEUP)) {
+  if (inCaption && client.hasWidgetEventListeners(VTree.this,ITEM_CLICK_EVENT_ID) && (type == Event.ONDBLCLICK || type == Event.ONMOUSEUP)) {
     fireClick(event);
   }
   if (type == Event.ONCLICK) {
@@ -51,7 +51,7 @@
  else     if (type == Event.ONMOUSEMOVE || type == Event.ONMOUSEOUT || type == Event.ONTOUCHMOVE) {
       if (mouseDownEvent != null) {
         VTransferable t=new VTransferable();
-        t.setDragSource(VTree.this);
+        t.setDragSource(VPaintableMap.get(client).getPaintable(VTree.this));
         t.setData("itemId",key);
         VDragEvent drag=VDragAndDropManager.get().startDrag(t,mouseDownEvent,true);
         drag.createDragImage(nodeCaptionDiv,true);
