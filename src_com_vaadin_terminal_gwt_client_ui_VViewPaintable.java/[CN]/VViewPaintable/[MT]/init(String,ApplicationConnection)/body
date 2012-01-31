@@ -1,0 +1,16 @@
+{
+  DOM.sinkEvents(getWidgetForPaintable().getElement(),Event.ONKEYDOWN | Event.ONSCROLL);
+  DOM.setElementProperty(getWidgetForPaintable().getElement(),"tabIndex","1");
+  RootPanel root=RootPanel.get(rootPanelId);
+  root.getElement().setInnerHTML("");
+  root.removeStyleName("v-app-loading");
+  String themeUri=applicationConnection.getConfiguration().getThemeUri();
+  String themeName=themeUri.substring(themeUri.lastIndexOf('/'));
+  themeName=themeName.replaceAll("[^a-zA-Z0-9]","");
+  root.addStyleName("v-theme-" + themeName);
+  root.add(getWidgetForPaintable());
+  if (applicationConnection.getConfiguration().isStandalone()) {
+    getWidgetForPaintable().getElement().focus();
+  }
+  getWidgetForPaintable().parentFrame=VView.getParentFrame();
+}

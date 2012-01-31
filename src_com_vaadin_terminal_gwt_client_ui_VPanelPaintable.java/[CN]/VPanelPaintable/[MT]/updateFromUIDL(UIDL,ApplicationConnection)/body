@@ -1,0 +1,80 @@
+{
+  getWidgetForPaintable().rendering=true;
+  if (!uidl.hasAttribute("cached")) {
+    getWidgetForPaintable().contentNode.setClassName(VPanel.CLASSNAME + "-content");
+    getWidgetForPaintable().bottomDecoration.setClassName(VPanel.CLASSNAME + "-deco");
+    getWidgetForPaintable().captionNode.setClassName(VPanel.CLASSNAME + "-caption");
+    boolean hasCaption=false;
+    if (uidl.hasAttribute("caption") && !uidl.getStringAttribute("caption").equals("")) {
+      getWidgetForPaintable().setCaption(uidl.getStringAttribute("caption"));
+      hasCaption=true;
+    }
+ else {
+      getWidgetForPaintable().setCaption("");
+      getWidgetForPaintable().captionNode.setClassName(VPanel.CLASSNAME + "-nocaption");
+    }
+    if (uidl.hasAttribute("style")) {
+      final String[] styles=uidl.getStringAttribute("style").split(" ");
+      final String captionBaseClass=VPanel.CLASSNAME + (hasCaption ? "-caption" : "-nocaption");
+      final String contentBaseClass=VPanel.CLASSNAME + "-content";
+      final String decoBaseClass=VPanel.CLASSNAME + "-deco";
+      String captionClass=captionBaseClass;
+      String contentClass=contentBaseClass;
+      String decoClass=decoBaseClass;
+      for (int i=0; i < styles.length; i++) {
+        captionClass+=" " + captionBaseClass + "-"+ styles[i];
+        contentClass+=" " + contentBaseClass + "-"+ styles[i];
+        decoClass+=" " + decoBaseClass + "-"+ styles[i];
+      }
+      getWidgetForPaintable().captionNode.setClassName(captionClass);
+      getWidgetForPaintable().contentNode.setClassName(contentClass);
+      getWidgetForPaintable().bottomDecoration.setClassName(decoClass);
+    }
+  }
+  if (client.updateComponent(this,uidl,false)) {
+    getWidgetForPaintable().rendering=false;
+    return;
+  }
+  clickEventHandler.handleEventHandlerRegistration(client);
+  getWidgetForPaintable().client=client;
+  getWidgetForPaintable().id=uidl.getId();
+  getWidgetForPaintable().setIconUri(uidl,client);
+  getWidgetForPaintable().handleError(uidl);
+  final UIDL layoutUidl=uidl.getChildUIDL(0);
+  final VPaintableWidget newLayout=client.getPaintable(layoutUidl);
+  if (newLayout != getWidgetForPaintable().layout) {
+    if (getWidgetForPaintable().layout != null) {
+      client.unregisterPaintable(getWidgetForPaintable().layout);
+    }
+    getWidgetForPaintable().setWidget(newLayout.getWidgetForPaintable());
+    getWidgetForPaintable().layout=newLayout;
+  }
+  getWidgetForPaintable().layout.updateFromUIDL(layoutUidl,client);
+  if (uidl.getChildCount() > 1) {
+    final int cnt=uidl.getChildCount();
+    for (int i=1; i < cnt; i++) {
+      UIDL childUidl=uidl.getChildUIDL(i);
+      if (childUidl.getTag().equals("actions")) {
+        if (getWidgetForPaintable().shortcutHandler == null) {
+          getWidgetForPaintable().shortcutHandler=new ShortcutActionHandler(getId(),client);
+        }
+        getWidgetForPaintable().shortcutHandler.updateActionMap(childUidl);
+      }
+    }
+  }
+  if (uidl.hasVariable("scrollTop") && uidl.getIntVariable("scrollTop") != getWidgetForPaintable().scrollTop) {
+    getWidgetForPaintable().scrollTop=uidl.getIntVariable("scrollTop");
+    getWidgetForPaintable().contentNode.setScrollTop(getWidgetForPaintable().scrollTop);
+    getWidgetForPaintable().scrollTop=getWidgetForPaintable().contentNode.getScrollTop();
+  }
+  if (uidl.hasVariable("scrollLeft") && uidl.getIntVariable("scrollLeft") != getWidgetForPaintable().scrollLeft) {
+    getWidgetForPaintable().scrollLeft=uidl.getIntVariable("scrollLeft");
+    getWidgetForPaintable().contentNode.setScrollLeft(getWidgetForPaintable().scrollLeft);
+    getWidgetForPaintable().scrollLeft=getWidgetForPaintable().contentNode.getScrollLeft();
+  }
+  getWidgetForPaintable().runHacks(false);
+  if (uidl.hasVariable("tabindex")) {
+    getWidgetForPaintable().contentNode.setTabIndex(uidl.getIntVariable("tabindex"));
+  }
+  getWidgetForPaintable().rendering=false;
+}

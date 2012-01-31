@@ -1,0 +1,49 @@
+{
+  super.updateFromUIDL(uidl,client);
+  getWidgetForPaintable().calendarPanel.setShowISOWeekNumbers(getWidgetForPaintable().isShowISOWeekNumbers());
+  getWidgetForPaintable().calendarPanel.setDateTimeService(getWidgetForPaintable().getDateTimeService());
+  getWidgetForPaintable().calendarPanel.setResolution(getWidgetForPaintable().getCurrentResolution());
+  Date currentDate=getWidgetForPaintable().getCurrentDate();
+  if (currentDate != null) {
+    getWidgetForPaintable().calendarPanel.setDate(new Date(currentDate.getTime()));
+  }
+ else {
+    getWidgetForPaintable().calendarPanel.setDate(null);
+  }
+  if (getWidgetForPaintable().currentResolution > VDateField.RESOLUTION_DAY) {
+    getWidgetForPaintable().calendarPanel.setTimeChangeListener(new TimeChangeListener(){
+      public void changed(      int hour,      int min,      int sec,      int msec){
+        Date d=getWidgetForPaintable().getDate();
+        if (d == null) {
+          d=(Date)getWidgetForPaintable().calendarPanel.getDate().clone();
+        }
+        d.setHours(hour);
+        d.setMinutes(min);
+        d.setSeconds(sec);
+        DateTimeService.setMilliseconds(d,msec);
+        getWidgetForPaintable().calendarPanel.setDate(d);
+        getWidgetForPaintable().updateValueFromPanel();
+      }
+    }
+);
+  }
+  if (getWidgetForPaintable().currentResolution <= VDateField.RESOLUTION_MONTH) {
+    getWidgetForPaintable().calendarPanel.setFocusChangeListener(new FocusChangeListener(){
+      public void focusChanged(      Date date){
+        Date date2=new Date();
+        if (getWidgetForPaintable().calendarPanel.getDate() != null) {
+          date2.setTime(getWidgetForPaintable().calendarPanel.getDate().getTime());
+        }
+        date2.setYear(date.getYear());
+        date2.setMonth(date.getMonth());
+        getWidgetForPaintable().calendarPanel.setDate(date2);
+        getWidgetForPaintable().updateValueFromPanel();
+      }
+    }
+);
+  }
+ else {
+    getWidgetForPaintable().calendarPanel.setFocusChangeListener(null);
+  }
+  getWidgetForPaintable().calendarPanel.renderCalendar();
+}

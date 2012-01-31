@@ -1,0 +1,24 @@
+{
+  getWidgetForPaintable().rendering=true;
+  getWidgetForPaintable().client=client;
+  if (client.updateComponent(this,uidl,true)) {
+    getWidgetForPaintable().rendering=false;
+    return;
+  }
+  clickEventHandler.handleEventHandlerRegistration(client);
+  HashSet<String> unrenderedPids=new HashSet<String>(getWidgetForPaintable().pidToComponentWrappper.keySet());
+  for (Iterator<Object> childIterator=uidl.getChildIterator(); childIterator.hasNext(); ) {
+    UIDL cc=(UIDL)childIterator.next();
+    if (cc.getTag().equals("cc")) {
+      UIDL componentUIDL=cc.getChildUIDL(0);
+      unrenderedPids.remove(componentUIDL.getId());
+      getWidgetForPaintable().getWrapper(client,componentUIDL).updateFromUIDL(cc);
+    }
+  }
+  for (  String pid : unrenderedPids) {
+    AbsoluteWrapper absoluteWrapper=getWidgetForPaintable().pidToComponentWrappper.get(pid);
+    getWidgetForPaintable().pidToComponentWrappper.remove(pid);
+    absoluteWrapper.destroy();
+  }
+  getWidgetForPaintable().rendering=false;
+}

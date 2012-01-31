@@ -1,0 +1,17 @@
+{
+  if (client.updateComponent(this,uidl,true)) {
+    return;
+  }
+  getWidgetForPaintable().setControls(shouldShowControls(uidl));
+  getWidgetForPaintable().setAutoplay(shouldAutoplay(uidl));
+  getWidgetForPaintable().setMuted(isMediaMuted(uidl));
+  for (int ix=0; ix < uidl.getChildCount(); ix++) {
+    UIDL child=uidl.getChildUIDL(ix);
+    if (TAG_SOURCE.equals(child.getTag())) {
+      getWidgetForPaintable().addSource(getSourceUrl(child),getSourceType(child));
+    }
+  }
+  setAltText(uidl);
+  evalPauseCommand(uidl);
+  evalPlayCommand(uidl);
+}

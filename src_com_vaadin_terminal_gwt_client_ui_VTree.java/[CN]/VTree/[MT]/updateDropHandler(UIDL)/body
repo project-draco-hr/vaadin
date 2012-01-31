@@ -23,7 +23,7 @@
               public void accepted(              VDragEvent event){
                 VerticalDropLocation curDetail=(VerticalDropLocation)event.getDropDetails().get("detail");
                 if (curDetail == detail && newKey.equals(currentMouseOverKey)) {
-                  keyToNode.get(newKey).emphasis(detail);
+                  getNodeByKey(newKey).emphasis(detail);
                 }
               }
             }
@@ -36,7 +36,7 @@
       }
       private void cleanUp(){
         if (currentMouseOverKey != null) {
-          keyToNode.get(currentMouseOverKey).emphasis(null);
+          getNodeByKey(currentMouseOverKey).emphasis(null);
           currentMouseOverKey=null;
         }
       }
@@ -45,7 +45,7 @@
         return super.drop(drag);
       }
       @Override public VPaintableWidget getPaintable(){
-        return VTree.this;
+        return VPaintableMap.get(client).getPaintable(VTree.this);
       }
       public ApplicationConnection getApplicationConnection(){
         return client;

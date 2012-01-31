@@ -1,19 +1,13 @@
 {
   final String tag=uidl.getTag();
   Class<? extends VPaintableWidget> widgetClass=conf.getWidgetClassByEncodedTag(tag);
-  if (widgetClass == VView.class && uidl.hasAttribute("sub")) {
-    return VWindow.class;
-  }
- else   if (widgetClass == VFilterSelect.class) {
+  if (widgetClass == VFilterSelectPaintable.class) {
     if (uidl.hasAttribute("type")) {
       final String type=uidl.getStringAttribute("type").intern();
       if ("legacy-multi" == type) {
-        return VListSelect.class;
+        return VListSelectPaintable.class;
       }
     }
-  }
- else   if (widgetClass == VSplitPanelHorizontal.class && uidl.hasAttribute("vertical")) {
-    return VSplitPanelVertical.class;
   }
   return widgetClass;
 }

@@ -1,0 +1,34 @@
+{
+  getWidgetForPaintable().rendering=true;
+  if (!uidl.getBooleanAttribute("cached")) {
+    getWidgetForPaintable().handleStyleNames(uidl);
+  }
+  super.updateFromUIDL(uidl,client);
+  if (getWidgetForPaintable().cachedUpdate) {
+    getWidgetForPaintable().rendering=false;
+    return;
+  }
+  if (!getWidgetForPaintable().isDynamicWidth()) {
+    DOM.setStyleAttribute(getWidgetForPaintable().tabs,"width","1px");
+    DOM.setStyleAttribute(getWidgetForPaintable().tabs,"overflow","hidden");
+  }
+ else {
+    getWidgetForPaintable().showAllTabs();
+    DOM.setStyleAttribute(getWidgetForPaintable().tabs,"width","");
+    DOM.setStyleAttribute(getWidgetForPaintable().tabs,"overflow","visible");
+    getWidgetForPaintable().updateDynamicWidth();
+  }
+  if (!getWidgetForPaintable().isDynamicHeight()) {
+    getWidgetForPaintable().updateContentNodeHeight();
+    getWidgetForPaintable().updateOpenTabSize();
+  }
+  getWidgetForPaintable().iLayout();
+  try {
+    client.handleComponentRelativeSize(getWidgetForPaintable().tp.getWidget(getWidgetForPaintable().tp.getVisibleWidget()));
+  }
+ catch (  Exception e) {
+  }
+  getWidgetForPaintable().renderInformation.updateSize(getWidgetForPaintable().getElement());
+  getWidgetForPaintable().waitingForResponse=false;
+  getWidgetForPaintable().rendering=false;
+}
