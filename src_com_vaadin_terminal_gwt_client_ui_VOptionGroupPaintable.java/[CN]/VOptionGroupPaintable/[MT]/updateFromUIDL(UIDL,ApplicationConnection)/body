@@ -1,0 +1,28 @@
+{
+  getWidgetForPaintable().htmlContentAllowed=uidl.hasAttribute(VOptionGroup.HTML_CONTENT_ALLOWED);
+  super.updateFromUIDL(uidl,client);
+  getWidgetForPaintable().sendFocusEvents=client.hasEventListeners(this,EventId.FOCUS);
+  getWidgetForPaintable().sendBlurEvents=client.hasEventListeners(this,EventId.BLUR);
+  if (getWidgetForPaintable().focusHandlers != null) {
+    for (    HandlerRegistration reg : getWidgetForPaintable().focusHandlers) {
+      reg.removeHandler();
+    }
+    getWidgetForPaintable().focusHandlers.clear();
+    getWidgetForPaintable().focusHandlers=null;
+    for (    HandlerRegistration reg : getWidgetForPaintable().blurHandlers) {
+      reg.removeHandler();
+    }
+    getWidgetForPaintable().blurHandlers.clear();
+    getWidgetForPaintable().blurHandlers=null;
+  }
+  if (getWidgetForPaintable().sendFocusEvents || getWidgetForPaintable().sendBlurEvents) {
+    getWidgetForPaintable().focusHandlers=new ArrayList<HandlerRegistration>();
+    getWidgetForPaintable().blurHandlers=new ArrayList<HandlerRegistration>();
+    for (    Widget wid : getWidgetForPaintable().panel) {
+      if (wid instanceof CheckBox) {
+        getWidgetForPaintable().focusHandlers.add(((CheckBox)wid).addFocusHandler(getWidgetForPaintable()));
+        getWidgetForPaintable().blurHandlers.add(((CheckBox)wid).addBlurHandler(getWidgetForPaintable()));
+      }
+    }
+  }
+}
