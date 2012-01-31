@@ -1,0 +1,109 @@
+{
+  getWidgetForPaintable().client=client;
+  getWidgetForPaintable().paintableId=uidl.getId();
+  getWidgetForPaintable().readonly=uidl.hasAttribute("readonly");
+  getWidgetForPaintable().enabled=!uidl.hasAttribute("disabled");
+  getWidgetForPaintable().tb.setEnabled(getWidgetForPaintable().enabled);
+  getWidgetForPaintable().updateReadOnly();
+  if (client.updateComponent(this,uidl,true)) {
+    return;
+  }
+  boolean noTextInput=uidl.hasAttribute(VFilterSelect.ATTR_NO_TEXT_INPUT) && uidl.getBooleanAttribute(VFilterSelect.ATTR_NO_TEXT_INPUT);
+  getWidgetForPaintable().setTextInputEnabled(!noTextInput);
+  if (uidl.hasAttribute("tabindex")) {
+    getWidgetForPaintable().tb.setTabIndex(uidl.getIntAttribute("tabindex"));
+  }
+  if (uidl.hasAttribute("filteringmode")) {
+    getWidgetForPaintable().filteringmode=uidl.getIntAttribute("filteringmode");
+  }
+  getWidgetForPaintable().immediate=uidl.hasAttribute("immediate");
+  getWidgetForPaintable().nullSelectionAllowed=uidl.hasAttribute("nullselect");
+  getWidgetForPaintable().nullSelectItem=uidl.hasAttribute("nullselectitem") && uidl.getBooleanAttribute("nullselectitem");
+  getWidgetForPaintable().currentPage=uidl.getIntVariable("page");
+  if (uidl.hasAttribute("pagelength")) {
+    getWidgetForPaintable().pageLength=uidl.getIntAttribute("pagelength");
+  }
+  if (uidl.hasAttribute(VFilterSelect.ATTR_INPUTPROMPT)) {
+    getWidgetForPaintable().inputPrompt=uidl.getStringAttribute(VFilterSelect.ATTR_INPUTPROMPT);
+  }
+ else {
+    getWidgetForPaintable().inputPrompt="";
+  }
+  getWidgetForPaintable().suggestionPopup.updateStyleNames(uidl);
+  getWidgetForPaintable().allowNewItem=uidl.hasAttribute("allownewitem");
+  getWidgetForPaintable().lastNewItemString=null;
+  getWidgetForPaintable().currentSuggestions.clear();
+  if (!getWidgetForPaintable().waitingForFilteringResponse) {
+    getWidgetForPaintable().currentSuggestion=null;
+    getWidgetForPaintable().suggestionPopup.menu.clearItems();
+  }
+  final UIDL options=uidl.getChildUIDL(0);
+  if (uidl.hasAttribute("totalMatches")) {
+    getWidgetForPaintable().totalMatches=uidl.getIntAttribute("totalMatches");
+  }
+ else {
+    getWidgetForPaintable().totalMatches=0;
+  }
+  String captions=Util.escapeHTML(getWidgetForPaintable().inputPrompt);
+  for (final Iterator<?> i=options.getChildIterator(); i.hasNext(); ) {
+    final UIDL optionUidl=(UIDL)i.next();
+    final FilterSelectSuggestion suggestion=getWidgetForPaintable().new FilterSelectSuggestion(optionUidl);
+    getWidgetForPaintable().currentSuggestions.add(suggestion);
+    if (optionUidl.hasAttribute("selected")) {
+      if (!getWidgetForPaintable().waitingForFilteringResponse || getWidgetForPaintable().popupOpenerClicked) {
+        String newSelectedOptionKey=Integer.toString(suggestion.getOptionKey());
+        if (!newSelectedOptionKey.equals(getWidgetForPaintable().selectedOptionKey) || suggestion.getReplacementString().equals(getWidgetForPaintable().tb.getText())) {
+          getWidgetForPaintable().setPromptingOff(suggestion.getReplacementString());
+          getWidgetForPaintable().selectedOptionKey=newSelectedOptionKey;
+        }
+      }
+      getWidgetForPaintable().currentSuggestion=suggestion;
+      getWidgetForPaintable().setSelectedItemIcon(suggestion.getIconUri());
+    }
+    if (captions.length() > 0) {
+      captions+="|";
+    }
+    captions+=Util.escapeHTML(suggestion.getReplacementString());
+  }
+  if ((!getWidgetForPaintable().waitingForFilteringResponse || getWidgetForPaintable().popupOpenerClicked) && uidl.hasVariable("selected") && uidl.getStringArrayVariable("selected").length == 0) {
+    if (!getWidgetForPaintable().waitingForFilteringResponse || !getWidgetForPaintable().popupOpenerClicked) {
+      if (!getWidgetForPaintable().focused) {
+        getWidgetForPaintable().prompting=false;
+        getWidgetForPaintable().setPromptingOn();
+      }
+ else {
+        getWidgetForPaintable().tb.setValue("");
+      }
+    }
+    getWidgetForPaintable().selectedOptionKey=null;
+  }
+  if (getWidgetForPaintable().waitingForFilteringResponse && getWidgetForPaintable().lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) {
+    getWidgetForPaintable().suggestionPopup.showSuggestions(getWidgetForPaintable().currentSuggestions,getWidgetForPaintable().currentPage,getWidgetForPaintable().totalMatches);
+    getWidgetForPaintable().waitingForFilteringResponse=false;
+    if (!getWidgetForPaintable().popupOpenerClicked && getWidgetForPaintable().selectPopupItemWhenResponseIsReceived != VFilterSelect.Select.NONE) {
+      if (getWidgetForPaintable().selectPopupItemWhenResponseIsReceived == VFilterSelect.Select.LAST) {
+        getWidgetForPaintable().suggestionPopup.menu.selectLastItem();
+      }
+ else {
+        getWidgetForPaintable().suggestionPopup.menu.selectFirstItem();
+      }
+      MenuItem activeMenuItem=getWidgetForPaintable().suggestionPopup.menu.getSelectedItem();
+      getWidgetForPaintable().suggestionPopup.menu.setKeyboardSelectedItem(activeMenuItem);
+      getWidgetForPaintable().setTextboxText(activeMenuItem.getText());
+      getWidgetForPaintable().tb.setSelectionRange(getWidgetForPaintable().lastFilter.length(),activeMenuItem.getText().length() - getWidgetForPaintable().lastFilter.length());
+      getWidgetForPaintable().selectPopupItemWhenResponseIsReceived=VFilterSelect.Select.NONE;
+    }
+    if (getWidgetForPaintable().updateSelectionWhenReponseIsReceived) {
+      getWidgetForPaintable().suggestionPopup.menu.doPostFilterSelectedItemAction();
+    }
+  }
+  getWidgetForPaintable().suggestionPopupMinWidth=getWidgetForPaintable().minWidth(captions);
+  getWidgetForPaintable().popupOpenerClicked=false;
+  if (!getWidgetForPaintable().initDone) {
+    getWidgetForPaintable().updateRootWidth();
+  }
+  if (getWidgetForPaintable().focused) {
+    getWidgetForPaintable().addStyleDependentName("focus");
+  }
+  getWidgetForPaintable().initDone=true;
+}

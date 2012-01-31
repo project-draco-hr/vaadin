@@ -1,0 +1,61 @@
+{
+  boolean lastReadOnlyState=getWidgetForPaintable().readonly;
+  boolean lastEnabledState=getWidgetForPaintable().isEnabled();
+  getWidgetForPaintable().parsable=uidl.getBooleanAttribute("parsable");
+  super.updateFromUIDL(uidl,client);
+  String popupStyleNames=ApplicationConnection.getStyleName(VPopupCalendar.POPUP_PRIMARY_STYLE_NAME,uidl,false);
+  popupStyleNames+=" " + VDateField.CLASSNAME + "-"+ VPopupCalendar.resolutionToString(getWidgetForPaintable().currentResolution);
+  getWidgetForPaintable().popup.setStyleName(popupStyleNames);
+  getWidgetForPaintable().calendar.setDateTimeService(getWidgetForPaintable().getDateTimeService());
+  getWidgetForPaintable().calendar.setShowISOWeekNumbers(getWidgetForPaintable().isShowISOWeekNumbers());
+  if (getWidgetForPaintable().calendar.getResolution() != getWidgetForPaintable().currentResolution) {
+    getWidgetForPaintable().calendar.setResolution(getWidgetForPaintable().currentResolution);
+    if (getWidgetForPaintable().calendar.getDate() != null) {
+      getWidgetForPaintable().calendar.setDate((Date)getWidgetForPaintable().getCurrentDate().clone());
+      getWidgetForPaintable().calendar.renderCalendar();
+    }
+  }
+  getWidgetForPaintable().calendarToggle.setEnabled(getWidgetForPaintable().enabled);
+  if (getWidgetForPaintable().currentResolution <= VPopupCalendar.RESOLUTION_MONTH) {
+    getWidgetForPaintable().calendar.setFocusChangeListener(new FocusChangeListener(){
+      public void focusChanged(      Date date){
+        getWidgetForPaintable().updateValue(date);
+        getWidgetForPaintable().buildDate();
+        Date date2=getWidgetForPaintable().calendar.getDate();
+        date2.setYear(date.getYear());
+        date2.setMonth(date.getMonth());
+      }
+    }
+);
+  }
+ else {
+    getWidgetForPaintable().calendar.setFocusChangeListener(null);
+  }
+  if (getWidgetForPaintable().currentResolution > VPopupCalendar.RESOLUTION_DAY) {
+    getWidgetForPaintable().calendar.setTimeChangeListener(new TimeChangeListener(){
+      public void changed(      int hour,      int min,      int sec,      int msec){
+        Date d=getWidgetForPaintable().getDate();
+        if (d == null) {
+          d=(Date)getWidgetForPaintable().calendar.getDate().clone();
+        }
+        d.setHours(hour);
+        d.setMinutes(min);
+        d.setSeconds(sec);
+        DateTimeService.setMilliseconds(d,msec);
+        getWidgetForPaintable().updateValue(d);
+        getWidgetForPaintable().buildDate();
+      }
+    }
+);
+  }
+  if (getWidgetForPaintable().readonly) {
+    getWidgetForPaintable().calendarToggle.addStyleName(VPopupCalendar.CLASSNAME + "-button-readonly");
+  }
+ else {
+    getWidgetForPaintable().calendarToggle.removeStyleName(VPopupCalendar.CLASSNAME + "-button-readonly");
+  }
+  if (lastReadOnlyState != getWidgetForPaintable().readonly || lastEnabledState != getWidgetForPaintable().isEnabled()) {
+    getWidgetForPaintable().updateWidth();
+  }
+  getWidgetForPaintable().calendarToggle.setEnabled(true);
+}
