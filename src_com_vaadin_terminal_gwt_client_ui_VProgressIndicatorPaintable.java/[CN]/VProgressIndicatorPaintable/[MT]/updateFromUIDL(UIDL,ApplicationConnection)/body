@@ -1,0 +1,30 @@
+{
+  if (client.updateComponent(this,uidl,false)) {
+    return;
+  }
+  getWidgetForPaintable().client=client;
+  getWidgetForPaintable().indeterminate=uidl.getBooleanAttribute("indeterminate");
+  if (getWidgetForPaintable().indeterminate) {
+    String basename=VProgressIndicator.CLASSNAME + "-indeterminate";
+    getWidgetForPaintable().addStyleName(basename);
+    if (uidl.getBooleanAttribute("disabled")) {
+      getWidgetForPaintable().addStyleName(basename + "-disabled");
+    }
+ else {
+      getWidgetForPaintable().removeStyleName(basename + "-disabled");
+    }
+  }
+ else {
+    try {
+      final float f=Float.parseFloat(uidl.getStringAttribute("state"));
+      final int size=Math.round(100 * f);
+      DOM.setStyleAttribute(getWidgetForPaintable().indicator,"width",size + "%");
+    }
+ catch (    final Exception e) {
+    }
+  }
+  if (!uidl.getBooleanAttribute("disabled")) {
+    getWidgetForPaintable().interval=uidl.getIntAttribute("pollinginterval");
+    getWidgetForPaintable().poller.scheduleRepeating(getWidgetForPaintable().interval);
+  }
+}
