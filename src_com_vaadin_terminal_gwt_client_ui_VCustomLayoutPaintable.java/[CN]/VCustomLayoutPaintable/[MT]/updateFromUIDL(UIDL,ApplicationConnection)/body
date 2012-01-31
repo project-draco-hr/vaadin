@@ -1,18 +1,18 @@
 {
-  this.client=client;
+  getWidgetForPaintable().client=client;
   if (client.updateComponent(this,uidl,true)) {
     return;
   }
-  pid=uidl.getId();
-  if (!hasTemplate()) {
-    initializeHTML(uidl,client);
+  getWidgetForPaintable().pid=uidl.getId();
+  if (!getWidgetForPaintable().hasTemplate()) {
+    getWidgetForPaintable().initializeHTML(uidl,client);
   }
-  eval(scripts);
-  scripts=null;
-  iLayout();
-  client.runDescendentsLayout(this);
+  VCustomLayout.eval(getWidgetForPaintable().scripts);
+  getWidgetForPaintable().scripts=null;
+  getWidgetForPaintable().iLayout();
+  client.runDescendentsLayout(getWidgetForPaintable());
   Set<Widget> oldWidgets=new HashSet<Widget>();
-  oldWidgets.addAll(locationToWidget.values());
+  oldWidgets.addAll(getWidgetForPaintable().locationToWidget.values());
   for (final Iterator<?> i=uidl.getChildIterator(); i.hasNext(); ) {
     final UIDL uidlForChild=(UIDL)i.next();
     if (uidlForChild.getTag().equals("location")) {
@@ -21,7 +21,7 @@
       final VPaintableWidget childPaintable=client.getPaintable(childUIDL);
       Widget childWidget=childPaintable.getWidgetForPaintable();
       try {
-        setWidget(childWidget,location);
+        getWidgetForPaintable().setWidget(childWidget,location);
         childPaintable.updateFromUIDL(childUIDL,client);
       }
  catch (      final IllegalArgumentException e) {
@@ -32,9 +32,9 @@
   for (Iterator<Widget> iterator=oldWidgets.iterator(); iterator.hasNext(); ) {
     Widget oldWidget=iterator.next();
     if (oldWidget.isAttached()) {
-      remove(oldWidget);
+      getWidgetForPaintable().remove(oldWidget);
     }
   }
-  iLayout();
-  client.runDescendentsLayout(this);
+  getWidgetForPaintable().iLayout();
+  client.runDescendentsLayout(getWidgetForPaintable());
 }
