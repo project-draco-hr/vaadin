@@ -47,6 +47,26 @@
     }
 );
   }
+  if (paintables != null) {
+    JSONObject sharedStates=new JSONObject();
+    for (final Iterator<Paintable> i=paintables.iterator(); i.hasNext(); ) {
+      final Paintable p=i.next();
+      String paintableId=getPaintableId(p);
+      SharedState state=p.getState();
+      if (null != state) {
+        try {
+          JSONArray stateJsonArray=JsonCodec.encode(state,this);
+          sharedStates.put(paintableId,stateJsonArray);
+        }
+ catch (        JSONException e) {
+          throw new PaintException("Failed to serialize shared state for paintable " + paintableId + ": "+ e.getMessage());
+        }
+      }
+    }
+    outWriter.print("\"state\":");
+    outWriter.append(sharedStates.toString());
+    outWriter.print(", ");
+  }
   outWriter.print("\"changes\":[");
   List<InvalidLayout> invalidComponentRelativeSizes=null;
   JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
@@ -74,8 +94,8 @@
     }
   }
   paintTarget.close();
-  outWriter.print("]");
-  outWriter.print(", \"meta\" : {");
+  outWriter.print("], ");
+  outWriter.print("\"meta\" : {");
   boolean metaOpen=false;
   if (repaintAll) {
     metaOpen=true;

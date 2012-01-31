@@ -55,6 +55,17 @@
       if (redirectTimer != null) {
         redirectTimer.schedule(1000 * sessionExpirationInterval);
       }
+      Map<String,SharedState> sharedStates=new HashMap<String,SharedState>();
+      ValueMap states=json.getValueMap("state");
+      JsArrayString keyArray=states.getKeyArray();
+      for (int i=0; i < keyArray.length(); i++) {
+        String paintableId=keyArray.get(i);
+        JavaScriptObject value=states.getJavaScriptObject(paintableId);
+        SharedState state=GWT.create(SharedState.class);
+        Map<String,Object> stateMap=(Map<String,Object>)JsonDecoder.convertValue(new JSONArray(value),getPaintableMap());
+        state.setState(stateMap);
+        sharedStates.put(paintableId,state);
+      }
       JsArray<ValueMap> changes=json.getJSValueMapArray("changes");
       ArrayList<VPaintableWidget> updatedVPaintableWidgets=new ArrayList<VPaintableWidget>();
       relativeSizeChanges.clear();
