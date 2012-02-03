@@ -2,7 +2,7 @@
 switch (DOM.eventGetType(event)) {
 case Event.ONTOUCHSTART:
 case Event.ONMOUSEDOWN:
-    if (columnReordering) {
+    if (columnReordering && Util.isTouchEventOrLeftMouseButton(event)) {
       if (event.getTypeInt() == Event.ONTOUCHSTART) {
         event.stopPropagation();
       }
@@ -17,7 +17,7 @@ case Event.ONMOUSEDOWN:
 case Event.ONMOUSEUP:
 case Event.ONTOUCHEND:
 case Event.ONTOUCHCANCEL:
-if (columnReordering) {
+if (columnReordering && Util.isTouchEventOrLeftMouseButton(event)) {
   dragging=false;
   DOM.releaseCapture(getElement());
   if (moved) {
@@ -59,11 +59,6 @@ if (Util.isTouchEvent(event)) {
   event.stopPropagation();
 }
 break;
-}
-break;
-case Event.ONCONTEXTMENU:
-if (client.hasEventListeners(VScrollTable.this,HEADER_CLICK_EVENT_ID)) {
-event.preventDefault();
 }
 break;
 case Event.ONDBLCLICK:

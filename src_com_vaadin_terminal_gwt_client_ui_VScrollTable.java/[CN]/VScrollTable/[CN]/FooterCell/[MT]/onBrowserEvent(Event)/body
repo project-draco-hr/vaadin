@@ -4,7 +4,13 @@
     if (DOM.eventGetType(event) == Event.ONMOUSEUP) {
       scrollBodyPanel.setFocus(true);
     }
-    event.stopPropagation();
-    event.preventDefault();
+    boolean stopPropagation=true;
+    if (event.getTypeInt() == Event.ONCONTEXTMENU && !client.hasEventListeners(VScrollTable.this,FOOTER_CLICK_EVENT_ID)) {
+      stopPropagation=false;
+    }
+    if (stopPropagation) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
   }
 }
