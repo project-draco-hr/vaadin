@@ -2,7 +2,7 @@
 switch (DOM.eventGetType(event)) {
 case Event.ONTOUCHSTART:
 case Event.ONMOUSEDOWN:
-    if (columnReordering) {
+    if (columnReordering && Util.isTouchEventOrLeftMouseButton(event)) {
       if (event.getTypeInt() == Event.ONTOUCHSTART) {
         event.stopPropagation();
       }
@@ -17,7 +17,7 @@ case Event.ONMOUSEDOWN:
 case Event.ONMOUSEUP:
 case Event.ONTOUCHEND:
 case Event.ONTOUCHCANCEL:
-if (columnReordering) {
+if (columnReordering && Util.isTouchEventOrLeftMouseButton(event)) {
   dragging=false;
   DOM.releaseCapture(getElement());
   if (moved) {
@@ -38,7 +38,7 @@ if (columnReordering) {
   }
 }
 if (!moved) {
-if (sortable) {
+if (sortable && Util.isTouchEventOrLeftMouseButton(event)) {
   if (sortColumn.equals(cid)) {
     client.updateVariable(paintableId,"sortascending",!sortAscending,false);
   }
@@ -61,17 +61,12 @@ if (Util.isTouchEvent(event)) {
 break;
 }
 break;
-case Event.ONCONTEXTMENU:
-if (client.hasWidgetEventListeners(VScrollTable.this,HEADER_CLICK_EVENT_ID)) {
-event.preventDefault();
-}
-break;
 case Event.ONDBLCLICK:
 fireHeaderClickedEvent(event);
 break;
 case Event.ONTOUCHMOVE:
 case Event.ONMOUSEMOVE:
-if (dragging) {
+if (dragging && Util.isTouchEventOrLeftMouseButton(event)) {
 if (event.getTypeInt() == Event.ONTOUCHMOVE) {
 event.stopPropagation();
 }
