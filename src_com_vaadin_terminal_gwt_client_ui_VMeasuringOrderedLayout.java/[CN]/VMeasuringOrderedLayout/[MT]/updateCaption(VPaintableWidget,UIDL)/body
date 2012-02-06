@@ -9,6 +9,8 @@
       DOM.insertBefore((com.google.gwt.user.client.Element)wrapper.cast(),caption.getElement(),widget.getElement());
       adopt(caption);
       captions.put(component,caption);
+      MeasureManager.MeasuredSize measuredSize=client.getMeasuredSize(component);
+      measuredSize.registerDependency(caption.getElement());
     }
     caption.updateCaption(uidl);
   }
@@ -17,8 +19,7 @@
     if (removedCaption != null) {
       remove(removedCaption);
       MeasureManager.MeasuredSize measuredSize=client.getMeasuredSize(component);
-      measuredSize.setCaptionHeight(0);
-      measuredSize.setCaptionWidth(0);
+      measuredSize.deRegisterDependency(removedCaption.getElement());
     }
   }
 }
