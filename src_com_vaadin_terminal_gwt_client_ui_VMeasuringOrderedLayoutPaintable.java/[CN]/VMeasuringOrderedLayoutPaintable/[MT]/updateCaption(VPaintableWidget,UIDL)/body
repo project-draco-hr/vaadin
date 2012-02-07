@@ -1,0 +1,22 @@
+{
+  if (VCaption.isNeeded(uidl)) {
+    VCaption caption=getWidgetForPaintable().captions.get(component);
+    if (caption == null) {
+      caption=new VCaption(component,getWidgetForPaintable().client);
+      Widget widget=component.getWidgetForPaintable();
+      getWidgetForPaintable().addCaption(caption,widget);
+      getWidgetForPaintable().captions.put(component,caption);
+      MeasureManager.MeasuredSize measuredSize=getWidgetForPaintable().client.getMeasuredSize(component);
+      measuredSize.registerDependency(caption.getElement());
+    }
+    caption.updateCaption(uidl);
+  }
+ else {
+    VCaption removedCaption=getWidgetForPaintable().captions.remove(component);
+    if (removedCaption != null) {
+      getWidgetForPaintable().remove(removedCaption);
+      MeasureManager.MeasuredSize measuredSize=getWidgetForPaintable().client.getMeasuredSize(component);
+      measuredSize.deRegisterDependency(removedCaption.getElement());
+    }
+  }
+}

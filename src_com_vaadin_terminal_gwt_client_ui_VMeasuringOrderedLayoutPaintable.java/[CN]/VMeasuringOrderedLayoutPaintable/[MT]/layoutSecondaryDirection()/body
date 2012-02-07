@@ -1,0 +1,61 @@
+{
+  Collection<VPaintableWidget> children=MeasureManager.getChildren(this,getWidgetForPaintable().client);
+  int maxSize=0;
+  for (  VPaintableWidget child : children) {
+    Widget widget=child.getWidgetForPaintable();
+    int captionAllocation;
+    if (!getWidgetForPaintable().isVertical) {
+      captionAllocation=getCaptionHeight(child);
+      getWidgetForPaintable().getWrapper(widget).getStyle().setPaddingTop(captionAllocation,Unit.PX);
+    }
+ else {
+      captionAllocation=0;
+    }
+    if (!isRelativeInDirection(widget,!getWidgetForPaintable().isVertical)) {
+      int childSize=getMeasuredInDirection(child,!getWidgetForPaintable().isVertical) + captionAllocation;
+      maxSize=Math.max(maxSize,childSize);
+    }
+  }
+  int startMargin=getWidgetForPaintable().getStartMarginInDirection(!getWidgetForPaintable().isVertical);
+  int totalMargins=startMargin + getWidgetForPaintable().getEndMarginInDirection(!getWidgetForPaintable().isVertical);
+  double availableSpace;
+  Style ownStyle=getWidgetForPaintable().getElement().getStyle();
+  if (isUndefinedInDirection(getWidgetForPaintable(),!getWidgetForPaintable().isVertical)) {
+    ownStyle.setProperty(getMinPropertyName(!getWidgetForPaintable().isVertical),maxSize + totalMargins,Unit.PX);
+    availableSpace=maxSize;
+  }
+ else {
+    ownStyle.clearProperty(getMinPropertyName(!getWidgetForPaintable().isVertical));
+    availableSpace=getMeasuredInDirection(this,!getWidgetForPaintable().isVertical) - totalMargins;
+  }
+  for (  VPaintableWidget child : children) {
+    Widget widget=child.getWidgetForPaintable();
+    Element wrapper=getWidgetForPaintable().getWrapper(widget);
+    Style wrapperStyle=wrapper.getStyle();
+    boolean relative=isRelativeInDirection(widget,!getWidgetForPaintable().isVertical);
+    int captionHeight=getCaptionHeight(child);
+    double allocatedSize=getMeasuredInDirection(child,!getWidgetForPaintable().isVertical);
+    if (!getWidgetForPaintable().isVertical) {
+      allocatedSize+=captionHeight;
+    }
+ else     if (!relative) {
+      allocatedSize=Math.max(allocatedSize,getCaptionWidth(child));
+    }
+    int alignment=getAlignmentInDirection(getWidgetForPaintable().getAlignment(child),!getWidgetForPaintable().isVertical);
+    double startPosition=startMargin;
+    if (alignment == 0) {
+      startPosition+=(availableSpace - allocatedSize) / 2;
+    }
+ else     if (alignment == 1) {
+      startPosition+=(availableSpace - allocatedSize);
+    }
+    wrapperStyle.setProperty(getStartProperty(!getWidgetForPaintable().isVertical),startPosition,Unit.PX);
+    if (relative) {
+      double captionReservation=!getWidgetForPaintable().isVertical ? captionHeight : 0;
+      wrapperStyle.setProperty(getSizeProperty(!getWidgetForPaintable().isVertical),availableSpace - captionReservation,Unit.PX);
+    }
+ else {
+      wrapperStyle.clearProperty(getSizeProperty(!getWidgetForPaintable().isVertical));
+    }
+  }
+}
