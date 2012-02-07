@@ -1,7 +1,7 @@
 {
   getWidgetForPaintable().isRendering=true;
   super.updateFromUIDL(uidl,client);
-  if (uidl.getBooleanAttribute("cached") || uidl.getBooleanAttribute("invisible")) {
+  if (!isRealUpdate(uidl) || uidl.getBooleanAttribute("invisible")) {
     getWidgetForPaintable().isRendering=false;
     return;
   }
@@ -22,7 +22,7 @@
       childComponentContainer.setPaintable(childPaintable);
     }
     getWidgetForPaintable().addOrMoveChild(childComponentContainer,pos++);
-    if (!Util.isCached(childUIDL)) {
+    if (isRealUpdate(childUIDL)) {
       FloatSize relativeSize=Util.parseRelativeSize(childUIDL);
       childComponentContainer.setRelativeSize(relativeSize);
     }
@@ -37,7 +37,7 @@
  else {
         childComponentContainer.renderChild(childUIDL,client,getWidgetForPaintable().activeLayoutSize.getWidth());
       }
-      if (getWidgetForPaintable().sizeHasChangedDuringRendering && Util.isCached(childUIDL)) {
+      if (getWidgetForPaintable().sizeHasChangedDuringRendering && !isRealUpdate(childUIDL)) {
         client.handleComponentRelativeSize(childComponentContainer.getWidget());
       }
     }
@@ -56,7 +56,7 @@
  else {
       childComponentContainer.renderChild(childUIDL,client,getWidgetForPaintable().activeLayoutSize.getWidth());
     }
-    if (Util.isCached(childUIDL)) {
+    if (!isRealUpdate(childUIDL)) {
       client.handleComponentRelativeSize(childComponentContainer.getWidget());
     }
   }

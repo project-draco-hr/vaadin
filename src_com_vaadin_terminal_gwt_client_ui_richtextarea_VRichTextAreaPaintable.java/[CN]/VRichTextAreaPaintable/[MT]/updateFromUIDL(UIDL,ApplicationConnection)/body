@@ -10,10 +10,11 @@
       getWidgetForPaintable().html.setHTML(getWidgetForPaintable().currentValue);
     }
   }
-  if (!uidl.hasAttribute("cached")) {
+  if (isRealUpdate(uidl)) {
     getWidgetForPaintable().setEnabled(!uidl.getBooleanAttribute("disabled"));
   }
-  if (client.updateComponent(this,uidl,true)) {
+  super.updateFromUIDL(uidl,client);
+  if (!isRealUpdate(uidl)) {
     return;
   }
   getWidgetForPaintable().setReadOnly(uidl.getBooleanAttribute("readonly"));
