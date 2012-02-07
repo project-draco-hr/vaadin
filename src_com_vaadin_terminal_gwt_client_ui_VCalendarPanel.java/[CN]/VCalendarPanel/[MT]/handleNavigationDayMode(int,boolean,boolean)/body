@@ -3,51 +3,19 @@
     return false;
   }
   if (keycode == getForwardKey() && !shift) {
-    Date newCurrentDate=(Date)focusedDate.clone();
-    newCurrentDate.setDate(newCurrentDate.getDate() + 1);
-    if (newCurrentDate.getMonth() == focusedDate.getMonth()) {
-      focusDay(newCurrentDate);
-    }
- else {
-      focusedDate.setDate(focusedDate.getDate() + 1);
-      renderCalendar();
-    }
+    focusNextDay(1);
     return true;
   }
  else   if (keycode == getBackwardKey() && !shift) {
-    Date newCurrentDate=(Date)focusedDate.clone();
-    newCurrentDate.setDate(newCurrentDate.getDate() - 1);
-    if (newCurrentDate.getMonth() == focusedDate.getMonth()) {
-      focusDay(newCurrentDate);
-    }
- else {
-      focusedDate.setDate(focusedDate.getDate() - 1);
-      renderCalendar();
-    }
+    focusPreviousDay(1);
+    return true;
+  }
+ else   if (keycode == getNextKey() && !shift) {
+    focusNextDay(7);
     return true;
   }
  else   if (keycode == getPreviousKey() && !shift) {
-    Date newCurrentDate=(Date)focusedDate.clone();
-    newCurrentDate.setDate(newCurrentDate.getDate() - 7);
-    if (newCurrentDate.getMonth() == focusedDate.getMonth() && focusedRow > 1) {
-      focusDay(newCurrentDate);
-    }
- else {
-      focusedDate=newCurrentDate;
-      renderCalendar();
-    }
-    return true;
-  }
- else   if (keycode == getNextKey() && !ctrl && !shift) {
-    Date newCurrentDate=(Date)focusedDate.clone();
-    newCurrentDate.setDate(newCurrentDate.getDate() + 7);
-    if (newCurrentDate.getMonth() == focusedDate.getMonth()) {
-      focusDay(newCurrentDate);
-    }
- else {
-      focusedDate=newCurrentDate;
-      renderCalendar();
-    }
+    focusPreviousDay(7);
     return true;
   }
  else   if (keycode == getSelectKey() && !shift) {
@@ -76,7 +44,8 @@
     return true;
   }
  else   if (keycode == getResetKey() && !shift) {
-    focusedDate.setTime(value.getTime());
+    focusedDate=new Date(value.getYear(),value.getMonth(),value.getDate());
+    displayedMonth=new Date(value.getYear(),value.getMonth(),1);
     renderCalendar();
     return true;
   }
