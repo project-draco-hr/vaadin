@@ -1,0 +1,40 @@
+{
+  String nodeKey=uidl.getStringAttribute("key");
+  treeNode.setText(uidl.getStringAttribute("caption"));
+  treeNode.key=nodeKey;
+  getWidgetForPaintable().registerNode(treeNode);
+  if (uidl.hasAttribute("al")) {
+    treeNode.actionKeys=uidl.getStringArrayAttribute("al");
+  }
+  if (uidl.getTag().equals("node")) {
+    if (uidl.getChildCount() == 0) {
+      treeNode.childNodeContainer.setVisible(false);
+    }
+ else {
+      renderChildNodes(treeNode,(Iterator)uidl.getChildIterator());
+      treeNode.childrenLoaded=true;
+    }
+  }
+ else {
+    treeNode.addStyleName(TreeNode.CLASSNAME + "-leaf");
+  }
+  if (uidl.hasAttribute("style")) {
+    treeNode.setNodeStyleName(uidl.getStringAttribute("style"));
+  }
+  String description=uidl.getStringAttribute("descr");
+  if (description != null && getConnection() != null) {
+    TooltipInfo info=new TooltipInfo(description);
+    getConnection().registerTooltip(this,nodeKey,info);
+  }
+ else {
+    getConnection().registerTooltip(this,nodeKey,null);
+  }
+  if (uidl.getBooleanAttribute("expanded") && !treeNode.getState()) {
+    treeNode.setState(true,false);
+  }
+  if (uidl.getBooleanAttribute("selected")) {
+    treeNode.setSelected(true);
+    getWidgetForPaintable().selectedIds.add(nodeKey);
+  }
+  treeNode.setIcon(uidl.getStringAttribute("icon"));
+}

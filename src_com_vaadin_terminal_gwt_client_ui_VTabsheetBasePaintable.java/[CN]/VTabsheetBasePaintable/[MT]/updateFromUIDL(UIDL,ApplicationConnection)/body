@@ -1,0 +1,50 @@
+{
+  getWidgetForPaintable().client=client;
+  getWidgetForPaintable().cachedUpdate=client.updateComponent(this,uidl,true);
+  if (getWidgetForPaintable().cachedUpdate) {
+    return;
+  }
+  getWidgetForPaintable().id=uidl.getId();
+  getWidgetForPaintable().disabled=uidl.hasAttribute("disabled");
+  final UIDL tabs=uidl.getChildUIDL(0);
+  ArrayList<Widget> oldWidgets=new ArrayList<Widget>();
+  for (Iterator<Widget> iterator=getWidgetForPaintable().getWidgetIterator(); iterator.hasNext(); ) {
+    oldWidgets.add(iterator.next());
+  }
+  getWidgetForPaintable().tabKeys.clear();
+  getWidgetForPaintable().disabledTabKeys.clear();
+  int index=0;
+  for (final Iterator<Object> it=tabs.getChildIterator(); it.hasNext(); ) {
+    final UIDL tab=(UIDL)it.next();
+    final String key=tab.getStringAttribute("key");
+    final boolean selected=tab.getBooleanAttribute("selected");
+    final boolean hidden=tab.getBooleanAttribute("hidden");
+    if (tab.getBooleanAttribute("disabled")) {
+      getWidgetForPaintable().disabledTabKeys.add(key);
+    }
+    getWidgetForPaintable().tabKeys.add(key);
+    if (selected) {
+      getWidgetForPaintable().activeTabIndex=index;
+    }
+    getWidgetForPaintable().renderTab(tab,index,selected,hidden);
+    index++;
+  }
+  int tabCount=getWidgetForPaintable().getTabCount();
+  while (tabCount-- > index) {
+    getWidgetForPaintable().removeTab(index);
+  }
+  for (int i=0; i < getWidgetForPaintable().getTabCount(); i++) {
+    VPaintableWidget p=getWidgetForPaintable().getTab(i);
+    if (p != null) {
+      oldWidgets.remove(p.getWidgetForPaintable());
+    }
+  }
+  for (Iterator<Widget> iterator=oldWidgets.iterator(); iterator.hasNext(); ) {
+    Widget oldWidget=iterator.next();
+    VPaintableWidget oldPaintable=VPaintableMap.get(client).getPaintable(oldWidget);
+    if (oldWidget.isAttached()) {
+      oldWidget.removeFromParent();
+    }
+    VPaintableMap.get(client).unregisterPaintable(oldPaintable);
+  }
+}

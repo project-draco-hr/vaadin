@@ -1,14 +1,20 @@
 {
 switch (DOM.eventGetType(event)) {
 case Event.ONMOUSEDOWN:
-    isResizing=true;
-  DOM.setCapture(getElement());
+    if (!Util.isTouchEventOrLeftMouseButton(event)) {
+      return;
+    }
+  isResizing=true;
+DOM.setCapture(getElement());
 dragStartX=DOM.eventGetClientX(event);
 colIndex=getColIndexByKey(cid);
 originalWidth=getWidth();
 DOM.eventPreventDefault(event);
 break;
 case Event.ONMOUSEUP:
+if (!Util.isTouchEventOrLeftMouseButton(event)) {
+return;
+}
 isResizing=false;
 DOM.releaseCapture(getElement());
 tHead.disableAutoColumnWidthCalculation(this);
@@ -18,6 +24,9 @@ triggerLazyColumnAdjustment(true);
 fireColumnResizeEvent(cid,originalWidth,getColWidth(cid));
 break;
 case Event.ONMOUSEMOVE:
+if (!Util.isTouchEventOrLeftMouseButton(event)) {
+return;
+}
 if (isResizing) {
 final int deltaX=DOM.eventGetClientX(event) - dragStartX;
 if (deltaX == 0) {

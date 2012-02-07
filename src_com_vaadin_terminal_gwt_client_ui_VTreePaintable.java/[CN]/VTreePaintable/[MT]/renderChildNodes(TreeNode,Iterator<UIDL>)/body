@@ -1,0 +1,19 @@
+{
+  containerNode.childNodeContainer.clear();
+  containerNode.childNodeContainer.setVisible(true);
+  while (i.hasNext()) {
+    final UIDL childUidl=i.next();
+    if ("actions".equals(childUidl.getTag())) {
+      updateActionMap(childUidl);
+      continue;
+    }
+    final TreeNode childTree=getWidgetForPaintable().new TreeNode();
+    updateNodeFromUIDL(childTree,childUidl);
+    containerNode.childNodeContainer.add(childTree);
+    if (!i.hasNext()) {
+      childTree.addStyleDependentName(childTree.isLeaf() ? "leaf-last" : "last");
+      childTree.childNodeContainer.addStyleDependentName("last");
+    }
+  }
+  containerNode.childrenLoaded=true;
+}

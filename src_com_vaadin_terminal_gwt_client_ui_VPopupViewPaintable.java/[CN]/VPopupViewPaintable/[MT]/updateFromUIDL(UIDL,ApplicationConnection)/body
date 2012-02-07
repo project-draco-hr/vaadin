@@ -1,0 +1,37 @@
+{
+  if (client.updateComponent(this,uidl,false)) {
+    return;
+  }
+  getWidgetForPaintable().client=client;
+  getWidgetForPaintable().uidlId=uidl.getId();
+  getWidgetForPaintable().hostPopupVisible=uidl.getBooleanVariable("popupVisibility");
+  getWidgetForPaintable().setHTML(uidl.getStringAttribute("html"));
+  if (uidl.hasAttribute("hideOnMouseOut")) {
+    getWidgetForPaintable().popup.setHideOnMouseOut(uidl.getBooleanAttribute("hideOnMouseOut"));
+  }
+  if (getWidgetForPaintable().hostPopupVisible) {
+    UIDL popupUIDL=uidl.getChildUIDL(0);
+    getWidgetForPaintable().preparePopup(getWidgetForPaintable().popup);
+    getWidgetForPaintable().popup.updateFromUIDL(popupUIDL,client);
+    if (uidl.hasAttribute("style")) {
+      final String[] styles=uidl.getStringAttribute("style").split(" ");
+      final StringBuffer styleBuf=new StringBuffer();
+      final String primaryName=getWidgetForPaintable().popup.getStylePrimaryName();
+      styleBuf.append(primaryName);
+      for (int i=0; i < styles.length; i++) {
+        styleBuf.append(" ");
+        styleBuf.append(primaryName);
+        styleBuf.append("-");
+        styleBuf.append(styles[i]);
+      }
+      getWidgetForPaintable().popup.setStyleName(styleBuf.toString());
+    }
+ else {
+      getWidgetForPaintable().popup.setStyleName(getWidgetForPaintable().popup.getStylePrimaryName());
+    }
+    getWidgetForPaintable().showPopup(getWidgetForPaintable().popup);
+  }
+ else {
+    getWidgetForPaintable().popup.hide();
+  }
+}

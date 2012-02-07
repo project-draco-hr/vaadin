@@ -1,0 +1,173 @@
+{
+  getWidgetForPaintable().rendering=true;
+  setId(uidl.getId());
+  getWidgetForPaintable().id=uidl.getId();
+  boolean firstPaint=getWidgetForPaintable().connection == null;
+  getWidgetForPaintable().connection=client;
+  getWidgetForPaintable().immediate=uidl.hasAttribute("immediate");
+  getWidgetForPaintable().resizeLazy=uidl.hasAttribute(VView.RESIZE_LAZY);
+  String newTheme=uidl.getStringAttribute("theme");
+  if (getWidgetForPaintable().theme != null && !newTheme.equals(getWidgetForPaintable().theme)) {
+    getWidgetForPaintable().reloadHostPage();
+  }
+ else {
+    getWidgetForPaintable().theme=newTheme;
+  }
+  if (uidl.hasAttribute("style")) {
+    getWidgetForPaintable().setStyleName(getWidgetForPaintable().getStylePrimaryName() + " " + uidl.getStringAttribute("style"));
+  }
+  clickEventHandler.handleEventHandlerRegistration(client);
+  if (!getWidgetForPaintable().isEmbedded() && uidl.hasAttribute("caption")) {
+    com.google.gwt.user.client.Window.setTitle(uidl.getStringAttribute("caption"));
+  }
+  int childIndex=0;
+  boolean isClosed=false;
+  while (childIndex < uidl.getChildCount() && "open".equals(uidl.getChildUIDL(childIndex).getTag())) {
+    final UIDL open=uidl.getChildUIDL(childIndex);
+    final String url=client.translateVaadinUri(open.getStringAttribute("src"));
+    final String target=open.getStringAttribute("name");
+    if (target == null) {
+      Scheduler.get().scheduleDeferred(new Command(){
+        public void execute(){
+          VView.goTo(url);
+        }
+      }
+);
+    }
+ else     if ("_self".equals(target)) {
+      isClosed=true;
+      VView.goTo(url);
+    }
+ else {
+      String options;
+      if (open.hasAttribute("border")) {
+        if (open.getStringAttribute("border").equals("minimal")) {
+          options="menubar=yes,location=no,status=no";
+        }
+ else {
+          options="menubar=no,location=no,status=no";
+        }
+      }
+ else {
+        options="resizable=yes,menubar=yes,toolbar=yes,directories=yes,location=yes,scrollbars=yes,status=yes";
+      }
+      if (open.hasAttribute("width")) {
+        int w=open.getIntAttribute("width");
+        options+=",width=" + w;
+      }
+      if (open.hasAttribute("height")) {
+        int h=open.getIntAttribute("height");
+        options+=",height=" + h;
+      }
+      Window.open(url,target,options);
+    }
+    childIndex++;
+  }
+  if (isClosed) {
+    getWidgetForPaintable().rendering=false;
+    return;
+  }
+  UIDL childUidl=uidl.getChildUIDL(childIndex);
+  final VPaintableWidget lo=client.getPaintable(childUidl);
+  if (getWidgetForPaintable().layout != null) {
+    if (getWidgetForPaintable().layout != lo) {
+      client.unregisterPaintable(getWidgetForPaintable().layout);
+      getWidgetForPaintable().setWidget(lo.getWidgetForPaintable());
+      getWidgetForPaintable().layout=lo;
+    }
+  }
+ else {
+    getWidgetForPaintable().setWidget(lo.getWidgetForPaintable());
+    getWidgetForPaintable().layout=lo;
+  }
+  getWidgetForPaintable().layout.updateFromUIDL(childUidl,client);
+  if (!childUidl.getBooleanAttribute("cached")) {
+    getWidgetForPaintable().updateParentFrameSize();
+  }
+  final HashSet<VWindow> removedSubWindows=new HashSet<VWindow>(getWidgetForPaintable().subWindows);
+  while ((childUidl=uidl.getChildUIDL(++childIndex)) != null) {
+    String tag=childUidl.getTag().intern();
+    if (tag == "actions") {
+      if (getWidgetForPaintable().actionHandler == null) {
+        getWidgetForPaintable().actionHandler=new ShortcutActionHandler(getWidgetForPaintable().id,client);
+      }
+      getWidgetForPaintable().actionHandler.updateActionMap(childUidl);
+    }
+ else     if (tag == "execJS") {
+      String script=childUidl.getStringAttribute("script");
+      VView.eval(script);
+    }
+ else     if (tag == "notifications") {
+      for (final Iterator<?> it=childUidl.getChildIterator(); it.hasNext(); ) {
+        final UIDL notification=(UIDL)it.next();
+        VNotification.showNotification(client,notification);
+      }
+    }
+ else {
+      final VWindowPaintable w=(VWindowPaintable)client.getPaintable(childUidl);
+      VWindow windowWidget=w.getWidgetForPaintable();
+      if (getWidgetForPaintable().subWindows.contains(windowWidget)) {
+        removedSubWindows.remove(windowWidget);
+      }
+ else {
+        getWidgetForPaintable().subWindows.add(windowWidget);
+      }
+      w.updateFromUIDL(childUidl,client);
+    }
+  }
+  for (final Iterator<VWindow> rem=removedSubWindows.iterator(); rem.hasNext(); ) {
+    final VWindow w=rem.next();
+    client.unregisterPaintable(VPaintableMap.get(getConnection()).getPaintable(w));
+    getWidgetForPaintable().subWindows.remove(w);
+    w.hide();
+  }
+  if (uidl.hasAttribute("focused")) {
+    Scheduler.get().scheduleDeferred(new Command(){
+      public void execute(){
+        VPaintableWidget paintable=(VPaintableWidget)uidl.getPaintableAttribute("focused",getConnection());
+        final Widget toBeFocused=paintable.getWidgetForPaintable();
+        if (toBeFocused instanceof com.google.gwt.user.client.ui.Focusable) {
+          final com.google.gwt.user.client.ui.Focusable toBeFocusedWidget=(com.google.gwt.user.client.ui.Focusable)toBeFocused;
+          toBeFocusedWidget.setFocus(true);
+        }
+ else         if (toBeFocused instanceof Focusable) {
+          ((Focusable)toBeFocused).focus();
+        }
+ else {
+          VConsole.log("Could not focus component");
+        }
+      }
+    }
+);
+  }
+  if (firstPaint) {
+    Window.addWindowClosingHandler(getWidgetForPaintable());
+    Window.addResizeHandler(getWidgetForPaintable());
+  }
+  getWidgetForPaintable().onResize();
+  if (uidl.hasVariable("scrollTop")) {
+    getWidgetForPaintable().scrollable=true;
+    getWidgetForPaintable().scrollTop=uidl.getIntVariable("scrollTop");
+    DOM.setElementPropertyInt(getWidgetForPaintable().getElement(),"scrollTop",getWidgetForPaintable().scrollTop);
+    getWidgetForPaintable().scrollLeft=uidl.getIntVariable("scrollLeft");
+    DOM.setElementPropertyInt(getWidgetForPaintable().getElement(),"scrollLeft",getWidgetForPaintable().scrollLeft);
+  }
+ else {
+    getWidgetForPaintable().scrollable=false;
+  }
+  if (BrowserInfo.get().isSafari()) {
+    Util.runWebkitOverflowAutoFix(getWidgetForPaintable().getElement());
+  }
+  getWidgetForPaintable().scrollIntoView(uidl);
+  if (uidl.hasAttribute(VView.FRAGMENT_VARIABLE)) {
+    getWidgetForPaintable().currentFragment=uidl.getStringAttribute(VView.FRAGMENT_VARIABLE);
+    if (!getWidgetForPaintable().currentFragment.equals(History.getToken())) {
+      History.newItem(getWidgetForPaintable().currentFragment,true);
+    }
+  }
+ else {
+    getWidgetForPaintable().currentFragment=History.getToken();
+    client.updateVariable(getWidgetForPaintable().id,VView.FRAGMENT_VARIABLE,getWidgetForPaintable().currentFragment,false);
+  }
+  getWidgetForPaintable().rendering=false;
+}
