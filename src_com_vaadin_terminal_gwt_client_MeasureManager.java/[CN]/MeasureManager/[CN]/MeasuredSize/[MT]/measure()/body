@@ -1,0 +1,43 @@
+{
+  boolean changed=isDirty;
+  Widget widget=paintable.getWidgetForPaintable();
+  ComputedStyle computedStyle=new ComputedStyle(widget.getElement());
+  int[] paddings=computedStyle.getPadding();
+  if (!changed && !Arrays.equals(this.paddings,paddings)) {
+    changed=true;
+    this.paddings=paddings;
+  }
+  int[] margins=computedStyle.getMargin();
+  if (!changed && !Arrays.equals(this.margins,margins)) {
+    changed=true;
+    this.margins=margins;
+  }
+  int[] borders=computedStyle.getBorder();
+  if (!changed && !Arrays.equals(this.borders,borders)) {
+    changed=true;
+    this.borders=borders;
+  }
+  int offsetHeight=widget.getOffsetHeight();
+  int marginHeight=sumHeights(margins);
+  setOuterHeight(offsetHeight + marginHeight);
+  int offsetWidth=widget.getOffsetWidth();
+  int marginWidth=sumWidths(margins);
+  setOuterWidth(offsetWidth + marginWidth);
+  for (  Entry<Element,int[]> entry : dependencySizes.entrySet()) {
+    Element element=entry.getKey();
+    int[] sizes=entry.getValue();
+    int elementWidth=element.getOffsetWidth();
+    if (elementWidth != sizes[0]) {
+      sizes[0]=elementWidth;
+      changed=true;
+    }
+    int elementHeight=element.getOffsetHeight();
+    if (elementHeight != sizes[1]) {
+      sizes[1]=elementHeight;
+      changed=true;
+    }
+  }
+  if (changed) {
+    setDirty(true);
+  }
+}

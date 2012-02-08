@@ -1,28 +1,8 @@
 {
   FastStringSet changed=FastStringSet.create();
   for (  VPaintableWidget paintableWidget : paintableWidgets) {
-    Widget widget=paintableWidget.getWidgetForPaintable();
     MeasureManager.MeasuredSize measuredSize=paintableWidget.getMeasuredSize();
-    measuredSize.setWidth(widget.getOffsetWidth());
-    measuredSize.setHeight(widget.getOffsetHeight());
-    boolean dirtyDependency=false;
-    for (    Entry<Element,int[]> entry : measuredSize.dependencySizes.entrySet()) {
-      Element element=entry.getKey();
-      int[] sizes=entry.getValue();
-      int offsetWidth=element.getOffsetWidth();
-      if (offsetWidth != sizes[0]) {
-        sizes[0]=offsetWidth;
-        dirtyDependency=true;
-      }
-      int offsetHeight=element.getOffsetHeight();
-      if (offsetHeight != sizes[1]) {
-        sizes[1]=offsetHeight;
-        dirtyDependency=true;
-      }
-    }
-    if (dirtyDependency) {
-      measuredSize.setDirty(true);
-    }
+    measuredSize.measure();
     if (measuredSize.isDirty()) {
       changed.add(paintableMap.getPid(paintableWidget));
       measuredSize.setDirty(false);

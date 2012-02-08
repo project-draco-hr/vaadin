@@ -5,7 +5,6 @@
   if (!isRealUpdate(uidl)) {
     return;
   }
-  long start=System.currentTimeMillis();
   HashSet<Widget> previousChildren=new HashSet<Widget>();
   for (  Widget child : getWidgetForPaintable()) {
     if (!(child instanceof VCaption)) {
@@ -36,10 +35,8 @@
     client.unregisterPaintable(VPaintableMap.get(client).getPaintable(widget));
   }
   int bitMask=uidl.getIntAttribute("margins");
-  if (getWidgetForPaintable().activeMarginsInfo == null || getWidgetForPaintable().activeMarginsInfo.getBitMask() != bitMask) {
-    getWidgetForPaintable().activeMarginsInfo=new VMarginInfo(bitMask);
-  }
-  getWidgetForPaintable().spacing=uidl.getBooleanAttribute("spacing");
+  getWidgetForPaintable().updateMarginStyleNames(new VMarginInfo(bitMask));
+  getWidgetForPaintable().updateSpacingStyleName(uidl.getBooleanAttribute("spacing"));
   getWidgetForPaintable().expandRatios=uidl.getMapAttribute("expandRatios");
   getWidgetForPaintable().alignments=uidl.getMapAttribute("alignments");
   getMeasuredSize().setDirty(true);

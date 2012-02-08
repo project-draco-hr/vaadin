@@ -13,25 +13,30 @@
  else {
       captionAllocation=0;
     }
-    if (!isRelativeInDirection(widget,getWidgetForPaintable().isVertical)) {
-      totalAllocated+=getMeasuredInDirection(child,getWidgetForPaintable().isVertical) + captionAllocation;
+    if (!isRelativeInDirection(child,getWidgetForPaintable().isVertical)) {
+      int childSize=getOuterSizeInDirection(child,getWidgetForPaintable().isVertical);
+      if (getWidgetForPaintable().isVertical) {
+        childSize+=captionAllocation;
+      }
+ else {
+        childSize=Math.max(childSize,getCaptionWidth(child));
+      }
+      totalAllocated+=childSize;
     }
   }
-  int startMargin=getWidgetForPaintable().getStartMarginInDirection(getWidgetForPaintable().isVertical);
-  int totalMargins=startMargin + getWidgetForPaintable().getEndMarginInDirection(getWidgetForPaintable().isVertical);
-  totalAllocated+=totalMargins + (getWidgetForPaintable().getSpacingInDirection(getWidgetForPaintable().isVertical) * (children.size() - 1));
+  totalAllocated+=getSpacingInDirection(getWidgetForPaintable().isVertical) * (children.size() - 1);
   Style ownStyle=getWidgetForPaintable().getElement().getStyle();
   double ownSize;
-  if (isUndefinedInDirection(getWidgetForPaintable(),getWidgetForPaintable().isVertical)) {
+  if (isUndefinedInDirection(this,getWidgetForPaintable().isVertical)) {
     ownSize=totalAllocated;
-    ownStyle.setProperty(getMinPropertyName(getWidgetForPaintable().isVertical),totalAllocated,Unit.PX);
+    ownStyle.setPropertyPx(getSizeProperty(getWidgetForPaintable().isVertical),getSizeForInnerSize(totalAllocated,getWidgetForPaintable().isVertical));
   }
  else {
-    ownSize=getMeasuredInDirection(this,getWidgetForPaintable().isVertical);
-    ownStyle.clearProperty(getMinPropertyName(getWidgetForPaintable().isVertical));
+    ownSize=getInnerSizeInDirection(getWidgetForPaintable().isVertical);
+    ownStyle.setProperty(getSizeProperty(getWidgetForPaintable().isVertical),getDefinedSize(getWidgetForPaintable().isVertical));
   }
   double unallocatedSpace=Math.max(0,ownSize - totalAllocated);
-  double currentLocation=startMargin;
+  double currentLocation=getStartPadding(getWidgetForPaintable().isVertical);
   for (  VPaintableWidget child : children) {
     Widget widget=child.getWidgetForPaintable();
     Element wrapper=getWidgetForPaintable().getWrapper(widget);
@@ -44,8 +49,8 @@
       childExpandRatio=getWidgetForPaintable().getExpandRatio(child) / totalExpand;
     }
     double extraPixels=unallocatedSpace * childExpandRatio;
-    boolean relative=isRelativeInDirection(widget,getWidgetForPaintable().isVertical);
-    double size=getMeasuredInDirection(child,getWidgetForPaintable().isVertical);
+    boolean relative=isRelativeInDirection(child,getWidgetForPaintable().isVertical);
+    double size=getOuterSizeInDirection(child,getWidgetForPaintable().isVertical);
     int captionHeight=getCaptionHeight(child);
     if (getWidgetForPaintable().isVertical) {
       size+=captionHeight;
@@ -73,6 +78,6 @@
       startPosition+=allocatedSpace - size;
     }
     wrapperStyle.setProperty(getStartProperty(getWidgetForPaintable().isVertical),startPosition,Unit.PX);
-    currentLocation+=allocatedSpace + getWidgetForPaintable().getSpacingInDirection(getWidgetForPaintable().isVertical);
+    currentLocation+=allocatedSpace + getSpacingInDirection(getWidgetForPaintable().isVertical);
   }
 }
