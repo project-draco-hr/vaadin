@@ -1,6 +1,6 @@
 {
   getWidgetForPaintable().rendering=true;
-  if (!uidl.hasAttribute("cached")) {
+  if (isRealUpdate(uidl)) {
     getWidgetForPaintable().contentNode.setClassName(VPanel.CLASSNAME + "-content");
     getWidgetForPaintable().bottomDecoration.setClassName(VPanel.CLASSNAME + "-deco");
     getWidgetForPaintable().captionNode.setClassName(VPanel.CLASSNAME + "-caption");
@@ -31,7 +31,8 @@
       getWidgetForPaintable().bottomDecoration.setClassName(decoClass);
     }
   }
-  if (client.updateComponent(this,uidl,false)) {
+  super.updateFromUIDL(uidl,client);
+  if (!isRealUpdate(uidl)) {
     getWidgetForPaintable().rendering=false;
     return;
   }

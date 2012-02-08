@@ -1,0 +1,38 @@
+{
+  if (isCachedUpdate(uidl)) {
+    return;
+  }
+  VPaintableMap paintableMap=VPaintableMap.get(getConnection());
+  paintableMap.registerEventListenersFromUIDL(getId(),uidl);
+  setVisible(!uidl.getBooleanAttribute("invisible"),uidl);
+  if (uidl.getId().startsWith("PID_S")) {
+    DOM.setElementProperty(getWidgetForPaintable().getElement(),"id",uidl.getId().substring(5));
+  }
+  if (!isVisible()) {
+    paintableMap.setOffsetSize(this,null);
+    return;
+  }
+  if (uidl.hasAttribute("tabindex") && getWidgetForPaintable() instanceof Focusable) {
+    ((Focusable)getWidgetForPaintable()).setTabIndex(uidl.getIntAttribute("tabindex"));
+  }
+  setEnabled(!uidl.getBooleanAttribute("disabled"));
+  String styleName=getStyleNameFromUIDL(getWidgetForPaintable().getStylePrimaryName(),uidl,getWidgetForPaintable() instanceof Field);
+  getWidgetForPaintable().setStyleName(styleName);
+  TooltipInfo tooltipInfo=paintableMap.getTooltipInfo(this,null);
+  if (uidl.hasAttribute(ATTRIBUTE_DESCRIPTION)) {
+    tooltipInfo.setTitle(uidl.getStringAttribute(ATTRIBUTE_DESCRIPTION));
+  }
+ else {
+    tooltipInfo.setTitle(null);
+  }
+  if (uidl.hasAttribute(ATTRIBUTE_ERROR)) {
+    tooltipInfo.setErrorUidl(uidl.getErrors());
+  }
+ else {
+    tooltipInfo.setErrorUidl(null);
+  }
+  if (delegateCaptionHandling()) {
+    getParent().updateCaption(this,uidl);
+  }
+  getConnection().updateComponentSize(this,uidl);
+}
