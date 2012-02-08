@@ -6,7 +6,7 @@
     getWidgetForPaintable().hide();
     return;
   }
-  if (!uidl.hasAttribute("cached")) {
+  if (isRealUpdate(uidl)) {
     if (uidl.getBooleanAttribute("modal") != getWidgetForPaintable().vaadinModality) {
       getWidgetForPaintable().setVaadinModality(!getWidgetForPaintable().vaadinModality);
     }
@@ -22,7 +22,8 @@
     getWidgetForPaintable().setCaption(uidl.getStringAttribute("caption"),uidl.getStringAttribute("icon"));
   }
   getWidgetForPaintable().visibilityChangesDisabled=true;
-  if (client.updateComponent(this,uidl,false)) {
+  super.updateFromUIDL(uidl,client);
+  if (!isRealUpdate(uidl)) {
     return;
   }
   getWidgetForPaintable().visibilityChangesDisabled=false;
