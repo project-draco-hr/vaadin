@@ -7,7 +7,7 @@
     long passStart=System.currentTimeMillis();
     passes++;
     long measureStart=System.currentTimeMillis();
-    FastStringSet changedSet=findChangedWidgets(paintableWidgets,paintableMap);
+    FastStringSet changedSet=findChangedWidgets(paintableWidgets);
     JsArrayString changed=changedSet.dump();
     long measureEnd=System.currentTimeMillis();
     VConsole.log("Measure in " + (measureEnd - measureStart) + " ms");
@@ -24,7 +24,7 @@
       VPaintableWidget paintable=(VPaintableWidget)paintableMap.getPaintable(changed.get(i));
       VPaintableWidget parentPaintable=paintable.getParent();
       if (parentPaintable instanceof CalculatingLayout) {
-        affectedContainers.add(paintableMap.getPid(parentPaintable));
+        affectedContainers.add(parentPaintable.getId());
       }
     }
     long layoutStart=System.currentTimeMillis();

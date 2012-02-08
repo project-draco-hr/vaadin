@@ -1,16 +1,9 @@
 {
-  getWidgetForPaintable().client=client;
-  getWidgetForPaintable().id=uidl.getId();
   super.updateFromUIDL(uidl,client);
   if (!isRealUpdate(uidl)) {
     return;
   }
-  HashSet<Widget> previousChildren=new HashSet<Widget>();
-  for (  Widget child : getWidgetForPaintable()) {
-    if (!(child instanceof VCaption)) {
-      previousChildren.add(child);
-    }
-  }
+  HashSet<VPaintableWidget> previousChildren=new HashSet<VPaintableWidget>(getChildren());
   for (final Iterator<Object> it=uidl.getChildIterator(); it.hasNext(); ) {
     final UIDL childUIDL=(UIDL)it.next();
     final VPaintableWidget child=client.getPaintable(childUIDL);
@@ -22,17 +15,19 @@
       child.updateFromUIDL(childUIDL,client);
       child.getMeasuredSize().setDirty(true);
     }
-    previousChildren.remove(widget);
+    previousChildren.remove(child);
   }
-  for (  Widget widget : previousChildren) {
-    Element wrapper=getWidgetForPaintable().getWrapper(widget);
+  for (  VPaintableWidget child : previousChildren) {
+    Widget widget=child.getWidgetForPaintable();
+    Element wrapper=VMeasuringOrderedLayout.getWrapper(widget);
     VCaption caption=getWidgetForPaintable().captions.remove(widget);
     if (caption != null) {
       getWidgetForPaintable().remove(caption);
     }
     getWidgetForPaintable().remove(widget);
     getWidgetForPaintable().getElement().removeChild(wrapper);
-    client.unregisterPaintable(VPaintableMap.get(client).getPaintable(widget));
+    VPaintableMap vPaintableMap=VPaintableMap.get(client);
+    vPaintableMap.unregisterPaintable(child);
   }
   int bitMask=uidl.getIntAttribute("margins");
   getWidgetForPaintable().updateMarginStyleNames(new VMarginInfo(bitMask));

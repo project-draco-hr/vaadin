@@ -4,11 +4,12 @@
   double totalExpand=0;
   for (  VPaintableWidget child : children) {
     Widget widget=child.getWidgetForPaintable();
-    totalExpand+=getWidgetForPaintable().getExpandRatio(child);
+    totalExpand+=getExpandRatio(child);
     int captionAllocation;
     if (getWidgetForPaintable().isVertical) {
       captionAllocation=getCaptionHeight(child);
-      getWidgetForPaintable().getWrapper(widget).getStyle().setPaddingTop(captionAllocation,Unit.PX);
+      getWidgetForPaintable();
+      VMeasuringOrderedLayout.getWrapper(widget).getStyle().setPaddingTop(captionAllocation,Unit.PX);
     }
  else {
       captionAllocation=0;
@@ -39,14 +40,15 @@
   double currentLocation=getStartPadding(getWidgetForPaintable().isVertical);
   for (  VPaintableWidget child : children) {
     Widget widget=child.getWidgetForPaintable();
-    Element wrapper=getWidgetForPaintable().getWrapper(widget);
+    getWidgetForPaintable();
+    Element wrapper=VMeasuringOrderedLayout.getWrapper(widget);
     Style wrapperStyle=wrapper.getStyle();
     double childExpandRatio;
     if (totalExpand == 0) {
       childExpandRatio=1d / children.size();
     }
  else {
-      childExpandRatio=getWidgetForPaintable().getExpandRatio(child) / totalExpand;
+      childExpandRatio=getExpandRatio(child) / totalExpand;
     }
     double extraPixels=unallocatedSpace * childExpandRatio;
     boolean relative=isRelativeInDirection(child,getWidgetForPaintable().isVertical);
@@ -62,7 +64,7 @@
     if (!relative) {
       allocatedSpace+=size;
     }
-    int alignment=getAlignmentInDirection(getWidgetForPaintable().getAlignment(child),getWidgetForPaintable().isVertical);
+    int alignment=getAlignmentInDirection(getAlignment(child),getWidgetForPaintable().isVertical);
     if (relative) {
       double captionReservation=getWidgetForPaintable().isVertical ? captionHeight : 0;
       wrapperStyle.setProperty(getSizeProperty(getWidgetForPaintable().isVertical),allocatedSpace - captionReservation,Unit.PX);

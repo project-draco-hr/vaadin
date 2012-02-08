@@ -6,7 +6,8 @@
     int captionAllocation;
     if (!getWidgetForPaintable().isVertical) {
       captionAllocation=getCaptionHeight(child);
-      getWidgetForPaintable().getWrapper(widget).getStyle().setPaddingTop(captionAllocation,Unit.PX);
+      getWidgetForPaintable();
+      VMeasuringOrderedLayout.getWrapper(widget).getStyle().setPaddingTop(captionAllocation,Unit.PX);
     }
  else {
       captionAllocation=0;
@@ -28,7 +29,8 @@
   }
   for (  VPaintableWidget child : children) {
     Widget widget=child.getWidgetForPaintable();
-    Element wrapper=getWidgetForPaintable().getWrapper(widget);
+    getWidgetForPaintable();
+    Element wrapper=VMeasuringOrderedLayout.getWrapper(widget);
     Style wrapperStyle=wrapper.getStyle();
     boolean relative=isRelativeInDirection(child,!getWidgetForPaintable().isVertical);
     int captionHeight=getCaptionHeight(child);
@@ -39,7 +41,7 @@
  else     if (!relative) {
       allocatedSize=Math.max(allocatedSize,getCaptionWidth(child));
     }
-    int alignment=getAlignmentInDirection(getWidgetForPaintable().getAlignment(child),!getWidgetForPaintable().isVertical);
+    int alignment=getAlignmentInDirection(getAlignment(child),!getWidgetForPaintable().isVertical);
     double startPosition=getStartPadding(getWidgetForPaintable().isVertical);
     if (alignment == 0) {
       startPosition+=(availableSpace - allocatedSize) / 2;
