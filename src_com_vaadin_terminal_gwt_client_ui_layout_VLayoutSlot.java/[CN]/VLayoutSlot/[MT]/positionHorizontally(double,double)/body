@@ -1,0 +1,37 @@
+{
+  Style style=wrapper.getStyle();
+  if (isRelativeWidth()) {
+    style.setWidth(allocatedSpace,Unit.PX);
+  }
+ else {
+    style.setWidth(getUsedWidth(),Unit.PX);
+  }
+  VCaption caption=getCaption();
+  Style captionStyle=caption != null ? caption.getElement().getStyle() : null;
+  AlignmentInfo alignment=getAlignment();
+  if (!alignment.isLeft()) {
+    double usedWidth=getWidgetWidth();
+    if (alignment.isHorizontalCenter()) {
+      currentLocation+=(allocatedSpace - usedWidth) / 2d;
+      if (captionStyle != null) {
+        double captionWidth=getCaptionWidth();
+        captionStyle.setLeft(usedWidth / 2 - (captionWidth / 2),Unit.PX);
+        captionStyle.clearRight();
+      }
+    }
+ else {
+      currentLocation+=(allocatedSpace - usedWidth);
+      if (captionStyle != null) {
+        captionStyle.clearLeft();
+        captionStyle.setRight(0,Unit.PX);
+      }
+    }
+  }
+ else {
+    if (captionStyle != null) {
+      captionStyle.setLeft(0,Unit.PX);
+      captionStyle.clearRight();
+    }
+  }
+  style.setLeft(currentLocation,Unit.PX);
+}

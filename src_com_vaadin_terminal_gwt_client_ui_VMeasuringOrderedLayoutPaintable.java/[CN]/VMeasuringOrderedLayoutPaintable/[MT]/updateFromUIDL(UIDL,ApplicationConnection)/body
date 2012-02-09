@@ -4,13 +4,35 @@
     return;
   }
   HashSet<VPaintableWidget> previousChildren=new HashSet<VPaintableWidget>(getChildren());
+  VMeasuringOrderedLayout layout=getWidgetForPaintable();
+  ValueMap expandRatios=uidl.getMapAttribute("expandRatios");
+  ValueMap alignments=uidl.getMapAttribute("alignments");
   for (final Iterator<Object> it=uidl.getChildIterator(); it.hasNext(); ) {
     final UIDL childUIDL=(UIDL)it.next();
     final VPaintableWidget child=client.getPaintable(childUIDL);
     Widget widget=child.getWidgetForPaintable();
-    if (widget.getParent() != getWidgetForPaintable()) {
-      getWidgetForPaintable().addChildWidget(widget);
+    VLayoutSlot slot=layout.getSlotForChild(widget);
+    if (widget.getParent() != layout) {
+      slot=new VPaintableLayoutSlot(child);
+      layout.addSlot(slot);
     }
+    String pid=child.getId();
+    AlignmentInfo alignment;
+    if (alignments.containsKey(pid)) {
+      alignment=new AlignmentInfo(alignments.getInt(pid));
+    }
+ else {
+      alignment=AlignmentInfo.TOP_LEFT;
+    }
+    slot.setAlignment(alignment);
+    double expandRatio;
+    if (expandRatios.containsKey(pid)) {
+      expandRatio=expandRatios.getRawNumber(pid);
+    }
+ else {
+      expandRatio=0;
+    }
+    slot.setExpandRatio(expandRatio);
     if (!childUIDL.getBooleanAttribute("cached")) {
       child.updateFromUIDL(childUIDL,client);
       child.getMeasuredSize().setDirty(true);
@@ -19,20 +41,12 @@
   }
   for (  VPaintableWidget child : previousChildren) {
     Widget widget=child.getWidgetForPaintable();
-    Element wrapper=VMeasuringOrderedLayout.getWrapper(widget);
-    VCaption caption=getWidgetForPaintable().captions.remove(widget);
-    if (caption != null) {
-      getWidgetForPaintable().remove(caption);
-    }
-    getWidgetForPaintable().remove(widget);
-    getWidgetForPaintable().getElement().removeChild(wrapper);
+    layout.removeSlot(layout.getSlotForChild(widget));
     VPaintableMap vPaintableMap=VPaintableMap.get(client);
     vPaintableMap.unregisterPaintable(child);
   }
   int bitMask=uidl.getIntAttribute("margins");
-  getWidgetForPaintable().updateMarginStyleNames(new VMarginInfo(bitMask));
-  getWidgetForPaintable().updateSpacingStyleName(uidl.getBooleanAttribute("spacing"));
-  getWidgetForPaintable().expandRatios=uidl.getMapAttribute("expandRatios");
-  getWidgetForPaintable().alignments=uidl.getMapAttribute("alignments");
+  layout.updateMarginStyleNames(new VMarginInfo(bitMask));
+  layout.updateSpacingStyleName(uidl.getBooleanAttribute("spacing"));
   getMeasuredSize().setDirty(true);
 }

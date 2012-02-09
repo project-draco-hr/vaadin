@@ -1,0 +1,30 @@
+{
+  Style style=wrapper.getStyle();
+  VCaption caption=getCaption();
+  double captionHeight=caption != null ? getCaptionHeight() : 0;
+  double contentHeight=allocatedSpace - captionHeight;
+  if (isRelativeHeight()) {
+    style.setHeight(contentHeight,Unit.PX);
+  }
+ else {
+    style.clearHeight();
+  }
+  if (caption != null) {
+    style.setPaddingTop(getCaptionHeight(),Unit.PX);
+    caption.getElement().getStyle().setTop(0,Unit.PX);
+  }
+ else {
+    style.clearPaddingTop();
+  }
+  AlignmentInfo alignment=getAlignment();
+  if (!alignment.isTop()) {
+    double actualHeight=getWidgetHeight() + captionHeight;
+    if (alignment.isVerticalCenter()) {
+      currentLocation+=(allocatedSpace - actualHeight) / 2d;
+    }
+ else {
+      currentLocation+=(allocatedSpace - actualHeight);
+    }
+  }
+  style.setTop(currentLocation,Unit.PX);
+}

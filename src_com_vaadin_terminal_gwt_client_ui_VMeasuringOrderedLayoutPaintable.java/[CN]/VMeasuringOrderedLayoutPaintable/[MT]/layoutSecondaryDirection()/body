@@ -1,61 +1,21 @@
 {
-  Collection<VPaintableWidget> children=getChildren();
-  int maxSize=0;
-  for (  VPaintableWidget child : children) {
-    Widget widget=child.getWidgetForPaintable();
-    int captionAllocation;
-    if (!getWidgetForPaintable().isVertical) {
-      captionAllocation=getCaptionHeight(child);
-      getWidgetForPaintable();
-      VMeasuringOrderedLayout.getWrapper(widget).getStyle().setPaddingTop(captionAllocation,Unit.PX);
-    }
- else {
-      captionAllocation=0;
-    }
-    if (!isRelativeInDirection(child,!getWidgetForPaintable().isVertical)) {
-      int childSize=getOuterSizeInDirection(child,!getWidgetForPaintable().isVertical) + captionAllocation;
-      maxSize=Math.max(maxSize,childSize);
-    }
+  VMeasuringOrderedLayout layout=getWidgetForPaintable();
+  boolean isVertical=layout.isVertical;
+  boolean isUndefined=isUndefinedInDirection(!isVertical);
+  int startPadding=getStartPadding(!isVertical);
+  int allocatedSize;
+  if (isUndefined) {
+    allocatedSize=-1;
   }
-  double availableSpace;
+ else {
+    allocatedSize=getInnerSizeInDirection(!isVertical);
+  }
+  allocatedSize=layout.layoutSecondaryDirection(allocatedSize,startPadding);
   Style ownStyle=getWidgetForPaintable().getElement().getStyle();
-  if (isUndefinedInDirection(this,!getWidgetForPaintable().isVertical)) {
-    ownStyle.setPropertyPx(getSizeProperty(!getWidgetForPaintable().isVertical),getSizeForInnerSize(maxSize,!getWidgetForPaintable().isVertical));
-    availableSpace=maxSize;
+  if (isUndefined) {
+    ownStyle.setPropertyPx(getSizeProperty(!getWidgetForPaintable().isVertical),getSizeForInnerSize(allocatedSize,!getWidgetForPaintable().isVertical));
   }
  else {
     ownStyle.setProperty(getSizeProperty(!getWidgetForPaintable().isVertical),getDefinedSize(!getWidgetForPaintable().isVertical));
-    availableSpace=getInnerSizeInDirection(!getWidgetForPaintable().isVertical);
-  }
-  for (  VPaintableWidget child : children) {
-    Widget widget=child.getWidgetForPaintable();
-    getWidgetForPaintable();
-    Element wrapper=VMeasuringOrderedLayout.getWrapper(widget);
-    Style wrapperStyle=wrapper.getStyle();
-    boolean relative=isRelativeInDirection(child,!getWidgetForPaintable().isVertical);
-    int captionHeight=getCaptionHeight(child);
-    double allocatedSize=getOuterSizeInDirection(child,!getWidgetForPaintable().isVertical);
-    if (!getWidgetForPaintable().isVertical) {
-      allocatedSize+=captionHeight;
-    }
- else     if (!relative) {
-      allocatedSize=Math.max(allocatedSize,getCaptionWidth(child));
-    }
-    int alignment=getAlignmentInDirection(getAlignment(child),!getWidgetForPaintable().isVertical);
-    double startPosition=getStartPadding(getWidgetForPaintable().isVertical);
-    if (alignment == 0) {
-      startPosition+=(availableSpace - allocatedSize) / 2;
-    }
- else     if (alignment == 1) {
-      startPosition+=(availableSpace - allocatedSize);
-    }
-    wrapperStyle.setProperty(getStartProperty(!getWidgetForPaintable().isVertical),startPosition,Unit.PX);
-    if (relative) {
-      double captionReservation=!getWidgetForPaintable().isVertical ? captionHeight : 0;
-      wrapperStyle.setProperty(getSizeProperty(!getWidgetForPaintable().isVertical),availableSpace - captionReservation,Unit.PX);
-    }
- else {
-      wrapperStyle.clearProperty(getSizeProperty(!getWidgetForPaintable().isVertical));
-    }
   }
 }
