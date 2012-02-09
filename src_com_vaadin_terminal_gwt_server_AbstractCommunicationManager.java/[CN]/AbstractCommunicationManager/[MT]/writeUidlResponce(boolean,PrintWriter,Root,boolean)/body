@@ -47,26 +47,6 @@
     }
 );
   }
-  if (paintables != null) {
-    JSONObject sharedStates=new JSONObject();
-    for (final Iterator<Paintable> i=paintables.iterator(); i.hasNext(); ) {
-      final Paintable p=i.next();
-      String paintableId=getPaintableId(p);
-      SharedState state=p.getState();
-      if (null != state) {
-        try {
-          JSONArray stateJsonArray=JsonCodec.encode(state,this);
-          sharedStates.put(paintableId,stateJsonArray);
-        }
- catch (        JSONException e) {
-          throw new PaintException("Failed to serialize shared state for paintable " + paintableId + ": "+ e.getMessage());
-        }
-      }
-    }
-    outWriter.print("\"state\":");
-    outWriter.append(sharedStates.toString());
-    outWriter.print(", ");
-  }
   outWriter.print("\"changes\":[");
   List<InvalidLayout> invalidComponentRelativeSizes=null;
   JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
@@ -76,8 +56,10 @@
     currentlyOpenWindowsInClient.put(Integer.valueOf(root.getRootId()),windowCache);
   }
   if (paintables != null) {
-    for (final Iterator<Paintable> i=paintables.iterator(); i.hasNext(); ) {
-      final Paintable p=i.next();
+    paintQueue.clear();
+    paintQueue.addAll(paintables);
+    while (!paintQueue.isEmpty()) {
+      final Paintable p=paintQueue.pop();
       if (paintTarget.needsToBePainted(p)) {
         paintTarget.startTag("change");
         paintTarget.addAttribute("format","uidl");
@@ -95,6 +77,28 @@
   }
   paintTarget.close();
   outWriter.print("], ");
+  if (paintables != null) {
+    JSONObject sharedStates=new JSONObject();
+    Stack<Paintable> paintablesWithModifiedState=new Stack<Paintable>();
+    paintablesWithModifiedState.addAll(paintables);
+    while (!paintablesWithModifiedState.empty()) {
+      final Paintable p=paintablesWithModifiedState.pop();
+      String paintableId=getPaintableId(p);
+      SharedState state=p.getState();
+      if (null != state) {
+        try {
+          JSONArray stateJsonArray=JsonCodec.encode(state,this);
+          sharedStates.put(paintableId,stateJsonArray);
+        }
+ catch (        JSONException e) {
+          throw new PaintException("Failed to serialize shared state for paintable " + paintableId + ": "+ e.getMessage());
+        }
+      }
+    }
+    outWriter.print("\"state\":");
+    outWriter.append(sharedStates.toString());
+    outWriter.print(", ");
+  }
   outWriter.print("\"meta\" : {");
   boolean metaOpen=false;
   if (repaintAll) {
