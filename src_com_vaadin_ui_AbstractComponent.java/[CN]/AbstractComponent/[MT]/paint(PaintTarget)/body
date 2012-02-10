@@ -1,6 +1,13 @@
 {
   final String tag=target.getTag(this);
-  if (!target.startPaintable(this,tag) || repaintRequestListenersNotified) {
+  final PaintStatus status=target.startPaintable(this,tag);
+  if (PaintStatus.DEFER == status) {
+    target.addAttribute("deferred",true);
+  }
+ else   if (PaintStatus.CACHED == status && !repaintRequestListenersNotified) {
+    target.addAttribute("cached",true);
+  }
+ else {
     if (isVisible()) {
       if (getHeight() >= 0 && (getHeightUnits() != Unit.PERCENTAGE || ComponentSizeValidator.parentCanDefineHeight(this))) {
         target.addAttribute("height","" + getCSSHeight());
@@ -41,9 +48,6 @@
  else {
       target.addAttribute("invisible",true);
     }
-  }
- else {
-    target.addAttribute("cached",true);
   }
   target.endPaintable(this);
   repaintRequestListenersNotified=false;
