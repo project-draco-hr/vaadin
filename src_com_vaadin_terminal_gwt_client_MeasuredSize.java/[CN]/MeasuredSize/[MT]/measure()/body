@@ -1,22 +1,30 @@
 {
-  boolean changed=isDirty;
   Widget widget=paintable.getWidgetForPaintable();
   ComputedStyle computedStyle=new ComputedStyle(widget.getElement());
   int[] paddings=computedStyle.getPadding();
-  if (!changed && !Arrays.equals(this.paddings,paddings)) {
-    changed=true;
-    this.paddings=paddings;
+  if (!heightChanged && hasHeightChanged(this.paddings,paddings)) {
+    heightChanged=true;
   }
+  if (!widthChanged && hasWidthChanged(this.paddings,paddings)) {
+    widthChanged=true;
+  }
+  this.paddings=paddings;
   int[] margins=computedStyle.getMargin();
-  if (!changed && !Arrays.equals(this.margins,margins)) {
-    changed=true;
-    this.margins=margins;
+  if (!heightChanged && hasHeightChanged(this.margins,margins)) {
+    heightChanged=true;
   }
+  if (!widthChanged && hasWidthChanged(this.margins,margins)) {
+    widthChanged=true;
+  }
+  this.margins=margins;
   int[] borders=computedStyle.getBorder();
-  if (!changed && !Arrays.equals(this.borders,borders)) {
-    changed=true;
-    this.borders=borders;
+  if (!heightChanged && hasHeightChanged(this.borders,borders)) {
+    heightChanged=true;
   }
+  if (!widthChanged && hasWidthChanged(this.borders,borders)) {
+    widthChanged=true;
+  }
+  this.borders=borders;
   int offsetHeight=widget.getOffsetHeight();
   int marginHeight=sumHeights(margins);
   setOuterHeight(offsetHeight + marginHeight);
@@ -29,15 +37,12 @@
     int elementWidth=element.getOffsetWidth();
     if (elementWidth != sizes[0]) {
       sizes[0]=elementWidth;
-      changed=true;
+      widthChanged=true;
     }
     int elementHeight=element.getOffsetHeight();
     if (elementHeight != sizes[1]) {
       sizes[1]=elementHeight;
-      changed=true;
+      heightChanged=true;
     }
-  }
-  if (changed) {
-    setDirty(true);
   }
 }

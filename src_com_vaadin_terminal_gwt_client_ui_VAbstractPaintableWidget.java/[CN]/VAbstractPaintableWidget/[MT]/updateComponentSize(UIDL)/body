@@ -1,9 +1,17 @@
 {
   String w=uidl.hasAttribute("width") ? uidl.getStringAttribute("width") : "";
   String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : "";
-  MeasuredSize measuredSize=getMeasuredSize();
-  if (!measuredSize.isDirty() && (w.endsWith("%") != definedWidth.endsWith("%") || h.endsWith("%") != definedHeight.endsWith("%"))) {
-    measuredSize.setDirty(true);
+  if (w.endsWith("%") != definedWidth.endsWith("%")) {
+    VPaintableWidgetContainer parent=getParent();
+    if (parent != null) {
+      parent.getMeasuredSize().setWidthNeedsUpdate();
+    }
+  }
+  if (h.endsWith("%") != definedHeight.endsWith("%")) {
+    VPaintableWidgetContainer parent=getParent();
+    if (parent != null) {
+      parent.getMeasuredSize().setHeightNeedsUpdate();
+    }
   }
   definedWidth=w;
   definedHeight=h;

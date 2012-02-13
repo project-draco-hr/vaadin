@@ -7,62 +7,72 @@
     }
   }
   int passes=0;
-  long start=System.currentTimeMillis();
+  Duration totalDuration=new Duration();
   while (true) {
-    long passStart=System.currentTimeMillis();
+    Duration passDuration=new Duration();
     passes++;
-    long measureStart=System.currentTimeMillis();
-    FastStringSet changedSet=findChangedWidgets(paintableWidgets);
-    JsArrayString changed=changedSet.dump();
-    long measureEnd=System.currentTimeMillis();
-    VConsole.log("Measure in " + (measureEnd - measureStart) + " ms");
-    if (changed.length() == 0) {
-      VConsole.log("No more changes in pass " + passes);
-      break;
-    }
-    if (passes > 100) {
-      VConsole.log("Aborting layout");
-      break;
-    }
-    FastStringSet affectedContainers=FastStringSet.create();
-    for (int i=0; i < changed.length(); i++) {
-      VPaintableWidget paintable=(VPaintableWidget)paintableMap.getPaintable(changed.get(i));
-      VPaintableWidget parentPaintable=paintable.getParent();
-      if (parentPaintable instanceof CalculatingLayout) {
-        affectedContainers.add(parentPaintable.getId());
+    measureWidgets(paintableWidgets);
+    FastStringSet needsHeightUpdate=FastStringSet.create();
+    FastStringSet needsWidthUpdate=FastStringSet.create();
+    for (    VPaintableWidget paintable : paintableWidgets) {
+      MeasuredSize measuredSize=paintable.getMeasuredSize();
+      boolean notifiableType=isNotifiableType(paintable);
+      VPaintableWidgetContainer parent=paintable.getParent();
+      boolean parentNotifiable=parent != null && isNotifiableType(parent);
+      if (measuredSize.isHeightNeedsUpdate()) {
+        if (notifiableType) {
+          needsHeightUpdate.add(paintable.getId());
+        }
+        if (!paintable.isRelativeHeight() && parentNotifiable) {
+          needsHeightUpdate.add(parent.getId());
+        }
       }
+      if (measuredSize.isWidthNeedsUpdate()) {
+        if (notifiableType) {
+          needsWidthUpdate.add(paintable.getId());
+        }
+        if (!paintable.isRelativeWidth() && parentNotifiable) {
+          needsWidthUpdate.add(parent.getId());
+        }
+      }
+      measuredSize.clearDirtyState();
     }
-    long layoutStart=System.currentTimeMillis();
-    for (int i=0; i < changed.length(); i++) {
-      String pid=changed.get(i);
+    int measureTime=passDuration.elapsedMillis();
+    VConsole.log("Measure in " + measureTime + " ms");
+    FastStringSet updatedSet=FastStringSet.create();
+    JsArrayString needsHeightUpdateArray=needsHeightUpdate.dump();
+    for (int i=0; i < needsHeightUpdateArray.length(); i++) {
+      String pid=needsHeightUpdateArray.get(i);
       VPaintableWidget paintable=(VPaintableWidget)paintableMap.getPaintable(pid);
-      if (!affectedContainers.contains(pid)) {
-        if (paintable instanceof CalculatingLayout) {
-          CalculatingLayout calculating=(CalculatingLayout)paintable;
-          calculating.updateHorizontalSizes();
-          calculating.updateVerticalSizes();
-        }
- else         if (paintable instanceof ResizeRequired) {
-          ((ResizeRequired)paintable).onResize();
-        }
+      if (paintable instanceof CalculatingLayout) {
+        CalculatingLayout cl=(CalculatingLayout)paintable;
+        cl.updateVerticalSizes();
       }
+ else       if (paintable instanceof ResizeRequired) {
+        ResizeRequired rr=(ResizeRequired)paintable;
+        rr.onResize();
+        needsWidthUpdate.remove(pid);
+      }
+      updatedSet.add(pid);
     }
-    JsArrayString affectedPids=affectedContainers.dump();
-    for (int i=0; i < affectedPids.length(); i++) {
-      String containerPid=affectedPids.get(i);
-      CalculatingLayout container=(CalculatingLayout)paintableMap.getPaintable(containerPid);
-      container.updateHorizontalSizes();
-      container.updateVerticalSizes();
+    JsArrayString needsWidthUpdateArray=needsWidthUpdate.dump();
+    for (int i=0; i < needsWidthUpdateArray.length(); i++) {
+      String pid=needsWidthUpdateArray.get(i);
+      VPaintable paintable=paintableMap.getPaintable(pid);
+      if (paintable instanceof CalculatingLayout) {
+        CalculatingLayout cl=(CalculatingLayout)paintable;
+        cl.updateHorizontalSizes();
+      }
+      updatedSet.add(pid);
     }
-    long layoutEnd=System.currentTimeMillis();
-    VConsole.log(affectedPids.length() + " requestLayout invocations in " + (layoutEnd - layoutStart)+ "ms");
-    long passEnd=System.currentTimeMillis();
+    JsArrayString changed=updatedSet.dump();
+    VConsole.log(changed.length() + " requestLayout invocations in " + (passDuration.elapsedMillis() - measureTime)+ "ms");
     StringBuilder b=new StringBuilder();
     b.append(changed.length());
     b.append(" changed widgets in pass ");
     b.append(passes);
     b.append(" in ");
-    b.append((passEnd - passStart));
+    b.append(passDuration.elapsedMillis());
     b.append(" ms: ");
     if (changed.length() < 10) {
       for (int i=0; i < changed.length(); i++) {
@@ -73,12 +83,19 @@
       }
     }
     VConsole.log(b.toString());
+    if (changed.length() == 0) {
+      VConsole.log("No more changes in pass " + passes);
+      break;
+    }
+    if (passes > 100) {
+      VConsole.log("Aborting layout");
+      break;
+    }
   }
   for (  VPaintableWidget vPaintableWidget : paintableWidgets) {
     if (vPaintableWidget instanceof LayoutPhaseListener) {
       ((LayoutPhaseListener)vPaintableWidget).afterLayout();
     }
   }
-  long end=System.currentTimeMillis();
-  VConsole.log("Total layout time: " + (end - start) + "ms");
+  VConsole.log("Total layout time: " + totalDuration.elapsedMillis() + "ms");
 }
