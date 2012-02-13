@@ -1,0 +1,31 @@
+{
+  VerticalLayout layout=new VerticalLayout();
+  final Table table=new Table("Ticket #8264 table");
+  layout.addComponent(table);
+  table.setWidth("200px");
+  table.setHeight("170px");
+  table.setSelectable(true);
+  table.setMultiSelect(true);
+  table.setImmediate(true);
+  table.addContainerProperty(ItemProperty.COLUMN1,String.class,null);
+  table.addContainerProperty(ItemProperty.COLUMN2,String.class,null);
+  for (int i=1; i < 100; i++) {
+    table.addItem(new String[]{"Item " + i,null},i);
+  }
+  layout.addComponent(new Button("Do It",new Button.ClickListener(){
+    public void buttonClick(    Button.ClickEvent event){
+      Collection selectedIds=(Collection)table.getValue();
+      for (      final Object itemId : selectedIds) {
+        final Property p=table.getItem(itemId).getItemProperty(ItemProperty.COLUMN2);
+        if (p.getValue() instanceof String) {
+          p.setValue(null);
+        }
+ else {
+          p.setValue("updated");
+        }
+      }
+    }
+  }
+));
+  return layout;
+}
