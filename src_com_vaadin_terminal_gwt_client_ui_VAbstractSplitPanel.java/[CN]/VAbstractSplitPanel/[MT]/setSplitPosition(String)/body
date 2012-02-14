@@ -5,22 +5,26 @@
   if (pos.indexOf("%") > 0) {
     pos=Float.parseFloat(pos.substring(0,pos.length() - 1)) / 100 * (orientation == ORIENTATION_HORIZONTAL ? getOffsetWidth() : getOffsetHeight()) + "px";
   }
+  String attributeName;
   if (orientation == ORIENTATION_HORIZONTAL) {
     if (positionReversed) {
-      DOM.setStyleAttribute(splitter,"right",pos);
+      attributeName="right";
     }
  else {
-      DOM.setStyleAttribute(splitter,"left",pos);
+      attributeName="left";
     }
   }
  else {
     if (positionReversed) {
-      DOM.setStyleAttribute(splitter,"bottom",pos);
+      attributeName="bottom";
     }
  else {
-      DOM.setStyleAttribute(splitter,"top",pos);
+      attributeName="top";
     }
   }
-  iLayout();
-  client.runDescendentsLayout(this);
+  Style style=splitter.getStyle();
+  if (!pos.equals(style.getProperty(attributeName))) {
+    style.setProperty(attributeName,pos);
+    updateSizes();
+  }
 }
