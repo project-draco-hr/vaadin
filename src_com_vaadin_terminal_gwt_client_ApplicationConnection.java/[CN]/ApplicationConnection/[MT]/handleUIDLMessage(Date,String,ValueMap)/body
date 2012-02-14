@@ -55,22 +55,42 @@
       if (redirectTimer != null) {
         redirectTimer.schedule(1000 * sessionExpirationInterval);
       }
-      Map<String,SharedState> sharedStates=new HashMap<String,SharedState>();
-      ValueMap states=json.getValueMap("state");
-      JsArrayString keyArray=states.getKeyArray();
-      for (int i=0; i < keyArray.length(); i++) {
-        String paintableId=keyArray.get(i);
-        JavaScriptObject value=states.getJavaScriptObject(paintableId);
-        SharedState state=GWT.create(SharedState.class);
-        Map<String,Object> stateMap=(Map<String,Object>)JsonDecoder.convertValue(new JSONArray(value),getPaintableMap());
-        state.setState(stateMap);
-        sharedStates.put(paintableId,state);
-      }
       JsArray<ValueMap> changes=json.getJSValueMapArray("changes");
       ArrayList<VPaintableWidget> updatedVPaintableWidgets=new ArrayList<VPaintableWidget>();
       relativeSizeChanges.clear();
       componentCaptionSizeChanges.clear();
       int length=changes.length();
+      for (int i=0; i < length; i++) {
+        try {
+          final UIDL change=changes.get(i).cast();
+          final UIDL uidl=change.getChildUIDL(0);
+          VPaintable paintable=paintableMap.getPaintable(uidl.getId());
+          if (null == paintable && !uidl.getTag().equals(configuration.getEncodedWindowTag())) {
+            getPaintable(uidl);
+          }
+        }
+ catch (        final Throwable e) {
+          VConsole.error(e);
+        }
+      }
+      ValueMap states=json.getValueMap("state");
+      JsArrayString keyArray=states.getKeyArray();
+      for (int i=0; i < keyArray.length(); i++) {
+        try {
+          String paintableId=keyArray.get(i);
+          VPaintable paintable=paintableMap.getPaintable(paintableId);
+          if (null != paintable) {
+            JavaScriptObject value=states.getJavaScriptObject(paintableId);
+            SharedState state=GWT.create(SharedState.class);
+            Map<String,Object> stateMap=(Map<String,Object>)JsonDecoder.convertValue(new JSONArray(value),getPaintableMap());
+            state.setState(stateMap);
+            paintable.updateState(state);
+          }
+        }
+ catch (        final Throwable e) {
+          VConsole.error(e);
+        }
+      }
       for (int i=0; i < length; i++) {
         try {
           final UIDL change=changes.get(i).cast();

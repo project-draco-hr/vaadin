@@ -55,11 +55,13 @@
     windowCache=new OpenWindowCache();
     currentlyOpenWindowsInClient.put(Integer.valueOf(root.getRootId()),windowCache);
   }
+  LinkedList<Paintable> stateQueue=new LinkedList<Paintable>();
   if (paintables != null) {
     paintQueue.clear();
     paintQueue.addAll(paintables);
     while (!paintQueue.isEmpty()) {
       final Paintable p=paintQueue.pop();
+      stateQueue.push(p);
       if (paintTarget.needsToBePainted(p)) {
         paintTarget.startTag("change");
         final String pid=getPaintableId(p);
@@ -76,12 +78,10 @@
   }
   paintTarget.close();
   outWriter.print("], ");
-  if (paintables != null) {
+  if (!stateQueue.isEmpty()) {
     JSONObject sharedStates=new JSONObject();
-    Stack<Paintable> paintablesWithModifiedState=new Stack<Paintable>();
-    paintablesWithModifiedState.addAll(paintables);
-    while (!paintablesWithModifiedState.empty()) {
-      final Paintable p=paintablesWithModifiedState.pop();
+    while (!stateQueue.isEmpty()) {
+      final Paintable p=stateQueue.pop();
       String paintableId=getPaintableId(p);
       SharedState state=p.getState();
       if (null != state) {

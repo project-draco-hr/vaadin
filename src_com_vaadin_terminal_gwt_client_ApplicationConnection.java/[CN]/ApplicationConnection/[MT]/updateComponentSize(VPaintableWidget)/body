@@ -1,6 +1,19 @@
 {
-  String w=uidl.hasAttribute("width") ? uidl.getStringAttribute("width") : "";
-  String h=uidl.hasAttribute("height") ? uidl.getStringAttribute("height") : "";
+  SharedState state=paintable.getState();
+  String w="";
+  String h="";
+  if (null != state) {
+    VConsole.log("Paintable state for " + getPaintableMap().getPid(paintable) + ": "+ String.valueOf(state.getState()));
+    if (state.getState().containsKey(ComponentState.STATE_WIDTH)) {
+      w=String.valueOf(state.getState().get(ComponentState.STATE_WIDTH));
+    }
+    if (state.getState().containsKey(ComponentState.STATE_HEIGHT)) {
+      h=String.valueOf(state.getState().get(ComponentState.STATE_HEIGHT));
+    }
+  }
+ else {
+    VConsole.log("No state for paintable " + getPaintableMap().getPid(paintable) + " in ApplicationConnection.updateComponentSize()");
+  }
   float relativeWidth=Util.parseRelativeSize(w);
   float relativeHeight=Util.parseRelativeSize(h);
   if (relativeHeight >= 0.0 || relativeWidth >= 0.0) {
