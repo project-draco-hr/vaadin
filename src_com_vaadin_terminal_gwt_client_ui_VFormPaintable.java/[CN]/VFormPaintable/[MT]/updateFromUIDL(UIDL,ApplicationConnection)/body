@@ -1,10 +1,8 @@
 {
-  getWidgetForPaintable().rendering=true;
   getWidgetForPaintable().client=client;
   getWidgetForPaintable().id=uidl.getId();
   super.updateFromUIDL(uidl,client);
   if (!isRealUpdate(uidl)) {
-    getWidgetForPaintable().rendering=false;
     return;
   }
   boolean legendEmpty=true;
@@ -54,7 +52,6 @@
       getWidgetForPaintable().fieldSet.removeChild(getWidgetForPaintable().desc);
     }
   }
-  getWidgetForPaintable().updateSize();
   if (uidl.getChildCount() > 1 && !uidl.getChildUIDL(1).getTag().equals("actions")) {
     VPaintableWidget newFooter=client.getPaintable(uidl.getChildUIDL(1));
     Widget newFooterWidget=newFooter.getWidgetForPaintable();
@@ -69,13 +66,11 @@
     }
     getWidgetForPaintable().footer=newFooterWidget;
     newFooter.updateFromUIDL(uidl.getChildUIDL(1),client);
-    getWidgetForPaintable().updateSize();
   }
  else {
     if (getWidgetForPaintable().footer != null) {
       getWidgetForPaintable().remove(getWidgetForPaintable().footer);
       client.unregisterPaintable(VPaintableMap.get(getConnection()).getPaintable(getWidgetForPaintable().footer));
-      getWidgetForPaintable().updateSize();
     }
   }
   final UIDL layoutUidl=uidl.getChildUIDL(0);
@@ -92,7 +87,6 @@
     getWidgetForPaintable().add(newLayoutWidget,getWidgetForPaintable().fieldContainer);
   }
   newLayout.updateFromUIDL(layoutUidl,client);
-  getWidgetForPaintable().updateSize();
   client.runDescendentsLayout(getWidgetForPaintable());
   if (uidl.getChildCount() > 1) {
     UIDL childUidl=uidl.getChildByTagName("actions");
@@ -109,5 +103,4 @@
     getWidgetForPaintable().shortcutHandler=null;
     getWidgetForPaintable().keyDownRegistration=null;
   }
-  getWidgetForPaintable().rendering=false;
 }
