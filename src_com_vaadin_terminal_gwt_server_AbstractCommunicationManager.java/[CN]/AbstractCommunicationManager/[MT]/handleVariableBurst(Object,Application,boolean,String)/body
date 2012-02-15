@@ -35,12 +35,16 @@
         changeVariables(source,owner,m);
       }
  catch (      Exception e) {
+        Component errorComponent=null;
         if (owner instanceof Component) {
-          handleChangeVariablesError(app,(Component)owner,e,m);
+          errorComponent=(Component)owner;
         }
- else {
-          throw new RuntimeException(e);
+ else         if (owner instanceof DragAndDropService) {
+          if (m.get("dhowner") instanceof Component) {
+            errorComponent=(Component)m.get("dhowner");
+          }
         }
+        handleChangeVariablesError(app,errorComponent,e,m);
       }
     }
  else {
