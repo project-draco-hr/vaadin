@@ -21,6 +21,31 @@
       String widgetClassName=split[0];
       String indexString=split[1];
       int widgetPosition=Integer.parseInt(indexString.substring(0,indexString.length() - 1));
+      if (w instanceof VMeasuringOrderedLayout && "ChildComponentContainer".equals(widgetClassName) && i + 1 < parts.length) {
+        VMeasuringOrderedLayout layout=(VMeasuringOrderedLayout)w;
+        String nextPart=parts[i + 1];
+        String[] nextSplit=nextPart.split("\\[",2);
+        String nextWidgetClassName=nextSplit[0];
+        int nextIndex=0;
+        for (        Widget child : layout) {
+          if (child instanceof VCaption) {
+            continue;
+          }
+          boolean matchingType=nextWidgetClassName.equals(Util.getSimpleName(child));
+          if (widgetPosition == 0) {
+            if (!matchingType) {
+              return null;
+            }
+            break;
+          }
+ else           if (matchingType) {
+            nextIndex++;
+          }
+          widgetPosition--;
+        }
+        parts[i + 1]=nextWidgetClassName + '[' + nextIndex+ ']';
+        continue;
+      }
       Iterator<? extends Widget> iterator;
       if (widgetClassName.equals("VWindow")) {
         iterator=client.getView().getWidgetForPaintable().getSubWindowList().iterator();
