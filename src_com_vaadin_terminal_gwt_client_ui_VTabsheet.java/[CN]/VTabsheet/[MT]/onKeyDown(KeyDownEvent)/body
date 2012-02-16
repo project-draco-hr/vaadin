@@ -1,0 +1,22 @@
+{
+  if (event.getSource() instanceof Tab) {
+    VConsole.log("KEYDOWN");
+    int keycode=event.getNativeEvent().getKeyCode();
+    if (keycode == KeyCodes.KEY_LEFT) {
+      int newTabIndex=activeTabIndex == 0 ? tb.getTabCount() - 1 : activeTabIndex - 1;
+      onTabSelected(newTabIndex);
+      activeTabIndex=newTabIndex;
+    }
+ else     if (keycode == KeyCodes.KEY_RIGHT) {
+      int newTabIndex=(activeTabIndex + 1) % tb.getTabCount();
+      onTabSelected(newTabIndex);
+      activeTabIndex=newTabIndex;
+    }
+ else     if (keycode == KeyCodes.KEY_DELETE) {
+      VConsole.log("INDEX=" + activeTabIndex);
+      focusedTab.onClose();
+      removeTab(activeTabIndex);
+    }
+    VConsole.log("tabindex -> " + activeTabIndex);
+  }
+}
