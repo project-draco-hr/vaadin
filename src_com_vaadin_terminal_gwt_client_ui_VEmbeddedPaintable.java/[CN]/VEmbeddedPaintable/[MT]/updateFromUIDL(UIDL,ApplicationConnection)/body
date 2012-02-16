@@ -29,20 +29,18 @@
         DOM.sinkEvents(el,Event.ONLOAD);
       }
       Style style=el.getStyle();
-      String w=uidl.getStringAttribute("width");
-      if (w != null) {
-        style.setProperty("width",w);
+      String w="";
+      String h="";
+      if (null != getState()) {
+        if (getState().getState().containsKey(ComponentState.STATE_WIDTH)) {
+          w=String.valueOf(getState().getState().get(ComponentState.STATE_WIDTH));
+        }
+        if (getState().getState().containsKey(ComponentState.STATE_HEIGHT)) {
+          h=String.valueOf(getState().getState().get(ComponentState.STATE_HEIGHT));
+        }
       }
- else {
-        style.setProperty("width","");
-      }
-      String h=uidl.getStringAttribute("height");
-      if (h != null) {
-        style.setProperty("height",h);
-      }
- else {
-        style.setProperty("height","");
-      }
+      style.setProperty("width",w);
+      style.setProperty("height",h);
       DOM.setElementProperty(el,"src",getWidgetForPaintable().getSrc(uidl,client));
       if (created) {
         getWidgetForPaintable().getElement().appendChild(el);
