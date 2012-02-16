@@ -10,12 +10,28 @@
   }
   VCaption caption=getCaption();
   Style captionStyle=caption != null ? caption.getElement().getStyle() : null;
+  boolean captionAboveCompnent;
+  if (caption == null) {
+    captionAboveCompnent=false;
+    style.clearPaddingRight();
+  }
+ else {
+    captionAboveCompnent=!caption.shouldBePlacedAfterComponent();
+    if (!captionAboveCompnent) {
+      style.setPaddingRight(getCaptionWidth(),Unit.PX);
+      captionStyle.setLeft(getWidgetWidth(),Unit.PX);
+    }
+ else {
+      style.clearPaddingRight();
+      captionStyle.setLeft(0,Unit.PX);
+    }
+  }
   AlignmentInfo alignment=getAlignment();
   if (!alignment.isLeft()) {
     double usedWidth=getWidgetWidth();
     if (alignment.isHorizontalCenter()) {
       currentLocation+=(allocatedSpace - usedWidth) / 2d;
-      if (captionStyle != null) {
+      if (captionAboveCompnent) {
         double captionWidth=getCaptionWidth();
         captionStyle.setLeft(usedWidth / 2 - (captionWidth / 2),Unit.PX);
         captionStyle.clearRight();
@@ -23,14 +39,14 @@
     }
  else {
       currentLocation+=(allocatedSpace - usedWidth);
-      if (captionStyle != null) {
+      if (captionAboveCompnent) {
         captionStyle.clearLeft();
         captionStyle.setRight(0,Unit.PX);
       }
     }
   }
  else {
-    if (captionStyle != null) {
+    if (captionAboveCompnent) {
       captionStyle.setLeft(0,Unit.PX);
       captionStyle.clearRight();
     }
