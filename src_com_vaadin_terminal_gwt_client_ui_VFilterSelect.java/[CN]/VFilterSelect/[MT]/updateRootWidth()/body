@@ -1,19 +1,13 @@
 {
-  if (width == null) {
+  VPaintableWidget paintable=VPaintableMap.get(client).getPaintable(this);
+  if (paintable.isUndefinedWidth()) {
     int tbWidth=Util.getRequiredWidth(tb);
-    int iconWidth=selectedItemIcon.isAttached() ? Util.measureMarginLeft(tb.getElement()) - Util.measureMarginLeft(selectedItemIcon.getElement()) : 0;
-    int w=tbWidth + getPopUpOpenerWidth() + iconWidth;
+    int w=tbWidth + getNonTextboxSpace();
     if ((!initDone || currentPage + 1 < 0) && suggestionPopupMinWidth > w) {
       setTextboxWidth(suggestionPopupMinWidth);
-      w=suggestionPopupMinWidth;
     }
- else {
-      tb.setWidth((tbWidth - getTextboxPadding()) + "px");
-    }
-    super.setWidth((w) + "px");
-    width=w + "px";
   }
  else {
-    setTextboxWidth(getMainWidth() - getComponentPadding());
+    setTextboxWidth(getMainWidth());
   }
 }
