@@ -1,13 +1,11 @@
 {
   if (widget instanceof HasWidgets) {
     for (    Widget child : (HasWidgets)widget) {
-      VPaintableWidget paintable=paintableMap.getPaintable(child);
-      if (paintable != null) {
-        paintables.add(paintable);
-      }
- else {
-        addDescendantPaintables(child,paintables,paintableMap);
-      }
+      addIfPaintable(child,paintables,paintableMap);
     }
+  }
+ else   if (widget instanceof HasOneWidget) {
+    Widget child=((HasOneWidget)widget).getWidget();
+    addIfPaintable(child,paintables,paintableMap);
   }
 }
