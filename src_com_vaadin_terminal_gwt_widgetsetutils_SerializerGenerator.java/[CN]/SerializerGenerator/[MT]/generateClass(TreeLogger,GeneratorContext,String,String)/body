@@ -1,0 +1,50 @@
+{
+  PrintWriter printWriter=null;
+  printWriter=context.tryCreate(logger,packageName,beanSerializerClassName);
+  if (printWriter == null) {
+    return;
+  }
+  Date date=new Date();
+  TypeOracle typeOracle=context.getTypeOracle();
+  logger.log(Type.DEBUG,"Processing serializable type " + beanTypeName + "...");
+  ClassSourceFileComposerFactory composer=null;
+  composer=new ClassSourceFileComposerFactory(packageName,beanSerializerClassName);
+  composer.addImport(GWT.class.getName());
+  composer.addImport(JSONArray.class.getName());
+  composer.addImport(JsonDecoder.class.getName());
+  composer.addImplementedInterface(VaadinSerializer.class.getName());
+  SourceWriter sourceWriter=composer.createSourceWriter(context,printWriter);
+  sourceWriter.indent();
+  sourceWriter.println("public " + beanTypeName + " deserialize("+ JSONObject.class.getName()+ " jsonValue, "+ VPaintableMap.class.getName()+ " idMapper) {");
+  sourceWriter.indent();
+  sourceWriter.println(beanTypeName + " state = GWT.create(" + beanTypeName+ ".class);");
+  JClassType beanType=typeOracle.findType(beanTypeName);
+  for (  JMethod method : beanType.getMethods()) {
+    if (!method.isPublic() || method.isStatic() || !method.getName().startsWith("set")|| method.getParameterTypes().length != 1) {
+      continue;
+    }
+    String setterName=method.getName();
+    String capitalizedFieldName=setterName.substring(3);
+    String fieldName=decapitalize(capitalizedFieldName);
+    JType setterParameterType=method.getParameterTypes()[0];
+    logger.log(Type.DEBUG,"* Processing field " + fieldName + " in "+ beanTypeName);
+    String jsonFieldName="json" + capitalizedFieldName;
+    sourceWriter.println("JSONArray " + jsonFieldName + " = (JSONArray) jsonValue.get(\""+ fieldName+ "\");");
+    String fieldType;
+    JPrimitiveType primitiveType=setterParameterType.isPrimitive();
+    if (primitiveType != null) {
+      fieldType=primitiveType.getQualifiedBoxedSourceName();
+    }
+ else {
+      fieldType=setterParameterType.getQualifiedSourceName();
+    }
+    sourceWriter.println("state." + setterName + "(("+ fieldType+ ") JsonDecoder.convertValue("+ jsonFieldName+ ", idMapper));");
+  }
+  sourceWriter.println("return state;");
+  sourceWriter.println("}");
+  sourceWriter.outdent();
+  sourceWriter.println("}");
+  sourceWriter.outdent();
+  context.commit(logger,printWriter);
+  logger.log(Type.INFO,"Done. (" + (new Date().getTime() - date.getTime()) / 1000 + "seconds)");
+}
