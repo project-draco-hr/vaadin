@@ -30,8 +30,10 @@
  else   if (JsonEncoder.VTYPE_PAINTABLE.equals(variableType)) {
     val=idMapper.getPaintable(String.valueOf(value));
   }
- else   if (JsonEncoder.VTYPE_SHAREDSTATE.equals(variableType)) {
-    val=convertMap((JSONObject)value,idMapper);
+ else {
+    VaadinSerializer serializer=getSerializer(variableType);
+    Object object=serializer.deserialize((JSONObject)value,idMapper);
+    return object;
   }
   return val;
 }

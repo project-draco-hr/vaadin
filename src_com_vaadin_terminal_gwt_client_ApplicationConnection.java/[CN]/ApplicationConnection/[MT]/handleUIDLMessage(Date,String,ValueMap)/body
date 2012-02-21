@@ -80,11 +80,9 @@
           String paintableId=keyArray.get(i);
           VPaintable paintable=paintableMap.getPaintable(paintableId);
           if (null != paintable) {
-            JavaScriptObject value=states.getJavaScriptObject(paintableId);
-            SharedState state=GWT.create(SharedState.class);
-            Map<String,Object> stateMap=(Map<String,Object>)JsonDecoder.convertValue(new JSONArray(value),getPaintableMap());
-            state.setState(stateMap);
-            paintable.updateState(state);
+            JSONArray stateDataAndType=new JSONArray(states.getJavaScriptObject(paintableId));
+            Object state=JsonDecoder.deserialize(stateDataAndType,paintableMap);
+            paintable.setState((SharedState)state);
           }
         }
  catch (        final Throwable e) {
