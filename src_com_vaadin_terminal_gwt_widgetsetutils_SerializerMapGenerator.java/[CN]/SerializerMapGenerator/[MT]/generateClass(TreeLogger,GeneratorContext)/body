@@ -1,0 +1,35 @@
+{
+  PrintWriter printWriter=null;
+  printWriter=context.tryCreate(logger,packageName,className);
+  if (printWriter == null) {
+    return;
+  }
+  logger.log(Type.INFO,"Detecting serializable data types...");
+  Date date=new Date();
+  TypeOracle typeOracle=context.getTypeOracle();
+  JClassType serializerType=typeOracle.findType(SharedState.class.getName());
+  JClassType[] serializerSubtypes=serializerType.getSubtypes();
+  ClassSourceFileComposerFactory composer=null;
+  composer=new ClassSourceFileComposerFactory(packageName,className);
+  composer.addImport("com.google.gwt.core.client.GWT");
+  composer.addImplementedInterface(SerializerMap.class.getName());
+  SourceWriter sourceWriter=composer.createSourceWriter(context,printWriter);
+  sourceWriter.indent();
+  sourceWriter.println("public " + VaadinSerializer.class.getName() + " getSerializer(String type) {");
+  sourceWriter.indent();
+  for (  JClassType type : serializerSubtypes) {
+    sourceWriter.println("if (type.equals(\"" + type.getQualifiedSourceName() + "\")) {");
+    sourceWriter.indent();
+    sourceWriter.println("return GWT.create(" + type.getQualifiedSourceName() + "_Serializer.class);");
+    sourceWriter.outdent();
+    sourceWriter.println("}");
+    logger.log(Type.INFO,"Configured serializer for " + type.getName());
+  }
+  sourceWriter.println("throw new RuntimeException(\"No serializer found for class \"+type);");
+  sourceWriter.outdent();
+  sourceWriter.println("}");
+  sourceWriter.outdent();
+  sourceWriter.println("}");
+  context.commit(logger,printWriter);
+  logger.log(Type.INFO,"Done. (" + (new Date().getTime() - date.getTime()) / 1000 + "seconds)");
+}
