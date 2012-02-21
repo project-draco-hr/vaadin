@@ -1,11 +1,17 @@
 {
-  Widget widget=paintable.getWidgetForPaintable();
-  ChildComponentContainer cc=getWidgetForPaintable().widgetToComponentContainer.get(widget);
-  if (cc != null) {
-    cc.updateCaption(uidl,getConnection(),getMeasuredSize());
+  VGridLayout layout=getWidgetForPaintable();
+  if (VCaption.isNeeded(uidl)) {
+    Cell cell=layout.widgetToCell.get(component.getWidgetForPaintable());
+    VLayoutSlot layoutSlot=cell.slot;
+    VCaption caption=layoutSlot.getCaption();
+    if (caption == null) {
+      caption=new VCaption(component,getConnection());
+      Widget widget=component.getWidgetForPaintable();
+      layout.setCaption(widget,caption);
+    }
+    caption.updateCaption(uidl);
   }
-  if (!getWidgetForPaintable().rendering) {
-    getWidgetForPaintable().widgetToCell.get(widget).updateRelSizeStatus(uidl);
-    getConnection().captionSizeUpdated(widget);
+ else {
+    layout.setCaption(component.getWidgetForPaintable(),null);
   }
 }
