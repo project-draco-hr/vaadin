@@ -41,9 +41,24 @@
   }
   for (  VPaintableWidget child : previousChildren) {
     Widget widget=child.getWidgetForPaintable();
-    layout.removeSlot(layout.getSlotForChild(widget));
-    VPaintableMap vPaintableMap=VPaintableMap.get(client);
-    vPaintableMap.unregisterPaintable(child);
+    if (widget.getParent() == getWidgetForPaintable()) {
+      layout.removeSlot(layout.getSlotForChild(widget));
+      VPaintableMap vPaintableMap=VPaintableMap.get(client);
+      vPaintableMap.unregisterPaintable(child);
+    }
+  }
+  while (true) {
+    int childCount=layout.getElement().getChildCount();
+    if (childCount <= 1) {
+      break;
+    }
+    Node lastSlot=layout.getElement().getChild(childCount - 2);
+    if (lastSlot.getChildCount() == 0) {
+      lastSlot.removeFromParent();
+    }
+ else {
+      break;
+    }
   }
   int bitMask=uidl.getIntAttribute("margins");
   layout.updateMarginStyleNames(new VMarginInfo(bitMask));
