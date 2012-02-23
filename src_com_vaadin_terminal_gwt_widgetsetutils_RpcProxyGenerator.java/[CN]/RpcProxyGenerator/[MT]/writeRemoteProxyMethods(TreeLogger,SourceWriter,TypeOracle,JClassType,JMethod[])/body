@@ -1,0 +1,22 @@
+{
+  for (  JMethod m : methods) {
+    writer.print(m.getReadableDeclaration(false,false,false,false,true));
+    writer.println(" {");
+    writer.indent();
+    writer.print("client.addMethodInvocationToQueue(new MethodInvocation(paintableId, \"" + requestedType.getQualifiedBinaryName() + "\", \"");
+    writer.print(m.getName());
+    writer.print("\", new Object[] {");
+    JParameter[] parameters=m.getParameters();
+    boolean first=true;
+    for (    JParameter p : parameters) {
+      if (!first) {
+        writer.print(", ");
+      }
+      first=false;
+      writer.print(p.getName());
+    }
+    writer.println("}), true);");
+    writer.outdent();
+    writer.println("}");
+  }
+}

@@ -1,0 +1,18 @@
+{
+  JSONArray invocationsJson=new JSONArray(burst);
+  ArrayList<MethodInvocation> invocations=new ArrayList<MethodInvocation>();
+  for (int i=0; i < invocationsJson.length(); ++i) {
+    JSONArray invocationJson=invocationsJson.getJSONArray(i);
+    String paintableId=invocationJson.getString(0);
+    String interfaceName=invocationJson.getString(1);
+    String methodName=invocationJson.getString(2);
+    JSONArray parametersJson=invocationJson.getJSONArray(3);
+    Object[] parameters=new Object[parametersJson.length()];
+    for (int j=0; j < parametersJson.length(); ++j) {
+      parameters[j]=JsonCodec.convertVariableValue(parametersJson.getJSONArray(j),this);
+    }
+    MethodInvocation invocation=new MethodInvocation(paintableId,interfaceName,methodName,parameters);
+    invocations.add(invocation);
+  }
+  return invocations;
+}

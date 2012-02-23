@@ -19,7 +19,7 @@
     }
     getWidgetForPaintable().resizeLazy=uidl.hasAttribute(VView.RESIZE_LAZY);
     getWidgetForPaintable().setDraggable(!uidl.hasAttribute("fixedposition"));
-    getWidgetForPaintable().setCaption(uidl.getStringAttribute("caption"),uidl.getStringAttribute("icon"));
+    getWidgetForPaintable().setCaption(getState().getCaption(),uidl.getStringAttribute(VAbstractPaintableWidget.ATTRIBUTE_ICON));
   }
   getWidgetForPaintable().visibilityChangesDisabled=true;
   super.updateFromUIDL(uidl,client);
@@ -28,8 +28,8 @@
   }
   getWidgetForPaintable().visibilityChangesDisabled=false;
   clickEventHandler.handleEventHandlerRegistration(client);
-  getWidgetForPaintable().immediate=uidl.hasAttribute("immediate");
-  getWidgetForPaintable().setClosable(!uidl.getBooleanAttribute("readonly"));
+  getWidgetForPaintable().immediate=getState().isImmediate();
+  getWidgetForPaintable().setClosable(!getState().isReadOnly());
   int positionx=uidl.getIntVariable("positionx");
   int positiony=uidl.getIntVariable("positiony");
   if (positionx >= 0 || positiony >= 0) {
@@ -76,8 +76,8 @@
     getWidgetForPaintable().contentPanel.setWidget(lo.getWidgetForPaintable());
     getWidgetForPaintable().layout=lo;
   }
-  getWidgetForPaintable().dynamicWidth=!uidl.hasAttribute("width");
-  getWidgetForPaintable().dynamicHeight=!uidl.hasAttribute("height");
+  getWidgetForPaintable().dynamicWidth=getState().isUndefinedWidth();
+  getWidgetForPaintable().dynamicHeight=getState().isUndefinedHeight();
   getWidgetForPaintable().layoutRelativeWidth=uidl.hasAttribute("layoutRelativeWidth");
   getWidgetForPaintable().layoutRelativeHeight=uidl.hasAttribute("layoutRelativeHeight");
   if (getWidgetForPaintable().dynamicWidth && getWidgetForPaintable().layoutRelativeWidth) {

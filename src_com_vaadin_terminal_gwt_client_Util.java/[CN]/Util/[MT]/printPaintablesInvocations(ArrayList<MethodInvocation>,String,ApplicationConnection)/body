@@ -1,0 +1,22 @@
+{
+  VPaintableWidget paintable=(VPaintableWidget)VPaintableMap.get(c).getPaintable(id);
+  if (paintable != null) {
+    VConsole.log("\t" + id + " ("+ paintable.getClass()+ ") :");
+    for (    MethodInvocation invocation : invocations) {
+      Object[] parameters=invocation.getParameters();
+      String formattedParams=null;
+      if (ApplicationConnection.UPDATE_VARIABLE_METHOD.equals(invocation.getMethodName()) && parameters.length == 2) {
+        Object value=parameters[1];
+        String formattedValue=value instanceof VPaintable ? c.getPaintableMap().getPid((VPaintable)value) : String.valueOf(value);
+        formattedParams=parameters[0] + " : " + formattedValue;
+      }
+      if (null == formattedParams) {
+        formattedParams=(null != parameters) ? Arrays.toString(parameters) : null;
+      }
+      VConsole.log("\t\t" + invocation.getInterfaceName() + "."+ invocation.getMethodName()+ "("+ formattedParams+ ")");
+    }
+  }
+ else {
+    VConsole.log("\t" + id + ": Warning: no corresponding paintable!");
+  }
+}

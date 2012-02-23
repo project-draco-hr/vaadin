@@ -17,7 +17,7 @@
     getWidgetForPaintable().rendering=false;
     return;
   }
-  getWidgetForPaintable().enabled=!uidl.hasAttribute("disabled");
+  getWidgetForPaintable().enabled=!getState().isDisabled();
   if (BrowserInfo.get().isIE8() && !getWidgetForPaintable().enabled) {
     getWidgetForPaintable().scrollBodyPanel.getElement().getStyle().setPosition(Position.STATIC);
   }
@@ -26,12 +26,12 @@
   }
   getWidgetForPaintable().client=client;
   getWidgetForPaintable().paintableId=uidl.getStringAttribute("id");
-  getWidgetForPaintable().immediate=uidl.getBooleanAttribute("immediate");
+  getWidgetForPaintable().immediate=getState().isImmediate();
   int previousTotalRows=getWidgetForPaintable().totalRows;
   getWidgetForPaintable().updateTotalRows(uidl);
   boolean totalRowsChanged=(getWidgetForPaintable().totalRows != previousTotalRows);
   getWidgetForPaintable().updateDragMode(uidl);
-  getWidgetForPaintable().updateSelectionProperties(uidl);
+  getWidgetForPaintable().updateSelectionProperties(uidl,getState());
   if (uidl.hasAttribute("alb")) {
     getWidgetForPaintable().bodyActionKeys=uidl.getStringArrayAttribute("alb");
   }

@@ -1,0 +1,76 @@
+{
+  boolean success=true;
+  try {
+    List<MethodInvocation> invocations=parseInvocations(burst);
+    for (int i=0; i < invocations.size(); i++) {
+      MethodInvocation invocation=invocations.get(i);
+      MethodInvocation nextInvocation=null;
+      if (i + 1 < invocations.size()) {
+        nextInvocation=invocations.get(i + 1);
+      }
+      final String interfaceName=invocation.getInterfaceName();
+      if (!ApplicationConnection.UPDATE_VARIABLE_INTERFACE.equals(interfaceName)) {
+        applyInvocation(invocation);
+        continue;
+      }
+      final VariableOwner owner=getVariableOwner(invocation.getPaintableId());
+      if (owner != null && owner.isEnabled()) {
+        VariableChange change=new VariableChange(invocation);
+        Map<String,Object> m=new HashMap<String,Object>();
+        m.put(change.getName(),change.getValue());
+        while (nextInvocation != null && invocation.getPaintableId().equals(nextInvocation.getPaintableId()) && ApplicationConnection.UPDATE_VARIABLE_METHOD.equals(nextInvocation.getMethodName())) {
+          i++;
+          invocation=nextInvocation;
+          change=new VariableChange(invocation);
+          m.put(change.getName(),change.getValue());
+          if (i + 1 < invocations.size()) {
+            nextInvocation=invocations.get(i + 1);
+          }
+ else {
+            nextInvocation=null;
+          }
+        }
+        try {
+          changeVariables(source,owner,m);
+        }
+ catch (        Exception e) {
+          Component errorComponent=null;
+          if (owner instanceof Component) {
+            errorComponent=(Component)owner;
+          }
+ else           if (owner instanceof DragAndDropService) {
+            if (m.get("dhowner") instanceof Component) {
+              errorComponent=(Component)m.get("dhowner");
+            }
+          }
+          handleChangeVariablesError(app,errorComponent,e,m);
+        }
+      }
+ else {
+        VariableChange change=new VariableChange(invocation);
+        if ("close".equals(change.getName()) && Boolean.TRUE.equals(change.getValue())) {
+          continue;
+        }
+        String msg="Warning: Ignoring RPC call for ";
+        if (owner != null) {
+          msg+="disabled component " + owner.getClass();
+          String caption=((Component)owner).getCaption();
+          if (caption != null) {
+            msg+=", caption=" + caption;
+          }
+        }
+ else {
+          msg+="non-existent component, VAR_PID=" + invocation.getPaintableId();
+          success=false;
+        }
+        logger.warning(msg);
+        continue;
+      }
+    }
+  }
+ catch (  JSONException e) {
+    logger.warning("Unable to parse RPC call from the client: " + e.getMessage());
+    throw new RuntimeException(e);
+  }
+  return success;
+}

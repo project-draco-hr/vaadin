@@ -1,0 +1,29 @@
+{
+  Type logType=TreeLogger.INFO;
+  logger.log(TreeLogger.INFO,"Running RpcProxyGenerator",null);
+  TypeOracle typeOracle=ctx.getTypeOracle();
+  assert(typeOracle != null);
+  JClassType requestedType=typeOracle.findType(requestedClassName);
+  if (requestedType == null) {
+    logger.log(TreeLogger.ERROR,"Unable to find metadata for type '" + requestedClassName + "'",null);
+    throw new UnableToCompleteException();
+  }
+  String generatedClassName="ClientToServerRpc_" + requestedType.getName().replaceAll("[$.]","_");
+  JClassType initializableInterface=typeOracle.findType(InitializableClientToServerRpc.class.getCanonicalName());
+  ClassSourceFileComposerFactory composer=new ClassSourceFileComposerFactory(requestedType.getPackage().getName(),generatedClassName);
+  composer.addImplementedInterface(requestedType.getQualifiedSourceName());
+  composer.addImplementedInterface(initializableInterface.getQualifiedSourceName());
+  composer.addImport(MethodInvocation.class.getCanonicalName());
+  logger.log(logType,"Generating client proxy for remote service interface '" + requestedType.getQualifiedSourceName() + "'");
+  PrintWriter printWriter=ctx.tryCreate(logger,composer.getCreatedPackage(),composer.getCreatedClassShortName());
+  if (printWriter != null) {
+    SourceWriter writer=composer.createSourceWriter(ctx,printWriter);
+    writer.println("public " + generatedClassName + "() {}");
+    writeCommonFieldsAndMethods(logger,writer,typeOracle);
+    writeRemoteProxyMethods(logger,writer,typeOracle,requestedType,requestedType.isClassOrInterface().getMethods());
+    writer.outdent();
+    writer.println("}");
+    ctx.commit(logger,printWriter);
+  }
+  return composer.getCreatedClassName();
+}

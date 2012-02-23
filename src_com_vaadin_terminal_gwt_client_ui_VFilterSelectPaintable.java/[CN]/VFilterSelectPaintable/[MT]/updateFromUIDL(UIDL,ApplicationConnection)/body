@@ -1,8 +1,8 @@
 {
   getWidgetForPaintable().client=client;
   getWidgetForPaintable().paintableId=uidl.getId();
-  getWidgetForPaintable().readonly=uidl.hasAttribute("readonly");
-  getWidgetForPaintable().enabled=!uidl.hasAttribute("disabled");
+  getWidgetForPaintable().readonly=getState().isReadOnly();
+  getWidgetForPaintable().enabled=!getState().isDisabled();
   getWidgetForPaintable().tb.setEnabled(getWidgetForPaintable().enabled);
   getWidgetForPaintable().updateReadOnly();
   super.updateFromUIDL(uidl,client);
@@ -17,7 +17,7 @@
   if (uidl.hasAttribute("filteringmode")) {
     getWidgetForPaintable().filteringmode=uidl.getIntAttribute("filteringmode");
   }
-  getWidgetForPaintable().immediate=uidl.hasAttribute("immediate");
+  getWidgetForPaintable().immediate=getState().isImmediate();
   getWidgetForPaintable().nullSelectionAllowed=uidl.hasAttribute("nullselect");
   getWidgetForPaintable().nullSelectItem=uidl.hasAttribute("nullselectitem") && uidl.getBooleanAttribute("nullselectitem");
   getWidgetForPaintable().currentPage=uidl.getIntVariable("page");
@@ -30,7 +30,7 @@
  else {
     getWidgetForPaintable().inputPrompt="";
   }
-  getWidgetForPaintable().suggestionPopup.updateStyleNames(uidl);
+  getWidgetForPaintable().suggestionPopup.updateStyleNames(uidl,getState());
   getWidgetForPaintable().allowNewItem=uidl.hasAttribute("allownewitem");
   getWidgetForPaintable().lastNewItemString=null;
   getWidgetForPaintable().currentSuggestions.clear();

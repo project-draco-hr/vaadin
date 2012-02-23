@@ -5,15 +5,10 @@
   if (!isRealUpdate(uidl)) {
     return;
   }
-  if (uidl.getBooleanAttribute("readonly")) {
-    getWidgetForPaintable().setReadOnly(true);
-  }
- else {
-    getWidgetForPaintable().setReadOnly(false);
-  }
+  getWidgetForPaintable().setReadOnly(getState().isReadOnly());
   getWidgetForPaintable().inputPrompt=uidl.getStringAttribute(VTextField.ATTR_INPUTPROMPT);
   getWidgetForPaintable().setMaxLength(uidl.hasAttribute("maxLength") ? uidl.getIntAttribute("maxLength") : -1);
-  getWidgetForPaintable().immediate=uidl.getBooleanAttribute("immediate");
+  getWidgetForPaintable().immediate=getState().isImmediate();
   getWidgetForPaintable().listenTextChangeEvents=client.hasEventListeners(this,"ie");
   if (getWidgetForPaintable().listenTextChangeEvents) {
     getWidgetForPaintable().textChangeEventMode=uidl.getStringAttribute(VTextField.ATTR_TEXTCHANGE_EVENTMODE);

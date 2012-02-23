@@ -1,33 +1,16 @@
 {
   final String tag=target.getTag(this);
-  if (!target.startTag(this,tag) || repaintRequestListenersNotified) {
+  final PaintStatus status=target.startPaintable(this,tag);
+  if (PaintStatus.DEFER == status) {
+    target.addAttribute("deferred",true);
+  }
+ else   if (PaintStatus.CACHED == status && !repaintRequestListenersNotified) {
+    target.addAttribute("cached",true);
+  }
+ else {
     if (isVisible()) {
-      if (getHeight() >= 0 && (getHeightUnits() != Unit.PERCENTAGE || ComponentSizeValidator.parentCanDefineHeight(this))) {
-        target.addAttribute("height","" + getCSSHeight());
-      }
-      if (getWidth() >= 0 && (getWidthUnits() != Unit.PERCENTAGE || ComponentSizeValidator.parentCanDefineWidth(this))) {
-        target.addAttribute("width","" + getCSSWidth());
-      }
-      if (styles != null && styles.size() > 0) {
-        target.addAttribute("style",getStyle());
-      }
-      if (isReadOnly()) {
-        target.addAttribute("readonly",true);
-      }
-      if (isImmediate()) {
-        target.addAttribute("immediate",true);
-      }
-      if (!isEnabled()) {
-        target.addAttribute("disabled",true);
-      }
-      if (getCaption() != null) {
-        target.addAttribute("caption",getCaption());
-      }
       if (getIcon() != null) {
-        target.addAttribute("icon",getIcon());
-      }
-      if (getDescription() != null && getDescription().length() > 0) {
-        target.addAttribute("description",getDescription());
+        target.addAttribute(VAbstractPaintableWidget.ATTRIBUTE_ICON,getIcon());
       }
       if (eventIdentifiers != null) {
         target.addAttribute("eventListeners",eventIdentifiers.toArray());
@@ -42,9 +25,6 @@
       target.addAttribute("invisible",true);
     }
   }
- else {
-    target.addAttribute("cached",true);
-  }
-  target.endTag(tag);
+  target.endPaintable(this);
   repaintRequestListenersNotified=false;
 }

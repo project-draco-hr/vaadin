@@ -4,7 +4,7 @@
   getWidgetForPaintable().id=uidl.getId();
   boolean firstPaint=getWidgetForPaintable().connection == null;
   getWidgetForPaintable().connection=client;
-  getWidgetForPaintable().immediate=uidl.hasAttribute("immediate");
+  getWidgetForPaintable().immediate=getState().isImmediate();
   getWidgetForPaintable().resizeLazy=uidl.hasAttribute(VView.RESIZE_LAZY);
   String newTheme=uidl.getStringAttribute("theme");
   if (getWidgetForPaintable().theme != null && !newTheme.equals(getWidgetForPaintable().theme)) {
@@ -13,12 +13,10 @@
  else {
     getWidgetForPaintable().theme=newTheme;
   }
-  if (uidl.hasAttribute("style")) {
-    getWidgetForPaintable().setStyleName(getWidgetForPaintable().getStylePrimaryName() + " " + uidl.getStringAttribute("style"));
-  }
+  getWidgetForPaintable().setStyleName(getWidgetForPaintable().getStylePrimaryName() + " " + getState().getStyle());
   clickEventHandler.handleEventHandlerRegistration(client);
-  if (!getWidgetForPaintable().isEmbedded() && uidl.hasAttribute("caption")) {
-    com.google.gwt.user.client.Window.setTitle(uidl.getStringAttribute("caption"));
+  if (!getWidgetForPaintable().isEmbedded() && getState().getCaption() != null) {
+    com.google.gwt.user.client.Window.setTitle(getState().getCaption());
   }
   int childIndex=0;
   boolean isClosed=false;

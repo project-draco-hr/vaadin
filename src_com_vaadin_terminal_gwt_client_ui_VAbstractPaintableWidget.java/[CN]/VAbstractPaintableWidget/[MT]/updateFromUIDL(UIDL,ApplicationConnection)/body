@@ -12,15 +12,18 @@
     paintableMap.setOffsetSize(this,null);
     return;
   }
+  if (!isRealUpdate(uidl)) {
+    return;
+  }
   if (uidl.hasAttribute("tabindex") && getWidgetForPaintable() instanceof Focusable) {
     ((Focusable)getWidgetForPaintable()).setTabIndex(uidl.getIntAttribute("tabindex"));
   }
-  setEnabled(!uidl.getBooleanAttribute("disabled"));
-  String styleName=getStyleNameFromUIDL(getWidgetForPaintable().getStylePrimaryName(),uidl,getWidgetForPaintable() instanceof Field);
+  setEnabled(!getState().isDisabled());
+  String styleName=getStyleNameFromUIDL(getWidgetForPaintable().getStylePrimaryName(),uidl,getState(),getWidgetForPaintable() instanceof Field);
   getWidgetForPaintable().setStyleName(styleName);
   TooltipInfo tooltipInfo=paintableMap.getTooltipInfo(this,null);
-  if (uidl.hasAttribute(ATTRIBUTE_DESCRIPTION)) {
-    tooltipInfo.setTitle(uidl.getStringAttribute(ATTRIBUTE_DESCRIPTION));
+  if (getState().hasDescription()) {
+    tooltipInfo.setTitle(getState().getDescription());
   }
  else {
     tooltipInfo.setTitle(null);
@@ -34,5 +37,5 @@
   if (delegateCaptionHandling()) {
     getParent().updateCaption(this,uidl);
   }
-  getConnection().updateComponentSize(this,uidl);
+  getConnection().updateComponentSize(this);
 }

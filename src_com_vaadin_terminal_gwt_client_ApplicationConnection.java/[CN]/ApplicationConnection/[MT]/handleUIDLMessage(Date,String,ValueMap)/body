@@ -64,6 +64,35 @@
         try {
           final UIDL change=changes.get(i).cast();
           final UIDL uidl=change.getChildUIDL(0);
+          VPaintable paintable=paintableMap.getPaintable(uidl.getId());
+          if (null == paintable && !uidl.getTag().equals(configuration.getEncodedWindowTag())) {
+            getPaintable(uidl);
+          }
+        }
+ catch (        final Throwable e) {
+          VConsole.error(e);
+        }
+      }
+      ValueMap states=json.getValueMap("state");
+      JsArrayString keyArray=states.getKeyArray();
+      for (int i=0; i < keyArray.length(); i++) {
+        try {
+          String paintableId=keyArray.get(i);
+          VPaintable paintable=paintableMap.getPaintable(paintableId);
+          if (null != paintable) {
+            JSONArray stateDataAndType=new JSONArray(states.getJavaScriptObject(paintableId));
+            Object state=JsonDecoder.convertValue(stateDataAndType,paintableMap);
+            paintable.setState((SharedState)state);
+          }
+        }
+ catch (        final Throwable e) {
+          VConsole.error(e);
+        }
+      }
+      for (int i=0; i < length; i++) {
+        try {
+          final UIDL change=changes.get(i).cast();
+          final UIDL uidl=change.getChildUIDL(0);
           final VPaintableWidget paintable=(VPaintableWidget)paintableMap.getPaintable(uidl.getId());
           if (paintable != null) {
             paintable.updateFromUIDL(uidl,ApplicationConnection.this);
