@@ -3,7 +3,15 @@
   if (paintable.isUndefinedWidth()) {
     int w=Util.getRequiredWidth(this);
     if ((!initDone || currentPage + 1 < 0) && suggestionPopupMinWidth > w) {
-      setWidth(suggestionPopupMinWidth + "px");
+      Style style=getElement().getStyle();
+      String originalPadding=style.getPadding();
+      String originalBorder=style.getBorderWidth();
+      style.setPaddingLeft(0,Unit.PX);
+      style.setBorderWidth(0,Unit.PX);
+      int offset=w - Util.getRequiredWidth(this);
+      style.setProperty("padding",originalPadding);
+      style.setProperty("borderWidth",originalBorder);
+      setWidth(suggestionPopupMinWidth + offset + "px");
     }
     if (!tb.getElement().getStyle().getWidth().endsWith("px")) {
       tb.setWidth((tb.getOffsetWidth() - selectedItemIcon.getOffsetWidth()) + "px");
