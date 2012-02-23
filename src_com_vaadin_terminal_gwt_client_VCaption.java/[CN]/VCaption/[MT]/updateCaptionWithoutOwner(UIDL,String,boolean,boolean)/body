@@ -2,19 +2,20 @@
   setVisible(!uidl.getBooleanAttribute("invisible"));
   boolean wasPlacedAfterComponent=placedAfterComponent;
   placedAfterComponent=true;
-  String style=CLASSNAME;
-  if (owner.getState().hasStyles()) {
-    final String[] styles=owner.getState().getStyle().split(" ");
-    for (int i=0; i < styles.length; i++) {
-      style+=" " + CLASSNAME + "-"+ styles[i];
-    }
-  }
-  if (owner.getState().isDisabled()) {
+  String style=VCaption.CLASSNAME;
+  if (disabled) {
     style+=" " + ApplicationConnection.DISABLED_CLASSNAME;
   }
   setStyleName(style);
+  if (hasDescription) {
+    if (captionText != null) {
+      addStyleDependentName("hasdescription");
+    }
+ else {
+      removeStyleDependentName("hasdescription");
+    }
+  }
   boolean hasIcon=uidl.hasAttribute(VAbstractPaintableWidget.ATTRIBUTE_ICON);
-  boolean showRequired=uidl.getBooleanAttribute(VAbstractPaintableWidget.ATTRIBUTE_REQUIRED);
   boolean showError=uidl.hasAttribute(VAbstractPaintableWidget.ATTRIBUTE_ERROR) && !uidl.getBooleanAttribute(VAbstractPaintableWidget.ATTRIBUTE_HIDEERRORS);
   if (hasIcon) {
     if (icon == null) {
@@ -30,44 +31,25 @@
     DOM.removeChild(getElement(),icon.getElement());
     icon=null;
   }
-  if (owner.getState().getCaption() != null) {
+  if (caption != null) {
     if (captionText == null) {
       captionText=DOM.createDiv();
       captionText.setClassName("v-captiontext");
       DOM.insertChild(getElement(),captionText,getInsertPosition(InsertPosition.CAPTION));
     }
-    String c=owner.getState().getCaption();
     placedAfterComponent=false;
-    if (c == null || c.trim().equals("")) {
-      if (!hasIcon && !showRequired && !showError) {
+    if (caption.trim().equals("")) {
+      if (!hasIcon && !showError) {
         captionText.setInnerHTML("&nbsp;");
       }
     }
  else {
-      DOM.setInnerText(captionText,c);
+      DOM.setInnerText(captionText,caption);
     }
   }
  else   if (captionText != null) {
     DOM.removeChild(getElement(),captionText);
     captionText=null;
-  }
-  if (owner.getState().hasDescription() && captionText != null) {
-    addStyleDependentName("hasdescription");
-  }
- else {
-    removeStyleDependentName("hasdescription");
-  }
-  if (showRequired) {
-    if (requiredFieldIndicator == null) {
-      requiredFieldIndicator=DOM.createDiv();
-      requiredFieldIndicator.setClassName("v-required-field-indicator");
-      DOM.setInnerText(requiredFieldIndicator,"*");
-      DOM.insertChild(getElement(),requiredFieldIndicator,getInsertPosition(InsertPosition.REQUIRED));
-    }
-  }
- else   if (requiredFieldIndicator != null) {
-    DOM.removeChild(getElement(),requiredFieldIndicator);
-    requiredFieldIndicator=null;
   }
   if (showError) {
     if (errorIndicatorElement == null) {
