@@ -2,17 +2,19 @@
   setVisible(!uidl.getBooleanAttribute("invisible"));
   boolean wasPlacedAfterComponent=placedAfterComponent;
   placedAfterComponent=true;
-  String style=CLASSNAME;
-  if (uidl.hasAttribute(VAbstractPaintableWidget.ATTRIBUTE_STYLE)) {
-    final String[] styles=uidl.getStringAttribute(VAbstractPaintableWidget.ATTRIBUTE_STYLE).split(" ");
-    for (int i=0; i < styles.length; i++) {
-      style+=" " + CLASSNAME + "-"+ styles[i];
+  if (null != owner) {
+    String style=CLASSNAME;
+    if (owner.getState().hasStyles()) {
+      final String[] styles=owner.getState().getStyle().split(" ");
+      for (int i=0; i < styles.length; i++) {
+        style+=" " + CLASSNAME + "-"+ styles[i];
+      }
     }
+    if (uidl.hasAttribute(VAbstractPaintableWidget.ATTRIBUTE_DISABLED)) {
+      style+=" " + ApplicationConnection.DISABLED_CLASSNAME;
+    }
+    setStyleName(style);
   }
-  if (uidl.hasAttribute(VAbstractPaintableWidget.ATTRIBUTE_DISABLED)) {
-    style+=" " + ApplicationConnection.DISABLED_CLASSNAME;
-  }
-  setStyleName(style);
   boolean hasIcon=uidl.hasAttribute(VAbstractPaintableWidget.ATTRIBUTE_ICON);
   boolean hasText=uidl.hasAttribute(VAbstractPaintableWidget.ATTRIBUTE_CAPTION);
   boolean hasDescription=uidl.hasAttribute(VAbstractPaintableWidget.ATTRIBUTE_DESCRIPTION);
@@ -53,8 +55,8 @@
     DOM.removeChild(getElement(),captionText);
     captionText=null;
   }
-  if (hasDescription) {
-    if (captionText != null) {
+  if (null != owner) {
+    if (hasDescription && captionText != null) {
       addStyleDependentName("hasdescription");
     }
  else {
