@@ -1,11 +1,9 @@
 {
   getWidgetForPaintable().client=client;
   getWidgetForPaintable().id=uidl.getId();
-  getWidgetForPaintable().rendering=true;
   getWidgetForPaintable().immediate=getState().isImmediate();
   super.updateFromUIDL(uidl,client);
   if (!isRealUpdate(uidl)) {
-    getWidgetForPaintable().rendering=false;
     return;
   }
   getWidgetForPaintable().setEnabled(!getState().isDisabled());
@@ -20,7 +18,6 @@
   getWidgetForPaintable().setPositionReversed(uidl.getBooleanAttribute("reversed"));
   getWidgetForPaintable().setStylenames();
   getWidgetForPaintable().position=uidl.getStringAttribute("position");
-  getWidgetForPaintable().setSplitPosition(getWidgetForPaintable().position);
   final VPaintableWidget newFirstChildPaintable=client.getPaintable(uidl.getChildUIDL(0));
   final VPaintableWidget newSecondChildPaintable=client.getPaintable(uidl.getChildUIDL(1));
   Widget newFirstChild=newFirstChildPaintable.getWidgetForPaintable();
@@ -39,7 +36,6 @@
   }
   newFirstChildPaintable.updateFromUIDL(uidl.getChildUIDL(0),client);
   newSecondChildPaintable.updateFromUIDL(uidl.getChildUIDL(1),client);
-  getWidgetForPaintable().renderInformation.updateSize(getWidgetForPaintable().getElement());
   client.runDescendentsLayout(getWidgetForPaintable());
-  getWidgetForPaintable().rendering=false;
+  getLayoutManager().setNeedsUpdate(this);
 }

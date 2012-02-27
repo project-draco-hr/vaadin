@@ -1,0 +1,22 @@
+{
+  for (int i=0; i < columnWidths.length; i++) {
+    columnWidths[i]=0;
+  }
+  for (int i=0; i < cells.length; i++) {
+    for (int j=0; j < cells[i].length; j++) {
+      Cell cell=cells[i][j];
+      if (cell != null) {
+        if (cell.colspan == 1) {
+          if (!cell.hasRelativeWidth() && columnWidths[i] < cell.getWidth()) {
+            columnWidths[i]=cell.getWidth();
+          }
+        }
+ else {
+          storeColSpannedCell(cell);
+        }
+      }
+    }
+  }
+  distributeColSpanWidths();
+  minColumnWidths=cloneArray(columnWidths);
+}

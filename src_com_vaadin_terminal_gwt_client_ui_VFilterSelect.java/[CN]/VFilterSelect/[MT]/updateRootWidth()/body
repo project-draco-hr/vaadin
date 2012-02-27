@@ -1,19 +1,20 @@
 {
-  if (width == null) {
-    int tbWidth=Util.getRequiredWidth(tb);
-    int iconWidth=selectedItemIcon.isAttached() ? Util.measureMarginLeft(tb.getElement()) - Util.measureMarginLeft(selectedItemIcon.getElement()) : 0;
-    int w=tbWidth + getPopUpOpenerWidth() + iconWidth;
+  VPaintableWidget paintable=VPaintableMap.get(client).getPaintable(this);
+  if (paintable.isUndefinedWidth()) {
+    int w=Util.getRequiredWidth(this);
     if ((!initDone || currentPage + 1 < 0) && suggestionPopupMinWidth > w) {
-      setTextboxWidth(suggestionPopupMinWidth);
-      w=suggestionPopupMinWidth;
+      Style style=getElement().getStyle();
+      String originalPadding=style.getPadding();
+      String originalBorder=style.getBorderWidth();
+      style.setPaddingLeft(0,Unit.PX);
+      style.setBorderWidth(0,Unit.PX);
+      int offset=w - Util.getRequiredWidth(this);
+      style.setProperty("padding",originalPadding);
+      style.setProperty("borderWidth",originalBorder);
+      setWidth(suggestionPopupMinWidth + offset + "px");
     }
- else {
-      tb.setWidth((tbWidth - getTextboxPadding()) + "px");
+    if (!tb.getElement().getStyle().getWidth().endsWith("px")) {
+      tb.setWidth((tb.getOffsetWidth() - selectedItemIcon.getOffsetWidth()) + "px");
     }
-    super.setWidth((w) + "px");
-    width=w + "px";
-  }
- else {
-    setTextboxWidth(getMainWidth() - getComponentPadding());
   }
 }

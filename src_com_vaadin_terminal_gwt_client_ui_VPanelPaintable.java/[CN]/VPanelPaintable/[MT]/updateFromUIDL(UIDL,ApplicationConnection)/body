@@ -1,5 +1,4 @@
 {
-  getWidgetForPaintable().rendering=true;
   if (isRealUpdate(uidl)) {
     getWidgetForPaintable().contentNode.setClassName(VPanel.CLASSNAME + "-content");
     getWidgetForPaintable().bottomDecoration.setClassName(VPanel.CLASSNAME + "-deco");
@@ -33,7 +32,6 @@
   }
   super.updateFromUIDL(uidl,client);
   if (!isRealUpdate(uidl)) {
-    getWidgetForPaintable().rendering=false;
     return;
   }
   clickEventHandler.handleEventHandlerRegistration(client);
@@ -64,18 +62,12 @@
     }
   }
   if (uidl.hasVariable("scrollTop") && uidl.getIntVariable("scrollTop") != getWidgetForPaintable().scrollTop) {
-    getWidgetForPaintable().scrollTop=uidl.getIntVariable("scrollTop");
-    getWidgetForPaintable().contentNode.setScrollTop(getWidgetForPaintable().scrollTop);
-    getWidgetForPaintable().scrollTop=getWidgetForPaintable().contentNode.getScrollTop();
+    uidlScrollTop=new Integer(uidl.getIntVariable("scrollTop"));
   }
   if (uidl.hasVariable("scrollLeft") && uidl.getIntVariable("scrollLeft") != getWidgetForPaintable().scrollLeft) {
-    getWidgetForPaintable().scrollLeft=uidl.getIntVariable("scrollLeft");
-    getWidgetForPaintable().contentNode.setScrollLeft(getWidgetForPaintable().scrollLeft);
-    getWidgetForPaintable().scrollLeft=getWidgetForPaintable().contentNode.getScrollLeft();
+    uidlScrollLeft=new Integer(uidl.getIntVariable("scrollLeft"));
   }
-  getWidgetForPaintable().runHacks(false);
   if (uidl.hasVariable("tabindex")) {
     getWidgetForPaintable().contentNode.setTabIndex(uidl.getIntVariable("tabindex"));
   }
-  getWidgetForPaintable().rendering=false;
 }

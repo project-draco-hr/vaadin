@@ -1,14 +1,12 @@
 {
-  getWidgetForPaintable().rendering=true;
   if (isRealUpdate(uidl)) {
     getWidgetForPaintable().handleStyleNames(uidl,getState());
   }
   super.updateFromUIDL(uidl,client);
   if (!isRealUpdate(uidl)) {
-    getWidgetForPaintable().rendering=false;
     return;
   }
-  if (!getWidgetForPaintable().isDynamicWidth()) {
+  if (!isUndefinedWidth()) {
     DOM.setStyleAttribute(getWidgetForPaintable().tabs,"width","1px");
     DOM.setStyleAttribute(getWidgetForPaintable().tabs,"overflow","hidden");
   }
@@ -18,7 +16,7 @@
     DOM.setStyleAttribute(getWidgetForPaintable().tabs,"overflow","visible");
     getWidgetForPaintable().updateDynamicWidth();
   }
-  if (!getWidgetForPaintable().isDynamicHeight()) {
+  if (!isUndefinedHeight()) {
     getWidgetForPaintable().updateContentNodeHeight();
     getWidgetForPaintable().updateOpenTabSize();
   }
@@ -28,7 +26,5 @@
   }
  catch (  Exception e) {
   }
-  getWidgetForPaintable().renderInformation.updateSize(getWidgetForPaintable().getElement());
   getWidgetForPaintable().waitingForResponse=false;
-  getWidgetForPaintable().rendering=false;
 }

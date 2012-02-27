@@ -1,0 +1,66 @@
+{
+  Style style=wrapper.getStyle();
+  double availableWidth=allocatedSpace;
+  VCaption caption=getCaption();
+  Style captionStyle=caption != null ? caption.getElement().getStyle() : null;
+  int captionWidth=getCaptionWidth();
+  boolean captionAboveCompnent;
+  if (caption == null) {
+    captionAboveCompnent=false;
+    style.clearPaddingRight();
+  }
+ else {
+    captionAboveCompnent=!caption.shouldBePlacedAfterComponent();
+    if (!captionAboveCompnent) {
+      style.setPaddingRight(captionWidth,Unit.PX);
+      availableWidth-=captionWidth;
+      captionStyle.clearLeft();
+      captionStyle.setRight(0,Unit.PX);
+    }
+ else {
+      style.clearPaddingRight();
+      captionStyle.setLeft(0,Unit.PX);
+      captionStyle.clearRight();
+    }
+  }
+  if (isRelativeWidth()) {
+    style.setPropertyPx("width",(int)availableWidth);
+    style.clearProperty("minWidth");
+    style.clearProperty("maxWidth");
+  }
+ else {
+    style.clearProperty("width");
+    if (caption != null && captionAboveCompnent) {
+      style.setPropertyPx("minWidth",captionWidth);
+    }
+ else {
+      style.clearProperty("minWidth");
+    }
+    style.setPropertyPx("maxWidth",(int)availableWidth);
+  }
+  AlignmentInfo alignment=getAlignment();
+  if (!alignment.isLeft()) {
+    double usedWidth=getWidgetWidth();
+    if (alignment.isHorizontalCenter()) {
+      currentLocation+=(allocatedSpace - usedWidth) / 2d;
+      if (captionAboveCompnent) {
+        captionStyle.setLeft(usedWidth / 2 - (captionWidth / 2d),Unit.PX);
+        captionStyle.clearRight();
+      }
+    }
+ else {
+      currentLocation+=(allocatedSpace - usedWidth);
+      if (captionAboveCompnent) {
+        captionStyle.clearLeft();
+        captionStyle.setRight(0,Unit.PX);
+      }
+    }
+  }
+ else {
+    if (captionAboveCompnent) {
+      captionStyle.setLeft(0,Unit.PX);
+      captionStyle.clearRight();
+    }
+  }
+  style.setLeft(currentLocation,Unit.PX);
+}

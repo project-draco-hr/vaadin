@@ -1,0 +1,21 @@
+{
+  VMeasuringOrderedLayout layout=getWidgetForPaintable();
+  boolean isVertical=layout.isVertical;
+  boolean isUndefined=isUndefinedInDirection(!isVertical);
+  int startPadding=getStartPadding(!isVertical);
+  int allocatedSize;
+  if (isUndefined) {
+    allocatedSize=-1;
+  }
+ else {
+    allocatedSize=getInnerSizeInDirection(!isVertical);
+  }
+  allocatedSize=layout.layoutSecondaryDirection(allocatedSize,startPadding);
+  Style ownStyle=getWidgetForPaintable().getElement().getStyle();
+  if (isUndefined) {
+    ownStyle.setPropertyPx(getSizeProperty(!getWidgetForPaintable().isVertical),getSizeForInnerSize(allocatedSize,!getWidgetForPaintable().isVertical));
+  }
+ else {
+    ownStyle.setProperty(getSizeProperty(!getWidgetForPaintable().isVertical),getDefinedSize(!getWidgetForPaintable().isVertical));
+  }
+}

@@ -1,11 +1,8 @@
 {
-  getWidgetForPaintable().rendering=true;
   super.updateFromUIDL(uidl,client);
   if (!isRealUpdate(uidl)) {
-    getWidgetForPaintable().rendering=false;
     return;
   }
-  getWidgetForPaintable().client=client;
   final UIDL child=uidl.getChildUIDL(0);
   if (child != null) {
     final VPaintableWidget paintable=client.getPaintable(child);
@@ -19,17 +16,4 @@
     }
     paintable.updateFromUIDL(child,client);
   }
-  boolean updateDynamicSize=getWidgetForPaintable().updateDynamicSize();
-  if (updateDynamicSize) {
-    Scheduler.get().scheduleDeferred(new Command(){
-      public void execute(){
-        client.handleComponentRelativeSize(getWidgetForPaintable());
-      }
-    }
-);
-  }
-  getWidgetForPaintable().renderSpace.setWidth(getWidgetForPaintable().getElement().getOffsetWidth());
-  getWidgetForPaintable().renderSpace.setHeight(getWidgetForPaintable().getElement().getOffsetHeight());
-  client.runDescendentsLayout(getWidgetForPaintable());
-  getWidgetForPaintable().rendering=false;
 }

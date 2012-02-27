@@ -1,0 +1,22 @@
+{
+  if (!findAppConnectionWarningDisplayed) {
+    findAppConnectionWarningDisplayed=true;
+    VConsole.log("Warning: Using Util.findApplicationConnectionFor which should be eliminated once there is a better way to find the ApplicationConnection for a Paintable");
+  }
+  List<ApplicationConnection> runningApplications=ApplicationConfiguration.getRunningApplications();
+  for (  ApplicationConnection applicationConnection : runningApplications) {
+    VPaintableMap paintableMap=applicationConnection.getPaintableMap();
+    VPaintableWidget paintable=paintableMap.getPaintable(widget);
+    if (paintable == null) {
+      continue;
+    }
+    String pid=paintableMap.getPid(paintable);
+    if (pid != null) {
+      VPaintable otherPaintable=paintableMap.getPaintable(pid);
+      if (otherPaintable == paintable) {
+        return applicationConnection;
+      }
+    }
+  }
+  return null;
+}
