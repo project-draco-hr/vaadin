@@ -1,5 +1,7 @@
 {
-  int x=0;
+  LayoutManager layoutManager=LayoutManager.get(client);
+  Element element=getElement();
+  int x=layoutManager.getPaddingLeft(element);
   int horizontalSpacing=getHorizontalSpacing();
   for (int i=0; i < cells.length; i++) {
     for (int j=0; j < cells[i].length; j++) {
@@ -11,6 +13,7 @@
     x+=columnWidths[i] + horizontalSpacing;
   }
   if (isUndefinedWidth()) {
-    getElement().getStyle().setWidth((x - horizontalSpacing),Unit.PX);
+    int outerWidth=x - horizontalSpacing + layoutManager.getPaddingRight(element) + layoutManager.getBorderWidth(element);
+    element.getStyle().setWidth(outerWidth,Unit.PX);
   }
 }
