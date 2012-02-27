@@ -1,22 +1,42 @@
 {
   if (event.getSource() instanceof Tab) {
-    VConsole.log("KEYDOWN");
     int keycode=event.getNativeEvent().getKeyCode();
     if (keycode == getPreviousTabKey()) {
-      int newTabIndex=activeTabIndex == 0 ? tb.getTabCount() - 1 : activeTabIndex - 1;
-      onTabSelected(newTabIndex);
+      int newTabIndex=activeTabIndex;
+      do {
+        newTabIndex=(newTabIndex != 0) ? newTabIndex - 1 : tb.getTabCount() - 1;
+      }
+ while (newTabIndex != activeTabIndex && !onTabSelected(newTabIndex));
       activeTabIndex=newTabIndex;
+      if (isScrolledTabs()) {
+        int newFirstIndex=tb.scrollLeft(scrollerIndex);
+        if (newFirstIndex != -1) {
+          scrollerIndex=newFirstIndex;
+          updateTabScroller();
+        }
+      }
     }
  else     if (keycode == getNextTabKey()) {
-      int newTabIndex=(activeTabIndex + 1) % tb.getTabCount();
-      onTabSelected(newTabIndex);
+      int newTabIndex=activeTabIndex;
+      do {
+        newTabIndex=(newTabIndex + 1) % tb.getTabCount();
+      }
+ while (newTabIndex != activeTabIndex && !onTabSelected(newTabIndex));
       activeTabIndex=newTabIndex;
+      if (isClippedTabs()) {
+        int newFirstIndex=tb.scrollRight(scrollerIndex);
+        if (newFirstIndex != -1) {
+          scrollerIndex=newFirstIndex;
+          updateTabScroller();
+        }
+      }
     }
  else     if (keycode == getCloseTabKey()) {
-      VConsole.log("INDEX=" + activeTabIndex);
-      focusedTab.onClose();
-      removeTab(activeTabIndex);
+      Tab tab=tb.getTab(activeTabIndex);
+      if (tab.isClosable()) {
+        tab.onClose();
+        removeTab(activeTabIndex);
+      }
     }
-    VConsole.log("tabindex -> " + activeTabIndex);
   }
 }
