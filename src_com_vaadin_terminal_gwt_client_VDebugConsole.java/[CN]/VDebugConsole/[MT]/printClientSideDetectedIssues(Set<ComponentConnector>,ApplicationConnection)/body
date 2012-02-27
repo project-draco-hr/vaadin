@@ -1,0 +1,19 @@
+{
+  for (  final ComponentConnector paintable : zeroHeightComponents) {
+    final Widget layout=paintable.getParent().getWidget();
+    VerticalPanel errorDetails=new VerticalPanel();
+    errorDetails.add(new Label("" + Util.getSimpleName(paintable) + " inside "+ Util.getSimpleName(layout)));
+    final CheckBox emphasisInUi=new CheckBox("Emphasize components parent in UI (the actual component is not visible)");
+    emphasisInUi.addClickHandler(new ClickHandler(){
+      public void onClick(      ClickEvent event){
+        if (paintable != null) {
+          Element element2=layout.getElement();
+          Widget.setStyleName(element2,"invalidlayout",emphasisInUi.getValue());
+        }
+      }
+    }
+);
+    errorDetails.add(emphasisInUi);
+    panel.add(errorDetails);
+  }
+}

@@ -1,0 +1,41 @@
+{
+  if (isCachedUpdate(uidl)) {
+    return;
+  }
+  ConnectorMap paintableMap=ConnectorMap.get(getConnection());
+  paintableMap.registerEventListenersFromUIDL(getId(),uidl);
+  setVisible(!uidl.getBooleanAttribute("invisible"),uidl);
+  if (uidl.getId().startsWith("PID_S")) {
+    DOM.setElementProperty(getWidget().getElement(),"id",uidl.getId().substring(5));
+  }
+  if (!isVisible()) {
+    paintableMap.setOffsetSize(this,null);
+    return;
+  }
+  if (!isRealUpdate(uidl)) {
+    return;
+  }
+  if (uidl.hasAttribute("tabindex") && getWidget() instanceof Focusable) {
+    ((Focusable)getWidget()).setTabIndex(uidl.getIntAttribute("tabindex"));
+  }
+  setEnabled(!getState().isDisabled());
+  String styleName=getStyleNameFromUIDL(getWidget().getStylePrimaryName(),uidl,getState(),getWidget() instanceof Field);
+  getWidget().setStyleName(styleName);
+  TooltipInfo tooltipInfo=paintableMap.getTooltipInfo(this,null);
+  if (getState().hasDescription()) {
+    tooltipInfo.setTitle(getState().getDescription());
+  }
+ else {
+    tooltipInfo.setTitle(null);
+  }
+  if (uidl.hasAttribute(ATTRIBUTE_ERROR)) {
+    tooltipInfo.setErrorUidl(uidl.getErrors());
+  }
+ else {
+    tooltipInfo.setErrorUidl(null);
+  }
+  if (delegateCaptionHandling()) {
+    getParent().updateCaption(this,uidl);
+  }
+  updateComponentSize();
+}

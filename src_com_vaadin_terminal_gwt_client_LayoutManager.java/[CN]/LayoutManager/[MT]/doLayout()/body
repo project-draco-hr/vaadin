@@ -1,6 +1,6 @@
 {
-  VPaintableMap paintableMap=connection.getPaintableMap();
-  VPaintableWidget[] paintableWidgets=paintableMap.getRegisteredPaintableWidgets();
+  ConnectorMap paintableMap=connection.getConnectorMap();
+  ComponentConnector[] paintableWidgets=paintableMap.getRegisteredComponentConnectors();
   int passes=0;
   Duration totalDuration=new Duration();
   while (true) {
@@ -9,10 +9,10 @@
     measureElements(paintableWidgets);
     FastStringSet needsHeightUpdate=FastStringSet.create();
     FastStringSet needsWidthUpdate=FastStringSet.create();
-    for (    VPaintableWidget paintable : paintableWidgets) {
+    for (    ComponentConnector paintable : paintableWidgets) {
       MeasuredSize measuredSize=getMeasuredSize(paintable);
       boolean managed=isManagedLayout(paintable);
-      VPaintableWidgetContainer parent=paintable.getParent();
+      ComponentContainerConnector parent=paintable.getParent();
       boolean managedParent=parent != null && isManagedLayout(parent);
       if (measuredSize.isHeightNeedsUpdate()) {
         if (managed) {
@@ -38,7 +38,7 @@
     JsArrayString needsWidthUpdateArray=needsWidthUpdate.dump();
     for (int i=0; i < needsWidthUpdateArray.length(); i++) {
       String pid=needsWidthUpdateArray.get(i);
-      VPaintable paintable=paintableMap.getPaintable(pid);
+      Connector paintable=paintableMap.getConnector(pid);
       if (paintable instanceof DirectionalManagedLayout) {
         DirectionalManagedLayout cl=(DirectionalManagedLayout)paintable;
         cl.layoutHorizontally();
@@ -53,7 +53,7 @@
     JsArrayString needsHeightUpdateArray=needsHeightUpdate.dump();
     for (int i=0; i < needsHeightUpdateArray.length(); i++) {
       String pid=needsHeightUpdateArray.get(i);
-      VPaintableWidget paintable=(VPaintableWidget)paintableMap.getPaintable(pid);
+      ComponentConnector paintable=(ComponentConnector)paintableMap.getConnector(pid);
       if (paintable instanceof DirectionalManagedLayout) {
         DirectionalManagedLayout cl=(DirectionalManagedLayout)paintable;
         cl.layoutVertically();
@@ -91,7 +91,7 @@
       break;
     }
   }
-  for (  VPaintableWidget vPaintableWidget : paintableWidgets) {
+  for (  ComponentConnector vPaintableWidget : paintableWidgets) {
     if (vPaintableWidget instanceof PostLayoutListener) {
       ((PostLayoutListener)vPaintableWidget).postLayout();
     }

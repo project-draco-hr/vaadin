@@ -1,0 +1,20 @@
+{
+  if (unregisterConnectors) {
+    for (    String connectorId : unregistryBag) {
+      Connector connector=getConnector(connectorId);
+      if (connector == null) {
+        VConsole.error("Tried to unregister component (id=" + connectorId + ") that is never registered (or already unregistered)");
+        continue;
+      }
+      Widget widget=null;
+      if (connector instanceof ComponentConnector) {
+        widget=((ComponentConnector)connector).getWidget();
+      }
+      if (widget == null || !widget.isAttached()) {
+        idToComponentDetail.remove(connectorId);
+        idToConnector.remove(connectorId);
+      }
+    }
+  }
+  unregistryBag.clear();
+}

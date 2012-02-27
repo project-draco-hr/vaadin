@@ -1,0 +1,32 @@
+{
+  SharedState state=getState();
+  String w="";
+  String h="";
+  if (null != state || !(state instanceof ComponentState)) {
+    ComponentState componentState=(ComponentState)state;
+    h=componentState.getHeight();
+    w=componentState.getWidth();
+  }
+ else {
+    VConsole.log("No state for paintable " + getId() + " in VAbstractPaintableWidget.updateComponentSize()");
+  }
+  if (w.endsWith("%") != declaredWidth.endsWith("%")) {
+    ComponentContainerConnector parent=getParent();
+    if (parent instanceof ManagedLayout) {
+      getLayoutManager().setWidthNeedsUpdate((ManagedLayout)parent);
+    }
+  }
+  if (h.endsWith("%") != declaredHeight.endsWith("%")) {
+    ComponentContainerConnector parent=getParent();
+    if (parent instanceof ManagedLayout) {
+      getLayoutManager().setHeightNeedsUpdate((ManagedLayout)parent);
+    }
+  }
+  declaredWidth=w;
+  declaredHeight=h;
+  Widget component=getWidget();
+  component.setStyleName("v-undefined-width",isUndefinedWidth());
+  component.setStyleName("v-undefined-height",isUndefinedHeight());
+  component.setHeight(h);
+  component.setWidth(w);
+}
