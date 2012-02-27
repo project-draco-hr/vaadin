@@ -1,0 +1,18 @@
+{
+  if (measuredSize.measure(element)) {
+    JsArrayString dependents=measuredSize.getDependents();
+    for (int i=0; i < dependents.length(); i++) {
+      String pid=dependents.get(i);
+      VPaintableWidget dependent=(VPaintableWidget)connection.getPaintableMap().getPaintable(pid);
+      if (dependent != null) {
+        MeasuredSize dependentSize=getMeasuredSize(dependent);
+        if (measuredSize.isHeightNeedsUpdate()) {
+          dependentSize.setHeightNeedsUpdate();
+        }
+        if (measuredSize.isWidthNeedsUpdate()) {
+          dependentSize.setWidthNeedsUpdate();
+        }
+      }
+    }
+  }
+}
