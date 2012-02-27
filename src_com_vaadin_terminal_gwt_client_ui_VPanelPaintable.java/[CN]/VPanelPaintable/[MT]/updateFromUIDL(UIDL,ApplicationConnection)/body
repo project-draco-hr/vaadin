@@ -1,16 +1,16 @@
 {
   if (isRealUpdate(uidl)) {
-    getWidgetForPaintable().contentNode.setClassName(VPanel.CLASSNAME + "-content");
-    getWidgetForPaintable().bottomDecoration.setClassName(VPanel.CLASSNAME + "-deco");
-    getWidgetForPaintable().captionNode.setClassName(VPanel.CLASSNAME + "-caption");
+    getWidget().contentNode.setClassName(VPanel.CLASSNAME + "-content");
+    getWidget().bottomDecoration.setClassName(VPanel.CLASSNAME + "-deco");
+    getWidget().captionNode.setClassName(VPanel.CLASSNAME + "-caption");
     boolean hasCaption=false;
     if (getState().getCaption() != null && !"".equals(getState().getCaption())) {
-      getWidgetForPaintable().setCaption(getState().getCaption());
+      getWidget().setCaption(getState().getCaption());
       hasCaption=true;
     }
  else {
-      getWidgetForPaintable().setCaption("");
-      getWidgetForPaintable().captionNode.setClassName(VPanel.CLASSNAME + "-nocaption");
+      getWidget().setCaption("");
+      getWidget().captionNode.setClassName(VPanel.CLASSNAME + "-nocaption");
     }
     final String captionBaseClass=VPanel.CLASSNAME + (hasCaption ? "-caption" : "-nocaption");
     final String contentBaseClass=VPanel.CLASSNAME + "-content";
@@ -26,48 +26,48 @@
         decoClass+=" " + decoBaseClass + "-"+ styles[i];
       }
     }
-    getWidgetForPaintable().captionNode.setClassName(captionClass);
-    getWidgetForPaintable().contentNode.setClassName(contentClass);
-    getWidgetForPaintable().bottomDecoration.setClassName(decoClass);
+    getWidget().captionNode.setClassName(captionClass);
+    getWidget().contentNode.setClassName(contentClass);
+    getWidget().bottomDecoration.setClassName(decoClass);
   }
   super.updateFromUIDL(uidl,client);
   if (!isRealUpdate(uidl)) {
     return;
   }
   clickEventHandler.handleEventHandlerRegistration(client);
-  getWidgetForPaintable().client=client;
-  getWidgetForPaintable().id=uidl.getId();
-  getWidgetForPaintable().setIconUri(uidl,client);
-  getWidgetForPaintable().handleError(uidl);
+  getWidget().client=client;
+  getWidget().id=uidl.getId();
+  getWidget().setIconUri(uidl,client);
+  getWidget().handleError(uidl);
   final UIDL layoutUidl=uidl.getChildUIDL(0);
   final VPaintableWidget newLayout=client.getPaintable(layoutUidl);
-  if (newLayout != getWidgetForPaintable().layout) {
-    if (getWidgetForPaintable().layout != null) {
-      client.unregisterPaintable(getWidgetForPaintable().layout);
+  if (newLayout != getWidget().layout) {
+    if (getWidget().layout != null) {
+      client.unregisterPaintable(getWidget().layout);
     }
-    getWidgetForPaintable().setWidget(newLayout.getWidgetForPaintable());
-    getWidgetForPaintable().layout=newLayout;
+    getWidget().setWidget(newLayout.getWidget());
+    getWidget().layout=newLayout;
   }
-  getWidgetForPaintable().layout.updateFromUIDL(layoutUidl,client);
+  getWidget().layout.updateFromUIDL(layoutUidl,client);
   if (uidl.getChildCount() > 1) {
     final int cnt=uidl.getChildCount();
     for (int i=1; i < cnt; i++) {
       UIDL childUidl=uidl.getChildUIDL(i);
       if (childUidl.getTag().equals("actions")) {
-        if (getWidgetForPaintable().shortcutHandler == null) {
-          getWidgetForPaintable().shortcutHandler=new ShortcutActionHandler(getId(),client);
+        if (getWidget().shortcutHandler == null) {
+          getWidget().shortcutHandler=new ShortcutActionHandler(getId(),client);
         }
-        getWidgetForPaintable().shortcutHandler.updateActionMap(childUidl);
+        getWidget().shortcutHandler.updateActionMap(childUidl);
       }
     }
   }
-  if (uidl.hasVariable("scrollTop") && uidl.getIntVariable("scrollTop") != getWidgetForPaintable().scrollTop) {
+  if (uidl.hasVariable("scrollTop") && uidl.getIntVariable("scrollTop") != getWidget().scrollTop) {
     uidlScrollTop=new Integer(uidl.getIntVariable("scrollTop"));
   }
-  if (uidl.hasVariable("scrollLeft") && uidl.getIntVariable("scrollLeft") != getWidgetForPaintable().scrollLeft) {
+  if (uidl.hasVariable("scrollLeft") && uidl.getIntVariable("scrollLeft") != getWidget().scrollLeft) {
     uidlScrollLeft=new Integer(uidl.getIntVariable("scrollLeft"));
   }
   if (uidl.hasVariable("tabindex")) {
-    getWidgetForPaintable().contentNode.setTabIndex(uidl.getIntVariable("tabindex"));
+    getWidget().contentNode.setTabIndex(uidl.getIntVariable("tabindex"));
   }
 }

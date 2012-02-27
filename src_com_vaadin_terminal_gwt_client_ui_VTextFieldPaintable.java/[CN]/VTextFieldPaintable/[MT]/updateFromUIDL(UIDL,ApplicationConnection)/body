@@ -1,50 +1,50 @@
 {
-  getWidgetForPaintable().client=client;
-  getWidgetForPaintable().paintableId=uidl.getId();
+  getWidget().client=client;
+  getWidget().paintableId=uidl.getId();
   super.updateFromUIDL(uidl,client);
   if (!isRealUpdate(uidl)) {
     return;
   }
-  getWidgetForPaintable().setReadOnly(getState().isReadOnly());
-  getWidgetForPaintable().inputPrompt=uidl.getStringAttribute(VTextField.ATTR_INPUTPROMPT);
-  getWidgetForPaintable().setMaxLength(uidl.hasAttribute("maxLength") ? uidl.getIntAttribute("maxLength") : -1);
-  getWidgetForPaintable().immediate=getState().isImmediate();
-  getWidgetForPaintable().listenTextChangeEvents=client.hasEventListeners(this,"ie");
-  if (getWidgetForPaintable().listenTextChangeEvents) {
-    getWidgetForPaintable().textChangeEventMode=uidl.getStringAttribute(VTextField.ATTR_TEXTCHANGE_EVENTMODE);
-    if (getWidgetForPaintable().textChangeEventMode.equals(VTextField.TEXTCHANGE_MODE_EAGER)) {
-      getWidgetForPaintable().textChangeEventTimeout=1;
+  getWidget().setReadOnly(getState().isReadOnly());
+  getWidget().inputPrompt=uidl.getStringAttribute(VTextField.ATTR_INPUTPROMPT);
+  getWidget().setMaxLength(uidl.hasAttribute("maxLength") ? uidl.getIntAttribute("maxLength") : -1);
+  getWidget().immediate=getState().isImmediate();
+  getWidget().listenTextChangeEvents=client.hasEventListeners(this,"ie");
+  if (getWidget().listenTextChangeEvents) {
+    getWidget().textChangeEventMode=uidl.getStringAttribute(VTextField.ATTR_TEXTCHANGE_EVENTMODE);
+    if (getWidget().textChangeEventMode.equals(VTextField.TEXTCHANGE_MODE_EAGER)) {
+      getWidget().textChangeEventTimeout=1;
     }
  else {
-      getWidgetForPaintable().textChangeEventTimeout=uidl.getIntAttribute(VTextField.ATTR_TEXTCHANGE_TIMEOUT);
-      if (getWidgetForPaintable().textChangeEventTimeout < 1) {
-        getWidgetForPaintable().textChangeEventTimeout=1;
+      getWidget().textChangeEventTimeout=uidl.getIntAttribute(VTextField.ATTR_TEXTCHANGE_TIMEOUT);
+      if (getWidget().textChangeEventTimeout < 1) {
+        getWidget().textChangeEventTimeout=1;
       }
     }
-    getWidgetForPaintable().sinkEvents(VTextField.TEXTCHANGE_EVENTS);
-    getWidgetForPaintable().attachCutEventListener(getWidgetForPaintable().getElement());
+    getWidget().sinkEvents(VTextField.TEXTCHANGE_EVENTS);
+    getWidget().attachCutEventListener(getWidget().getElement());
   }
   if (uidl.hasAttribute("cols")) {
-    getWidgetForPaintable().setColumns(new Integer(uidl.getStringAttribute("cols")).intValue());
+    getWidget().setColumns(new Integer(uidl.getStringAttribute("cols")).intValue());
   }
   final String text=uidl.getStringVariable("text");
-  if (!(uidl.getBooleanAttribute(VTextField.ATTR_NO_VALUE_CHANGE_BETWEEN_PAINTS) && getWidgetForPaintable().valueBeforeEdit != null && text.equals(getWidgetForPaintable().valueBeforeEdit))) {
-    getWidgetForPaintable().updateFieldContent(text);
+  if (!(uidl.getBooleanAttribute(VTextField.ATTR_NO_VALUE_CHANGE_BETWEEN_PAINTS) && getWidget().valueBeforeEdit != null && text.equals(getWidget().valueBeforeEdit))) {
+    getWidget().updateFieldContent(text);
   }
   if (uidl.hasAttribute("selpos")) {
     final int pos=uidl.getIntAttribute("selpos");
     final int length=uidl.getIntAttribute("sellen");
     Scheduler.get().scheduleDeferred(new Command(){
       public void execute(){
-        getWidgetForPaintable().setSelectionRange(pos,length);
+        getWidget().setSelectionRange(pos,length);
       }
     }
 );
   }
   if (uidl.hasAttribute("wordwrap") && uidl.getBooleanAttribute("wordwrap") == false) {
-    getWidgetForPaintable().setWordwrap(false);
+    getWidget().setWordwrap(false);
   }
  else {
-    getWidgetForPaintable().setWordwrap(true);
+    getWidget().setWordwrap(true);
   }
 }

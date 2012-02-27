@@ -1,21 +1,21 @@
 {
-  getWidgetForPaintable().rendering=true;
+  getWidget().rendering=true;
   setId(uidl.getId());
-  getWidgetForPaintable().id=uidl.getId();
-  boolean firstPaint=getWidgetForPaintable().connection == null;
-  getWidgetForPaintable().connection=client;
-  getWidgetForPaintable().immediate=getState().isImmediate();
-  getWidgetForPaintable().resizeLazy=uidl.hasAttribute(VView.RESIZE_LAZY);
+  getWidget().id=uidl.getId();
+  boolean firstPaint=getWidget().connection == null;
+  getWidget().connection=client;
+  getWidget().immediate=getState().isImmediate();
+  getWidget().resizeLazy=uidl.hasAttribute(VView.RESIZE_LAZY);
   String newTheme=uidl.getStringAttribute("theme");
-  if (getWidgetForPaintable().theme != null && !newTheme.equals(getWidgetForPaintable().theme)) {
-    getWidgetForPaintable().reloadHostPage();
+  if (getWidget().theme != null && !newTheme.equals(getWidget().theme)) {
+    getWidget().reloadHostPage();
   }
  else {
-    getWidgetForPaintable().theme=newTheme;
+    getWidget().theme=newTheme;
   }
-  getWidgetForPaintable().setStyleName(getWidgetForPaintable().getStylePrimaryName() + " " + getState().getStyle());
+  getWidget().setStyleName(getWidget().getStylePrimaryName() + " " + getState().getStyle());
   clickEventHandler.handleEventHandlerRegistration(client);
-  if (!getWidgetForPaintable().isEmbedded() && getState().getCaption() != null) {
+  if (!getWidget().isEmbedded() && getState().getCaption() != null) {
     com.google.gwt.user.client.Window.setTitle(getState().getCaption());
   }
   int childIndex=0;
@@ -62,31 +62,31 @@
     childIndex++;
   }
   if (isClosed) {
-    getWidgetForPaintable().rendering=false;
+    getWidget().rendering=false;
     return;
   }
   UIDL childUidl=uidl.getChildUIDL(childIndex);
   final VPaintableWidget lo=client.getPaintable(childUidl);
-  if (getWidgetForPaintable().layout != null) {
-    if (getWidgetForPaintable().layout != lo) {
-      client.unregisterPaintable(getWidgetForPaintable().layout);
-      getWidgetForPaintable().setWidget(lo.getWidgetForPaintable());
-      getWidgetForPaintable().layout=lo;
+  if (getWidget().layout != null) {
+    if (getWidget().layout != lo) {
+      client.unregisterPaintable(getWidget().layout);
+      getWidget().setWidget(lo.getWidget());
+      getWidget().layout=lo;
     }
   }
  else {
-    getWidgetForPaintable().setWidget(lo.getWidgetForPaintable());
-    getWidgetForPaintable().layout=lo;
+    getWidget().setWidget(lo.getWidget());
+    getWidget().layout=lo;
   }
-  getWidgetForPaintable().layout.updateFromUIDL(childUidl,client);
-  final HashSet<VWindow> removedSubWindows=new HashSet<VWindow>(getWidgetForPaintable().subWindows);
+  getWidget().layout.updateFromUIDL(childUidl,client);
+  final HashSet<VWindow> removedSubWindows=new HashSet<VWindow>(getWidget().subWindows);
   while ((childUidl=uidl.getChildUIDL(++childIndex)) != null) {
     String tag=childUidl.getTag().intern();
     if (tag == "actions") {
-      if (getWidgetForPaintable().actionHandler == null) {
-        getWidgetForPaintable().actionHandler=new ShortcutActionHandler(getWidgetForPaintable().id,client);
+      if (getWidget().actionHandler == null) {
+        getWidget().actionHandler=new ShortcutActionHandler(getWidget().id,client);
       }
-      getWidgetForPaintable().actionHandler.updateActionMap(childUidl);
+      getWidget().actionHandler.updateActionMap(childUidl);
     }
  else     if (tag == "execJS") {
       String script=childUidl.getStringAttribute("script");
@@ -100,12 +100,12 @@
     }
  else {
       final VWindowPaintable w=(VWindowPaintable)client.getPaintable(childUidl);
-      VWindow windowWidget=w.getWidgetForPaintable();
-      if (getWidgetForPaintable().subWindows.contains(windowWidget)) {
+      VWindow windowWidget=w.getWidget();
+      if (getWidget().subWindows.contains(windowWidget)) {
         removedSubWindows.remove(windowWidget);
       }
  else {
-        getWidgetForPaintable().subWindows.add(windowWidget);
+        getWidget().subWindows.add(windowWidget);
       }
       w.updateFromUIDL(childUidl,client);
     }
@@ -113,14 +113,14 @@
   for (final Iterator<VWindow> rem=removedSubWindows.iterator(); rem.hasNext(); ) {
     final VWindow w=rem.next();
     client.unregisterPaintable(VPaintableMap.get(getConnection()).getPaintable(w));
-    getWidgetForPaintable().subWindows.remove(w);
+    getWidget().subWindows.remove(w);
     w.hide();
   }
   if (uidl.hasAttribute("focused")) {
     Scheduler.get().scheduleDeferred(new Command(){
       public void execute(){
         VPaintableWidget paintable=(VPaintableWidget)uidl.getPaintableAttribute("focused",getConnection());
-        final Widget toBeFocused=paintable.getWidgetForPaintable();
+        final Widget toBeFocused=paintable.getWidget();
         if (toBeFocused instanceof com.google.gwt.user.client.ui.Focusable) {
           final com.google.gwt.user.client.ui.Focusable toBeFocusedWidget=(com.google.gwt.user.client.ui.Focusable)toBeFocused;
           toBeFocusedWidget.setFocus(true);
@@ -136,33 +136,33 @@
 );
   }
   if (firstPaint) {
-    Window.addWindowClosingHandler(getWidgetForPaintable());
-    Window.addResizeHandler(getWidgetForPaintable());
+    Window.addWindowClosingHandler(getWidget());
+    Window.addResizeHandler(getWidget());
   }
-  getWidgetForPaintable().onResize();
+  getWidget().onResize();
   if (uidl.hasVariable("scrollTop")) {
-    getWidgetForPaintable().scrollable=true;
-    getWidgetForPaintable().scrollTop=uidl.getIntVariable("scrollTop");
-    DOM.setElementPropertyInt(getWidgetForPaintable().getElement(),"scrollTop",getWidgetForPaintable().scrollTop);
-    getWidgetForPaintable().scrollLeft=uidl.getIntVariable("scrollLeft");
-    DOM.setElementPropertyInt(getWidgetForPaintable().getElement(),"scrollLeft",getWidgetForPaintable().scrollLeft);
+    getWidget().scrollable=true;
+    getWidget().scrollTop=uidl.getIntVariable("scrollTop");
+    DOM.setElementPropertyInt(getWidget().getElement(),"scrollTop",getWidget().scrollTop);
+    getWidget().scrollLeft=uidl.getIntVariable("scrollLeft");
+    DOM.setElementPropertyInt(getWidget().getElement(),"scrollLeft",getWidget().scrollLeft);
   }
  else {
-    getWidgetForPaintable().scrollable=false;
+    getWidget().scrollable=false;
   }
   if (BrowserInfo.get().isSafari()) {
-    Util.runWebkitOverflowAutoFix(getWidgetForPaintable().getElement());
+    Util.runWebkitOverflowAutoFix(getWidget().getElement());
   }
-  getWidgetForPaintable().scrollIntoView(uidl);
+  getWidget().scrollIntoView(uidl);
   if (uidl.hasAttribute(VView.FRAGMENT_VARIABLE)) {
-    getWidgetForPaintable().currentFragment=uidl.getStringAttribute(VView.FRAGMENT_VARIABLE);
-    if (!getWidgetForPaintable().currentFragment.equals(History.getToken())) {
-      History.newItem(getWidgetForPaintable().currentFragment,true);
+    getWidget().currentFragment=uidl.getStringAttribute(VView.FRAGMENT_VARIABLE);
+    if (!getWidget().currentFragment.equals(History.getToken())) {
+      History.newItem(getWidget().currentFragment,true);
     }
   }
  else {
-    getWidgetForPaintable().currentFragment=History.getToken();
-    client.updateVariable(getWidgetForPaintable().id,VView.FRAGMENT_VARIABLE,getWidgetForPaintable().currentFragment,false);
+    getWidget().currentFragment=History.getToken();
+    client.updateVariable(getWidget().id,VView.FRAGMENT_VARIABLE,getWidget().currentFragment,false);
   }
-  getWidgetForPaintable().rendering=false;
+  getWidget().rendering=false;
 }

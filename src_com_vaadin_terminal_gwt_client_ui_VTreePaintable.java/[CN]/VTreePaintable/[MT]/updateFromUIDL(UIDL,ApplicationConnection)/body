@@ -3,24 +3,24 @@
   if (!isRealUpdate(uidl)) {
     return;
   }
-  getWidgetForPaintable().rendering=true;
-  getWidgetForPaintable().client=client;
+  getWidget().rendering=true;
+  getWidget().client=client;
   if (uidl.hasAttribute("partialUpdate")) {
     handleUpdate(uidl);
-    getWidgetForPaintable().rendering=false;
+    getWidget().rendering=false;
     return;
   }
-  getWidgetForPaintable().paintableId=uidl.getId();
-  getWidgetForPaintable().immediate=getState().isImmediate();
-  getWidgetForPaintable().disabled=getState().isDisabled();
-  getWidgetForPaintable().readonly=getState().isReadOnly();
-  getWidgetForPaintable().dragMode=uidl.hasAttribute("dragMode") ? uidl.getIntAttribute("dragMode") : 0;
-  getWidgetForPaintable().isNullSelectionAllowed=uidl.getBooleanAttribute("nullselect");
+  getWidget().paintableId=uidl.getId();
+  getWidget().immediate=getState().isImmediate();
+  getWidget().disabled=getState().isDisabled();
+  getWidget().readonly=getState().isReadOnly();
+  getWidget().dragMode=uidl.hasAttribute("dragMode") ? uidl.getIntAttribute("dragMode") : 0;
+  getWidget().isNullSelectionAllowed=uidl.getBooleanAttribute("nullselect");
   if (uidl.hasAttribute("alb")) {
-    getWidgetForPaintable().bodyActionKeys=uidl.getStringArrayAttribute("alb");
+    getWidget().bodyActionKeys=uidl.getStringArrayAttribute("alb");
   }
-  getWidgetForPaintable().body.clear();
-  getWidgetForPaintable().clearNodeToKeyMap();
+  getWidget().body.clear();
+  getWidget().clearNodeToKeyMap();
   TreeNode childTree=null;
   UIDL childUidl=null;
   for (final Iterator<?> i=uidl.getChildIterator(); i.hasNext(); ) {
@@ -30,12 +30,12 @@
       continue;
     }
  else     if ("-ac".equals(childUidl.getTag())) {
-      getWidgetForPaintable().updateDropHandler(childUidl);
+      getWidget().updateDropHandler(childUidl);
       continue;
     }
-    childTree=getWidgetForPaintable().new TreeNode();
+    childTree=getWidget().new TreeNode();
     updateNodeFromUIDL(childTree,childUidl);
-    getWidgetForPaintable().body.add(childTree);
+    getWidget().body.add(childTree);
     childTree.addStyleDependentName("root");
     childTree.childNodeContainer.addStyleDependentName("root");
   }
@@ -45,21 +45,21 @@
     childTree.childNodeContainer.addStyleDependentName("last");
   }
   final String selectMode=uidl.getStringAttribute("selectmode");
-  getWidgetForPaintable().selectable=!"none".equals(selectMode);
-  getWidgetForPaintable().isMultiselect="multi".equals(selectMode);
-  if (getWidgetForPaintable().isMultiselect) {
-    getWidgetForPaintable().multiSelectMode=uidl.getIntAttribute("multiselectmode");
+  getWidget().selectable=!"none".equals(selectMode);
+  getWidget().isMultiselect="multi".equals(selectMode);
+  if (getWidget().isMultiselect) {
+    getWidget().multiSelectMode=uidl.getIntAttribute("multiselectmode");
   }
-  getWidgetForPaintable().selectedIds=uidl.getStringArrayVariableAsSet("selected");
-  if (getWidgetForPaintable().lastSelection != null) {
-    getWidgetForPaintable().lastSelection=getWidgetForPaintable().getNodeByKey(getWidgetForPaintable().lastSelection.key);
+  getWidget().selectedIds=uidl.getStringArrayVariableAsSet("selected");
+  if (getWidget().lastSelection != null) {
+    getWidget().lastSelection=getWidget().getNodeByKey(getWidget().lastSelection.key);
   }
-  if (getWidgetForPaintable().focusedNode != null) {
-    getWidgetForPaintable().setFocusedNode(getWidgetForPaintable().getNodeByKey(getWidgetForPaintable().focusedNode.key));
+  if (getWidget().focusedNode != null) {
+    getWidget().setFocusedNode(getWidget().getNodeByKey(getWidget().focusedNode.key));
   }
-  if (getWidgetForPaintable().lastSelection == null && getWidgetForPaintable().focusedNode == null && !getWidgetForPaintable().selectedIds.isEmpty()) {
-    getWidgetForPaintable().setFocusedNode(getWidgetForPaintable().getNodeByKey(getWidgetForPaintable().selectedIds.iterator().next()));
-    getWidgetForPaintable().focusedNode.setFocused(false);
+  if (getWidget().lastSelection == null && getWidget().focusedNode == null && !getWidget().selectedIds.isEmpty()) {
+    getWidget().setFocusedNode(getWidget().getNodeByKey(getWidget().selectedIds.iterator().next()));
+    getWidget().focusedNode.setFocused(false);
   }
-  getWidgetForPaintable().rendering=false;
+  getWidget().rendering=false;
 }

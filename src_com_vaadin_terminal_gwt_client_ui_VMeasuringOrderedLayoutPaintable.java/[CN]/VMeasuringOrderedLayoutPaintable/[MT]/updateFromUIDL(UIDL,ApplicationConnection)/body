@@ -4,17 +4,17 @@
     return;
   }
   HashSet<VPaintableWidget> previousChildren=new HashSet<VPaintableWidget>(getChildren());
-  VMeasuringOrderedLayout layout=getWidgetForPaintable();
+  VMeasuringOrderedLayout layout=getWidget();
   ValueMap expandRatios=uidl.getMapAttribute("expandRatios");
   ValueMap alignments=uidl.getMapAttribute("alignments");
   int currentIndex=0;
   for (final Iterator<Object> it=uidl.getChildIterator(); it.hasNext(); ) {
     final UIDL childUIDL=(UIDL)it.next();
     final VPaintableWidget child=client.getPaintable(childUIDL);
-    Widget widget=child.getWidgetForPaintable();
+    Widget widget=child.getWidget();
     VLayoutSlot slot=layout.getSlotForChild(widget);
     if (widget.getParent() != layout) {
-      slot=new VPaintableLayoutSlot(getWidgetForPaintable().getStylePrimaryName(),child);
+      slot=new VPaintableLayoutSlot(getWidget().getStylePrimaryName(),child);
     }
     layout.addOrMove(slot,currentIndex++);
     String pid=child.getId();
@@ -40,8 +40,8 @@
     previousChildren.remove(child);
   }
   for (  VPaintableWidget child : previousChildren) {
-    Widget widget=child.getWidgetForPaintable();
-    if (widget.getParent() == getWidgetForPaintable()) {
+    Widget widget=child.getWidget();
+    if (widget.getParent() == getWidget()) {
       layout.removeSlot(layout.getSlotForChild(widget));
       VPaintableMap vPaintableMap=VPaintableMap.get(client);
       vPaintableMap.unregisterPaintable(child);

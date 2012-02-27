@@ -3,13 +3,13 @@
   if (!isRealUpdate(uidl)) {
     return;
   }
-  getWidgetForPaintable().htmlContentAllowed=uidl.hasAttribute(VMenuBar.HTML_CONTENT_ALLOWED);
-  getWidgetForPaintable().openRootOnHover=uidl.getBooleanAttribute(VMenuBar.OPEN_ROOT_MENU_ON_HOWER);
-  getWidgetForPaintable().enabled=!getState().isDisabled();
-  getWidgetForPaintable().client=client;
-  getWidgetForPaintable().uidlId=uidl.getId();
-  if (!getWidgetForPaintable().getItems().isEmpty()) {
-    getWidgetForPaintable().clearItems();
+  getWidget().htmlContentAllowed=uidl.hasAttribute(VMenuBar.HTML_CONTENT_ALLOWED);
+  getWidget().openRootOnHover=uidl.getBooleanAttribute(VMenuBar.OPEN_ROOT_MENU_ON_HOWER);
+  getWidget().enabled=!getState().isDisabled();
+  getWidget().client=client;
+  getWidget().uidlId=uidl.getId();
+  if (!getWidget().getItems().isEmpty()) {
+    getWidget().clearItems();
   }
   UIDL options=uidl.getChildUIDL(0);
   if (null != getState() && !getState().isUndefinedWidth()) {
@@ -23,31 +23,31 @@
       moreItemText="&#x25BA;";
     }
     itemHTML.append(moreItemText);
-    getWidgetForPaintable().moreItem=GWT.create(CustomMenuItem.class);
-    getWidgetForPaintable().moreItem.setHTML(itemHTML.toString());
-    getWidgetForPaintable().moreItem.setCommand(VMenuBar.emptyCommand);
-    getWidgetForPaintable().collapsedRootItems=new VMenuBar(true,getWidgetForPaintable());
-    getWidgetForPaintable().moreItem.setSubMenu(getWidgetForPaintable().collapsedRootItems);
-    getWidgetForPaintable().moreItem.addStyleName(VMenuBar.CLASSNAME + "-more-menuitem");
+    getWidget().moreItem=GWT.create(CustomMenuItem.class);
+    getWidget().moreItem.setHTML(itemHTML.toString());
+    getWidget().moreItem.setCommand(VMenuBar.emptyCommand);
+    getWidget().collapsedRootItems=new VMenuBar(true,getWidget());
+    getWidget().moreItem.setSubMenu(getWidget().collapsedRootItems);
+    getWidget().moreItem.addStyleName(VMenuBar.CLASSNAME + "-more-menuitem");
   }
   UIDL uidlItems=uidl.getChildUIDL(1);
   Iterator<Object> itr=uidlItems.getChildIterator();
   Stack<Iterator<Object>> iteratorStack=new Stack<Iterator<Object>>();
   Stack<VMenuBar> menuStack=new Stack<VMenuBar>();
-  VMenuBar currentMenu=getWidgetForPaintable();
+  VMenuBar currentMenu=getWidget();
   while (itr.hasNext()) {
     UIDL item=(UIDL)itr.next();
     CustomMenuItem currentItem=null;
     final int itemId=item.getIntAttribute("id");
     boolean itemHasCommand=item.hasAttribute("command");
     boolean itemIsCheckable=item.hasAttribute(VMenuBar.ATTRIBUTE_CHECKED);
-    String itemHTML=getWidgetForPaintable().buildItemHTML(item);
+    String itemHTML=getWidget().buildItemHTML(item);
     Command cmd=null;
     if (!item.hasAttribute("separator")) {
       if (itemHasCommand || itemIsCheckable) {
         cmd=new Command(){
           public void execute(){
-            getWidgetForPaintable().hostReference.onMenuClick(itemId);
+            getWidget().hostReference.onMenuClick(itemId);
           }
         }
 ;
@@ -82,5 +82,5 @@
       currentMenu=menuStack.pop();
     }
   }
-  getWidgetForPaintable().iLayout(false);
+  getWidget().iLayout(false);
 }

@@ -1,35 +1,35 @@
 {
-  getWidgetForPaintable().id=uidl.getId();
-  getWidgetForPaintable().client=client;
-  DOM.setElementProperty(getWidgetForPaintable().closeBox,"id",getWidgetForPaintable().id + "_window_close");
+  getWidget().id=uidl.getId();
+  getWidget().client=client;
+  DOM.setElementProperty(getWidget().closeBox,"id",getWidget().id + "_window_close");
   if (uidl.hasAttribute("invisible")) {
-    getWidgetForPaintable().hide();
+    getWidget().hide();
     return;
   }
   if (isRealUpdate(uidl)) {
-    if (uidl.getBooleanAttribute("modal") != getWidgetForPaintable().vaadinModality) {
-      getWidgetForPaintable().setVaadinModality(!getWidgetForPaintable().vaadinModality);
+    if (uidl.getBooleanAttribute("modal") != getWidget().vaadinModality) {
+      getWidget().setVaadinModality(!getWidget().vaadinModality);
     }
-    if (!getWidgetForPaintable().isAttached()) {
-      getWidgetForPaintable().setVisible(false);
-      getWidgetForPaintable().show();
+    if (!getWidget().isAttached()) {
+      getWidget().setVisible(false);
+      getWidget().show();
     }
-    if (uidl.getBooleanAttribute("resizable") != getWidgetForPaintable().resizable) {
-      getWidgetForPaintable().setResizable(!getWidgetForPaintable().resizable);
+    if (uidl.getBooleanAttribute("resizable") != getWidget().resizable) {
+      getWidget().setResizable(!getWidget().resizable);
     }
-    getWidgetForPaintable().resizeLazy=uidl.hasAttribute(VView.RESIZE_LAZY);
-    getWidgetForPaintable().setDraggable(!uidl.hasAttribute("fixedposition"));
-    getWidgetForPaintable().setCaption(getState().getCaption(),uidl.getStringAttribute(VAbstractPaintableWidget.ATTRIBUTE_ICON));
+    getWidget().resizeLazy=uidl.hasAttribute(VView.RESIZE_LAZY);
+    getWidget().setDraggable(!uidl.hasAttribute("fixedposition"));
+    getWidget().setCaption(getState().getCaption(),uidl.getStringAttribute(VAbstractPaintableWidget.ATTRIBUTE_ICON));
   }
-  getWidgetForPaintable().visibilityChangesDisabled=true;
+  getWidget().visibilityChangesDisabled=true;
   super.updateFromUIDL(uidl,client);
   if (!isRealUpdate(uidl)) {
     return;
   }
-  getWidgetForPaintable().visibilityChangesDisabled=false;
+  getWidget().visibilityChangesDisabled=false;
   clickEventHandler.handleEventHandlerRegistration(client);
-  getWidgetForPaintable().immediate=getState().isImmediate();
-  getWidgetForPaintable().setClosable(!getState().isReadOnly());
+  getWidget().immediate=getState().isImmediate();
+  getWidget().setClosable(!getState().isReadOnly());
   int positionx=uidl.getIntVariable("positionx");
   int positiony=uidl.getIntVariable("positiony");
   if (positionx >= 0 || positiony >= 0) {
@@ -39,7 +39,7 @@
     if (positiony < 0) {
       positiony=0;
     }
-    getWidgetForPaintable().setPopupPosition(positionx,positiony);
+    getWidget().setPopupPosition(positionx,positiony);
   }
   boolean showingUrl=false;
   int childIndex=0;
@@ -52,7 +52,7 @@
       DOM.setStyleAttribute(frame.getElement(),"height","100%");
       DOM.setStyleAttribute(frame.getElement(),"border","0px");
       frame.setUrl(parsedUri);
-      getWidgetForPaintable().contentPanel.setWidget(frame);
+      getWidget().contentPanel.setWidget(frame);
       showingUrl=true;
     }
  else {
@@ -62,83 +62,83 @@
     childUidl=uidl.getChildUIDL(childIndex++);
   }
   final VPaintableWidget lo=client.getPaintable(childUidl);
-  if (getWidgetForPaintable().layout != null) {
-    if (getWidgetForPaintable().layout != lo) {
-      client.unregisterPaintable(getWidgetForPaintable().layout);
-      getWidgetForPaintable().contentPanel.remove(getWidgetForPaintable().layout.getWidgetForPaintable());
+  if (getWidget().layout != null) {
+    if (getWidget().layout != lo) {
+      client.unregisterPaintable(getWidget().layout);
+      getWidget().contentPanel.remove(getWidget().layout.getWidget());
       if (!showingUrl) {
-        getWidgetForPaintable().contentPanel.setWidget(lo.getWidgetForPaintable());
+        getWidget().contentPanel.setWidget(lo.getWidget());
       }
-      getWidgetForPaintable().layout=lo;
+      getWidget().layout=lo;
     }
   }
  else   if (!showingUrl) {
-    getWidgetForPaintable().contentPanel.setWidget(lo.getWidgetForPaintable());
-    getWidgetForPaintable().layout=lo;
+    getWidget().contentPanel.setWidget(lo.getWidget());
+    getWidget().layout=lo;
   }
-  getWidgetForPaintable().dynamicWidth=getState().isUndefinedWidth();
-  getWidgetForPaintable().dynamicHeight=getState().isUndefinedHeight();
-  getWidgetForPaintable().layoutRelativeWidth=uidl.hasAttribute("layoutRelativeWidth");
-  getWidgetForPaintable().layoutRelativeHeight=uidl.hasAttribute("layoutRelativeHeight");
-  if (getWidgetForPaintable().dynamicWidth && getWidgetForPaintable().layoutRelativeWidth) {
-    getWidgetForPaintable().setNaturalWidth();
+  getWidget().dynamicWidth=getState().isUndefinedWidth();
+  getWidget().dynamicHeight=getState().isUndefinedHeight();
+  getWidget().layoutRelativeWidth=uidl.hasAttribute("layoutRelativeWidth");
+  getWidget().layoutRelativeHeight=uidl.hasAttribute("layoutRelativeHeight");
+  if (getWidget().dynamicWidth && getWidget().layoutRelativeWidth) {
+    getWidget().setNaturalWidth();
   }
-  getWidgetForPaintable().layout.updateFromUIDL(childUidl,client);
-  if (!getWidgetForPaintable().dynamicHeight && getWidgetForPaintable().layoutRelativeWidth) {
-    client.runDescendentsLayout(getWidgetForPaintable());
+  getWidget().layout.updateFromUIDL(childUidl,client);
+  if (!getWidget().dynamicHeight && getWidget().layoutRelativeWidth) {
+    client.runDescendentsLayout(getWidget());
   }
-  if (getWidgetForPaintable().dynamicWidth && !getWidgetForPaintable().layoutRelativeWidth) {
-    getWidgetForPaintable().setNaturalWidth();
+  if (getWidget().dynamicWidth && !getWidget().layoutRelativeWidth) {
+    getWidget().setNaturalWidth();
   }
-  if (getWidgetForPaintable().dynamicHeight && getWidgetForPaintable().layoutRelativeHeight) {
-    getWidgetForPaintable().resizable=false;
+  if (getWidget().dynamicHeight && getWidget().layoutRelativeHeight) {
+    getWidget().resizable=false;
   }
   if (uidl.getChildCount() > 1) {
     final int cnt=uidl.getChildCount();
     for (int i=1; i < cnt; i++) {
       childUidl=uidl.getChildUIDL(i);
       if (childUidl.getTag().equals("actions")) {
-        if (getWidgetForPaintable().shortcutHandler == null) {
-          getWidgetForPaintable().shortcutHandler=new ShortcutActionHandler(getId(),client);
+        if (getWidget().shortcutHandler == null) {
+          getWidget().shortcutHandler=new ShortcutActionHandler(getId(),client);
         }
-        getWidgetForPaintable().shortcutHandler.updateActionMap(childUidl);
+        getWidget().shortcutHandler.updateActionMap(childUidl);
       }
     }
   }
-  getWidgetForPaintable().contentPanel.setScrollPosition(uidl.getIntVariable("scrollTop"));
-  getWidgetForPaintable().contentPanel.setHorizontalScrollPosition(uidl.getIntVariable("scrollLeft"));
+  getWidget().contentPanel.setScrollPosition(uidl.getIntVariable("scrollTop"));
+  getWidget().contentPanel.setHorizontalScrollPosition(uidl.getIntVariable("scrollLeft"));
   if (uidl.getBooleanAttribute("center")) {
-    getWidgetForPaintable().centered=true;
-    getWidgetForPaintable().center();
+    getWidget().centered=true;
+    getWidget().center();
   }
  else {
-    getWidgetForPaintable().centered=false;
+    getWidget().centered=false;
   }
-  getWidgetForPaintable().updateShadowSizeAndPosition();
-  getWidgetForPaintable().setVisible(true);
+  getWidget().updateShadowSizeAndPosition();
+  getWidget().setVisible(true);
   boolean sizeReduced=false;
-  if (getWidgetForPaintable().getOffsetWidth() > Window.getClientWidth()) {
-    getWidgetForPaintable().setWidth(Window.getClientWidth() + "px");
+  if (getWidget().getOffsetWidth() > Window.getClientWidth()) {
+    getWidget().setWidth(Window.getClientWidth() + "px");
     sizeReduced=true;
   }
-  if (getWidgetForPaintable().getOffsetHeight() > Window.getClientHeight()) {
-    getWidgetForPaintable().setHeight(Window.getClientHeight() + "px");
+  if (getWidget().getOffsetHeight() > Window.getClientHeight()) {
+    getWidget().setHeight(Window.getClientHeight() + "px");
     sizeReduced=true;
   }
-  if (getWidgetForPaintable().dynamicHeight && getWidgetForPaintable().layoutRelativeHeight) {
-    int h=getWidgetForPaintable().contents.getOffsetHeight() + getWidgetForPaintable().getExtraHeight();
-    int w=getWidgetForPaintable().getElement().getOffsetWidth();
+  if (getWidget().dynamicHeight && getWidget().layoutRelativeHeight) {
+    int h=getWidget().contents.getOffsetHeight() + getWidget().getExtraHeight();
+    int w=getWidget().getElement().getOffsetWidth();
     client.updateVariable(getId(),"height",h,false);
     client.updateVariable(getId(),"width",w,true);
   }
   if (sizeReduced) {
-    client.runDescendentsLayout(getWidgetForPaintable());
+    client.runDescendentsLayout(getWidget());
   }
-  Util.runWebkitOverflowAutoFix(getWidgetForPaintable().contentPanel.getElement());
-  client.getView().getWidgetForPaintable().scrollIntoView(uidl);
+  Util.runWebkitOverflowAutoFix(getWidget().contentPanel.getElement());
+  client.getView().getWidget().scrollIntoView(uidl);
   if (uidl.hasAttribute("bringToFront")) {
-    getWidgetForPaintable().contentPanel.focus();
-    getWidgetForPaintable().bringToFrontSequence=uidl.getIntAttribute("bringToFront");
+    getWidget().contentPanel.focus();
+    getWidget().bringToFrontSequence=uidl.getIntAttribute("bringToFront");
     VWindow.deferOrdering();
   }
 }

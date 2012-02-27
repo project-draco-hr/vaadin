@@ -3,24 +3,24 @@
   if (!isRealUpdate(uidl)) {
     return;
   }
-  getWidgetForPaintable().client=client;
-  getWidgetForPaintable().paintableId=uidl.getId();
-  getWidgetForPaintable().immediate=getState().isImmediate();
-  getWidgetForPaintable().readonly=getState().isReadOnly();
-  getWidgetForPaintable().enabled=!getState().isDisabled();
+  getWidget().client=client;
+  getWidget().paintableId=uidl.getId();
+  getWidget().immediate=getState().isImmediate();
+  getWidget().readonly=getState().isReadOnly();
+  getWidget().enabled=!getState().isDisabled();
   if (uidl.hasAttribute("locale")) {
     final String locale=uidl.getStringAttribute("locale");
     try {
-      getWidgetForPaintable().dts.setLocale(locale);
-      getWidgetForPaintable().currentLocale=locale;
+      getWidget().dts.setLocale(locale);
+      getWidget().currentLocale=locale;
     }
  catch (    final LocaleNotLoadedException e) {
-      getWidgetForPaintable().currentLocale=getWidgetForPaintable().dts.getLocale();
-      VConsole.error("Tried to use an unloaded locale \"" + locale + "\". Using default locale ("+ getWidgetForPaintable().currentLocale+ ").");
+      getWidget().currentLocale=getWidget().dts.getLocale();
+      VConsole.error("Tried to use an unloaded locale \"" + locale + "\". Using default locale ("+ getWidget().currentLocale+ ").");
       VConsole.error(e);
     }
   }
-  getWidgetForPaintable().showISOWeekNumbers=uidl.getBooleanAttribute(VDateField.WEEK_NUMBERS) && getWidgetForPaintable().dts.getFirstDayOfWeek() == 1;
+  getWidget().showISOWeekNumbers=uidl.getBooleanAttribute(VDateField.WEEK_NUMBERS) && getWidget().dts.getFirstDayOfWeek() == 1;
   int newResolution;
   if (uidl.hasVariable("sec")) {
     newResolution=VDateField.RESOLUTION_SEC;
@@ -40,18 +40,18 @@
  else {
     newResolution=VDateField.RESOLUTION_YEAR;
   }
-  getWidgetForPaintable().currentResolution=newResolution;
-  getWidgetForPaintable().addStyleName(VDateField.CLASSNAME + "-" + VDateField.resolutionToString(getWidgetForPaintable().currentResolution));
+  getWidget().currentResolution=newResolution;
+  getWidget().addStyleName(VDateField.CLASSNAME + "-" + VDateField.resolutionToString(getWidget().currentResolution));
   final int year=uidl.getIntVariable("year");
-  final int month=(getWidgetForPaintable().currentResolution >= VDateField.RESOLUTION_MONTH) ? uidl.getIntVariable("month") : -1;
-  final int day=(getWidgetForPaintable().currentResolution >= VDateField.RESOLUTION_DAY) ? uidl.getIntVariable("day") : -1;
-  final int hour=(getWidgetForPaintable().currentResolution >= VDateField.RESOLUTION_HOUR) ? uidl.getIntVariable("hour") : 0;
-  final int min=(getWidgetForPaintable().currentResolution >= VDateField.RESOLUTION_MIN) ? uidl.getIntVariable("min") : 0;
-  final int sec=(getWidgetForPaintable().currentResolution >= VDateField.RESOLUTION_SEC) ? uidl.getIntVariable("sec") : 0;
+  final int month=(getWidget().currentResolution >= VDateField.RESOLUTION_MONTH) ? uidl.getIntVariable("month") : -1;
+  final int day=(getWidget().currentResolution >= VDateField.RESOLUTION_DAY) ? uidl.getIntVariable("day") : -1;
+  final int hour=(getWidget().currentResolution >= VDateField.RESOLUTION_HOUR) ? uidl.getIntVariable("hour") : 0;
+  final int min=(getWidget().currentResolution >= VDateField.RESOLUTION_MIN) ? uidl.getIntVariable("min") : 0;
+  final int sec=(getWidget().currentResolution >= VDateField.RESOLUTION_SEC) ? uidl.getIntVariable("sec") : 0;
   if (year > -1) {
-    getWidgetForPaintable().setCurrentDate(new Date((long)getWidgetForPaintable().getTime(year,month,day,hour,min,sec,0)));
+    getWidget().setCurrentDate(new Date((long)getWidget().getTime(year,month,day,hour,min,sec,0)));
   }
  else {
-    getWidgetForPaintable().setCurrentDate(null);
+    getWidget().setCurrentDate(null);
   }
 }

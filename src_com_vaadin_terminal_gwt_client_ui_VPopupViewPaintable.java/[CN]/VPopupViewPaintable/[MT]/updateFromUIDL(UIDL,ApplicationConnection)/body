@@ -3,21 +3,21 @@
   if (!isRealUpdate(uidl)) {
     return;
   }
-  getWidgetForPaintable().client=client;
-  getWidgetForPaintable().uidlId=uidl.getId();
-  getWidgetForPaintable().hostPopupVisible=uidl.getBooleanVariable("popupVisibility");
-  getWidgetForPaintable().setHTML(uidl.getStringAttribute("html"));
+  getWidget().client=client;
+  getWidget().uidlId=uidl.getId();
+  getWidget().hostPopupVisible=uidl.getBooleanVariable("popupVisibility");
+  getWidget().setHTML(uidl.getStringAttribute("html"));
   if (uidl.hasAttribute("hideOnMouseOut")) {
-    getWidgetForPaintable().popup.setHideOnMouseOut(uidl.getBooleanAttribute("hideOnMouseOut"));
+    getWidget().popup.setHideOnMouseOut(uidl.getBooleanAttribute("hideOnMouseOut"));
   }
-  if (getWidgetForPaintable().hostPopupVisible) {
+  if (getWidget().hostPopupVisible) {
     UIDL popupUIDL=uidl.getChildUIDL(0);
-    getWidgetForPaintable().preparePopup(getWidgetForPaintable().popup);
-    getWidgetForPaintable().popup.updateFromUIDL(popupUIDL,client);
+    getWidget().preparePopup(getWidget().popup);
+    getWidget().popup.updateFromUIDL(popupUIDL,client);
     if (getState().hasStyles()) {
       final String[] styles=getState().getStyle().split(" ");
       final StringBuffer styleBuf=new StringBuffer();
-      final String primaryName=getWidgetForPaintable().popup.getStylePrimaryName();
+      final String primaryName=getWidget().popup.getStylePrimaryName();
       styleBuf.append(primaryName);
       for (int i=0; i < styles.length; i++) {
         styleBuf.append(" ");
@@ -25,14 +25,14 @@
         styleBuf.append("-");
         styleBuf.append(styles[i]);
       }
-      getWidgetForPaintable().popup.setStyleName(styleBuf.toString());
+      getWidget().popup.setStyleName(styleBuf.toString());
     }
  else {
-      getWidgetForPaintable().popup.setStyleName(getWidgetForPaintable().popup.getStylePrimaryName());
+      getWidget().popup.setStyleName(getWidget().popup.getStylePrimaryName());
     }
-    getWidgetForPaintable().showPopup(getWidgetForPaintable().popup);
+    getWidget().showPopup(getWidget().popup);
   }
  else {
-    getWidgetForPaintable().popup.hide();
+    getWidget().popup.hide();
   }
 }

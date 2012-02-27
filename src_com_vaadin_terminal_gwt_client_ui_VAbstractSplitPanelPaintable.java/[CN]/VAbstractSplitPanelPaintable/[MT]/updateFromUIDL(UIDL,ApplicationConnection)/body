@@ -1,41 +1,41 @@
 {
-  getWidgetForPaintable().client=client;
-  getWidgetForPaintable().id=uidl.getId();
-  getWidgetForPaintable().immediate=getState().isImmediate();
+  getWidget().client=client;
+  getWidget().id=uidl.getId();
+  getWidget().immediate=getState().isImmediate();
   super.updateFromUIDL(uidl,client);
   if (!isRealUpdate(uidl)) {
     return;
   }
-  getWidgetForPaintable().setEnabled(!getState().isDisabled());
+  getWidget().setEnabled(!getState().isDisabled());
   clickEventHandler.handleEventHandlerRegistration(client);
   if (getState().hasStyles()) {
-    getWidgetForPaintable().componentStyleNames=getState().getStyle().split(" ");
+    getWidget().componentStyleNames=getState().getStyle().split(" ");
   }
  else {
-    getWidgetForPaintable().componentStyleNames=new String[0];
+    getWidget().componentStyleNames=new String[0];
   }
-  getWidgetForPaintable().setLocked(uidl.getBooleanAttribute("locked"));
-  getWidgetForPaintable().setPositionReversed(uidl.getBooleanAttribute("reversed"));
-  getWidgetForPaintable().setStylenames();
-  getWidgetForPaintable().position=uidl.getStringAttribute("position");
+  getWidget().setLocked(uidl.getBooleanAttribute("locked"));
+  getWidget().setPositionReversed(uidl.getBooleanAttribute("reversed"));
+  getWidget().setStylenames();
+  getWidget().position=uidl.getStringAttribute("position");
   final VPaintableWidget newFirstChildPaintable=client.getPaintable(uidl.getChildUIDL(0));
   final VPaintableWidget newSecondChildPaintable=client.getPaintable(uidl.getChildUIDL(1));
-  Widget newFirstChild=newFirstChildPaintable.getWidgetForPaintable();
-  Widget newSecondChild=newSecondChildPaintable.getWidgetForPaintable();
-  if (getWidgetForPaintable().firstChild != newFirstChild) {
-    if (getWidgetForPaintable().firstChild != null) {
-      client.unregisterPaintable(VPaintableMap.get(client).getPaintable(getWidgetForPaintable().firstChild));
+  Widget newFirstChild=newFirstChildPaintable.getWidget();
+  Widget newSecondChild=newSecondChildPaintable.getWidget();
+  if (getWidget().firstChild != newFirstChild) {
+    if (getWidget().firstChild != null) {
+      client.unregisterPaintable(VPaintableMap.get(client).getPaintable(getWidget().firstChild));
     }
-    getWidgetForPaintable().setFirstWidget(newFirstChild);
+    getWidget().setFirstWidget(newFirstChild);
   }
-  if (getWidgetForPaintable().secondChild != newSecondChild) {
-    if (getWidgetForPaintable().secondChild != null) {
-      client.unregisterPaintable(VPaintableMap.get(client).getPaintable(getWidgetForPaintable().secondChild));
+  if (getWidget().secondChild != newSecondChild) {
+    if (getWidget().secondChild != null) {
+      client.unregisterPaintable(VPaintableMap.get(client).getPaintable(getWidget().secondChild));
     }
-    getWidgetForPaintable().setSecondWidget(newSecondChild);
+    getWidget().setSecondWidget(newSecondChild);
   }
   newFirstChildPaintable.updateFromUIDL(uidl.getChildUIDL(0),client);
   newSecondChildPaintable.updateFromUIDL(uidl.getChildUIDL(1),client);
-  client.runDescendentsLayout(getWidgetForPaintable());
+  client.runDescendentsLayout(getWidget());
   getLayoutManager().setNeedsUpdate(this);
 }
