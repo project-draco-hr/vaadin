@@ -25,39 +25,37 @@
   }
   if (isRelativeWidth()) {
     style.setPropertyPx("width",(int)availableWidth);
-    style.clearProperty("minWidth");
   }
  else {
     style.clearProperty("width");
-    if (caption != null && captionAboveCompnent) {
-      style.setPropertyPx("minWidth",captionWidth);
-    }
- else {
-      style.clearProperty("minWidth");
-    }
   }
   AlignmentInfo alignment=getAlignment();
   if (!alignment.isLeft()) {
-    double usedWidth=getWidgetWidth();
+    double usedWidth;
+    if (isRelativeWidth()) {
+      String percentWidth=getWidget().getElement().getStyle().getWidth();
+      double percentage=parsePercent(percentWidth);
+      usedWidth=availableWidth * (percentage / 100);
+    }
+ else {
+      usedWidth=getWidgetWidth();
+    }
     if (alignment.isHorizontalCenter()) {
       currentLocation+=(allocatedSpace - usedWidth) / 2d;
       if (captionAboveCompnent) {
-        captionStyle.setLeft(usedWidth / 2 - (captionWidth / 2d),Unit.PX);
-        captionStyle.clearRight();
+        captionStyle.setLeft((usedWidth - captionWidth) / 2,Unit.PX);
       }
     }
  else {
       currentLocation+=(allocatedSpace - usedWidth);
       if (captionAboveCompnent) {
-        captionStyle.clearLeft();
-        captionStyle.setRight(0,Unit.PX);
+        captionStyle.setLeft(usedWidth - captionWidth,Unit.PX);
       }
     }
   }
  else {
     if (captionAboveCompnent) {
       captionStyle.setLeft(0,Unit.PX);
-      captionStyle.clearRight();
     }
   }
   style.setLeft(currentLocation,Unit.PX);
