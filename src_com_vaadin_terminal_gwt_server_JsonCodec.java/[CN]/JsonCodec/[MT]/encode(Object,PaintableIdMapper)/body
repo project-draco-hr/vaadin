@@ -2,9 +2,6 @@
   if (null == value) {
     return combineTypeAndValue(JsonEncoder.VTYPE_UNDEFINED,JSONObject.NULL);
   }
- else   if (value instanceof SharedState) {
-    return combineTypeAndValue(value.getClass().getName(),encodeObject(value,idMapper));
-  }
  else   if (value instanceof String[]) {
     String[] array=(String[])value;
     JSONArray jsonArray=new JSONArray();
@@ -36,7 +33,10 @@
     Paintable paintable=(Paintable)value;
     return combineTypeAndValue(JsonEncoder.VTYPE_PAINTABLE,idMapper.getPaintableId(paintable));
   }
- else {
+ else   if (getTransportType(value) != JsonEncoder.VTYPE_UNDEFINED) {
     return combineTypeAndValue(getTransportType(value),String.valueOf(value));
+  }
+ else {
+    return combineTypeAndValue(value.getClass().getCanonicalName(),encodeObject(value,idMapper));
   }
 }

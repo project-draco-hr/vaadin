@@ -1,0 +1,14 @@
+{
+  logger.log(Type.INFO,"Detecting serializable data types...");
+  HashSet<JClassType> types=new HashSet<JClassType>();
+  JClassType serializerType=typeOracle.findType(SharedState.class.getName());
+  JClassType[] serializerSubtypes=serializerType.getSubtypes();
+  for (  JClassType type : serializerSubtypes) {
+    types.add(type);
+  }
+  for (  Object t : types.toArray()) {
+    findSubTypesNeedingSerializers((JClassType)t,types);
+  }
+  logger.log(Type.INFO,"Serializable data types: " + types.toString());
+  return types;
+}

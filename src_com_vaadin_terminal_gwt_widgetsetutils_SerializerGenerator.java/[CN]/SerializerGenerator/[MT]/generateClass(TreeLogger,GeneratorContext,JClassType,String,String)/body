@@ -1,35 +1,32 @@
 {
   PrintWriter printWriter=null;
-  printWriter=context.tryCreate(logger,packageName,beanSerializerClassName);
+  printWriter=context.tryCreate(logger,serializerPackageName,serializerClassName);
   if (printWriter == null) {
     return;
   }
   Date date=new Date();
   TypeOracle typeOracle=context.getTypeOracle();
-  logger.log(Type.DEBUG,"Processing serializable type " + beanTypeName + "...");
+  String beanQualifiedSourceName=beanType.getQualifiedSourceName();
+  logger.log(Type.DEBUG,"Processing serializable type " + beanQualifiedSourceName + "...");
   ClassSourceFileComposerFactory composer=null;
-  composer=new ClassSourceFileComposerFactory(packageName,beanSerializerClassName);
+  composer=new ClassSourceFileComposerFactory(serializerPackageName,serializerClassName);
   composer.addImport(GWT.class.getName());
   composer.addImport(JSONArray.class.getName());
   composer.addImport(JsonDecoder.class.getName());
   composer.addImplementedInterface(VaadinSerializer.class.getName());
   SourceWriter sourceWriter=composer.createSourceWriter(context,printWriter);
   sourceWriter.indent();
-  sourceWriter.println("public " + beanTypeName + " deserialize("+ JSONObject.class.getName()+ " jsonValue, "+ ConnectorMap.class.getName()+ " idMapper) {");
+  sourceWriter.println("public " + beanQualifiedSourceName + " deserialize("+ JSONObject.class.getName()+ " jsonValue, "+ ConnectorMap.class.getName()+ " idMapper) {");
   sourceWriter.indent();
-  sourceWriter.println(beanTypeName + " state = GWT.create(" + beanTypeName+ ".class);");
-  JClassType beanType=typeOracle.findType(beanTypeName);
+  sourceWriter.println(beanQualifiedSourceName + " state = GWT.create(" + beanQualifiedSourceName+ ".class);");
   JClassType objectType=typeOracle.findType("java.lang.Object");
   while (!objectType.equals(beanType)) {
-    for (    JMethod method : beanType.getMethods()) {
-      if (!method.isPublic() || method.isStatic() || !method.getName().startsWith("set")|| method.getParameterTypes().length != 1) {
-        continue;
-      }
+    for (    JMethod method : getSetters(beanType)) {
       String setterName=method.getName();
       String capitalizedFieldName=setterName.substring(3);
       String fieldName=decapitalize(capitalizedFieldName);
       JType setterParameterType=method.getParameterTypes()[0];
-      logger.log(Type.DEBUG,"* Processing field " + fieldName + " in "+ beanTypeName+ " ("+ beanType.getName()+ ")");
+      logger.log(Type.INFO,"* Processing field " + fieldName + " in "+ beanQualifiedSourceName+ " ("+ beanType.getName()+ ")");
       String jsonFieldName="json" + capitalizedFieldName;
       sourceWriter.println("JSONArray " + jsonFieldName + " = (JSONArray) jsonValue.get(\""+ fieldName+ "\");");
       String fieldType;

@@ -1,14 +1,12 @@
 {
-  String beanSerializerTypeName=beanTypeName + "_Serializer";
+  JClassType beanType=context.getTypeOracle().findType(beanTypeName);
+  String beanSerializerClassName=getSerializerSimpleClassName(beanType);
   try {
-    TypeOracle typeOracle=context.getTypeOracle();
-    JClassType classType=typeOracle.getType(beanTypeName);
-    packageName=classType.getPackage().getName();
-    beanSerializerClassName=classType.getSimpleSourceName() + "_Serializer";
-    generateClass(logger,context,beanTypeName,beanSerializerTypeName);
+    generateClass(logger,context,beanType,beanSerializerPackageName,beanSerializerClassName);
   }
  catch (  Exception e) {
-    logger.log(TreeLogger.ERROR,"SerializerGenerator failed for " + beanTypeName,e);
+    logger.log(TreeLogger.ERROR,"SerializerGenerator failed for " + beanType.getQualifiedSourceName(),e);
   }
-  return packageName + "." + beanSerializerClassName;
+  logger.log(TreeLogger.INFO,"Generated Serializer class " + getFullyQualifiedSerializerClassName(beanType));
+  return getFullyQualifiedSerializerClassName(beanType);
 }
