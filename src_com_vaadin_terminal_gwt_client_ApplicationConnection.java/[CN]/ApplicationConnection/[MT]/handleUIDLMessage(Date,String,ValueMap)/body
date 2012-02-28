@@ -59,7 +59,7 @@
         redirectTimer.schedule(1000 * sessionExpirationInterval);
       }
       JsArray<ValueMap> changes=json.getJSValueMapArray("changes");
-      ArrayList<ComponentConnector> updatedVPaintableWidgets=new ArrayList<ComponentConnector>();
+      ArrayList<ComponentConnector> updatedComponentConnectors=new ArrayList<ComponentConnector>();
       componentCaptionSizeChanges.clear();
       Duration updateDuration=new Duration();
       int length=changes.length();
@@ -70,7 +70,7 @@
           final UIDL uidl=change.getChildUIDL(0);
           Connector paintable=connectorMap.getConnector(uidl.getId());
           if (null == paintable && !uidl.getTag().equals(configuration.getEncodedWindowTag())) {
-            getPaintable(uidl);
+            getConnector(uidl.getId(),uidl.getTag());
           }
         }
  catch (        final Throwable e) {
@@ -82,10 +82,10 @@
       JsArrayString keyArray=states.getKeyArray();
       for (int i=0; i < keyArray.length(); i++) {
         try {
-          String paintableId=keyArray.get(i);
-          Connector paintable=connectorMap.getConnector(paintableId);
+          String connectorId=keyArray.get(i);
+          Connector paintable=connectorMap.getConnector(connectorId);
           if (null != paintable) {
-            JSONArray stateDataAndType=new JSONArray(states.getJavaScriptObject(paintableId));
+            JSONArray stateDataAndType=new JSONArray(states.getJavaScriptObject(connectorId));
             Object state=JsonDecoder.convertValue(stateDataAndType,connectorMap);
             paintable.setState((SharedState)state);
           }
@@ -99,14 +99,15 @@
         try {
           final UIDL change=changes.get(i).cast();
           final UIDL uidl=change.getChildUIDL(0);
-          final ComponentConnector paintable=(ComponentConnector)connectorMap.getConnector(uidl.getId());
+          String paintableId=uidl.getId();
+          final ComponentConnector paintable=(ComponentConnector)connectorMap.getConnector(paintableId);
           if (paintable != null) {
             paintable.updateFromUIDL(uidl,ApplicationConnection.this);
-            updatedVPaintableWidgets.add(paintable);
+            updatedComponentConnectors.add(paintable);
           }
  else {
             if (!uidl.getTag().equals(configuration.getEncodedWindowTag())) {
-              VConsole.error("Received update for " + uidl.getTag() + ", but there is no such paintable ("+ uidl.getId()+ ") rendered.");
+              VConsole.error("Received update for " + uidl.getTag() + ", but there is no such paintable ("+ paintableId+ ") rendered.");
             }
  else {
               String pid=uidl.getId();
