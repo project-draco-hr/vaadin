@@ -99,24 +99,18 @@
         try {
           final UIDL change=changes.get(i).cast();
           final UIDL uidl=change.getChildUIDL(0);
-          String paintableId=uidl.getId();
-          final ComponentConnector paintable=(ComponentConnector)connectorMap.getConnector(paintableId);
+          String connectorId=uidl.getId();
+          if (!connectorMap.hasConnector(connectorId) && uidl.getTag().equals(configuration.getEncodedWindowTag())) {
+            connectorMap.registerConnector(connectorId,view);
+            view.doInit(connectorId,ApplicationConnection.this);
+          }
+          final ComponentConnector paintable=(ComponentConnector)connectorMap.getConnector(connectorId);
           if (paintable != null) {
             paintable.updateFromUIDL(uidl,ApplicationConnection.this);
             updatedComponentConnectors.add(paintable);
           }
  else {
-            if (!uidl.getTag().equals(configuration.getEncodedWindowTag())) {
-              VConsole.error("Received update for " + uidl.getTag() + ", but there is no such paintable ("+ paintableId+ ") rendered.");
-            }
- else {
-              String pid=uidl.getId();
-              if (!connectorMap.hasConnector(pid)) {
-                connectorMap.registerConnector(pid,view);
-              }
-              connectorMap.registerEventListenersFromUIDL(pid,uidl);
-              view.updateFromUIDL(uidl,ApplicationConnection.this);
-            }
+            VConsole.error("Received update for " + uidl.getTag() + ", but there is no such paintable ("+ connectorId+ ") rendered.");
           }
         }
  catch (        final Throwable e) {
