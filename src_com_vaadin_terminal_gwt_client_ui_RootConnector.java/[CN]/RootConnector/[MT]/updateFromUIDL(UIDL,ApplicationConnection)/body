@@ -1,0 +1,168 @@
+{
+  getWidget().rendering=true;
+  setId(uidl.getId());
+  getWidget().id=uidl.getId();
+  boolean firstPaint=getWidget().connection == null;
+  getWidget().connection=client;
+  getWidget().immediate=getState().isImmediate();
+  getWidget().resizeLazy=uidl.hasAttribute(VView.RESIZE_LAZY);
+  String newTheme=uidl.getStringAttribute("theme");
+  if (getWidget().theme != null && !newTheme.equals(getWidget().theme)) {
+    getWidget().reloadHostPage();
+  }
+ else {
+    getWidget().theme=newTheme;
+  }
+  getWidget().setStyleName(getWidget().getStylePrimaryName() + " " + getState().getStyle());
+  clickEventHandler.handleEventHandlerRegistration(client);
+  if (!getWidget().isEmbedded() && getState().getCaption() != null) {
+    com.google.gwt.user.client.Window.setTitle(getState().getCaption());
+  }
+  int childIndex=0;
+  boolean isClosed=false;
+  while (childIndex < uidl.getChildCount() && "open".equals(uidl.getChildUIDL(childIndex).getTag())) {
+    final UIDL open=uidl.getChildUIDL(childIndex);
+    final String url=client.translateVaadinUri(open.getStringAttribute("src"));
+    final String target=open.getStringAttribute("name");
+    if (target == null) {
+      Scheduler.get().scheduleDeferred(new Command(){
+        public void execute(){
+          VView.goTo(url);
+        }
+      }
+);
+    }
+ else     if ("_self".equals(target)) {
+      isClosed=true;
+      VView.goTo(url);
+    }
+ else {
+      String options;
+      if (open.hasAttribute("border")) {
+        if (open.getStringAttribute("border").equals("minimal")) {
+          options="menubar=yes,location=no,status=no";
+        }
+ else {
+          options="menubar=no,location=no,status=no";
+        }
+      }
+ else {
+        options="resizable=yes,menubar=yes,toolbar=yes,directories=yes,location=yes,scrollbars=yes,status=yes";
+      }
+      if (open.hasAttribute("width")) {
+        int w=open.getIntAttribute("width");
+        options+=",width=" + w;
+      }
+      if (open.hasAttribute("height")) {
+        int h=open.getIntAttribute("height");
+        options+=",height=" + h;
+      }
+      Window.open(url,target,options);
+    }
+    childIndex++;
+  }
+  if (isClosed) {
+    getWidget().rendering=false;
+    return;
+  }
+  UIDL childUidl=uidl.getChildUIDL(childIndex);
+  final ComponentConnector lo=client.getPaintable(childUidl);
+  if (getWidget().layout != null) {
+    if (getWidget().layout != lo) {
+      client.unregisterPaintable(getWidget().layout);
+      getWidget().setWidget(lo.getWidget());
+      getWidget().layout=lo;
+    }
+  }
+ else {
+    getWidget().setWidget(lo.getWidget());
+    getWidget().layout=lo;
+  }
+  getWidget().layout.updateFromUIDL(childUidl,client);
+  final HashSet<VWindow> removedSubWindows=new HashSet<VWindow>(getWidget().subWindows);
+  while ((childUidl=uidl.getChildUIDL(++childIndex)) != null) {
+    String tag=childUidl.getTag().intern();
+    if (tag == "actions") {
+      if (getWidget().actionHandler == null) {
+        getWidget().actionHandler=new ShortcutActionHandler(getWidget().id,client);
+      }
+      getWidget().actionHandler.updateActionMap(childUidl);
+    }
+ else     if (tag == "execJS") {
+      String script=childUidl.getStringAttribute("script");
+      VView.eval(script);
+    }
+ else     if (tag == "notifications") {
+      for (final Iterator<?> it=childUidl.getChildIterator(); it.hasNext(); ) {
+        final UIDL notification=(UIDL)it.next();
+        VNotification.showNotification(client,notification);
+      }
+    }
+ else {
+      final WindowConnector w=(WindowConnector)client.getPaintable(childUidl);
+      VWindow windowWidget=w.getWidget();
+      if (getWidget().subWindows.contains(windowWidget)) {
+        removedSubWindows.remove(windowWidget);
+      }
+ else {
+        getWidget().subWindows.add(windowWidget);
+      }
+      w.updateFromUIDL(childUidl,client);
+    }
+  }
+  for (final Iterator<VWindow> rem=removedSubWindows.iterator(); rem.hasNext(); ) {
+    final VWindow w=rem.next();
+    client.unregisterPaintable(ConnectorMap.get(getConnection()).getConnector(w));
+    getWidget().subWindows.remove(w);
+    w.hide();
+  }
+  if (uidl.hasAttribute("focused")) {
+    Scheduler.get().scheduleDeferred(new Command(){
+      public void execute(){
+        ComponentConnector paintable=(ComponentConnector)uidl.getPaintableAttribute("focused",getConnection());
+        final Widget toBeFocused=paintable.getWidget();
+        if (toBeFocused instanceof com.google.gwt.user.client.ui.Focusable) {
+          final com.google.gwt.user.client.ui.Focusable toBeFocusedWidget=(com.google.gwt.user.client.ui.Focusable)toBeFocused;
+          toBeFocusedWidget.setFocus(true);
+        }
+ else         if (toBeFocused instanceof Focusable) {
+          ((Focusable)toBeFocused).focus();
+        }
+ else {
+          VConsole.log("Could not focus component");
+        }
+      }
+    }
+);
+  }
+  if (firstPaint) {
+    Window.addWindowClosingHandler(getWidget());
+    Window.addResizeHandler(getWidget());
+  }
+  getWidget().onResize();
+  if (uidl.hasVariable("scrollTop")) {
+    getWidget().scrollable=true;
+    getWidget().scrollTop=uidl.getIntVariable("scrollTop");
+    DOM.setElementPropertyInt(getWidget().getElement(),"scrollTop",getWidget().scrollTop);
+    getWidget().scrollLeft=uidl.getIntVariable("scrollLeft");
+    DOM.setElementPropertyInt(getWidget().getElement(),"scrollLeft",getWidget().scrollLeft);
+  }
+ else {
+    getWidget().scrollable=false;
+  }
+  if (BrowserInfo.get().isSafari()) {
+    Util.runWebkitOverflowAutoFix(getWidget().getElement());
+  }
+  getWidget().scrollIntoView(uidl);
+  if (uidl.hasAttribute(VView.FRAGMENT_VARIABLE)) {
+    getWidget().currentFragment=uidl.getStringAttribute(VView.FRAGMENT_VARIABLE);
+    if (!getWidget().currentFragment.equals(History.getToken())) {
+      History.newItem(getWidget().currentFragment,true);
+    }
+  }
+ else {
+    getWidget().currentFragment=History.getToken();
+    client.updateVariable(getWidget().id,VView.FRAGMENT_VARIABLE,getWidget().currentFragment,false);
+  }
+  getWidget().rendering=false;
+}

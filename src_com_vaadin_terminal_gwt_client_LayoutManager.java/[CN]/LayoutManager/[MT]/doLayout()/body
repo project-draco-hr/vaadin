@@ -1,4 +1,5 @@
 {
+  VConsole.log("Starting layout phase");
   ConnectorMap paintableMap=connection.getConnectorMap();
   ComponentConnector[] paintableWidgets=paintableMap.getRegisteredComponentConnectors();
   int passes=0;
@@ -91,10 +92,12 @@
       break;
     }
   }
+  VConsole.log("Layout phase done");
+  VConsole.log("Calling post layout listeners");
   for (  ComponentConnector vPaintableWidget : paintableWidgets) {
     if (vPaintableWidget instanceof PostLayoutListener) {
       ((PostLayoutListener)vPaintableWidget).postLayout();
     }
   }
-  VConsole.log("Total layout time: " + totalDuration.elapsedMillis() + "ms");
+  VConsole.log("Total layout phase time: " + totalDuration.elapsedMillis() + "ms");
 }
