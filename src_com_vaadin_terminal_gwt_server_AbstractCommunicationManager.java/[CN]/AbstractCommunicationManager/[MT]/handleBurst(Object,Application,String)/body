@@ -13,12 +13,12 @@
         applyInvocation(invocation);
         continue;
       }
-      final VariableOwner owner=getVariableOwner(invocation.getPaintableId());
+      final VariableOwner owner=getVariableOwner(invocation.getConnectorId());
       if (owner != null && owner.isEnabled()) {
         VariableChange change=new VariableChange(invocation);
         Map<String,Object> m=new HashMap<String,Object>();
         m.put(change.getName(),change.getValue());
-        while (nextInvocation != null && invocation.getPaintableId().equals(nextInvocation.getPaintableId()) && ApplicationConnection.UPDATE_VARIABLE_METHOD.equals(nextInvocation.getMethodName())) {
+        while (nextInvocation != null && invocation.getConnectorId().equals(nextInvocation.getConnectorId()) && ApplicationConnection.UPDATE_VARIABLE_METHOD.equals(nextInvocation.getMethodName())) {
           i++;
           invocation=nextInvocation;
           change=new VariableChange(invocation);
@@ -60,7 +60,7 @@
           }
         }
  else {
-          msg+="non-existent component, VAR_PID=" + invocation.getPaintableId();
+          msg+="non-existent component, VAR_PID=" + invocation.getConnectorId();
           success=false;
         }
         logger.warning(msg);

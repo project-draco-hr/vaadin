@@ -1,0 +1,11 @@
+{
+  String connectorId=((JSONString)rpcCall.get(0)).stringValue();
+  String interfaceName=((JSONString)rpcCall.get(1)).stringValue();
+  String methodName=((JSONString)rpcCall.get(2)).stringValue();
+  JSONArray parametersJson=(JSONArray)rpcCall.get(3);
+  Object[] parameters=new Object[parametersJson.size()];
+  for (int j=0; j < parametersJson.size(); ++j) {
+    parameters[j]=JsonDecoder.convertValue((JSONArray)parametersJson.get(j),getConnectorMap());
+  }
+  return new MethodInvocation(connectorId,interfaceName,methodName,parameters);
+}

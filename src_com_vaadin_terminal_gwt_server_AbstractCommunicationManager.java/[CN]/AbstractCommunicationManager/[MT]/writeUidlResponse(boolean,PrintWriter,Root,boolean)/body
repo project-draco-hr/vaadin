@@ -30,12 +30,14 @@
     currentlyOpenWindowsInClient.put(Integer.valueOf(root.getRootId()),windowCache);
   }
   LinkedList<Paintable> stateQueue=new LinkedList<Paintable>();
+  LinkedList<Paintable> rpcPendingQueue=new LinkedList<Paintable>();
   if (paintables != null) {
     paintQueue.clear();
     paintQueue.addAll(paintables);
     while (!paintQueue.isEmpty()) {
-      final Paintable p=paintQueue.pop();
+      final Paintable p=paintQueue.removeFirst();
       stateQueue.push(p);
+      rpcPendingQueue.push(p);
       if (paintTarget.needsToBePainted(p)) {
         paintTarget.startTag("change");
         final String pid=getPaintableId(p);
@@ -71,6 +73,32 @@
     outWriter.print("\"state\":");
     outWriter.append(sharedStates.toString());
     outWriter.print(", ");
+  }
+  if (!rpcPendingQueue.isEmpty()) {
+    List<ClientMethodInvocation> pendingInvocations=collectPendingRpcCalls(rpcPendingQueue);
+    JSONArray rpcCalls=new JSONArray();
+    for (    ClientMethodInvocation invocation : pendingInvocations) {
+      try {
+        JSONArray invocationJson=new JSONArray();
+        invocationJson.put(getPaintableId(invocation.getPaintable()));
+        invocationJson.put(invocation.getInterfaceName());
+        invocationJson.put(invocation.getMethodName());
+        JSONArray paramJson=new JSONArray();
+        for (int i=0; i < invocation.getParameters().length; ++i) {
+          paramJson.put(JsonCodec.encode(invocation.getParameters()[i],this));
+        }
+        invocationJson.put(paramJson);
+        rpcCalls.put(invocationJson);
+      }
+ catch (      JSONException e) {
+        throw new PaintException("Failed to serialize RPC method call parameters for paintable " + getPaintableId(invocation.getPaintable()) + " method "+ invocation.getInterfaceName()+ "."+ invocation.getMethodName()+ ": "+ e.getMessage());
+      }
+    }
+    if (rpcCalls.length() > 0) {
+      outWriter.print("\"rpc\" : ");
+      outWriter.append(rpcCalls.toString());
+      outWriter.print(", ");
+    }
   }
   outWriter.print("\"meta\" : {");
   boolean metaOpen=false;

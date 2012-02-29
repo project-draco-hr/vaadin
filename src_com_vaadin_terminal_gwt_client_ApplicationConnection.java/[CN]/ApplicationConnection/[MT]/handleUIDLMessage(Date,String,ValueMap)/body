@@ -117,6 +117,22 @@
           VConsole.error(e);
         }
       }
+      if (json.containsKey("rpc")) {
+        VConsole.log(" * Performing server to client RPC calls");
+        JSONArray rpcCalls=new JSONArray(json.getJavaScriptObject("rpc"));
+        int rpcLength=rpcCalls.size();
+        for (int i=0; i < rpcLength; i++) {
+          try {
+            JSONArray rpcCall=(JSONArray)rpcCalls.get(i);
+            MethodInvocation invocation=parseMethodInvocation(rpcCall);
+            VConsole.log("Server to client RPC call: " + invocation);
+            rpcManager.applyInvocation(invocation,getConnectorMap());
+          }
+ catch (          final Throwable e) {
+            VConsole.error(e);
+          }
+        }
+      }
       if (json.containsKey("dd")) {
         VDragAndDropManager.get().handleServerResponse(json.getValueMap("dd"));
       }
