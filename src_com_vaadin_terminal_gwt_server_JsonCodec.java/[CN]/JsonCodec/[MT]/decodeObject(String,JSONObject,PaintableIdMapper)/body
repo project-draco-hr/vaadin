@@ -1,0 +1,34 @@
+{
+  Class<?> cls;
+  try {
+    cls=Class.forName(type);
+    Object decodedObject=cls.newInstance();
+    for (    PropertyDescriptor pd : Introspector.getBeanInfo(cls).getPropertyDescriptors()) {
+      if (pd.getReadMethod() == null || pd.getWriteMethod() == null) {
+        continue;
+      }
+      String fieldName=pd.getName();
+      JSONArray encodedObject=serializedObject.getJSONArray(fieldName);
+      pd.getWriteMethod().invoke(decodedObject,decode(encodedObject,idMapper));
+    }
+    return decodedObject;
+  }
+ catch (  ClassNotFoundException e) {
+    throw new JSONException(e);
+  }
+catch (  IllegalArgumentException e) {
+    throw new JSONException(e);
+  }
+catch (  IllegalAccessException e) {
+    throw new JSONException(e);
+  }
+catch (  InvocationTargetException e) {
+    throw new JSONException(e);
+  }
+catch (  InstantiationException e) {
+    throw new JSONException(e);
+  }
+catch (  IntrospectionException e) {
+    throw new JSONException(e);
+  }
+}
