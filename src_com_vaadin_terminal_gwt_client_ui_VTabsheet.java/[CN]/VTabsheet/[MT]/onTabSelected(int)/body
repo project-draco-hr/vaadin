@@ -1,13 +1,16 @@
 {
   if (disabled || waitingForResponse) {
-    return;
+    return false;
   }
   final Object tabKey=tabKeys.get(tabIndex);
   if (disabledTabKeys.contains(tabKey)) {
-    return;
+    return false;
   }
   if (client != null && activeTabIndex != tabIndex) {
     tb.selectTab(tabIndex);
+    if (focusedTab != null) {
+      focusedTab=tb.getTab(tabIndex);
+    }
     addStyleDependentName("loading");
     Scheduler.get().scheduleDeferred(new Command(){
       public void execute(){
@@ -18,5 +21,7 @@
     }
 );
     waitingForResponse=true;
+    return true;
   }
+  return false;
 }
