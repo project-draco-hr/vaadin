@@ -76,23 +76,7 @@
     getWidget().contentPanel.setWidget(lo.getWidget());
     getWidget().layout=lo;
   }
-  getWidget().dynamicWidth=getState().isUndefinedWidth();
-  getWidget().dynamicHeight=getState().isUndefinedHeight();
-  getWidget().layoutRelativeWidth=uidl.hasAttribute("layoutRelativeWidth");
-  getWidget().layoutRelativeHeight=uidl.hasAttribute("layoutRelativeHeight");
-  if (getWidget().dynamicWidth && getWidget().layoutRelativeWidth) {
-    getWidget().setNaturalWidth();
-  }
   getWidget().layout.updateFromUIDL(childUidl,client);
-  if (!getWidget().dynamicHeight && getWidget().layoutRelativeWidth) {
-    client.runDescendentsLayout(getWidget());
-  }
-  if (getWidget().dynamicWidth && !getWidget().layoutRelativeWidth) {
-    getWidget().setNaturalWidth();
-  }
-  if (getWidget().dynamicHeight && getWidget().layoutRelativeHeight) {
-    getWidget().resizable=false;
-  }
   if (uidl.getChildCount() > 1) {
     final int cnt=uidl.getChildCount();
     for (int i=1; i < cnt; i++) {
@@ -109,32 +93,17 @@
   getWidget().contentPanel.setHorizontalScrollPosition(uidl.getIntVariable("scrollLeft"));
   if (uidl.getBooleanAttribute("center")) {
     getWidget().centered=true;
-    getWidget().center();
   }
  else {
     getWidget().centered=false;
   }
-  getWidget().updateShadowSizeAndPosition();
   getWidget().setVisible(true);
-  boolean sizeReduced=false;
   if (getWidget().getOffsetWidth() > Window.getClientWidth()) {
     getWidget().setWidth(Window.getClientWidth() + "px");
-    sizeReduced=true;
   }
   if (getWidget().getOffsetHeight() > Window.getClientHeight()) {
     getWidget().setHeight(Window.getClientHeight() + "px");
-    sizeReduced=true;
   }
-  if (getWidget().dynamicHeight && getWidget().layoutRelativeHeight) {
-    int h=getWidget().contents.getOffsetHeight() + getWidget().getExtraHeight();
-    int w=getWidget().getElement().getOffsetWidth();
-    client.updateVariable(getId(),"height",h,false);
-    client.updateVariable(getId(),"width",w,true);
-  }
-  if (sizeReduced) {
-    client.runDescendentsLayout(getWidget());
-  }
-  Util.runWebkitOverflowAutoFix(getWidget().contentPanel.getElement());
   client.getView().getWidget().scrollIntoView(uidl);
   if (uidl.hasAttribute("bringToFront")) {
     getWidget().contentPanel.focus();

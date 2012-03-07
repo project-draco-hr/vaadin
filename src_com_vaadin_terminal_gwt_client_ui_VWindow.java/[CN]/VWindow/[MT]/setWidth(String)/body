@@ -1,25 +1,9 @@
 {
-  this.width=width;
-  if (!isAttached()) {
-    return;
+  super.setWidth(width);
+  if (width == null || width.length() == 0) {
+    headerText.removeClassName("v-not-spanning");
   }
-  if (width != null && !"".equals(width)) {
-    int rootPixelWidth=-1;
-    if (width.indexOf("px") < 0) {
-      DOM.setStyleAttribute(getElement(),"width",width);
-      rootPixelWidth=getElement().getOffsetWidth();
-      width=rootPixelWidth + "px";
-    }
  else {
-      rootPixelWidth=Integer.parseInt(width.substring(0,width.indexOf("px")));
-    }
-    getElement().getStyle().setProperty("width",width);
-    int contentAreaInnerWidth=rootPixelWidth - getContentAreaToRootDifference();
-    if (contentAreaInnerWidth < MIN_CONTENT_AREA_WIDTH) {
-      contentAreaInnerWidth=MIN_CONTENT_AREA_WIDTH;
-      int rootWidth=contentAreaInnerWidth + getContentAreaToRootDifference();
-      DOM.setStyleAttribute(getElement(),"width",rootWidth + "px");
-    }
-    updateShadowSizeAndPosition();
+    headerText.addClassName("v-not-spanning");
   }
 }
