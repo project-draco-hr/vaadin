@@ -31,12 +31,14 @@
   }
   LinkedList<Paintable> stateQueue=new LinkedList<Paintable>();
   LinkedList<Paintable> rpcPendingQueue=new LinkedList<Paintable>();
+  LinkedList<Paintable> hierarchyPendingQueue=new LinkedList<Paintable>();
   if (paintables != null) {
     paintQueue.clear();
     paintQueue.addAll(paintables);
     while (!paintQueue.isEmpty()) {
       final Paintable p=paintQueue.removeFirst();
       stateQueue.push(p);
+      hierarchyPendingQueue.push(p);
       rpcPendingQueue.push(p);
       if (paintTarget.needsToBePainted(p)) {
         paintTarget.startTag("change");
@@ -72,6 +74,33 @@
     }
     outWriter.print("\"state\":");
     outWriter.append(sharedStates.toString());
+    outWriter.print(", ");
+  }
+  if (!hierarchyPendingQueue.isEmpty()) {
+    outWriter.print("\"hierarchy\":");
+    JSONObject hierarchyInfo=new JSONObject();
+    for (    Paintable p : hierarchyPendingQueue) {
+      if (p instanceof ComponentContainer) {
+        ComponentContainer cc=(ComponentContainer)p;
+        String connectorId=paintableIdMap.get(cc);
+        JSONArray children=new JSONArray();
+        Iterator<Component> iterator=getChildComponentIterator(cc);
+        while (iterator.hasNext()) {
+          Component child=iterator.next();
+          if (child.getState().isVisible()) {
+            String childConnectorId=paintableIdMap.get(child);
+            children.put(childConnectorId);
+          }
+        }
+        try {
+          hierarchyInfo.put(connectorId,children);
+        }
+ catch (        JSONException e) {
+          throw new PaintException("Failed to send hierarchy information about " + connectorId + " to the client: "+ e.getMessage());
+        }
+      }
+    }
+    outWriter.append(hierarchyInfo.toString());
     outWriter.print(", ");
   }
   if (!rpcPendingQueue.isEmpty()) {
