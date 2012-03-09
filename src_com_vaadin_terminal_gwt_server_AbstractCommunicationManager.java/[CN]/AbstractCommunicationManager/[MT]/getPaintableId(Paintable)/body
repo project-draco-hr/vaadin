@@ -1,19 +1,21 @@
 {
   String id=paintableIdMap.get(paintable);
   if (id == null) {
-    id=paintable.getDebugId();
-    if (id == null) {
-      id="PID" + Integer.toString(idSequence++);
+    String debugId=paintable.getDebugId();
+    if (debugId == null) {
+      id="PID" + idSequence++;
     }
  else {
-      id="PID_S" + id;
-    }
-    Paintable old=idPaintableMap.put(id,paintable);
-    if (old != null && old != paintable) {
-      if (old instanceof Component && ((Component)old).getApplication() != null) {
-        throw new IllegalStateException("Two paintables (" + paintable.getClass().getSimpleName() + ","+ old.getClass().getSimpleName()+ ") have been assigned the same id: "+ paintable.getDebugId());
+      id="PID_S" + debugId;
+      for (int seq=0; ; ++seq) {
+        Paintable old=idPaintableMap.get(id);
+        if (old == null || (old instanceof Component && ((Component)old).getApplication() == null)) {
+          break;
+        }
+        id="PID_" + seq + "S"+ debugId;
       }
     }
+    idPaintableMap.put(id,paintable);
     paintableIdMap.put(paintable,id);
   }
   return id;
