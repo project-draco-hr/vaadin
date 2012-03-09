@@ -1,0 +1,13 @@
+{
+  JClassType serializerInterface=typeOracle.findType(JSONSerializer.class.getName());
+  Set<JClassType> types=new HashSet<JClassType>();
+  for (  JClassType serializer : serializerInterface.getSubtypes()) {
+    JType[] deserializeParamTypes=new JType[]{typeOracle.findType(JSONObject.class.getName()),typeOracle.findType(ConnectorMap.class.getName()),typeOracle.findType(ApplicationConnection.class.getName())};
+    JMethod deserializeMethod=serializer.findMethod("deserialize",deserializeParamTypes);
+    if (deserializeMethod == null) {
+      continue;
+    }
+    types.add(deserializeMethod.getReturnType().isClass());
+  }
+  return types;
+}

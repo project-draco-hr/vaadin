@@ -16,7 +16,7 @@
   composer.addImplementedInterface(JSONSerializer.class.getName());
   SourceWriter sourceWriter=composer.createSourceWriter(context,printWriter);
   sourceWriter.indent();
-  sourceWriter.println("public " + JSONObject.class.getName() + " serialize("+ Object.class.getName()+ " value, "+ ConnectorMap.class.getName()+ " idMapper) {");
+  sourceWriter.println("public " + JSONObject.class.getName() + " serialize("+ Object.class.getName()+ " value, "+ ConnectorMap.class.getName()+ " idMapper, "+ ApplicationConnection.class.getName()+ " connection) {");
   sourceWriter.indent();
   sourceWriter.println(beanQualifiedSourceName + " castedValue = (" + beanQualifiedSourceName+ ") value;");
   sourceWriter.println(JSONObject.class.getName() + " json = new " + JSONObject.class.getName()+ "();");
@@ -28,11 +28,11 @@
     if (getterName == null) {
       logger.log(TreeLogger.WARN,"No getter found for " + fieldName + ". Serialization will likely fail");
     }
-    sourceWriter.println("json.put(\"" + fieldName + "\", "+ JsonEncoder.class.getName()+ ".encode(castedValue."+ getterName+ "(), idMapper));");
+    sourceWriter.println("json.put(\"" + fieldName + "\", "+ JsonEncoder.class.getName()+ ".encode(castedValue."+ getterName+ "(), idMapper, connection));");
   }
   sourceWriter.println("return json;");
   sourceWriter.println("}");
-  sourceWriter.println("public " + beanQualifiedSourceName + " deserialize("+ JSONObject.class.getName()+ " jsonValue, "+ ConnectorMap.class.getName()+ " idMapper) {");
+  sourceWriter.println("public " + beanQualifiedSourceName + " deserialize("+ JSONObject.class.getName()+ " jsonValue, "+ ConnectorMap.class.getName()+ " idMapper, "+ ApplicationConnection.class.getName()+ " connection) {");
   sourceWriter.indent();
   sourceWriter.println(beanQualifiedSourceName + " state = GWT.create(" + beanQualifiedSourceName+ ".class);");
   for (  JMethod method : getSetters(beanType)) {
@@ -51,7 +51,7 @@
  else {
       fieldType=setterParameterType.getQualifiedSourceName();
     }
-    sourceWriter.println("state." + setterName + "(("+ fieldType+ ") JsonDecoder.convertValue("+ jsonFieldName+ ", idMapper));");
+    sourceWriter.println("state." + setterName + "(("+ fieldType+ ") JsonDecoder.convertValue("+ jsonFieldName+ ", idMapper, connection));");
   }
   sourceWriter.println("return state;");
   sourceWriter.println("}");

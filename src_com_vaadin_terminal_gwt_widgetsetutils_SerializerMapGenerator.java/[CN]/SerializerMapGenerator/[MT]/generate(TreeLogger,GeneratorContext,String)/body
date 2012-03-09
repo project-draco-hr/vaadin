@@ -2,10 +2,14 @@
   try {
     TypeOracle typeOracle=context.getTypeOracle();
     Set<JClassType> typesNeedingSerializers=findTypesNeedingSerializers(typeOracle,logger);
+    Set<JClassType> typesWithExistingSerializers=findTypesWithExistingSerializers(typeOracle,logger);
+    Set<JClassType> serializerMappings=new HashSet<JClassType>();
+    serializerMappings.addAll(typesNeedingSerializers);
+    serializerMappings.addAll(typesWithExistingSerializers);
     JClassType classType=typeOracle.getType(typeName);
     packageName=classType.getPackage().getName();
     className=classType.getSimpleSourceName() + "Impl";
-    generateSerializerMap(typesNeedingSerializers,logger,context);
+    generateSerializerMap(serializerMappings,logger,context);
     SerializerGenerator sg=new SerializerGenerator();
     for (    JClassType type : typesNeedingSerializers) {
       sg.generate(logger,context,type.getQualifiedSourceName());

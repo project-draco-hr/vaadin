@@ -3,12 +3,13 @@
   try {
     for (    PropertyDescriptor pd : Introspector.getBeanInfo(value.getClass()).getPropertyDescriptors()) {
       String fieldName=pd.getName();
+      Class<?> fieldType=pd.getPropertyType();
       if (pd.getReadMethod() == null || pd.getWriteMethod() == null) {
         continue;
       }
       Method getterMethod=pd.getReadMethod();
       Object fieldValue=getterMethod.invoke(value,null);
-      jsonMap.put(fieldName,encode(fieldValue,idMapper));
+      jsonMap.put(fieldName,encode(fieldValue,fieldType,idMapper));
     }
   }
  catch (  Exception e) {
