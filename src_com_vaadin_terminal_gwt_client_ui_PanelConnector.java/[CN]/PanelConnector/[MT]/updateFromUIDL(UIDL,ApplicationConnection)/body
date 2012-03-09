@@ -43,19 +43,9 @@
     getWidget().setIconUri(null,client);
   }
   getWidget().handleError(uidl);
-  final UIDL layoutUidl=uidl.getChildUIDL(0);
-  final ComponentConnector newLayout=client.getPaintable(layoutUidl);
-  if (newLayout != getWidget().layout) {
-    if (getWidget().layout != null) {
-      client.unregisterPaintable(getWidget().layout);
-    }
-    getWidget().setWidget(newLayout.getWidget());
-    getWidget().layout=newLayout;
-  }
-  getWidget().layout.updateFromUIDL(layoutUidl,client);
-  if (uidl.getChildCount() > 1) {
+  if (uidl.getChildCount() > 0) {
     final int cnt=uidl.getChildCount();
-    for (int i=1; i < cnt; i++) {
+    for (int i=0; i < cnt; i++) {
       UIDL childUidl=uidl.getChildUIDL(i);
       if (childUidl.getTag().equals("actions")) {
         if (getWidget().shortcutHandler == null) {
@@ -65,13 +55,11 @@
       }
     }
   }
-  if (uidl.hasVariable("scrollTop") && uidl.getIntVariable("scrollTop") != getWidget().scrollTop) {
-    uidlScrollTop=new Integer(uidl.getIntVariable("scrollTop"));
+  if (getState().getScrollTop() != getWidget().scrollTop) {
+    uidlScrollTop=getState().getScrollTop();
   }
-  if (uidl.hasVariable("scrollLeft") && uidl.getIntVariable("scrollLeft") != getWidget().scrollLeft) {
-    uidlScrollLeft=new Integer(uidl.getIntVariable("scrollLeft"));
+  if (getState().getScrollLeft() != getWidget().scrollLeft) {
+    uidlScrollLeft=getState().getScrollLeft();
   }
-  if (uidl.hasVariable("tabindex")) {
-    getWidget().contentNode.setTabIndex(uidl.getIntVariable("tabindex"));
-  }
+  getWidget().contentNode.setTabIndex(getState().getTabIndex());
 }

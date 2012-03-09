@@ -116,19 +116,18 @@
     }
     private void createConnectorsIfNeeded(    ValueMap json){
       VConsole.log(" * Creating connectors (if needed)");
-      JsArray<ValueMap> changes=json.getJSValueMapArray("changes");
-      int length=changes.length();
-      for (int i=0; i < length; i++) {
+      ValueMap types=json.getValueMap("types");
+      JsArrayString keyArray=types.getKeyArray();
+      for (int i=0; i < keyArray.length(); i++) {
         try {
-          final UIDL change=changes.get(i).cast();
-          final UIDL uidl=change.getChildUIDL(0);
-          String connectorId=uidl.getId();
+          String connectorId=keyArray.get(i);
+          String connectorType=types.getString(connectorId);
           Connector connector=connectorMap.getConnector(connectorId);
           if (connector != null) {
             continue;
           }
-          if (!uidl.getTag().equals(configuration.getEncodedWindowTag())) {
-            getConnector(uidl.getId(),uidl.getTag());
+          if (!connectorType.equals(configuration.getEncodedWindowTag())) {
+            getConnector(connectorId,connectorType);
           }
  else {
             connectorMap.registerConnector(connectorId,view);
@@ -223,7 +222,7 @@
               childConnector.setParent(ccc);
             }
           }
-          Collection<ComponentConnector> oldChildren=ccc.getChildren();
+          List<ComponentConnector> oldChildren=ccc.getChildren();
           boolean actuallyChanged=!Util.collectionsEquals(oldChildren,newChildren);
           if (!actuallyChanged) {
             continue;
@@ -231,7 +230,7 @@
           ConnectorHierarchyChangedEvent event=GWT.create(ConnectorHierarchyChangedEvent.class);
           event.setOldChildren(oldChildren);
           event.setParent(ccc);
-          ccc.setChildren((Collection)newChildren);
+          ccc.setChildren((List)newChildren);
           events.add(event);
         }
  catch (        final Throwable e) {

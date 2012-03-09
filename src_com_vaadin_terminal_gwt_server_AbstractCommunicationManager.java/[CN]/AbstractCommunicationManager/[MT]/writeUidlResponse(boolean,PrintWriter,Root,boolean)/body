@@ -32,12 +32,14 @@
   LinkedList<Paintable> stateQueue=new LinkedList<Paintable>();
   LinkedList<Paintable> rpcPendingQueue=new LinkedList<Paintable>();
   LinkedList<Paintable> hierarchyPendingQueue=new LinkedList<Paintable>();
+  LinkedList<Paintable> connectorTypeQueue=new LinkedList<Paintable>();
   if (paintables != null) {
     paintQueue.clear();
     paintQueue.addAll(paintables);
     while (!paintQueue.isEmpty()) {
       final Paintable p=paintQueue.removeFirst();
       stateQueue.push(p);
+      connectorTypeQueue.push(p);
       hierarchyPendingQueue.push(p);
       rpcPendingQueue.push(p);
       if (paintTarget.needsToBePainted(p)) {
@@ -76,6 +78,23 @@
     outWriter.append(sharedStates.toString());
     outWriter.print(", ");
   }
+  if (!connectorTypeQueue.isEmpty()) {
+    JSONObject connectorTypes=new JSONObject();
+    while (!connectorTypeQueue.isEmpty()) {
+      final Paintable p=connectorTypeQueue.pop();
+      String paintableId=getPaintableId(p);
+      String connectorType=paintTarget.getTag(p);
+      try {
+        connectorTypes.put(paintableId,connectorType);
+      }
+ catch (      JSONException e) {
+        throw new PaintException("Failed to send connector type for paintable " + paintableId + ": "+ e.getMessage());
+      }
+    }
+    outWriter.print("\"types\":");
+    outWriter.append(connectorTypes.toString());
+    outWriter.print(", ");
+  }
   if (!hierarchyPendingQueue.isEmpty()) {
     outWriter.print("\"hierarchy\":");
     JSONObject hierarchyInfo=new JSONObject();
@@ -88,7 +107,7 @@
         while (iterator.hasNext()) {
           Component child=iterator.next();
           if (child.getState().isVisible()) {
-            String childConnectorId=paintableIdMap.get(child);
+            String childConnectorId=getPaintableId(child);
             children.put(childConnectorId);
           }
         }
