@@ -18,8 +18,11 @@
   if (uidl.hasAttribute("tabindex") && getWidget() instanceof Focusable) {
     ((Focusable)getWidget()).setTabIndex(uidl.getIntAttribute("tabindex"));
   }
-  setEnabled(getState().isEnabled());
-  String styleName=getStyleNameFromUIDL(getWidget().getStylePrimaryName(),uidl,getState(),getWidget() instanceof Field);
+  if (getWidget() instanceof FocusWidget) {
+    FocusWidget fw=(FocusWidget)getWidget();
+    fw.setEnabled(isEnabled());
+  }
+  String styleName=getStyleNameFromUIDL(getWidget().getStylePrimaryName(),uidl,getWidget() instanceof Field,this);
   getWidget().setStyleName(styleName);
   TooltipInfo tooltipInfo=paintableMap.getTooltipInfo(this,null);
   if (getState().hasDescription()) {
