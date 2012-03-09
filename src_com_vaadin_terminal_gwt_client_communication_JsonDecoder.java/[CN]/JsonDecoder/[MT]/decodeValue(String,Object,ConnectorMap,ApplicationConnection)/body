@@ -1,16 +1,22 @@
 {
   Object val=null;
-  if (JsonEncoder.VTYPE_ARRAY.equals(variableType)) {
-    val=convertArray((JSONArray)value,idMapper);
+  if (JsonEncoder.VTYPE_UNDEFINED.equals(variableType)) {
+    val=null;
+  }
+ else   if (JsonEncoder.VTYPE_ARRAY.equals(variableType)) {
+    val=decodeArray((JSONArray)value,idMapper,connection);
   }
  else   if (JsonEncoder.VTYPE_MAP.equals(variableType)) {
-    val=convertMap((JSONObject)value,idMapper);
+    val=decodeMap((JSONObject)value,idMapper,connection);
+  }
+ else   if (JsonEncoder.VTYPE_LIST.equals(variableType)) {
+    val=decodeList((JSONArray)value,idMapper,connection);
   }
  else   if (JsonEncoder.VTYPE_STRINGARRAY.equals(variableType)) {
-    val=convertStringArray((JSONArray)value);
+    val=decodeStringArray((JSONArray)value);
   }
  else   if (JsonEncoder.VTYPE_STRING.equals(variableType)) {
-    val=value;
+    val=((JSONString)value).stringValue();
   }
  else   if (JsonEncoder.VTYPE_INTEGER.equals(variableType)) {
     val=Integer.valueOf(String.valueOf(value));
@@ -28,10 +34,12 @@
     val=Boolean.valueOf(String.valueOf(value));
   }
  else   if (JsonEncoder.VTYPE_PAINTABLE.equals(variableType)) {
-    val=idMapper.getPaintable(String.valueOf(value));
+    val=idMapper.getConnector(String.valueOf(value));
   }
  else {
-    return decodeObject(variableType,(JSONObject)value,idMapper);
+    JSONSerializer serializer=serializerMap.getSerializer(variableType);
+    Object object=serializer.deserialize((JSONObject)value,idMapper,connection);
+    return object;
   }
   return val;
 }

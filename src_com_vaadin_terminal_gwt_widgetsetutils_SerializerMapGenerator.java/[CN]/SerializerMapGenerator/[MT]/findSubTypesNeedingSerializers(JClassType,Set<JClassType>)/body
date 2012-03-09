@@ -7,7 +7,10 @@
     if (serializationHandledByFramework(setterType)) {
       continue;
     }
-    serializableTypes.add(setterType.isClass());
-    findSubTypesNeedingSerializers(type,serializableTypes);
+    JClassType setterTypeClass=setterType.isClass();
+    if (setterTypeClass != null) {
+      serializableTypes.add(setterTypeClass);
+      findSubTypesNeedingSerializers(type,serializableTypes);
+    }
   }
 }
