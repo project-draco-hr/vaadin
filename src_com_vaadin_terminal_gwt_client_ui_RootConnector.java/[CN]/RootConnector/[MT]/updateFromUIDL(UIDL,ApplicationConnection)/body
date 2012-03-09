@@ -14,7 +14,14 @@
  else {
     getWidget().theme=newTheme;
   }
-  getWidget().setStyleName(getWidget().getStylePrimaryName() + " " + getState().getStyle());
+  String styles="";
+  styles+=getWidget().getStylePrimaryName() + " ";
+  if (getState().hasStyles()) {
+    for (    String style : getState().getStyles()) {
+      styles+=style + " ";
+    }
+  }
+  getWidget().setStyleName(styles.trim());
   clickEventHandler.handleEventHandlerRegistration(client);
   if (!getWidget().isEmbedded() && getState().getCaption() != null) {
     com.google.gwt.user.client.Window.setTitle(getState().getCaption());

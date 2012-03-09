@@ -1,20 +1,19 @@
 {
   if (state.hasStyles()) {
-    final String style=state.getStyle();
-    if (currentStyle != style) {
-      currentStyle=style;
-      final String[] styles=style.split(" ");
+    final List<String> styles=state.getStyles();
+    if (!currentStyle.equals(styles.toString())) {
+      currentStyle=styles.toString();
       final String tabsBaseClass=TABS_CLASSNAME;
       String tabsClass=tabsBaseClass;
       final String contentBaseClass=CLASSNAME + "-content";
       String contentClass=contentBaseClass;
       final String decoBaseClass=CLASSNAME + "-deco";
       String decoClass=decoBaseClass;
-      for (int i=0; i < styles.length; i++) {
-        tb.addStyleDependentName(styles[i]);
-        tabsClass+=" " + tabsBaseClass + "-"+ styles[i];
-        contentClass+=" " + contentBaseClass + "-"+ styles[i];
-        decoClass+=" " + decoBaseClass + "-"+ styles[i];
+      for (      String style : styles) {
+        tb.addStyleDependentName(style);
+        tabsClass+=" " + tabsBaseClass + "-"+ style;
+        contentClass+=" " + contentBaseClass + "-"+ style;
+        decoClass+=" " + decoBaseClass + "-"+ style;
       }
       DOM.setElementProperty(tabs,"className",tabsClass);
       DOM.setElementProperty(contentNode,"className",contentClass);
