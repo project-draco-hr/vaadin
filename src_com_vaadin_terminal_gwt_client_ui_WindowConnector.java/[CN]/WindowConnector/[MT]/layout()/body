@@ -1,13 +1,14 @@
 {
   LayoutManager lm=getLayoutManager();
   VWindow window=getWidget();
+  ComponentConnector layout=window.layout;
   Element contentElement=window.contentPanel.getElement();
-  boolean needsMinWidth=!isUndefinedWidth() || window.layout.isRelativeWidth();
+  boolean needsMinWidth=!isUndefinedWidth() || layout.isRelativeWidth();
   int minWidth=window.getMinWidth();
   if (needsMinWidth && lm.getInnerWidth(contentElement) < minWidth) {
     window.setWidth(minWidth + "px");
   }
-  boolean needsMinHeight=!isUndefinedHeight() || window.layout.isRelativeHeight();
+  boolean needsMinHeight=!isUndefinedHeight() || layout.isRelativeHeight();
   int minHeight=window.getMinHeight();
   if (needsMinHeight && lm.getInnerHeight(contentElement) < minHeight) {
     window.setHeight(minHeight + "px");
@@ -19,5 +20,21 @@
   int footerHeight=lm.getOuterHeight(window.footer);
   contentStyle.setPaddingBottom(footerHeight,Unit.PX);
   contentStyle.setMarginBottom(-footerHeight,Unit.PX);
+  Element layoutElement=layout.getWidget().getElement();
+  Style childStyle=layoutElement.getStyle();
+  if (layout.isRelativeHeight()) {
+    childStyle.setPosition(Position.ABSOLUTE);
+    Style wrapperStyle=contentElement.getStyle();
+    if (window.getElement().getStyle().getWidth().length() == 0 && !layout.isRelativeWidth()) {
+      int contentWidth=lm.getOuterWidth(layoutElement);
+      wrapperStyle.setWidth(contentWidth,Unit.PX);
+    }
+ else {
+      wrapperStyle.clearWidth();
+    }
+  }
+ else {
+    childStyle.clearPosition();
+  }
   Util.runWebkitOverflowAutoFix(window.contentPanel.getElement());
 }
