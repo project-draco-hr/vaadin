@@ -122,7 +122,7 @@
         try {
           String connectorId=keyArray.get(i);
           String connectorType=types.getString(connectorId);
-          Connector connector=connectorMap.getConnector(connectorId);
+          ServerConnector connector=connectorMap.getConnector(connectorId);
           if (connector != null) {
             continue;
           }
@@ -177,7 +177,7 @@
       for (int i=0; i < keyArray.length(); i++) {
         try {
           String connectorId=keyArray.get(i);
-          Connector paintable=connectorMap.getConnector(connectorId);
+          ServerConnector paintable=connectorMap.getConnector(connectorId);
           if (null != paintable) {
             JSONArray stateDataAndType=new JSONArray(states.getJavaScriptObject(connectorId));
             Object state=JsonDecoder.decodeValue(stateDataAndType,connectorMap,ApplicationConnection.this);
@@ -205,7 +205,7 @@
       for (int i=0; i < hierarchyKeys.length(); i++) {
         try {
           String connectorId=hierarchyKeys.get(i);
-          Connector connector=connectorMap.getConnector(connectorId);
+          ServerConnector connector=connectorMap.getConnector(connectorId);
           if (!(connector instanceof ComponentContainerConnector)) {
             VConsole.error("Retrieved a hierarchy update for a connector (" + connectorId + ") that is not a ComponentContainerConnector");
             continue;
@@ -213,7 +213,7 @@
           ComponentContainerConnector ccc=(ComponentContainerConnector)connector;
           JsArrayString childConnectorIds=hierarchies.getJSStringArray(connectorId);
           int childConnectorSize=childConnectorIds.length();
-          List<Connector> newChildren=new ArrayList<Connector>();
+          List<ServerConnector> newChildren=new ArrayList<ServerConnector>();
           for (int connectorIndex=0; connectorIndex < childConnectorSize; connectorIndex++) {
             String childConnectorId=childConnectorIds.get(connectorIndex);
             ComponentConnector childConnector=(ComponentConnector)connectorMap.getConnector(childConnectorId);
