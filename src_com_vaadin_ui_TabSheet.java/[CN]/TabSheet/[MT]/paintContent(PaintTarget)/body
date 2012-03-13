@@ -6,10 +6,8 @@
     target.addAttribute("tabindex",tabIndex);
   }
   target.startTag("tabs");
-  Collection<Component> orphaned=new HashSet<Component>(paintedTabs);
   for (final Iterator<Component> i=getComponentIterator(); i.hasNext(); ) {
     final Component component=i.next();
-    orphaned.remove(component);
     Tab tab=tabs.get(component);
     target.startTag("tab");
     if (!tab.isEnabled() && tab.isVisible()) {
@@ -44,25 +42,12 @@
     target.addAttribute("key",keyMapper.key(component));
     if (component.equals(selected)) {
       target.addAttribute("selected",true);
-      if (!paintedTabs.contains(component)) {
-        component.requestRepaint();
-        paintedTabs.add(component);
-      }
       component.paint(target);
-    }
- else     if (paintedTabs.contains(component)) {
-      component.paint(target);
-    }
- else {
-      component.requestRepaintRequests();
     }
     target.endTag("tab");
   }
   target.endTag("tabs");
   if (selected != null) {
     target.addVariable(this,"selected",keyMapper.key(selected));
-  }
-  for (  Component component2 : orphaned) {
-    paintedTabs.remove(component2);
   }
 }
