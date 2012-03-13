@@ -99,13 +99,11 @@
     outWriter.print("\"hierarchy\":");
     JSONObject hierarchyInfo=new JSONObject();
     for (    Paintable p : hierarchyPendingQueue) {
-      if (p instanceof ComponentContainer) {
-        ComponentContainer cc=(ComponentContainer)p;
+      if (p instanceof HasComponents) {
+        HasComponents cc=(HasComponents)p;
         String connectorId=paintableIdMap.get(cc);
         JSONArray children=new JSONArray();
-        Iterator<Component> iterator=getChildComponentIterator(cc);
-        while (iterator.hasNext()) {
-          Component child=iterator.next();
+        for (        Component child : getChildComponents(cc)) {
           if (child.getState().isVisible()) {
             String childConnectorId=getPaintableId(child);
             children.put(childConnectorId);
