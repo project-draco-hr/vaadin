@@ -1,5 +1,9 @@
 {
+  if (layoutRunning) {
+    throw new IllegalStateException("Can't start a new layout phase before the previous layout phase ends.");
+  }
   VConsole.log("Starting layout phase");
+  layoutRunning=true;
   ConnectorMap paintableMap=connection.getConnectorMap();
   ComponentConnector[] paintableWidgets=paintableMap.getRegisteredComponentConnectors();
   int passes=0;
@@ -99,5 +103,6 @@
       ((PostLayoutListener)vPaintableWidget).postLayout();
     }
   }
+  layoutRunning=false;
   VConsole.log("Total layout phase time: " + totalDuration.elapsedMillis() + "ms");
 }
