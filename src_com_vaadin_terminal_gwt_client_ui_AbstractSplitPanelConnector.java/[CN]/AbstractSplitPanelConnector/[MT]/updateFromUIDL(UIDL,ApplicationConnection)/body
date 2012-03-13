@@ -18,24 +18,9 @@
   getWidget().setPositionReversed(uidl.getBooleanAttribute("reversed"));
   getWidget().setStylenames();
   getWidget().position=uidl.getStringAttribute("position");
-  final ComponentConnector newFirstChildPaintable=client.getPaintable(uidl.getChildUIDL(0));
-  final ComponentConnector newSecondChildPaintable=client.getPaintable(uidl.getChildUIDL(1));
-  Widget newFirstChild=newFirstChildPaintable.getWidget();
-  Widget newSecondChild=newSecondChildPaintable.getWidget();
-  if (getWidget().firstChild != newFirstChild) {
-    if (getWidget().firstChild != null) {
-      client.unregisterPaintable(ConnectorMap.get(client).getConnector(getWidget().firstChild));
-    }
-    getWidget().setFirstWidget(newFirstChild);
+  for (int childIndex=0; childIndex < getChildren().size(); childIndex++) {
+    getChildren().get(childIndex).updateFromUIDL(uidl.getChildUIDL(childIndex++),client);
   }
-  if (getWidget().secondChild != newSecondChild) {
-    if (getWidget().secondChild != null) {
-      client.unregisterPaintable(ConnectorMap.get(client).getConnector(getWidget().secondChild));
-    }
-    getWidget().setSecondWidget(newSecondChild);
-  }
-  newFirstChildPaintable.updateFromUIDL(uidl.getChildUIDL(0),client);
-  newSecondChildPaintable.updateFromUIDL(uidl.getChildUIDL(1),client);
   client.runDescendentsLayout(getWidget());
   getLayoutManager().setNeedsUpdate(this);
 }
