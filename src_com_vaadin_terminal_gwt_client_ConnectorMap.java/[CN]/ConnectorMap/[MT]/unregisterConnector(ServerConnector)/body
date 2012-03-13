@@ -1,20 +1,22 @@
 {
   if (connector == null) {
-    VConsole.error("WARN: Trying to unregister null connector");
+    VConsole.error("Trying to unregister null connector");
     return;
   }
-  String id=connector.getConnectorId();
+  String connectorId=connector.getConnectorId();
+  VConsole.log("Unregistering connector " + connectorId + " ("+ connector.getClass().getName()+ ")");
   Widget widget=null;
   if (connector instanceof ComponentConnector) {
     widget=((ComponentConnector)connector).getWidget();
   }
-  if (id == null) {
-    VConsole.log("Tried to unregister a " + connector.getClass().getName() + " ("+ id+ ") which was not registered");
+  if (widget != null && widget.isAttached()) {
+    VConsole.log("Widget for unregistered connector " + connectorId + " is still attached to the DOM.");
   }
- else {
-    unregistryBag.add(id);
-  }
-  if (widget != null && widget instanceof HasWidgets) {
-    unregisterChildConnectors((HasWidgets)widget);
+  idToComponentDetail.remove(connectorId);
+  idToConnector.remove(connectorId);
+  if (connector instanceof ComponentContainerConnector) {
+    for (    ComponentConnector child : ((ComponentContainerConnector)connector).getChildren()) {
+      unregisterConnector(child);
+    }
   }
 }

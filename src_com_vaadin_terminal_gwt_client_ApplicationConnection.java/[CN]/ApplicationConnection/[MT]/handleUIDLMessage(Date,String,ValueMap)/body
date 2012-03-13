@@ -70,6 +70,7 @@
       if (json.containsKey("dd")) {
         VDragAndDropManager.get().handleServerResponse(json.getValueMap("dd"));
       }
+      unregisterRemovedConnectors();
       VConsole.log("updateFromUidl: " + updateDuration.elapsedMillis() + " ms");
       doLayout(false);
       if (meta != null) {
@@ -103,16 +104,24 @@
           validatingLayouts=false;
         }
       }
-      if (repaintAll) {
-        connectorMap.purgeUnregistryBag(false);
-      }
- else {
-        connectorMap.purgeUnregistryBag(true);
-      }
       final long prosessingTime=(new Date().getTime()) - start.getTime();
       VConsole.log(" Processing time was " + String.valueOf(prosessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
       VConsole.log("Referenced paintables: " + connectorMap.size());
       endRequest();
+    }
+    private void unregisterRemovedConnectors(){
+      List<ServerConnector> currentConnectors=new ArrayList<ServerConnector>(connectorMap.getConnectors());
+      for (      ServerConnector c : currentConnectors) {
+        if (c instanceof ComponentConnector) {
+          ComponentConnector cc=(ComponentConnector)c;
+          if (cc.getParent() == null && !(cc instanceof RootConnector)) {
+            connectorMap.unregisterConnector(cc);
+          }
+ else           if (cc.getParent() != null && !cc.getParent().getChildren().contains(cc)) {
+            VConsole.error("ERROR: Connector is connected to a parent but the parent does not contain the connector");
+          }
+        }
+      }
     }
     private void createConnectorsIfNeeded(    ValueMap json){
       VConsole.log(" * Creating connectors (if needed)");
@@ -217,6 +226,10 @@
           for (int connectorIndex=0; connectorIndex < childConnectorSize; connectorIndex++) {
             String childConnectorId=childConnectorIds.get(connectorIndex);
             ComponentConnector childConnector=(ComponentConnector)connectorMap.getConnector(childConnectorId);
+            if (childConnector == null) {
+              VConsole.error("Hierarchy claims that " + childConnectorId + " is a child for "+ connectorId+ " ("+ connector.getClass().getName()+ ") but no connector with id "+ childConnectorId+ " has been registered");
+              continue;
+            }
             newChildren.add(childConnector);
             if (childConnector.getParent() != ccc) {
               childConnector.setParent(ccc);
@@ -232,6 +245,14 @@
           event.setParent(ccc);
           ccc.setChildren((List)newChildren);
           events.add(event);
+          for (          ComponentConnector oldChild : oldChildren) {
+            if (oldChild.getParent() != ccc) {
+              continue;
+            }
+            if (!newChildren.contains(oldChild)) {
+              oldChild.setParent(null);
+            }
+          }
         }
  catch (        final Throwable e) {
           VConsole.error(e);
