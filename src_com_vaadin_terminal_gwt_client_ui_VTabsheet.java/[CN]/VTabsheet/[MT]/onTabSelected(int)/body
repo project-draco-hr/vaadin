@@ -12,14 +12,9 @@
       focusedTab=tb.getTab(tabIndex);
     }
     addStyleDependentName("loading");
-    Scheduler.get().scheduleDeferred(new Command(){
-      public void execute(){
-        previousVisibleWidget=tp.getWidget(tp.getVisibleWidget());
-        DOM.setStyleAttribute(DOM.getParent(previousVisibleWidget.getElement()),"visibility","hidden");
-        client.updateVariable(id,"selected",tabKeys.get(tabIndex).toString(),true);
-      }
-    }
-);
+    Widget currentlyDisplayedWidget=tp.getWidget(tp.getVisibleWidget());
+    currentlyDisplayedWidget.getElement().getParentElement().getStyle().setVisibility(Visibility.HIDDEN);
+    client.updateVariable(id,"selected",tabKeys.get(tabIndex).toString(),true);
     waitingForResponse=true;
     return true;
   }
