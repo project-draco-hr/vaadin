@@ -1,5 +1,5 @@
 {
-  ErrorMessage validationError=null;
+  Validator.InvalidValueException validationError=null;
   if (isValidationVisible()) {
     try {
       validate();
@@ -14,5 +14,5 @@
   if (superError == null && validationError == null && getCurrentBufferedSourceException() == null) {
     return null;
   }
-  return new CompositeErrorMessage(new ErrorMessage[]{superError,validationError,getCurrentBufferedSourceException()});
+  return new CompositeErrorMessage(new ErrorMessage[]{superError,AbstractErrorMessage.getErrorMessageForException(validationError),AbstractErrorMessage.getErrorMessageForException(getCurrentBufferedSourceException())});
 }

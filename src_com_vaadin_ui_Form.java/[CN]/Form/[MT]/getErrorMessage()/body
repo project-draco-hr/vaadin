@@ -8,12 +8,12 @@
         validationError=field.getErrorMessage();
         if (validationError != null) {
           if ("".equals(validationError.toString())) {
-            validationError=new Validator.InvalidValueException(field.getCaption());
+            validationError=new UserError(field.getCaption());
           }
           break;
         }
  else         if (f instanceof Field && !((Field<?>)f).isValid()) {
-          validationError=new Validator.InvalidValueException(field.getCaption());
+          validationError=new UserError(field.getCaption());
           break;
         }
       }
@@ -22,5 +22,5 @@
   if (getComponentError() == null && validationError == null && currentBufferedSourceException == null) {
     return null;
   }
-  return new CompositeErrorMessage(new ErrorMessage[]{getComponentError(),validationError,currentBufferedSourceException});
+  return new CompositeErrorMessage(new ErrorMessage[]{getComponentError(),validationError,AbstractErrorMessage.getErrorMessageForException(currentBufferedSourceException)});
 }
