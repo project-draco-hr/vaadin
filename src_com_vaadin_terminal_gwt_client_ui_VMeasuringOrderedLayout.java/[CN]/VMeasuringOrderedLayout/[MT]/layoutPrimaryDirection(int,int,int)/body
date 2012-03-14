@@ -32,12 +32,14 @@
       childExpandRatio=slot.getExpandRatio() / totalExpand;
     }
     double extraPixels=unallocatedSpace * childExpandRatio;
-    double allocatedSpace=extraPixels;
+    double endLocation=currentLocation + extraPixels;
     if (!slot.isRelativeInDirection(isVertical)) {
-      allocatedSpace+=slot.getUsedSizeInDirection(isVertical);
+      endLocation+=slot.getUsedSizeInDirection(isVertical);
     }
-    slot.positionInDirection(currentLocation,allocatedSpace,isVertical);
-    currentLocation+=allocatedSpace + spacingSize;
+    double roundedLocation=Math.round(currentLocation);
+    double roundedSpace=Math.round(endLocation) - roundedLocation;
+    slot.positionInDirection(roundedLocation,roundedSpace,isVertical);
+    currentLocation=endLocation + spacingSize;
   }
   return allocatedSize;
 }
