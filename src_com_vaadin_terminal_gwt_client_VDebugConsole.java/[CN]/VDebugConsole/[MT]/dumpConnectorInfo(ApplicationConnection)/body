@@ -1,0 +1,23 @@
+{
+  RootConnector root=a.getView();
+  log("================");
+  log("Connector hierarchy for Root: " + root.getState().getCaption() + " ("+ root.getConnectorId()+ ")");
+  Set<ComponentConnector> connectorsInHierarchy=new HashSet<ComponentConnector>();
+  dumpConnectorHierarchy(root,"",connectorsInHierarchy);
+  ConnectorMap connectorMap=a.getConnectorMap();
+  Collection<? extends ServerConnector> registeredConnectors=connectorMap.getConnectors();
+  log("Registered connectors not in hierarchy (should be empty):");
+  for (  ServerConnector registeredConnector : registeredConnectors) {
+    if (connectorsInHierarchy.contains(registeredConnector)) {
+      continue;
+    }
+    error(getConnectorString(registeredConnector));
+  }
+  log("Unregistered connectors in hierarchy (should be empty):");
+  for (  ServerConnector hierarchyConnector : connectorsInHierarchy) {
+    if (!connectorMap.hasConnector(hierarchyConnector.getConnectorId())) {
+      error(getConnectorString(hierarchyConnector));
+    }
+  }
+  log("================");
+}

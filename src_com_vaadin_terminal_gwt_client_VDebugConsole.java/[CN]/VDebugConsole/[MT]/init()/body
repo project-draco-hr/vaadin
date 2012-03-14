@@ -27,6 +27,8 @@
     actions.add(forceLayout);
     actions.add(analyzeLayout);
     actions.add(highlight);
+    actions.add(connectorStats);
+    connectorStats.setTitle("Show connector statistics for client");
     highlight.setTitle("Select a component and print details about it to the server log and client side console.");
     actions.add(savePosition);
     savePosition.setTitle("Saves the position and size of debug console to a cookie");
@@ -131,6 +133,14 @@
     }
 );
   }
+  connectorStats.addClickHandler(new ClickHandler(){
+    public void onClick(    ClickEvent event){
+      for (      ApplicationConnection a : ApplicationConfiguration.getRunningApplications()) {
+        dumpConnectorInfo(a);
+      }
+    }
+  }
+);
   log("Starting Vaadin client side engine. Widgetset: " + GWT.getModuleName());
   log("Widget set is built on version: " + ApplicationConfiguration.VERSION);
   logToDebugWindow("<div class=\"v-theme-version v-theme-version-" + ApplicationConfiguration.VERSION.replaceAll("\\.","_") + "\">Warning: widgetset version "+ ApplicationConfiguration.VERSION+ " does not seem to match theme version </div>",true);
