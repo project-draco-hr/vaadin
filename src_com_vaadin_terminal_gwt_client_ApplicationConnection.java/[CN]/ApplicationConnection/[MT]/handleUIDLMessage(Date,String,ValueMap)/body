@@ -115,12 +115,18 @@
       for (      ServerConnector c : currentConnectors) {
         if (c instanceof ComponentConnector) {
           ComponentConnector cc=(ComponentConnector)c;
-          if (cc.getParent() == null && !(cc instanceof RootConnector)) {
+          if (cc.getParent() != null) {
+            if (!cc.getParent().getChildren().contains(cc)) {
+              VConsole.error("ERROR: Connector is connected to a parent but the parent does not contain the connector");
+            }
+          }
+ else           if ((cc instanceof RootConnector && cc == getView())) {
+          }
+ else           if (cc instanceof WindowConnector && getView().hasSubWindow((WindowConnector)cc)) {
+          }
+ else {
             connectorMap.unregisterConnector(cc);
             unregistered++;
-          }
- else           if (cc.getParent() != null && !cc.getParent().getChildren().contains(cc)) {
-            VConsole.error("ERROR: Connector is connected to a parent but the parent does not contain the connector");
           }
         }
       }

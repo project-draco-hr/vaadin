@@ -6,9 +6,17 @@
   dumpConnectorHierarchy(root,"",connectorsInHierarchy);
   ConnectorMap connectorMap=a.getConnectorMap();
   Collection<? extends ServerConnector> registeredConnectors=connectorMap.getConnectors();
+  log("Sub windows:");
+  Set<ComponentConnector> subWindowHierarchyConnectors=new HashSet<ComponentConnector>();
+  for (  VWindow w : root.getWidget().getSubWindowList()) {
+    dumpConnectorHierarchy(connectorMap.getConnector(w),"",subWindowHierarchyConnectors);
+  }
   log("Registered connectors not in hierarchy (should be empty):");
   for (  ServerConnector registeredConnector : registeredConnectors) {
     if (connectorsInHierarchy.contains(registeredConnector)) {
+      continue;
+    }
+    if (subWindowHierarchyConnectors.contains(registeredConnector)) {
       continue;
     }
     error(getConnectorString(registeredConnector));
