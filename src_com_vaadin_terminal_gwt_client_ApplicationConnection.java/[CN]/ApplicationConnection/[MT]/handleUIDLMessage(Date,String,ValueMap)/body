@@ -110,18 +110,21 @@
       endRequest();
     }
     private void unregisterRemovedConnectors(){
+      int unregistered=0;
       List<ServerConnector> currentConnectors=new ArrayList<ServerConnector>(connectorMap.getConnectors());
       for (      ServerConnector c : currentConnectors) {
         if (c instanceof ComponentConnector) {
           ComponentConnector cc=(ComponentConnector)c;
           if (cc.getParent() == null && !(cc instanceof RootConnector)) {
             connectorMap.unregisterConnector(cc);
+            unregistered++;
           }
  else           if (cc.getParent() != null && !cc.getParent().getChildren().contains(cc)) {
             VConsole.error("ERROR: Connector is connected to a parent but the parent does not contain the connector");
           }
         }
       }
+      VConsole.log("* Unregistered " + unregistered + " connectors");
     }
     private void createConnectorsIfNeeded(    ValueMap json){
       VConsole.log(" * Creating connectors (if needed)");

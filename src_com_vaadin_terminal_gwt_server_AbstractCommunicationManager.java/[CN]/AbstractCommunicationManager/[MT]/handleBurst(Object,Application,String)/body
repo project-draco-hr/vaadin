@@ -14,7 +14,14 @@
         continue;
       }
       final VariableOwner owner=getVariableOwner(invocation.getConnectorId());
-      if (owner != null && owner.isEnabled()) {
+      boolean connectorEnabled;
+      if (owner instanceof Connector) {
+        connectorEnabled=((Connector)owner).isConnectorEnabled();
+      }
+ else {
+        connectorEnabled=owner.isEnabled();
+      }
+      if (owner != null && connectorEnabled) {
         VariableChange change=new VariableChange(invocation);
         Map<String,Object> m=new HashMap<String,Object>();
         m.put(change.getName(),change.getValue());
