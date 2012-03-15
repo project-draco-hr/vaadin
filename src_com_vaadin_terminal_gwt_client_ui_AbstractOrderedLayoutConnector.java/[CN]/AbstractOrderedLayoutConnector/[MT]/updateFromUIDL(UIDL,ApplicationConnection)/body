@@ -6,16 +6,8 @@
   VMeasuringOrderedLayout layout=getWidget();
   ValueMap expandRatios=uidl.getMapAttribute("expandRatios");
   ValueMap alignments=uidl.getMapAttribute("alignments");
-  int currentIndex=0;
-  for (final Iterator<Object> it=uidl.getChildIterator(); it.hasNext(); ) {
-    final UIDL childUIDL=(UIDL)it.next();
-    final ComponentConnector child=client.getPaintable(childUIDL);
-    Widget widget=child.getWidget();
-    VLayoutSlot slot=layout.getSlotForChild(widget);
-    if (widget.getParent() != layout) {
-      slot=new ComponentConnectorLayoutSlot(getWidget().getStylePrimaryName(),child);
-    }
-    layout.addOrMove(slot,currentIndex++);
+  for (  ComponentConnector child : getChildren()) {
+    VLayoutSlot slot=layout.getSlotForChild(child.getWidget());
     String pid=child.getConnectorId();
     AlignmentInfo alignment;
     if (alignments.containsKey(pid)) {
@@ -33,33 +25,6 @@
       expandRatio=0;
     }
     slot.setExpandRatio(expandRatio);
-    if (!childUIDL.getBooleanAttribute("cached")) {
-      child.updateFromUIDL(childUIDL,client);
-    }
-    previousChildren.remove(child);
-  }
-  if (previousChildren != null) {
-    for (    ComponentConnector child : previousChildren) {
-      Widget widget=child.getWidget();
-      if (widget.getParent() == getWidget()) {
-        layout.removeSlot(layout.getSlotForChild(widget));
-        ConnectorMap vPaintableMap=ConnectorMap.get(client);
-        vPaintableMap.unregisterConnector(child);
-      }
-    }
-  }
-  while (true) {
-    int childCount=layout.getElement().getChildCount();
-    if (childCount <= 1) {
-      break;
-    }
-    Node lastSlot=layout.getElement().getChild(childCount - 2);
-    if (lastSlot.getChildCount() == 0) {
-      lastSlot.removeFromParent();
-    }
- else {
-      break;
-    }
   }
   int bitMask=uidl.getIntAttribute("margins");
   layout.updateMarginStyleNames(new VMarginInfo(bitMask));
