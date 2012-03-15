@@ -1,0 +1,32 @@
+{
+  String result=null;
+switch (getMode()) {
+case TEXT:
+    result=AbstractApplicationServlet.safeEscapeForHtml(getMessage());
+  break;
+case PREFORMATTED:
+result="<pre>" + AbstractApplicationServlet.safeEscapeForHtml(getMessage()) + "</pre>";
+break;
+case XHTML:
+result=getMessage();
+break;
+}
+if (null == result && null != getCauses() && getCauses().size() > 0) {
+StringBuilder sb=new StringBuilder();
+for (ErrorMessage cause : getCauses()) {
+String childMessage=cause.getFormattedHtmlMessage();
+if (null != childMessage) {
+sb.append("<div>");
+sb.append(childMessage);
+sb.append("</div>\n");
+}
+}
+if (sb.length() > 0) {
+result=sb.toString();
+}
+}
+if (null == result) {
+result="";
+}
+return result;
+}
