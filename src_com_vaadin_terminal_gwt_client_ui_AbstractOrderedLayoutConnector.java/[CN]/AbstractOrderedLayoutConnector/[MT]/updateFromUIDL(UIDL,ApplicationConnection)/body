@@ -38,12 +38,14 @@
     }
     previousChildren.remove(child);
   }
-  for (  ComponentConnector child : previousChildren) {
-    Widget widget=child.getWidget();
-    if (widget.getParent() == getWidget()) {
-      layout.removeSlot(layout.getSlotForChild(widget));
-      ConnectorMap vPaintableMap=ConnectorMap.get(client);
-      vPaintableMap.unregisterConnector(child);
+  if (previousChildren != null) {
+    for (    ComponentConnector child : previousChildren) {
+      Widget widget=child.getWidget();
+      if (widget.getParent() == getWidget()) {
+        layout.removeSlot(layout.getSlotForChild(widget));
+        ConnectorMap vPaintableMap=ConnectorMap.get(client);
+        vPaintableMap.unregisterConnector(child);
+      }
     }
   }
   while (true) {
