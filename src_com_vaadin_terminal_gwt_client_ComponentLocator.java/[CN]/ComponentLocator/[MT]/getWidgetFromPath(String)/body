@@ -10,7 +10,17 @@
       w=client.getView().getWidget();
     }
  else     if (w == null) {
-      w=((ComponentConnector)ConnectorMap.get(client).getConnector(part)).getWidget();
+      String id=part;
+      ComponentConnector connector=(ComponentConnector)ConnectorMap.get(client).getConnector(id);
+      if (connector == null) {
+        connector=findConnectorById(client.getView(),id.substring(5));
+      }
+      if (connector != null) {
+        w=connector.getWidget();
+      }
+ else {
+        return null;
+      }
     }
  else     if (part.startsWith("domChild[")) {
       break;

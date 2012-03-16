@@ -5,8 +5,11 @@
   ConnectorMap paintableMap=ConnectorMap.get(getConnection());
   paintableMap.registerEventListenersFromUIDL(getConnectorId(),uidl);
   setVisible(!uidl.getBooleanAttribute("invisible"),uidl);
-  if (uidl.getId().startsWith("PID_S")) {
-    DOM.setElementProperty(getWidget().getElement(),"id",uidl.getId().substring(5));
+  if (getState().getDebugId() != null) {
+    getWidget().getElement().setId(getState().getDebugId());
+  }
+ else {
+    getWidget().getElement().setId(null);
   }
   if (!isVisible()) {
     paintableMap.setOffsetSize(this,null);
