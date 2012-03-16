@@ -1,32 +1,23 @@
 {
-  SharedState state=getState();
-  String w="";
-  String h="";
-  if (null != state || !(state instanceof ComponentState)) {
-    ComponentState componentState=(ComponentState)state;
-    h=componentState.getHeight();
-    w=componentState.getWidth();
-  }
- else {
-    VConsole.log("No state for paintable " + getConnectorId() + " in VAbstractPaintableWidget.updateComponentSize()");
-  }
-  if (w.endsWith("%") != declaredWidth.endsWith("%")) {
+  String newWidth=getState().getWidth();
+  String newHeight=getState().getHeight();
+  if (newWidth.endsWith("%") != lastKnownWidth.endsWith("%")) {
     ComponentContainerConnector parent=getParent();
     if (parent instanceof ManagedLayout) {
       getLayoutManager().setWidthNeedsUpdate((ManagedLayout)parent);
     }
   }
-  if (h.endsWith("%") != declaredHeight.endsWith("%")) {
+  if (newHeight.endsWith("%") != lastKnownHeight.endsWith("%")) {
     ComponentContainerConnector parent=getParent();
     if (parent instanceof ManagedLayout) {
       getLayoutManager().setHeightNeedsUpdate((ManagedLayout)parent);
     }
   }
-  declaredWidth=w;
-  declaredHeight=h;
-  Widget component=getWidget();
-  component.setStyleName("v-has-width",!isUndefinedWidth());
-  component.setStyleName("v-has-height",!isUndefinedHeight());
-  component.setHeight(h);
-  component.setWidth(w);
+  lastKnownWidth=newWidth;
+  lastKnownHeight=newHeight;
+  Widget widget=getWidget();
+  widget.setStyleName("v-has-width",!isUndefinedWidth());
+  widget.setStyleName("v-has-height",!isUndefinedHeight());
+  widget.setHeight(newHeight);
+  widget.setWidth(newWidth);
 }
