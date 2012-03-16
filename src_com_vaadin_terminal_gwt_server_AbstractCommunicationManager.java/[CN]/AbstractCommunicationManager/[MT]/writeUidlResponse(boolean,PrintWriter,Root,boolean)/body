@@ -1,5 +1,5 @@
 {
-  ArrayList<Connector> dirtyVisibleConnectors=new ArrayList<Connector>();
+  ArrayList<ClientConnector> dirtyVisibleConnectors=new ArrayList<ClientConnector>();
   Application application=root.getApplication();
   DirtyConnectorTracker rootConnectorTracker=root.getDirtyConnectorTracker();
   System.out.println("* Creating response to client");
@@ -21,6 +21,7 @@
   JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
   for (  Connector connector : dirtyVisibleConnectors) {
     if (connector instanceof Paintable) {
+      System.out.println("  * Painting legacy Paintable " + connector.getClass().getName() + "@"+ Integer.toHexString(connector.hashCode()));
       Paintable p=(Paintable)connector;
       paintTarget.startTag("change");
       final String pid=connector.getConnectorId();
@@ -90,8 +91,8 @@
   }
   outWriter.append(hierarchyInfo.toString());
   outWriter.print(", ");
-  LinkedList<ClientConnector> rpcPendingQueue=new LinkedList<ClientConnector>((Collection<? extends ClientConnector>)dirtyVisibleConnectors);
-  List<ClientMethodInvocation> pendingInvocations=collectPendingRpcCalls(rpcPendingQueue);
+  LinkedList<ClientConnector> rpcPendingQueue=new LinkedList<ClientConnector>(dirtyVisibleConnectors);
+  List<ClientMethodInvocation> pendingInvocations=collectPendingRpcCalls(dirtyVisibleConnectors);
   JSONArray rpcCalls=new JSONArray();
   for (  ClientMethodInvocation invocation : pendingInvocations) {
     try {
