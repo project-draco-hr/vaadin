@@ -1,3 +1,9 @@
 {
-  throw new RuntimeException("TODO: Move connector id handling to AbstractComponent");
+  if (connectorId == null) {
+    if (getApplication() == null) {
+      throw new RuntimeException("Component must be attached to an application when getConnectorId() is called for the first time");
+    }
+    connectorId=getApplication().createConnectorId(this);
+  }
+  return connectorId;
 }

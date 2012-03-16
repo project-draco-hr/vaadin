@@ -10,8 +10,8 @@
     analyzeLayouts=(request.getParameter(GET_PARAM_ANALYZE_LAYOUTS) != null);
     if (request.getParameter(GET_PARAM_HIGHLIGHT_COMPONENT) != null) {
       String pid=request.getParameter(GET_PARAM_HIGHLIGHT_COMPONENT);
-      highLightedPaintable=idPaintableMap.get(pid);
-      highlightPaintable(highLightedPaintable);
+      highlightedConnector=root.getApplication().getConnector(pid);
+      highlightConnector(highlightedConnector);
     }
   }
   final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
@@ -46,6 +46,7 @@ synchronized (application) {
       repaintAll=true;
     }
     paintAfterVariableChanges(request,response,callback,repaintAll,outWriter,root,analyzeLayouts);
+    postPaint(root);
   }
   outWriter.close();
   requestThemeName=null;

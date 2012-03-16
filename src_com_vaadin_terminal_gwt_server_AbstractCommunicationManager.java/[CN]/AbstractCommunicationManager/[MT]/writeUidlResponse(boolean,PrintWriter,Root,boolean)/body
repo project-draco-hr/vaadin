@@ -1,146 +1,119 @@
 {
-  ArrayList<Paintable> paintables=null;
+  ArrayList<Connector> dirtyVisibleConnectors=new ArrayList<Connector>();
+  Application application=root.getApplication();
+  DirtyConnectorTracker rootConnectorTracker=root.getDirtyConnectorTracker();
+  System.out.println("* Creating response to client");
   if (repaintAll) {
-    paintables=new ArrayList<Paintable>();
-    paintables.add(root);
+    System.out.println("Full repaint");
+    getClientCache(root).clear();
+    rootConnectorTracker.markAllComponentsDirty();
+    dirtyVisibleConnectors.addAll(rootConnectorTracker.getDirtyComponents());
     locales=null;
     requireLocale(application.getLocale().toString());
   }
  else {
-    for (Iterator<Paintable> it=paintableIdMap.keySet().iterator(); it.hasNext(); ) {
-      Component p=(Component)it.next();
-      if (p.getApplication() == null) {
-        unregisterPaintable(p);
-        String pid=paintableIdMap.get(p);
-        if (idPaintableMap.get(pid) == p) {
-          idPaintableMap.remove(pid);
-        }
-        it.remove();
-        dirtyPaintables.remove(p);
-      }
-    }
-    paintables=getDirtyVisibleComponents(root);
+    dirtyVisibleConnectors.addAll(getDirtyVisibleComponents(rootConnectorTracker));
   }
+  System.out.println("* Found " + dirtyVisibleConnectors.size() + " dirty connectors to paint");
+  rootConnectorTracker.markAllComponentsClean();
   outWriter.print("\"changes\":[");
   List<InvalidLayout> invalidComponentRelativeSizes=null;
   JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
-  ClientCache clientCache=getClientCache(root);
-  LinkedList<Paintable> stateQueue=new LinkedList<Paintable>();
-  LinkedList<Paintable> rpcPendingQueue=new LinkedList<Paintable>();
-  LinkedList<Paintable> hierarchyPendingQueue=new LinkedList<Paintable>();
-  LinkedList<Paintable> connectorTypeQueue=new LinkedList<Paintable>();
-  if (paintables != null) {
-    paintQueue.clear();
-    paintQueue.addAll(paintables);
-    while (!paintQueue.isEmpty()) {
-      final Paintable p=paintQueue.removeFirst();
-      stateQueue.push(p);
-      connectorTypeQueue.push(p);
-      hierarchyPendingQueue.push(p);
-      rpcPendingQueue.push(p);
-      if (paintTarget.needsToBePainted(p)) {
-        paintTarget.startTag("change");
-        final String pid=getPaintableId(p);
-        paintTarget.addAttribute("pid",pid);
-        p.paint(paintTarget);
-        paintTarget.endTag("change");
-      }
-      paintablePainted(p);
-      if (analyzeLayouts) {
-        Root w=(Root)p;
-        invalidComponentRelativeSizes=ComponentSizeValidator.validateComponentRelativeSizes(w.getContent(),null,null);
+  for (  Connector connector : dirtyVisibleConnectors) {
+    if (connector instanceof Paintable) {
+      Paintable p=(Paintable)connector;
+      paintTarget.startTag("change");
+      final String pid=connector.getConnectorId();
+      paintTarget.addAttribute("pid",pid);
+      p.paint(paintTarget);
+      paintTarget.endTag("change");
+    }
+  }
+  if (analyzeLayouts) {
+    invalidComponentRelativeSizes=ComponentSizeValidator.validateComponentRelativeSizes(root.getContent(),null,null);
+    if (root.getWindows() != null) {
+      for (      Window subWindow : root.getWindows()) {
+        invalidComponentRelativeSizes=ComponentSizeValidator.validateComponentRelativeSizes(subWindow.getContent(),invalidComponentRelativeSizes,null);
       }
     }
   }
   paintTarget.close();
   outWriter.print("], ");
-  if (!stateQueue.isEmpty()) {
-    JSONObject sharedStates=new JSONObject();
-    while (!stateQueue.isEmpty()) {
-      final Paintable p=stateQueue.pop();
-      String paintableId=getPaintableId(p);
-      SharedState state=p.getState();
-      if (null != state) {
-        try {
-          JSONArray stateJsonArray=JsonCodec.encode(state,this);
-          sharedStates.put(paintableId,stateJsonArray);
-        }
- catch (        JSONException e) {
-          throw new PaintException("Failed to serialize shared state for paintable " + paintableId + ": "+ e.getMessage());
-        }
-      }
-    }
-    outWriter.print("\"state\":");
-    outWriter.append(sharedStates.toString());
-    outWriter.print(", ");
-  }
-  if (!connectorTypeQueue.isEmpty()) {
-    JSONObject connectorTypes=new JSONObject();
-    while (!connectorTypeQueue.isEmpty()) {
-      final Paintable p=connectorTypeQueue.pop();
-      String paintableId=getPaintableId(p);
-      String connectorType=paintTarget.getTag(p);
+  JSONObject sharedStates=new JSONObject();
+  for (  Connector connector : dirtyVisibleConnectors) {
+    SharedState state=connector.getState();
+    if (null != state) {
       try {
-        connectorTypes.put(paintableId,connectorType);
+        JSONArray stateJsonArray=JsonCodec.encode(state,application);
+        sharedStates.put(connector.getConnectorId(),stateJsonArray);
       }
  catch (      JSONException e) {
-        throw new PaintException("Failed to send connector type for paintable " + paintableId + ": "+ e.getMessage());
+        throw new PaintException("Failed to serialize shared state for connector " + connector.getConnectorId() + ": "+ e.getMessage());
       }
     }
-    outWriter.print("\"types\":");
-    outWriter.append(connectorTypes.toString());
-    outWriter.print(", ");
   }
-  if (!hierarchyPendingQueue.isEmpty()) {
-    outWriter.print("\"hierarchy\":");
-    JSONObject hierarchyInfo=new JSONObject();
-    for (    Paintable p : hierarchyPendingQueue) {
-      if (p instanceof HasComponents) {
-        HasComponents parent=(HasComponents)p;
-        String parentConnectorId=paintableIdMap.get(parent);
-        JSONArray children=new JSONArray();
-        for (        Component child : getChildComponents(parent)) {
-          if (isVisible(child)) {
-            String childConnectorId=getPaintableId(child);
-            children.put(childConnectorId);
-          }
-        }
-        try {
-          hierarchyInfo.put(parentConnectorId,children);
-        }
- catch (        JSONException e) {
-          throw new PaintException("Failed to send hierarchy information about " + parentConnectorId + " to the client: "+ e.getMessage());
+  outWriter.print("\"state\":");
+  outWriter.append(sharedStates.toString());
+  outWriter.print(", ");
+  JSONObject connectorTypes=new JSONObject();
+  for (  Connector connector : dirtyVisibleConnectors) {
+    String connectorType=paintTarget.getTag((Paintable)connector);
+    try {
+      connectorTypes.put(connector.getConnectorId(),connectorType);
+    }
+ catch (    JSONException e) {
+      throw new PaintException("Failed to send connector type for connector " + connector.getConnectorId() + ": "+ e.getMessage());
+    }
+  }
+  outWriter.print("\"types\":");
+  outWriter.append(connectorTypes.toString());
+  outWriter.print(", ");
+  outWriter.print("\"hierarchy\":");
+  JSONObject hierarchyInfo=new JSONObject();
+  for (  Connector connector : dirtyVisibleConnectors) {
+    if (connector instanceof HasComponents) {
+      HasComponents parent=(HasComponents)connector;
+      String parentConnectorId=parent.getConnectorId();
+      JSONArray children=new JSONArray();
+      for (      Component child : getChildComponents(parent)) {
+        if (isVisible(child)) {
+          children.put(child.getConnectorId());
         }
       }
-    }
-    outWriter.append(hierarchyInfo.toString());
-    outWriter.print(", ");
-  }
-  if (!rpcPendingQueue.isEmpty()) {
-    List<ClientMethodInvocation> pendingInvocations=collectPendingRpcCalls(rpcPendingQueue);
-    JSONArray rpcCalls=new JSONArray();
-    for (    ClientMethodInvocation invocation : pendingInvocations) {
       try {
-        JSONArray invocationJson=new JSONArray();
-        invocationJson.put(getPaintableId(invocation.getPaintable()));
-        invocationJson.put(invocation.getInterfaceName());
-        invocationJson.put(invocation.getMethodName());
-        JSONArray paramJson=new JSONArray();
-        for (int i=0; i < invocation.getParameters().length; ++i) {
-          paramJson.put(JsonCodec.encode(invocation.getParameters()[i],this));
-        }
-        invocationJson.put(paramJson);
-        rpcCalls.put(invocationJson);
+        hierarchyInfo.put(parentConnectorId,children);
       }
  catch (      JSONException e) {
-        throw new PaintException("Failed to serialize RPC method call parameters for paintable " + getPaintableId(invocation.getPaintable()) + " method "+ invocation.getInterfaceName()+ "."+ invocation.getMethodName()+ ": "+ e.getMessage());
+        throw new PaintException("Failed to send hierarchy information about " + parentConnectorId + " to the client: "+ e.getMessage());
       }
     }
-    if (rpcCalls.length() > 0) {
-      outWriter.print("\"rpc\" : ");
-      outWriter.append(rpcCalls.toString());
-      outWriter.print(", ");
+  }
+  outWriter.append(hierarchyInfo.toString());
+  outWriter.print(", ");
+  LinkedList<ClientConnector> rpcPendingQueue=new LinkedList<ClientConnector>((Collection<? extends ClientConnector>)dirtyVisibleConnectors);
+  List<ClientMethodInvocation> pendingInvocations=collectPendingRpcCalls(rpcPendingQueue);
+  JSONArray rpcCalls=new JSONArray();
+  for (  ClientMethodInvocation invocation : pendingInvocations) {
+    try {
+      JSONArray invocationJson=new JSONArray();
+      invocationJson.put(invocation.getConnector().getConnectorId());
+      invocationJson.put(invocation.getInterfaceName());
+      invocationJson.put(invocation.getMethodName());
+      JSONArray paramJson=new JSONArray();
+      for (int i=0; i < invocation.getParameters().length; ++i) {
+        paramJson.put(JsonCodec.encode(invocation.getParameters()[i],application));
+      }
+      invocationJson.put(paramJson);
+      rpcCalls.put(invocationJson);
     }
+ catch (    JSONException e) {
+      throw new PaintException("Failed to serialize RPC method call parameters for connector " + invocation.getConnector().getConnectorId() + " method "+ invocation.getInterfaceName()+ "."+ invocation.getMethodName()+ ": "+ e.getMessage());
+    }
+  }
+  if (rpcCalls.length() > 0) {
+    outWriter.print("\"rpc\" : ");
+    outWriter.append(rpcCalls.toString());
+    outWriter.print(", ");
   }
   outWriter.print("\"meta\" : {");
   boolean metaOpen=false;
@@ -164,11 +137,11 @@
       }
       outWriter.write("]");
     }
-    if (highLightedPaintable != null) {
+    if (highlightedConnector != null) {
       outWriter.write(", \"hl\":\"");
-      outWriter.write(paintableIdMap.get(highLightedPaintable));
+      outWriter.write(highlightedConnector.getConnectorId());
       outWriter.write("\"");
-      highLightedPaintable=null;
+      highlightedConnector=null;
     }
   }
   SystemMessages ci=null;
@@ -235,6 +208,7 @@ catch (  InvocationTargetException e) {
   outWriter.print("}");
   Collection<Class<? extends Paintable>> usedPaintableTypes=paintTarget.getUsedPaintableTypes();
   boolean typeMappingsOpen=false;
+  ClientCache clientCache=getClientCache(root);
   for (  Class<? extends Paintable> class1 : usedPaintableTypes) {
     if (clientCache.cache(class1)) {
       if (!typeMappingsOpen) {

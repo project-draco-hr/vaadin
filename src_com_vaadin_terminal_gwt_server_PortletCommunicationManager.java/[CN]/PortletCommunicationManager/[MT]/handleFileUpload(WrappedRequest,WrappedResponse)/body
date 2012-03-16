@@ -2,12 +2,12 @@
   String contentType=request.getContentType();
   String name=request.getParameter("name");
   String ownerId=request.getParameter("rec-owner");
-  VariableOwner variableOwner=getVariableOwner(ownerId);
-  StreamVariable streamVariable=ownerToNameToStreamVariable.get(variableOwner).get(name);
+  Connector owner=getConnector(getApplication(),ownerId);
+  StreamVariable streamVariable=ownerToNameToStreamVariable.get(owner).get(name);
   if (contentType.contains("boundary")) {
-    doHandleSimpleMultipartFileUpload(request,response,streamVariable,name,variableOwner,contentType.split("boundary=")[1]);
+    doHandleSimpleMultipartFileUpload(request,response,streamVariable,name,owner,contentType.split("boundary=")[1]);
   }
  else {
-    doHandleXhrFilePost(request,response,streamVariable,name,variableOwner,request.getContentLength());
+    doHandleXhrFilePost(request,response,streamVariable,name,owner,request.getContentLength());
   }
 }

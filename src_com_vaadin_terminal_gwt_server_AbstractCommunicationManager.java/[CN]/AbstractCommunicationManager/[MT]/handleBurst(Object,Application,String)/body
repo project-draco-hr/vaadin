@@ -10,17 +10,11 @@
       }
       final String interfaceName=invocation.getInterfaceName();
       if (!ApplicationConnection.UPDATE_VARIABLE_INTERFACE.equals(interfaceName)) {
-        applyInvocation(invocation);
+        applyInvocation(app,invocation);
         continue;
       }
-      final VariableOwner owner=getVariableOwner(invocation.getConnectorId());
-      boolean connectorEnabled;
-      if (owner instanceof Connector) {
-        connectorEnabled=((Connector)owner).isConnectorEnabled();
-      }
- else {
-        connectorEnabled=owner.isEnabled();
-      }
+      final VariableOwner owner=(VariableOwner)getConnector(app,invocation.getConnectorId());
+      boolean connectorEnabled=owner.isEnabled();
       if (owner != null && connectorEnabled) {
         VariableChange change=new VariableChange(invocation);
         Map<String,Object> m=new HashMap<String,Object>();
