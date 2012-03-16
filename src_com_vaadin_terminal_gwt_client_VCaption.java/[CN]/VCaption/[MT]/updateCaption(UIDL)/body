@@ -13,10 +13,14 @@
   }
   setStyleName(style);
   boolean hasIcon=owner.getState().getIcon() != null;
-  boolean showRequired=uidl.getBooleanAttribute(AbstractComponentConnector.ATTRIBUTE_REQUIRED);
+  boolean showRequired=false;
   boolean showError=owner.getState().getErrorMessage() != null;
   if (owner.getState() instanceof AbstractFieldState) {
-    showError=showError && !((AbstractFieldState)owner.getState()).isHideErrors();
+    AbstractFieldState abstractFieldState=(AbstractFieldState)owner.getState();
+    showError=showError && !abstractFieldState.isHideErrors();
+  }
+  if (owner instanceof AbstractFieldConnector) {
+    showRequired=((AbstractFieldConnector)owner).isRequired();
   }
   if (hasIcon) {
     if (icon == null) {
