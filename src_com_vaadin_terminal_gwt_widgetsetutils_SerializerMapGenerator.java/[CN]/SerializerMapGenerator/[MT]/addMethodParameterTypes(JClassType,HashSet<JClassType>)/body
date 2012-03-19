@@ -4,7 +4,17 @@
       continue;
     }
     for (    JType type : method.getParameterTypes()) {
-      types.add(type.isClass());
+      JClassType t=type.isClass();
+      JClassType interfaceType=type.isInterface();
+      if (t != null) {
+        types.add(t);
+      }
+ else       if (interfaceType != null) {
+        types.add(interfaceType);
+      }
+ else {
+        System.err.println("Unknown method parameter type: " + type.getQualifiedSourceName());
+      }
     }
   }
 }

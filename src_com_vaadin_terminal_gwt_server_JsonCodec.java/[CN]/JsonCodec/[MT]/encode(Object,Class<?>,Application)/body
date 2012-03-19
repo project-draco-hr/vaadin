@@ -2,7 +2,11 @@
   if (null == value) {
     return combineTypeAndValue(JsonEncoder.VTYPE_NULL,JSONObject.NULL);
   }
- else   if (value instanceof String[]) {
+  if (valueType == null) {
+    valueType=value.getClass();
+  }
+  String transportType=getTransportType(valueType);
+  if (value instanceof String[]) {
     String[] array=(String[])value;
     JSONArray jsonArray=new JSONArray();
     for (int i=0; i < array.length; ++i) {
@@ -17,12 +21,15 @@
     return combineTypeAndValue(JsonEncoder.VTYPE_BOOLEAN,value);
   }
  else   if (value instanceof Number) {
-    return combineTypeAndValue(getTransportType(value),value);
+    return combineTypeAndValue(transportType,value);
   }
- else   if (value instanceof List) {
-    List list=(List)value;
-    JSONArray jsonArray=encodeList(list,application);
-    return combineTypeAndValue(JsonEncoder.VTYPE_LIST,jsonArray);
+ else   if (value instanceof Collection) {
+    if (transportType == null) {
+      throw new RuntimeException("Unable to serialize unsupported type: " + valueType);
+    }
+    Collection<?> collection=(Collection<?>)value;
+    JSONArray jsonArray=encodeCollection(collection,application);
+    return combineTypeAndValue(transportType,jsonArray);
   }
  else   if (value instanceof Object[]) {
     Object[] array=(Object[])value;
@@ -38,13 +45,10 @@
     Connector connector=(Connector)value;
     return combineTypeAndValue(JsonEncoder.VTYPE_CONNECTOR,connector.getConnectorId());
   }
- else   if (getTransportType(value) != null) {
-    return combineTypeAndValue(getTransportType(value),String.valueOf(value));
+ else   if (transportType != null) {
+    return combineTypeAndValue(transportType,String.valueOf(value));
   }
  else {
-    if (valueType == null) {
-      valueType=value.getClass();
-    }
     return combineTypeAndValue(valueType.getCanonicalName(),encodeObject(value,application));
   }
 }

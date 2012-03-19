@@ -17,12 +17,7 @@
     return combineTypeAndValue(VTYPE_BOOLEAN,JSONBoolean.getInstance((Boolean)value));
   }
  else   if (value instanceof Object[]) {
-    Object[] array=(Object[])value;
-    JSONArray jsonArray=new JSONArray();
-    for (int i=0; i < array.length; ++i) {
-      jsonArray.set(i,encode(array[i],connectorMap,connection));
-    }
-    return combineTypeAndValue(VTYPE_ARRAY,jsonArray);
+    return encodeObjectArray((Object[])value,connectorMap,connection);
   }
  else   if (value instanceof Map) {
     Map<String,Object> map=(Map<String,Object>)value;
@@ -36,6 +31,9 @@
  else   if (value instanceof Connector) {
     Connector connector=(Connector)value;
     return combineTypeAndValue(VTYPE_CONNECTOR,new JSONString(connector.getConnectorId()));
+  }
+ else   if (value instanceof Collection) {
+    return encodeCollection((Collection)value,connectorMap,connection);
   }
  else {
     String transportType=getTransportType(value);
