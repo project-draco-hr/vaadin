@@ -19,17 +19,7 @@
   outWriter.print("\"changes\":[");
   List<InvalidLayout> invalidComponentRelativeSizes=null;
   JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
-  for (  Connector connector : dirtyVisibleConnectors) {
-    if (connector instanceof Paintable) {
-      System.out.println("  * Painting legacy Paintable " + connector.getClass().getName() + "@"+ Integer.toHexString(connector.hashCode()));
-      Paintable p=(Paintable)connector;
-      paintTarget.startTag("change");
-      final String pid=connector.getConnectorId();
-      paintTarget.addAttribute("pid",pid);
-      p.paint(paintTarget);
-      paintTarget.endTag("change");
-    }
-  }
+  legacyPaint(paintTarget,dirtyVisibleConnectors);
   if (analyzeLayouts) {
     invalidComponentRelativeSizes=ComponentSizeValidator.validateComponentRelativeSizes(root.getContent(),null,null);
     if (root.getWindows() != null) {

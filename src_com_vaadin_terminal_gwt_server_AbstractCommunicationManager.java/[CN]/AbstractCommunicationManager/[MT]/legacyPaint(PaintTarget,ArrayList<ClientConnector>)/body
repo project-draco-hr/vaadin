@@ -1,0 +1,17 @@
+{
+  List<Paintable> paintables=new ArrayList<Paintable>();
+  for (  Connector connector : dirtyVisibleConnectors) {
+    if (connector instanceof Paintable) {
+      paintables.add((Paintable)connector);
+    }
+  }
+  sortByHierarchy(paintables);
+  for (  Paintable p : paintables) {
+    System.out.println("  * Painting legacy Paintable " + p.getClass().getName() + "@"+ Integer.toHexString(p.hashCode()));
+    paintTarget.startTag("change");
+    final String pid=((Connector)p).getConnectorId();
+    paintTarget.addAttribute("pid",pid);
+    p.paint(paintTarget);
+    paintTarget.endTag("change");
+  }
+}
