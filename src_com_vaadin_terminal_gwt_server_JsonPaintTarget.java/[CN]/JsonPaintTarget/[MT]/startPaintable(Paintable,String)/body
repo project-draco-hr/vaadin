@@ -1,11 +1,10 @@
 {
   boolean topLevelPaintable=openPaintables.isEmpty();
-  System.out.println("startPaintable for " + paintable.getClass().getName() + "@"+ Integer.toHexString(paintable.hashCode()));
+  logger.fine("startPaintable for " + paintable.getClass().getName() + "@"+ Integer.toHexString(paintable.hashCode()));
   startTag(tagName,true);
   openPaintables.push(paintable);
   openPaintableTags.push(tagName);
-  final String id=manager.getPaintableId(paintable);
-  paintable.addListener(manager);
+  final String id=getPaintIdentifier(paintable);
   addAttribute("id",id);
   if (!topLevelPaintable) {
     return PaintStatus.DEFER;
