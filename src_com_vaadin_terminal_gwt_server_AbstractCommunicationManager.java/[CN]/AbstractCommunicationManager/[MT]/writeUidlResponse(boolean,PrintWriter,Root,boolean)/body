@@ -11,6 +11,11 @@
   }
   dirtyVisibleConnectors.addAll(getDirtyVisibleComponents(rootConnectorTracker));
   System.out.println("* Found " + dirtyVisibleConnectors.size() + " dirty connectors to paint");
+  for (  ClientConnector connector : dirtyVisibleConnectors) {
+    if (connector instanceof Component) {
+      ((Component)connector).updateState();
+    }
+  }
   rootConnectorTracker.markAllComponentsClean();
   outWriter.print("\"changes\":[");
   List<InvalidLayout> invalidComponentRelativeSizes=null;
