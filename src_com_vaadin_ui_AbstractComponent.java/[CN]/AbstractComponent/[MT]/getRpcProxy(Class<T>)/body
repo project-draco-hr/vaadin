@@ -1,16 +1,9 @@
 {
   try {
     if (!rpcProxyMap.containsKey(rpcInterface)) {
-      InvocationHandler handler=new InvocationHandler(){
-        public Object invoke(        Object proxy,        Method method,        Object[] args) throws Throwable {
-          addMethodInvocationToQueue(rpcInterface.getName().replaceAll("\\$","."),method.getName(),args);
-          requestRepaint();
-          return null;
-        }
-      }
-;
-      Class<?> proxyClass=Proxy.getProxyClass(rpcInterface.getClassLoader(),new Class[]{rpcInterface});
-      T rpcProxy=(T)proxyClass.getConstructor(new Class[]{InvocationHandler.class}).newInstance(new Object[]{handler});
+      Class<T> proxyClass=(Class)Proxy.getProxyClass(rpcInterface.getClassLoader(),rpcInterface);
+      Constructor<T> constructor=proxyClass.getConstructor(InvocationHandler.class);
+      T rpcProxy=constructor.newInstance(new RpcInvoicationHandler(rpcInterface));
       rpcProxyMap.put(rpcInterface,rpcProxy);
     }
     return (T)rpcProxyMap.get(rpcInterface);
