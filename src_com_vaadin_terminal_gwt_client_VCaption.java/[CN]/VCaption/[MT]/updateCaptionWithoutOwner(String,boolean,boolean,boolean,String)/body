@@ -37,7 +37,7 @@
     }
     placedAfterComponent=false;
     if (caption.trim().equals("")) {
-      if (!hasIcon) {
+      if (!hasIcon && !hasError) {
         captionText.setInnerHTML("&nbsp;");
       }
     }
@@ -48,6 +48,18 @@
  else   if (captionText != null) {
     DOM.removeChild(getElement(),captionText);
     captionText=null;
+  }
+  if (hasError) {
+    if (errorIndicatorElement == null) {
+      errorIndicatorElement=DOM.createDiv();
+      DOM.setInnerHTML(errorIndicatorElement,"&nbsp;");
+      DOM.setElementProperty(errorIndicatorElement,"className","v-errorindicator");
+      DOM.insertChild(getElement(),errorIndicatorElement,getInsertPosition(InsertPosition.ERROR));
+    }
+  }
+ else   if (errorIndicatorElement != null) {
+    getElement().removeChild(errorIndicatorElement);
+    errorIndicatorElement=null;
   }
   return (wasPlacedAfterComponent != placedAfterComponent);
 }
