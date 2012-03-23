@@ -2,12 +2,18 @@
   if (iconUri == null || iconUri.length() == 0) {
     if (selectedItemIcon.isAttached()) {
       panel.remove(selectedItemIcon);
+      if (BrowserInfo.get().isIE8()) {
+        forceReflow();
+      }
       updateRootWidth();
     }
   }
  else {
-    panel.insert(selectedItemIcon,0);
     selectedItemIcon.setUrl(iconUri);
+    panel.insert(selectedItemIcon,0);
+    if (BrowserInfo.get().isIE8()) {
+      forceReflow();
+    }
     updateRootWidth();
     updateSelectedIconPosition();
   }
