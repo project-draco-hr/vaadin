@@ -1,5 +1,14 @@
 {
   rendering=true;
+  if (this.client == null) {
+    client.getContextMenu().addCloseHandler(new CloseHandler<PopupPanel>(){
+      public void onClose(      CloseEvent<PopupPanel> event){
+        contextMenu=null;
+      }
+    }
+);
+  }
+  ContextMenuDetails savedContextMenu=contextMenu;
   if (uidl.hasAttribute(ATTRIBUTE_PAGEBUFFER_FIRST)) {
     serverCacheFirst=uidl.getIntAttribute(ATTRIBUTE_PAGEBUFFER_FIRST);
     serverCacheLast=uidl.getIntAttribute(ATTRIBUTE_PAGEBUFFER_LAST);
@@ -124,4 +133,13 @@
   lastRenderedHeight=scrollBody.getOffsetHeight();
   rendering=false;
   headerChangedDuringUpdate=false;
+  if (savedContextMenu != null) {
+    for (    Widget w : scrollBody.renderedRows) {
+      VScrollTableRow row=(VScrollTableRow)w;
+      if (row.getKey().equals(savedContextMenu.rowKey)) {
+        contextMenu=savedContextMenu;
+        client.getContextMenu().showAt(row,savedContextMenu.left,savedContextMenu.top);
+      }
+    }
+  }
 }
