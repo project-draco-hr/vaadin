@@ -1,17 +1,44 @@
 {
   ts.setWidth("500px");
   ts.setHeight("500px");
-  for (int i=0; i < 4; ++i) {
+  ts.addListener(new FocusListener(){
+    public void focus(    FocusEvent event){
+      focusblur.setValue("Tabsheet focused!");
+    }
+  }
+);
+  ts.addListener(new BlurListener(){
+    public void blur(    BlurEvent event){
+      focusblur.setValue("Tabsheet blurred!");
+    }
+  }
+);
+  ts.addListener(new SelectedTabChangeListener(){
+    public void selectedTabChange(    SelectedTabChangeEvent event){
+    }
+  }
+);
+  for (int i=0; i < 5; ++i) {
     addTab();
   }
-  Button b=new Button("Add a tab",new Button.ClickListener(){
+  Button addTab=new Button("Add a tab",new ClickListener(){
     public void buttonClick(    ClickEvent event){
       addTab();
     }
   }
 );
-  addComponent(b);
-  addComponent(new TextField());
+  Button focus=new Button("Focus tabsheet",new ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      ts.focus();
+    }
+  }
+);
+  addComponent(addTab);
+  addComponent(focus);
+  TextField tf=new TextField();
+  addComponent(tf);
+  addComponent(focusblur);
   addComponent(ts);
-  addComponent(new TextField());
+  tf=new TextField();
+  addComponent(tf);
 }
