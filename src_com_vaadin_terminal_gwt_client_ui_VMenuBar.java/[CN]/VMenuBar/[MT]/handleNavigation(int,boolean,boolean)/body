@@ -11,7 +11,7 @@
   if (keycode == getNavigationLeftKey()) {
     if (getSelected() == null) {
       setSelected(items.get(items.size() - 1));
-      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+      if (!getSelected().isSelectable()) {
         handleNavigation(keycode,ctrl,shift);
       }
     }
@@ -23,7 +23,7 @@
  else {
         setSelected(items.get(items.size() - 1));
       }
-      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+      if (!getSelected().isSelectable()) {
         handleNavigation(keycode,ctrl,shift);
       }
     }
@@ -42,9 +42,7 @@
         selected=root.getItems().get(--idx);
       }
       root.setSelected(selected);
-      root.showChildMenu(selected);
-      VMenuBar submenu=selected.getSubMenu();
-      submenu.setSelected(submenu.getItems().get(0));
+      openMenuAndFocusFirstIfPossible(selected);
     }
  else {
       getParentMenu().getSelected().getSubMenu().setSelected(null);
@@ -55,7 +53,7 @@
  else   if (keycode == getNavigationRightKey()) {
     if (getSelected() == null) {
       setSelected(items.get(0));
-      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+      if (!getSelected().isSelectable()) {
         handleNavigation(keycode,ctrl,shift);
       }
     }
@@ -67,7 +65,7 @@
  else {
         setSelected(items.get(0));
       }
-      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+      if (!getSelected().isSelectable()) {
         handleNavigation(keycode,ctrl,shift);
       }
     }
@@ -90,9 +88,7 @@
         selected=root.getItems().get(++idx);
       }
       root.setSelected(selected);
-      root.showChildMenu(selected);
-      VMenuBar submenu=selected.getSubMenu();
-      submenu.setSelected(submenu.getItems().get(0));
+      openMenuAndFocusFirstIfPossible(selected);
     }
  else     if (visibleChildMenu != null) {
       visibleChildMenu.handleNavigation(keycode,ctrl,shift);
@@ -102,7 +98,7 @@
  else   if (keycode == getNavigationUpKey()) {
     if (getSelected() == null) {
       setSelected(items.get(items.size() - 1));
-      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+      if (!getSelected().isSelectable()) {
         handleNavigation(keycode,ctrl,shift);
       }
     }
@@ -117,7 +113,7 @@
  else {
         setSelected(items.get(items.size() - 1));
       }
-      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+      if (!getSelected().isSelectable()) {
         handleNavigation(keycode,ctrl,shift);
       }
     }
@@ -125,15 +121,10 @@
   }
  else   if (keycode == getNavigationDownKey()) {
     if (getSelected() == null) {
-      setSelected(items.get(0));
-      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
-        handleNavigation(keycode,ctrl,shift);
-      }
+      selectFirstItem();
     }
  else     if (visibleChildMenu == null && getParentMenu() == null) {
-      showChildMenu(getSelected());
-      menuVisible=true;
-      visibleChildMenu.handleNavigation(keycode,ctrl,shift);
+      openMenuAndFocusFirstIfPossible(getSelected());
     }
  else     if (visibleChildMenu != null) {
       visibleChildMenu.handleNavigation(keycode,ctrl,shift);
@@ -146,7 +137,7 @@
  else {
         setSelected(items.get(0));
       }
-      if (getSelected().isSeparator() || !getSelected().isEnabled()) {
+      if (!getSelected().isSelectable()) {
         handleNavigation(keycode,ctrl,shift);
       }
     }
@@ -158,14 +149,15 @@
     menuVisible=false;
   }
  else   if (keycode == getNavigationSelectKey()) {
-    if (visibleChildMenu != null) {
+    if (getSelected() == null) {
+      selectFirstItem();
+    }
+ else     if (visibleChildMenu != null) {
       visibleChildMenu.handleNavigation(keycode,ctrl,shift);
       menuVisible=false;
     }
  else     if (visibleChildMenu == null && getSelected().getSubMenu() != null) {
-      showChildMenu(getSelected());
-      menuVisible=true;
-      visibleChildMenu.handleNavigation(keycode,ctrl,shift);
+      openMenuAndFocusFirstIfPossible(getSelected());
     }
  else {
       Command command=getSelected().getCommand();
