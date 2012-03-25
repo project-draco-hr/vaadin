@@ -1,17 +1,17 @@
 {
-  List<Paintable> paintables=new ArrayList<Paintable>();
+  List<Component> legacyComponents=new ArrayList<Component>();
   for (  Connector connector : dirtyVisibleConnectors) {
     if (connector instanceof Paintable) {
-      paintables.add((Paintable)connector);
+      legacyComponents.add((Component)connector);
     }
   }
-  sortByHierarchy(paintables);
-  for (  Paintable p : paintables) {
-    logger.info("Painting legacy Paintable " + p.getClass().getName() + "@"+ Integer.toHexString(p.hashCode()));
+  sortByHierarchy(legacyComponents);
+  for (  Component c : legacyComponents) {
+    logger.info("Painting legacy Component " + c.getClass().getName() + "@"+ Integer.toHexString(c.hashCode()));
     paintTarget.startTag("change");
-    final String pid=((Connector)p).getConnectorId();
+    final String pid=c.getConnectorId();
     paintTarget.addAttribute("pid",pid);
-    p.paint(paintTarget);
+    c.paint(paintTarget);
     paintTarget.endTag("change");
   }
 }
