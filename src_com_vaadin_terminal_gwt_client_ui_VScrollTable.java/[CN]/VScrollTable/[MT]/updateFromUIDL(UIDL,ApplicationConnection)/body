@@ -102,6 +102,15 @@
       }
     }
   }
+  if (enabled && savedContextMenu != null) {
+    for (    Widget w : scrollBody.renderedRows) {
+      VScrollTableRow row=(VScrollTableRow)w;
+      if (row.isVisible() && row.getKey().equals(savedContextMenu.rowKey)) {
+        contextMenu=savedContextMenu;
+        client.getContextMenu().showAt(row,savedContextMenu.left,savedContextMenu.top);
+      }
+    }
+  }
   if (!isSelectable()) {
     scrollBody.addStyleName(CLASSNAME + "-body-noselection");
   }
@@ -133,13 +142,4 @@
   lastRenderedHeight=scrollBody.getOffsetHeight();
   rendering=false;
   headerChangedDuringUpdate=false;
-  if (savedContextMenu != null) {
-    for (    Widget w : scrollBody.renderedRows) {
-      VScrollTableRow row=(VScrollTableRow)w;
-      if (row.getKey().equals(savedContextMenu.rowKey)) {
-        contextMenu=savedContextMenu;
-        client.getContextMenu().showAt(row,savedContextMenu.left,savedContextMenu.top);
-      }
-    }
-  }
 }
