@@ -7,18 +7,18 @@
     onResizeEvent(event);
     return false;
   }
- else   if (vaadinModality) {
-    final Element target=event.getEventTarget().cast();
+  if (getTopmostWindow().vaadinModality) {
     if (DOM.getCaptureElement() != null) {
       return true;
     }
-    if (!DOM.isOrHasChild(getElement(),target)) {
+    final Element target=event.getEventTarget().cast();
+    if (!DOM.isOrHasChild(getTopmostWindow().getElement(),target)) {
       Widget w=Util.findWidget(target,null);
       while (w != null) {
         if (w instanceof Console) {
           return true;
         }
- else         if (w instanceof ComponentConnector) {
+ else         if (ConnectorMap.get(client).isConnector(w)) {
           return false;
         }
         w=w.getParent();
