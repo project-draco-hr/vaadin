@@ -1,0 +1,9 @@
+{
+  LoggingClassLoader loggingClassLoader=new LoggingClassLoader();
+  Application application=createStubApplication();
+  application.start(new ApplicationStartEvent(null,new Properties(),null,false,loggingClassLoader));
+  Root root=application.getRootForRequest(null);
+  assertTrue(root instanceof MyRoot);
+  assertEquals(1,loggingClassLoader.requestedClasses.size());
+  assertEquals(MyRoot.class.getName(),loggingClassLoader.requestedClasses.get(0));
+}
