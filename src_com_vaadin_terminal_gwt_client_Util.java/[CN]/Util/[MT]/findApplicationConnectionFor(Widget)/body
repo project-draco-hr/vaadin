@@ -5,17 +5,13 @@
   }
   List<ApplicationConnection> runningApplications=ApplicationConfiguration.getRunningApplications();
   for (  ApplicationConnection applicationConnection : runningApplications) {
-    ConnectorMap paintableMap=applicationConnection.getConnectorMap();
-    ComponentConnector paintable=paintableMap.getConnector(widget);
-    if (paintable == null) {
+    ConnectorMap connectorMap=applicationConnection.getConnectorMap();
+    ComponentConnector connector=connectorMap.getConnector(widget);
+    if (connector == null) {
       continue;
     }
-    String pid=paintableMap.getConnectorId(paintable);
-    if (pid != null) {
-      ServerConnector otherPaintable=paintableMap.getConnector(pid);
-      if (otherPaintable == paintable) {
-        return applicationConnection;
-      }
+    if (connector.getConnection() == applicationConnection) {
+      return applicationConnection;
     }
   }
   return null;

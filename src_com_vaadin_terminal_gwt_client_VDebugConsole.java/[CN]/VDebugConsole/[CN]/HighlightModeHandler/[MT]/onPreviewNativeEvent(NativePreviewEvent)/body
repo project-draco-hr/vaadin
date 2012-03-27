@@ -11,14 +11,14 @@
       return;
     }
     for (    ApplicationConnection a : ApplicationConfiguration.getRunningApplications()) {
-      ComponentConnector paintable=Util.getPaintableForElement(a,a.getView().getWidget(),eventTarget);
-      if (paintable == null) {
-        paintable=Util.getPaintableForElement(a,RootPanel.get(),eventTarget);
+      ComponentConnector connector=Util.getConnectorForElement(a,a.getView().getWidget(),eventTarget);
+      if (connector == null) {
+        connector=Util.getConnectorForElement(a,RootPanel.get(),eventTarget);
       }
-      if (paintable != null) {
-        String pid=ConnectorMap.get(a).getConnectorId(paintable);
-        VUIDLBrowser.highlight(paintable);
-        label.setText("Currently focused  :" + paintable.getClass() + " ID:"+ pid);
+      if (connector != null) {
+        String pid=connector.getConnectorId();
+        VUIDLBrowser.highlight(connector);
+        label.setText("Currently focused  :" + connector.getClass() + " ID:"+ pid);
         event.cancel();
         event.consume();
         event.getNativeEvent().stopPropagation();
@@ -34,9 +34,9 @@
     highlightModeRegistration.removeHandler();
     Element eventTarget=Util.getElementFromPoint(event.getNativeEvent().getClientX(),event.getNativeEvent().getClientY());
     for (    ApplicationConnection a : ApplicationConfiguration.getRunningApplications()) {
-      ComponentConnector paintable=Util.getPaintableForElement(a,a.getView().getWidget(),eventTarget);
+      ComponentConnector paintable=Util.getConnectorForElement(a,a.getView().getWidget(),eventTarget);
       if (paintable == null) {
-        paintable=Util.getPaintableForElement(a,RootPanel.get(),eventTarget);
+        paintable=Util.getConnectorForElement(a,RootPanel.get(),eventTarget);
       }
       if (paintable != null) {
         a.highlightComponent(paintable);
