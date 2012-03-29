@@ -1,9 +1,12 @@
 {
+  if (!hasActiveRequest) {
+    throw new IllegalStateException("No active request");
+  }
+  hasActiveRequest=false;
   if (applicationRunning) {
     checkForPendingVariableBursts();
     runPostRequestHooks(configuration.getRootPanelId());
   }
-  hasActiveRequest=false;
   Scheduler.get().scheduleDeferred(new Command(){
     public void execute(){
       if (!hasActiveRequest()) {
