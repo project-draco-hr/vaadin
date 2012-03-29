@@ -61,10 +61,10 @@
       componentCaptionSizeChanges.clear();
       Duration updateDuration=new Duration();
       createConnectorsIfNeeded(json);
-      updateConnectorState(json);
+      Collection<StateChangeEvent> pendingStateChangeEvents=updateConnectorState(json);
       Collection<ConnectorHierarchyChangedEvent> pendingHierarchyChangeEvents=updateConnectorHierarchy(json);
       sendHierarchyChangeEvents(pendingHierarchyChangeEvents);
-      VConsole.log(" * Sending state change events");
+      sendStateChangeEvents(pendingStateChangeEvents);
       updateVaadin6StyleConnectors(json);
       handleRpcInvocations(json);
       if (json.containsKey("dd")) {
@@ -108,6 +108,22 @@
       VConsole.log(" Processing time was " + String.valueOf(prosessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
       VConsole.log("Referenced paintables: " + connectorMap.size());
       endRequest();
+    }
+    /** 
+ * Sends the state change events created while updating the state
+ * information.
+ * This must be called after hierarchy change listeners have been
+ * called. At least caption updates for the parent are strange if
+ * fired from state change listeners and thus calls the parent
+ * BEFORE the parent is aware of the child (through a
+ * ConnectorHierarchyChangedEvent)
+ * @param pendingStateChangeEventsThe events to send
+ */
+    private void sendStateChangeEvents(    Collection<StateChangeEvent> pendingStateChangeEvents){
+      VConsole.log(" * Sending state change events");
+      for (      StateChangeEvent sce : pendingStateChangeEvents) {
+        sce.getConnector().fireEvent(sce);
+      }
     }
     private void unregisterRemovedConnectors(){
       int unregistered=0;
@@ -191,27 +207,30 @@
         event.getParent().connectorHierarchyChanged(event);
       }
     }
-    private void updateConnectorState(    ValueMap json){
+    private Collection<StateChangeEvent> updateConnectorState(    ValueMap json){
+      ArrayList<StateChangeEvent> events=new ArrayList<StateChangeEvent>();
       VConsole.log(" * Updating connector states");
       if (!json.containsKey("state")) {
-        return;
+        return events;
       }
       ValueMap states=json.getValueMap("state");
       JsArrayString keyArray=states.getKeyArray();
       for (int i=0; i < keyArray.length(); i++) {
         try {
           String connectorId=keyArray.get(i);
-          ServerConnector paintable=connectorMap.getConnector(connectorId);
-          if (null != paintable) {
+          ServerConnector connector=connectorMap.getConnector(connectorId);
+          if (null != connector) {
             JSONArray stateDataAndType=new JSONArray(states.getJavaScriptObject(connectorId));
             Object state=JsonDecoder.decodeValue(stateDataAndType,connectorMap,ApplicationConnection.this);
-            paintable.setState((SharedState)state);
+            connector.setState((SharedState)state);
+            events.add(new StateChangeEvent(connector));
           }
         }
  catch (        final Throwable e) {
           VConsole.error(e);
         }
       }
+      return events;
     }
     /** 
  * Updates the connector hierarchy and returns a list of events that
