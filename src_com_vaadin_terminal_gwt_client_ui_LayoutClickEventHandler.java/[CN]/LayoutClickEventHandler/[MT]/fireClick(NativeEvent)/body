@@ -1,10 +1,4 @@
 {
-  ApplicationConnection client=getApplicationConnection();
-  String pid=connector.getConnectorId();
   MouseEventDetails mouseDetails=MouseEventDetailsBuilder.buildMouseEventDetails(event,getRelativeToElement());
-  ComponentConnector childComponent=getChildComponent((Element)event.getEventTarget().cast());
-  Map<String,Object> parameters=new HashMap<String,Object>();
-  parameters.put("mouseDetails",mouseDetails.serialize());
-  parameters.put("component",childComponent);
-  client.updateVariable(pid,clickEventIdentifier,parameters,true);
+  getLayoutClickRPC().layoutClick(mouseDetails,getChildComponent(event));
 }
