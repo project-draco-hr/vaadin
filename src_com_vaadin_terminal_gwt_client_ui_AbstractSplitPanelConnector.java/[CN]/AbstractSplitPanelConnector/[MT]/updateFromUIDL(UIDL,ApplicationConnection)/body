@@ -1,11 +1,9 @@
 {
-  getWidget().client=client;
-  getWidget().id=uidl.getId();
-  getWidget().immediate=getState().isImmediate();
   super.updateFromUIDL(uidl,client);
   if (!isRealUpdate(uidl)) {
     return;
   }
+  getWidget().immediate=getState().isImmediate();
   getWidget().setEnabled(isEnabled());
   clickEventHandler.handleEventHandlerRegistration();
   if (getState().hasStyles()) {
@@ -14,13 +12,11 @@
  else {
     getWidget().componentStyleNames=new LinkedList<String>();
   }
-  getWidget().setLocked(uidl.getBooleanAttribute("locked"));
-  getWidget().setPositionReversed(uidl.getBooleanAttribute("reversed"));
+  SplitterState splitterState=getState().getSplitterState();
+  getWidget().setLocked(splitterState.isLocked());
+  getWidget().setPositionReversed(splitterState.isPositionReversed());
   getWidget().setStylenames();
-  getWidget().position=uidl.getStringAttribute("position");
-  for (int childIndex=0; childIndex < getChildren().size(); childIndex++) {
-    getChildren().get(childIndex).updateFromUIDL(uidl.getChildUIDL(childIndex++),client);
-  }
+  getWidget().position=splitterState.getPosition() + splitterState.getPositionUnit();
   client.runDescendentsLayout(getWidget());
   getLayoutManager().setNeedsUpdate(this);
 }
