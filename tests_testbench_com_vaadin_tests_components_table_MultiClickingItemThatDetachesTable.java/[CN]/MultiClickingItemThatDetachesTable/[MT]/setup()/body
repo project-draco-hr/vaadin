@@ -1,0 +1,26 @@
+{
+  final Table table=new Table();
+  table.setImmediate(true);
+  table.addContainerProperty("p1",String.class,"p1");
+  table.addContainerProperty("p2",String.class,"p2");
+  for (int i=0; i < 200; ++i) {
+    final Item item=table.getItem(table.addItem());
+    item.getItemProperty("p2").setValue(i + "");
+    item.getItemProperty("p1").setValue(i + "");
+  }
+  table.addListener(new ItemClickListener(){
+    public void itemClick(    ItemClickEvent event){
+      if (event.isDoubleClick()) {
+        try {
+          Thread.sleep(3000);
+        }
+ catch (        InterruptedException e) {
+          e.printStackTrace();
+        }
+        replaceComponent(table,new Label("Completed!"));
+      }
+    }
+  }
+);
+  addComponent(table);
+}
