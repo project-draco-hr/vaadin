@@ -26,7 +26,7 @@
     String fieldName=decapitalize(capitalizedFieldName);
     String getterName=findGetter(beanType,setterMethod);
     if (getterName == null) {
-      logger.log(TreeLogger.WARN,"No getter found for " + fieldName + ". Serialization will likely fail");
+      logger.log(TreeLogger.ERROR,"No getter found for " + fieldName + ". Serialization will likely fail");
     }
     sourceWriter.println("json.put(\"" + fieldName + "\", "+ JsonEncoder.class.getName()+ ".encode(castedValue."+ getterName+ "(), idMapper, connection));");
   }
@@ -40,7 +40,7 @@
     String capitalizedFieldName=setterName.substring(3);
     String fieldName=decapitalize(capitalizedFieldName);
     JType setterParameterType=method.getParameterTypes()[0];
-    logger.log(Type.INFO,"* Processing field " + fieldName + " in "+ beanQualifiedSourceName+ " ("+ beanType.getName()+ ")");
+    logger.log(Type.DEBUG,"* Processing field " + fieldName + " in "+ beanQualifiedSourceName+ " ("+ beanType.getName()+ ")");
     String jsonFieldName="json" + capitalizedFieldName;
     sourceWriter.println("JSONArray " + jsonFieldName + " = (JSONArray) jsonValue.get(\""+ fieldName+ "\");");
     String fieldType;
@@ -59,5 +59,5 @@
   sourceWriter.println("}");
   sourceWriter.outdent();
   context.commit(logger,printWriter);
-  logger.log(Type.INFO,"Done. (" + (new Date().getTime() - date.getTime()) / 1000 + "seconds)");
+  logger.log(TreeLogger.INFO,"Generated Serializer class " + getFullyQualifiedSerializerClassName(beanType));
 }

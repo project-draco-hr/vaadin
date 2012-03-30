@@ -1,16 +1,6 @@
 {
   for (  JMethod setterMethod : SerializerGenerator.getSetters(type)) {
     JType setterType=setterMethod.getParameterTypes()[0];
-    if (serializableTypes.contains(setterType)) {
-      continue;
-    }
-    if (serializationHandledByFramework(setterType)) {
-      continue;
-    }
-    JClassType setterTypeClass=setterType.isClass();
-    if (setterTypeClass != null) {
-      serializableTypes.add(setterTypeClass);
-      findSubTypesNeedingSerializers(type,serializableTypes);
-    }
+    addTypeIfNeeded(serializableTypes,setterType);
   }
 }

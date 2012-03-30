@@ -1,0 +1,14 @@
+{
+  if (serializableTypes.contains(type)) {
+    return;
+  }
+  if (serializationHandledByFramework(type)) {
+    return;
+  }
+  if (serializableTypes.contains(type))   return;
+  JClassType typeClass=type.isClass();
+  if (typeClass != null) {
+    serializableTypes.add(typeClass);
+    findSubTypesNeedingSerializers(typeClass,serializableTypes);
+  }
+}
