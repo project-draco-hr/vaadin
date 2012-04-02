@@ -80,11 +80,18 @@
   if (getWidget().layout != null) {
     if (getWidget().layout != lo) {
       client.unregisterPaintable(getWidget().layout);
+      if (childStateChangeHandlerRegistration != null) {
+        childStateChangeHandlerRegistration.removeHandler();
+        childStateChangeHandlerRegistration=null;
+      }
       getWidget().setWidget(lo.getWidget());
       getWidget().layout=lo;
     }
   }
  else {
+    if (getWidget().layout != lo) {
+      childStateChangeHandlerRegistration=lo.addStateChangeHandler(childStateChangeHandler);
+    }
     getWidget().setWidget(lo.getWidget());
     getWidget().layout=lo;
   }
