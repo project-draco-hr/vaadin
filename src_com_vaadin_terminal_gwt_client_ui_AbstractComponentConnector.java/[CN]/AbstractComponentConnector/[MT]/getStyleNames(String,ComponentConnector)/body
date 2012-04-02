@@ -21,19 +21,22 @@
       styleBuf.append(style);
     }
   }
-  if (field && uidl.hasAttribute("modified")) {
-    styleBuf.append(" ");
-    styleBuf.append(ApplicationConnection.MODIFIED_CLASSNAME);
+  if (connector instanceof AbstractFieldConnector) {
+    AbstractFieldConnector afc=((AbstractFieldConnector)connector);
+    if (afc.isModified()) {
+      styleBuf.append(" ");
+      styleBuf.append(ApplicationConnection.MODIFIED_CLASSNAME);
+    }
+    if (afc.isRequired()) {
+      styleBuf.append(" ");
+      styleBuf.append(primaryStyleName);
+      styleBuf.append(ApplicationConnection.REQUIRED_CLASSNAME_EXT);
+    }
   }
   if (null != state.getErrorMessage()) {
     styleBuf.append(" ");
     styleBuf.append(primaryStyleName);
     styleBuf.append(ApplicationConnection.ERROR_CLASSNAME_EXT);
-  }
-  if (connector instanceof AbstractFieldConnector && ((AbstractFieldConnector)connector).isRequired()) {
-    styleBuf.append(" ");
-    styleBuf.append(primaryStyleName);
-    styleBuf.append(ApplicationConnection.REQUIRED_CLASSNAME_EXT);
   }
   return styleBuf.toString();
 }
