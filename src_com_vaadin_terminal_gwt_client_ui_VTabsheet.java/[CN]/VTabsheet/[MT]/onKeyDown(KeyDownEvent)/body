@@ -2,15 +2,40 @@
   if (event.getSource() instanceof Tab) {
     int keycode=event.getNativeEvent().getKeyCode();
     if (keycode == getPreviousTabKey()) {
-      selectPreviousTab();
+      int newTabIndex=activeTabIndex;
+      do {
+        newTabIndex=(newTabIndex != 0) ? newTabIndex - 1 : tb.getTabCount() - 1;
+      }
+ while (newTabIndex != activeTabIndex && !onTabSelected(newTabIndex));
+      activeTabIndex=newTabIndex;
+      if (isScrolledTabs()) {
+        int newFirstIndex=tb.scrollLeft(scrollerIndex);
+        if (newFirstIndex != -1) {
+          scrollerIndex=newFirstIndex;
+          updateTabScroller();
+        }
+      }
     }
  else     if (keycode == getNextTabKey()) {
-      selectNextTab();
+      int newTabIndex=activeTabIndex;
+      do {
+        newTabIndex=(newTabIndex + 1) % tb.getTabCount();
+      }
+ while (newTabIndex != activeTabIndex && !onTabSelected(newTabIndex));
+      activeTabIndex=newTabIndex;
+      if (isClippedTabs()) {
+        int newFirstIndex=tb.scrollRight(scrollerIndex);
+        if (newFirstIndex != -1) {
+          scrollerIndex=newFirstIndex;
+          updateTabScroller();
+        }
+      }
     }
  else     if (keycode == getCloseTabKey()) {
       Tab tab=tb.getTab(activeTabIndex);
       if (tab.isClosable()) {
         tab.onClose();
+        removeTab(activeTabIndex);
       }
     }
   }

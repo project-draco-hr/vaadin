@@ -1,15 +1,15 @@
 {
-  Tab tab=tb.getTab(tabIndex);
-  if (client == null || disabled || waitingForResponse) {
+  if (disabled || waitingForResponse) {
     return false;
   }
-  if (!tab.isEnabledOnServer() || tab.isHiddenOnServer()) {
+  final Object tabKey=tabKeys.get(tabIndex);
+  if (disabledTabKeys.contains(tabKey)) {
     return false;
   }
-  if (activeTabIndex != tabIndex) {
+  if (client != null && activeTabIndex != tabIndex) {
     tb.selectTab(tabIndex);
     if (focusedTab != null) {
-      focusedTab=tab;
+      focusedTab=tb.getTab(tabIndex);
     }
     addStyleDependentName("loading");
     Scheduler.get().scheduleDeferred(new Command(){
@@ -21,6 +21,7 @@
     }
 );
     waitingForResponse=true;
+    return true;
   }
-  return true;
+  return false;
 }
