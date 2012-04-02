@@ -44,23 +44,6 @@
   boolean showingUrl=false;
   int childIndex=0;
   UIDL childUidl=uidl.getChildUIDL(childIndex++);
-  while ("open".equals(childUidl.getTag())) {
-    final String parsedUri=client.translateVaadinUri(childUidl.getStringAttribute("src"));
-    if (!childUidl.hasAttribute("name")) {
-      final Frame frame=new Frame();
-      DOM.setStyleAttribute(frame.getElement(),"width","100%");
-      DOM.setStyleAttribute(frame.getElement(),"height","100%");
-      DOM.setStyleAttribute(frame.getElement(),"border","0px");
-      frame.setUrl(parsedUri);
-      getWidget().contentPanel.setWidget(frame);
-      showingUrl=true;
-    }
- else {
-      final String target=childUidl.getStringAttribute("name");
-      Window.open(parsedUri,target,"");
-    }
-    childUidl=uidl.getChildUIDL(childIndex++);
-  }
   final ComponentConnector lo=client.getPaintable(childUidl);
   if (getWidget().layout != null) {
     if (getWidget().layout != lo) {
