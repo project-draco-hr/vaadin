@@ -2,23 +2,19 @@
   getWidget().id=getConnectorId();
   getWidget().client=client;
   DOM.setElementProperty(getWidget().closeBox,"id",getConnectorId() + "_window_close");
-  if (uidl.hasAttribute("invisible")) {
-    getWidget().hide();
-    return;
-  }
   if (isRealUpdate(uidl)) {
-    if (uidl.getBooleanAttribute("modal") != getWidget().vaadinModality) {
+    if (getState().isModal() != getWidget().vaadinModality) {
       getWidget().setVaadinModality(!getWidget().vaadinModality);
     }
     if (!getWidget().isAttached()) {
       getWidget().setVisible(false);
       getWidget().show();
     }
-    if (uidl.getBooleanAttribute("resizable") != getWidget().resizable) {
-      getWidget().setResizable(!getWidget().resizable);
+    if (getState().isResizable() != getWidget().resizable) {
+      getWidget().setResizable(getState().isResizable());
     }
-    getWidget().resizeLazy=uidl.hasAttribute(VView.RESIZE_LAZY);
-    getWidget().setDraggable(!uidl.hasAttribute("fixedposition"));
+    getWidget().resizeLazy=getState().isResizeLazy();
+    getWidget().setDraggable(getState().isDraggable());
     String iconURL=null;
     if (getState().getIcon() != null) {
       iconURL=getState().getIcon().getURL();
@@ -34,8 +30,8 @@
   clickEventHandler.handleEventHandlerRegistration();
   getWidget().immediate=getState().isImmediate();
   getWidget().setClosable(!isReadOnly());
-  int positionx=uidl.getIntVariable("positionx");
-  int positiony=uidl.getIntVariable("positiony");
+  int positionx=getState().getPositionX();
+  int positiony=getState().getPositionY();
   if (positionx >= 0 || positiony >= 0) {
     if (positionx < 0) {
       positionx=0;
@@ -95,12 +91,7 @@
   }
   getWidget().contentPanel.setScrollPosition(getState().getScrollTop());
   getWidget().contentPanel.setHorizontalScrollPosition(getState().getScrollLeft());
-  if (uidl.getBooleanAttribute("center")) {
-    getWidget().centered=true;
-  }
- else {
-    getWidget().centered=false;
-  }
+  getWidget().centered=getState().isCentered();
   getWidget().setVisible(true);
   if (getWidget().getOffsetWidth() > Window.getClientWidth()) {
     getWidget().setWidth(Window.getClientWidth() + "px");
