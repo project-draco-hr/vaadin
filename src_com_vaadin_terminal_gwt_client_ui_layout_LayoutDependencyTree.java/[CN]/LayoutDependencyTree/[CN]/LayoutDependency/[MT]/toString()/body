@@ -1,0 +1,26 @@
+{
+  String s=getCompactConnectorString(connector) + "\n";
+  if (direction == VERTICAL) {
+    s+="Vertical";
+  }
+ else {
+    s+="Horizontal";
+  }
+  ComponentState state=connector.getState();
+  s+=" sizing: " + getSizeDefinition(direction == VERTICAL ? state.getHeight() : state.getWidth()) + "\n";
+  if (needsLayout) {
+    s+="Needs layout\n";
+  }
+  if (getLayoutQueue(direction).contains(connector)) {
+    s+="In layout queue\n";
+  }
+  s+="Layout blockers: " + blockersToString(layoutBlockers) + "\n";
+  if (needsMeasure) {
+    s+="Needs measure\n";
+  }
+  if (getMeasureQueue(direction).contains(connector)) {
+    s+="In measure queue\n";
+  }
+  s+="Measure blockers: " + blockersToString(measureBlockers);
+  return s;
+}

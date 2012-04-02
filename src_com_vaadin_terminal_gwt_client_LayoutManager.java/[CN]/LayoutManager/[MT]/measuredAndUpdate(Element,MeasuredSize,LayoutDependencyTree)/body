@@ -1,0 +1,19 @@
+{
+  MeasureResult measureResult=measuredSize.measure(element);
+  if (measureResult.isChanged()) {
+    JsArrayString dependents=measuredSize.getDependents();
+    for (int i=0; i < dependents.length(); i++) {
+      String pid=dependents.get(i);
+      ComponentConnector dependent=(ComponentConnector)connection.getConnectorMap().getConnector(pid);
+      if (dependent != null) {
+        if (measureResult.isHeightChanged()) {
+          layoutDependencyTree.setNeedsVerticalLayout(dependent,true);
+        }
+        if (measureResult.isWidthChanged()) {
+          layoutDependencyTree.setNeedsHorizontalLayout(dependent,true);
+        }
+      }
+    }
+  }
+  return measureResult;
+}

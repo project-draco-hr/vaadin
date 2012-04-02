@@ -1,0 +1,22 @@
+{
+  Collection<ComponentConnector> measureTargets;
+  if (measureAll) {
+    measureTargets=Arrays.asList(ConnectorMap.get(connection).getComponentConnectors());
+  }
+ else {
+    measureTargets=layoutDependencyTree.getMeasureTargets();
+  }
+  for (  ComponentConnector paintableWidget : measureTargets) {
+    Element element=paintableWidget.getWidget().getElement();
+    MeasuredSize measuredSize=getMeasuredSize(paintableWidget);
+    MeasureResult measureResult=measuredAndUpdate(element,measuredSize,layoutDependencyTree);
+    if (measureResult.isHeightChanged()) {
+      layoutDependencyTree.markHeightAsChanged(paintableWidget);
+    }
+    if (measureResult.isWidthChanged()) {
+      layoutDependencyTree.markWidthAsChanged(paintableWidget);
+    }
+    layoutDependencyTree.setNeedsMeasure(paintableWidget,false);
+  }
+  return measureTargets.size();
+}

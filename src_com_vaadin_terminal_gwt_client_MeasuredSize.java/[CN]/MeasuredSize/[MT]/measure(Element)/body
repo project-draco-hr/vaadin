@@ -1,6 +1,6 @@
 {
-  boolean wasHeightChanged=heightChanged;
-  boolean wasWidthChanged=widthChanged;
+  boolean heightChanged=false;
+  boolean widthChanged=false;
   ComputedStyle computedStyle=new ComputedStyle(element);
   int[] paddings=computedStyle.getPadding();
   if (!heightChanged && hasHeightChanged(this.paddings,paddings)) {
@@ -28,9 +28,13 @@
   this.borders=borders;
   int requiredHeight=Util.getRequiredHeight(element);
   int marginHeight=sumHeights(margins);
-  setOuterHeight(requiredHeight + marginHeight);
+  if (setOuterHeight(requiredHeight + marginHeight)) {
+    heightChanged=true;
+  }
   int requiredWidth=Util.getRequiredWidth(element);
   int marginWidth=sumWidths(margins);
-  setOuterWidth(requiredWidth + marginWidth);
-  return wasHeightChanged != heightChanged || wasWidthChanged != widthChanged;
+  if (setOuterWidth(requiredWidth + marginWidth)) {
+    widthChanged=true;
+  }
+  return new MeasureResult(widthChanged,heightChanged);
 }
