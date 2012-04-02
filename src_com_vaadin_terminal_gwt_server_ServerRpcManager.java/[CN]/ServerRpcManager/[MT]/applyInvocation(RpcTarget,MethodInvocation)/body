@@ -6,10 +6,10 @@
       manager.applyInvocation(invocation);
     }
  else {
-      throw new RuntimeException("RPC call to a target without an RPC manager.");
+      getLogger().log(Level.WARNING,"RPC call received for RpcTarget " + target.getClass().getName() + " ("+ invocation.getConnectorId()+ ") but the target has not registered any RPC interfaces");
     }
   }
  catch (  ClassNotFoundException e) {
-    throw new RuntimeException("No RPC manager registered for RPC interface " + invocation.getInterfaceName() + " of the target "+ target+ ".");
+    throw new RuntimeException("Class for RPC interface " + invocation.getInterfaceName() + " of the target "+ target+ " could not be found.");
   }
 }
