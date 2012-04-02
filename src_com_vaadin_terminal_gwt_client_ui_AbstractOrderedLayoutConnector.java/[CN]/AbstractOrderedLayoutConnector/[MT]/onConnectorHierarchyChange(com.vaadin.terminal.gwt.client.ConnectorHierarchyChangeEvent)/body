@@ -1,0 +1,19 @@
+{
+  super.onConnectorHierarchyChange(event);
+  List<ComponentConnector> previousChildren=event.getOldChildren();
+  int currentIndex=0;
+  VMeasuringOrderedLayout layout=getWidget();
+  for (  ComponentConnector child : getChildren()) {
+    Widget childWidget=child.getWidget();
+    VLayoutSlot slot=layout.getSlotForChild(childWidget);
+    if (childWidget.getParent() != layout) {
+      slot=new ComponentConnectorLayoutSlot(getWidget().getStylePrimaryName(),child,this);
+    }
+    layout.addOrMove(slot,currentIndex++);
+  }
+  for (  ComponentConnector child : previousChildren) {
+    if (child.getParent() != this) {
+      layout.removeSlotForWidget(child.getWidget());
+    }
+  }
+}
