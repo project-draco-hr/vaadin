@@ -23,6 +23,16 @@ secondContainerWidth=0;
 }
 DOM.setStyleAttribute(secondContainer,"width",secondContainerWidth + "px");
 DOM.setStyleAttribute(secondContainer,"left",(pixelPosition + getSplitterSize()) + "px");
+LayoutManager layoutManager=LayoutManager.get(client);
+if (layoutManager.isLayoutRunning()) {
+ConnectorMap connectorMap=ConnectorMap.get(client);
+if (firstChild != null) {
+layoutManager.reportWidthAssignedToRelative(connectorMap.getConnector(firstChild),pixelPosition);
+}
+if (secondChild != null) {
+layoutManager.reportWidthAssignedToRelative(connectorMap.getConnector(secondChild),secondContainerWidth);
+}
+}
 break;
 case ORIENTATION_VERTICAL:
 wholeSize=DOM.getElementPropertyInt(wrapper,"clientHeight");
@@ -42,6 +52,16 @@ secondContainerHeight=0;
 }
 DOM.setStyleAttribute(secondContainer,"height",secondContainerHeight + "px");
 DOM.setStyleAttribute(secondContainer,"top",(pixelPosition + getSplitterSize()) + "px");
+layoutManager=LayoutManager.get(client);
+if (layoutManager.isLayoutRunning()) {
+ConnectorMap connectorMap=ConnectorMap.get(client);
+if (firstChild != null) {
+layoutManager.reportHeightAssignedToRelative(connectorMap.getConnector(firstChild),pixelPosition);
+}
+if (secondChild != null) {
+layoutManager.reportHeightAssignedToRelative(connectorMap.getConnector(secondChild),secondContainerHeight);
+}
+}
 break;
 }
 }
