@@ -1,3 +1,20 @@
 {
-  getWidget().panel.updateCaption(component);
+  Widget childWidget=child.getWidget();
+  FlowPane cssLayoutWidgetContainer=getWidget().panel;
+  int widgetPosition=cssLayoutWidgetContainer.getWidgetIndex(childWidget);
+  VCaption caption=childToCaption.get(child);
+  if (VCaption.isNeeded(child.getState())) {
+    if (caption == null) {
+      caption=new VCaption(child,getConnection());
+      childToCaption.put(child,caption);
+    }
+    if (!caption.isAttached()) {
+      cssLayoutWidgetContainer.insert(caption,widgetPosition);
+    }
+    caption.updateCaption();
+  }
+ else   if (caption != null) {
+    childToCaption.remove(child);
+    cssLayoutWidgetContainer.remove(caption);
+  }
 }

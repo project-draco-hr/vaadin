@@ -1,0 +1,17 @@
+{
+  super.onStateChanged(stateChangeEvent);
+  for (  ComponentConnector child : getChildren()) {
+    if (!getState().getChildCss().containsKey(child.getConnectorId())) {
+      continue;
+    }
+    String css=getState().getChildCss().get(child.getConnectorId());
+    Style style=child.getWidget().getElement().getStyle();
+    String[] cssRules=css.split(";");
+    for (    String cssRule : cssRules) {
+      String parts[]=cssRule.split(":");
+      if (parts.length == 2) {
+        style.setProperty(makeCamelCase(parts[0].trim()),parts[1].trim());
+      }
+    }
+  }
+}
