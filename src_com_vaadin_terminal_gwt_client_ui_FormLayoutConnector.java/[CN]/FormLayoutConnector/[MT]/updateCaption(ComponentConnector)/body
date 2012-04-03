@@ -1,10 +1,8 @@
 {
-  final Caption c=getWidget().table.widgetToCaption.get(component.getWidget());
-  if (c != null) {
-    c.updateCaption(component.getState(),component.isEnabled());
+  getWidget().table.updateCaption(component.getWidget(),component.getState(),component.isEnabled());
+  boolean hideErrors=false;
+  if (component instanceof AbstractFieldConnector) {
+    hideErrors=((AbstractFieldConnector)component).getState().isHideErrors();
   }
-  final ErrorFlag e=getWidget().table.widgetToError.get(component.getWidget());
-  if (e != null) {
-    e.updateFromUIDL(component);
-  }
+  getWidget().table.updateError(component.getWidget(),component.getState().getErrorMessage(),hideErrors);
 }

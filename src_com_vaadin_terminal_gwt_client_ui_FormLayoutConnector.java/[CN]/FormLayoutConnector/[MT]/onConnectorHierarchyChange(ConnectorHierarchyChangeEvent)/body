@@ -1,0 +1,27 @@
+{
+  super.onConnectorHierarchyChange(event);
+  VFormLayout formLayout=getWidget();
+  VFormLayoutTable formLayoutTable=getWidget().table;
+  int childId=0;
+  formLayoutTable.setRowCount(getChildren().size());
+  for (  ComponentConnector child : getChildren()) {
+    Widget childWidget=child.getWidget();
+    Caption caption=formLayoutTable.getCaption(childWidget);
+    if (caption == null) {
+      caption=formLayout.new Caption(child);
+      caption.addClickHandler(formLayoutTable);
+    }
+    ErrorFlag error=formLayoutTable.getError(childWidget);
+    if (error == null) {
+      error=formLayout.new ErrorFlag(child);
+    }
+    formLayoutTable.setChild(childId,childWidget,caption,error);
+    childId++;
+  }
+  for (  ComponentConnector oldChild : event.getOldChildren()) {
+    if (oldChild.getParent() == this) {
+      continue;
+    }
+    formLayoutTable.cleanReferences(oldChild.getWidget());
+  }
+}
