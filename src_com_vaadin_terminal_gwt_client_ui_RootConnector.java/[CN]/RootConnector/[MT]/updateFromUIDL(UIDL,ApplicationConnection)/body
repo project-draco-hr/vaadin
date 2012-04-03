@@ -77,8 +77,9 @@
   }
   UIDL childUidl=uidl.getChildUIDL(childIndex);
   final ComponentConnector lo=client.getPaintable(childUidl);
+  boolean layoutChanged=getWidget().layout != lo;
   if (getWidget().layout != null) {
-    if (getWidget().layout != lo) {
+    if (layoutChanged) {
       client.unregisterPaintable(getWidget().layout);
       if (childStateChangeHandlerRegistration != null) {
         childStateChangeHandlerRegistration.removeHandler();
@@ -89,11 +90,12 @@
     }
   }
  else {
-    if (getWidget().layout != lo) {
-      childStateChangeHandlerRegistration=lo.addStateChangeHandler(childStateChangeHandler);
-    }
     getWidget().setWidget(lo.getWidget());
     getWidget().layout=lo;
+    if (layoutChanged) {
+      childStateChangeHandlerRegistration=lo.addStateChangeHandler(childStateChangeHandler);
+      onChildSizeChange();
+    }
   }
   getWidget().layout.updateFromUIDL(childUidl,client);
   final HashSet<VWindow> removedSubWindows=new HashSet<VWindow>(getWidget().subWindows);
