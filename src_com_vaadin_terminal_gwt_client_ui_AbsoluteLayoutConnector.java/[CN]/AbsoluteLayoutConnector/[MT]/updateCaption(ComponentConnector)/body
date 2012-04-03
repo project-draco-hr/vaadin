@@ -1,4 +1,19 @@
 {
-  AbsoluteWrapper parent2=(AbsoluteWrapper)(component.getWidget()).getParent();
-  parent2.updateCaption();
+  VAbsoluteLayout absoluteLayoutWidget=getWidget();
+  AbsoluteWrapper componentWrapper=getWrapper(component);
+  boolean captionIsNeeded=VCaption.isNeeded(component.getState());
+  VCaption caption=componentWrapper.getCaption();
+  if (captionIsNeeded) {
+    if (caption == null) {
+      caption=new VCaption(component,getConnection());
+      absoluteLayoutWidget.add(caption);
+    }
+    caption.updateCaption();
+    componentWrapper.updateCaptionPosition();
+  }
+ else {
+    if (caption != null) {
+      caption.removeFromParent();
+    }
+  }
 }
