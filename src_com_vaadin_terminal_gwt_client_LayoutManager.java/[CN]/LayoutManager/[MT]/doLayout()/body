@@ -3,6 +3,7 @@
     throw new IllegalStateException("Can't start a new layout phase before the previous layout phase ends.");
   }
   VConsole.log("Starting layout phase");
+  Map<ManagedLayout,Integer> layoutCounts=new HashMap<ManagedLayout,Integer>();
   int passes=0;
   Duration totalDuration=new Duration();
   currentDependencyTree=new LayoutDependencyTree();
@@ -21,7 +22,7 @@
     passes++;
     int measuredConnectorCount=measureConnectors(currentDependencyTree,passes == 1);
     int measureTime=passDuration.elapsedMillis();
-    VConsole.log("Measured " + measuredConnectorCount + " elements in "+ measureTime+ " ms");
+    VConsole.log("  Measured " + measuredConnectorCount + " elements in "+ measureTime+ " ms");
     FastStringSet updatedSet=FastStringSet.create();
     while (currentDependencyTree.hasHorizontalConnectorToLayout() || currentDependencyTree.hasVerticaConnectorToLayout()) {
       for (      ManagedLayout layout : currentDependencyTree.getHorizontalLayoutTargets()) {
@@ -29,12 +30,14 @@
           currentDependencyTree.markAsHorizontallyLayouted(layout);
           DirectionalManagedLayout cl=(DirectionalManagedLayout)layout;
           cl.layoutHorizontally();
+          countLayout(layoutCounts,cl);
         }
  else {
           currentDependencyTree.markAsHorizontallyLayouted(layout);
           currentDependencyTree.markAsVerticallyLayouted(layout);
           SimpleManagedLayout rr=(SimpleManagedLayout)layout;
           rr.layout();
+          countLayout(layoutCounts,rr);
         }
         updatedSet.add(layout.getConnectorId());
       }
@@ -43,31 +46,38 @@
           currentDependencyTree.markAsVerticallyLayouted(layout);
           DirectionalManagedLayout cl=(DirectionalManagedLayout)layout;
           cl.layoutVertically();
+          countLayout(layoutCounts,cl);
         }
  else {
           currentDependencyTree.markAsHorizontallyLayouted(layout);
           currentDependencyTree.markAsVerticallyLayouted(layout);
           SimpleManagedLayout rr=(SimpleManagedLayout)layout;
           rr.layout();
+          countLayout(layoutCounts,rr);
         }
         updatedSet.add(layout.getConnectorId());
       }
     }
     JsArrayString changed=updatedSet.dump();
-    VConsole.log(changed.length() + " requestLayout invocations in " + (passDuration.elapsedMillis() - measureTime)+ "ms");
-    StringBuilder b=new StringBuilder();
+    StringBuilder b=new StringBuilder("  ");
     b.append(changed.length());
-    b.append(" changed widgets in pass ");
-    b.append(passes);
-    b.append(" in ");
-    b.append(passDuration.elapsedMillis());
-    b.append(" ms: ");
-    if (changed.length() < 10) {
+    b.append(" requestLayout invocations in ");
+    b.append(passDuration.elapsedMillis() - measureTime);
+    b.append(" ms");
+    if (changed.length() < 30) {
       for (int i=0; i < changed.length(); i++) {
         if (i != 0) {
           b.append(", ");
         }
-        b.append(changed.get(i));
+ else {
+          b.append(": ");
+        }
+        String connectorString=changed.get(i);
+        if (changed.length() < 10) {
+          ServerConnector connector=ConnectorMap.get(connection).getConnector(connectorString);
+          connectorString=Util.getConnectorString(connector);
+        }
+        b.append(connectorString);
       }
     }
     VConsole.log(b.toString());
@@ -75,6 +85,7 @@
       VConsole.log("No more changes in pass " + passes);
       break;
     }
+    VConsole.log("Pass " + passes + " completed in "+ passDuration.elapsedMillis()+ " ms");
     if (passes > 100) {
       VConsole.log(LOOP_ABORT_MESSAGE);
       VNotification.createNotification(VNotification.DELAY_FOREVER).show(LOOP_ABORT_MESSAGE,VNotification.CENTERED,"error");
