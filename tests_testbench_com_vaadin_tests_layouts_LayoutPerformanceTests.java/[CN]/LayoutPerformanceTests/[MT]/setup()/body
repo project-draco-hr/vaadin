@@ -1,0 +1,50 @@
+{
+  HorizontalLayout controls=new HorizontalLayout();
+  controls.setSpacing(true);
+  controls.addComponent(wrapInPanel);
+  controls.addComponent(containerSelector);
+  controls.addComponent(levels);
+  controls.addComponent(leafSelector);
+  controls.addComponent(childAmount);
+  controls.addComponent(new Button("Clear",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      setTestLayout(new Label(""));
+    }
+  }
+));
+  controls.addComponent(new Button("Apply",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      SampleType leafType=(SampleType)leafSelector.getValue();
+      if (leafType == null) {
+        return;
+      }
+      ContainerType containerType=(ContainerType)containerSelector.getValue();
+      if (containerType == null) {
+        return;
+      }
+      boolean wrapped=wrapInPanel.booleanValue();
+      ComponentContainer container=containerType.buildLayout(((Number)levels.getValue()).intValue(),((Number)childAmount.getValue()).intValue(),leafType,!wrapped);
+      if (wrapped) {
+        Panel panel=new Panel(container);
+        panel.setSizeFull();
+        container=panel;
+      }
+      setTestLayout(container);
+    }
+  }
+));
+  for (Iterator<Component> i=controls.getComponentIterator(); i.hasNext(); ) {
+    Component component=i.next();
+    if (component instanceof NativeSelect) {
+      NativeSelect nativeSelect=(NativeSelect)component;
+      nativeSelect.setNullSelectionAllowed(false);
+      nativeSelect.setValue(new ArrayList<Object>(nativeSelect.getItemIds()).get(0));
+    }
+    controls.setComponentAlignment(component,Alignment.BOTTOM_LEFT);
+  }
+  VerticalLayout layout=getLayout();
+  layout.addComponent(controls);
+  layout.addComponent(testLayout);
+  layout.setExpandRatio(testLayout,1);
+  layout.setSizeFull();
+}
