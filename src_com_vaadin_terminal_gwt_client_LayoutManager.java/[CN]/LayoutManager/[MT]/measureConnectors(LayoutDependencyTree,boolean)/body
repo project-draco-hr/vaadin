@@ -1,22 +1,24 @@
 {
-  Collection<ComponentConnector> measureTargets;
+  int measureCount=0;
   if (measureAll) {
-    measureTargets=Arrays.asList(ConnectorMap.get(connection).getComponentConnectors());
-  }
- else {
-    measureTargets=layoutDependencyTree.getMeasureTargets();
-  }
-  for (  ComponentConnector paintableWidget : measureTargets) {
-    Element element=paintableWidget.getWidget().getElement();
-    MeasuredSize measuredSize=getMeasuredSize(paintableWidget);
-    MeasureResult measureResult=measuredAndUpdate(element,measuredSize,layoutDependencyTree);
-    if (measureResult.isHeightChanged()) {
-      layoutDependencyTree.markHeightAsChanged(paintableWidget);
+    ComponentConnector[] connectors=ConnectorMap.get(connection).getComponentConnectors();
+    for (    ComponentConnector connector : connectors) {
+      measueConnector(layoutDependencyTree,connector);
     }
-    if (measureResult.isWidthChanged()) {
-      layoutDependencyTree.markWidthAsChanged(paintableWidget);
+    for (    ComponentConnector connector : connectors) {
+      layoutDependencyTree.setNeedsMeasure(connector,false);
     }
-    layoutDependencyTree.setNeedsMeasure(paintableWidget,false);
+    measureCount+=connectors.length;
   }
-  return measureTargets.size();
+  while (layoutDependencyTree.hasConnectorsToMeasure()) {
+    Collection<ComponentConnector> measureTargets=layoutDependencyTree.getMeasureTargets();
+    for (    ComponentConnector connector : measureTargets) {
+      measueConnector(layoutDependencyTree,connector);
+    }
+    for (    ComponentConnector connector : measureTargets) {
+      layoutDependencyTree.setNeedsMeasure(connector,false);
+    }
+    measureCount++;
+  }
+  return measureCount;
 }

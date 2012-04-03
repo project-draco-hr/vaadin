@@ -21,13 +21,18 @@
  else {
     style.clearHeight();
   }
+  double allocatedContentHeight=0;
+  if (isRelativeHeight()) {
+    String height=getWidget().getElement().getStyle().getHeight();
+    double percentage=parsePercent(height);
+    allocatedContentHeight=contentHeight * (percentage / 100);
+    reportActualRelativeHeight(Math.round((float)allocatedContentHeight));
+  }
   AlignmentInfo alignment=getAlignment();
   if (!alignment.isTop()) {
     double usedHeight;
     if (isRelativeHeight()) {
-      String height=getWidget().getElement().getStyle().getHeight();
-      double percentage=parsePercent(height);
-      usedHeight=captionHeight + contentHeight * (percentage / 100);
+      usedHeight=captionHeight + allocatedContentHeight;
     }
  else {
       usedHeight=getUsedHeight();

@@ -29,13 +29,18 @@
  else {
     style.clearProperty("width");
   }
+  double allocatedContentWidth=0;
+  if (isRelativeWidth()) {
+    String percentWidth=getWidget().getElement().getStyle().getWidth();
+    double percentage=parsePercent(percentWidth);
+    allocatedContentWidth=availableWidth * (percentage / 100);
+    reportActualRelativeWidth(Math.round((float)allocatedContentWidth));
+  }
   AlignmentInfo alignment=getAlignment();
   if (!alignment.isLeft()) {
     double usedWidth;
     if (isRelativeWidth()) {
-      String percentWidth=getWidget().getElement().getStyle().getWidth();
-      double percentage=parsePercent(percentWidth);
-      usedWidth=availableWidth * (percentage / 100);
+      usedWidth=allocatedContentWidth;
     }
  else {
       usedWidth=getWidgetWidth();

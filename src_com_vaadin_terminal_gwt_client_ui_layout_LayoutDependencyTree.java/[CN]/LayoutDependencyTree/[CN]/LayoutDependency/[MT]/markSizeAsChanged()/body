@@ -1,6 +1,11 @@
 {
   for (  ComponentConnector connector : getNeedsSizeForLayout()) {
     LayoutDependency layoutDependency=getDependency(connector,direction);
-    layoutDependency.setNeedsLayout(true);
+    if (connector instanceof ManagedLayout) {
+      layoutDependency.setNeedsLayout(true);
+    }
+ else {
+      layoutDependency.propagatePostLayoutMeasure();
+    }
   }
 }

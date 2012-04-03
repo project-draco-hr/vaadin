@@ -1,8 +1,11 @@
 {
+  if (!(connector instanceof ManagedLayout)) {
+    throw new IllegalStateException("Only managed layouts can need layout");
+  }
   if (needsLayout && !this.needsLayout) {
     this.needsLayout=needsLayout;
     if (layoutBlockers.isEmpty()) {
-      getLayoutQueue(direction).add(connector);
+      getLayoutQueue(direction).add((ManagedLayout)connector);
       propagatePotentialLayout();
     }
   }
