@@ -1,4 +1,19 @@
 {
+  if (!pendingOverflowFixes.isEmpty()) {
+    Duration duration=new Duration();
+    for (    ComponentConnector componentConnector : pendingOverflowFixes) {
+      componentConnector.getWidget().getElement().getParentElement().getStyle().setTop(1,Unit.PX);
+    }
+    for (    ComponentConnector componentConnector : pendingOverflowFixes) {
+      componentConnector.getWidget().getElement().getParentElement().getOffsetHeight();
+    }
+    for (    ComponentConnector componentConnector : pendingOverflowFixes) {
+      componentConnector.getWidget().getElement().getParentElement().getStyle().setTop(0,Unit.PX);
+      layoutDependencyTree.setNeedsMeasure(componentConnector,true);
+    }
+    VConsole.log("Did overflow fix for " + pendingOverflowFixes.size() + " elements  in "+ duration.elapsedMillis()+ " ms");
+    pendingOverflowFixes.clear();
+  }
   int measureCount=0;
   if (measureAll) {
     ComponentConnector[] connectors=ConnectorMap.get(connection).getComponentConnectors();
