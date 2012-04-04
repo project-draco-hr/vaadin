@@ -50,8 +50,8 @@
       getWidget().fieldSet.removeChild(getWidget().desc);
     }
   }
-  if (uidl.getChildCount() > 1 && !uidl.getChildUIDL(1).getTag().equals("actions")) {
-    ComponentConnector newFooter=client.getPaintable(uidl.getChildUIDL(1));
+  if (getState().getFooter() != null) {
+    ComponentConnector newFooter=(ComponentConnector)getState().getFooter();
     Widget newFooterWidget=newFooter.getWidget();
     if (getWidget().footer == null) {
       getWidget().add(newFooter.getWidget(),getWidget().footerContainer);
@@ -68,8 +68,7 @@
       getWidget().remove(getWidget().footer);
     }
   }
-  final UIDL layoutUidl=uidl.getChildUIDL(0);
-  ComponentConnector newLayout=client.getPaintable(layoutUidl);
+  ComponentConnector newLayout=(ComponentConnector)getState().getLayout();
   Widget newLayoutWidget=newLayout.getWidget();
   if (getWidget().lo == null) {
     getWidget().lo=newLayoutWidget;
@@ -81,7 +80,7 @@
     getWidget().add(newLayoutWidget,getWidget().fieldContainer);
   }
   client.runDescendentsLayout(getWidget());
-  if (uidl.getChildCount() > 1) {
+  if (uidl.getChildCount() >= 1) {
     UIDL childUidl=uidl.getChildByTagName("actions");
     if (childUidl != null) {
       if (getWidget().shortcutHandler == null) {
