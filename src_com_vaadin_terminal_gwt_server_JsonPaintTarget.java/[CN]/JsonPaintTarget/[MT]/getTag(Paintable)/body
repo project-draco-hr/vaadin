@@ -1,24 +1,15 @@
 {
-  Class<? extends Paintable> class1;
-synchronized (widgetMappingCache) {
-    class1=widgetMappingCache.get(paintable.getClass());
+  if (!(paintable instanceof ClientConnector)) {
+    throw new IllegalArgumentException("Tags are only available for ClientConnectors");
   }
-  if (class1 == null) {
-    class1=paintable.getClass();
-    while (!hasClientWidgetMapping(class1)) {
-      Class<?> superclass=class1.getSuperclass();
-      if (superclass != null && Paintable.class.isAssignableFrom(superclass)) {
-        class1=(Class<? extends Paintable>)superclass;
-      }
- else {
-        logger.warning("No superclass of " + paintable.getClass().getName() + " has a @ClientWidget"+ " annotation. Component will not be mapped correctly on client side.");
-        break;
-      }
-    }
-synchronized (widgetMappingCache) {
-      widgetMappingCache.put(paintable.getClass(),class1);
-    }
+  Class<? extends Paintable> paintableClass=paintable.getClass();
+  while (paintableClass.isAnonymousClass()) {
+    paintableClass=(Class<? extends Paintable>)paintableClass.getSuperclass();
   }
-  usedPaintableTypes.add(class1);
-  return manager.getTagForType((Class<? extends ClientConnector>)class1);
+  Class<?> clazz=paintableClass;
+  while (!usedClientConnectors.contains(clazz) && clazz.getSuperclass() != null && ClientConnector.class.isAssignableFrom(clazz)) {
+    usedClientConnectors.add((Class<? extends ClientConnector>)clazz);
+    clazz=clazz.getSuperclass();
+  }
+  return manager.getTagForType((Class<? extends ClientConnector>)paintableClass);
 }
