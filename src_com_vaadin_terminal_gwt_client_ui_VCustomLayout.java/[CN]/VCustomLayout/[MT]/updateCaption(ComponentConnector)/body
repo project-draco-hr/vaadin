@@ -1,13 +1,13 @@
 {
-  VCaptionWrapper wrapper=paintableToCaptionWrapper.get(paintable);
   Widget widget=paintable.getWidget();
+  VCaptionWrapper wrapper=childWidgetToCaptionWrapper.get(widget);
   if (VCaption.isNeeded(paintable.getState())) {
     if (wrapper == null) {
       final String loc=getLocation(widget);
       super.remove(widget);
       wrapper=new VCaptionWrapper(paintable,client);
       super.add(wrapper,locationToElement.get(loc));
-      paintableToCaptionWrapper.put(paintable,wrapper);
+      childWidgetToCaptionWrapper.put(widget,wrapper);
     }
     wrapper.updateCaption();
   }
@@ -16,7 +16,7 @@
       final String loc=getLocation(widget);
       super.remove(wrapper);
       super.add(widget,locationToElement.get(loc));
-      paintableToCaptionWrapper.remove(paintable);
+      childWidgetToCaptionWrapper.remove(widget);
     }
   }
 }
