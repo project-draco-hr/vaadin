@@ -198,10 +198,10 @@ catch (  InvocationTargetException e) {
     }
   }
   outWriter.print("}");
-  Collection<Class<? extends Paintable>> usedPaintableTypes=paintTarget.getUsedPaintableTypes();
+  Collection<Class<? extends ClientConnector>> usedClientConnectors=paintTarget.getUsedClientConnectors();
   boolean typeMappingsOpen=false;
   ClientCache clientCache=getClientCache(root);
-  for (  Class<? extends Paintable> class1 : usedPaintableTypes) {
+  for (  Class<? extends ClientConnector> class1 : usedClientConnectors) {
     if (clientCache.cache(class1)) {
       if (!typeMappingsOpen) {
         typeMappingsOpen=true;
@@ -214,11 +214,30 @@ catch (  InvocationTargetException e) {
       outWriter.print("\"");
       outWriter.print(canonicalName);
       outWriter.print("\" : ");
-      outWriter.print(getTagForType((Class<? extends ClientConnector>)class1));
+      outWriter.print(getTagForType(class1));
     }
   }
   if (typeMappingsOpen) {
     outWriter.print(" }");
+  }
+  boolean typeInheritanceMapOpen=false;
+  if (typeMappingsOpen) {
+    for (    Class<? extends ClientConnector> class1 : usedClientConnectors) {
+      if (!typeInheritanceMapOpen) {
+        typeInheritanceMapOpen=true;
+        outWriter.print(", \"typeInheritanceMap\" : { ");
+      }
+ else {
+        outWriter.print(" , ");
+      }
+      outWriter.print("\"");
+      outWriter.print(getTagForType(class1));
+      outWriter.print("\" : ");
+      outWriter.print(getTagForType((Class<? extends ClientConnector>)class1.getSuperclass()));
+    }
+    if (typeInheritanceMapOpen) {
+      outWriter.print(" }");
+    }
   }
   printLocaleDeclarations(outWriter);
   if (dragAndDropService != null) {

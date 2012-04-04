@@ -18,6 +18,9 @@
       resourcesMap.put(key,resources.getAsString(key));
     }
   }
+  if (json.containsKey("typeInheritanceMap")) {
+    configuration.addComponentInheritanceInfo(json.getValueMap("typeInheritanceMap"));
+  }
   if (json.containsKey("typeMappings")) {
     configuration.addComponentMappings(json.getValueMap("typeMappings"),widgetSet);
   }
@@ -158,12 +161,13 @@
       for (int i=0; i < keyArray.length(); i++) {
         try {
           String connectorId=keyArray.get(i);
-          String connectorType=types.getString(connectorId);
+          int connectorType=Integer.parseInt(types.getString((connectorId)));
           ServerConnector connector=connectorMap.getConnector(connectorId);
           if (connector != null) {
             continue;
           }
-          if (!connectorType.equals(configuration.getEncodedWindowTag())) {
+          Class<? extends ComponentConnector> connectorClass=configuration.getWidgetClassByEncodedTag(connectorType);
+          if (connectorClass != RootConnector.class) {
             getConnector(connectorId,connectorType);
           }
  else {

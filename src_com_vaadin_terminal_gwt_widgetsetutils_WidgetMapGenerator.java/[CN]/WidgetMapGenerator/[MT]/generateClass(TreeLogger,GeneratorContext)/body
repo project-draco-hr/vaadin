@@ -13,10 +13,11 @@
   composer.addImport("com.google.gwt.core.client.RunAsyncCallback");
   composer.setSuperclass("com.vaadin.terminal.gwt.client.WidgetMap");
   SourceWriter sourceWriter=composer.createSourceWriter(context,printWriter);
-  Collection<Class<? extends Paintable>> paintablesHavingWidgetAnnotation=getUsedPaintables();
-  validatePaintables(logger,context,paintablesHavingWidgetAnnotation);
-  generateImplementationDetector(sourceWriter,paintablesHavingWidgetAnnotation);
-  generateInstantiatorMethod(sourceWriter,paintablesHavingWidgetAnnotation);
+  Collection<Class<? extends ComponentConnector>> connectors=getUsedConnectors(context.getTypeOracle());
+  validateConnectors(logger,connectors);
+  logConnectors(logger,context,connectors);
+  generateImplementationDetector(sourceWriter,connectors);
+  generateInstantiatorMethod(sourceWriter,connectors);
   sourceWriter.outdent();
   sourceWriter.println("}");
   context.commit(logger,printWriter);
