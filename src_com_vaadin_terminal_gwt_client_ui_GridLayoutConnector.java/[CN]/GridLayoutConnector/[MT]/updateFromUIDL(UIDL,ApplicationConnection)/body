@@ -29,9 +29,11 @@
     final UIDL r=(UIDL)i.next();
     if ("gr".equals(r.getTag())) {
       for (final Iterator<?> j=r.getChildIterator(); j.hasNext(); ) {
-        final UIDL c=(UIDL)j.next();
-        if ("gc".equals(c.getTag())) {
-          Cell cell=layout.getCell(c);
+        final UIDL cellUidl=(UIDL)j.next();
+        if ("gc".equals(cellUidl.getTag())) {
+          int row=cellUidl.getIntAttribute("y");
+          int col=cellUidl.getIntAttribute("x");
+          Cell cell=layout.getCell(row,col,cellUidl);
           if (cell.hasContent()) {
             cell.setAlignment(new AlignmentInfo(alignments[alignmentIndex++]));
             nonRenderedWidgets.remove(cell.slot.getWidget());
@@ -42,18 +44,13 @@
   }
   layout.colExpandRatioArray=uidl.getIntArrayAttribute("colExpand");
   layout.rowExpandRatioArray=uidl.getIntArrayAttribute("rowExpand");
-  for (  Widget w : nonRenderedWidgets) {
-    Cell cell=layout.widgetToCell.remove(w);
-    cell.slot.setCaption(null);
-    if (w.getParent() == layout) {
-      w.removeFromParent();
-      ConnectorMap paintableMap=ConnectorMap.get(client);
-      paintableMap.unregisterConnector(paintableMap.getConnector(w));
-    }
-    cell.slot.getWrapperElement().removeFromParent();
-    cell.slot=null;
-  }
   layout.updateMarginStyleNames(new VMarginInfo(getState().getMarginsBitmask()));
   layout.updateSpacingStyleName(getState().isSpacing());
+  if (needCaptionUpdate) {
+    needCaptionUpdate=false;
+    for (    ComponentConnector child : getChildren()) {
+      updateCaption(child);
+    }
+  }
   getLayoutManager().setNeedsUpdate(this);
 }
