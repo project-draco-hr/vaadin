@@ -15,7 +15,7 @@
   }
   needsHorizontalLayout.clear();
   needsVerticalLayout.clear();
-  measureNonPaintables(currentDependencyTree);
+  measureNonPaintables();
   VConsole.log("Layout init in " + totalDuration.elapsedMillis() + " ms");
   while (true) {
     Duration passDuration=new Duration();
@@ -23,6 +23,20 @@
     int measuredConnectorCount=measureConnectors(currentDependencyTree,passes == 1);
     int measureTime=passDuration.elapsedMillis();
     VConsole.log("  Measured " + measuredConnectorCount + " elements in "+ measureTime+ " ms");
+    if (!listenersToFire.isEmpty()) {
+      for (      Element element : listenersToFire) {
+        Collection<ElementResizeListener> listeners=elementResizeListeners.get(element);
+        ElementResizeListener[] array=listeners.toArray(new ElementResizeListener[listeners.size()]);
+        ElementResizeEvent event=new ElementResizeEvent(this,element);
+        for (        ElementResizeListener listener : array) {
+          listener.onElementResize(event);
+        }
+      }
+      int measureListenerTime=passDuration.elapsedMillis();
+      VConsole.log("  Fired resize listeners for  " + listenersToFire.size() + " elements in "+ (measureListenerTime - measureTime)+ " ms");
+      measureTime=measuredConnectorCount;
+      listenersToFire.clear();
+    }
     FastStringSet updatedSet=FastStringSet.create();
     while (currentDependencyTree.hasHorizontalConnectorToLayout() || currentDependencyTree.hasVerticaConnectorToLayout()) {
       for (      ManagedLayout layout : currentDependencyTree.getHorizontalLayoutTargets()) {
