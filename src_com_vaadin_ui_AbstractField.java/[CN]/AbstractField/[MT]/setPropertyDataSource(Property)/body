@@ -1,11 +1,6 @@
 {
   final Object oldValue=value;
-  if (dataSource != null && Property.ValueChangeNotifier.class.isAssignableFrom(dataSource.getClass())) {
-    ((Property.ValueChangeNotifier)dataSource).removeListener(this);
-  }
-  if (dataSource != null && Property.ReadOnlyStatusChangeNotifier.class.isAssignableFrom(dataSource.getClass())) {
-    ((Property.ReadOnlyStatusChangeNotifier)dataSource).removeListener(this);
-  }
+  removePropertyListeners();
   dataSource=newDataSource;
   try {
     if (dataSource != null) {
@@ -17,12 +12,7 @@
     currentBufferedSourceException=new Buffered.SourceException(this,e);
     modified=true;
   }
-  if (dataSource instanceof Property.ValueChangeNotifier) {
-    ((Property.ValueChangeNotifier)dataSource).addListener(this);
-  }
-  if (dataSource instanceof Property.ReadOnlyStatusChangeNotifier) {
-    ((Property.ReadOnlyStatusChangeNotifier)dataSource).addListener(this);
-  }
+  addPropertyListeners();
   if (dataSource instanceof Validatable) {
     final Collection<Validator> validators=((Validatable)dataSource).getValidators();
     if (validators != null) {
