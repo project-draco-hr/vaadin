@@ -80,7 +80,6 @@
   boolean layoutChanged=getWidget().layout != lo;
   if (getWidget().layout != null) {
     if (layoutChanged) {
-      client.unregisterPaintable(getWidget().layout);
       if (childStateChangeHandlerRegistration != null) {
         childStateChangeHandlerRegistration.removeHandler();
         childStateChangeHandlerRegistration=null;
@@ -97,7 +96,6 @@
       onChildSizeChange();
     }
   }
-  getWidget().layout.updateFromUIDL(childUidl,client);
   final HashSet<VWindow> removedSubWindows=new HashSet<VWindow>(getWidget().subWindows);
   while ((childUidl=uidl.getChildUIDL(++childIndex)) != null) {
     String tag=childUidl.getTag().intern();
@@ -131,7 +129,6 @@
   }
   for (final Iterator<VWindow> rem=removedSubWindows.iterator(); rem.hasNext(); ) {
     final VWindow w=rem.next();
-    client.unregisterPaintable(ConnectorMap.get(getConnection()).getConnector(w));
     getWidget().subWindows.remove(w);
     w.hide();
   }

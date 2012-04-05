@@ -1,24 +1,24 @@
 {
-  if (newLayout == null) {
-    newLayout=new FormLayout();
+  if (layout == null) {
+    layout=new FormLayout();
   }
   gridlayoutCursorX=-1;
   gridlayoutCursorY=-1;
-  if (layout != null) {
+  if (getLayout() != null) {
     final Object[] properties=propertyIds.toArray();
     for (int i=0; i < properties.length; i++) {
       Field<?> f=getField(properties[i]);
       detachField(f);
-      if (newLayout instanceof CustomLayout) {
-        ((CustomLayout)newLayout).addComponent(f,properties[i].toString());
+      if (layout instanceof CustomLayout) {
+        ((CustomLayout)layout).addComponent(f,properties[i].toString());
       }
  else {
-        newLayout.addComponent(f);
+        layout.addComponent(f);
       }
     }
-    layout.setParent(null);
+    getLayout().setParent(null);
   }
-  newLayout.setParent(this);
-  layout=newLayout;
+  layout.setParent(this);
+  getState().setLayout(layout);
   requestRepaint();
 }

@@ -2,7 +2,7 @@
   ArrayList<ClientConnector> dirtyVisibleConnectors=new ArrayList<ClientConnector>();
   Application application=root.getApplication();
   DirtyConnectorTracker rootConnectorTracker=root.getDirtyConnectorTracker();
-  System.out.println("* Creating response to client");
+  logger.log(Level.FINE,"* Creating response to client");
   if (repaintAll) {
     getClientCache(root).clear();
     rootConnectorTracker.markAllComponentsDirty();
@@ -10,7 +10,7 @@
     requireLocale(application.getLocale().toString());
   }
   dirtyVisibleConnectors.addAll(getDirtyVisibleComponents(rootConnectorTracker));
-  System.out.println("* Found " + dirtyVisibleConnectors.size() + " dirty connectors to paint");
+  logger.log(Level.FINE,"Found " + dirtyVisibleConnectors.size() + " dirty connectors to paint");
   for (  ClientConnector connector : dirtyVisibleConnectors) {
     if (connector instanceof Component) {
       ((Component)connector).updateState();
@@ -40,7 +40,7 @@
         sharedStates.put(connector.getConnectorId(),stateJsonArray);
       }
  catch (      JSONException e) {
-        throw new PaintException("Failed to serialize shared state for connector " + connector.getConnectorId() + ": "+ e.getMessage());
+        throw new PaintException("Failed to serialize shared state for connector " + connector.getClass().getName() + " ("+ connector.getConnectorId()+ "): "+ e.getMessage());
       }
     }
   }

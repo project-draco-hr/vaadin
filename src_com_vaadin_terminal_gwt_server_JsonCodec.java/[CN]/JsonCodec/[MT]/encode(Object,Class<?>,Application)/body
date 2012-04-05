@@ -37,9 +37,14 @@
     return combineTypeAndValue(JsonEncoder.VTYPE_ARRAY,jsonArray);
   }
  else   if (value instanceof Map) {
-    Map<String,Object> map=(Map<String,Object>)value;
+    Map<Object,Object> map=(Map<Object,Object>)value;
     JSONObject jsonMap=encodeMapContents(map,application);
-    return combineTypeAndValue(JsonEncoder.VTYPE_MAP,jsonMap);
+    if (!map.isEmpty() && map.keySet().iterator().next() instanceof Connector) {
+      return combineTypeAndValue(JsonEncoder.VTYPE_MAP_CONNECTOR,jsonMap);
+    }
+ else {
+      return combineTypeAndValue(JsonEncoder.VTYPE_MAP,jsonMap);
+    }
   }
  else   if (value instanceof Connector) {
     Connector connector=(Connector)value;

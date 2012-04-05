@@ -1,0 +1,17 @@
+{
+  template=extractBodyAndScriptsFromTemplate(template);
+  String relImgPrefix=themeUri + "/layouts/";
+  template=template.replaceAll("<((?:img)|(?:IMG))\\s([^>]*)src=\"((?![a-z]+:)[^/][^\"]+)\"","<$1 $2src=\"" + relImgPrefix + "$3\"");
+  template=template.replaceAll("<((?:img)|(?:IMG))\\s([^>]*)src=[^\"]((?![a-z]+:)[^/][^ />]+)[ />]","<$1 $2src=\"" + relImgPrefix + "$3\"");
+  template=template.replaceAll("(<[^>]+style=\"[^\"]*url\\()((?![a-z]+:)[^/][^\"]+)(\\)[^>]*>)","$1 " + relImgPrefix + "$2 $3");
+  getElement().setInnerHTML(template);
+  locationToElement.clear();
+  scanForLocations(getElement());
+  initImgElements();
+  elementWithNativeResizeFunction=DOM.getFirstChild(getElement());
+  if (elementWithNativeResizeFunction == null) {
+    elementWithNativeResizeFunction=getElement();
+  }
+  publishResizedFunction(elementWithNativeResizeFunction);
+  htmlInitialized=true;
+}

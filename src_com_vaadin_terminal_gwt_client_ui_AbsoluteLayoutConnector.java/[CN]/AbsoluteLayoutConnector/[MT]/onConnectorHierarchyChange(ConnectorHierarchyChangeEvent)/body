@@ -1,0 +1,13 @@
+{
+  super.onConnectorHierarchyChange(event);
+  for (  ComponentConnector child : getChildren()) {
+    getWrapper(child);
+  }
+  for (  ComponentConnector oldChild : event.getOldChildren()) {
+    if (oldChild.getParent() != this) {
+      String connectorId=oldChild.getConnectorId();
+      AbsoluteWrapper absoluteWrapper=connectorIdToComponentWrapper.remove(connectorId);
+      absoluteWrapper.destroy();
+    }
+  }
+}

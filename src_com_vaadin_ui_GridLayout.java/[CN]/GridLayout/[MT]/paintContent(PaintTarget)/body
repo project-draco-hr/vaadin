@@ -1,31 +1,26 @@
 {
   super.paintContent(target);
-  target.addAttribute("h",rows);
-  target.addAttribute("w",cols);
   target.addAttribute("structuralChange",structuralChange);
   structuralChange=false;
-  if (spacing) {
-    target.addAttribute("spacing",spacing);
-  }
   final Iterator<Area> areaiterator=areas.iterator();
   Area area=areaiterator.hasNext() ? (Area)areaiterator.next() : null;
   final HashMap<Integer,Integer> cellUsed=new HashMap<Integer,Integer>();
   int emptyCells=0;
   final String[] alignmentsArray=new String[components.size()];
-  final Integer[] columnExpandRatioArray=new Integer[cols];
-  final Integer[] rowExpandRatioArray=new Integer[rows];
+  final Integer[] columnExpandRatioArray=new Integer[getColumns()];
+  final Integer[] rowExpandRatioArray=new Integer[getRows()];
   int realColExpandRatioSum=0;
   float colSum=getExpandRatioSum(columnExpandRatio);
   if (colSum == 0) {
-    float equalSize=1 / (float)cols;
+    float equalSize=1 / (float)getColumns();
     int myRatio=Math.round(equalSize * 1000);
-    for (int i=0; i < cols; i++) {
+    for (int i=0; i < getColumns(); i++) {
       columnExpandRatioArray[i]=myRatio;
     }
-    realColExpandRatioSum=myRatio * cols;
+    realColExpandRatioSum=myRatio * getColumns();
   }
  else {
-    for (int i=0; i < cols; i++) {
+    for (int i=0; i < getColumns(); i++) {
       int myRatio=Math.round((getColumnExpandRatio(i) / colSum) * 1000);
       columnExpandRatioArray[i]=myRatio;
       realColExpandRatioSum+=myRatio;
@@ -36,22 +31,22 @@
   float rowSum=getExpandRatioSum(rowExpandRatio);
   if (rowSum == 0) {
     equallyDividedRows=true;
-    float equalSize=1 / (float)rows;
+    float equalSize=1 / (float)getRows();
     int myRatio=Math.round(equalSize * 1000);
-    for (int i=0; i < rows; i++) {
+    for (int i=0; i < getRows(); i++) {
       rowExpandRatioArray[i]=myRatio;
     }
-    realRowExpandRatioSum=myRatio * rows;
+    realRowExpandRatioSum=myRatio * getRows();
   }
   int index=0;
-  for (int cury=0; cury < rows; cury++) {
+  for (int cury=0; cury < getRows(); cury++) {
     target.startTag("gr");
     if (!equallyDividedRows) {
       int myRatio=Math.round((getRowExpandRatio(cury) / rowSum) * 1000);
       rowExpandRatioArray[cury]=myRatio;
       realRowExpandRatioSum+=myRatio;
     }
-    for (int curx=0; curx < cols; curx++) {
+    for (int curx=0; curx < getColumns(); curx++) {
       if (area != null && (area.row1 == cury) && (area.column1 == curx)) {
         if (emptyCells > 0) {
           target.startTag("gc");
@@ -121,7 +116,7 @@
     }
     if (emptyCells > 0) {
       target.startTag("gc");
-      target.addAttribute("x",cols - emptyCells);
+      target.addAttribute("x",getColumns() - emptyCells);
       target.addAttribute("y",cury);
       if (emptyCells > 1) {
         target.addAttribute("w",emptyCells);

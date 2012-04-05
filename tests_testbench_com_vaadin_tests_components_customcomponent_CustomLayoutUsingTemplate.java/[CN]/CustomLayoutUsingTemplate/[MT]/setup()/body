@@ -1,0 +1,23 @@
+{
+  String thisPackage=CustomLayoutUsingTemplate.class.getName().replace('.','/');
+  thisPackage=thisPackage.replaceAll(CustomLayoutUsingTemplate.class.getSimpleName() + "$","");
+  String template=thisPackage + "template.html";
+  InputStream is=getClassLoader().getResourceAsStream(template);
+  try {
+    layout=new CustomLayout(is);
+    layout.addComponent(new Button("Click to add a TextField to second location",this),"location1");
+    addComponent(layout);
+  }
+ catch (  IOException e) {
+    addComponent(new Label(e.getMessage()));
+    e.printStackTrace();
+  }
+ finally {
+    try {
+      is.close();
+    }
+ catch (    IOException e) {
+      e.printStackTrace();
+    }
+  }
+}

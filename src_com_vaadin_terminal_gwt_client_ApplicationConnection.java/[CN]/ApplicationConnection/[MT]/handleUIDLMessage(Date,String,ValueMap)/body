@@ -9,6 +9,7 @@
   if (json.containsKey(UIDL_SECURITY_TOKEN_ID)) {
     uidlSecurityKey=json.getString(UIDL_SECURITY_TOKEN_ID);
   }
+  VConsole.log(" * Handling resources from server");
   if (json.containsKey("resources")) {
     ValueMap resources=json.getValueMap("resources");
     JsArrayString keyArray=resources.getKeyArray();
@@ -18,14 +19,17 @@
       resourcesMap.put(key,resources.getAsString(key));
     }
   }
+  VConsole.log("Handling type inheritance map from server");
   if (json.containsKey("typeInheritanceMap")) {
     configuration.addComponentInheritanceInfo(json.getValueMap("typeInheritanceMap"));
   }
+  VConsole.log("Handling type mappings from server");
   if (json.containsKey("typeMappings")) {
     configuration.addComponentMappings(json.getValueMap("typeMappings"),widgetSet);
   }
   Command c=new Command(){
     public void execute(){
+      VConsole.log(" * Dumping UIDL");
       VConsole.dirUIDL(json,configuration);
       if (json.containsKey("locales")) {
         VConsole.log(" * Handling locales");
@@ -65,7 +69,7 @@
       Duration updateDuration=new Duration();
       createConnectorsIfNeeded(json);
       Collection<StateChangeEvent> pendingStateChangeEvents=updateConnectorState(json);
-      Collection<ConnectorHierarchyChangedEvent> pendingHierarchyChangeEvents=updateConnectorHierarchy(json);
+      Collection<ConnectorHierarchyChangeEvent> pendingHierarchyChangeEvents=updateConnectorHierarchy(json);
       sendHierarchyChangeEvents(pendingHierarchyChangeEvents);
       sendStateChangeEvents(pendingStateChangeEvents);
       updateVaadin6StyleConnectors(json);
@@ -189,12 +193,15 @@
           final UIDL change=changes.get(i).cast();
           final UIDL uidl=change.getChildUIDL(0);
           String connectorId=uidl.getId();
-          final ComponentConnector paintable=(ComponentConnector)connectorMap.getConnector(connectorId);
-          if (paintable != null) {
-            paintable.updateFromUIDL(uidl,ApplicationConnection.this);
+          final ComponentConnector legacyConnector=(ComponentConnector)connectorMap.getConnector(connectorId);
+          if (legacyConnector instanceof Paintable) {
+            ((Paintable)legacyConnector).updateFromUIDL(uidl,ApplicationConnection.this);
+          }
+ else           if (legacyConnector == null) {
+            VConsole.error("Received update for " + uidl.getTag() + ", but there is no such paintable ("+ connectorId+ ") rendered.");
           }
  else {
-            VConsole.error("Received update for " + uidl.getTag() + ", but there is no such paintable ("+ connectorId+ ") rendered.");
+            VConsole.error("Server sent Vaadin 6 style updates for " + Util.getConnectorString(legacyConnector) + " but this is not a Vaadin 6 Paintable");
           }
         }
  catch (        final Throwable e) {
@@ -202,13 +209,13 @@
         }
       }
     }
-    private void sendHierarchyChangeEvents(    Collection<ConnectorHierarchyChangedEvent> pendingHierarchyChangeEvents){
+    private void sendHierarchyChangeEvents(    Collection<ConnectorHierarchyChangeEvent> pendingHierarchyChangeEvents){
       if (pendingHierarchyChangeEvents.isEmpty()) {
         return;
       }
       VConsole.log(" * Sending hierarchy change events");
-      for (      ConnectorHierarchyChangedEvent event : pendingHierarchyChangeEvents) {
-        event.getParent().connectorHierarchyChanged(event);
+      for (      ConnectorHierarchyChangeEvent event : pendingHierarchyChangeEvents) {
+        event.getConnector().fireEvent(event);
       }
     }
     private Collection<StateChangeEvent> updateConnectorState(    ValueMap json){
@@ -227,7 +234,9 @@
             JSONArray stateDataAndType=new JSONArray(states.getJavaScriptObject(connectorId));
             Object state=JsonDecoder.decodeValue(stateDataAndType,connectorMap,ApplicationConnection.this);
             connector.setState((SharedState)state);
-            events.add(new StateChangeEvent(connector));
+            StateChangeEvent event=GWT.create(StateChangeEvent.class);
+            event.setConnector(connector);
+            events.add(event);
           }
         }
  catch (        final Throwable e) {
@@ -244,8 +253,8 @@
  * @return A collection of events that should be fired when update
  * of hierarchy and state is complete
  */
-    private Collection<ConnectorHierarchyChangedEvent> updateConnectorHierarchy(    ValueMap json){
-      List<ConnectorHierarchyChangedEvent> events=new LinkedList<ConnectorHierarchyChangedEvent>();
+    private Collection<ConnectorHierarchyChangeEvent> updateConnectorHierarchy(    ValueMap json){
+      List<ConnectorHierarchyChangeEvent> events=new LinkedList<ConnectorHierarchyChangeEvent>();
       VConsole.log(" * Updating connector hierarchy");
       if (!json.containsKey("hierarchy")) {
         return events;
@@ -281,9 +290,9 @@
           if (!actuallyChanged) {
             continue;
           }
-          ConnectorHierarchyChangedEvent event=GWT.create(ConnectorHierarchyChangedEvent.class);
+          ConnectorHierarchyChangeEvent event=GWT.create(ConnectorHierarchyChangeEvent.class);
           event.setOldChildren(oldChildren);
-          event.setParent(ccc);
+          event.setConnector(ccc);
           ccc.setChildren((List)newChildren);
           events.add(event);
           for (          ComponentConnector oldChild : oldChildren) {

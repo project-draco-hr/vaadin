@@ -1,13 +1,11 @@
 {
   VGridLayout layout=getWidget();
   layout.client=client;
-  super.updateFromUIDL(uidl,client);
   if (!isRealUpdate(uidl)) {
     return;
   }
-  clickEventHandler.handleEventHandlerRegistration();
-  int cols=uidl.getIntAttribute("w");
-  int rows=uidl.getIntAttribute("h");
+  int cols=getState().getColumns();
+  int rows=getState().getRows();
   layout.columnWidths=new int[cols];
   layout.rowHeights=new int[rows];
   if (layout.cells == null) {
@@ -31,9 +29,11 @@
     final UIDL r=(UIDL)i.next();
     if ("gr".equals(r.getTag())) {
       for (final Iterator<?> j=r.getChildIterator(); j.hasNext(); ) {
-        final UIDL c=(UIDL)j.next();
-        if ("gc".equals(c.getTag())) {
-          Cell cell=layout.getCell(c);
+        final UIDL cellUidl=(UIDL)j.next();
+        if ("gc".equals(cellUidl.getTag())) {
+          int row=cellUidl.getIntAttribute("y");
+          int col=cellUidl.getIntAttribute("x");
+          Cell cell=layout.getCell(row,col,cellUidl);
           if (cell.hasContent()) {
             cell.setAlignment(new AlignmentInfo(alignments[alignmentIndex++]));
             nonRenderedWidgets.remove(cell.slot.getWidget());
@@ -44,19 +44,13 @@
   }
   layout.colExpandRatioArray=uidl.getIntArrayAttribute("colExpand");
   layout.rowExpandRatioArray=uidl.getIntArrayAttribute("rowExpand");
-  for (  Widget w : nonRenderedWidgets) {
-    Cell cell=layout.widgetToCell.remove(w);
-    cell.slot.setCaption(null);
-    if (w.getParent() == layout) {
-      w.removeFromParent();
-      ConnectorMap paintableMap=ConnectorMap.get(client);
-      paintableMap.unregisterConnector(paintableMap.getConnector(w));
+  layout.updateMarginStyleNames(new VMarginInfo(getState().getMarginsBitmask()));
+  layout.updateSpacingStyleName(getState().isSpacing());
+  if (needCaptionUpdate) {
+    needCaptionUpdate=false;
+    for (    ComponentConnector child : getChildren()) {
+      updateCaption(child);
     }
-    cell.slot.getWrapperElement().removeFromParent();
-    cell.slot=null;
   }
-  int bitMask=uidl.getIntAttribute("margins");
-  layout.updateMarginStyleNames(new VMarginInfo(bitMask));
-  layout.updateSpacingStyleName(uidl.getBooleanAttribute("spacing"));
   getLayoutManager().setNeedsUpdate(this);
 }

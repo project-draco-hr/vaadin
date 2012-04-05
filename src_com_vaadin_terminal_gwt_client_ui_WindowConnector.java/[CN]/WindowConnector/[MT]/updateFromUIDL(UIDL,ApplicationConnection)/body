@@ -2,23 +2,19 @@
   getWidget().id=getConnectorId();
   getWidget().client=client;
   DOM.setElementProperty(getWidget().closeBox,"id",getConnectorId() + "_window_close");
-  if (uidl.hasAttribute("invisible")) {
-    getWidget().hide();
-    return;
-  }
   if (isRealUpdate(uidl)) {
-    if (uidl.getBooleanAttribute("modal") != getWidget().vaadinModality) {
+    if (getState().isModal() != getWidget().vaadinModality) {
       getWidget().setVaadinModality(!getWidget().vaadinModality);
     }
     if (!getWidget().isAttached()) {
       getWidget().setVisible(false);
       getWidget().show();
     }
-    if (uidl.getBooleanAttribute("resizable") != getWidget().resizable) {
-      getWidget().setResizable(!getWidget().resizable);
+    if (getState().isResizable() != getWidget().resizable) {
+      getWidget().setResizable(getState().isResizable());
     }
-    getWidget().resizeLazy=uidl.hasAttribute(VView.RESIZE_LAZY);
-    getWidget().setDraggable(!uidl.hasAttribute("fixedposition"));
+    getWidget().resizeLazy=getState().isResizeLazy();
+    getWidget().setDraggable(getState().isDraggable());
     String iconURL=null;
     if (getState().getIcon() != null) {
       iconURL=getState().getIcon().getURL();
@@ -26,7 +22,6 @@
     getWidget().setCaption(getState().getCaption(),iconURL);
   }
   getWidget().visibilityChangesDisabled=true;
-  super.updateFromUIDL(uidl,client);
   if (!isRealUpdate(uidl)) {
     return;
   }
@@ -34,8 +29,8 @@
   clickEventHandler.handleEventHandlerRegistration();
   getWidget().immediate=getState().isImmediate();
   getWidget().setClosable(!isReadOnly());
-  int positionx=uidl.getIntVariable("positionx");
-  int positiony=uidl.getIntVariable("positiony");
+  int positionx=getState().getPositionX();
+  int positiony=getState().getPositionY();
   if (positionx >= 0 || positiony >= 0) {
     if (positionx < 0) {
       positionx=0;
@@ -48,27 +43,9 @@
   boolean showingUrl=false;
   int childIndex=0;
   UIDL childUidl=uidl.getChildUIDL(childIndex++);
-  while ("open".equals(childUidl.getTag())) {
-    final String parsedUri=client.translateVaadinUri(childUidl.getStringAttribute("src"));
-    if (!childUidl.hasAttribute("name")) {
-      final Frame frame=new Frame();
-      DOM.setStyleAttribute(frame.getElement(),"width","100%");
-      DOM.setStyleAttribute(frame.getElement(),"height","100%");
-      DOM.setStyleAttribute(frame.getElement(),"border","0px");
-      frame.setUrl(parsedUri);
-      getWidget().contentPanel.setWidget(frame);
-      showingUrl=true;
-    }
- else {
-      final String target=childUidl.getStringAttribute("name");
-      Window.open(parsedUri,target,"");
-    }
-    childUidl=uidl.getChildUIDL(childIndex++);
-  }
   final ComponentConnector lo=client.getPaintable(childUidl);
   if (getWidget().layout != null) {
     if (getWidget().layout != lo) {
-      client.unregisterPaintable(getWidget().layout);
       getWidget().contentPanel.remove(getWidget().layout.getWidget());
       if (!showingUrl) {
         getWidget().contentPanel.setWidget(lo.getWidget());
@@ -80,7 +57,6 @@
     getWidget().contentPanel.setWidget(lo.getWidget());
     getWidget().layout=lo;
   }
-  getWidget().layout.updateFromUIDL(childUidl,client);
   if (uidl.getChildCount() > 1) {
     final int cnt=uidl.getChildCount();
     for (int i=1; i < cnt; i++) {
@@ -95,12 +71,7 @@
   }
   getWidget().contentPanel.setScrollPosition(getState().getScrollTop());
   getWidget().contentPanel.setHorizontalScrollPosition(getState().getScrollLeft());
-  if (uidl.getBooleanAttribute("center")) {
-    getWidget().centered=true;
-  }
- else {
-    getWidget().centered=false;
-  }
+  getWidget().centered=getState().isCentered();
   getWidget().setVisible(true);
   if (getWidget().getOffsetWidth() > Window.getClientWidth()) {
     getWidget().setWidth(Window.getClientWidth() + "px");

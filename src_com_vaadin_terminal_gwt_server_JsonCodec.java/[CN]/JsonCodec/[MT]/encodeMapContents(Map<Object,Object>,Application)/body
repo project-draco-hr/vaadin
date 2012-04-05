@@ -1,0 +1,14 @@
+{
+  JSONObject jsonMap=new JSONObject();
+  for (  Object mapKey : map.keySet()) {
+    Object mapValue=map.get(mapKey);
+    if (mapKey instanceof ClientConnector) {
+      mapKey=((ClientConnector)mapKey).getConnectorId();
+    }
+    if (!(mapKey instanceof String)) {
+      throw new JSONException("Only maps with String/Connector keys are currently supported (#8602)");
+    }
+    jsonMap.put((String)mapKey,encode(mapValue,application));
+  }
+  return jsonMap;
+}

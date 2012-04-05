@@ -1,3 +1,11 @@
 {
+  try {
+    Method m=getClass().getMethod("getState",(Class[])null);
+    Class<? extends ComponentState> type=(Class<? extends ComponentState>)m.getReturnType();
+    return type.newInstance();
+  }
+ catch (  Exception e) {
+    getLogger().log(Level.INFO,"Error determining state object class for " + getClass().getName());
+  }
   return new ComponentState();
 }

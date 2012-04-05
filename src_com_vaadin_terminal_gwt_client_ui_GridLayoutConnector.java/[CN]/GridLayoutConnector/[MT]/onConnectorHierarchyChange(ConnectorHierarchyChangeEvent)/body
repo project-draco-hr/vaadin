@@ -1,0 +1,15 @@
+{
+  super.onConnectorHierarchyChange(event);
+  VGridLayout layout=getWidget();
+  for (  ComponentConnector oldChild : event.getOldChildren()) {
+    if (oldChild.getParent() == this) {
+      continue;
+    }
+    Widget childWidget=oldChild.getWidget();
+    layout.remove(childWidget);
+    Cell cell=layout.widgetToCell.remove(childWidget);
+    cell.slot.setCaption(null);
+    cell.slot.getWrapperElement().removeFromParent();
+    cell.slot=null;
+  }
+}

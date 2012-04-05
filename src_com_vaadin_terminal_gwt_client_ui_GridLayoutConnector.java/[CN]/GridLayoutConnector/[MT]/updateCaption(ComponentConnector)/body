@@ -1,17 +1,21 @@
 {
   VGridLayout layout=getWidget();
-  if (VCaption.isNeeded(paintable.getState())) {
-    Cell cell=layout.widgetToCell.get(paintable.getWidget());
+  Cell cell=layout.widgetToCell.get(childConnector.getWidget());
+  if (cell == null) {
+    needCaptionUpdate=true;
+    return;
+  }
+  if (VCaption.isNeeded(childConnector.getState())) {
     VLayoutSlot layoutSlot=cell.slot;
     VCaption caption=layoutSlot.getCaption();
     if (caption == null) {
-      caption=new VCaption(paintable,getConnection());
-      Widget widget=paintable.getWidget();
+      caption=new VCaption(childConnector,getConnection());
+      Widget widget=childConnector.getWidget();
       layout.setCaption(widget,caption);
     }
     caption.updateCaption();
   }
  else {
-    layout.setCaption(paintable.getWidget(),null);
+    layout.setCaption(childConnector.getWidget(),null);
   }
 }
