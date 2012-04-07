@@ -1,0 +1,33 @@
+{
+  if (!isRealUpdate(uidl)) {
+    return;
+  }
+  clickEventHandler.handleEventHandlerRegistration();
+  VBoxLayout layout=getWidget();
+  ValueMap expandRatios=uidl.getMapAttribute("expandRatios");
+  ValueMap alignments=uidl.getMapAttribute("alignments");
+  for (  ComponentConnector child : getChildren()) {
+    Slot slot=layout.getSlot(child.getWidget());
+    String pid=child.getConnectorId();
+    AlignmentInfo alignment;
+    if (alignments.containsKey(pid)) {
+      alignment=new AlignmentInfo(alignments.getInt(pid));
+    }
+ else {
+      alignment=AlignmentInfo.TOP_LEFT;
+    }
+    slot.setAlignment(alignment);
+    double expandRatio;
+    if (expandRatios.containsKey(pid) && expandRatios.getRawNumber(pid) > 0) {
+      expandRatio=expandRatios.getRawNumber(pid);
+    }
+ else {
+      expandRatio=-1;
+    }
+    slot.setExpandRatio(expandRatio);
+  }
+  layout.setMargin(new VMarginInfo(getState().getMarginsBitmask()));
+  layout.setSpacing(getState().isSpacing());
+  getWidget().recalculateUsedSpace();
+  getWidget().recalculateExpands();
+}

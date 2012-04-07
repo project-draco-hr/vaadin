@@ -1,0 +1,58 @@
+{
+  l=horizontal ? new HorizontalLayout() : new VerticalLayout();
+  l.setSizeUndefined();
+  l.addStyleName("test");
+  Label label=new Label("Component 1");
+  l.addComponent(label);
+  l.addComponent(new Button("Component 2"));
+  l.addListener(new LayoutClickListener(){
+    public void layoutClick(    LayoutClickEvent event){
+      if (event.getChildComponent() != null) {
+        if (target != null || target == event.getChildComponent()) {
+          target.removeStyleName("target");
+        }
+        if (target != event.getChildComponent()) {
+          target=(AbstractComponent)event.getChildComponent();
+          target.addStyleName("target");
+        }
+ else {
+          target=null;
+        }
+        componentWidth.setEnabled(target != null);
+        componentHeight.setEnabled(target != null);
+        componentCaption.setEnabled(target != null);
+        componentIcon.setEnabled(target != null);
+        componentDescription.setEnabled(target != null);
+        align.setEnabled(target != null);
+        expand.setEnabled(target != null);
+        if (target != null) {
+          if (target.getWidth() > -1) {
+            componentWidth.select(new Float(target.getWidth()).intValue() + target.getWidthUnits().getSymbol());
+          }
+ else {
+            componentWidth.select(null);
+          }
+          if (target.getHeight() > -1) {
+            componentHeight.select(new Float(target.getHeight()).intValue() + target.getHeightUnits().getSymbol());
+          }
+ else {
+            componentHeight.select(null);
+          }
+          align.select(l.getComponentAlignment(target));
+          expand.setValue(new Boolean(l.getExpandRatio(target) > 0));
+          componentCaption.select(target.getCaption());
+          if (target.getIcon() != null) {
+            componentIcon.select(((ThemeResource)target.getIcon()).getResourceId());
+          }
+ else {
+            componentIcon.select(null);
+          }
+          componentDescription.setValue(target.getDescription());
+        }
+      }
+    }
+  }
+);
+  target=null;
+  return l;
+}

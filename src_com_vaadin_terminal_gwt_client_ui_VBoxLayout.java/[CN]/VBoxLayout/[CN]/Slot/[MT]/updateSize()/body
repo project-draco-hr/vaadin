@@ -1,0 +1,47 @@
+{
+  if (caption == null) {
+    return;
+  }
+  VConsole.log("####################### updateSize");
+  Style style=captionWrap.getStyle();
+  style.clearWidth();
+  style.clearHeight();
+  style.clearPaddingTop();
+  style.clearPaddingRight();
+  style.clearPaddingBottom();
+  style.clearPaddingLeft();
+  caption.getStyle().clearMarginTop();
+  caption.getStyle().clearMarginRight();
+  caption.getStyle().clearMarginBottom();
+  caption.getStyle().clearMarginLeft();
+  captionWrap.removeClassName("v-has-width");
+  captionWrap.removeClassName("v-has-height");
+  if (getWidget().getElement().getStyle().getWidth().endsWith("%")) {
+    if (captionPosition == CaptionPosition.LEFT) {
+      int offset=caption.getOffsetWidth();
+      style.setPaddingLeft(offset,Unit.PX);
+      caption.getStyle().setMarginLeft(-offset,Unit.PX);
+    }
+ else     if (captionPosition == CaptionPosition.RIGHT) {
+      int offset=caption.getOffsetWidth();
+      style.setPaddingRight(offset,Unit.PX);
+      caption.getStyle().setMarginRight(-offset,Unit.PX);
+    }
+    captionWrap.addClassName("v-has-width");
+    style.setProperty("width",getWidget().getElement().getStyle().getWidth());
+  }
+  if (getWidget().getElement().getStyle().getHeight().endsWith("%")) {
+    if (captionPosition == CaptionPosition.TOP) {
+      int offset=caption.getOffsetHeight();
+      style.setPaddingTop(offset,Unit.PX);
+      caption.getStyle().setMarginTop(-offset,Unit.PX);
+    }
+ else     if (captionPosition == CaptionPosition.BOTTOM) {
+      int offset=caption.getOffsetHeight();
+      style.setPaddingBottom(offset,Unit.PX);
+      caption.getStyle().setMarginBottom(-offset,Unit.PX);
+    }
+    captionWrap.addClassName("v-has-height");
+    style.setProperty("height",getWidget().getElement().getStyle().getHeight());
+  }
+}
