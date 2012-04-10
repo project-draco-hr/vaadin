@@ -6,9 +6,19 @@
     }
     return;
   }
-  error(Util.getSimpleName(e) + ": " + e.getMessage());
+  String exceptionText=Util.getSimpleName(e);
+  String message=e.getMessage();
+  if (message != null && message.length() != 0) {
+    exceptionText+=": " + e.getMessage();
+  }
+  error(exceptionText);
   GWT.log(e.getMessage(),e);
   if (!GWT.isProdMode()) {
     e.printStackTrace();
+  }
+  try {
+    VNotification.createNotification(VNotification.DELAY_FOREVER).show("<h1>Uncaught client side exception</h1><br />" + exceptionText,VNotification.CENTERED,"error");
+  }
+ catch (  Exception e2) {
   }
 }
