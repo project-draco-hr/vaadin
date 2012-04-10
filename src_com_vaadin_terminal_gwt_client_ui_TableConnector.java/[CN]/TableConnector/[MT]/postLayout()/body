@@ -1,3 +1,13 @@
 {
-  getWidget().sizeInit();
+  VScrollTable table=getWidget();
+  if (table.sizeNeedsInit) {
+    table.sizeInit();
+    Scheduler.get().scheduleFinally(new ScheduledCommand(){
+      public void execute(){
+        getLayoutManager().setNeedsUpdate(TableConnector.this);
+        getLayoutManager().layoutNow();
+      }
+    }
+);
+  }
 }

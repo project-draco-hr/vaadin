@@ -1,12 +1,14 @@
 {
-  if (!isLayoutRunning()) {
-    throw new IllegalStateException("Can only report sizes when layout is running");
-  }
   MeasuredSize measuredSize=getMeasuredSize(component);
-  boolean heightChanged=measuredSize.setOuterHeight(outerHeight);
-  if (heightChanged) {
-    onConnectorChange(component,false,true);
-    notifyListenersAndDepdendents(component.getWidget().getElement(),false,true);
+  if (isLayoutRunning()) {
+    boolean heightChanged=measuredSize.setOuterHeight(outerHeight);
+    if (heightChanged) {
+      onConnectorChange(component,false,true);
+      notifyListenersAndDepdendents(component.getWidget().getElement(),false,true);
+    }
+    currentDependencyTree.setNeedsVerticalMeasure(component,false);
   }
-  currentDependencyTree.setNeedsVerticalMeasure(component,false);
+ else   if (measuredSize.getOuterHeight() != outerHeight) {
+    setNeedsMeasure(component);
+  }
 }

@@ -1,12 +1,8 @@
 {
-  if (isLayoutRunning()) {
-    throw new IllegalStateException("Can't start a new layout phase before the previous layout phase ends.");
-  }
   VConsole.log("Starting layout phase");
   Map<ManagedLayout,Integer> layoutCounts=new HashMap<ManagedLayout,Integer>();
   int passes=0;
   Duration totalDuration=new Duration();
-  currentDependencyTree=new LayoutDependencyTree();
   for (  ManagedLayout layout : needsHorizontalLayout) {
     currentDependencyTree.setNeedsHorizontalLayout(layout,true);
   }
@@ -15,12 +11,17 @@
   }
   needsHorizontalLayout.clear();
   needsVerticalLayout.clear();
+  for (  ComponentConnector connector : needsMeasure) {
+    currentDependencyTree.setNeedsMeasure(connector,true);
+  }
+  needsMeasure.clear();
   measureNonPaintables();
   VConsole.log("Layout init in " + totalDuration.elapsedMillis() + " ms");
   while (true) {
     Duration passDuration=new Duration();
     passes++;
-    int measuredConnectorCount=measureConnectors(currentDependencyTree,passes == 1);
+    int measuredConnectorCount=measureConnectors(currentDependencyTree,everythingNeedsMeasure);
+    everythingNeedsMeasure=false;
     int measureTime=passDuration.elapsedMillis();
     VConsole.log("  Measured " + measuredConnectorCount + " elements in "+ measureTime+ " ms");
     if (!listenersToFire.isEmpty()) {
@@ -113,6 +114,5 @@
     }
   }
   VConsole.log("Invoke post layout listeners in " + (totalDuration.elapsedMillis() - postLayoutStart) + " ms");
-  currentDependencyTree=null;
   VConsole.log("Total layout phase time: " + totalDuration.elapsedMillis() + "ms");
 }
