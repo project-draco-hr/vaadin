@@ -8,23 +8,9 @@
   int rows=getState().getRows();
   layout.columnWidths=new int[cols];
   layout.rowHeights=new int[rows];
-  if (layout.cells == null) {
-    layout.cells=new Cell[cols][rows];
-  }
- else   if (layout.cells.length != cols || layout.cells[0].length != rows) {
-    Cell[][] newCells=new Cell[cols][rows];
-    for (int i=0; i < layout.cells.length; i++) {
-      for (int j=0; j < layout.cells[i].length; j++) {
-        if (i < cols && j < rows) {
-          newCells[i][j]=layout.cells[i][j];
-        }
-      }
-    }
-    layout.cells=newCells;
-  }
+  layout.setSize(rows,cols);
   final int[] alignments=uidl.getIntArrayAttribute("alignments");
   int alignmentIndex=0;
-  HashSet<Widget> nonRenderedWidgets=new HashSet<Widget>(layout.widgetToCell.keySet());
   for (final Iterator<?> i=uidl.getChildIterator(); i.hasNext(); ) {
     final UIDL r=(UIDL)i.next();
     if ("gr".equals(r.getTag())) {
@@ -33,10 +19,18 @@
         if ("gc".equals(cellUidl.getTag())) {
           int row=cellUidl.getIntAttribute("y");
           int col=cellUidl.getIntAttribute("x");
-          Cell cell=layout.getCell(row,col,cellUidl);
+          Widget previousWidget=null;
+          Cell cell=layout.getCell(row,col);
+          if (cell != null && cell.slot != null) {
+            previousWidget=cell.slot.getWidget();
+          }
+          cell=layout.createCell(row,col);
+          cell.updateFromUidl(cellUidl);
           if (cell.hasContent()) {
             cell.setAlignment(new AlignmentInfo(alignments[alignmentIndex++]));
-            nonRenderedWidgets.remove(cell.slot.getWidget());
+            if (cell.slot.getWidget() != previousWidget) {
+              updateCaption(ConnectorMap.get(getConnection()).getConnector(cell.slot.getWidget()));
+            }
           }
         }
       }
@@ -49,9 +43,7 @@
   if (needCaptionUpdate) {
     needCaptionUpdate=false;
     for (    ComponentConnector child : getChildren()) {
-      if (child.delegateCaptionHandling()) {
-        updateCaption(child);
-      }
+      updateCaption(child);
     }
   }
   getLayoutManager().setNeedsUpdate(this);
