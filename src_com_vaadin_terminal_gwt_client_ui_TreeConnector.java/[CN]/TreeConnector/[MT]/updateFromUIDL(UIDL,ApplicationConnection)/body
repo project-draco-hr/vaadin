@@ -47,7 +47,12 @@
   getWidget().selectable=!"none".equals(selectMode);
   getWidget().isMultiselect="multi".equals(selectMode);
   if (getWidget().isMultiselect) {
-    getWidget().multiSelectMode=uidl.getIntAttribute("multiselectmode");
+    if (BrowserInfo.get().isTouchDevice()) {
+      getWidget().multiSelectMode=VTree.MULTISELECT_MODE_SIMPLE;
+    }
+ else {
+      getWidget().multiSelectMode=uidl.getIntAttribute("multiselectmode");
+    }
   }
   getWidget().selectedIds=uidl.getStringArrayVariableAsSet("selected");
   if (getWidget().lastSelection != null) {
