@@ -16,8 +16,10 @@
     }
   }
   long lastModifiedTime=0;
+  URLConnection connection=null;
   try {
-    lastModifiedTime=resourceUrl.openConnection().getLastModified();
+    connection=resourceUrl.openConnection();
+    lastModifiedTime=connection.getLastModified();
     lastModifiedTime=lastModifiedTime - lastModifiedTime % 1000;
     if (browserHasNewestVersion(request,lastModifiedTime)) {
       response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
@@ -26,6 +28,19 @@
   }
  catch (  Exception e) {
     logger.log(Level.FINEST,"Failed to find out last modified timestamp. Continuing without it.",e);
+  }
+ finally {
+    if (connection instanceof FileURLConnection) {
+      try {
+        InputStream is=connection.getInputStream();
+        if (is != null) {
+          is.close();
+        }
+      }
+ catch (      IOException e) {
+        logger.log(Level.INFO,"Error closing FileURLConnection input stream",e);
+      }
+    }
   }
   final String mimetype=sc.getMimeType(filename);
   if (mimetype != null) {
