@@ -9,7 +9,7 @@
   composer.addImport(GWT.class.getCanonicalName());
   composer.addImport(ServerRpc.class.getCanonicalName());
   composer.addImport(ServerConnector.class.getCanonicalName());
-  composer.addImport(InitializableClientToServerRpc.class.getCanonicalName());
+  composer.addImport(InitializableServerRpc.class.getCanonicalName());
   composer.addImport(IllegalArgumentException.class.getCanonicalName());
   composer.addImplementedInterface(RpcProxyCreator.class.getCanonicalName());
   SourceWriter sourceWriter=composer.createSourceWriter(context,printWriter);
@@ -20,20 +20,16 @@
   sourceWriter.indent();
   sourceWriter.println("throw new IllegalArgumentException(\"RpcInterface and/or connector cannot be null\");");
   sourceWriter.outdent();
-  sourceWriter.println("} else if (connector.getConnectorId() == null) {");
-  sourceWriter.indent();
-  sourceWriter.println("throw new IllegalArgumentException(\"Connector must be initialized before creating Rpc instances.\");");
-  sourceWriter.outdent();
   JClassType initializableInterface=typeOracle.findType(ServerRpc.class.getCanonicalName());
   for (  JClassType rpcType : initializableInterface.getSubtypes()) {
     String rpcClassName=rpcType.getQualifiedSourceName();
-    if (InitializableClientToServerRpc.class.getCanonicalName().equals(rpcClassName)) {
+    if (InitializableServerRpc.class.getCanonicalName().equals(rpcClassName)) {
       continue;
     }
     sourceWriter.println("} else if (rpcInterface == " + rpcClassName + ".class) {");
     sourceWriter.indent();
     sourceWriter.println(rpcClassName + " rpc = GWT.create(" + rpcClassName+ ".class);");
-    sourceWriter.println("((InitializableClientToServerRpc) rpc).initRpc(connector.getConnectorId(), connector.getConnection());");
+    sourceWriter.println("((" + InitializableServerRpc.class.getName() + ") rpc).initRpc(connector);");
     sourceWriter.println("return (T) rpc;");
     sourceWriter.outdent();
   }
