@@ -3,5 +3,10 @@
   if (actionManager != null) {
     actionManager.setViewer(getWindow());
   }
-  addPropertyListeners();
+  if (!isListeningToPropertyEvents) {
+    addPropertyListeners();
+    if (!isModified() && isReadThrough()) {
+      discard();
+    }
+  }
 }
