@@ -40,33 +40,14 @@
     }
     getWidget().setPopupPosition(positionx,positiony);
   }
-  boolean showingUrl=false;
   int childIndex=0;
-  UIDL childUidl=uidl.getChildUIDL(childIndex++);
-  final ComponentConnector lo=client.getPaintable(childUidl);
-  if (getWidget().layout != null) {
-    if (getWidget().layout != lo) {
-      getWidget().contentPanel.remove(getWidget().layout.getWidget());
-      if (!showingUrl) {
-        getWidget().contentPanel.setWidget(lo.getWidget());
+  for (int i=0; i < uidl.getChildCount(); i++) {
+    UIDL childUidl=uidl.getChildUIDL(i);
+    if (childUidl.getTag().equals("actions")) {
+      if (getWidget().shortcutHandler == null) {
+        getWidget().shortcutHandler=new ShortcutActionHandler(getConnectorId(),client);
       }
-      getWidget().layout=lo;
-    }
-  }
- else   if (!showingUrl) {
-    getWidget().contentPanel.setWidget(lo.getWidget());
-    getWidget().layout=lo;
-  }
-  if (uidl.getChildCount() > 1) {
-    final int cnt=uidl.getChildCount();
-    for (int i=1; i < cnt; i++) {
-      childUidl=uidl.getChildUIDL(i);
-      if (childUidl.getTag().equals("actions")) {
-        if (getWidget().shortcutHandler == null) {
-          getWidget().shortcutHandler=new ShortcutActionHandler(getConnectorId(),client);
-        }
-        getWidget().shortcutHandler.updateActionMap(childUidl);
-      }
+      getWidget().shortcutHandler.updateActionMap(childUidl);
     }
   }
   getWidget().contentPanel.setScrollPosition(getState().getScrollTop());
