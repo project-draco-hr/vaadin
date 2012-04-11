@@ -1,0 +1,16 @@
+{
+  LayoutDependency dependency=getDependency(connector,HORIZONTAL);
+  if (!dependency.scrollingParentCached) {
+    ComponentContainerConnector parent=dependency.connector.getParent();
+    if (parent instanceof MayScrollChildren) {
+      dependency.scrollingBoundary=connector;
+    }
+ else     if (parent != null) {
+      dependency.scrollingBoundary=getScrollingBoundary(parent);
+    }
+ else {
+    }
+    dependency.scrollingParentCached=true;
+  }
+  return dependency.scrollingBoundary;
+}

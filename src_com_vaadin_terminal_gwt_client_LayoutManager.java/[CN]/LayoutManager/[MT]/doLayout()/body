@@ -22,6 +22,10 @@
     passes++;
     int measuredConnectorCount=measureConnectors(currentDependencyTree,everythingNeedsMeasure);
     everythingNeedsMeasure=false;
+    if (measuredConnectorCount == 0) {
+      VConsole.log("No more changes in pass " + passes);
+      break;
+    }
     int measureTime=passDuration.elapsedMillis();
     VConsole.log("  Measured " + measuredConnectorCount + " elements in "+ measureTime+ " ms");
     if (!listenersToFire.isEmpty()) {
@@ -39,9 +43,7 @@
       listenersToFire.clear();
     }
     FastStringSet updatedSet=FastStringSet.create();
-    boolean changed=false;
     while (currentDependencyTree.hasHorizontalConnectorToLayout() || currentDependencyTree.hasVerticaConnectorToLayout()) {
-      changed=true;
       for (      ManagedLayout layout : currentDependencyTree.getHorizontalLayoutTargets()) {
         if (layout instanceof DirectionalManagedLayout) {
           currentDependencyTree.markAsHorizontallyLayouted(layout);
@@ -103,10 +105,6 @@
         }
       }
       VConsole.log(b.toString());
-    }
-    if (!changed) {
-      VConsole.log("No more changes in pass " + passes);
-      break;
     }
     VConsole.log("Pass " + passes + " completed in "+ passDuration.elapsedMillis()+ " ms");
     if (passes > 100) {
