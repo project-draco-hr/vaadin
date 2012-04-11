@@ -75,28 +75,7 @@
     getWidget().rendering=false;
     return;
   }
-  UIDL childUidl=uidl.getChildUIDL(childIndex);
-  final ComponentConnector lo=client.getPaintable(childUidl);
-  boolean layoutChanged=getWidget().layout != lo;
-  if (getWidget().layout != null) {
-    if (layoutChanged) {
-      if (childStateChangeHandlerRegistration != null) {
-        childStateChangeHandlerRegistration.removeHandler();
-        childStateChangeHandlerRegistration=null;
-      }
-      getWidget().setWidget(lo.getWidget());
-      getWidget().layout=lo;
-    }
-  }
- else {
-    getWidget().setWidget(lo.getWidget());
-    getWidget().layout=lo;
-    if (layoutChanged) {
-      childStateChangeHandlerRegistration=lo.addStateChangeHandler(childStateChangeHandler);
-      onChildSizeChange();
-    }
-  }
-  final HashSet<VWindow> removedSubWindows=new HashSet<VWindow>(getWidget().subWindows);
+  UIDL childUidl;
   while ((childUidl=uidl.getChildUIDL(++childIndex)) != null) {
     String tag=childUidl.getTag().intern();
     if (tag == "actions") {
@@ -115,22 +94,6 @@
         VNotification.showNotification(client,notification);
       }
     }
- else {
-      final WindowConnector w=(WindowConnector)client.getPaintable(childUidl);
-      VWindow windowWidget=w.getWidget();
-      if (getWidget().subWindows.contains(windowWidget)) {
-        removedSubWindows.remove(windowWidget);
-      }
- else {
-        getWidget().subWindows.add(windowWidget);
-      }
-      w.updateFromUIDL(childUidl,client);
-    }
-  }
-  for (final Iterator<VWindow> rem=removedSubWindows.iterator(); rem.hasNext(); ) {
-    final VWindow w=rem.next();
-    getWidget().subWindows.remove(w);
-    w.hide();
   }
   if (uidl.hasAttribute("focused")) {
     Scheduler.get().scheduleDeferred(new Command(){

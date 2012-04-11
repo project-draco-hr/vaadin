@@ -63,7 +63,12 @@
       }
       Iterator<? extends Widget> iterator;
       if (widgetClassName.equals("VWindow")) {
-        iterator=client.getView().getWidget().getSubWindowList().iterator();
+        List<WindowConnector> windows=client.getView().getSubWindows();
+        List<VWindow> windowWidgets=new ArrayList<VWindow>(windows.size());
+        for (        WindowConnector wc : windows) {
+          windowWidgets.add(wc.getWidget());
+        }
+        iterator=windowWidgets.iterator();
       }
  else       if (widgetClassName.equals("VContextMenu")) {
         return client.getContextMenu();

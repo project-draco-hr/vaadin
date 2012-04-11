@@ -1,9 +1,31 @@
 {
   super.onConnectorHierarchyChange(event);
+  ComponentConnector oldChild=null;
+  ComponentConnector newChild=(ComponentConnector)getState().getContent();
+  for (  ComponentConnector c : event.getOldChildren()) {
+    if (!(c instanceof WindowConnector)) {
+      oldChild=c;
+      break;
+    }
+  }
+  if (oldChild != newChild) {
+    if (childStateChangeHandlerRegistration != null) {
+      childStateChangeHandlerRegistration.removeHandler();
+      childStateChangeHandlerRegistration=null;
+    }
+    getWidget().setWidget(newChild.getWidget());
+    childStateChangeHandlerRegistration=newChild.addStateChangeHandler(childStateChangeHandler);
+    onChildSizeChange();
+  }
   for (  ComponentConnector c : getChildren()) {
     if (c instanceof WindowConnector) {
       WindowConnector wc=(WindowConnector)c;
       wc.setWindowOrderAndPosition();
+    }
+  }
+  for (  ComponentConnector c : event.getOldChildren()) {
+    if (c.getParent() != this && c instanceof WindowConnector) {
+      ((WindowConnector)c).getWidget().hide();
     }
   }
 }

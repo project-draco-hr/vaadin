@@ -2,17 +2,13 @@
   if (w == null) {
     return null;
   }
-  String pid=ConnectorMap.get(client).getConnectorId(w.getElement());
-  if (isStaticPid(pid)) {
-    return pid;
-  }
   if (w instanceof VView) {
     return "";
   }
  else   if (w instanceof VWindow) {
-    VWindow win=(VWindow)w;
-    ArrayList<VWindow> subWindowList=client.getView().getWidget().getSubWindowList();
-    int indexOfSubWindow=subWindowList.indexOf(win);
+    Connector windowConnector=ConnectorMap.get(client).getConnector(w);
+    List<WindowConnector> subWindowList=client.getView().getSubWindows();
+    int indexOfSubWindow=subWindowList.indexOf(windowConnector);
     return PARENTCHILD_SEPARATOR + "VWindow[" + indexOfSubWindow+ "]";
   }
  else   if (w instanceof RootPanel) {
