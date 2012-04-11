@@ -39,7 +39,9 @@
       listenersToFire.clear();
     }
     FastStringSet updatedSet=FastStringSet.create();
+    boolean changed=false;
     while (currentDependencyTree.hasHorizontalConnectorToLayout() || currentDependencyTree.hasVerticaConnectorToLayout()) {
+      changed=true;
       for (      ManagedLayout layout : currentDependencyTree.getHorizontalLayoutTargets()) {
         if (layout instanceof DirectionalManagedLayout) {
           currentDependencyTree.markAsHorizontallyLayouted(layout);
@@ -54,7 +56,9 @@
           rr.layout();
           countLayout(layoutCounts,rr);
         }
-        updatedSet.add(layout.getConnectorId());
+        if (debugLogging) {
+          updatedSet.add(layout.getConnectorId());
+        }
       }
       for (      ManagedLayout layout : currentDependencyTree.getVerticalLayoutTargets()) {
         if (layout instanceof DirectionalManagedLayout) {
@@ -70,33 +74,37 @@
           rr.layout();
           countLayout(layoutCounts,rr);
         }
-        updatedSet.add(layout.getConnectorId());
+        if (debugLogging) {
+          updatedSet.add(layout.getConnectorId());
+        }
       }
     }
-    JsArrayString changed=updatedSet.dump();
-    StringBuilder b=new StringBuilder("  ");
-    b.append(changed.length());
-    b.append(" requestLayout invocations in ");
-    b.append(passDuration.elapsedMillis() - measureTime);
-    b.append(" ms");
-    if (changed.length() < 30) {
-      for (int i=0; i < changed.length(); i++) {
-        if (i != 0) {
-          b.append(", ");
-        }
+    if (debugLogging) {
+      JsArrayString changedCids=updatedSet.dump();
+      StringBuilder b=new StringBuilder("  ");
+      b.append(changedCids.length());
+      b.append(" requestLayout invocations in ");
+      b.append(passDuration.elapsedMillis() - measureTime);
+      b.append(" ms");
+      if (changedCids.length() < 30) {
+        for (int i=0; i < changedCids.length(); i++) {
+          if (i != 0) {
+            b.append(", ");
+          }
  else {
-          b.append(": ");
+            b.append(": ");
+          }
+          String connectorString=changedCids.get(i);
+          if (changedCids.length() < 10) {
+            ServerConnector connector=ConnectorMap.get(connection).getConnector(connectorString);
+            connectorString=Util.getConnectorString(connector);
+          }
+          b.append(connectorString);
         }
-        String connectorString=changed.get(i);
-        if (changed.length() < 10) {
-          ServerConnector connector=ConnectorMap.get(connection).getConnector(connectorString);
-          connectorString=Util.getConnectorString(connector);
-        }
-        b.append(connectorString);
       }
+      VConsole.log(b.toString());
     }
-    VConsole.log(b.toString());
-    if (changed.length() == 0) {
+    if (!changed) {
       VConsole.log("No more changes in pass " + passes);
       break;
     }
