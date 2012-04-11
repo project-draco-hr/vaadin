@@ -1,16 +1,22 @@
 {
   if (!pendingOverflowFixes.isEmpty()) {
     Duration duration=new Duration();
+    HashMap<Element,String> originalOverflows=new HashMap<Element,String>();
     for (    ComponentConnector componentConnector : pendingOverflowFixes) {
-      Style style=componentConnector.getWidget().getElement().getParentElement().getStyle();
-      assert(style.getOverflow() == null);
+      Element parentElement=componentConnector.getWidget().getElement().getParentElement();
+      Style style=parentElement.getStyle();
+      String originalOverflow=style.getOverflow();
+      if (originalOverflow != null && !originalOverflows.containsKey(parentElement)) {
+        originalOverflows.put(parentElement,originalOverflow);
+      }
       style.setOverflow(Overflow.HIDDEN);
     }
     for (    ComponentConnector componentConnector : pendingOverflowFixes) {
       componentConnector.getWidget().getElement().getParentElement().getOffsetHeight();
     }
     for (    ComponentConnector componentConnector : pendingOverflowFixes) {
-      componentConnector.getWidget().getElement().getParentElement().getStyle().clearOverflow();
+      Element parentElement=componentConnector.getWidget().getElement().getParentElement();
+      parentElement.getStyle().setProperty("overflow",originalOverflows.get(parentElement));
       layoutDependencyTree.setNeedsMeasure(componentConnector,true);
       ComponentContainerConnector parent=componentConnector.getParent();
       if (parent instanceof ManagedLayout) {
