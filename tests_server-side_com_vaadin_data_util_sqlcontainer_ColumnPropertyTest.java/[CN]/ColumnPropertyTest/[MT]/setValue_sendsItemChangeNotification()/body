@@ -1,0 +1,31 @@
+{
+class TestContainer extends SQLContainer {
+    Object value=null;
+    boolean modified=false;
+    public TestContainer(    QueryDelegate delegate) throws SQLException {
+      super(delegate);
+    }
+    @Override public void itemChangeNotification(    RowItem changedItem){
+      ColumnProperty cp=(ColumnProperty)changedItem.getItemProperty("NAME");
+      value=cp.getValue();
+      modified=cp.isModified();
+    }
+  }
+  ColumnProperty property=new ColumnProperty("NAME",false,true,true,"Ville",String.class);
+  Statement statement=EasyMock.createNiceMock(Statement.class);
+  EasyMock.replay(statement);
+  ResultSetMetaData metadata=EasyMock.createNiceMock(ResultSetMetaData.class);
+  EasyMock.replay(metadata);
+  ResultSet resultSet=EasyMock.createNiceMock(ResultSet.class);
+  EasyMock.expect(resultSet.getStatement()).andReturn(statement);
+  EasyMock.expect(resultSet.getMetaData()).andReturn(metadata);
+  EasyMock.replay(resultSet);
+  QueryDelegate delegate=EasyMock.createNiceMock(QueryDelegate.class);
+  EasyMock.expect(delegate.getResults(0,1)).andReturn(resultSet);
+  EasyMock.replay(delegate);
+  TestContainer container=new TestContainer(delegate);
+  new RowItem(container,new RowId(new Object[]{1}),Arrays.asList(property));
+  property.setValue("Kalle");
+  Assert.assertEquals("Kalle",container.value);
+  Assert.assertTrue(container.modified);
+}

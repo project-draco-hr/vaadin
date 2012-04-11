@@ -1,0 +1,18 @@
+{
+  int newTabIndex=activeTabIndex;
+  do {
+    newTabIndex--;
+  }
+ while (newTabIndex >= 0 && !onTabSelected(newTabIndex));
+  if (newTabIndex >= 0) {
+    activeTabIndex=newTabIndex;
+    if (isScrolledTabs()) {
+      int newScrollerIndex=scrollerIndex;
+      while (tb.getTab(activeTabIndex).getAbsoluteLeft() < getAbsoluteLeft() && newScrollerIndex != -1) {
+        newScrollerIndex=tb.scrollLeft(newScrollerIndex);
+      }
+      scrollerIndex=newScrollerIndex;
+      updateTabScroller();
+    }
+  }
+}

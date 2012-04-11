@@ -1,12 +1,14 @@
 {
-  if (!isLayoutRunning()) {
-    throw new IllegalStateException("Can only report sizes when layout is running");
-  }
   MeasuredSize measuredSize=getMeasuredSize(component);
-  boolean widthChanged=measuredSize.setOuterWidth(outerWidth);
-  if (widthChanged) {
-    onConnectorChange(component,true,false);
-    notifyListenersAndDepdendents(component.getWidget().getElement(),true,false);
+  if (isLayoutRunning()) {
+    boolean widthChanged=measuredSize.setOuterWidth(outerWidth);
+    if (widthChanged) {
+      onConnectorChange(component,true,false);
+      notifyListenersAndDepdendents(component.getWidget().getElement(),true,false);
+    }
+    currentDependencyTree.setNeedsHorizontalMeasure(component,false);
   }
-  currentDependencyTree.setNeedsHorizontalMeasure(component,false);
+ else   if (measuredSize.getOuterWidth() != outerWidth) {
+    setNeedsMeasure(component);
+  }
 }
