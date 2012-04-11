@@ -1,8 +1,15 @@
 {
   VConsole.log("Starting layout phase");
+  Duration totalDuration=new Duration();
+  int preLayoutStart=totalDuration.elapsedMillis();
+  for (  ComponentConnector connector : connection.getConnectorMap().getComponentConnectors()) {
+    if (connector instanceof PreLayoutListener) {
+      ((PreLayoutListener)connector).preLayout();
+    }
+  }
+  VConsole.log("Invoke pre layout listeners in " + (totalDuration.elapsedMillis() - preLayoutStart) + " ms");
   Map<ManagedLayout,Integer> layoutCounts=new HashMap<ManagedLayout,Integer>();
   int passes=0;
-  Duration totalDuration=new Duration();
   for (  ManagedLayout layout : needsHorizontalLayout) {
     currentDependencyTree.setNeedsHorizontalLayout(layout,true);
   }

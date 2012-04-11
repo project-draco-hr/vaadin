@@ -1,9 +1,28 @@
 {
-  if (vertical || getStyleName().contains("v-has-height")) {
+  if (vertical || definedHeight) {
     return;
   }
-  if (!recalculateLayoutHeightScheduled) {
-    recalculateLayoutHeightScheduled=true;
-    Scheduler.get().scheduleDeferred(calculateLayoutHeight);
+  boolean hasRelativeHeightChildren=false;
+  boolean hasVAlign=false;
+  for (  Widget slot : getChildren()) {
+    Widget widget=((Slot)slot).getWidget();
+    String h=widget.getElement().getStyle().getHeight();
+    if (h != null && h.indexOf("%") > -1) {
+      hasRelativeHeightChildren=true;
+    }
+    AlignmentInfo a=((Slot)slot).getAlignment();
+    if (a.isVerticalCenter() || a.isBottom()) {
+      hasVAlign=true;
+    }
+  }
+  if (hasRelativeHeightChildren || hasVAlign) {
+    int newHeight;
+    if (layoutManager != null) {
+      newHeight=layoutManager.getOuterHeight(getElement()) - layoutManager.getMarginHeight(getElement());
+    }
+ else {
+      newHeight=getElement().getOffsetHeight();
+    }
+    VBoxLayout.this.getElement().getStyle().setHeight(newHeight,Unit.PX);
   }
 }

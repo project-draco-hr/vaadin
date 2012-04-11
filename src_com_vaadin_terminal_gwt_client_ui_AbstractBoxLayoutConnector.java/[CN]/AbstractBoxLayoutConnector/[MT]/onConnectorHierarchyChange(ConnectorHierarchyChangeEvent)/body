@@ -7,17 +7,17 @@
     Widget childWidget=child.getWidget();
     Slot slot=layout.getSlot(childWidget);
     if (slot.getParent() != layout) {
-      getLayoutManager().addElementResizeListener(slot.getWidget().getElement(),this);
+      getLayoutManager().addElementResizeListener(slot.getWidget().getElement(),childComponentResizeListener);
+      child.addStateChangeHandler(childStateChangeHandler);
     }
     layout.addOrMoveSlot(slot,currentIndex++);
-    child.addStateChangeHandler(childStateChange);
   }
   for (  ComponentConnector child : previousChildren) {
     if (child.getParent() != this) {
       Slot removed=layout.removeSlot(child.getWidget());
-      getLayoutManager().removeElementResizeListener(removed.getWidget().getElement(),this);
+      getLayoutManager().removeElementResizeListener(removed.getWidget().getElement(),childComponentResizeListener);
     }
   }
+  updateLayoutHeight();
   getWidget().recalculateUsedSpace();
-  getWidget().recalculateLayoutHeight();
 }

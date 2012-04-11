@@ -133,7 +133,7 @@
   HorizontalLayout component=new HorizontalLayout();
   component.addStyleName("fieldset");
   component.setSpacing(true);
-  controls.addComponent(component);
+  root.addComponent(component);
   component.addComponent(new Label("Component"));
   sizes=new ArrayList<String>();
   sizes.addAll(Arrays.asList("50px","200px","10em","50%","100%"));
@@ -211,5 +211,17 @@
   }
 );
   component.addComponent(componentDescription);
+  componentError=new CheckBox("Error");
+  componentError.setImmediate(true);
+  componentError.setEnabled(false);
+  componentError.addListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      if (target != null) {
+        target.setComponentError(componentError.getValue() ? new UserError("Error message") : null);
+      }
+    }
+  }
+);
+  component.addComponent(componentError);
   return root;
 }

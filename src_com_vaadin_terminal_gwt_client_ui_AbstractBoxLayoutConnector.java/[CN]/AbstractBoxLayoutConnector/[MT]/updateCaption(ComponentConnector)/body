@@ -1,5 +1,16 @@
 {
   Slot slot=getWidget().getSlot(connector.getWidget());
-  URLReference icon=connector.getState().getIcon();
-  slot.setCaption(connector.getState().getCaption(),icon != null ? icon.getURL() : null,connector.getState().getStyles());
+  String caption=connector.getState().getCaption();
+  String iconUrl=connector.getState().getIcon() != null ? connector.getState().getIcon().getURL() : null;
+  List<String> styles=connector.getState().getStyles();
+  String error=connector.getState().getErrorMessage();
+  slot.setCaption(caption,iconUrl,styles,error);
+  slot.setRelativeWidth(connector.isRelativeWidth());
+  slot.setRelativeHeight(connector.isRelativeHeight());
+  if (connector.isRelativeHeight() && slot.hasCaption()) {
+    getLayoutManager().addElementResizeListener(slot.getCaptionElement(),slotCaptionResizeListener);
+  }
+ else {
+    getLayoutManager().removeElementResizeListener(slot.getCaptionElement(),slotCaptionResizeListener);
+  }
 }
