@@ -2,13 +2,15 @@
   if (!pendingOverflowFixes.isEmpty()) {
     Duration duration=new Duration();
     for (    ComponentConnector componentConnector : pendingOverflowFixes) {
-      componentConnector.getWidget().getElement().getParentElement().getStyle().setTop(1,Unit.PX);
+      Style style=componentConnector.getWidget().getElement().getParentElement().getStyle();
+      assert(style.getOverflow() == null);
+      style.setOverflow(Overflow.HIDDEN);
     }
     for (    ComponentConnector componentConnector : pendingOverflowFixes) {
       componentConnector.getWidget().getElement().getParentElement().getOffsetHeight();
     }
     for (    ComponentConnector componentConnector : pendingOverflowFixes) {
-      componentConnector.getWidget().getElement().getParentElement().getStyle().setTop(0,Unit.PX);
+      componentConnector.getWidget().getElement().getParentElement().getStyle().clearOverflow();
       layoutDependencyTree.setNeedsMeasure(componentConnector,true);
       ComponentContainerConnector parent=componentConnector.getParent();
       if (parent instanceof ManagedLayout) {
