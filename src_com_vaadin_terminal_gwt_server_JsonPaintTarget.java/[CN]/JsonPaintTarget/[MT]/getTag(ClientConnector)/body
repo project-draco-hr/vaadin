@@ -1,0 +1,12 @@
+{
+  Class<? extends ClientConnector> clientConnectorClass=clientConnector.getClass();
+  while (clientConnectorClass.isAnonymousClass()) {
+    clientConnectorClass=(Class<? extends ClientConnector>)clientConnectorClass.getSuperclass();
+  }
+  Class<?> clazz=clientConnectorClass;
+  while (!usedClientConnectors.contains(clazz) && clazz.getSuperclass() != null && ClientConnector.class.isAssignableFrom(clazz)) {
+    usedClientConnectors.add((Class<? extends ClientConnector>)clazz);
+    clazz=clazz.getSuperclass();
+  }
+  return manager.getTagForType(clientConnectorClass);
+}

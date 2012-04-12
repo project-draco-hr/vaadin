@@ -7,14 +7,6 @@ synchronized (openList) {
       openList.clear();
     }
   }
-  ComponentContainer content=getContent();
-  if (content != null) {
-    content.paint(target);
-  }
-  for (final Iterator<Window> i=windows.iterator(); i.hasNext(); ) {
-    final Window w=i.next();
-    w.paint(target);
-  }
   if (notifications != null) {
     target.startTag("notifications");
     for (final Iterator<Notification> it=notifications.iterator(); it.hasNext(); ) {
@@ -30,7 +22,7 @@ synchronized (openList) {
         target.addAttribute(VNotification.ATTRIBUTE_NOTIFICATION_ICON,n.getIcon());
       }
       if (!n.isHtmlContentAllowed()) {
-        target.addAttribute(VView.NOTIFICATION_HTML_CONTENT_NOT_ALLOWED,true);
+        target.addAttribute(VRoot.NOTIFICATION_HTML_CONTENT_NOT_ALLOWED,true);
       }
       target.addAttribute(VNotification.ATTRIBUTE_NOTIFICATION_POSITION,n.getPosition());
       target.addAttribute(VNotification.ATTRIBUTE_NOTIFICATION_DELAY,n.getDelayMsec());
@@ -64,9 +56,9 @@ synchronized (openList) {
     actionManager.paintActions(null,target);
   }
   if (fragment != null) {
-    target.addAttribute(VView.FRAGMENT_VARIABLE,fragment);
+    target.addAttribute(VRoot.FRAGMENT_VARIABLE,fragment);
   }
   if (isResizeLazy()) {
-    target.addAttribute(VView.RESIZE_LAZY,true);
+    target.addAttribute(VRoot.RESIZE_LAZY,true);
   }
 }

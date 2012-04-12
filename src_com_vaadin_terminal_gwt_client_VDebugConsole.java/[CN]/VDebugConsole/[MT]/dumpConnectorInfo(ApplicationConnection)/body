@@ -1,5 +1,5 @@
 {
-  RootConnector root=a.getView();
+  RootConnector root=a.getRootConnector();
   log("================");
   log("Connector hierarchy for Root: " + root.getState().getCaption() + " ("+ root.getConnectorId()+ ")");
   Set<ComponentConnector> connectorsInHierarchy=new HashSet<ComponentConnector>();
@@ -12,8 +12,8 @@
   Collection<? extends ServerConnector> registeredConnectors=connectorMap.getConnectors();
   log("Sub windows:");
   Set<ComponentConnector> subWindowHierarchyConnectors=new HashSet<ComponentConnector>();
-  for (  VWindow w : root.getWidget().getSubWindowList()) {
-    SimpleTree windowHierachy=dumpConnectorHierarchy(connectorMap.getConnector(w),"",subWindowHierarchyConnectors);
+  for (  WindowConnector wc : root.getSubWindows()) {
+    SimpleTree windowHierachy=dumpConnectorHierarchy(wc,"",subWindowHierarchyConnectors);
     if (panel.isAttached()) {
       windowHierachy.open(true);
       panel.add(windowHierachy);
