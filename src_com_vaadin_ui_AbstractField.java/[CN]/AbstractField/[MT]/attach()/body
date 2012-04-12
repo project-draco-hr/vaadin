@@ -1,4 +1,9 @@
 {
   super.attach();
-  addPropertyListeners();
+  if (!isListeningToPropertyEvents) {
+    addPropertyListeners();
+    if (!isModified() && isReadThrough()) {
+      discard();
+    }
+  }
 }
