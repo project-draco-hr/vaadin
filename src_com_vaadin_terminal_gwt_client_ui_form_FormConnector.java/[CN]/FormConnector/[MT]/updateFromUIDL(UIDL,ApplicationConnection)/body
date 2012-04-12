@@ -54,10 +54,13 @@
     ComponentConnector newFooter=(ComponentConnector)getState().getFooter();
     Widget newFooterWidget=newFooter.getWidget();
     if (getWidget().footer == null) {
+      getLayoutManager().addElementResizeListener(newFooterWidget.getElement(),footerResizeListener);
       getWidget().add(newFooter.getWidget(),getWidget().footerContainer);
       getWidget().footer=newFooterWidget;
     }
  else     if (newFooter != getWidget().footer) {
+      getLayoutManager().removeElementResizeListener(getWidget().footer.getElement(),footerResizeListener);
+      getLayoutManager().addElementResizeListener(newFooterWidget.getElement(),footerResizeListener);
       getWidget().remove(getWidget().footer);
       getWidget().add(newFooter.getWidget(),getWidget().footerContainer);
     }
@@ -65,7 +68,9 @@
   }
  else {
     if (getWidget().footer != null) {
+      getLayoutManager().removeElementResizeListener(getWidget().footer.getElement(),footerResizeListener);
       getWidget().remove(getWidget().footer);
+      getWidget().footer=null;
     }
   }
   ComponentConnector newLayout=(ComponentConnector)getState().getLayout();

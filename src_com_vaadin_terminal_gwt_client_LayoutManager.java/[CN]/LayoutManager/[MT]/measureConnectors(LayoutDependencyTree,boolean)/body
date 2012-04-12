@@ -1,0 +1,58 @@
+{
+  if (!pendingOverflowFixes.isEmpty()) {
+    Duration duration=new Duration();
+    HashMap<Element,String> originalOverflows=new HashMap<Element,String>();
+    HashSet<ComponentConnector> delayedOverflowFixes=new HashSet<ComponentConnector>();
+    for (    ComponentConnector componentConnector : pendingOverflowFixes) {
+      if (!currentDependencyTree.noMoreChangesExpected(componentConnector) || !currentDependencyTree.noMoreChangesExpected(componentConnector.getParent())) {
+        delayedOverflowFixes.add(componentConnector);
+        continue;
+      }
+      if (debugLogging) {
+        VConsole.log("Doing overflow fix for " + Util.getConnectorString(componentConnector) + " in "+ Util.getConnectorString(componentConnector.getParent()));
+      }
+      Element parentElement=componentConnector.getWidget().getElement().getParentElement();
+      Style style=parentElement.getStyle();
+      String originalOverflow=style.getOverflow();
+      if (originalOverflow != null && !originalOverflows.containsKey(parentElement)) {
+        originalOverflows.put(parentElement,originalOverflow);
+      }
+      style.setOverflow(Overflow.HIDDEN);
+    }
+    pendingOverflowFixes.removeAll(delayedOverflowFixes);
+    for (    ComponentConnector componentConnector : pendingOverflowFixes) {
+      componentConnector.getWidget().getElement().getParentElement().getOffsetHeight();
+    }
+    for (    ComponentConnector componentConnector : pendingOverflowFixes) {
+      Element parentElement=componentConnector.getWidget().getElement().getParentElement();
+      parentElement.getStyle().setProperty("overflow",originalOverflows.get(parentElement));
+      layoutDependencyTree.setNeedsMeasure(componentConnector,true);
+    }
+    if (!pendingOverflowFixes.isEmpty()) {
+      VConsole.log("Did overflow fix for " + pendingOverflowFixes.size() + " elements  in "+ duration.elapsedMillis()+ " ms");
+    }
+    pendingOverflowFixes=delayedOverflowFixes;
+  }
+  int measureCount=0;
+  if (measureAll) {
+    ComponentConnector[] connectors=ConnectorMap.get(connection).getComponentConnectors();
+    for (    ComponentConnector connector : connectors) {
+      measueConnector(connector);
+    }
+    for (    ComponentConnector connector : connectors) {
+      layoutDependencyTree.setNeedsMeasure(connector,false);
+    }
+    measureCount+=connectors.length;
+  }
+  while (layoutDependencyTree.hasConnectorsToMeasure()) {
+    Collection<ComponentConnector> measureTargets=layoutDependencyTree.getMeasureTargets();
+    for (    ComponentConnector connector : measureTargets) {
+      measueConnector(connector);
+      measureCount++;
+    }
+    for (    ComponentConnector connector : measureTargets) {
+      layoutDependencyTree.setNeedsMeasure(connector,false);
+    }
+  }
+  return measureCount;
+}

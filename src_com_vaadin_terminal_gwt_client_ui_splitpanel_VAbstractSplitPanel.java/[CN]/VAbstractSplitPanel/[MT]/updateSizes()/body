@@ -23,6 +23,26 @@ secondContainerWidth=0;
 }
 DOM.setStyleAttribute(secondContainer,"width",secondContainerWidth + "px");
 DOM.setStyleAttribute(secondContainer,"left",(pixelPosition + getSplitterSize()) + "px");
+LayoutManager layoutManager=LayoutManager.get(client);
+ConnectorMap connectorMap=ConnectorMap.get(client);
+if (firstChild != null) {
+ComponentConnector connector=connectorMap.getConnector(firstChild);
+if (connector.isRelativeWidth()) {
+layoutManager.reportWidthAssignedToRelative(connector,pixelPosition);
+}
+ else {
+layoutManager.setNeedsMeasure(connector);
+}
+}
+if (secondChild != null) {
+ComponentConnector connector=connectorMap.getConnector(secondChild);
+if (connector.isRelativeWidth()) {
+layoutManager.reportWidthAssignedToRelative(connector,secondContainerWidth);
+}
+ else {
+layoutManager.setNeedsMeasure(connector);
+}
+}
 break;
 case ORIENTATION_VERTICAL:
 wholeSize=DOM.getElementPropertyInt(wrapper,"clientHeight");
@@ -42,6 +62,26 @@ secondContainerHeight=0;
 }
 DOM.setStyleAttribute(secondContainer,"height",secondContainerHeight + "px");
 DOM.setStyleAttribute(secondContainer,"top",(pixelPosition + getSplitterSize()) + "px");
+layoutManager=LayoutManager.get(client);
+connectorMap=ConnectorMap.get(client);
+if (firstChild != null) {
+ComponentConnector connector=connectorMap.getConnector(firstChild);
+if (connector.isRelativeHeight()) {
+layoutManager.reportHeightAssignedToRelative(connector,pixelPosition);
+}
+ else {
+layoutManager.setNeedsMeasure(connector);
+}
+}
+if (secondChild != null) {
+ComponentConnector connector=connectorMap.getConnector(secondChild);
+if (connector.isRelativeHeight()) {
+layoutManager.reportHeightAssignedToRelative(connector,secondContainerHeight);
+}
+ else {
+layoutManager.setNeedsMeasure(connector);
+}
+}
 break;
 }
 }

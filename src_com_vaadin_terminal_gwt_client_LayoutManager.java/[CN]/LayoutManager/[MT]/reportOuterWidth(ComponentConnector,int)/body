@@ -1,0 +1,14 @@
+{
+  MeasuredSize measuredSize=getMeasuredSize(component);
+  if (isLayoutRunning()) {
+    boolean widthChanged=measuredSize.setOuterWidth(outerWidth);
+    if (widthChanged) {
+      onConnectorChange(component,true,false);
+      notifyListenersAndDepdendents(component.getWidget().getElement(),true,false);
+    }
+    currentDependencyTree.setNeedsHorizontalMeasure(component,false);
+  }
+ else   if (measuredSize.getOuterWidth() != outerWidth) {
+    setNeedsMeasure(component);
+  }
+}

@@ -1,0 +1,15 @@
+{
+  for (  ComponentConnector connector : getNeedsSizeForLayout()) {
+    LayoutDependency layoutDependency=getDependency(connector,direction);
+    if (connector instanceof ManagedLayout) {
+      layoutDependency.setNeedsLayout(true);
+    }
+ else {
+      layoutDependency.propagatePostLayoutMeasure();
+    }
+  }
+  ComponentConnector scrollingBoundary=getScrollingBoundary(connector);
+  if (scrollingBoundary != null) {
+    getDependency(scrollingBoundary,getOppositeDirection()).setNeedsMeasure(true);
+  }
+}
