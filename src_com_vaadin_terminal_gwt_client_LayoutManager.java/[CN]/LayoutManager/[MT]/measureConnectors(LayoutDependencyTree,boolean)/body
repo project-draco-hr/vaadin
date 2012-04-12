@@ -1,26 +1,37 @@
 {
   if (!pendingOverflowFixes.isEmpty()) {
     Duration duration=new Duration();
+    HashMap<Element,String> originalOverflows=new HashMap<Element,String>();
+    HashSet<ComponentConnector> delayedOverflowFixes=new HashSet<ComponentConnector>();
     for (    ComponentConnector componentConnector : pendingOverflowFixes) {
-      Style style=componentConnector.getWidget().getElement().getParentElement().getStyle();
-      assert(style.getOverflow() == null);
+      if (!currentDependencyTree.noMoreChangesExpected(componentConnector) || !currentDependencyTree.noMoreChangesExpected(componentConnector.getParent())) {
+        delayedOverflowFixes.add(componentConnector);
+        continue;
+      }
+      if (debugLogging) {
+        VConsole.log("Doing overflow fix for " + Util.getConnectorString(componentConnector) + " in "+ Util.getConnectorString(componentConnector.getParent()));
+      }
+      Element parentElement=componentConnector.getWidget().getElement().getParentElement();
+      Style style=parentElement.getStyle();
+      String originalOverflow=style.getOverflow();
+      if (originalOverflow != null && !originalOverflows.containsKey(parentElement)) {
+        originalOverflows.put(parentElement,originalOverflow);
+      }
       style.setOverflow(Overflow.HIDDEN);
     }
+    pendingOverflowFixes.removeAll(delayedOverflowFixes);
     for (    ComponentConnector componentConnector : pendingOverflowFixes) {
       componentConnector.getWidget().getElement().getParentElement().getOffsetHeight();
     }
     for (    ComponentConnector componentConnector : pendingOverflowFixes) {
-      componentConnector.getWidget().getElement().getParentElement().getStyle().clearOverflow();
+      Element parentElement=componentConnector.getWidget().getElement().getParentElement();
+      parentElement.getStyle().setProperty("overflow",originalOverflows.get(parentElement));
       layoutDependencyTree.setNeedsMeasure(componentConnector,true);
-      ComponentContainerConnector parent=componentConnector.getParent();
-      if (parent instanceof ManagedLayout) {
-        ManagedLayout managedParent=(ManagedLayout)parent;
-        layoutDependencyTree.setNeedsHorizontalLayout(managedParent,true);
-        layoutDependencyTree.setNeedsVerticalLayout(managedParent,true);
-      }
     }
-    VConsole.log("Did overflow fix for " + pendingOverflowFixes.size() + " elements  in "+ duration.elapsedMillis()+ " ms");
-    pendingOverflowFixes.clear();
+    if (!pendingOverflowFixes.isEmpty()) {
+      VConsole.log("Did overflow fix for " + pendingOverflowFixes.size() + " elements  in "+ duration.elapsedMillis()+ " ms");
+    }
+    pendingOverflowFixes=delayedOverflowFixes;
   }
   int measureCount=0;
   if (measureAll) {
