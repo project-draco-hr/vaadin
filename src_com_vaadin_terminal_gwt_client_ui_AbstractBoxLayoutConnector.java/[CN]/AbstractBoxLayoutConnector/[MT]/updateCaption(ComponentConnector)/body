@@ -1,16 +1,19 @@
 {
-  Slot slot=getWidget().getSlot(connector.getWidget());
-  String caption=connector.getState().getCaption();
-  String iconUrl=connector.getState().getIcon() != null ? connector.getState().getIcon().getURL() : null;
-  List<String> styles=connector.getState().getStyles();
-  String error=connector.getState().getErrorMessage();
+  Slot slot=getWidget().getSlot(child.getWidget());
+  String caption=child.getState().getCaption();
+  String iconUrl=child.getState().getIcon() != null ? child.getState().getIcon().getURL() : null;
+  List<String> styles=child.getState().getStyles();
+  String error=child.getState().getErrorMessage();
   slot.setCaption(caption,iconUrl,styles,error);
-  slot.setRelativeWidth(connector.isRelativeWidth());
-  slot.setRelativeHeight(connector.isRelativeHeight());
-  if (connector.isRelativeHeight() && slot.hasCaption()) {
+  slot.setRelativeWidth(child.isRelativeWidth());
+  slot.setRelativeHeight(child.isRelativeHeight());
+  if (slot.hasCaption()) {
     getLayoutManager().addElementResizeListener(slot.getCaptionElement(),slotCaptionResizeListener);
   }
  else {
     getLayoutManager().removeElementResizeListener(slot.getCaptionElement(),slotCaptionResizeListener);
+  }
+  if (!slot.hasCaption()) {
+    childCaptionElementHeight.remove(child.getWidget().getElement());
   }
 }

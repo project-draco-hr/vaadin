@@ -1,13 +1,10 @@
 {
-  if (!getWidget().vertical && isUndefinedHeight()) {
-    if (!layoutHeightListenerAdded) {
-      getLayoutManager().addElementResizeListener(getWidget().getElement(),layoutHeightResizeListener);
-      layoutHeightListenerAdded=true;
-    }
+  if (needsFixedHeight() && childElementHeight.size() > 0) {
+    System.out.println("All sizes: " + childElementHeight.values().toString() + " - Caption sizes: "+ childCaptionElementHeight.values().toString());
+    int h=getMaxHeight();
+    System.out.println("Max height: " + h);
+    h+=getLayoutManager().getBorderHeight(getWidget().getElement()) + getLayoutManager().getPaddingHeight(getWidget().getElement());
+    getWidget().getElement().getStyle().setHeight(h,Unit.PX);
+    getLayoutManager().setNeedsMeasure(this);
   }
- else   if (getWidget().vertical || !isUndefinedHeight()) {
-    getLayoutManager().removeElementResizeListener(getWidget().getElement(),layoutHeightResizeListener);
-    layoutHeightListenerAdded=false;
-  }
-  getWidget().recalculateLayoutHeight();
 }
