@@ -32,9 +32,17 @@
  else {
       expandRatio=-1;
       hasExpandRatio.remove(child);
+      getLayoutManager().addElementResizeListener(child.getWidget().getElement(),childComponentResizeListener);
+      if (slot.hasCaption()) {
+        getLayoutManager().addElementResizeListener(slot.getCaptionElement(),slotCaptionResizeListener);
+      }
     }
     slot.setExpandRatio(expandRatio);
   }
-  layout.setMargin(new VMarginInfo(getState().getMarginsBitmask()));
-  layout.setSpacing(getState().isSpacing());
+  if (needsExpand()) {
+    updateExpand();
+  }
+ else {
+    getWidget().clearExpand();
+  }
 }

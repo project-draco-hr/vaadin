@@ -1,13 +1,26 @@
 {
-  int h=0;
+  int highestNonRelative=-1;
+  int highestRelative=-1;
   for (  Element el : childElementHeight.keySet()) {
-    int height=childElementHeight.get(el);
-    if (childCaptionElementHeight.containsKey(el)) {
-      height+=childCaptionElementHeight.get(el);
+    if (needsMeasure.contains(el)) {
+      int h=childElementHeight.get(el);
+      String sHeight=el.getStyle().getHeight();
+      if (childCaptionElementHeight.containsKey(el) && (sHeight == null || !sHeight.endsWith("%"))) {
+        h+=childCaptionElementHeight.get(el);
+      }
+      if (h > highestNonRelative) {
+        highestNonRelative=h;
+      }
     }
-    if (height > h) {
-      h=height;
+ else {
+      int h=childElementHeight.get(el);
+      if (childCaptionElementHeight.containsKey(el)) {
+        h+=childCaptionElementHeight.get(el);
+      }
+      if (h > highestRelative) {
+        highestRelative=h;
+      }
     }
   }
-  return h;
+  return highestNonRelative > -1 ? highestNonRelative : highestRelative;
 }

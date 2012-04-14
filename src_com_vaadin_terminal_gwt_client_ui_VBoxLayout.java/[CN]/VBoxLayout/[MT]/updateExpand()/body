@@ -29,7 +29,20 @@
     for (    Widget w : getChildren()) {
       Slot slot=(Slot)w;
       if (slot.getExpandRatio() == -1) {
-        totalSize+=vertical ? slot.getOffsetHeight() : slot.getOffsetWidth();
+        if (layoutManager != null) {
+          if (vertical) {
+            totalSize+=layoutManager.getOuterHeight(slot.getWidget().getElement()) - layoutManager.getMarginHeight(slot.getWidget().getElement());
+            if (slot.hasCaption()) {
+              totalSize+=layoutManager.getOuterHeight(slot.getCaptionElement()) - layoutManager.getMarginHeight(slot.getCaptionElement());
+            }
+          }
+ else {
+            totalSize+=layoutManager.getOuterWidth(slot.getWidget().getElement()) - layoutManager.getMarginWidth(slot.getWidget().getElement());
+          }
+        }
+ else {
+          totalSize+=vertical ? slot.getOffsetHeight() : slot.getOffsetWidth();
+        }
       }
       totalSize+=slot.getSpacingSize(vertical);
     }
