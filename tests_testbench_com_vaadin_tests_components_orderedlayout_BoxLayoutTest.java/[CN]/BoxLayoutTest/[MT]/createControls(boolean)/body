@@ -38,7 +38,7 @@
       grid.addComponent(new Label("Grid cell 2"));
       grid.addComponent(grow);
       grid.addComponent(new Label("Grid cell 4"));
-      l.addComponent(grid);
+      l.addComponent(new TextField("Some field"));
     }
   }
 );
@@ -239,5 +239,17 @@
   }
 );
   component.addComponent(componentError);
+  componentRequired=new CheckBox("Required");
+  componentRequired.setImmediate(true);
+  componentRequired.setEnabled(false);
+  componentRequired.addListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      if (target != null && target instanceof AbstractField) {
+        ((AbstractField<?>)target).setRequired(componentRequired.getValue());
+      }
+    }
+  }
+);
+  component.addComponent(componentRequired);
   return root;
 }
