@@ -1,5 +1,5 @@
 {
-  if (captionText != null || iconUrl != null || error != null) {
+  if (captionText != null || iconUrl != null || error != null || required) {
     if (caption == null) {
       caption=DOM.createDiv();
       captionWrap=DOM.createDiv();
@@ -7,7 +7,6 @@
       captionWrap.addClassName("v-has-caption");
       getElement().appendChild(captionWrap);
       captionWrap.appendChild(getWidget().getElement());
-      setCaptionPosition(captionPosition);
     }
   }
  else   if (caption != null) {
@@ -50,12 +49,31 @@
     errorIcon.removeFromParent();
     errorIcon=null;
   }
+  if (required) {
+    if (requiredIcon == null) {
+      requiredIcon=DOM.createSpan();
+      requiredIcon.setClassName("v-required-indicator");
+    }
+    caption.appendChild(requiredIcon);
+  }
+ else   if (requiredIcon != null) {
+    requiredIcon.removeFromParent();
+    requiredIcon=null;
+  }
   if (caption != null) {
     caption.setClassName("v-caption");
     if (styles != null) {
       for (      String style : styles) {
         caption.addClassName("v-caption-" + style);
       }
+    }
+  }
+  if (caption != null) {
+    if (captionText != null || iconUrl != null) {
+      setCaptionPosition(CaptionPosition.TOP);
+    }
+ else {
+      setCaptionPosition(CaptionPosition.RIGHT);
     }
   }
 }

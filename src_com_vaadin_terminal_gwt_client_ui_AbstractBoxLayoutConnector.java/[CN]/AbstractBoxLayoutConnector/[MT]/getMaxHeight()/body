@@ -2,10 +2,11 @@
   int highestNonRelative=-1;
   int highestRelative=-1;
   for (  Element el : childElementHeight.keySet()) {
+    CaptionPosition pos=getWidget().getCaptionPositionFromElement((Element)el.getParentElement().cast());
     if (needsMeasure.contains(el)) {
       int h=childElementHeight.get(el);
       String sHeight=el.getStyle().getHeight();
-      if (childCaptionElementHeight.containsKey(el) && (sHeight == null || !sHeight.endsWith("%"))) {
+      if (childCaptionElementHeight.containsKey(el) && (sHeight == null || !sHeight.endsWith("%")) && (pos == CaptionPosition.TOP || pos == CaptionPosition.BOTTOM)) {
         h+=childCaptionElementHeight.get(el);
       }
       if (h > highestNonRelative) {
@@ -14,7 +15,7 @@
     }
  else {
       int h=childElementHeight.get(el);
-      if (childCaptionElementHeight.containsKey(el)) {
+      if (childCaptionElementHeight.containsKey(el) && (pos == CaptionPosition.TOP || pos == CaptionPosition.BOTTOM)) {
         h+=childCaptionElementHeight.get(el);
       }
       if (h > highestRelative) {
