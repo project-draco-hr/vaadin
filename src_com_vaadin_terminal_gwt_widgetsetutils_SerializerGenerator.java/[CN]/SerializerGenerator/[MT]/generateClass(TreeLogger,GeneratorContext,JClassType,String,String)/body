@@ -22,8 +22,7 @@
   sourceWriter.println(JSONObject.class.getName() + " json = new " + JSONObject.class.getName()+ "();");
   for (  JMethod setterMethod : getSetters(beanType)) {
     String setterName=setterMethod.getName();
-    String capitalizedFieldName=setterName.substring(3);
-    String fieldName=decapitalize(capitalizedFieldName);
+    String fieldName=setterName.substring(3);
     String getterName=findGetter(beanType,setterMethod);
     if (getterName == null) {
       logger.log(TreeLogger.ERROR,"No getter found for " + fieldName + ". Serialization will likely fail");
@@ -37,11 +36,10 @@
   sourceWriter.println(beanQualifiedSourceName + " state = GWT.create(" + beanQualifiedSourceName+ ".class);");
   for (  JMethod method : getSetters(beanType)) {
     String setterName=method.getName();
-    String capitalizedFieldName=setterName.substring(3);
-    String fieldName=decapitalize(capitalizedFieldName);
+    String fieldName=setterName.substring(3);
     JType setterParameterType=method.getParameterTypes()[0];
     logger.log(Type.DEBUG,"* Processing field " + fieldName + " in "+ beanQualifiedSourceName+ " ("+ beanType.getName()+ ")");
-    String jsonFieldName="json" + capitalizedFieldName;
+    String jsonFieldName="json" + fieldName;
     sourceWriter.println("JSONArray " + jsonFieldName + " = (JSONArray) jsonValue.get(\""+ fieldName+ "\");");
     String fieldType;
     JPrimitiveType primitiveType=setterParameterType.isPrimitive();
