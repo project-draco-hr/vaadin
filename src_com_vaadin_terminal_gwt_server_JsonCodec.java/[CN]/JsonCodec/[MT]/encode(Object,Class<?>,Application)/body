@@ -1,6 +1,6 @@
 {
   if (null == value) {
-    return combineTypeAndValue(JsonEncoder.VTYPE_NULL,JSONObject.NULL);
+    return encodeNull();
   }
   if (valueType == null) {
     valueType=value.getClass();
@@ -48,6 +48,9 @@
   }
  else   if (value instanceof Connector) {
     Connector connector=(Connector)value;
+    if (value instanceof Component && !(AbstractCommunicationManager.isVisible((Component)value))) {
+      return encodeNull();
+    }
     return combineTypeAndValue(JsonEncoder.VTYPE_CONNECTOR,connector.getConnectorId());
   }
  else   if (transportType != null) {
