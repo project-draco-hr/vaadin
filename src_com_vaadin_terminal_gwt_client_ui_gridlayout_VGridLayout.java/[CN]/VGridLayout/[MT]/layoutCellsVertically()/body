@@ -3,13 +3,21 @@
   LayoutManager layoutManager=LayoutManager.get(client);
   Element element=getElement();
   int paddingTop=layoutManager.getPaddingTop(element);
+  int paddingBottom=layoutManager.getPaddingBottom(element);
   int y=paddingTop;
   for (int i=0; i < cells.length; i++) {
     y=paddingTop;
     for (int j=0; j < cells[i].length; j++) {
       Cell cell=cells[i][j];
       if (cell != null) {
-        cell.layoutVertically(y);
+        int effectivePadding;
+        if (cell.rowspan + j >= cells[i].length) {
+          effectivePadding=paddingBottom;
+        }
+ else {
+          effectivePadding=0;
+        }
+        cell.layoutVertically(y,effectivePadding);
       }
       y+=rowHeights[j] + verticalSpacing;
     }
