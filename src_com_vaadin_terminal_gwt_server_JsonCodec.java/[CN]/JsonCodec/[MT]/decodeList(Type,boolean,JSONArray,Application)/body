@@ -1,0 +1,16 @@
+{
+  List<Object> list=new ArrayList<Object>();
+  for (int i=0; i < jsonArray.length(); ++i) {
+    JSONArray entryArray=jsonArray.getJSONArray(i);
+    Object decodedChild;
+    if (!restrictToInternalTypes && targetType instanceof ParameterizedType) {
+      Type childType=((ParameterizedType)targetType).getActualTypeArguments()[0];
+      decodedChild=decodeInternalOrCustomType(childType,entryArray,application);
+    }
+ else {
+      decodedChild=decodeInternalType(entryArray,application);
+    }
+    list.add(decodedChild);
+  }
+  return list;
+}
