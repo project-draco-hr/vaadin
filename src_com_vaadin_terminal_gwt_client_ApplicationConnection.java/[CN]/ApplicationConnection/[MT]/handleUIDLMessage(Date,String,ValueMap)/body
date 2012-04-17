@@ -153,7 +153,12 @@
     private void sendStateChangeEvents(    Collection<StateChangeEvent> pendingStateChangeEvents){
       VConsole.log(" * Sending state change events");
       for (      StateChangeEvent sce : pendingStateChangeEvents) {
-        sce.getConnector().fireEvent(sce);
+        try {
+          sce.getConnector().fireEvent(sce);
+        }
+ catch (        final Throwable e) {
+          VConsole.error(e);
+        }
       }
     }
     private void unregisterRemovedConnectors(){
@@ -239,7 +244,12 @@
       }
       VConsole.log(" * Sending hierarchy change events");
       for (      ConnectorHierarchyChangeEvent event : pendingHierarchyChangeEvents) {
-        event.getConnector().fireEvent(event);
+        try {
+          event.getConnector().fireEvent(event);
+        }
+ catch (        final Throwable e) {
+          VConsole.error(e);
+        }
       }
     }
     private Collection<StateChangeEvent> updateConnectorState(    ValueMap json){

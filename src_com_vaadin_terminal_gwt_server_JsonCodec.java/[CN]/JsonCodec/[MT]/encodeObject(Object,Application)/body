@@ -2,9 +2,9 @@
   JSONObject jsonMap=new JSONObject();
   try {
     for (    PropertyDescriptor pd : Introspector.getBeanInfo(value.getClass()).getPropertyDescriptors()) {
-      String fieldName=pd.getName();
       Class<?> fieldType=pd.getPropertyType();
-      if (pd.getReadMethod() == null || pd.getWriteMethod() == null) {
+      String fieldName=getTransportFieldName(pd);
+      if (fieldName == null) {
         continue;
       }
       Method getterMethod=pd.getReadMethod();

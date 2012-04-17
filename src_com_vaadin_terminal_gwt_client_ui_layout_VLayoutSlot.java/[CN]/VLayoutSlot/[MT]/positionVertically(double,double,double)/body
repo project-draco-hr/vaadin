@@ -1,0 +1,54 @@
+{
+  Style style=wrapper.getStyle();
+  double contentHeight=allocatedSpace;
+  int captionHeight;
+  VCaption caption=getCaption();
+  if (caption == null || caption.shouldBePlacedAfterComponent()) {
+    style.clearPaddingTop();
+    captionHeight=0;
+  }
+ else {
+    captionHeight=getCaptionHeight();
+    contentHeight-=captionHeight;
+    if (contentHeight < 0) {
+      contentHeight=0;
+    }
+    style.setPaddingTop(captionHeight,Unit.PX);
+  }
+  if (paddingBottom > 0) {
+    style.setPaddingBottom(paddingBottom,Unit.PX);
+  }
+ else {
+    style.clearPaddingBottom();
+  }
+  if (isRelativeHeight()) {
+    style.setHeight(contentHeight,Unit.PX);
+  }
+ else {
+    style.clearHeight();
+  }
+  double allocatedContentHeight=0;
+  if (isRelativeHeight()) {
+    String height=getWidget().getElement().getStyle().getHeight();
+    double percentage=parsePercent(height);
+    allocatedContentHeight=contentHeight * (percentage / 100);
+    reportActualRelativeHeight(Math.round((float)allocatedContentHeight));
+  }
+  AlignmentInfo alignment=getAlignment();
+  if (!alignment.isTop()) {
+    double usedHeight;
+    if (isRelativeHeight()) {
+      usedHeight=captionHeight + allocatedContentHeight;
+    }
+ else {
+      usedHeight=getUsedHeight();
+    }
+    if (alignment.isVerticalCenter()) {
+      currentLocation+=(allocatedSpace - usedHeight) / 2d;
+    }
+ else {
+      currentLocation+=(allocatedSpace - usedHeight);
+    }
+  }
+  style.setTop(currentLocation,Unit.PX);
+}

@@ -2,6 +2,12 @@
   if (serializableTypes.contains(type)) {
     return;
   }
+  JParameterizedType parametrized=type.isParameterized();
+  if (parametrized != null) {
+    for (    JClassType parameterType : parametrized.getTypeArgs()) {
+      addTypeIfNeeded(serializableTypes,parameterType);
+    }
+  }
   if (serializationHandledByFramework(type)) {
     return;
   }

@@ -3,10 +3,14 @@
   VWindow window=getWidget();
   ComponentConnector layout=window.layout;
   Element contentElement=window.contentPanel.getElement();
-  boolean needsMinWidth=!isUndefinedWidth() || layout.isRelativeWidth();
-  int minWidth=window.getMinWidth();
-  if (needsMinWidth && lm.getInnerWidth(contentElement) < minWidth) {
-    window.setWidth(minWidth + "px");
+  if (!minWidthChecked) {
+    boolean needsMinWidth=!isUndefinedWidth() || layout.isRelativeWidth();
+    int minWidth=window.getMinWidth();
+    if (needsMinWidth && lm.getInnerWidth(contentElement) < minWidth) {
+      minWidthChecked=true;
+      window.setWidth(minWidth + "px");
+    }
+    minWidthChecked=true;
   }
   boolean needsMinHeight=!isUndefinedHeight() || layout.isRelativeHeight();
   int minHeight=window.getMinHeight();

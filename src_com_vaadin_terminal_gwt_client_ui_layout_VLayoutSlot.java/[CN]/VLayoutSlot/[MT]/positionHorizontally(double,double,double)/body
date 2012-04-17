@@ -1,0 +1,71 @@
+{
+  Style style=wrapper.getStyle();
+  double availableWidth=allocatedSpace;
+  VCaption caption=getCaption();
+  Style captionStyle=caption != null ? caption.getElement().getStyle() : null;
+  int captionWidth=getCaptionWidth();
+  boolean captionAboveCompnent;
+  if (caption == null) {
+    captionAboveCompnent=false;
+  }
+ else {
+    captionAboveCompnent=!caption.shouldBePlacedAfterComponent();
+    if (!captionAboveCompnent) {
+      availableWidth-=captionWidth;
+      captionStyle.clearLeft();
+      captionStyle.setRight(paddingRight,Unit.PX);
+      paddingRight+=captionWidth;
+    }
+ else {
+      captionStyle.setLeft(0,Unit.PX);
+      captionStyle.clearRight();
+    }
+  }
+  if (paddingRight > 0) {
+    style.setPaddingRight(paddingRight,Unit.PX);
+  }
+ else {
+    style.clearPaddingRight();
+  }
+  if (isRelativeWidth()) {
+    style.setPropertyPx("width",(int)availableWidth);
+  }
+ else {
+    style.clearProperty("width");
+  }
+  double allocatedContentWidth=0;
+  if (isRelativeWidth()) {
+    String percentWidth=getWidget().getElement().getStyle().getWidth();
+    double percentage=parsePercent(percentWidth);
+    allocatedContentWidth=availableWidth * (percentage / 100);
+    reportActualRelativeWidth(Math.round((float)allocatedContentWidth));
+  }
+  AlignmentInfo alignment=getAlignment();
+  if (!alignment.isLeft()) {
+    double usedWidth;
+    if (isRelativeWidth()) {
+      usedWidth=allocatedContentWidth;
+    }
+ else {
+      usedWidth=getWidgetWidth();
+    }
+    if (alignment.isHorizontalCenter()) {
+      currentLocation+=(allocatedSpace - usedWidth) / 2d;
+      if (captionAboveCompnent) {
+        captionStyle.setLeft(Math.round(usedWidth - captionWidth) / 2,Unit.PX);
+      }
+    }
+ else {
+      currentLocation+=(allocatedSpace - usedWidth);
+      if (captionAboveCompnent) {
+        captionStyle.setLeft(Math.round(usedWidth - captionWidth),Unit.PX);
+      }
+    }
+  }
+ else {
+    if (captionAboveCompnent) {
+      captionStyle.setLeft(0,Unit.PX);
+    }
+  }
+  style.setLeft(Math.round(currentLocation),Unit.PX);
+}
