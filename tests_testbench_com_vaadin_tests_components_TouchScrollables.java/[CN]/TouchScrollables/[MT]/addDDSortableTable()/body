@@ -1,11 +1,21 @@
 {
   final Table table;
   table=new Table();
-  table.setCaption("DD sortable table");
+  table.setCaption("DD sortable table with context menus");
   table.setPageLength(10);
   table.setRowHeaderMode(Table.ROW_HEADER_MODE_ID);
   table.setSelectable(true);
   table.setMultiSelect(true);
+  table.addActionHandler(new Handler(){
+    Action[] actions=new Action[]{new Action("FOO"),new Action("BAR"),new Action("CAR")};
+    public Action[] getActions(    Object target,    Object sender){
+      return actions;
+    }
+    public void handleAction(    Action action,    Object sender,    Object target){
+      getLayout().getWindow().showNotification(action.getCaption());
+    }
+  }
+);
   populateTable(table);
   table.setDragMode(Table.TableDragMode.ROW);
   table.setDropHandler(new DropHandler(){
