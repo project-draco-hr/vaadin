@@ -16,46 +16,44 @@
     slot.getElement().getStyle().clearMarginTop();
   }
   if (isExpanding) {
-    if (isExpanding) {
-      if (expandWrapper == null) {
-        expandWrapper=DOM.createDiv();
-        expandWrapper.setClassName("v-expand");
-        for (; getElement().getChildCount() > 0; ) {
-          Node el=getElement().getChild(0);
-          expandWrapper.appendChild(el);
-        }
-        getElement().appendChild(expandWrapper);
+    if (expandWrapper == null) {
+      expandWrapper=DOM.createDiv();
+      expandWrapper.setClassName("v-expand");
+      for (; getElement().getChildCount() > 0; ) {
+        Node el=getElement().getChild(0);
+        expandWrapper.appendChild(el);
       }
-      int totalSize=0;
-      for (      Widget w : getChildren()) {
-        Slot slot=(Slot)w;
-        if (slot.getExpandRatio() == -1) {
-          if (layoutManager != null) {
-            if (vertical) {
-              totalSize+=layoutManager.getOuterHeight(slot.getWidget().getElement()) - layoutManager.getMarginHeight(slot.getWidget().getElement());
-              if (slot.hasCaption()) {
-                totalSize+=layoutManager.getOuterHeight(slot.getCaptionElement()) - layoutManager.getMarginHeight(slot.getCaptionElement());
-              }
-            }
- else {
-              totalSize+=layoutManager.getOuterWidth(slot.getWidget().getElement()) - layoutManager.getMarginWidth(slot.getWidget().getElement());
-            }
-          }
- else {
-            totalSize+=vertical ? slot.getOffsetHeight() : slot.getOffsetWidth();
-          }
-        }
-        totalSize+=slot.getSpacingSize(vertical);
-      }
-      if (vertical) {
-        expandWrapper.getStyle().setPaddingTop(totalSize,Unit.PX);
-        expandWrapper.getFirstChildElement().getStyle().setMarginTop(-totalSize,Unit.PX);
-      }
- else {
-        expandWrapper.getStyle().setPaddingLeft(totalSize,Unit.PX);
-        expandWrapper.getFirstChildElement().getStyle().setMarginLeft(-totalSize,Unit.PX);
-      }
-      recalculateExpands();
+      getElement().appendChild(expandWrapper);
     }
+    int totalSize=0;
+    for (    Widget w : getChildren()) {
+      Slot slot=(Slot)w;
+      if (slot.getExpandRatio() == -1) {
+        if (layoutManager != null) {
+          if (vertical) {
+            totalSize+=layoutManager.getOuterHeight(slot.getWidget().getElement()) - layoutManager.getMarginHeight(slot.getWidget().getElement());
+            if (slot.hasCaption()) {
+              totalSize+=layoutManager.getOuterHeight(slot.getCaptionElement()) - layoutManager.getMarginHeight(slot.getCaptionElement());
+            }
+          }
+ else {
+            totalSize+=layoutManager.getOuterWidth(slot.getWidget().getElement()) - layoutManager.getMarginWidth(slot.getWidget().getElement());
+          }
+        }
+ else {
+          totalSize+=vertical ? slot.getOffsetHeight() : slot.getOffsetWidth();
+        }
+      }
+      totalSize+=slot.getSpacingSize(vertical);
+    }
+    if (vertical) {
+      expandWrapper.getStyle().setPaddingTop(totalSize,Unit.PX);
+      expandWrapper.getFirstChildElement().getStyle().setMarginTop(-totalSize,Unit.PX);
+    }
+ else {
+      expandWrapper.getStyle().setPaddingLeft(totalSize,Unit.PX);
+      expandWrapper.getFirstChildElement().getStyle().setMarginLeft(-totalSize,Unit.PX);
+    }
+    recalculateExpands();
   }
 }
