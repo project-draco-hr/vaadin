@@ -31,9 +31,12 @@
       if (slot.getExpandRatio() == -1) {
         if (layoutManager != null) {
           if (vertical) {
-            totalSize+=layoutManager.getOuterHeight(slot.getWidget().getElement()) - layoutManager.getMarginHeight(slot.getWidget().getElement());
+            int size=layoutManager.getOuterHeight(slot.getWidget().getElement()) - layoutManager.getMarginHeight(slot.getWidget().getElement());
             if (slot.hasCaption()) {
-              totalSize+=layoutManager.getOuterHeight(slot.getCaptionElement()) - layoutManager.getMarginHeight(slot.getCaptionElement());
+              size+=layoutManager.getOuterHeight(slot.getCaptionElement()) - layoutManager.getMarginHeight(slot.getCaptionElement());
+            }
+            if (size > 0) {
+              totalSize+=size;
             }
           }
  else {
@@ -43,14 +46,19 @@
               int max2=layoutManager.getOuterWidth(slot.getCaptionElement()) - layoutManager.getMarginWidth(slot.getCaptionElement());
               max=Math.max(max,max2);
             }
-            totalSize+=max;
+            if (max > 0) {
+              totalSize+=max;
+            }
           }
         }
  else {
           totalSize+=vertical ? slot.getOffsetHeight() : slot.getOffsetWidth();
         }
       }
-      totalSize+=slot.getSpacingSize(vertical);
+      int spacingSize=slot.getSpacingSize(vertical);
+      if (spacingSize > 0) {
+        totalSize+=spacingSize;
+      }
     }
     if (vertical) {
       expandWrapper.getStyle().setPaddingTop(totalSize,Unit.PX);
