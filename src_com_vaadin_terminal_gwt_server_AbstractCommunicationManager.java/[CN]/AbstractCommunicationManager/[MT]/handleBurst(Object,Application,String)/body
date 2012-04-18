@@ -4,20 +4,16 @@
     List<MethodInvocation> invocations=parseInvocations(burst);
     for (int i=0; i < invocations.size(); i++) {
       MethodInvocation invocation=invocations.get(i);
-      MethodInvocation nextInvocation=null;
-      if (i + 1 < invocations.size()) {
-        nextInvocation=invocations.get(i + 1);
-      }
-      final String interfaceName=invocation.getInterfaceName();
       final ClientConnector connector=getConnector(app,invocation.getConnectorId());
       if (connector == null) {
         logger.log(Level.WARNING,"RPC call to " + invocation.getInterfaceName() + "."+ invocation.getMethodName()+ " received for connector "+ invocation.getConnectorId()+ " but no such connector could be found");
         continue;
       }
       if (!connector.isConnectorEnabled()) {
-        if (ApplicationConnection.UPDATE_VARIABLE_INTERFACE.equals(interfaceName)) {
-          VariableChange change=new VariableChange(invocation);
-          if ("close".equals(change.getName()) && Boolean.TRUE.equals(change.getValue())) {
+        if (invocation instanceof LegacyChangeVariablesInvocation) {
+          LegacyChangeVariablesInvocation legacyInvocation=(LegacyChangeVariablesInvocation)invocation;
+          Map<String,Object> changes=legacyInvocation.getVariableChanges();
+          if (changes.size() == 1 && changes.containsKey("close") && Boolean.TRUE.equals(changes.get("close"))) {
             continue;
           }
         }
@@ -31,40 +27,28 @@
         logger.warning(msg);
         continue;
       }
-      if (!ApplicationConnection.UPDATE_VARIABLE_INTERFACE.equals(interfaceName)) {
-        ServerRpcManager.applyInvocation(connector,invocation);
-        continue;
+      if (invocation instanceof ServerRPCMethodInvocation) {
+        ServerRpcManager.applyInvocation(connector,(ServerRPCMethodInvocation)invocation);
       }
-      final VariableOwner owner=(VariableOwner)connector;
-      VariableChange change=new VariableChange(invocation);
-      Map<String,Object> m=new HashMap<String,Object>();
-      m.put(change.getName(),change.getValue());
-      while (nextInvocation != null && invocation.getConnectorId().equals(nextInvocation.getConnectorId()) && ApplicationConnection.UPDATE_VARIABLE_METHOD.equals(nextInvocation.getMethodName())) {
-        i++;
-        invocation=nextInvocation;
-        change=new VariableChange(invocation);
-        m.put(change.getName(),change.getValue());
-        if (i + 1 < invocations.size()) {
-          nextInvocation=invocations.get(i + 1);
-        }
  else {
-          nextInvocation=null;
+        LegacyChangeVariablesInvocation legacyInvocation=(LegacyChangeVariablesInvocation)invocation;
+        Map<String,Object> changes=legacyInvocation.getVariableChanges();
+        try {
+          changeVariables(source,(VariableOwner)connector,changes);
         }
-      }
-      try {
-        changeVariables(source,owner,m);
-      }
- catch (      Exception e) {
-        Component errorComponent=null;
-        if (owner instanceof Component) {
-          errorComponent=(Component)owner;
-        }
- else         if (owner instanceof DragAndDropService) {
-          if (m.get("dhowner") instanceof Component) {
-            errorComponent=(Component)m.get("dhowner");
+ catch (        Exception e) {
+          Component errorComponent=null;
+          if (connector instanceof Component) {
+            errorComponent=(Component)connector;
           }
+ else           if (connector instanceof DragAndDropService) {
+            Object dropHandlerOwner=changes.get("dhowner");
+            if (dropHandlerOwner instanceof Component) {
+              errorComponent=(Component)dropHandlerOwner;
+            }
+          }
+          handleChangeVariablesError(app,errorComponent,e,changes);
         }
-        handleChangeVariablesError(app,errorComponent,e,m);
       }
     }
   }

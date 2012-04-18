@@ -1,55 +1,55 @@
 {
+  String encodedTransportType=valueAndType.getString(0);
   if (!isInternalType(targetType)) {
-    throw new JSONException("Cannot decode internal type. Type " + targetType + " is not supported.");
+    throw new JSONException("Type " + targetType + " is not a supported internal type.");
   }
   String transportType=getInternalTransportType(targetType);
-  String encodedTransportType=valueAndType.getString(0);
-  if (!encodedTransportType.equals(transportType)) {
-    throw new JSONException("Expected a value of type " + transportType + ", received "+ encodedTransportType);
+  if (!transportTypesCompatible(encodedTransportType,transportType)) {
+    throw new JSONException("Expected a value of type " + targetType + ", received "+ getType(encodedTransportType));
   }
   Object encodedJsonValue=valueAndType.get(1);
+  if (JsonEncoder.VTYPE_NULL.equals(encodedTransportType)) {
+    return null;
+  }
   if (JsonEncoder.VTYPE_LIST.equals(transportType)) {
-    return (T)decodeList(targetType,restrictToInternalTypes,(JSONArray)encodedJsonValue,application);
+    return decodeList(targetType,restrictToInternalTypes,(JSONArray)encodedJsonValue,application);
   }
  else   if (JsonEncoder.VTYPE_SET.equals(transportType)) {
-    return (T)decodeSet(targetType,restrictToInternalTypes,(JSONArray)encodedJsonValue,application);
+    return decodeSet(targetType,restrictToInternalTypes,(JSONArray)encodedJsonValue,application);
   }
  else   if (JsonEncoder.VTYPE_MAP_CONNECTOR.equals(transportType)) {
-    return (T)decodeConnectorToObjectMap(targetType,restrictToInternalTypes,(JSONObject)encodedJsonValue,application);
+    return decodeConnectorToObjectMap(targetType,restrictToInternalTypes,(JSONObject)encodedJsonValue,application);
   }
  else   if (JsonEncoder.VTYPE_MAP.equals(transportType)) {
-    return (T)decodeStringToObjectMap(targetType,restrictToInternalTypes,(JSONObject)encodedJsonValue,application);
+    return decodeStringToObjectMap(targetType,restrictToInternalTypes,(JSONObject)encodedJsonValue,application);
   }
   if (JsonEncoder.VTYPE_ARRAY.equals(transportType)) {
-    return (T)decodeObjectArray(targetType,(JSONArray)encodedJsonValue,application);
+    return decodeObjectArray(targetType,(JSONArray)encodedJsonValue,application);
   }
  else   if (JsonEncoder.VTYPE_STRINGARRAY.equals(transportType)) {
-    return (T)decodeStringArray((JSONArray)encodedJsonValue);
+    return decodeStringArray((JSONArray)encodedJsonValue);
   }
   String stringValue=String.valueOf(encodedJsonValue);
   if (JsonEncoder.VTYPE_CONNECTOR.equals(transportType)) {
-    return (T)application.getConnector(stringValue);
+    return application.getConnector(stringValue);
   }
   if (JsonEncoder.VTYPE_STRING.equals(transportType)) {
-    return (T)stringValue;
+    return stringValue;
   }
  else   if (JsonEncoder.VTYPE_INTEGER.equals(transportType)) {
-    return (T)Integer.valueOf(stringValue);
+    return Integer.valueOf(stringValue);
   }
  else   if (JsonEncoder.VTYPE_LONG.equals(transportType)) {
-    return (T)Long.valueOf(stringValue);
+    return Long.valueOf(stringValue);
   }
  else   if (JsonEncoder.VTYPE_FLOAT.equals(transportType)) {
-    return (T)Float.valueOf(stringValue);
+    return Float.valueOf(stringValue);
   }
  else   if (JsonEncoder.VTYPE_DOUBLE.equals(transportType)) {
-    return (T)Double.valueOf(stringValue);
+    return Double.valueOf(stringValue);
   }
  else   if (JsonEncoder.VTYPE_BOOLEAN.equals(transportType)) {
-    return (T)Boolean.valueOf(stringValue);
-  }
- else   if (JsonEncoder.VTYPE_NULL.equals(transportType)) {
-    return null;
+    return Boolean.valueOf(stringValue);
   }
   throw new JSONException("Unknown type " + transportType);
 }

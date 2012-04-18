@@ -5,14 +5,7 @@
     String connectorId=it.next();
     Connector connector=application.getConnector(connectorId);
     JSONArray encodedValueAndType=jsonMap.getJSONArray(connectorId);
-    Object decodedChild;
-    if (!restrictToInternalTypes && targetType instanceof ParameterizedType) {
-      Type mapValueType=((ParameterizedType)targetType).getActualTypeArguments()[1];
-      decodedChild=decodeInternalOrCustomType(mapValueType,encodedValueAndType,application);
-    }
- else {
-      decodedChild=decodeInternalType(encodedValueAndType,application);
-    }
+    Object decodedChild=decodeChild(targetType,restrictToInternalTypes,1,encodedValueAndType,application);
     map.put(connector,decodedChild);
   }
   return map;

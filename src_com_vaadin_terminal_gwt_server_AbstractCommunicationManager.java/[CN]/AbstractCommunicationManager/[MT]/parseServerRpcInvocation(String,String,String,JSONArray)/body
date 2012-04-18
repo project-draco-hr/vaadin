@@ -1,0 +1,12 @@
+{
+  ServerRPCMethodInvocation invocation=new ServerRPCMethodInvocation(connectorId,interfaceName,methodName,parametersJson.length());
+  Object[] parameters=new Object[parametersJson.length()];
+  Type[] declaredRpcMethodParameterTypes=invocation.getMethod().getGenericParameterTypes();
+  for (int j=0; j < parametersJson.length(); ++j) {
+    JSONArray parameterJson=parametersJson.getJSONArray(j);
+    Type parameterType=declaredRpcMethodParameterTypes[j];
+    parameters[j]=JsonCodec.decodeInternalOrCustomType(parameterType,parameterJson,application);
+  }
+  invocation.setParameters(parameters);
+  return invocation;
+}

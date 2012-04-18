@@ -4,14 +4,7 @@
   while (it.hasNext()) {
     String key=it.next();
     JSONArray encodedValueAndType=jsonMap.getJSONArray(key);
-    Object decodedChild;
-    if (!restrictToInternalTypes && targetType instanceof ParameterizedType) {
-      Type mapValueType=((ParameterizedType)targetType).getActualTypeArguments()[1];
-      decodedChild=decodeInternalOrCustomType(mapValueType,encodedValueAndType,application);
-    }
- else {
-      decodedChild=decodeInternalType(encodedValueAndType,application);
-    }
+    Object decodedChild=decodeChild(targetType,restrictToInternalTypes,1,encodedValueAndType,application);
     map.put(key,decodedChild);
   }
   return map;
