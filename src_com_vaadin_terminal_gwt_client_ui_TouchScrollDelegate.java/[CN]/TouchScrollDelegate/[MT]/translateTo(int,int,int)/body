@@ -1,0 +1,20 @@
+{
+  if (duration > 0) {
+    transitionOn=true;
+    momentum=new Animation(){
+      @Override protected void onUpdate(      double progress){
+        double translateY=(fromY + (finalY - fromY) * progress);
+        translateTo(translateY);
+      }
+      @Override protected double interpolate(      double progress){
+        return 1 + Math.pow(progress - 1,3);
+      }
+      @Override protected void onComplete(){
+        super.onComplete();
+        onTransitionEnd();
+      }
+    }
+;
+    momentum.run(duration);
+  }
+}
