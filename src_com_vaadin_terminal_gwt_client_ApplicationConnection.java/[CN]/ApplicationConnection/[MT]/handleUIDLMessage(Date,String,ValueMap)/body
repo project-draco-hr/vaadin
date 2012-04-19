@@ -20,6 +20,9 @@
   if (json.containsKey("typeMappings")) {
     configuration.addComponentMappings(json.getValueMap("typeMappings"),widgetSet);
   }
+  if (json.containsKey("tbss")) {
+    testBenchServerStatus=json.getValueMap("tbss");
+  }
   Command c=new Command(){
     public void execute(){
       VConsole.dirUIDL(json,configuration);
@@ -142,8 +145,9 @@
  else {
         purgeUnregistryBag();
       }
-      final long prosessingTime=(new Date().getTime()) - start.getTime();
-      VConsole.log(" Processing time was " + String.valueOf(prosessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
+      lastProcessingTime=(int)((new Date().getTime()) - start.getTime());
+      totalProcessingTime+=lastProcessingTime;
+      VConsole.log(" Processing time was " + String.valueOf(lastProcessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
       VConsole.log("Referenced paintables: " + idToPaintableDetail.size());
       endRequest();
     }

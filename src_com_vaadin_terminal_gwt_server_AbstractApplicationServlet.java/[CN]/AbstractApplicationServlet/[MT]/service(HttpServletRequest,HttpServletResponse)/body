@@ -1,4 +1,7 @@
 {
+  RequestTimer.RequestWrapper wrappedRequest=new RequestTimer.RequestWrapper(request);
+  RequestTimer requestTimer=RequestTimer.get(wrappedRequest);
+  requestTimer.start(wrappedRequest);
   RequestType requestType=getRequestType(request);
   if (!ensureCookiesEnabled(requestType,request,response)) {
     return;
@@ -80,6 +83,8 @@ catch (  final Throwable e) {
       if (requestStarted) {
         ((HttpServletRequestListener)application).onRequestEnd(request,response);
       }
+      requestTimer.stop();
+      RequestTimer.set(wrappedRequest,requestTimer);
     }
   }
 }
