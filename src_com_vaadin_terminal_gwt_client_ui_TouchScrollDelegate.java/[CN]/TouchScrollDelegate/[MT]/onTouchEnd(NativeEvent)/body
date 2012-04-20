@@ -29,11 +29,13 @@
     if (finalY > maxFinalY + getMaxOverScroll()) {
       finalY=getMaxFinalY() + getMaxOverScroll();
       int fixedPixelsToMove=finalY - currentY;
+      pixelsPerMs=pixelsPerMs * pixelsToMove / fixedPixelsToMove / FRICTION;
       pixelsToMove=fixedPixelsToMove;
     }
  else     if (finalY < 0 - getMaxOverScroll()) {
       finalY=-getMaxOverScroll();
       int fixedPixelsToMove=finalY - currentY;
+      pixelsPerMs=pixelsPerMs * pixelsToMove / fixedPixelsToMove / FRICTION;
       pixelsToMove=fixedPixelsToMove;
     }
  else {
@@ -53,11 +55,6 @@
     moveTransformationToScrolloffset();
     return;
   }
-  int translateTo=-finalY + origScrollTop;
-  int fromY=-currentY + origScrollTop;
-  if (androidWithBrokenScrollTop) {
-    fromY-=origScrollTop;
-    translateTo-=origScrollTop;
-  }
-  translateTo(duration,fromY,translateTo);
+  int translateY=-finalY + origScrollTop;
+  translateTo(duration,translateY);
 }

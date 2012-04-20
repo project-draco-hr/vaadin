@@ -1,6 +1,7 @@
 {
   if (!moved) {
-    double l=(getTimeStamp() - eventTimeStamps[0]);
+    Date date=new Date();
+    long l=(date.getTime() - eventTimeStamps[0].getTime());
     VConsole.log(l + " ms from start to move");
   }
   boolean handleMove=readPositionAndSpeed(event);
@@ -10,15 +11,15 @@
     if (finalPos > getMaxFinalY()) {
       int overscroll=(deltaScrollTop + origScrollTop) - getMaxFinalY();
       overscroll=overscroll / 2;
-      if (overscroll > getMaxOverScroll()) {
-        overscroll=getMaxOverScroll();
+      if (overscroll > scrolledElement.getClientHeight() / 2) {
+        overscroll=scrolledElement.getClientHeight() / 2;
       }
       deltaScrollTop=getMaxFinalY() + overscroll - origScrollTop;
     }
  else     if (finalPos < 0) {
       int overscroll=finalPos / 2;
-      if (-overscroll > getMaxOverScroll()) {
-        overscroll=-getMaxOverScroll();
+      if (-overscroll > scrolledElement.getClientHeight() / 2) {
+        overscroll=-scrolledElement.getClientHeight() / 2;
       }
       deltaScrollTop=overscroll - origScrollTop;
     }
