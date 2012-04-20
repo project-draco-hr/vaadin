@@ -21,19 +21,26 @@ case 401:
   endRequest();
 return;
 case 503:
-int delay=Integer.parseInt(response.getHeader("Retry-After"));
+String delay=response.getHeader("Retry-After");
+if (delay != null) {
 VConsole.log("503, retrying in " + delay + "msec");
 (new Timer(){
 @Override public void run(){
-hasActiveRequest=false;
-doUidlRequest(uri,payload,synchronous);
+  hasActiveRequest=false;
+  doUidlRequest(uri,payload,synchronous);
 }
 }
-).schedule(delay);
+).schedule(Integer.parseInt(delay));
 return;
+}
 }
 if ((statusCode / 100) == 4) {
 showCommunicationError("UIDL could not be read from server. Check servlets mappings. Error code: " + statusCode,statusCode);
+endRequest();
+return;
+}
+ else if ((statusCode / 100) == 5) {
+showCommunicationError("Server error. Error code: " + statusCode,statusCode);
 endRequest();
 return;
 }
