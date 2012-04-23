@@ -28,7 +28,7 @@
       throw new RuntimeException("Unable to serialize unsupported type: " + valueType);
     }
     Collection<?> collection=(Collection<?>)value;
-    JSONArray jsonArray=encodeCollection(collection,application);
+    JSONArray jsonArray=encodeCollection(valueType,collection,application);
     return combineTypeAndValue(internalTransportType,jsonArray);
   }
  else   if (value instanceof Object[]) {
@@ -57,6 +57,6 @@
     return combineTypeAndValue(internalTransportType,String.valueOf(value));
   }
  else {
-    return combineTypeAndValue(getCustomTransportType(valueType),encodeObject(value,application));
+    return combineTypeAndValue(getCustomTransportType((Class<?>)valueType),encodeObject(value,referenceValue,application));
   }
 }

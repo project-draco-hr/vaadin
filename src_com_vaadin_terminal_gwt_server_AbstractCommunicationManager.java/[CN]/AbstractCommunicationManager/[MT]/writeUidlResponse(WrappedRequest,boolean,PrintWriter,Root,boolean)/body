@@ -32,11 +32,21 @@
   paintTarget.close();
   outWriter.print("], ");
   JSONObject sharedStates=new JSONObject();
-  for (  Connector connector : dirtyVisibleConnectors) {
+  for (  ClientConnector connector : dirtyVisibleConnectors) {
     SharedState state=connector.getState();
     if (null != state) {
       try {
-        JSONArray stateJsonArray=JsonCodec.encode(state,state.getClass(),application);
+        Class<? extends SharedState> stateType=connector.getStateType();
+        SharedState referenceState=null;
+        if (repaintAll) {
+          try {
+            referenceState=stateType.newInstance();
+          }
+ catch (          Exception e) {
+            logger.log(Level.WARNING,"Error creating reference object for state of type " + stateType.getName());
+          }
+        }
+        JSONArray stateJsonArray=JsonCodec.encode(state,referenceState,stateType,application);
         sharedStates.put(connector.getConnectorId(),stateJsonArray);
       }
  catch (      JSONException e) {
@@ -93,7 +103,9 @@
       invocationJson.put(invocation.getMethodName());
       JSONArray paramJson=new JSONArray();
       for (int i=0; i < invocation.getParameterTypes().length; ++i) {
-        paramJson.put(JsonCodec.encode(invocation.getParameters()[i],invocation.getParameterTypes()[i],application));
+        Class<?> parameterType=invocation.getParameterTypes()[i];
+        Object referenceParameter=null;
+        paramJson.put(JsonCodec.encode(invocation.getParameters()[i],referenceParameter,parameterType,application));
       }
       invocationJson.put(paramJson);
       rpcCalls.put(invocationJson);

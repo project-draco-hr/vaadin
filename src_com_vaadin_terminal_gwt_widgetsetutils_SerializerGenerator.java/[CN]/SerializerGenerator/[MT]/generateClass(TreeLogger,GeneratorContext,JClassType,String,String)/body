@@ -13,10 +13,10 @@
   composer.addImport(GWT.class.getName());
   composer.addImport(JSONArray.class.getName());
   composer.addImport(JsonDecoder.class.getName());
-  composer.addImplementedInterface(JSONSerializer.class.getName());
+  composer.addImplementedInterface(JSONSerializer.class.getName() + "<" + beanQualifiedSourceName+ ">");
   SourceWriter sourceWriter=composer.createSourceWriter(context,printWriter);
   sourceWriter.indent();
-  sourceWriter.println("public " + JSONObject.class.getName() + " serialize("+ Object.class.getName()+ " value, "+ ConnectorMap.class.getName()+ " idMapper, "+ ApplicationConnection.class.getName()+ " connection) {");
+  sourceWriter.println("public " + JSONObject.class.getName() + " serialize("+ beanQualifiedSourceName+ " value, "+ ConnectorMap.class.getName()+ " idMapper, "+ ApplicationConnection.class.getName()+ " connection) {");
   sourceWriter.indent();
   sourceWriter.println(beanQualifiedSourceName + " castedValue = (" + beanQualifiedSourceName+ ") value;");
   sourceWriter.println(JSONObject.class.getName() + " json = new " + JSONObject.class.getName()+ "();");
@@ -31,27 +31,47 @@
   }
   sourceWriter.println("return json;");
   sourceWriter.println("}");
-  sourceWriter.println("public " + beanQualifiedSourceName + " deserialize("+ JSONObject.class.getName()+ " jsonValue, "+ ConnectorMap.class.getName()+ " idMapper, "+ ApplicationConnection.class.getName()+ " connection) {");
+  sourceWriter.println("public " + beanQualifiedSourceName + " deserialize("+ JSONObject.class.getName()+ " jsonValue, "+ beanQualifiedSourceName+ " target, "+ ConnectorMap.class.getName()+ " idMapper, "+ ApplicationConnection.class.getName()+ " connection) {");
   sourceWriter.indent();
-  sourceWriter.println(beanQualifiedSourceName + " state = GWT.create(" + beanQualifiedSourceName+ ".class);");
+  sourceWriter.println("if (target == null) {");
+  sourceWriter.indent();
+  sourceWriter.println("target = GWT.create(" + beanQualifiedSourceName + ".class);");
+  sourceWriter.outdent();
+  sourceWriter.println("}");
   for (  JMethod method : getSetters(beanType)) {
     String setterName=method.getName();
     String fieldName=setterName.substring(3);
     JType setterParameterType=method.getParameterTypes()[0];
     logger.log(Type.DEBUG,"* Processing field " + fieldName + " in "+ beanQualifiedSourceName+ " ("+ beanType.getName()+ ")");
+    sourceWriter.println("if (jsonValue.containsKey(\"" + fieldName + "\")) {");
+    sourceWriter.indent();
     String jsonFieldName="json_" + fieldName;
     sourceWriter.println("JSONArray " + jsonFieldName + " = (JSONArray) jsonValue.get(\""+ fieldName+ "\");");
     String fieldType;
+    String getterName="get" + fieldName;
     JPrimitiveType primitiveType=setterParameterType.isPrimitive();
     if (primitiveType != null) {
       fieldType=primitiveType.getQualifiedBoxedSourceName();
+      if (primitiveType == JPrimitiveType.BOOLEAN) {
+        getterName="is" + fieldName;
+      }
     }
  else {
       fieldType=setterParameterType.getQualifiedSourceName();
     }
-    sourceWriter.println("state." + setterName + "(("+ fieldType+ ") "+ JsonDecoder.class.getName()+ ".decodeValue("+ jsonFieldName+ ", idMapper, connection));");
+    sourceWriter.println(fieldType + " referenceValue;");
+    sourceWriter.println("if (target == null) {");
+    sourceWriter.indent();
+    sourceWriter.println("referenceValue = null;");
+    sourceWriter.println("} else {");
+    sourceWriter.println("referenceValue = target." + getterName + "();");
+    sourceWriter.outdent();
+    sourceWriter.println("}");
+    sourceWriter.println("target." + setterName + "(("+ fieldType+ ") "+ JsonDecoder.class.getName()+ ".decodeValue("+ jsonFieldName+ ", referenceValue, idMapper, connection));");
+    sourceWriter.println("}");
+    sourceWriter.outdent();
   }
-  sourceWriter.println("return state;");
+  sourceWriter.println("return target;");
   sourceWriter.println("}");
   sourceWriter.outdent();
   sourceWriter.println("}");
