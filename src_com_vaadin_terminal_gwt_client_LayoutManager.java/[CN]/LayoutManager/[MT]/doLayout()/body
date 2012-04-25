@@ -1,13 +1,6 @@
 {
   VConsole.log("Starting layout phase");
   Duration totalDuration=new Duration();
-  int preLayoutStart=totalDuration.elapsedMillis();
-  for (  ComponentConnector connector : connection.getConnectorMap().getComponentConnectors()) {
-    if (connector instanceof PreLayoutListener) {
-      ((PreLayoutListener)connector).preLayout();
-    }
-  }
-  VConsole.log("Invoke pre layout listeners in " + (totalDuration.elapsedMillis() - preLayoutStart) + " ms");
   Map<ManagedLayout,Integer> layoutCounts=new HashMap<ManagedLayout,Integer>();
   int passes=0;
   for (  ManagedLayout layout : needsHorizontalLayout) {
@@ -19,6 +12,7 @@
   needsHorizontalLayout.clear();
   needsVerticalLayout.clear();
   for (  ComponentConnector connector : needsMeasure) {
+    getMeasuredSize(connector);
     currentDependencyTree.setNeedsMeasure(connector,true);
   }
   needsMeasure.clear();
@@ -35,6 +29,7 @@
     }
     int measureTime=passDuration.elapsedMillis();
     VConsole.log("  Measured " + measuredConnectorCount + " elements in "+ measureTime+ " ms");
+    VConsole.log("  Total of " + measureCount + " measurement operations");
     if (!listenersToFire.isEmpty()) {
       for (      Element element : listenersToFire) {
         Collection<ElementResizeListener> listeners=elementResizeListeners.get(element);
@@ -152,9 +147,5 @@
     }
   }
   VConsole.log("Invoke post layout listeners in " + (totalDuration.elapsedMillis() - postLayoutStart) + " ms");
-  VConsole.log("Total layout phase time: " + totalDuration.elapsedMillis() + "ms");
-  totalLayoutTime+=totalDuration.elapsedMillis();
-  VConsole.log("");
-  VConsole.log("### Total combined layout phase: " + totalLayoutTime + "ms");
-  VConsole.log("");
+  VConsole.log("<b>Total layout phase time: " + totalDuration.elapsedMillis() + "ms</b>");
 }
