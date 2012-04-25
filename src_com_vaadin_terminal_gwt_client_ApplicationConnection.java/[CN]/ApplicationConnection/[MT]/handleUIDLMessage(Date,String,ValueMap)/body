@@ -31,6 +31,9 @@
     configuration.addComponentMappings(json.getValueMap("typeMappings"),widgetSet);
   }
   handleUIDLDuration.logDuration(" * Handling type mappings from server completed",10);
+  if (json.containsKey("tbss")) {
+    testBenchServerStatus=json.getValueMap("tbss");
+  }
   Command c=new Command(){
     public void execute(){
       handleUIDLDuration.logDuration(" * Loading widgets completed",10);
@@ -135,8 +138,9 @@
         }
       }
       updateDuration.logDuration(" * Error handling completed",10);
-      final long prosessingTime=(new Date().getTime()) - start.getTime();
-      VConsole.log(" Processing time was " + String.valueOf(prosessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
+      lastProcessingTime=(int)((new Date().getTime()) - start.getTime());
+      totalProcessingTime+=lastProcessingTime;
+      VConsole.log(" Processing time was " + String.valueOf(lastProcessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
       VConsole.log("Referenced paintables: " + connectorMap.size());
       endRequest();
     }

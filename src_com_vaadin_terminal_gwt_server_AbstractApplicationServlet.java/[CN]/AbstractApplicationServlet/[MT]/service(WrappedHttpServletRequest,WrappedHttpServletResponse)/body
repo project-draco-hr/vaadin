@@ -1,5 +1,7 @@
 {
   AbstractApplicationServletWrapper servletWrapper=new AbstractApplicationServletWrapper(this);
+  RequestTimer requestTimer=RequestTimer.get(request);
+  requestTimer.start(request);
   RequestType requestType=getRequestType(request);
   if (!ensureCookiesEnabled(requestType,request,response)) {
     return;
@@ -83,6 +85,8 @@ catch (  final Throwable e) {
         Root.setCurrentRoot(null);
         Application.setCurrentApplication(null);
       }
+      requestTimer.stop();
+      RequestTimer.set(request,requestTimer);
     }
   }
 }

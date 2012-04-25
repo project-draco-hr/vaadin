@@ -1,0 +1,71 @@
+{
+  final Table table;
+  table=new Table();
+  table.setCaption("DD sortable table with context menus");
+  table.setPageLength(10);
+  table.setRowHeaderMode(Table.ROW_HEADER_MODE_ID);
+  table.setSelectable(true);
+  table.setMultiSelect(true);
+  table.addActionHandler(new Handler(){
+    Action[] actions=new Action[]{new Action("FOO"),new Action("BAR"),new Action("CAR")};
+    public Action[] getActions(    Object target,    Object sender){
+      return actions;
+    }
+    public void handleAction(    Action action,    Object sender,    Object target){
+      getLayout().getRoot().showNotification(action.getCaption());
+    }
+  }
+);
+  populateTable(table);
+  table.setDragMode(Table.TableDragMode.ROW);
+  table.setDropHandler(new DropHandler(){
+    AcceptCriterion crit=new SourceIs(table);
+    public AcceptCriterion getAcceptCriterion(){
+      return crit;
+    }
+    public void drop(    DragAndDropEvent dropEvent){
+      AbstractSelectTargetDetails dropTargetData=(AbstractSelectTargetDetails)dropEvent.getTargetDetails();
+      DataBoundTransferable transferable=(DataBoundTransferable)dropEvent.getTransferable();
+      Object itemIdOver=dropTargetData.getItemIdOver();
+      Object itemId=transferable.getItemId();
+      if (itemId == null || itemIdOver == null || itemId.equals(itemIdOver)) {
+        return;
+      }
+      IndexedContainer containerDataSource=(IndexedContainer)table.getContainerDataSource();
+      int newIndex=containerDataSource.indexOfId(itemIdOver) - 1;
+      if (dropTargetData.getDropLocation() != VerticalDropLocation.TOP) {
+        newIndex++;
+      }
+      if (newIndex < 0) {
+        newIndex=0;
+      }
+      Object idAfter=containerDataSource.getIdByIndex(newIndex);
+      Collection<?> selections=(Collection<?>)table.getValue();
+      if (selections != null && selections.contains(itemId)) {
+        for (        Object object : selections) {
+          moveAfter(containerDataSource,object,idAfter);
+        }
+      }
+ else {
+        moveAfter(containerDataSource,itemId,idAfter);
+      }
+    }
+    private void moveAfter(    IndexedContainer containerDataSource,    Object itemId,    Object idAfter){
+      try {
+        IndexedContainer clone=null;
+        clone=(IndexedContainer)containerDataSource.clone();
+        containerDataSource.removeItem(itemId);
+        Item newItem=containerDataSource.addItemAfter(idAfter,itemId);
+        Item item=clone.getItem(itemId);
+        for (        Object propId : item.getItemPropertyIds()) {
+          newItem.getItemProperty(propId).setValue(item.getItemProperty(propId).getValue());
+        }
+      }
+ catch (      CloneNotSupportedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+);
+  addTest(table);
+}
