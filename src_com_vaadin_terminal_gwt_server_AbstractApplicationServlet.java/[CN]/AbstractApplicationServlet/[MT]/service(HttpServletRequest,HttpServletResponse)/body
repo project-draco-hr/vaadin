@@ -79,10 +79,14 @@ catch (  final Throwable e) {
       }
     }
   finally {
-      if (requestStarted) {
-        ((HttpServletRequestListener)application).onRequestEnd(request,response);
+      try {
+        if (requestStarted) {
+          ((HttpServletRequestListener)application).onRequestEnd(request,response);
+        }
       }
-      requestTimer.stop((AbstractWebApplicationContext)application.getContext());
+  finally {
+        requestTimer.stop((AbstractWebApplicationContext)application.getContext());
+      }
     }
   }
 }

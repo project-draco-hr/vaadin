@@ -97,10 +97,14 @@ if (transactionStarted) {
 }
 }
   finally {
-if (requestStarted) {
-  ((PortletRequestListener)application).onRequestEnd(request,response);
+try {
+  if (requestStarted) {
+    ((PortletRequestListener)application).onRequestEnd(request,response);
+  }
 }
-requestTimer.stop((AbstractWebApplicationContext)application.getContext());
+  finally {
+  requestTimer.stop((AbstractWebApplicationContext)application.getContext());
+}
 }
 }
 }
