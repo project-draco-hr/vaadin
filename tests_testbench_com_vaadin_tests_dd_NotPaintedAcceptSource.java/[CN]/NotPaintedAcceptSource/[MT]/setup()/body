@@ -1,0 +1,39 @@
+{
+  final Table source1=createTable("Source 1");
+  final Table source2=createTable("Source 2");
+  final Table target=createTable("Target");
+  source1.setDragMode(TableDragMode.ROW);
+  source2.setDragMode(TableDragMode.ROW);
+  target.setDropHandler(new DropHandler(){
+    public AcceptCriterion getAcceptCriterion(){
+      return new SourceIs(source1,source2);
+    }
+    public void drop(    DragAndDropEvent event){
+      TableTransferable transferable=(TableTransferable)event.getTransferable();
+      Item item=transferable.getSourceComponent().getItem(transferable.getItemId());
+      Object value=item.getItemProperty("value").getValue();
+      AbstractSelectTargetDetails targetDetails=(AbstractSelectTargetDetails)event.getTargetDetails();
+      Object targetItemId=targetDetails.getItemIdOver();
+      Object addItemAfter=target.addItemAfter(targetItemId);
+      target.getItem(addItemAfter).getItemProperty("value").setValue(value);
+      transferable.getSourceComponent().removeItem(transferable.getItemId());
+    }
+  }
+);
+  final HorizontalLayout horizontalLayout=new HorizontalLayout();
+  horizontalLayout.setSpacing(true);
+  horizontalLayout.addComponent(source1);
+  horizontalLayout.addComponent(target);
+  addComponent(horizontalLayout);
+  addComponent(new Button("Swap sources",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      if (source1.getParent() != null) {
+        horizontalLayout.replaceComponent(source1,source2);
+      }
+ else {
+        horizontalLayout.replaceComponent(source2,source1);
+      }
+    }
+  }
+));
+}
