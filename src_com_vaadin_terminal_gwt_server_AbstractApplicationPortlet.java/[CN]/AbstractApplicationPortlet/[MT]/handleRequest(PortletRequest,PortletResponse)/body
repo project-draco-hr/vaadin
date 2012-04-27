@@ -1,7 +1,6 @@
 {
-  RequestTimer.RequestWrapper wrappedRequest=new RequestTimer.RequestWrapper(request);
-  RequestTimer requestTimer=RequestTimer.get(wrappedRequest);
-  requestTimer.start(wrappedRequest);
+  RequestTimer requestTimer=new RequestTimer();
+  requestTimer.start();
   RequestType requestType=getRequestType(request);
   if (requestType == RequestType.UNKNOWN) {
     handleUnknownRequest(request,response);
@@ -101,8 +100,7 @@ if (transactionStarted) {
 if (requestStarted) {
   ((PortletRequestListener)application).onRequestEnd(request,response);
 }
-requestTimer.stop();
-RequestTimer.set(wrappedRequest,requestTimer);
+requestTimer.stop((AbstractWebApplicationContext)application.getContext());
 }
 }
 }
