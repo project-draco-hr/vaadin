@@ -5,9 +5,9 @@
     return;
   }
   getWidget().setReadOnly(isReadOnly());
-  getWidget().inputPrompt=uidl.getStringAttribute(VTextField.ATTR_INPUTPROMPT);
-  getWidget().setMaxLength(uidl.hasAttribute("maxLength") ? uidl.getIntAttribute("maxLength") : -1);
-  getWidget().immediate=getState().isImmediate();
+  getWidget().setInputPrompt(getState().getInputPrompt());
+  getWidget().setMaxLength(getState().getMaxLength());
+  getWidget().setImmediate(getState().isImmediate());
   getWidget().listenTextChangeEvents=hasEventListener("ie");
   if (getWidget().listenTextChangeEvents) {
     getWidget().textChangeEventMode=uidl.getStringAttribute(VTextField.ATTR_TEXTCHANGE_EVENTMODE);
@@ -23,10 +23,8 @@
     getWidget().sinkEvents(VTextField.TEXTCHANGE_EVENTS);
     getWidget().attachCutEventListener(getWidget().getElement());
   }
-  if (uidl.hasAttribute("cols")) {
-    getWidget().setColumns(new Integer(uidl.getStringAttribute("cols")).intValue());
-  }
-  final String text=uidl.getStringVariable("text");
+  getWidget().setColumns(getState().getColumns());
+  final String text=getState().getText();
   if (!(uidl.getBooleanAttribute(VTextField.ATTR_NO_VALUE_CHANGE_BETWEEN_PAINTS) && getWidget().valueBeforeEdit != null && text.equals(getWidget().valueBeforeEdit))) {
     getWidget().updateFieldContent(text);
   }
@@ -39,11 +37,5 @@
       }
     }
 );
-  }
-  if (uidl.hasAttribute("wordwrap") && uidl.getBooleanAttribute("wordwrap") == false) {
-    getWidget().setWordwrap(false);
-  }
- else {
-    getWidget().setWordwrap(true);
   }
 }
