@@ -1,0 +1,43 @@
+{
+  String beanQualifiedSourceName=beanType.getQualifiedSourceName();
+  sourceWriter.println("if (target == null) {");
+  sourceWriter.indent();
+  sourceWriter.println("target = GWT.create(" + beanQualifiedSourceName + ".class);");
+  sourceWriter.outdent();
+  sourceWriter.println("}");
+  sourceWriter.println(JSONObject.class.getName() + " json = (" + JSONObject.class.getName()+ ")jsonValue;");
+  for (  JMethod method : getSetters(beanType)) {
+    String setterName=method.getName();
+    String fieldName=setterName.substring(3);
+    JType setterParameterType=method.getParameterTypes()[0];
+    logger.log(Type.DEBUG,"* Processing field " + fieldName + " in "+ beanQualifiedSourceName+ " ("+ beanType.getName()+ ")");
+    sourceWriter.println("if (json.containsKey(\"" + fieldName + "\")) {");
+    sourceWriter.indent();
+    String jsonFieldName="json_" + fieldName;
+    sourceWriter.println("JSONArray " + jsonFieldName + " = (JSONArray) json.get(\""+ fieldName+ "\");");
+    String fieldType;
+    String getterName="get" + fieldName;
+    JPrimitiveType primitiveType=setterParameterType.isPrimitive();
+    if (primitiveType != null) {
+      fieldType=primitiveType.getQualifiedBoxedSourceName();
+      if (primitiveType == JPrimitiveType.BOOLEAN) {
+        getterName="is" + fieldName;
+      }
+    }
+ else {
+      fieldType=setterParameterType.getQualifiedSourceName();
+    }
+    sourceWriter.println(fieldType + " referenceValue;");
+    sourceWriter.println("if (target == null) {");
+    sourceWriter.indent();
+    sourceWriter.println("referenceValue = null;");
+    sourceWriter.println("} else {");
+    sourceWriter.println("referenceValue = target." + getterName + "();");
+    sourceWriter.outdent();
+    sourceWriter.println("}");
+    sourceWriter.println("target." + setterName + "(("+ fieldType+ ") "+ JsonDecoder.class.getName()+ ".decodeValue("+ jsonFieldName+ ", referenceValue, idMapper, connection));");
+    sourceWriter.println("}");
+    sourceWriter.outdent();
+  }
+  sourceWriter.println("return target;");
+}

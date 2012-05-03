@@ -4,6 +4,7 @@
   if (printWriter == null) {
     return;
   }
+  boolean isEnum=(beanType.isEnum() != null);
   Date date=new Date();
   TypeOracle typeOracle=context.getTypeOracle();
   String beanQualifiedSourceName=beanType.getQualifiedSourceName();
@@ -16,62 +17,24 @@
   composer.addImplementedInterface(JSONSerializer.class.getName() + "<" + beanQualifiedSourceName+ ">");
   SourceWriter sourceWriter=composer.createSourceWriter(context,printWriter);
   sourceWriter.indent();
-  sourceWriter.println("public " + JSONObject.class.getName() + " serialize("+ beanQualifiedSourceName+ " value, "+ ConnectorMap.class.getName()+ " idMapper, "+ ApplicationConnection.class.getName()+ " connection) {");
+  sourceWriter.println("public " + JSONValue.class.getName() + " serialize("+ beanQualifiedSourceName+ " value, "+ ConnectorMap.class.getName()+ " idMapper, "+ ApplicationConnection.class.getName()+ " connection) {");
   sourceWriter.indent();
   sourceWriter.println(beanQualifiedSourceName + " castedValue = (" + beanQualifiedSourceName+ ") value;");
-  sourceWriter.println(JSONObject.class.getName() + " json = new " + JSONObject.class.getName()+ "();");
-  for (  JMethod setterMethod : getSetters(beanType)) {
-    String setterName=setterMethod.getName();
-    String fieldName=setterName.substring(3);
-    String getterName=findGetter(beanType,setterMethod);
-    if (getterName == null) {
-      logger.log(TreeLogger.ERROR,"No getter found for " + fieldName + ". Serialization will likely fail");
-    }
-    sourceWriter.println("json.put(\"" + fieldName + "\", "+ JsonEncoder.class.getName()+ ".encode(castedValue."+ getterName+ "(), idMapper, connection));");
+  if (isEnum) {
+    writeEnumSerializer(logger,sourceWriter,beanType);
   }
-  sourceWriter.println("return json;");
-  sourceWriter.println("}");
-  sourceWriter.println("public " + beanQualifiedSourceName + " deserialize("+ JSONObject.class.getName()+ " jsonValue, "+ beanQualifiedSourceName+ " target, "+ ConnectorMap.class.getName()+ " idMapper, "+ ApplicationConnection.class.getName()+ " connection) {");
-  sourceWriter.indent();
-  sourceWriter.println("if (target == null) {");
-  sourceWriter.indent();
-  sourceWriter.println("target = GWT.create(" + beanQualifiedSourceName + ".class);");
-  sourceWriter.outdent();
-  sourceWriter.println("}");
-  for (  JMethod method : getSetters(beanType)) {
-    String setterName=method.getName();
-    String fieldName=setterName.substring(3);
-    JType setterParameterType=method.getParameterTypes()[0];
-    logger.log(Type.DEBUG,"* Processing field " + fieldName + " in "+ beanQualifiedSourceName+ " ("+ beanType.getName()+ ")");
-    sourceWriter.println("if (jsonValue.containsKey(\"" + fieldName + "\")) {");
-    sourceWriter.indent();
-    String jsonFieldName="json_" + fieldName;
-    sourceWriter.println("JSONArray " + jsonFieldName + " = (JSONArray) jsonValue.get(\""+ fieldName+ "\");");
-    String fieldType;
-    String getterName="get" + fieldName;
-    JPrimitiveType primitiveType=setterParameterType.isPrimitive();
-    if (primitiveType != null) {
-      fieldType=primitiveType.getQualifiedBoxedSourceName();
-      if (primitiveType == JPrimitiveType.BOOLEAN) {
-        getterName="is" + fieldName;
-      }
-    }
  else {
-      fieldType=setterParameterType.getQualifiedSourceName();
-    }
-    sourceWriter.println(fieldType + " referenceValue;");
-    sourceWriter.println("if (target == null) {");
-    sourceWriter.indent();
-    sourceWriter.println("referenceValue = null;");
-    sourceWriter.println("} else {");
-    sourceWriter.println("referenceValue = target." + getterName + "();");
-    sourceWriter.outdent();
-    sourceWriter.println("}");
-    sourceWriter.println("target." + setterName + "(("+ fieldType+ ") "+ JsonDecoder.class.getName()+ ".decodeValue("+ jsonFieldName+ ", referenceValue, idMapper, connection));");
-    sourceWriter.println("}");
-    sourceWriter.outdent();
+    writeBeanSerializer(logger,sourceWriter,beanType);
   }
-  sourceWriter.println("return target;");
+  sourceWriter.println("}");
+  sourceWriter.println("public " + beanQualifiedSourceName + " deserialize("+ JSONValue.class.getName()+ " jsonValue, "+ beanQualifiedSourceName+ " target, "+ ConnectorMap.class.getName()+ " idMapper, "+ ApplicationConnection.class.getName()+ " connection) {");
+  sourceWriter.indent();
+  if (isEnum) {
+    writeEnumDeserializer(logger,sourceWriter,beanType.isEnum());
+  }
+ else {
+    writeBeanDeserializer(logger,sourceWriter,beanType);
+  }
   sourceWriter.println("}");
   sourceWriter.outdent();
   sourceWriter.println("}");
