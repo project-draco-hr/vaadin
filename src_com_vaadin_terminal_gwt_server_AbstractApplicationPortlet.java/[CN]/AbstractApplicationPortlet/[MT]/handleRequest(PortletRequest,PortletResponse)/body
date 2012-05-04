@@ -1,4 +1,6 @@
 {
+  RequestTimer requestTimer=new RequestTimer();
+  requestTimer.start();
   AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
   WrappedPortletRequest wrappedRequest;
   String portalInfo=request.getPortalContext().getPortalInfo().toLowerCase();
@@ -12,8 +14,6 @@
     wrappedRequest=new WrappedPortletRequest(request,getDeploymentConfiguration());
   }
   WrappedPortletResponse wrappedResponse=new WrappedPortletResponse(response,getDeploymentConfiguration());
-  RequestTimer requestTimer=RequestTimer.get(wrappedRequest);
-  requestTimer.start(wrappedRequest);
   RequestType requestType=getRequestType(request);
   if (requestType == RequestType.UNKNOWN) {
     handleUnknownRequest(request,response);
@@ -132,9 +132,8 @@ if (requestStarted) {
   finally {
 Root.setCurrentRoot(null);
 Application.setCurrentApplication(null);
+requestTimer.stop((AbstractWebApplicationContext)application.getContext());
 }
-requestTimer.stop();
-RequestTimer.set(wrappedRequest,requestTimer);
 }
 }
 }

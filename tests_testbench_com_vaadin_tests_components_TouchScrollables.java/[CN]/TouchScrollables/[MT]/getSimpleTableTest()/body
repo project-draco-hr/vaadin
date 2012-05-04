@@ -1,0 +1,35 @@
+{
+  CssLayout cssLayout=new CssLayout();
+  final Table table=new Table();
+  Button button=new Button("Toggle lazyloading");
+  button.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      if (table.getCacheRate() == 100) {
+        table.setCacheRate(2);
+        table.setPageLength(15);
+      }
+ else {
+        table.setCacheRate(100);
+        table.setHeight("400px");
+      }
+    }
+  }
+);
+  cssLayout.addComponent(button);
+  button=new Button("Toggle selectable");
+  button.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      table.setSelectable(!table.isSelectable());
+    }
+  }
+);
+  cssLayout.addComponent(button);
+  table.addContainerProperty("foo",String.class,"bar");
+  table.setRowHeaderMode(Table.ROW_HEADER_MODE_INDEX);
+  for (int i=0; i < 1000; i++) {
+    table.addItem();
+  }
+  cssLayout.addComponent(table);
+  cssLayout.setCaption("Table");
+  return cssLayout;
+}
