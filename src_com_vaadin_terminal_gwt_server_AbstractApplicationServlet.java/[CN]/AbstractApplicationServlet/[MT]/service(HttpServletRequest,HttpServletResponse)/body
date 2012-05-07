@@ -85,7 +85,10 @@ catch (  final Throwable e) {
         }
       }
   finally {
-        requestTimer.stop((AbstractWebApplicationContext)application.getContext());
+        HttpSession session=request.getSession(false);
+        if (session != null) {
+          requestTimer.stop(getApplicationContext(session));
+        }
       }
     }
   }
