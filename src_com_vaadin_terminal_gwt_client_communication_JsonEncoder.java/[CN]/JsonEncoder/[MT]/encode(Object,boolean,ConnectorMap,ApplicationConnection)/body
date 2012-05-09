@@ -17,11 +17,16 @@
     return combineTypeAndValue(VTYPE_BOOLEAN,JSONBoolean.getInstance((Boolean)value));
   }
  else   if (value instanceof Object[]) {
-    return encodeObjectArray((Object[])value,connectorMap,connection);
+    return encodeObjectArray((Object[])value,restrictToInternalTypes,connectorMap,connection);
   }
  else   if (value instanceof Enum) {
-    Enum e=(Enum)value;
-    return encodeEnum(e,connectorMap,connection);
+    if (restrictToInternalTypes) {
+      return encode(value.toString(),restrictToInternalTypes,connectorMap,connection);
+    }
+ else {
+      Enum e=(Enum)value;
+      return encodeEnum(e,connectorMap,connection);
+    }
   }
  else   if (value instanceof Map) {
     Map<Object,Object> map=(Map<Object,Object>)value;
@@ -36,7 +41,7 @@
       if (!(mapKey instanceof String)) {
         throw new RuntimeException("Only Map<String,?> and Map<Connector,?> is currently supported." + " Failed map used " + mapKey.getClass().getName() + " as keys");
       }
-      jsonMap.put((String)mapKey,encode(mapValue,connectorMap,connection));
+      jsonMap.put((String)mapKey,encode(mapValue,restrictToInternalTypes,connectorMap,connection));
     }
     return combineTypeAndValue(type,jsonMap);
   }
@@ -45,7 +50,7 @@
     return combineTypeAndValue(VTYPE_CONNECTOR,new JSONString(connector.getConnectorId()));
   }
  else   if (value instanceof Collection) {
-    return encodeCollection((Collection)value,connectorMap,connection);
+    return encodeCollection((Collection)value,restrictToInternalTypes,connectorMap,connection);
   }
  else {
     String transportType=getTransportType(value);
