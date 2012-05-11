@@ -1,0 +1,32 @@
+{
+  Class<?> targetClass=getClassForType(targetType);
+  try {
+    Object decodedObject=targetClass.newInstance();
+    for (    PropertyDescriptor pd : Introspector.getBeanInfo(targetClass).getPropertyDescriptors()) {
+      String fieldName=getTransportFieldName(pd);
+      if (fieldName == null) {
+        continue;
+      }
+      JSONArray encodedFieldValue=serializedObject.getJSONArray(fieldName);
+      Type fieldType=pd.getReadMethod().getGenericReturnType();
+      Object decodedFieldValue=decodeInternalOrCustomType(fieldType,encodedFieldValue,application);
+      pd.getWriteMethod().invoke(decodedObject,decodedFieldValue);
+    }
+    return decodedObject;
+  }
+ catch (  IllegalArgumentException e) {
+    throw new JSONException(e);
+  }
+catch (  IllegalAccessException e) {
+    throw new JSONException(e);
+  }
+catch (  InvocationTargetException e) {
+    throw new JSONException(e);
+  }
+catch (  InstantiationException e) {
+    throw new JSONException(e);
+  }
+catch (  IntrospectionException e) {
+    throw new JSONException(e);
+  }
+}

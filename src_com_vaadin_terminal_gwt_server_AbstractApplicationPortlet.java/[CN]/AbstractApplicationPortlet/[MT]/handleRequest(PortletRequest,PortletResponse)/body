@@ -1,4 +1,6 @@
 {
+  RequestTimer requestTimer=new RequestTimer();
+  requestTimer.start();
   AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
   WrappedPortletRequest wrappedRequest;
   String portalInfo=request.getPortalContext().getPortalInfo().toLowerCase();
@@ -53,6 +55,7 @@ synchronized (application) {
         if (application.isRunning()) {
 switch (requestType) {
 case RENDER:
+case ACTION:
             try {
               root=application.getRootForRequest(wrappedRequest);
             }
@@ -129,6 +132,7 @@ if (requestStarted) {
   finally {
 Root.setCurrentRoot(null);
 Application.setCurrentApplication(null);
+requestTimer.stop((AbstractWebApplicationContext)application.getContext());
 }
 }
 }

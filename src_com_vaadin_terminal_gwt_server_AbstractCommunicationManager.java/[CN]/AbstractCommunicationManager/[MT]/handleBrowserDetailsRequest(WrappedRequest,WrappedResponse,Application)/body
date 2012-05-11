@@ -17,7 +17,11 @@
       String initialUIDL=getInitialUIDL(combinedRequest,root);
       params.put("uidl",initialUIDL);
     }
-    response.getWriter().write(params.toString());
+    final OutputStream out=response.getOutputStream();
+    final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
+    outWriter.write(params.toString());
+    outWriter.flush();
+    out.flush();
   }
  catch (  RootRequiresMoreInformationException e) {
     throw new RuntimeException(e);

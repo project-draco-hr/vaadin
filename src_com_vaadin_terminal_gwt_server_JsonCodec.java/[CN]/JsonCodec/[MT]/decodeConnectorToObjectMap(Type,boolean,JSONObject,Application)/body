@@ -1,0 +1,12 @@
+{
+  HashMap<Connector,Object> map=new HashMap<Connector,Object>();
+  Iterator<String> it=jsonMap.keys();
+  while (it.hasNext()) {
+    String connectorId=it.next();
+    Connector connector=application.getConnector(connectorId);
+    JSONArray encodedValueAndType=jsonMap.getJSONArray(connectorId);
+    Object decodedChild=decodeChild(targetType,restrictToInternalTypes,1,encodedValueAndType,application);
+    map.put(connector,decodedChild);
+  }
+  return map;
+}

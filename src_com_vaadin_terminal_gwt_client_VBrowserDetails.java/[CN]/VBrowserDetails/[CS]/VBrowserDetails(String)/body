@@ -61,12 +61,24 @@
     System.err.println("Browser version parsing failed for: " + userAgent);
   }
   if (userAgent.contains("windows ")) {
-    isWindows=true;
+    os=OperatingSystem.WINDOWS;
   }
  else   if (userAgent.contains("linux")) {
-    isLinux=true;
+    if (userAgent.contains("android")) {
+      os=OperatingSystem.ANDROID;
+      parseAndroidVersion(userAgent);
+    }
+ else {
+      os=OperatingSystem.LINUX;
+    }
   }
  else   if (userAgent.contains("macintosh") || userAgent.contains("mac osx") || userAgent.contains("mac os x")) {
-    isMacOSX=true;
+    if (userAgent.contains("ipad") || userAgent.contains("ipod") || userAgent.contains("iphone")) {
+      os=OperatingSystem.IOS;
+      parseIOSVersion(userAgent);
+    }
+ else {
+      os=OperatingSystem.MACOSX;
+    }
   }
 }

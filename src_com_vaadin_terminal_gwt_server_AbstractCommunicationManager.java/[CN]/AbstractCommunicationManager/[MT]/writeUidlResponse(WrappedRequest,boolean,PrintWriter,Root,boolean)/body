@@ -1,0 +1,250 @@
+{
+  ArrayList<ClientConnector> dirtyVisibleConnectors=new ArrayList<ClientConnector>();
+  Application application=root.getApplication();
+  DirtyConnectorTracker rootConnectorTracker=root.getDirtyConnectorTracker();
+  logger.log(Level.FINE,"* Creating response to client");
+  if (repaintAll) {
+    getClientCache(root).clear();
+    rootConnectorTracker.markAllComponentsDirty();
+    locales=null;
+    requireLocale(application.getLocale().toString());
+  }
+  dirtyVisibleConnectors.addAll(getDirtyVisibleComponents(rootConnectorTracker));
+  logger.log(Level.FINE,"Found " + dirtyVisibleConnectors.size() + " dirty connectors to paint");
+  for (  ClientConnector connector : dirtyVisibleConnectors) {
+    if (connector instanceof Component) {
+      ((Component)connector).updateState();
+    }
+  }
+  rootConnectorTracker.markAllComponentsClean();
+  outWriter.print("\"changes\":[");
+  List<InvalidLayout> invalidComponentRelativeSizes=null;
+  JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
+  legacyPaint(paintTarget,dirtyVisibleConnectors);
+  if (analyzeLayouts) {
+    invalidComponentRelativeSizes=ComponentSizeValidator.validateComponentRelativeSizes(root.getContent(),null,null);
+    if (root.getWindows() != null) {
+      for (      Window subWindow : root.getWindows()) {
+        invalidComponentRelativeSizes=ComponentSizeValidator.validateComponentRelativeSizes(subWindow.getContent(),invalidComponentRelativeSizes,null);
+      }
+    }
+  }
+  paintTarget.close();
+  outWriter.print("], ");
+  JSONObject sharedStates=new JSONObject();
+  for (  Connector connector : dirtyVisibleConnectors) {
+    SharedState state=connector.getState();
+    if (null != state) {
+      try {
+        JSONArray stateJsonArray=JsonCodec.encode(state,state.getClass(),application);
+        sharedStates.put(connector.getConnectorId(),stateJsonArray);
+      }
+ catch (      JSONException e) {
+        throw new PaintException("Failed to serialize shared state for connector " + connector.getClass().getName() + " ("+ connector.getConnectorId()+ "): "+ e.getMessage());
+      }
+    }
+  }
+  outWriter.print("\"state\":");
+  outWriter.append(sharedStates.toString());
+  outWriter.print(", ");
+  JSONObject connectorTypes=new JSONObject();
+  for (  ClientConnector connector : dirtyVisibleConnectors) {
+    String connectorType=paintTarget.getTag(connector);
+    try {
+      connectorTypes.put(connector.getConnectorId(),connectorType);
+    }
+ catch (    JSONException e) {
+      throw new PaintException("Failed to send connector type for connector " + connector.getConnectorId() + ": "+ e.getMessage());
+    }
+  }
+  outWriter.print("\"types\":");
+  outWriter.append(connectorTypes.toString());
+  outWriter.print(", ");
+  outWriter.print("\"hierarchy\":");
+  JSONObject hierarchyInfo=new JSONObject();
+  for (  Connector connector : dirtyVisibleConnectors) {
+    if (connector instanceof HasComponents) {
+      HasComponents parent=(HasComponents)connector;
+      String parentConnectorId=parent.getConnectorId();
+      JSONArray children=new JSONArray();
+      for (      Component child : getChildComponents(parent)) {
+        if (isVisible(child)) {
+          children.put(child.getConnectorId());
+        }
+      }
+      try {
+        hierarchyInfo.put(parentConnectorId,children);
+      }
+ catch (      JSONException e) {
+        throw new PaintException("Failed to send hierarchy information about " + parentConnectorId + " to the client: "+ e.getMessage());
+      }
+    }
+  }
+  outWriter.append(hierarchyInfo.toString());
+  outWriter.print(", ");
+  LinkedList<ClientConnector> rpcPendingQueue=new LinkedList<ClientConnector>(dirtyVisibleConnectors);
+  List<ClientMethodInvocation> pendingInvocations=collectPendingRpcCalls(dirtyVisibleConnectors);
+  JSONArray rpcCalls=new JSONArray();
+  for (  ClientMethodInvocation invocation : pendingInvocations) {
+    try {
+      JSONArray invocationJson=new JSONArray();
+      invocationJson.put(invocation.getConnector().getConnectorId());
+      invocationJson.put(invocation.getInterfaceName());
+      invocationJson.put(invocation.getMethodName());
+      JSONArray paramJson=new JSONArray();
+      for (int i=0; i < invocation.getParameterTypes().length; ++i) {
+        paramJson.put(JsonCodec.encode(invocation.getParameters()[i],invocation.getParameterTypes()[i],application));
+      }
+      invocationJson.put(paramJson);
+      rpcCalls.put(invocationJson);
+    }
+ catch (    JSONException e) {
+      throw new PaintException("Failed to serialize RPC method call parameters for connector " + invocation.getConnector().getConnectorId() + " method "+ invocation.getInterfaceName()+ "."+ invocation.getMethodName()+ ": "+ e.getMessage());
+    }
+  }
+  if (rpcCalls.length() > 0) {
+    outWriter.print("\"rpc\" : ");
+    outWriter.append(rpcCalls.toString());
+    outWriter.print(", ");
+  }
+  outWriter.print("\"meta\" : {");
+  boolean metaOpen=false;
+  if (repaintAll) {
+    metaOpen=true;
+    outWriter.write("\"repaintAll\":true");
+    if (analyzeLayouts) {
+      outWriter.write(", \"invalidLayouts\":");
+      outWriter.write("[");
+      if (invalidComponentRelativeSizes != null) {
+        boolean first=true;
+        for (        InvalidLayout invalidLayout : invalidComponentRelativeSizes) {
+          if (!first) {
+            outWriter.write(",");
+          }
+ else {
+            first=false;
+          }
+          invalidLayout.reportErrors(outWriter,this,System.err);
+        }
+      }
+      outWriter.write("]");
+    }
+    if (highlightedConnector != null) {
+      outWriter.write(", \"hl\":\"");
+      outWriter.write(highlightedConnector.getConnectorId());
+      outWriter.write("\"");
+      highlightedConnector=null;
+    }
+  }
+  SystemMessages ci=null;
+  try {
+    Method m=application.getClass().getMethod("getSystemMessages",(Class[])null);
+    ci=(Application.SystemMessages)m.invoke(null,(Object[])null);
+  }
+ catch (  NoSuchMethodException e) {
+    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+  }
+catch (  IllegalArgumentException e) {
+    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+  }
+catch (  IllegalAccessException e) {
+    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+  }
+catch (  InvocationTargetException e) {
+    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+  }
+  if (ci != null && ci.getSessionExpiredMessage() == null && ci.getSessionExpiredCaption() == null && ci.isSessionExpiredNotificationEnabled()) {
+    int newTimeoutInterval=getTimeoutInterval();
+    if (repaintAll || (timeoutInterval != newTimeoutInterval)) {
+      String escapedURL=ci.getSessionExpiredURL() == null ? "" : ci.getSessionExpiredURL().replace("/","\\/");
+      if (metaOpen) {
+        outWriter.write(",");
+      }
+      outWriter.write("\"timedRedirect\":{\"interval\":" + (newTimeoutInterval + 15) + ",\"url\":\""+ escapedURL+ "\"}");
+      metaOpen=true;
+    }
+    timeoutInterval=newTimeoutInterval;
+  }
+  outWriter.print("}, \"resources\" : {");
+  int resourceIndex=0;
+  for (final Iterator<Object> i=paintTarget.getUsedResources().iterator(); i.hasNext(); ) {
+    final String resource=(String)i.next();
+    InputStream is=null;
+    try {
+      is=getThemeResourceAsStream(root,getTheme(root),resource);
+    }
+ catch (    final Exception e) {
+      logger.log(Level.FINER,"Failed to get theme resource stream.",e);
+    }
+    if (is != null) {
+      outWriter.print((resourceIndex++ > 0 ? ", " : "") + "\"" + resource+ "\" : ");
+      final StringBuffer layout=new StringBuffer();
+      try {
+        final InputStreamReader r=new InputStreamReader(is,"UTF-8");
+        final char[] buffer=new char[20000];
+        int charsRead=0;
+        while ((charsRead=r.read(buffer)) > 0) {
+          layout.append(buffer,0,charsRead);
+        }
+        r.close();
+      }
+ catch (      final java.io.IOException e) {
+        logger.log(Level.INFO,"Resource transfer failed",e);
+      }
+      outWriter.print("\"" + JsonPaintTarget.escapeJSON(layout.toString()) + "\"");
+    }
+ else {
+      logger.severe("CustomLayout not found: " + resource);
+    }
+  }
+  outWriter.print("}");
+  Collection<Class<? extends ClientConnector>> usedClientConnectors=paintTarget.getUsedClientConnectors();
+  boolean typeMappingsOpen=false;
+  ClientCache clientCache=getClientCache(root);
+  for (  Class<? extends ClientConnector> class1 : usedClientConnectors) {
+    if (clientCache.cache(class1)) {
+      if (!typeMappingsOpen) {
+        typeMappingsOpen=true;
+        outWriter.print(", \"typeMappings\" : { ");
+      }
+ else {
+        outWriter.print(" , ");
+      }
+      String canonicalName=class1.getCanonicalName();
+      outWriter.print("\"");
+      outWriter.print(canonicalName);
+      outWriter.print("\" : ");
+      outWriter.print(getTagForType(class1));
+    }
+  }
+  if (typeMappingsOpen) {
+    outWriter.print(" }");
+  }
+  boolean typeInheritanceMapOpen=false;
+  if (typeMappingsOpen) {
+    for (    Class<? extends ClientConnector> class1 : usedClientConnectors) {
+      if (!ClientConnector.class.isAssignableFrom(class1.getSuperclass())) {
+        continue;
+      }
+      if (!typeInheritanceMapOpen) {
+        typeInheritanceMapOpen=true;
+        outWriter.print(", \"typeInheritanceMap\" : { ");
+      }
+ else {
+        outWriter.print(" , ");
+      }
+      outWriter.print("\"");
+      outWriter.print(getTagForType(class1));
+      outWriter.print("\" : ");
+      outWriter.print(getTagForType((Class<? extends ClientConnector>)class1.getSuperclass()));
+    }
+    if (typeInheritanceMapOpen) {
+      outWriter.print(" }");
+    }
+  }
+  printLocaleDeclarations(outWriter);
+  if (dragAndDropService != null) {
+    dragAndDropService.printJSONResponse(outWriter);
+  }
+  writePerformanceData(outWriter);
+}
