@@ -1,0 +1,15 @@
+{
+  super.onStateChanged(stateChangeEvent);
+  clickEventHandler.handleEventHandlerRegistration();
+  VMeasuringOrderedLayout layout=getWidget();
+  for (  ComponentConnector child : getChildren()) {
+    VLayoutSlot slot=layout.getSlotForChild(child.getWidget());
+    AlignmentInfo alignment=new AlignmentInfo(getState().getChildData().get(child).getAlignmentBitmask());
+    slot.setAlignment(alignment);
+    double expandRatio=getState().getChildData().get(child).getExpandRatio();
+    slot.setExpandRatio(expandRatio);
+  }
+  layout.updateMarginStyleNames(new VMarginInfo(getState().getMarginsBitmask()));
+  layout.updateSpacingStyleName(getState().isSpacing());
+  getLayoutManager().setNeedsLayout(this);
+}
