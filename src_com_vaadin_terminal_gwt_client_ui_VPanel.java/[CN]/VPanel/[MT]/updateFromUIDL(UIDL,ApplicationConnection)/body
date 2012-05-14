@@ -1,34 +1,21 @@
 {
   rendering=true;
   if (!uidl.hasAttribute("cached")) {
-    contentNode.setClassName(CLASSNAME + "-content");
-    bottomDecoration.setClassName(CLASSNAME + "-deco");
-    captionNode.setClassName(CLASSNAME + "-caption");
-    boolean hasCaption=false;
-    if (uidl.hasAttribute("caption") && !uidl.getStringAttribute("caption").equals("")) {
-      setCaption(uidl.getStringAttribute("caption"));
-      hasCaption=true;
-    }
- else {
-      setCaption("");
-      captionNode.setClassName(CLASSNAME + "-nocaption");
-    }
+    final boolean hasCaption=uidl.hasAttribute("caption") && !uidl.getStringAttribute("caption").equals("");
+    setCaption(hasCaption ? uidl.getStringAttribute("caption") : "");
+    final String captionBaseClass=CLASSNAME + (hasCaption ? "-caption" : "-nocaption");
+    final String contentBaseClass=CLASSNAME + "-content";
+    final String decoBaseClass=CLASSNAME + "-deco";
+    captionNode.addClassName(captionBaseClass);
+    contentNode.addClassName(contentBaseClass);
+    bottomDecoration.addClassName(decoBaseClass);
     if (uidl.hasAttribute("style")) {
       final String[] styles=uidl.getStringAttribute("style").split(" ");
-      final String captionBaseClass=CLASSNAME + (hasCaption ? "-caption" : "-nocaption");
-      final String contentBaseClass=CLASSNAME + "-content";
-      final String decoBaseClass=CLASSNAME + "-deco";
-      String captionClass=captionBaseClass;
-      String contentClass=contentBaseClass;
-      String decoClass=decoBaseClass;
-      for (int i=0; i < styles.length; i++) {
-        captionClass+=" " + captionBaseClass + "-"+ styles[i];
-        contentClass+=" " + contentBaseClass + "-"+ styles[i];
-        decoClass+=" " + decoBaseClass + "-"+ styles[i];
+      for (      String style : styles) {
+        captionNode.addClassName(captionBaseClass + "-" + style);
+        contentNode.addClassName(contentBaseClass + "-" + style);
+        bottomDecoration.addClassName(decoBaseClass + "-" + style);
       }
-      captionNode.setClassName(captionClass);
-      contentNode.setClassName(contentClass);
-      bottomDecoration.setClassName(decoClass);
     }
   }
   if (client.updateComponent(this,uidl,false)) {
