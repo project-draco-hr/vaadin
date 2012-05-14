@@ -82,8 +82,12 @@
     setWidget((Widget)lo);
     layout=lo;
   }
+  boolean childLayoutCached=childUidl.getBooleanAttribute("cached");
+  if (!childLayoutCached) {
+    updateLiferayPortletBodySize(childUidl);
+  }
   layout.updateFromUIDL(childUidl,client);
-  if (!childUidl.getBooleanAttribute("cached")) {
+  if (!childLayoutCached) {
     updateParentFrameSize();
   }
   final HashSet<VWindow> removedSubWindows=new HashSet<VWindow>(subWindows);
