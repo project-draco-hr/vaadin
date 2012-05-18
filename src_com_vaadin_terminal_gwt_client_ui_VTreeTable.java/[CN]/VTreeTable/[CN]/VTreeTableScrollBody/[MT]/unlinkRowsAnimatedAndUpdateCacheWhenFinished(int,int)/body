@@ -6,14 +6,16 @@
       rowsToDelete.add(row);
     }
   }
-  RowCollapseAnimation anim=new RowCollapseAnimation(rowsToDelete){
-    @Override protected void onComplete(){
-      super.onComplete();
-      unlinkAndReindexRows(firstIndex,rows);
-      discardRowsOutsideCacheWindow();
-      ensureCacheFilled();
+  if (!rowsToDelete.isEmpty()) {
+    RowCollapseAnimation anim=new RowCollapseAnimation(rowsToDelete){
+      @Override protected void onComplete(){
+        super.onComplete();
+        unlinkAndReindexRows(firstIndex,rows);
+        discardRowsOutsideCacheWindow();
+        ensureCacheFilled();
+      }
     }
-  }
 ;
-  anim.run(150);
+    anim.run(150);
+  }
 }
