@@ -1,0 +1,27 @@
+{
+  super.onStateChanged(stateChangeEvent);
+  boolean sinkOnloads=false;
+switch (getState().getContentMode()) {
+case PREFORMATTED:
+    PreElement preElement=Document.get().createPreElement();
+  preElement.setInnerText(getState().getText());
+getWidget().setHTML("");
+getWidget().getElement().appendChild(preElement);
+break;
+case TEXT:
+getWidget().setText(getState().getText());
+break;
+case XHTML:
+case RAW:
+sinkOnloads=true;
+case XML:
+getWidget().setHTML(getState().getText());
+break;
+default :
+getWidget().setText("");
+break;
+}
+if (sinkOnloads) {
+Util.sinkOnloadForImages(getWidget().getElement());
+}
+}

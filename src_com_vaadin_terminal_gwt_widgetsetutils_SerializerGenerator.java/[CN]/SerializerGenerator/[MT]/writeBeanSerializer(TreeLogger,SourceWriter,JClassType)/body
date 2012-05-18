@@ -1,0 +1,13 @@
+{
+  sourceWriter.println(JSONObject.class.getName() + " json = new " + JSONObject.class.getName()+ "();");
+  for (  JMethod setterMethod : getSetters(beanType)) {
+    String setterName=setterMethod.getName();
+    String fieldName=setterName.substring(3);
+    String getterName=findGetter(beanType,setterMethod);
+    if (getterName == null) {
+      logger.log(TreeLogger.ERROR,"No getter found for " + fieldName + ". Serialization will likely fail");
+    }
+    sourceWriter.println("json.put(\"" + fieldName + "\",  "+ JsonEncoder.class.getName()+ ".encode(castedValue."+ getterName+ "(), false, idMapper, connection));");
+  }
+  sourceWriter.println("return json;");
+}

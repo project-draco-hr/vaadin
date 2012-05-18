@@ -32,15 +32,25 @@
   paintTarget.close();
   outWriter.print("], ");
   JSONObject sharedStates=new JSONObject();
-  for (  Connector connector : dirtyVisibleConnectors) {
+  for (  ClientConnector connector : dirtyVisibleConnectors) {
     SharedState state=connector.getState();
     if (null != state) {
       try {
-        JSONArray stateJsonArray=JsonCodec.encode(state,state.getClass(),application);
+        Class<? extends SharedState> stateType=connector.getStateType();
+        SharedState referenceState=null;
+        if (repaintAll) {
+          try {
+            referenceState=stateType.newInstance();
+          }
+ catch (          Exception e) {
+            logger.log(Level.WARNING,"Error creating reference object for state of type " + stateType.getName());
+          }
+        }
+        JSONArray stateJsonArray=JsonCodec.encode(state,referenceState,stateType,application);
         sharedStates.put(connector.getConnectorId(),stateJsonArray);
       }
  catch (      JSONException e) {
-        throw new PaintException("Failed to serialize shared state for connector " + connector.getClass().getName() + " ("+ connector.getConnectorId()+ "): "+ e.getMessage());
+        throw new PaintException("Failed to serialize shared state for connector " + connector.getClass().getName() + " ("+ connector.getConnectorId()+ "): "+ e.getMessage(),e);
       }
     }
   }
@@ -54,7 +64,7 @@
       connectorTypes.put(connector.getConnectorId(),connectorType);
     }
  catch (    JSONException e) {
-      throw new PaintException("Failed to send connector type for connector " + connector.getConnectorId() + ": "+ e.getMessage());
+      throw new PaintException("Failed to send connector type for connector " + connector.getConnectorId() + ": "+ e.getMessage(),e);
     }
   }
   outWriter.print("\"types\":");
@@ -76,7 +86,7 @@
         hierarchyInfo.put(parentConnectorId,children);
       }
  catch (      JSONException e) {
-        throw new PaintException("Failed to send hierarchy information about " + parentConnectorId + " to the client: "+ e.getMessage());
+        throw new PaintException("Failed to send hierarchy information about " + parentConnectorId + " to the client: "+ e.getMessage(),e);
       }
     }
   }
@@ -93,13 +103,15 @@
       invocationJson.put(invocation.getMethodName());
       JSONArray paramJson=new JSONArray();
       for (int i=0; i < invocation.getParameterTypes().length; ++i) {
-        paramJson.put(JsonCodec.encode(invocation.getParameters()[i],invocation.getParameterTypes()[i],application));
+        Class<?> parameterType=invocation.getParameterTypes()[i];
+        Object referenceParameter=null;
+        paramJson.put(JsonCodec.encode(invocation.getParameters()[i],referenceParameter,parameterType,application));
       }
       invocationJson.put(paramJson);
       rpcCalls.put(invocationJson);
     }
  catch (    JSONException e) {
-      throw new PaintException("Failed to serialize RPC method call parameters for connector " + invocation.getConnector().getConnectorId() + " method "+ invocation.getInterfaceName()+ "."+ invocation.getMethodName()+ ": "+ e.getMessage());
+      throw new PaintException("Failed to serialize RPC method call parameters for connector " + invocation.getConnector().getConnectorId() + " method "+ invocation.getInterfaceName()+ "."+ invocation.getMethodName()+ ": "+ e.getMessage(),e);
     }
   }
   if (rpcCalls.length() > 0) {

@@ -1,9 +1,8 @@
 {
-  if (components.contains(component)) {
-    componentToExpandRatio.put(component,ratio);
-    requestRepaint();
+  ChildComponentData childData=getState().getChildData().get(component);
+  if (childData == null) {
+    throw new IllegalArgumentException("The given component is not a child of this layout");
   }
- else {
-    throw new IllegalArgumentException("Component must be added to layout before using setExpandRatio()");
-  }
+  childData.setExpandRatio(ratio);
+  requestRepaint();
 }
