@@ -1,0 +1,28 @@
+{
+  final Table source1=createTable("Source 1");
+  final Table source2=createTable("Source 2");
+  final Table target=createTable("Target");
+  source1.setDragMode(TableDragMode.ROW);
+  source2.setDragMode(TableDragMode.ROW);
+  target.setDropHandler(new DropHandler(){
+    public AcceptCriterion getAcceptCriterion(){
+      return new SourceIs(source1,source2);
+    }
+    public void drop(    DragAndDropEvent event){
+      TableTransferable transferable=(TableTransferable)event.getTransferable();
+      Item item=transferable.getSourceComponent().getItem(transferable.getItemId());
+      Object value=item.getItemProperty("value").getValue();
+      AbstractSelectTargetDetails targetDetails=(AbstractSelectTargetDetails)event.getTargetDetails();
+      Object targetItemId=targetDetails.getItemIdOver();
+      Object addItemAfter=target.addItemAfter(targetItemId);
+      target.getItem(addItemAfter).getItemProperty("value").setValue(value);
+      transferable.getSourceComponent().removeItem(transferable.getItemId());
+    }
+  }
+);
+  TabSheet tabSheet=new TabSheet();
+  tabSheet.addComponent(source1);
+  tabSheet.addComponent(source2);
+  addComponent(tabSheet);
+  addComponent(target);
+}
