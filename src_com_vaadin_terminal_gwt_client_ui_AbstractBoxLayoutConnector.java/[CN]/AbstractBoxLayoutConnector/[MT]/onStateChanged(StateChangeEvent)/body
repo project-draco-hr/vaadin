@@ -1,13 +1,34 @@
 {
   super.onStateChanged(stateChangeEvent);
+  clickEventHandler.handleEventHandlerRegistration();
   getWidget().setMargin(new VMarginInfo(getState().getMarginsBitmask()));
   getWidget().setSpacing(getState().isSpacing());
-  if (needsFixedHeight()) {
-    getWidget().clearHeight();
-    setLayoutHeightListener(true);
-    getLayoutManager().setNeedsMeasure(this);
-  }
+  hasExpandRatio.clear();
+  hasVerticalAlignment.clear();
+  hasRelativeHeight.clear();
+  needsMeasure.clear();
+  for (  ComponentConnector child : getChildren()) {
+    Slot slot=getWidget().getSlot(child);
+    AlignmentInfo alignment=new AlignmentInfo(getState().getChildData().get(child).getAlignmentBitmask());
+    slot.setAlignment(alignment);
+    double expandRatio=getState().getChildData().get(child).getExpandRatio();
+    if (expandRatio == 0) {
+      expandRatio=-1;
+    }
+    slot.setExpandRatio(expandRatio);
+    if (alignment.isVerticalCenter() || alignment.isBottom()) {
+      hasVerticalAlignment.add(child);
+    }
+    if (expandRatio > 0) {
+      hasExpandRatio.add(child);
+    }
+    if (child.getState().isRelativeHeight()) {
+      hasRelativeHeight.add(child);
+    }
  else {
-    setLayoutHeightListener(false);
+      needsMeasure.add(child.getWidget().getElement());
+    }
   }
+  updateAllSlotListeners();
+  updateLayoutHeight();
 }

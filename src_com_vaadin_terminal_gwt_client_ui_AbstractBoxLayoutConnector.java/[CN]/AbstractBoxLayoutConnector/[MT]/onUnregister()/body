@@ -1,14 +1,13 @@
 {
-  getLayoutManager().removeElementResizeListener(getWidget().getElement(),layoutResizeListener);
-  for (int i=0; i < getWidget().getWidgetCount(); i++) {
-    Slot slot=(Slot)getWidget().getWidget(i);
+  for (  ComponentConnector child : getChildren()) {
+    Slot slot=getWidget().getSlot(child);
     if (slot.hasCaption()) {
-      getLayoutManager().removeElementResizeListener(slot.getCaptionElement(),slotCaptionResizeListener);
+      dontListen(slot.getCaptionElement(),slotCaptionResizeListener);
     }
     if (slot.getSpacingElement() != null) {
-      getLayoutManager().removeElementResizeListener(slot.getSpacingElement(),spacingResizeListener);
+      dontListen(slot.getSpacingElement(),spacingResizeListener);
     }
-    getLayoutManager().removeElementResizeListener(slot.getWidget().getElement(),childComponentResizeListener);
+    dontListen(slot.getWidget().getElement(),childComponentResizeListener);
   }
   super.onUnregister();
 }
