@@ -2,7 +2,7 @@
   portletEdit.setEnabled(true);
   portletMax.setEnabled(true);
   tf.setEnabled((request.getPortletMode() == PortletMode.EDIT));
-  getMainWindow().showNotification("Portlet status","Mode: " + request.getPortletMode() + " State: "+ request.getWindowState(),Notification.TYPE_WARNING_MESSAGE);
+  showNotification("Portlet status","Mode: " + request.getPortletMode() + " State: "+ request.getWindowState(),Notification.TYPE_WARNING_MESSAGE);
   Map<?,?> uinfo=(Map<?,?>)request.getAttribute(PortletRequest.USER_INFO);
   if (uinfo != null) {
     String s="";
@@ -41,7 +41,8 @@
     url=response.createActionURL();
     try {
       someAction=new Link("An action",new ExternalResource(url.toString()));
-      main.addComponent(someAction);
+      someAction.setDebugId("someAction");
+      addComponent(someAction);
     }
  catch (    Exception e) {
       System.err.println("Could not create someAction: " + e);
