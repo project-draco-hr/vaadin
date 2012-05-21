@@ -1,0 +1,80 @@
+{
+  boolean touchEventHandled=false;
+  if (enabled && hasNativeTouchScrolling) {
+    final Element targetTdOrTr=getEventTargetTdOrTr(event);
+    final int type=event.getTypeInt();
+switch (type) {
+case Event.ONTOUCHSTART:
+      touchEventHandled=true;
+    touchStart=event;
+  isDragging=false;
+Touch touch=event.getChangedTouches().get(0);
+touchStartX=touch.getClientX();
+touchStartY=touch.getClientY();
+if (dragmode != 0) {
+if (dragTouchTimeout == null) {
+dragTouchTimeout=new Timer(){
+@Override public void run(){
+  if (touchStart != null) {
+    isDragging=true;
+  }
+}
+}
+;
+}
+dragTouchTimeout.schedule(TOUCHSCROLL_TIMEOUT);
+}
+if (actionKeys != null) {
+if (contextTouchTimeout == null) {
+contextTouchTimeout=new Timer(){
+@Override public void run(){
+if (touchStart != null) {
+  showContextMenu(touchStart);
+  event.preventDefault();
+}
+}
+}
+;
+}
+contextTouchTimeout.schedule(TOUCH_CONTEXT_MENU_TIMEOUT);
+}
+break;
+case Event.ONTOUCHMOVE:
+touchEventHandled=true;
+if (isSignificantMove(event)) {
+if (contextTouchTimeout != null) {
+contextTouchTimeout.cancel();
+contextTouchTimeout=null;
+}
+if (!isDragging && dragTouchTimeout != null) {
+dragTouchTimeout.cancel();
+dragTouchTimeout=null;
+}
+if (dragmode != 0 && touchStart != null && isDragging) {
+event.preventDefault();
+event.stopPropagation();
+startRowDrag(touchStart,type,targetTdOrTr);
+}
+touchStart=null;
+}
+break;
+case Event.ONTOUCHEND:
+case Event.ONTOUCHCANCEL:
+touchEventHandled=true;
+if (contextTouchTimeout != null) {
+contextTouchTimeout.cancel();
+}
+if (dragTouchTimeout != null) {
+dragTouchTimeout.cancel();
+}
+if (touchStart != null) {
+event.preventDefault();
+event.stopPropagation();
+touchStart=null;
+}
+isDragging=false;
+break;
+}
+}
+return touchEventHandled;
+}
