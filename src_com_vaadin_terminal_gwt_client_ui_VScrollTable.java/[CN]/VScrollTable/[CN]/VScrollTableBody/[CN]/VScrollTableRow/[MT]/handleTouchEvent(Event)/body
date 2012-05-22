@@ -31,6 +31,7 @@ contextTouchTimeout=new Timer(){
 if (touchStart != null) {
   showContextMenu(touchStart);
   event.preventDefault();
+  touchStart=null;
 }
 }
 }
@@ -70,6 +71,9 @@ dragTouchTimeout.cancel();
 if (touchStart != null) {
 event.preventDefault();
 event.stopPropagation();
+if (!BrowserInfo.get().isAndroid()) {
+Util.simulateClickFromTouchEvent(touchStart,this);
+}
 touchStart=null;
 }
 isDragging=false;
