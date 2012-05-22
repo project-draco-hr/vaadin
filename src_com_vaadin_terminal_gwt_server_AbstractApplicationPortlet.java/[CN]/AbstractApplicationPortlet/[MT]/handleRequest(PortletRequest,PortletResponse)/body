@@ -2,17 +2,7 @@
   RequestTimer requestTimer=new RequestTimer();
   requestTimer.start();
   AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
-  WrappedPortletRequest wrappedRequest;
-  String portalInfo=request.getPortalContext().getPortalInfo().toLowerCase();
-  if (portalInfo.contains("liferay")) {
-    wrappedRequest=new WrappedLiferayRequest(request,getDeploymentConfiguration());
-  }
- else   if (portalInfo.contains("gatein")) {
-    wrappedRequest=new WrappedGateinRequest(request,getDeploymentConfiguration());
-  }
- else {
-    wrappedRequest=new WrappedPortletRequest(request,getDeploymentConfiguration());
-  }
+  WrappedPortletRequest wrappedRequest=createWrappedRequest(request);
   WrappedPortletResponse wrappedResponse=new WrappedPortletResponse(response,getDeploymentConfiguration());
   RequestType requestType=getRequestType(request);
   if (requestType == RequestType.UNKNOWN) {
