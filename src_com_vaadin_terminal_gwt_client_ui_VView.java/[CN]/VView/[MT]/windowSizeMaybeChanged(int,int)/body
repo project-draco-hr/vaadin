@@ -1,19 +1,38 @@
 {
   boolean changed=false;
-  if (windowWidth != newWidth) {
-    windowWidth=newWidth;
+  if (windowWidth != newWindowWidth) {
+    windowWidth=newWindowWidth;
     changed=true;
     VConsole.log("New window width: " + windowWidth);
   }
-  if (windowHeight != newHeight) {
-    windowHeight=newHeight;
+  if (windowHeight != newWindowHeight) {
+    windowHeight=newWindowHeight;
     changed=true;
     VConsole.log("New window height: " + windowHeight);
   }
+  Element parentElement=getElement().getParentElement();
+  if (isMonitoringParentSize() && parentElement != null) {
+    int newParentWidth=parentElement.getClientWidth();
+    int newParentHeight=parentElement.getClientHeight();
+    if (parentWidth != newParentWidth) {
+      parentWidth=newParentWidth;
+      changed=true;
+      VConsole.log("New parent width: " + parentWidth);
+    }
+    if (parentHeight != newParentHeight) {
+      parentHeight=newParentHeight;
+      changed=true;
+      VConsole.log("New parent height: " + parentHeight);
+    }
+  }
   if (changed) {
-    VConsole.log("Running layout functions due to window resize");
+    VConsole.log("Running layout functions due to window or parent resize");
     connection.runDescendentsLayout(VView.this);
     Util.runWebkitOverflowAutoFix(getElement());
+    if (isMonitoringParentSize() && parentElement != null) {
+      parentWidth=parentElement.getClientWidth();
+      parentHeight=parentElement.getClientHeight();
+    }
     sendClientResized();
   }
 }
