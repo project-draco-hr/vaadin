@@ -1,0 +1,21 @@
+{
+  Class<? extends View> newViewClass=viewNameToClass.get(viewName);
+  if (null == newViewClass) {
+    return null;
+  }
+  if (!classToView.containsKey(newViewClass)) {
+    try {
+      View view=newViewClass.newInstance();
+      view.init();
+      classToView.put(newViewClass,view);
+    }
+ catch (    InstantiationException e) {
+      throw new RuntimeException(e);
+    }
+catch (    IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+  }
+  final View v=classToView.get(newViewClass);
+  return v;
+}

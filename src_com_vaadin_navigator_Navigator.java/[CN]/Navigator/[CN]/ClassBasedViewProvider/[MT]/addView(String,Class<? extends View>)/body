@@ -1,0 +1,19 @@
+{
+  if (viewName == null || viewClass == null || viewName.length() == 0) {
+    throw new IllegalArgumentException("viewClass and viewName must be non-null and not empty");
+  }
+  if (!View.class.isAssignableFrom(viewClass)) {
+    throw new IllegalArgumentException("viewClass must implement Navigator.View");
+  }
+  if (viewNameToClass.containsKey(viewName)) {
+    if (viewNameToClass.get(viewName) == viewClass) {
+      return;
+    }
+    throw new IllegalArgumentException(viewNameToClass.get(viewName).getName() + " is already mapped to '" + viewName+ "'");
+  }
+  if (classToViewName.containsKey(viewClass)) {
+    throw new IllegalArgumentException("Each view class can only be added to Navigator with one view name");
+  }
+  viewNameToClass.put(viewName,viewClass);
+  classToViewName.put(viewClass,viewName);
+}
