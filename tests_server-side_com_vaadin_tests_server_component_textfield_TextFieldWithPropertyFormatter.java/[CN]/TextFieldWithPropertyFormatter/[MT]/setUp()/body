@@ -1,6 +1,12 @@
 {
   super.setUp();
-  field=new TextField();
+  field=new TextField(){
+    @Override public void requestRepaint(){
+      repainted++;
+      super.requestRepaint();
+    }
+  }
+;
   formatter=new PropertyFormatter<String>(){
     @Override public String parse(    String formattedValue) throws Exception {
       assertEquals(INPUT_VALUE,formattedValue);
@@ -23,12 +29,6 @@
   }
 ;
   field.addListener(listener);
-  field.addListener(new RepaintRequestListener(){
-    public void repaintRequested(    RepaintRequestEvent event){
-      repainted++;
-    }
-  }
-);
   listenerCalled=0;
   repainted=0;
 }

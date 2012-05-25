@@ -5,7 +5,10 @@
     Scheduler.get().scheduleFinally(new ScheduledCommand(){
       public void execute(){
         getLayoutManager().setNeedsMeasure(TableConnector.this);
-        getLayoutManager().setNeedsMeasure(TableConnector.this.getParent());
+        ServerConnector parent=getParent();
+        if (parent instanceof ComponentConnector) {
+          getLayoutManager().setNeedsMeasure((ComponentConnector)parent);
+        }
         getLayoutManager().setNeedsVerticalLayout(TableConnector.this);
         getLayoutManager().layoutNow();
       }

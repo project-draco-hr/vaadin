@@ -7,11 +7,9 @@
   idToComponentDetail.remove(connectorId);
   idToConnector.remove(connectorId);
   connector.onUnregister();
-  if (connector instanceof ComponentContainerConnector) {
-    for (    ComponentConnector child : ((ComponentContainerConnector)connector).getChildren()) {
-      if (child.getParent() == connector) {
-        unregisterConnector(child);
-      }
+  for (  ServerConnector child : connector.getChildren()) {
+    if (child.getParent() == connector) {
+      unregisterConnector(child);
     }
   }
 }

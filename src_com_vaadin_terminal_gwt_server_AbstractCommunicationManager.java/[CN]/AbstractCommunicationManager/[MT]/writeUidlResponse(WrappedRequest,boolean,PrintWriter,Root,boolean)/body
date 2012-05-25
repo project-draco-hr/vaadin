@@ -5,18 +5,18 @@
   logger.log(Level.FINE,"* Creating response to client");
   if (repaintAll) {
     getClientCache(root).clear();
-    rootConnectorTracker.markAllComponentsDirty();
+    rootConnectorTracker.markAllConnectorsDirty();
     locales=null;
     requireLocale(application.getLocale().toString());
   }
-  dirtyVisibleConnectors.addAll(getDirtyVisibleComponents(rootConnectorTracker));
+  dirtyVisibleConnectors.addAll(getDirtyVisibleConnectors(rootConnectorTracker));
   logger.log(Level.FINE,"Found " + dirtyVisibleConnectors.size() + " dirty connectors to paint");
   for (  ClientConnector connector : dirtyVisibleConnectors) {
     if (connector instanceof Component) {
       ((Component)connector).updateState();
     }
   }
-  rootConnectorTracker.markAllComponentsClean();
+  rootConnectorTracker.markAllConnectorsClean();
   outWriter.print("\"changes\":[");
   List<InvalidLayout> invalidComponentRelativeSizes=null;
   JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
@@ -72,22 +72,19 @@
   outWriter.print(", ");
   outWriter.print("\"hierarchy\":");
   JSONObject hierarchyInfo=new JSONObject();
-  for (  Connector connector : dirtyVisibleConnectors) {
-    if (connector instanceof HasComponents) {
-      HasComponents parent=(HasComponents)connector;
-      String parentConnectorId=parent.getConnectorId();
-      JSONArray children=new JSONArray();
-      for (      Component child : getChildComponents(parent)) {
-        if (isVisible(child)) {
-          children.put(child.getConnectorId());
-        }
+  for (  ClientConnector connector : dirtyVisibleConnectors) {
+    String connectorId=connector.getConnectorId();
+    JSONArray children=new JSONArray();
+    for (    ClientConnector child : AbstractClientConnector.getAllChildrenIteratable(connector)) {
+      if (isVisible(child)) {
+        children.put(child.getConnectorId());
       }
-      try {
-        hierarchyInfo.put(parentConnectorId,children);
-      }
- catch (      JSONException e) {
-        throw new PaintException("Failed to send hierarchy information about " + parentConnectorId + " to the client: "+ e.getMessage(),e);
-      }
+    }
+    try {
+      hierarchyInfo.put(connectorId,children);
+    }
+ catch (    JSONException e) {
+      throw new PaintException("Failed to send hierarchy information about " + connectorId + " to the client: "+ e.getMessage(),e);
     }
   }
   outWriter.append(hierarchyInfo.toString());

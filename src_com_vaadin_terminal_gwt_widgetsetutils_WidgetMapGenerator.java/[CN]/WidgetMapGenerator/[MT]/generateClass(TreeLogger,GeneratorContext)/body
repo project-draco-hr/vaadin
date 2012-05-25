@@ -4,7 +4,7 @@
   if (printWriter == null) {
     return;
   }
-  logger.log(Type.INFO,"Detecting Vaadin components in classpath to generate WidgetMapImpl.java ...");
+  logger.log(Type.INFO,"Detecting Vaadin connectors in classpath to generate WidgetMapImpl.java ...");
   Date date=new Date();
   ClassSourceFileComposerFactory composer=null;
   composer=new ClassSourceFileComposerFactory(packageName,className);
@@ -13,7 +13,7 @@
   composer.addImport("com.google.gwt.core.client.RunAsyncCallback");
   composer.setSuperclass("com.vaadin.terminal.gwt.client.WidgetMap");
   SourceWriter sourceWriter=composer.createSourceWriter(context,printWriter);
-  Collection<Class<? extends ComponentConnector>> connectors=getUsedConnectors(context.getTypeOracle());
+  Collection<Class<? extends ServerConnector>> connectors=getUsedConnectors(context.getTypeOracle());
   validateConnectors(logger,connectors);
   logConnectors(logger,context,connectors);
   generateImplementationDetector(sourceWriter,connectors);

@@ -1,0 +1,14 @@
+{
+  try {
+    if (!rpcProxyMap.containsKey(rpcInterface)) {
+      Class<?> proxyClass=Proxy.getProxyClass(rpcInterface.getClassLoader(),rpcInterface);
+      Constructor<?> constructor=proxyClass.getConstructor(InvocationHandler.class);
+      T rpcProxy=rpcInterface.cast(constructor.newInstance(new RpcInvoicationHandler(rpcInterface)));
+      rpcProxyMap.put(rpcInterface,rpcProxy);
+    }
+    return (T)rpcProxyMap.get(rpcInterface);
+  }
+ catch (  Exception e) {
+    throw new RuntimeException(e);
+  }
+}

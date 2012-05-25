@@ -4,7 +4,9 @@
     HashMap<Element,String> originalOverflows=new HashMap<Element,String>();
     HashSet<ComponentConnector> delayedOverflowFixes=new HashSet<ComponentConnector>();
     for (    ComponentConnector componentConnector : pendingOverflowFixes) {
-      if (!currentDependencyTree.noMoreChangesExpected(componentConnector) || !currentDependencyTree.noMoreChangesExpected(componentConnector.getParent())) {
+      boolean connectorChangesExpected=!currentDependencyTree.noMoreChangesExpected(componentConnector);
+      boolean parentChangesExcpected=componentConnector.getParent() instanceof ComponentConnector && !currentDependencyTree.noMoreChangesExpected((ComponentConnector)componentConnector.getParent());
+      if (connectorChangesExpected || parentChangesExcpected) {
         delayedOverflowFixes.add(componentConnector);
         continue;
       }

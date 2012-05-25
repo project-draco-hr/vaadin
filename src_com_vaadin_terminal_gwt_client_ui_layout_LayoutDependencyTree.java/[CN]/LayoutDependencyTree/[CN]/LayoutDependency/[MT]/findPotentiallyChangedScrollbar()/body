@@ -1,13 +1,13 @@
 {
   ComponentConnector currentConnector=connector;
   while (true) {
-    ComponentContainerConnector parent=currentConnector.getParent();
-    if (parent == null) {
+    ServerConnector parent=currentConnector.getParent();
+    if (!(parent instanceof ComponentConnector)) {
       return null;
     }
     if (parent instanceof MayScrollChildren) {
       return getDependency(currentConnector,getOppositeDirection());
     }
-    currentConnector=parent;
+    currentConnector=(ComponentConnector)parent;
   }
 }
