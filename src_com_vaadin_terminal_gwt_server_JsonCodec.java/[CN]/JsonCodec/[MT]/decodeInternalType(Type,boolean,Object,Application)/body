@@ -1,18 +1,13 @@
 {
-  String encodedTransportType=valueAndType.getString(0);
   if (!isInternalType(targetType)) {
     throw new JSONException("Type " + targetType + " is not a supported internal type.");
   }
   String transportType=getInternalTransportType(targetType);
-  if (!transportTypesCompatible(encodedTransportType,transportType)) {
-    throw new JSONException("Expected a value of type " + targetType + ", received "+ getType(encodedTransportType));
-  }
-  Object encodedJsonValue=valueAndType.get(1);
-  if (JsonEncoder.VTYPE_NULL.equals(encodedTransportType)) {
+  if (encodedJsonValue == JSONObject.NULL) {
     return null;
   }
-  if (JsonEncoder.VTYPE_UIDL_VALUE.contentEquals(transportType)) {
-    return decodeVariableChange((JSONArray)encodedJsonValue,application);
+  if (targetType == UidlValue.class) {
+    return decodeUidlValue((JSONArray)encodedJsonValue,application);
   }
   if (JsonEncoder.VTYPE_LIST.equals(transportType)) {
     return decodeList(targetType,restrictToInternalTypes,(JSONArray)encodedJsonValue,application);
