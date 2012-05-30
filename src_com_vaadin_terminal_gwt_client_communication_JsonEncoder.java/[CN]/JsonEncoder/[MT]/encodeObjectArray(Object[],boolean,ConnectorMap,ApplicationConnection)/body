@@ -1,7 +1,11 @@
 {
   JSONArray jsonArray=new JSONArray();
   for (int i=0; i < array.length; ++i) {
-    jsonArray.set(i,encode(array[i],restrictToInternalTypes,connectorMap,connection));
+    Object value=array[i];
+    if (restrictToInternalTypes) {
+      value=new UidlValue(value);
+    }
+    jsonArray.set(i,encode(value,restrictToInternalTypes,connectorMap,connection));
   }
   return combineTypeAndValue(VTYPE_ARRAY,jsonArray);
 }

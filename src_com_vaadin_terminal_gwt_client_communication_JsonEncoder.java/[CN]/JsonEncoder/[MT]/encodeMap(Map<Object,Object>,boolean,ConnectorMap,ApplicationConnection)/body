@@ -2,6 +2,13 @@
   JSONObject jsonMap=new JSONObject();
   for (  Object mapKey : map.keySet()) {
     Object mapValue=map.get(mapKey);
+    if (restrictToInternalTypes) {
+      if (!(mapKey instanceof String)) {
+        throw new IllegalStateException("Only string keys supported for legacy maps");
+      }
+      mapKey=new UidlValue(mapKey);
+      mapValue=new UidlValue(mapValue);
+    }
     JSONValue encodedKey=encode(mapKey,restrictToInternalTypes,connectorMap,connection);
     JSONValue encodedValue=encode(mapValue,restrictToInternalTypes,connectorMap,connection);
     jsonMap.put(encodedKey.toString(),encodedValue);
