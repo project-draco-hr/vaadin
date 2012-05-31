@@ -13,8 +13,14 @@
   composer=new ClassSourceFileComposerFactory(serializerPackageName,serializerClassName);
   composer.addImport(GWT.class.getName());
   composer.addImport(JSONArray.class.getName());
+  composer.addImport(com.vaadin.terminal.gwt.client.communication.Type.class.getName());
   composer.addImport(JsonDecoder.class.getName());
-  composer.addImplementedInterface(JSONSerializer.class.getName() + "<" + beanQualifiedSourceName+ ">");
+  if (isEnum) {
+    composer.addImplementedInterface(JSONSerializer.class.getName() + "<" + beanQualifiedSourceName+ ">");
+  }
+ else {
+    composer.addImplementedInterface(DiffJSONSerializer.class.getName() + "<" + beanQualifiedSourceName+ ">");
+  }
   SourceWriter sourceWriter=composer.createSourceWriter(context,printWriter);
   sourceWriter.indent();
   sourceWriter.println("public " + JSONValue.class.getName() + " serialize("+ beanQualifiedSourceName+ " value, "+ ConnectorMap.class.getName()+ " idMapper, "+ ApplicationConnection.class.getName()+ " connection) {");
@@ -26,14 +32,23 @@
  else {
     writeBeanSerializer(logger,sourceWriter,beanType);
   }
+  sourceWriter.outdent();
   sourceWriter.println("}");
-  sourceWriter.println("public " + beanQualifiedSourceName + " deserialize("+ JSONValue.class.getName()+ " jsonValue, "+ beanQualifiedSourceName+ " target, "+ ConnectorMap.class.getName()+ " idMapper, "+ ApplicationConnection.class.getName()+ " connection) {");
+  sourceWriter.println();
+  if (!isEnum) {
+    sourceWriter.println("public void update(" + beanQualifiedSourceName + " target, Type type, "+ JSONValue.class.getName()+ " jsonValue, "+ ApplicationConnection.class.getName()+ " connection) {");
+    sourceWriter.indent();
+    writeBeanDeserializer(logger,sourceWriter,beanType,true);
+    sourceWriter.outdent();
+    sourceWriter.println("}");
+  }
+  sourceWriter.println("public " + beanQualifiedSourceName + " deserialize(Type type, "+ JSONValue.class.getName()+ " jsonValue, "+ ApplicationConnection.class.getName()+ " connection) {");
   sourceWriter.indent();
   if (isEnum) {
     writeEnumDeserializer(logger,sourceWriter,beanType.isEnum());
   }
  else {
-    writeBeanDeserializer(logger,sourceWriter,beanType);
+    writeBeanDeserializer(logger,sourceWriter,beanType,false);
   }
   sourceWriter.println("}");
   sourceWriter.outdent();

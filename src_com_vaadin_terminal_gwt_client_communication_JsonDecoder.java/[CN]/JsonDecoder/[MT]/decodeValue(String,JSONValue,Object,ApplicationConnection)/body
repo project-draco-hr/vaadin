@@ -4,16 +4,16 @@
     val=null;
   }
  else   if (JsonEncoder.VTYPE_ARRAY.equals(variableType)) {
-    val=decodeArray((JSONArray)value,idMapper,connection);
+    val=decodeArray((JSONArray)value,connection);
   }
  else   if (JsonEncoder.VTYPE_MAP.equals(variableType)) {
-    val=decodeMap((JSONObject)value,idMapper,connection);
+    val=decodeMap((JSONObject)value,connection);
   }
  else   if (JsonEncoder.VTYPE_LIST.equals(variableType)) {
-    val=decodeList((JSONArray)value,idMapper,connection);
+    val=decodeList((JSONArray)value,connection);
   }
  else   if (JsonEncoder.VTYPE_SET.equals(variableType)) {
-    val=decodeSet((JSONArray)value,idMapper,connection);
+    val=decodeSet((JSONArray)value,connection);
   }
  else   if (JsonEncoder.VTYPE_STRINGARRAY.equals(variableType)) {
     val=decodeStringArray((JSONArray)value);
@@ -37,10 +37,10 @@
     val=Boolean.valueOf(String.valueOf(value));
   }
  else   if (JsonEncoder.VTYPE_CONNECTOR.equals(variableType)) {
-    val=idMapper.getConnector(((JSONString)value).stringValue());
+    val=ConnectorMap.get(connection).getConnector(((JSONString)value).stringValue());
   }
  else {
-    return decodeObject(variableType,value,target,idMapper,connection);
+    return decodeObject(new Type(variableType,null),value,target,connection);
   }
   return val;
 }

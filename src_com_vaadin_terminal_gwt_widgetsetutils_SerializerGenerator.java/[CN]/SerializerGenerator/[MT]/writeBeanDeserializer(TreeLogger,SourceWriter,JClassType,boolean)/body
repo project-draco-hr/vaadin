@@ -1,10 +1,8 @@
 {
   String beanQualifiedSourceName=beanType.getQualifiedSourceName();
-  sourceWriter.println("if (target == null) {");
-  sourceWriter.indent();
-  sourceWriter.println("target = GWT.create(" + beanQualifiedSourceName + ".class);");
-  sourceWriter.outdent();
-  sourceWriter.println("}");
+  if (!update) {
+    sourceWriter.println(beanQualifiedSourceName + " target = GWT.create(" + beanQualifiedSourceName+ ".class);");
+  }
   sourceWriter.println(JSONObject.class.getName() + " json = (" + JSONObject.class.getName()+ ")jsonValue;");
   for (  JMethod method : getSetters(beanType)) {
     String setterName=method.getName();
@@ -27,17 +25,12 @@
  else {
       fieldType=setterParameterType.getQualifiedSourceName();
     }
-    sourceWriter.println(fieldType + " referenceValue;");
-    sourceWriter.println("if (target == null) {");
-    sourceWriter.indent();
-    sourceWriter.println("referenceValue = null;");
-    sourceWriter.println("} else {");
-    sourceWriter.println("referenceValue = target." + getterName + "();");
-    sourceWriter.outdent();
-    sourceWriter.println("}");
-    sourceWriter.println("target." + setterName + "(("+ fieldType+ ") "+ JsonDecoder.class.getName()+ ".decodeValue("+ jsonFieldName+ ", referenceValue, idMapper, connection));");
+    sourceWriter.println(fieldType + " referenceValue = target." + getterName+ "();");
+    sourceWriter.println("target." + setterName + "(("+ fieldType+ ") "+ JsonDecoder.class.getName()+ ".decodeValue("+ jsonFieldName+ ", referenceValue, connection));");
     sourceWriter.println("}");
     sourceWriter.outdent();
   }
-  sourceWriter.println("return target;");
+  if (!update) {
+    sourceWriter.println("return target;");
+  }
 }
