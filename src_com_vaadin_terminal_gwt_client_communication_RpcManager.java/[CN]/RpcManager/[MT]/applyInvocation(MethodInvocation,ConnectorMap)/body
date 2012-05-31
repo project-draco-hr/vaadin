@@ -1,0 +1,12 @@
+{
+  ServerConnector connector=connectorMap.getConnector(invocation.getConnectorId());
+  String signature=getSignature(invocation);
+  if (connector == null) {
+    throw new IllegalStateException("Target connector (" + invocation.getConnectorId() + ") not found for RCC to "+ signature);
+  }
+  RpcMethod rpcMethod=getRpcMethod(signature);
+  Collection<ClientRpc> implementations=connector.getRpcImplementations(invocation.getInterfaceName());
+  for (  ClientRpc clientRpc : implementations) {
+    rpcMethod.applyInvocation(clientRpc,invocation.getParameters());
+  }
+}

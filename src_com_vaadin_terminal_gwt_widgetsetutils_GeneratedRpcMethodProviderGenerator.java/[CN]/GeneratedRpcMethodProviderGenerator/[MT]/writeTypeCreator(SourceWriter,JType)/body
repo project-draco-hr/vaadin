@@ -1,0 +1,17 @@
+{
+  sourceWriter.print("new Type(\"" + type.getErasedType().getQualifiedSourceName() + "\", ");
+  JParameterizedType parameterized=type.isParameterized();
+  if (parameterized != null) {
+    sourceWriter.print("new Type[] {");
+    JClassType[] typeArgs=parameterized.getTypeArgs();
+    for (    JClassType jClassType : typeArgs) {
+      writeTypeCreator(sourceWriter,jClassType);
+      sourceWriter.print(", ");
+    }
+    sourceWriter.print("}");
+  }
+ else {
+    sourceWriter.print("null");
+  }
+  sourceWriter.print(")");
+}
