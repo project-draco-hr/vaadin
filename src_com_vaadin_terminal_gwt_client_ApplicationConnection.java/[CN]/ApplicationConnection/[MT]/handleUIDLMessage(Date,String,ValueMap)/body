@@ -267,7 +267,8 @@
           ServerConnector connector=connectorMap.getConnector(connectorId);
           if (null != connector) {
             JSONArray stateDataAndType=new JSONArray(states.getJavaScriptObject(connectorId));
-            JsonDecoder.decodeValue(stateDataAndType,connector.getState(),ApplicationConnection.this);
+            SharedState state=connector.getState();
+            JsonDecoder.decodeValue(new Type(state.getClass().getName(),null),stateDataAndType,state,ApplicationConnection.this);
             StateChangeEvent event=GWT.create(StateChangeEvent.class);
             event.setConnector(connector);
             events.add(event);

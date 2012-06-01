@@ -26,9 +26,11 @@
       fieldType=setterParameterType.getQualifiedSourceName();
     }
     sourceWriter.println(fieldType + " referenceValue = target." + getterName+ "();");
-    sourceWriter.println("target." + setterName + "(("+ fieldType+ ") "+ JsonDecoder.class.getName()+ ".decodeValue("+ jsonFieldName+ ", referenceValue, connection));");
-    sourceWriter.println("}");
+    sourceWriter.print("target." + setterName + "(("+ fieldType+ ") "+ JsonDecoder.class.getName()+ ".decodeValue(");
+    GeneratedRpcMethodProviderGenerator.writeTypeCreator(sourceWriter,setterParameterType);
+    sourceWriter.println(", " + jsonFieldName + ", referenceValue, connection));");
     sourceWriter.outdent();
+    sourceWriter.println("}");
   }
   if (!update) {
     sourceWriter.println("return target;");

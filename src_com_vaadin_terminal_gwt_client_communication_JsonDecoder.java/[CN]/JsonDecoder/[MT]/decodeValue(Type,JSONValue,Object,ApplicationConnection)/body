@@ -1,0 +1,42 @@
+{
+  if (jsonValue.isNull() != null) {
+    return null;
+  }
+  String baseTypeName=type.getBaseTypeName();
+  if (baseTypeName.endsWith("[]")) {
+    return decodeArray(type,(JSONArray)jsonValue,connection);
+  }
+ else   if (Map.class.getName().equals(baseTypeName) || HashMap.class.getName().equals(baseTypeName)) {
+    return decodeMap(type,(JSONObject)jsonValue,connection);
+  }
+ else   if (List.class.getName().equals(baseTypeName) || ArrayList.class.getName().equals(baseTypeName)) {
+    return decodeList(type,(JSONArray)jsonValue,connection);
+  }
+ else   if (Set.class.getName().equals(baseTypeName)) {
+    return decodeSet(type,(JSONArray)jsonValue,connection);
+  }
+ else   if (String.class.getName().equals(baseTypeName)) {
+    return ((JSONString)jsonValue).stringValue();
+  }
+ else   if (Integer.class.getName().equals(baseTypeName)) {
+    return Integer.valueOf(String.valueOf(jsonValue));
+  }
+ else   if (Long.class.getName().equals(baseTypeName)) {
+    return Long.valueOf(String.valueOf(jsonValue));
+  }
+ else   if (Float.class.getName().equals(baseTypeName)) {
+    return Float.valueOf(String.valueOf(jsonValue));
+  }
+ else   if (Double.class.getName().equals(baseTypeName)) {
+    return Double.valueOf(String.valueOf(jsonValue));
+  }
+ else   if (Boolean.class.getName().equals(baseTypeName)) {
+    return Boolean.valueOf(String.valueOf(jsonValue));
+  }
+ else   if (Connector.class.getName().equals(baseTypeName)) {
+    return ConnectorMap.get(connection).getConnector(((JSONString)jsonValue).stringValue());
+  }
+ else {
+    return decodeObject(type,jsonValue,target,connection);
+  }
+}
