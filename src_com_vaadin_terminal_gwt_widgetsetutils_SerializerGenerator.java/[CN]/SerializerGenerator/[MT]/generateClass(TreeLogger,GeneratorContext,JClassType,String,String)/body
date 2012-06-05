@@ -38,7 +38,7 @@
   if (!isEnum) {
     sourceWriter.println("public void update(" + beanQualifiedSourceName + " target, Type type, "+ JSONValue.class.getName()+ " jsonValue, "+ ApplicationConnection.class.getName()+ " connection) {");
     sourceWriter.indent();
-    writeBeanDeserializer(logger,sourceWriter,beanType,true);
+    writeBeanDeserializer(logger,sourceWriter,beanType);
     sourceWriter.outdent();
     sourceWriter.println("}");
   }
@@ -48,12 +48,14 @@
     writeEnumDeserializer(logger,sourceWriter,beanType.isEnum());
   }
  else {
-    writeBeanDeserializer(logger,sourceWriter,beanType,false);
+    sourceWriter.println(beanQualifiedSourceName + " target = GWT.create(" + beanQualifiedSourceName+ ".class);");
+    sourceWriter.println("update(target, type, jsonValue, connection);");
+    sourceWriter.println("return target;");
   }
-  sourceWriter.println("}");
   sourceWriter.outdent();
   sourceWriter.println("}");
   sourceWriter.outdent();
+  sourceWriter.println("}");
   context.commit(logger,printWriter);
   logger.log(TreeLogger.INFO,"Generated Serializer class " + getFullyQualifiedSerializerClassName(beanType));
 }
