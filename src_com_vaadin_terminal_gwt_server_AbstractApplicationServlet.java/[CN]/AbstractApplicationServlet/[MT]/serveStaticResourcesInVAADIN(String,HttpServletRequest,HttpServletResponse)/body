@@ -5,12 +5,12 @@
     filename=filename.substring(1);
     resourceUrl=getClassLoader().getResource(filename);
     if (resourceUrl == null) {
-      logger.info("Requested resource [" + filename + "] not found from filesystem or through class loader."+ " Add widgetset and/or theme JAR to your classpath or add files to WebContent/VAADIN folder.");
+      getLogger().info("Requested resource [" + filename + "] not found from filesystem or through class loader."+ " Add widgetset and/or theme JAR to your classpath or add files to WebContent/VAADIN folder.");
       response.setStatus(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
     if (!isAllowedVAADINResourceUrl(request,resourceUrl)) {
-      logger.info("Requested resource [" + filename + "] not accessible in the VAADIN directory or access to it is forbidden.");
+      getLogger().info("Requested resource [" + filename + "] not accessible in the VAADIN directory or access to it is forbidden.");
       response.setStatus(HttpServletResponse.SC_FORBIDDEN);
       return;
     }
@@ -25,7 +25,7 @@
     }
   }
  catch (  Exception e) {
-    logger.log(Level.FINEST,"Failed to find out last modified timestamp. Continuing without it.",e);
+    getLogger().log(Level.FINEST,"Failed to find out last modified timestamp. Continuing without it.",e);
   }
   final String mimetype=sc.getMimeType(filename);
   if (mimetype != null) {
