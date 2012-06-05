@@ -7,12 +7,16 @@
  else {
     throw new JSONException("Map is missing generics");
   }
-  JSONObject jsonMap=new JSONObject();
-  for (  Object mapKey : map.keySet()) {
-    Object mapValue=map.get(mapKey);
-    Object encodedKey=encode(mapKey,null,keyType,application);
-    Object encodedValue=encode(mapValue,null,valueType,application);
-    jsonMap.put(JSONObject.quote(encodedKey.toString()),encodedValue);
+  if (map.isEmpty()) {
+    return new JSONArray();
   }
-  return jsonMap;
+  if (keyType == String.class) {
+    return encodeStringMap(valueType,map,application);
+  }
+ else   if (keyType == Connector.class) {
+    return encodeConnectorMap(valueType,map,application);
+  }
+ else {
+    return encodeObjectMap(keyType,valueType,map,application);
+  }
 }

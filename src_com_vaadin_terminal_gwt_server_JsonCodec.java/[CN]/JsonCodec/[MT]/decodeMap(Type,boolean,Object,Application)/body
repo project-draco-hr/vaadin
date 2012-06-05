@@ -1,0 +1,24 @@
+{
+  if (jsonMap instanceof JSONArray) {
+    JSONArray jsonArray=(JSONArray)jsonMap;
+    if (jsonArray.length() == 0) {
+      return new HashMap<Object,Object>();
+    }
+  }
+  if (!restrictToInternalTypes && targetType instanceof ParameterizedType) {
+    Type keyType=((ParameterizedType)targetType).getActualTypeArguments()[0];
+    Type valueType=((ParameterizedType)targetType).getActualTypeArguments()[1];
+    if (keyType == String.class) {
+      return decodeStringMap(valueType,(JSONObject)jsonMap,application);
+    }
+ else     if (keyType == Connector.class) {
+      return decodeConnectorMap(valueType,(JSONObject)jsonMap,application);
+    }
+ else {
+      return decodeObjectMap(keyType,valueType,(JSONArray)jsonMap,application);
+    }
+  }
+ else {
+    return decodeStringMap(UidlValue.class,(JSONObject)jsonMap,application);
+  }
+}

@@ -1,0 +1,19 @@
+{
+  if (jsonMap instanceof JSONArray) {
+    JSONArray array=(JSONArray)jsonMap;
+    if (array.size() == 0) {
+      return new HashMap<Object,Object>();
+    }
+  }
+  Type keyType=type.getParameterTypes()[0];
+  Type valueType=type.getParameterTypes()[1];
+  if (keyType.getBaseTypeName().equals(String.class.getName())) {
+    return decodeStringMap(valueType,jsonMap,connection);
+  }
+ else   if (keyType.getBaseTypeName().equals(Connector.class.getName())) {
+    return decodeConnectorMap(valueType,jsonMap,connection);
+  }
+ else {
+    return decodeObjectMap(keyType,valueType,jsonMap,connection);
+  }
+}
