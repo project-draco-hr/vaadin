@@ -6,7 +6,12 @@
     updatePageLength();
   }
   if (!rendering) {
-    Util.runWebkitOverflowAutoFix(scrollBodyPanel.getElement());
+    Scheduler.get().scheduleDeferred(new Command(){
+      public void execute(){
+        Util.runWebkitOverflowAutoFix(scrollBodyPanel.getElement());
+      }
+    }
+);
   }
   setProperTabIndex();
 }
