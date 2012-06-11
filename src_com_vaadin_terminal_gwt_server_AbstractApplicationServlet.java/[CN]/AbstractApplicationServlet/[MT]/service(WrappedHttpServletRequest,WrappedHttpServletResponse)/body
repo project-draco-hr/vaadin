@@ -81,7 +81,10 @@ catch (  final Throwable e) {
   finally {
         Root.setCurrentRoot(null);
         Application.setCurrentApplication(null);
-        requestTimer.stop((AbstractWebApplicationContext)application.getContext());
+        HttpSession session=request.getSession(false);
+        if (session != null) {
+          requestTimer.stop(getApplicationContext(session));
+        }
       }
     }
   }
