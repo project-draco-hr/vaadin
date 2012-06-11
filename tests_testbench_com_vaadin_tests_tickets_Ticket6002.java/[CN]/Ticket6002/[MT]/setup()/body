@@ -1,13 +1,12 @@
 {
-  LegacyWindow main=new LegacyWindow("The Main Window");
-  setMainWindow(main);
+  LegacyWindow main=getMainWindow();
   final VerticalLayout mainLayout=new VerticalLayout();
   main.setContent(mainLayout);
   mainLayout.addComponent(new Label("Replace the floating-point values with an integer"));
   final ObjectProperty<Double> property1=new ObjectProperty<Double>(new Double(42.0));
   final TextField tf1=new TextField("Changing this field modifies only the textfield",property1);
   tf1.addListener(new Property.ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       System.out.println("Value 2 is: " + property1.getValue());
       tf1.setCaption("With caption " + property1.getValue());
     }
@@ -18,7 +17,7 @@
   final ObjectProperty<Double> property2=new ObjectProperty<Double>(new Double(42.0));
   final TextField tf2=new TextField("Changing this field modifies the layout - do it twice",property2);
   tf2.addListener(new Property.ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       System.out.println("Value 1 is: " + property2.getValue());
       mainLayout.addComponent(new Label("Added a component, value is " + property2.getValue()));
     }
