@@ -1,0 +1,21 @@
+{
+  ViewChangeEvent event=new ViewChangeEvent(this,currentView,view,viewName,fragmentParameters);
+  if (!isViewChangeAllowed(event)) {
+    return;
+  }
+  if (null != viewName && getFragmentManager() != null) {
+    String currentFragment=viewName;
+    if (fragmentParameters != null) {
+      currentFragment+="/" + fragmentParameters;
+    }
+    if (!currentFragment.equals(getFragmentManager().getFragment())) {
+      getFragmentManager().setFragment(currentFragment);
+    }
+  }
+  view.navigateTo(fragmentParameters);
+  currentView=view;
+  if (display != null) {
+    display.showView(view);
+  }
+  fireViewChange(event);
+}
