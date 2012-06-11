@@ -4,22 +4,6 @@
   }
   Tab newTab=tabs.get(newComponent);
   Tab oldTab=tabs.get(oldComponent);
-  String oldCaption=null;
-  Resource oldIcon=null;
-  String newCaption=null;
-  Resource newIcon=null;
-  if (oldTab != null) {
-    oldCaption=oldTab.getCaption();
-    oldIcon=oldTab.getIcon();
-  }
-  if (newTab != null) {
-    newCaption=newTab.getCaption();
-    newIcon=newTab.getIcon();
-  }
- else {
-    newCaption=newComponent.getCaption();
-    newIcon=newComponent.getIcon();
-  }
   int oldLocation=-1;
   int newLocation=-1;
   int location=0;
@@ -38,34 +22,16 @@
   }
  else   if (newLocation == -1) {
     removeComponent(oldComponent);
-    keyMapper.remove(oldComponent);
-    newTab=addTab(newComponent);
-    components.remove(newComponent);
-    components.add(oldLocation,newComponent);
-    newTab.setCaption(oldCaption);
-    newTab.setIcon(oldIcon);
+    newTab=addTab(newComponent,oldLocation);
+    copyTabMetadata(oldTab,newTab);
   }
  else {
-    if (oldLocation > newLocation) {
-      components.remove(oldComponent);
-      components.add(newLocation,oldComponent);
-      components.remove(newComponent);
-      components.add(oldLocation,newComponent);
-    }
- else {
-      components.remove(newComponent);
-      components.add(oldLocation,newComponent);
-      components.remove(oldComponent);
-      components.add(newLocation,oldComponent);
-    }
-    if (newTab != null) {
-      newTab.setCaption(oldCaption);
-      newTab.setIcon(oldIcon);
-    }
-    if (oldTab != null) {
-      oldTab.setCaption(newCaption);
-      oldTab.setIcon(newIcon);
-    }
+    components.set(oldLocation,newComponent);
+    components.set(newLocation,oldComponent);
+    Tab tmp=new TabSheetTabImpl(null,null);
+    copyTabMetadata(newTab,tmp);
+    copyTabMetadata(oldTab,newTab);
+    copyTabMetadata(tmp,oldTab);
     requestRepaint();
   }
 }
