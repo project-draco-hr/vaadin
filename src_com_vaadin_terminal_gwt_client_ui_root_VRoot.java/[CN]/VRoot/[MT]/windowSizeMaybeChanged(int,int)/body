@@ -1,20 +1,39 @@
 {
   boolean changed=false;
   ComponentConnector connector=ConnectorMap.get(connection).getConnector(this);
-  if (windowWidth != newWidth) {
-    windowWidth=newWidth;
+  if (windowWidth != newWindowWidth) {
+    windowWidth=newWindowWidth;
     changed=true;
-    connector.getLayoutManager().reportOuterWidth(connector,newWidth);
+    connector.getLayoutManager().reportOuterWidth(connector,newWindowWidth);
     VConsole.log("New window width: " + windowWidth);
   }
-  if (windowHeight != newHeight) {
-    windowHeight=newHeight;
+  if (windowHeight != newWindowHeight) {
+    windowHeight=newWindowHeight;
     changed=true;
-    connector.getLayoutManager().reportOuterHeight(connector,newHeight);
+    connector.getLayoutManager().reportOuterHeight(connector,newWindowHeight);
     VConsole.log("New window height: " + windowHeight);
   }
+  Element parentElement=getElement().getParentElement();
+  if (isMonitoringParentSize() && parentElement != null) {
+    int newParentWidth=parentElement.getClientWidth();
+    int newParentHeight=parentElement.getClientHeight();
+    if (parentWidth != newParentWidth) {
+      parentWidth=newParentWidth;
+      changed=true;
+      VConsole.log("New parent width: " + parentWidth);
+    }
+    if (parentHeight != newParentHeight) {
+      parentHeight=newParentHeight;
+      changed=true;
+      VConsole.log("New parent height: " + parentHeight);
+    }
+  }
   if (changed) {
-    VConsole.log("Running layout functions due to window resize");
+    VConsole.log("Running layout functions due to window or parent resize");
+    if (isMonitoringParentSize() && parentElement != null) {
+      parentWidth=parentElement.getClientWidth();
+      parentHeight=parentElement.getClientHeight();
+    }
     sendClientResized();
     connector.getLayoutManager().layoutNow();
   }
