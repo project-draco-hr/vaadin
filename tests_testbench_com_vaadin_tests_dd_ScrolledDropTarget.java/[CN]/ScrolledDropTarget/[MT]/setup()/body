@@ -1,0 +1,27 @@
+{
+  Table table=new Table();
+  table.addContainerProperty("A",String.class,"");
+  for (int i=0; i < 100; i++) {
+    table.addItem(new Object[]{Integer.toString(i)},Integer.valueOf(i));
+  }
+  table.setDragMode(TableDragMode.ROW);
+  table.setDropHandler(new DropHandler(){
+    public AcceptCriterion getAcceptCriterion(){
+      return VerticalLocationIs.MIDDLE;
+    }
+    public void drop(    DragAndDropEvent event){
+      AbstractSelectTargetDetails targetDetails=(AbstractSelectTargetDetails)event.getTargetDetails();
+      VerticalDropLocation dropLocation=targetDetails.getDropLocation();
+      log.log("Drop at " + dropLocation + " relative to "+ targetDetails.getItemIdOver());
+    }
+  }
+);
+  addComponent(table);
+  addComponent(new Button("Scroll body",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      getMainWindow().executeJavaScript("document.body.style.overflow = 'auto';" + "document.body.style.height = '200%';" + "window.scrollTo(0,18)");
+    }
+  }
+));
+  addComponent(log);
+}
