@@ -1,6 +1,8 @@
 {
   final String styleAttribute=vertical ? "height" : "width";
+  final String oppositeStyleAttribute=vertical ? "width" : "height";
   final String domProperty=vertical ? "offsetHeight" : "offsetWidth";
+  DOM.setStyleAttribute(base,oppositeStyleAttribute,"");
   final Element p=DOM.getParent(getElement());
   if (DOM.getElementPropertyInt(p,domProperty) > 50) {
     if (vertical) {
@@ -13,7 +15,7 @@
  else {
     DOM.setStyleAttribute(base,styleAttribute,MIN_SIZE + "px");
     Scheduler.get().scheduleDeferred(new Command(){
-      public void execute(){
+      @Override public void execute(){
         final Element p=DOM.getParent(getElement());
         if (DOM.getElementPropertyInt(p,domProperty) > (MIN_SIZE + 5)) {
           if (vertical) {
