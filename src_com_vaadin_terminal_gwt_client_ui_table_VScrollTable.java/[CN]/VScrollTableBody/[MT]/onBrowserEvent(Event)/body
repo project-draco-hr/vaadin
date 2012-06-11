@@ -1,9 +1,6 @@
 {
-  if (hasNativeTouchScrolling) {
-    onTouchBrowserEvent(event);
-    return;
-  }
-  if (enabled) {
+  final boolean touchEventHandled=handleTouchEvent(event);
+  if (enabled && !touchEventHandled) {
     final int type=event.getTypeInt();
     final Element targetTdOrTr=getEventTargetTdOrTr(event);
     if (type == Event.ONCONTEXTMENU) {
@@ -26,7 +23,6 @@ case Event.ONDBLCLICK:
     break;
 case Event.ONMOUSEUP:
   if (targetCellOrRowFound) {
-    mDown=false;
     boolean clickEventSent=handleClickEvent(event,targetTdOrTr,false);
     if (event.getButton() == Event.BUTTON_LEFT && isSelectable()) {
       if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && isMultiSelectModeDefault()) {
@@ -154,9 +150,6 @@ event.stopPropagation();
 }
 break;
 case Event.ONMOUSEOUT:
-if (targetCellOrRowFound) {
-mDown=false;
-}
 break;
 default :
 break;
