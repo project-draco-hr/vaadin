@@ -1,0 +1,51 @@
+{
+  this.client=client;
+  id=uidl.getId();
+  rendering=true;
+  immediate=uidl.hasAttribute("immediate");
+  if (client.updateComponent(this,uidl,true)) {
+    rendering=false;
+    return;
+  }
+  setEnabled(!uidl.getBooleanAttribute("disabled"));
+  clickEventHandler.handleEventHandlerRegistration(client);
+  if (uidl.hasAttribute("style")) {
+    componentStyleNames=uidl.getStringAttribute("style").split(" ");
+  }
+ else {
+    componentStyleNames=new String[0];
+  }
+  setLocked(uidl.getBooleanAttribute("locked"));
+  setPositionReversed(uidl.getBooleanAttribute("reversed"));
+  setStylenames();
+  touchScrollHandler.setElements(firstContainer,secondContainer);
+  position=uidl.getStringAttribute("position");
+  setSplitPosition(position);
+  final Paintable newFirstChild=client.getPaintable(uidl.getChildUIDL(0));
+  final Paintable newSecondChild=client.getPaintable(uidl.getChildUIDL(1));
+  if (firstChild != newFirstChild) {
+    if (firstChild != null) {
+      client.unregisterPaintable((Paintable)firstChild);
+    }
+    setFirstWidget((Widget)newFirstChild);
+  }
+  if (secondChild != newSecondChild) {
+    if (secondChild != null) {
+      client.unregisterPaintable((Paintable)secondChild);
+    }
+    setSecondWidget((Widget)newSecondChild);
+  }
+  newFirstChild.updateFromUIDL(uidl.getChildUIDL(0),client);
+  newSecondChild.updateFromUIDL(uidl.getChildUIDL(1),client);
+  renderInformation.updateSize(getElement());
+  if (BrowserInfo.get().isIE7()) {
+    Scheduler.get().scheduleDeferred(new Command(){
+      public void execute(){
+        iLayout();
+      }
+    }
+);
+  }
+  client.runDescendentsLayout(this);
+  rendering=false;
+}
