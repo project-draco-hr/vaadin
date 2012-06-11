@@ -1,21 +1,14 @@
 {
-  final String splitterSuffix=(orientation == ORIENTATION_HORIZONTAL ? "-hsplitter" : "-vsplitter");
-  final String firstContainerSuffix="-first-container";
-  final String secondContainerSuffix="-second-container";
-  String lockedSuffix="";
-  String splitterStyle=CLASSNAME + splitterSuffix;
-  String firstStyle=CLASSNAME + firstContainerSuffix;
-  String secondStyle=CLASSNAME + secondContainerSuffix;
-  if (locked) {
-    splitterStyle=CLASSNAME + splitterSuffix + "-locked";
-    lockedSuffix="-locked";
+  final String splitterClass=CLASSNAME + (orientation == ORIENTATION_HORIZONTAL ? "-hsplitter" : "-vsplitter");
+  final String firstContainerClass=CLASSNAME + "-first-container";
+  final String secondContainerClass=CLASSNAME + "-second-container";
+  final String lockedSuffix=locked ? "-locked" : "";
+  splitter.addClassName(splitterClass);
+  firstContainer.addClassName(firstContainerClass);
+  secondContainer.addClassName(secondContainerClass);
+  for (  String styleName : componentStyleNames) {
+    splitter.addClassName(splitterClass + "-" + styleName+ lockedSuffix);
+    firstContainer.addClassName(firstContainerClass + "-" + styleName);
+    secondContainer.addClassName(secondContainerClass + "-" + styleName);
   }
-  for (  String style : componentStyleNames) {
-    splitterStyle+=" " + CLASSNAME + splitterSuffix+ "-"+ style+ lockedSuffix;
-    firstStyle+=" " + CLASSNAME + firstContainerSuffix+ "-"+ style;
-    secondStyle+=" " + CLASSNAME + secondContainerSuffix+ "-"+ style;
-  }
-  DOM.setElementProperty(splitter,"className",splitterStyle);
-  DOM.setElementProperty(firstContainer,"className",firstStyle);
-  DOM.setElementProperty(secondContainer,"className",secondStyle);
 }
