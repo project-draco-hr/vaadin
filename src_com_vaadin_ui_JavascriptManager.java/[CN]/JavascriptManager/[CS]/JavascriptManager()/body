@@ -2,7 +2,12 @@
   registerRpc(new JavascriptCallbackRpc(){
     public void call(    String name,    JSONArray arguments){
       JavascriptCallback callback=callbacks.get(name);
-      callback.call(arguments);
+      try {
+        callback.call(arguments);
+      }
+ catch (      JSONException e) {
+        throw new IllegalArgumentException(e);
+      }
     }
   }
 );
