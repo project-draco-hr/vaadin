@@ -10,7 +10,7 @@
       }
       if (success) {
         delegate.commit();
-        logger.log(Level.FINER,"All rows removed from DB...");
+        getLogger().log(Level.FINER,"All rows removed from DB...");
         refresh();
         if (notificationsEnabled) {
           CacheFlushNotifier.notifyOfCacheFlush(this);
@@ -22,22 +22,22 @@
       return success;
     }
  catch (    SQLException e) {
-      logger.log(Level.WARNING,"removeAllItems() failed, rolling back",e);
+      getLogger().log(Level.WARNING,"removeAllItems() failed, rolling back",e);
       try {
         delegate.rollback();
       }
  catch (      SQLException ee) {
-        logger.log(Level.SEVERE,"Failed to roll back",ee);
+        getLogger().log(Level.SEVERE,"Failed to roll back",ee);
       }
       return false;
     }
 catch (    OptimisticLockException e) {
-      logger.log(Level.WARNING,"removeAllItems() failed, rolling back",e);
+      getLogger().log(Level.WARNING,"removeAllItems() failed, rolling back",e);
       try {
         delegate.rollback();
       }
  catch (      SQLException ee) {
-        logger.log(Level.SEVERE,"Failed to roll back",ee);
+        getLogger().log(Level.SEVERE,"Failed to roll back",ee);
       }
       throw e;
     }
