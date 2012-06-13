@@ -1,0 +1,21 @@
+{
+  ApplicationConfiguration conf=connector.getConnection().getConfiguration();
+  ArrayList<String> attemptedNames=new ArrayList<String>();
+  Integer tag=Integer.valueOf(this.tag);
+  while (tag != null) {
+    String serverSideClassName=conf.getServerSideClassNameForTag(tag);
+    String initFunctionName=serverSideClassName.replaceAll("\\.","_");
+    if (tryInitJs(initFunctionName,getConnectorWrapper())) {
+      VConsole.log("Javascript connector initialized using " + initFunctionName);
+      return true;
+    }
+ else {
+      VConsole.log("No javascript function " + initFunctionName + " found");
+      attemptedNames.add(initFunctionName);
+      tag=conf.getParentTag(tag.intValue());
+    }
+  }
+  VConsole.log("No javascript init for connector not found");
+  showInitProblem(attemptedNames);
+  return false;
+}

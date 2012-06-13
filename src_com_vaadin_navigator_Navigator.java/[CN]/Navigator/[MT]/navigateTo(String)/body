@@ -1,0 +1,21 @@
+{
+  String longestViewName="";
+  View viewWithLongestName=null;
+  for (  ViewProvider provider : providers) {
+    String viewName=provider.getViewName(viewAndParameters);
+    if (null != viewName && viewName.length() > longestViewName.length()) {
+      View view=provider.getView(viewName);
+      if (null != view) {
+        longestViewName=viewName;
+        viewWithLongestName=view;
+      }
+    }
+  }
+  if (viewWithLongestName != null) {
+    String parameters=null;
+    if (viewAndParameters.length() > longestViewName.length() + 1) {
+      parameters=viewAndParameters.substring(longestViewName.length() + 1);
+    }
+    navigateTo(viewWithLongestName,longestViewName,parameters);
+  }
+}

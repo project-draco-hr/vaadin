@@ -266,9 +266,12 @@
           String connectorId=keyArray.get(i);
           ServerConnector connector=connectorMap.getConnector(connectorId);
           if (null != connector) {
-            JSONObject stateDataAndType=new JSONObject(states.getJavaScriptObject(connectorId));
+            JSONObject stateJson=new JSONObject(states.getJavaScriptObject(connectorId));
+            if (connector instanceof HasJavascriptConnectorHelper) {
+              ((HasJavascriptConnectorHelper)connector).getJavascriptConnectorHelper().setNativeState(stateJson.getJavaScriptObject());
+            }
             SharedState state=connector.getState();
-            JsonDecoder.decodeValue(new Type(state.getClass().getName(),null),stateDataAndType,state,ApplicationConnection.this);
+            JsonDecoder.decodeValue(new Type(state.getClass().getName(),null),stateJson,state,ApplicationConnection.this);
             StateChangeEvent event=GWT.create(StateChangeEvent.class);
             event.setConnector(connector);
             events.add(event);
@@ -362,9 +365,7 @@
         for (int i=0; i < rpcLength; i++) {
           try {
             JSONArray rpcCall=(JSONArray)rpcCalls.get(i);
-            MethodInvocation invocation=parseMethodInvocation(rpcCall);
-            VConsole.log("Server to client RPC call: " + invocation);
-            rpcManager.applyInvocation(invocation,getConnectorMap());
+            rpcManager.parseAndApplyInvocation(rpcCall,ApplicationConnection.this);
           }
  catch (          final Throwable e) {
             VConsole.error(e);
