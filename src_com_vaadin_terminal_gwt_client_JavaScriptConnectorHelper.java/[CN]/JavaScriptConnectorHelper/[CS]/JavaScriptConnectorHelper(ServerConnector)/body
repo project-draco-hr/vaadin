@@ -1,3 +1,13 @@
 {
   this.connector=connector;
+  connector.addStateChangeHandler(new StateChangeHandler(){
+    public void onStateChanged(    StateChangeEvent stateChangeEvent){
+      JavaScriptObject wrapper=getConnectorWrapper();
+      for (      String callback : getConnectorState().getCallbackNames()) {
+        ensureCallback(JavaScriptConnectorHelper.this,wrapper,callback);
+      }
+      fireNativeStateChange(wrapper);
+    }
+  }
+);
 }

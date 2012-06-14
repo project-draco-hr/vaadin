@@ -1,6 +1,8 @@
 {
   if ("com.vaadin.ui.JavaScript$JavaScriptCallbackRpc".equals(invocation.getInterfaceName()) && "call".equals(invocation.getMethodName())) {
-    invokeJsRpc(rpcMap,parametersJson.get(0).isString().stringValue(),null,parametersJson.get(1).isArray().getJavaScriptObject());
+    String callbackName=parametersJson.get(0).isString().stringValue();
+    JavaScriptObject arguments=parametersJson.get(1).isArray().getJavaScriptObject();
+    invokeCallback(getConnectorWrapper(),callbackName,arguments);
   }
  else {
     invokeJsRpc(rpcMap,invocation.getInterfaceName(),invocation.getMethodName(),parametersJson.getJavaScriptObject());
