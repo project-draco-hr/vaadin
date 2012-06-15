@@ -1,37 +1,4 @@
 {
   this.connector=connector;
   rpcObjects.put("",JavaScriptObject.createObject());
-  connector.addStateChangeHandler(new StateChangeHandler(){
-    public void onStateChanged(    StateChangeEvent stateChangeEvent){
-      JavaScriptObject wrapper=getConnectorWrapper();
-      JavaScriptConnectorState state=getConnectorState();
-      for (      String callback : state.getCallbackNames()) {
-        ensureCallback(JavaScriptConnectorHelper.this,wrapper,callback);
-      }
-      for (      Entry<String,Set<String>> entry : state.getRpcInterfaces().entrySet()) {
-        String rpcName=entry.getKey();
-        String jsName=getJsInterfaceName(rpcName);
-        if (!rpcObjects.containsKey(jsName)) {
-          Set<String> methods=entry.getValue();
-          rpcObjects.put(jsName,createRpcObject(rpcName,methods));
-          for (          String method : methods) {
-            JavaScriptObject wildcardRpcObject=rpcObjects.get("");
-            Set<String> interfaces=rpcMethods.get(method);
-            if (interfaces == null) {
-              interfaces=new HashSet<String>();
-              rpcMethods.put(method,interfaces);
-              attachRpcMethod(wildcardRpcObject,null,method);
-            }
-            interfaces.add(rpcName);
-          }
-        }
-      }
-      if (!inited) {
-        init();
-        inited=true;
-      }
-      fireNativeStateChange(wrapper);
-    }
-  }
-);
 }

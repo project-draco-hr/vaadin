@@ -1,21 +1,35 @@
 {
-  ApplicationConfiguration conf=connector.getConnection().getConfiguration();
-  ArrayList<String> attemptedNames=new ArrayList<String>();
-  Integer tag=Integer.valueOf(this.tag);
-  while (tag != null) {
-    String serverSideClassName=conf.getServerSideClassNameForTag(tag);
-    String initFunctionName=serverSideClassName.replaceAll("\\.","_");
-    if (tryInitJs(initFunctionName,getConnectorWrapper())) {
-      VConsole.log("JavaScript connector initialized using " + initFunctionName);
-      return true;
-    }
- else {
-      VConsole.log("No JavaScript function " + initFunctionName + " found");
-      attemptedNames.add(initFunctionName);
-      tag=conf.getParentTag(tag.intValue());
+  connector.addStateChangeHandler(new StateChangeHandler(){
+    public void onStateChanged(    StateChangeEvent stateChangeEvent){
+      JavaScriptObject wrapper=getConnectorWrapper();
+      JavaScriptConnectorState state=getConnectorState();
+      for (      String callback : state.getCallbackNames()) {
+        ensureCallback(JavaScriptConnectorHelper.this,wrapper,callback);
+      }
+      for (      Entry<String,Set<String>> entry : state.getRpcInterfaces().entrySet()) {
+        String rpcName=entry.getKey();
+        String jsName=getJsInterfaceName(rpcName);
+        if (!rpcObjects.containsKey(jsName)) {
+          Set<String> methods=entry.getValue();
+          rpcObjects.put(jsName,createRpcObject(rpcName,methods));
+          for (          String method : methods) {
+            JavaScriptObject wildcardRpcObject=rpcObjects.get("");
+            Set<String> interfaces=rpcMethods.get(method);
+            if (interfaces == null) {
+              interfaces=new HashSet<String>();
+              rpcMethods.put(method,interfaces);
+              attachRpcMethod(wildcardRpcObject,null,method);
+            }
+            interfaces.add(rpcName);
+          }
+        }
+      }
+      if (!inited) {
+        initJavaScript();
+        inited=true;
+      }
+      fireNativeStateChange(wrapper);
     }
   }
-  VConsole.log("No JavaScript init for connector not found");
-  showInitProblem(attemptedNames);
-  return false;
+);
 }
