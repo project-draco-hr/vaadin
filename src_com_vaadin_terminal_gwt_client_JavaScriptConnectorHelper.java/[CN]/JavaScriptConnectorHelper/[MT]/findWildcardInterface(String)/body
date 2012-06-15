@@ -1,0 +1,16 @@
+{
+  Set<String> interfaces=rpcMethods.get(method);
+  if (interfaces.size() == 1) {
+    return interfaces.iterator().next();
+  }
+ else {
+    String interfaceList="";
+    for (    String iface : interfaces) {
+      if (interfaceList.length() != 0) {
+        interfaceList+=", ";
+      }
+      interfaceList+=getJsInterfaceName(iface);
+    }
+    throw new IllegalStateException("Can not call method " + method + " for wildcard rpc proxy because the function is defined for multiple rpc interfaces: "+ interfaceList+ ". Retrieve a rpc proxy for a specific interface using getRpcProxy(interfaceName) to use the function.");
+  }
+}

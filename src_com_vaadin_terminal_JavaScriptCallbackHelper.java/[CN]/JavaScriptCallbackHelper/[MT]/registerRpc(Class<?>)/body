@@ -1,0 +1,15 @@
+{
+  if (rpcInterfaceType == JavaScriptCallbackRpc.class) {
+    return;
+  }
+  Map<String,Set<String>> rpcInterfaces=getConnectorState().getRpcInterfaces();
+  String interfaceName=rpcInterfaceType.getName();
+  if (!rpcInterfaces.containsKey(interfaceName)) {
+    Set<String> methodNames=new HashSet<String>();
+    for (    Method method : rpcInterfaceType.getMethods()) {
+      methodNames.add(method.getName());
+    }
+    rpcInterfaces.put(interfaceName,methodNames);
+    connector.requestRepaint();
+  }
+}
