@@ -1,5 +1,15 @@
 {
   if (getWidget() instanceof HasEnabled) {
     ((HasEnabled)getWidget()).setEnabled(widgetEnabled);
+    getWidget().setStyleName(ApplicationConnection.DISABLED_CLASSNAME,!widgetEnabled);
+    if (delegateCaptionHandling()) {
+      ServerConnector parent=getParent();
+      if (parent instanceof ComponentContainerConnector) {
+        ((ComponentContainerConnector)parent).updateCaption(this);
+      }
+ else       if (parent == null && !(this instanceof RootConnector)) {
+        VConsole.error("Parent of connector " + Util.getConnectorString(this) + " is null. This is typically an indication of a broken component hierarchy");
+      }
+    }
   }
 }
