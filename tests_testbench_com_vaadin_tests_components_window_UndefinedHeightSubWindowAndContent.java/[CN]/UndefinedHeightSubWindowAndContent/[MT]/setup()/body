@@ -1,0 +1,31 @@
+{
+  Window subWindow=new Window("No scrollbars!");
+  subWindow.setWidth("300px");
+  subWindow.center();
+  subWindow.setModal(true);
+  VerticalLayout layout=new VerticalLayout();
+  layout.setWidth("100%");
+  subWindow.setContent(layout);
+  final Form form=new Form();
+  form.setImmediate(true);
+  form.setValidationVisible(true);
+  form.setCaption("This is a form");
+  form.setDescription("How do you do?");
+  final TextField field1=new TextField("Write here");
+  field1.setImmediate(true);
+  field1.addValidator(new Validator(){
+    public void validate(    Object value) throws InvalidValueException {
+      if (!isValid(value)) {
+        throw new InvalidValueException("FAIL!");
+      }
+    }
+    public boolean isValid(    Object value){
+      return field1.getValue().equals("valid");
+    }
+  }
+);
+  form.addField("Field 1",field1);
+  layout.addComponent(form);
+  getMainWindow().addWindow(subWindow);
+  subWindow.bringToFront();
+}

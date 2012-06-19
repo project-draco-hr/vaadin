@@ -1,0 +1,17 @@
+{
+  File baseDir=new File(SourceFileChecker.getBaseDir() + "WebContent/VAADIN/themes/");
+  List<Class<? extends BaseTheme>> themeClasses=VaadinClasses.getThemeClasses();
+  for (  Class<? extends BaseTheme> themeClass : themeClasses) {
+    try {
+      Field field=themeClass.getField("THEME_NAME");
+      String themeName=(String)field.get(null);
+      File themeDir=new File(baseDir,themeName);
+      File styleFile=new File(themeDir,"styles.css");
+      assertTrue("Can't find " + styleFile + " for theme "+ themeClass.getName(),styleFile.exists());
+      assertEquals(themeDir.getCanonicalFile().getName(),themeName);
+    }
+ catch (    Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+}
