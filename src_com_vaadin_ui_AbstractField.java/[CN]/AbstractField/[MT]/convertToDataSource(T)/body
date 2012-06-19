@@ -1,26 +1,13 @@
 {
-  if (converter != null) {
-    try {
-      return converter.convertToModel(fieldValue,getLocale());
+  try {
+    Class<?> modelType=null;
+    Property pd=getPropertyDataSource();
+    if (pd != null) {
+      modelType=pd.getType();
     }
- catch (    com.vaadin.data.util.converter.Converter.ConversionException e) {
-      throw new Converter.ConversionException(getConversionError(converter.getModelType()),e);
-    }
+    return ConverterUtil.convertToModel(fieldValue,(Class<Object>)modelType,getConverter(),getLocale());
   }
-  if (fieldValue == null) {
-    return null;
-  }
-  Class<?> type;
-  if (getPropertyDataSource() != null) {
-    type=getPropertyDataSource().getType();
-  }
- else {
-    type=getType();
-  }
-  if (type.isAssignableFrom(fieldValue.getClass())) {
-    return fieldValue;
-  }
- else {
-    throw new Converter.ConversionException(getConversionError(type));
+ catch (  ConversionException e) {
+    throw new ConversionException(getConversionError(converter.getModelType()),e);
   }
 }
