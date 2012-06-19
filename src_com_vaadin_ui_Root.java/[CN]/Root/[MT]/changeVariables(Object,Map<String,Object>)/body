@@ -7,18 +7,9 @@
   }
   if (variables.containsKey(VRoot.FRAGMENT_VARIABLE)) {
     String fragment=(String)variables.get(VRoot.FRAGMENT_VARIABLE);
-    setFragment(fragment,true);
+    getPage().setFragment(fragment,true);
   }
-  boolean sendResizeEvent=false;
-  if (variables.containsKey("height")) {
-    browserWindowHeight=((Integer)variables.get("height")).intValue();
-    sendResizeEvent=true;
-  }
-  if (variables.containsKey("width")) {
-    browserWindowWidth=((Integer)variables.get("width")).intValue();
-    sendResizeEvent=true;
-  }
-  if (sendResizeEvent) {
-    fireEvent(new BrowserWindowResizeEvent(this,browserWindowWidth,browserWindowHeight));
+  if (variables.containsKey("height") || variables.containsKey("width")) {
+    getPage().setBrowserWindowSize((Integer)variables.get("width"),(Integer)variables.get("height"));
   }
 }
