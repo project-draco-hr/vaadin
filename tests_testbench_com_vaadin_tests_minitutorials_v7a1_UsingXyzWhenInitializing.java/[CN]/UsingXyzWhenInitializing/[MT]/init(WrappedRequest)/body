@@ -1,0 +1,22 @@
+{
+  String name=request.getParameter("name");
+  if (name == null) {
+    name="Unknown";
+  }
+  getContent().addComponent(new Label("Hello " + name));
+  String pathInfo=request.getRequestPathInfo();
+  if ("/viewSource".equals(pathInfo)) {
+    getContent().addComponent(new Label("This is the source"));
+  }
+ else {
+    getContent().addComponent(new Label("Welcome to my application"));
+  }
+  WebBrowser browser=request.getBrowserDetails().getWebBrowser();
+  String resolution="Your browser window on startup was " + browser.getClientWidth() + "x"+ browser.getClientHeight();
+  if (browser.getClientWidth() > 1024) {
+    getContent().addComponent(new Label("The is the large version of the application. " + resolution));
+  }
+ else {
+    getContent().addComponent(new Label("This is the small version of the application. " + resolution));
+  }
+}
