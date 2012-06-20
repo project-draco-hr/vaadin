@@ -15,7 +15,7 @@
   HashSet<String> packages=new HashSet<String>();
   for (Enumeration<JarEntry> it=jar.entries(); it.hasMoreElements(); ) {
     JarEntry entry=it.nextElement();
-    if (entry.getName().startsWith("com") && entry.getName().endsWith(".class")) {
+    if ((entry.getName().startsWith(VAADIN_PACKAGE_PATH_PREFIX) || entry.getName().startsWith(GOOGLE_PACKAGE_PATH_PREFIX)) && entry.getName().endsWith(".class")) {
       int lastSlash=entry.getName().lastIndexOf('/');
       String pkg=entry.getName().substring(0,lastSlash).replace('/','.');
       packages.add(pkg);
@@ -34,8 +34,12 @@
   packages.toArray(packageArray);
   Arrays.sort(packageArray);
   for (int i=0; i < packageArray.length; i++) {
-    if (i == 0)     exportPackage=packageArray[i];
- else     exportPackage+=", " + packageArray[i];
+    if (i == 0) {
+      exportPackage=packageArray[i];
+    }
+ else {
+      exportPackage+=", " + packageArray[i];
+    }
   }
   Manifest oldMF=null;
   try {
@@ -71,5 +75,7 @@
   }
   manifest.writeAttribute("Export-Package",exportPackage);
   int status=manifest.updateJar(jarFilename);
-  if (status != 0)   System.exit(status);
+  if (status != 0) {
+    System.exit(status);
+  }
 }
