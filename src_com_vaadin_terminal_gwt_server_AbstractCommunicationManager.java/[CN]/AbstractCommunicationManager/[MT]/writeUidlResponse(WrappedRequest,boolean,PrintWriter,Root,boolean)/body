@@ -2,7 +2,7 @@
   ArrayList<ClientConnector> dirtyVisibleConnectors=new ArrayList<ClientConnector>();
   Application application=root.getApplication();
   DirtyConnectorTracker rootConnectorTracker=root.getDirtyConnectorTracker();
-  logger.log(Level.FINE,"* Creating response to client");
+  getLogger().log(Level.FINE,"* Creating response to client");
   if (repaintAll) {
     getClientCache(root).clear();
     rootConnectorTracker.markAllConnectorsDirty();
@@ -10,7 +10,7 @@
     requireLocale(application.getLocale().toString());
   }
   dirtyVisibleConnectors.addAll(getDirtyVisibleConnectors(rootConnectorTracker));
-  logger.log(Level.FINE,"Found " + dirtyVisibleConnectors.size() + " dirty connectors to paint");
+  getLogger().log(Level.FINE,"Found " + dirtyVisibleConnectors.size() + " dirty connectors to paint");
   for (  ClientConnector connector : dirtyVisibleConnectors) {
     if (connector instanceof Component) {
       ((Component)connector).updateState();
@@ -43,7 +43,7 @@
             referenceState=stateType.newInstance();
           }
  catch (          Exception e) {
-            logger.log(Level.WARNING,"Error creating reference object for state of type " + stateType.getName());
+            getLogger().log(Level.WARNING,"Error creating reference object for state of type " + stateType.getName());
           }
         }
         Object stateJson=JsonCodec.encode(state,referenceState,stateType,application);
@@ -151,16 +151,16 @@
     ci=(Application.SystemMessages)m.invoke(null,(Object[])null);
   }
  catch (  NoSuchMethodException e) {
-    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+    getLogger().log(Level.WARNING,"getSystemMessages() failed - continuing",e);
   }
 catch (  IllegalArgumentException e) {
-    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+    getLogger().log(Level.WARNING,"getSystemMessages() failed - continuing",e);
   }
 catch (  IllegalAccessException e) {
-    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+    getLogger().log(Level.WARNING,"getSystemMessages() failed - continuing",e);
   }
 catch (  InvocationTargetException e) {
-    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+    getLogger().log(Level.WARNING,"getSystemMessages() failed - continuing",e);
   }
   if (ci != null && ci.getSessionExpiredMessage() == null && ci.getSessionExpiredCaption() == null && ci.isSessionExpiredNotificationEnabled()) {
     int newTimeoutInterval=getTimeoutInterval();
@@ -183,7 +183,7 @@ catch (  InvocationTargetException e) {
       is=getThemeResourceAsStream(root,getTheme(root),resource);
     }
  catch (    final Exception e) {
-      logger.log(Level.FINER,"Failed to get theme resource stream.",e);
+      getLogger().log(Level.FINER,"Failed to get theme resource stream.",e);
     }
     if (is != null) {
       outWriter.print((resourceIndex++ > 0 ? ", " : "") + "\"" + resource+ "\" : ");
@@ -198,12 +198,12 @@ catch (  InvocationTargetException e) {
         r.close();
       }
  catch (      final java.io.IOException e) {
-        logger.log(Level.INFO,"Resource transfer failed",e);
+        getLogger().log(Level.INFO,"Resource transfer failed",e);
       }
       outWriter.print("\"" + JsonPaintTarget.escapeJSON(layout.toString()) + "\"");
     }
  else {
-      logger.severe("CustomLayout not found: " + resource);
+      getLogger().severe("CustomLayout not found: " + resource);
     }
   }
   outWriter.print("}");

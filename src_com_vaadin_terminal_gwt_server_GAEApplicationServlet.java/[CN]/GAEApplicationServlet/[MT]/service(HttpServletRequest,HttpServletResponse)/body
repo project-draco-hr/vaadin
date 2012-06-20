@@ -36,7 +36,7 @@
         Thread.sleep(RETRY_AFTER_MILLISECONDS);
       }
  catch (      InterruptedException e) {
-        logger.finer("Thread.sleep() interrupted while waiting for lock. Trying again. " + e);
+        getLogger().finer("Thread.sleep() interrupted while waiting for lock. Trying again. " + e);
       }
     }
     if (!locked) {
@@ -64,15 +64,15 @@
     ds.put(entity);
   }
  catch (  DeadlineExceededException e) {
-    logger.warning("DeadlineExceeded for " + session.getId());
+    getLogger().warning("DeadlineExceeded for " + session.getId());
     sendDeadlineExceededNotification(request,response);
   }
 catch (  NotSerializableException e) {
-    logger.log(Level.SEVERE,"Not serializable!",e);
+    getLogger().log(Level.SEVERE,"Not serializable!",e);
     sendNotSerializableNotification(request,response);
   }
 catch (  Exception e) {
-    logger.log(Level.WARNING,"An exception occurred while servicing request.",e);
+    getLogger().log(Level.WARNING,"An exception occurred while servicing request.",e);
     sendCriticalErrorNotification(request,response);
   }
  finally {

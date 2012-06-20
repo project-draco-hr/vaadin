@@ -23,27 +23,27 @@
         CacheFlushNotifier.notifyOfCacheFlush(this);
       }
       if (success) {
-        logger.log(Level.FINER,"Row removed from DB...");
+        getLogger().log(Level.FINER,"Row removed from DB...");
       }
       return success;
     }
  catch (    SQLException e) {
-      logger.log(Level.WARNING,"Failed to remove row, rolling back",e);
+      getLogger().log(Level.WARNING,"Failed to remove row, rolling back",e);
       try {
         delegate.rollback();
       }
  catch (      SQLException ee) {
-        logger.log(Level.SEVERE,"Failed to rollback row removal",ee);
+        getLogger().log(Level.SEVERE,"Failed to rollback row removal",ee);
       }
       return false;
     }
 catch (    OptimisticLockException e) {
-      logger.log(Level.WARNING,"Failed to remove row, rolling back",e);
+      getLogger().log(Level.WARNING,"Failed to remove row, rolling back",e);
       try {
         delegate.rollback();
       }
  catch (      SQLException ee) {
-        logger.log(Level.SEVERE,"Failed to rollback row removal",ee);
+        getLogger().log(Level.SEVERE,"Failed to rollback row removal",ee);
       }
       throw e;
     }

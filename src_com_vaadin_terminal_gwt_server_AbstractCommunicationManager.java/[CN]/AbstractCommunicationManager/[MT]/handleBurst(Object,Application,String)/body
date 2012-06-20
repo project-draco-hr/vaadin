@@ -13,7 +13,7 @@
       MethodInvocation invocation=invocations.get(i);
       final ClientConnector connector=getConnector(app,invocation.getConnectorId());
       if (connector == null) {
-        logger.log(Level.WARNING,"RPC call to " + invocation.getInterfaceName() + "."+ invocation.getMethodName()+ " received for connector "+ invocation.getConnectorId()+ " but no such connector could be found");
+        getLogger().log(Level.WARNING,"RPC call to " + invocation.getInterfaceName() + "."+ invocation.getMethodName()+ " received for connector "+ invocation.getConnectorId()+ " but no such connector could be found");
         continue;
       }
       if (!enabledConnectors.contains(connector)) {
@@ -31,7 +31,7 @@
             msg+=", caption=" + caption;
           }
         }
-        logger.warning(msg);
+        getLogger().warning(msg);
         continue;
       }
       if (invocation instanceof ServerRpcMethodInvocation) {
@@ -60,7 +60,7 @@
     }
   }
  catch (  JSONException e) {
-    logger.warning("Unable to parse RPC call from the client: " + e.getMessage());
+    getLogger().warning("Unable to parse RPC call from the client: " + e.getMessage());
     throw new RuntimeException(e);
   }
   return success;

@@ -9,7 +9,7 @@
       delegate.setOrderBy(sorters);
     }
  catch (    UnsupportedOperationException e) {
-      logger.log(Level.FINE,"The query delegate doesn't support sorting",e);
+      getLogger().log(Level.FINE,"The query delegate doesn't support sorting",e);
     }
     delegate.beginTransaction();
     rs=delegate.getResults(currentOffset,pageLength * CACHE_RATIO);
@@ -71,15 +71,15 @@
     rs.getStatement().close();
     rs.close();
     delegate.commit();
-    logger.log(Level.FINER,"Fetched " + pageLength * CACHE_RATIO + " rows starting from " + currentOffset);
+    getLogger().log(Level.FINER,"Fetched " + pageLength * CACHE_RATIO + " rows starting from " + currentOffset);
   }
  catch (  SQLException e) {
-    logger.log(Level.WARNING,"Failed to fetch rows, rolling back",e);
+    getLogger().log(Level.WARNING,"Failed to fetch rows, rolling back",e);
     try {
       delegate.rollback();
     }
  catch (    SQLException e1) {
-      logger.log(Level.SEVERE,"Failed to roll back",e1);
+      getLogger().log(Level.SEVERE,"Failed to roll back",e1);
     }
     try {
       if (rs != null) {
@@ -90,7 +90,7 @@
       }
     }
  catch (    SQLException e1) {
-      logger.log(Level.WARNING,"Failed to close session",e1);
+      getLogger().log(Level.WARNING,"Failed to close session",e1);
     }
     throw new RuntimeException("Failed to fetch page.",e);
   }
