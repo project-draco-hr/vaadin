@@ -34,13 +34,17 @@
     webApplicationContext.startTransaction(application,request);
     transactionStarted=true;
     if (requestType == RequestType.FILE_UPLOAD) {
-      applicationManager.handleFileUpload(application,request,response);
+      Root root=application.getRootForRequest(request);
+      if (root == null) {
+        throw new ServletException(ERROR_NO_ROOT_FOUND);
+      }
+      applicationManager.handleFileUpload(root,request,response);
       return;
     }
  else     if (requestType == RequestType.UIDL) {
       Root root=application.getRootForRequest(request);
       if (root == null) {
-        throw new ServletException(ERROR_NO_WINDOW_FOUND);
+        throw new ServletException(ERROR_NO_ROOT_FOUND);
       }
       applicationManager.handleUidlRequest(request,response,servletWrapper,root);
       return;
