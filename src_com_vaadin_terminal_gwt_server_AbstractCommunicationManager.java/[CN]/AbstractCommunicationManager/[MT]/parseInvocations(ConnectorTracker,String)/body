@@ -1,0 +1,14 @@
+{
+  JSONArray invocationsJson=new JSONArray(burst);
+  ArrayList<MethodInvocation> invocations=new ArrayList<MethodInvocation>();
+  MethodInvocation previousInvocation=null;
+  for (int i=0; i < invocationsJson.length(); ++i) {
+    JSONArray invocationJson=invocationsJson.getJSONArray(i);
+    MethodInvocation invocation=parseInvocation(invocationJson,previousInvocation,connectorTracker);
+    if (invocation != null) {
+      invocations.add(invocation);
+      previousInvocation=invocation;
+    }
+  }
+  return invocations;
+}

@@ -1,0 +1,56 @@
+{
+  getLayout().setSizeFull();
+  HorizontalSplitPanel split1=new HorizontalSplitPanel();
+  split1.setSizeFull();
+  addComponent(split1);
+  VerticalLayout left=new VerticalLayout();
+  left.setSizeFull();
+  split1.setFirstComponent(left);
+  left.setSpacing(true);
+  left.setMargin(true);
+  left.addComponent(new Label("<h2>Layout resize test</h2>",ContentMode.XHTML));
+  Button resize=new Button("Resize to 700x400",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      JavaScript.getCurrent().execute("setTimeout(function() {window.resizeTo(700,400)}, 500)");
+    }
+  }
+);
+  left.addComponent(resize);
+  resize=new Button("Resize to 900x600",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      JavaScript.getCurrent().execute("setTimeout(function() {window.resizeTo(900,600)}, 500)");
+    }
+  }
+);
+  left.addComponent(resize);
+  left.addComponent(new Label("Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Proin vel ante a orci tempus eleifend ut et magna. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus luctus urna sed urna ultricies."));
+  Table table1=new Table();
+  table1.setSizeFull();
+  table1.addContainerProperty("Column",String.class,"");
+  for (int i=1; i <= 100; i++) {
+    table1.addItem(new Object[]{"Value " + i},i);
+  }
+  left.addComponent(table1);
+  left.setExpandRatio(table1,1);
+  VerticalSplitPanel split2=new VerticalSplitPanel();
+  split2.setSizeFull();
+  split1.setSecondComponent(split2);
+  Table table2=new Table();
+  table2.setSizeFull();
+  table2.addContainerProperty("Column 1",String.class,"");
+  table2.addContainerProperty("Column 2",String.class,"");
+  table2.addContainerProperty("Column 3",String.class,"");
+  table2.addContainerProperty("Column 4",String.class,"");
+  for (int i=1; i <= 100; i++) {
+    table2.addItem(new Object[]{"Value " + i,"Value " + i,"Value " + i,"Value " + i},i);
+  }
+  split2.setFirstComponent(table2);
+  VerticalLayout rows=new VerticalLayout();
+  rows.setWidth("100%");
+  rows.setSpacing(true);
+  rows.setMargin(true);
+  for (int i=1; i <= 100; i++) {
+    rows.addComponent(getRow(i));
+  }
+  split2.setSecondComponent(rows);
+}

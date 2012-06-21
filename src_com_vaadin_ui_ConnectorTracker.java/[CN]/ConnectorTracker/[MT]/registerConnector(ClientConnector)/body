@@ -1,0 +1,14 @@
+{
+  String connectorId=connector.getConnectorId();
+  ClientConnector previouslyRegistered=connectorIdToConnector.get(connectorId);
+  if (previouslyRegistered == null) {
+    connectorIdToConnector.put(connectorId,connector);
+    getLogger().fine("Registered " + connector.getClass().getSimpleName() + " ("+ connectorId+ ")");
+  }
+ else   if (previouslyRegistered != connector) {
+    throw new RuntimeException("A connector with id " + connectorId + " is already registered!");
+  }
+ else {
+    getLogger().warning("An already registered connector was registered again: " + connector.getClass().getSimpleName() + " ("+ connectorId+ ")");
+  }
+}

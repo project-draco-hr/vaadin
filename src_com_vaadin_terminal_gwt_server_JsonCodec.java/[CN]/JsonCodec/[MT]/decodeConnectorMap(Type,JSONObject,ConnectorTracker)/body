@@ -1,0 +1,12 @@
+{
+  Map<Object,Object> map=new HashMap<Object,Object>();
+  for (Iterator<?> iter=jsonMap.keys(); iter.hasNext(); ) {
+    String key=(String)iter.next();
+    Object value=decodeInternalOrCustomType(valueType,jsonMap.get(key),connectorTracker);
+    if (valueType == UidlValue.class) {
+      value=((UidlValue)value).getValue();
+    }
+    map.put(connectorTracker.getConnector(key),value);
+  }
+  return map;
+}

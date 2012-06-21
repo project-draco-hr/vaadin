@@ -1,0 +1,21 @@
+{
+  final Application a=new Application();
+  Application.setCurrentApplication(a);
+  TextField tf=new TextField(){
+    @Override public Application getApplication(){
+      return a;
+    }
+  }
+;
+  NumberBean nb=new NumberBean();
+  nb.setNumber(490);
+  tf.setPropertyDataSource(new MethodProperty<Number>(nb,"number"));
+  assertEquals(490,tf.getPropertyDataSource().getValue());
+  assertEquals("490",tf.getValue());
+  Converter c1=tf.getConverter();
+  tf.setPropertyDataSource(new MethodProperty<Number>(nb,"number"));
+  Converter c2=tf.getConverter();
+  assertTrue("StringToNumber converter is ok for integer types and should stay even though property is changed",c1 == c2);
+  assertEquals(490,tf.getPropertyDataSource().getValue());
+  assertEquals("490",tf.getValue());
+}
