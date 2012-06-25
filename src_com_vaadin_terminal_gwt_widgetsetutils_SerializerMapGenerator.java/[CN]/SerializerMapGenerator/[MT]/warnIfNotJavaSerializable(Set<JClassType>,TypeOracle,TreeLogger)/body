@@ -1,6 +1,9 @@
 {
   JClassType javaSerializable=typeOracle.findType(Serializable.class.getName());
   for (  JClassType type : typesNeedingSerializers) {
+    if (type.isArray() != null) {
+      continue;
+    }
     boolean serializable=type.isAssignableTo(javaSerializable);
     if (!serializable) {
       logger.log(Type.ERROR,type + " is used in RPC or shared state but does not implement " + Serializable.class.getName()+ ". Communication will work but the Application on server side cannot be serialized if it refers to objects of this type.");

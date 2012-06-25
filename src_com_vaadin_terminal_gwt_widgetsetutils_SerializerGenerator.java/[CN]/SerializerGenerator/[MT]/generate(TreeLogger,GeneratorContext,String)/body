@@ -1,12 +1,19 @@
 {
-  JClassType beanType=context.getTypeOracle().findType(beanTypeName);
-  String beanSerializerClassName=getSerializerSimpleClassName(beanType);
+  JClassType type;
   try {
-    generateClass(logger,context,beanType,beanSerializerPackageName,beanSerializerClassName);
+    type=(JClassType)context.getTypeOracle().parse(typeName);
   }
- catch (  Exception e) {
-    logger.log(TreeLogger.ERROR,"SerializerGenerator failed for " + beanType.getQualifiedSourceName(),e);
+ catch (  TypeOracleException e1) {
+    logger.log(Type.ERROR,"Could not find type " + typeName,e1);
     throw new UnableToCompleteException();
   }
-  return getFullyQualifiedSerializerClassName(beanType);
+  String serializerClassName=getSerializerSimpleClassName(type);
+  try {
+    generateClass(logger,context,type,serializerPackageName,serializerClassName);
+  }
+ catch (  Exception e) {
+    logger.log(TreeLogger.ERROR,"SerializerGenerator failed for " + type.getQualifiedSourceName(),e);
+    throw new UnableToCompleteException();
+  }
+  return getFullyQualifiedSerializerClassName(type);
 }
