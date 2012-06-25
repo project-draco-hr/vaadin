@@ -15,23 +15,17 @@
     setWidth("");
   }
  else {
-    int borderWidths=1;
-    if (w - borderWidths >= 0) {
-      captionContainer.getStyle().setPropertyPx("width",w - borderWidths);
-    }
- else {
-      captionContainer.getStyle().setPropertyPx("width",0);
-    }
+    final int borderWidths=1;
+    captionContainer.getStyle().setPropertyPx("width",Math.max(w - borderWidths,0));
     if (scrollBody != null) {
       int tdWidth=width + scrollBody.getCellExtraWidth() - borderWidths;
-      setWidth(tdWidth + "px");
+      setWidth(Math.max(tdWidth,0) + "px");
     }
  else {
       Scheduler.get().scheduleDeferred(new Command(){
         public void execute(){
-          int borderWidths=1;
           int tdWidth=width + scrollBody.getCellExtraWidth() - borderWidths;
-          setWidth(tdWidth + "px");
+          setWidth(Math.max(tdWidth,0) + "px");
         }
       }
 );
