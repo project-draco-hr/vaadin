@@ -15,7 +15,11 @@
   sourceWriter.println("public " + JSONSerializer.class.getName() + " getSerializer(String type) {");
   sourceWriter.indent();
   for (  JClassType type : typesNeedingSerializers) {
-    sourceWriter.println("if (type.equals(\"" + type.getQualifiedBinaryName() + "\")) {");
+    sourceWriter.print("if (type.equals(\"" + type.getQualifiedSourceName() + "\")");
+    if (type instanceof JArrayType) {
+      sourceWriter.print("||type.equals(\"" + type.getJNISignature() + "\")");
+    }
+    sourceWriter.println(") {");
     sourceWriter.indent();
     String serializerName=SerializerGenerator.getFullyQualifiedSerializerClassName(type);
     sourceWriter.println("return GWT.create(" + serializerName + ".class);");

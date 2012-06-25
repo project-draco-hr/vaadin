@@ -5,6 +5,15 @@
   if (value == JSONObject.NULL) {
     return null;
   }
+ else   if (targetType == byte.class || targetType == Byte.class) {
+    return Byte.valueOf(String.valueOf(value));
+  }
+ else   if (targetType == char.class || targetType == Character.class) {
+    return Character.valueOf(String.valueOf(value).charAt(0));
+  }
+ else   if (targetType instanceof Class<?> && ((Class<?>)targetType).isArray()) {
+    return decodeArray((Class<?>)targetType,(JSONArray)value,application);
+  }
  else   if (targetType == JSONObject.class || targetType == JSONArray.class) {
     return value;
   }
