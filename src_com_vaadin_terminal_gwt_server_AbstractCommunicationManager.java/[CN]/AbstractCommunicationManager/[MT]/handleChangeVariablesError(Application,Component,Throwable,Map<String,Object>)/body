@@ -1,0 +1,16 @@
+{
+  boolean handled=false;
+  ChangeVariablesErrorEvent errorEvent=new ChangeVariablesErrorEvent(owner,t,m);
+  if (owner instanceof AbstractField) {
+    try {
+      handled=((AbstractField<?>)owner).handleError(errorEvent);
+    }
+ catch (    Exception handlerException) {
+      application.getErrorHandler().terminalError(new ErrorHandlerErrorEvent(handlerException));
+      handled=false;
+    }
+  }
+  if (!handled) {
+    application.getErrorHandler().terminalError(errorEvent);
+  }
+}

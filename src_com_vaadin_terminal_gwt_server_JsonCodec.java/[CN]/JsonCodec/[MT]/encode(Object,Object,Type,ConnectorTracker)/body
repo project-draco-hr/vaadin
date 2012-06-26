@@ -22,14 +22,16 @@
  else   if (value instanceof Number) {
     return value;
   }
+ else   if (value instanceof Character) {
+    return value;
+  }
  else   if (value instanceof Collection) {
     Collection<?> collection=(Collection<?>)value;
     JSONArray jsonArray=encodeCollection(valueType,collection,connectorTracker);
     return jsonArray;
   }
- else   if (value instanceof Object[]) {
-    Object[] array=(Object[])value;
-    JSONArray jsonArray=encodeArrayContents(array,connectorTracker);
+ else   if (valueType instanceof Class<?> && ((Class<?>)valueType).isArray()) {
+    JSONArray jsonArray=encodeArrayContents(value,connectorTracker);
     return jsonArray;
   }
  else   if (value instanceof Map) {

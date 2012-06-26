@@ -35,7 +35,17 @@
         continue;
       }
       if (invocation instanceof ServerRpcMethodInvocation) {
-        ServerRpcManager.applyInvocation(connector,(ServerRpcMethodInvocation)invocation);
+        try {
+          ServerRpcManager.applyInvocation(connector,(ServerRpcMethodInvocation)invocation);
+        }
+ catch (        RpcInvocationException e) {
+          Throwable realException=e.getCause();
+          Component errorComponent=null;
+          if (connector instanceof Component) {
+            errorComponent=(Component)connector;
+          }
+          handleChangeVariablesError(root.getApplication(),errorComponent,realException,null);
+        }
       }
  else {
         LegacyChangeVariablesInvocation legacyInvocation=(LegacyChangeVariablesInvocation)invocation;
