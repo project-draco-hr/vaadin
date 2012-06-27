@@ -1,0 +1,21 @@
+{
+  Document document=Document.get();
+  head=document.getElementsByTagName("head").getItem(0);
+  NodeList<Element> scripts=document.getElementsByTagName("script");
+  for (int i=0; i < scripts.getLength(); i++) {
+    ScriptElement element=ScriptElement.as(scripts.getItem(i));
+    String src=element.getSrc();
+    if (src != null && src.length() != 0) {
+      loadedResources.add(src);
+    }
+  }
+  NodeList<Element> links=document.getElementsByTagName("link");
+  for (int i=0; i < links.getLength(); i++) {
+    LinkElement linkElement=LinkElement.as(links.getItem(i));
+    String rel=linkElement.getRel();
+    String href=linkElement.getHref();
+    if ("stylesheet".equalsIgnoreCase(rel) && href != null && href.length() != 0) {
+      loadedResources.add(href);
+    }
+  }
+}

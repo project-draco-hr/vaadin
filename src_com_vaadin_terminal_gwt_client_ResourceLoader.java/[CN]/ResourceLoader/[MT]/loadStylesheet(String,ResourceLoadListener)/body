@@ -1,0 +1,42 @@
+{
+  final String url=getAbsoluteUrl(stylesheetUrl);
+  if (loadedResources.contains(url)) {
+    if (resourceLoadListener != null) {
+      resourceLoadListener.onResourceLoad(new ResourceLoadEvent(this,url,false));
+    }
+    return;
+  }
+  if (preloadListeners.containsKey(url)) {
+    preloadResource(url,new ResourceLoadListener(){
+      public void onResourceLoad(      ResourceLoadEvent event){
+        loadStylesheet(url,resourceLoadListener);
+      }
+    }
+);
+    return;
+  }
+  if (addListener(url,resourceLoadListener,loadListeners)) {
+    LinkElement linkElement=Document.get().createLinkElement();
+    linkElement.setRel("stylesheet");
+    linkElement.setType("text/css");
+    linkElement.setHref(url);
+    if (BrowserInfo.get().isSafari()) {
+      Scheduler.get().scheduleFixedPeriod(new RepeatingCommand(){
+        public boolean execute(){
+          if (isStyleSheetPresent(url)) {
+            onResourceLoad(url,false);
+            return false;
+          }
+ else {
+            return true;
+          }
+        }
+      }
+,10);
+    }
+ else {
+      addOnloadHandler(linkElement,url,false);
+    }
+    head.appendChild(linkElement);
+  }
+}

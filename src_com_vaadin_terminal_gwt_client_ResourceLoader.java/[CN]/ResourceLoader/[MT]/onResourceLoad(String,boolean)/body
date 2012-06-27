@@ -1,0 +1,23 @@
+{
+  Collection<ResourceLoadListener> listeners;
+  if (preload) {
+    preloadedResources.add(resource);
+    listeners=preloadListeners.remove(resource);
+  }
+ else {
+    if (preloadListeners.containsKey(resource)) {
+      onResourceLoad(resource,true);
+    }
+    preloadedResources.remove(resource);
+    loadedResources.add(resource);
+    listeners=loadListeners.remove(resource);
+  }
+  if (listeners != null && !listeners.isEmpty()) {
+    ResourceLoadEvent event=new ResourceLoadEvent(this,resource,preload);
+    for (    ResourceLoadListener listener : listeners) {
+      if (listener != null) {
+        listener.onResourceLoad(event);
+      }
+    }
+  }
+}

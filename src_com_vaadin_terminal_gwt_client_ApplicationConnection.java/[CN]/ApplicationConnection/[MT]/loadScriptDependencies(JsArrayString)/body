@@ -1,0 +1,21 @@
+{
+  if (dependencies.length() == 0) {
+    return;
+  }
+  ResourceLoadListener resourceLoadListener=new ResourceLoadListener(){
+    public void onResourceLoad(    ResourceLoadEvent event){
+      if (dependencies.length() != 0) {
+        ApplicationConfiguration.startWidgetLoading();
+        event.getResourceLoader().loadScript(dependencies.shift(),this);
+      }
+      ApplicationConfiguration.endWidgetLoading();
+    }
+  }
+;
+  ResourceLoader loader=ResourceLoader.get();
+  ApplicationConfiguration.startWidgetLoading();
+  loader.loadScript(dependencies.shift(),resourceLoadListener);
+  for (int i=0; i < dependencies.length(); i++) {
+    loader.loadScript(dependencies.get(i),null);
+  }
+}

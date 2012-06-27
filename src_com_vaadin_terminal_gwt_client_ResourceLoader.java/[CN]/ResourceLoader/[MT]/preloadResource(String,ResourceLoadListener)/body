@@ -1,0 +1,14 @@
+{
+  url=getAbsoluteUrl(url);
+  if (loadedResources.contains(url) || preloadedResources.contains(url)) {
+    if (resourceLoadListener != null) {
+      resourceLoadListener.onResourceLoad(new ResourceLoadEvent(this,url,!loadedResources.contains(url)));
+    }
+    return;
+  }
+  if (addListener(url,resourceLoadListener,preloadListeners) && !loadListeners.containsKey(url)) {
+    Element element=getPreloadElement(url);
+    addOnloadHandler(element,url,true);
+    Document.get().getBody().appendChild(element);
+  }
+}
