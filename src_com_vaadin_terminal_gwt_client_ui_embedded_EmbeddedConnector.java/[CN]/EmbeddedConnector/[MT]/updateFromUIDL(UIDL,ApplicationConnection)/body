@@ -6,6 +6,12 @@
   boolean clearBrowserElement=true;
   clickEventHandler.handleEventHandlerRegistration();
   if (uidl.hasAttribute("type")) {
+    if (getWidget().type != null) {
+      getWidget().removeStyleName(VEmbedded.CLASSNAME + "-" + getWidget().type);
+    }
+    if (getWidget().mimetype != null) {
+      getWidget().removeStyleName(VEmbedded.CLASSNAME + "-" + getWidget().mimetype);
+    }
     getWidget().type=uidl.getStringAttribute("type");
     if (getWidget().type.equals("image")) {
       getWidget().addStyleName(VEmbedded.CLASSNAME + "-image");
@@ -53,12 +59,20 @@
     }
   }
  else   if (uidl.hasAttribute("mimetype")) {
+    if (getWidget().type != null) {
+      getWidget().removeStyleName(VEmbedded.CLASSNAME + "-" + getWidget().type);
+    }
+    if (getWidget().mimetype != null) {
+      getWidget().removeStyleName(VEmbedded.CLASSNAME + "-" + getWidget().mimetype);
+    }
     final String mime=uidl.getStringAttribute("mimetype");
     if (mime.equals("application/x-shockwave-flash")) {
+      getWidget().mimetype="flash";
       getWidget().addStyleName(VEmbedded.CLASSNAME + "-flash");
       getWidget().setHTML(getWidget().createFlashEmbed(uidl));
     }
  else     if (mime.equals("image/svg+xml")) {
+      getWidget().mimetype="svg";
       getWidget().addStyleName(VEmbedded.CLASSNAME + "-svg");
       String data;
       Map<String,String> parameters=VEmbedded.getParameters(uidl);
