@@ -1,0 +1,26 @@
+{
+  Event event=Event.as(mme.getNativeEvent());
+  com.google.gwt.dom.client.Element element=Element.as(event.getEventTarget());
+  if (currentElement == element) {
+    return;
+  }
+  currentElement=element;
+  boolean connectorAndTooltipFound=resolveConnector((com.google.gwt.user.client.Element)element);
+  if (!connectorAndTooltipFound) {
+    if (isShowing()) {
+      handleHideEvent();
+    }
+ else {
+      currentTooltipInfo=null;
+    }
+  }
+ else {
+    updatePosition(event);
+    if (isShowing()) {
+      replaceCurrentTooltip();
+    }
+ else {
+      showTooltip();
+    }
+  }
+}
