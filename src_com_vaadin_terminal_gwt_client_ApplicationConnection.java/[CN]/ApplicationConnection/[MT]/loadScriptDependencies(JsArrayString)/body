@@ -5,8 +5,9 @@
   ResourceLoadListener resourceLoadListener=new ResourceLoadListener(){
     public void onLoad(    ResourceLoadEvent event){
       if (dependencies.length() != 0) {
+        String url=translateVaadinUri(dependencies.shift());
         ApplicationConfiguration.startDependencyLoading();
-        event.getResourceLoader().loadScript(dependencies.shift(),this);
+        event.getResourceLoader().loadScript(url,this);
       }
       ApplicationConfiguration.endDependencyLoading();
     }
@@ -17,8 +18,9 @@
   }
 ;
   ResourceLoader loader=ResourceLoader.get();
+  String url=translateVaadinUri(dependencies.shift());
   ApplicationConfiguration.startDependencyLoading();
-  loader.loadScript(dependencies.shift(),resourceLoadListener);
+  loader.loadScript(url,resourceLoadListener);
   for (int i=0; i < dependencies.length(); i++) {
     loader.loadScript(dependencies.get(i),null);
   }

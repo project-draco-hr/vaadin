@@ -272,11 +272,15 @@ catch (  InvocationTargetException e) {
   for (  Class<? extends ClientConnector> class1 : newConnectorTypes) {
     JavaScript jsAnnotation=class1.getAnnotation(JavaScript.class);
     if (jsAnnotation != null) {
-      scriptDependencies.addAll(Arrays.asList(jsAnnotation.value()));
+      for (      String resource : jsAnnotation.value()) {
+        scriptDependencies.add(registerResource(resource,class1));
+      }
     }
     StyleSheet styleAnnotation=class1.getAnnotation(StyleSheet.class);
     if (styleAnnotation != null) {
-      styleDependencies.addAll(Arrays.asList(styleAnnotation.value()));
+      for (      String resource : styleAnnotation.value()) {
+        styleDependencies.add(registerResource(resource,class1));
+      }
     }
   }
   if (!scriptDependencies.isEmpty()) {
