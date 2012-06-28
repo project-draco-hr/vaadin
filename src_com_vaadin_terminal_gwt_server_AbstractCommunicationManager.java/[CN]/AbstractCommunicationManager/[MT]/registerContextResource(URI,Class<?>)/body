@@ -1,0 +1,13 @@
+{
+  String path=uri.getPath();
+synchronized (connectoResourceContexts) {
+    if (connectoResourceContexts.containsKey(path)) {
+      Class<?> oldContext=connectoResourceContexts.get(path);
+      getLogger().warning("Resource " + path + " defined by both "+ context+ " and "+ oldContext+ ". Resource from "+ oldContext+ " will be used.");
+    }
+ else {
+      connectoResourceContexts.put(path,context);
+    }
+  }
+  return "connector://" + path;
+}

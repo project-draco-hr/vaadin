@@ -210,8 +210,10 @@ catch (  InvocationTargetException e) {
   Collection<Class<? extends ClientConnector>> usedClientConnectors=paintTarget.getUsedClientConnectors();
   boolean typeMappingsOpen=false;
   ClientCache clientCache=getClientCache(root);
+  List<Class<? extends ClientConnector>> newConnectorTypes=new ArrayList<Class<? extends ClientConnector>>();
   for (  Class<? extends ClientConnector> class1 : usedClientConnectors) {
     if (clientCache.cache(class1)) {
+      newConnectorTypes.add(class1);
       if (!typeMappingsOpen) {
         typeMappingsOpen=true;
         outWriter.print(", \"typeMappings\" : { ");
@@ -250,6 +252,42 @@ catch (  InvocationTargetException e) {
     if (typeInheritanceMapOpen) {
       outWriter.print(" }");
     }
+  }
+  Collections.sort(newConnectorTypes,new Comparator<Class<?>>(){
+    public int compare(    Class<?> o1,    Class<?> o2){
+      return hierarchyDepth(o1) - hierarchyDepth(o2);
+    }
+    private int hierarchyDepth(    Class<?> type){
+      if (type == Object.class) {
+        return 0;
+      }
+ else {
+        return hierarchyDepth(type.getSuperclass()) + 1;
+      }
+    }
+  }
+);
+  List<String> scriptDependencies=new ArrayList<String>();
+  List<String> styleDependencies=new ArrayList<String>();
+  for (  Class<? extends ClientConnector> class1 : newConnectorTypes) {
+    JavaScript jsAnnotation=class1.getAnnotation(JavaScript.class);
+    if (jsAnnotation != null) {
+      for (      String resource : jsAnnotation.value()) {
+        scriptDependencies.add(registerResource(resource,class1));
+      }
+    }
+    StyleSheet styleAnnotation=class1.getAnnotation(StyleSheet.class);
+    if (styleAnnotation != null) {
+      for (      String resource : styleAnnotation.value()) {
+        styleDependencies.add(registerResource(resource,class1));
+      }
+    }
+  }
+  if (!scriptDependencies.isEmpty()) {
+    outWriter.print(", \"scriptDependencies\": " + new JSONArray(scriptDependencies).toString());
+  }
+  if (!styleDependencies.isEmpty()) {
+    outWriter.print(", \"styleDependencies\": " + new JSONArray(styleDependencies).toString());
   }
   printLocaleDeclarations(outWriter);
   if (dragAndDropService != null) {

@@ -1,0 +1,23 @@
+{
+  String resource=event.getResourceUrl();
+  Collection<ResourceLoadListener> listeners;
+  if (event.isPreload()) {
+    preloadedResources.add(resource);
+    listeners=preloadListeners.remove(resource);
+  }
+ else {
+    if (preloadListeners.containsKey(resource)) {
+      fireLoad(new ResourceLoadEvent(this,resource,true));
+    }
+    preloadedResources.remove(resource);
+    loadedResources.add(resource);
+    listeners=loadListeners.remove(resource);
+  }
+  if (listeners != null && !listeners.isEmpty()) {
+    for (    ResourceLoadListener listener : listeners) {
+      if (listener != null) {
+        listener.onLoad(event);
+      }
+    }
+  }
+}

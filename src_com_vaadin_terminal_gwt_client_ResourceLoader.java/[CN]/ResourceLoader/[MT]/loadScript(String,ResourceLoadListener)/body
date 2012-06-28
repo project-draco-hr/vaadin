@@ -1,0 +1,39 @@
+{
+  final String url=getAbsoluteUrl(scriptUrl);
+  ResourceLoadEvent event=new ResourceLoadEvent(this,url,false);
+  if (loadedResources.contains(url)) {
+    if (resourceLoadListener != null) {
+      resourceLoadListener.onLoad(event);
+    }
+    return;
+  }
+  if (preloadListeners.containsKey(url)) {
+    preloadResource(url,new ResourceLoadListener(){
+      public void onLoad(      ResourceLoadEvent event){
+        loadScript(url,resourceLoadListener);
+      }
+      public void onError(      ResourceLoadEvent event){
+        if (resourceLoadListener != null) {
+          resourceLoadListener.onError(event);
+        }
+      }
+    }
+);
+    return;
+  }
+  if (addListener(url,resourceLoadListener,loadListeners)) {
+    ScriptElement scriptTag=Document.get().createScriptElement();
+    scriptTag.setSrc(url);
+    scriptTag.setType("text/javascript");
+    addOnloadHandler(scriptTag,new ResourceLoadListener(){
+      public void onLoad(      ResourceLoadEvent event){
+        fireLoad(event);
+      }
+      public void onError(      ResourceLoadEvent event){
+        fireError(event);
+      }
+    }
+,event);
+    head.appendChild(scriptTag);
+  }
+}

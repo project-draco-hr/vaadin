@@ -25,6 +25,13 @@
     Application.setCurrent(application);
     WebApplicationContext webApplicationContext=getApplicationContext(request.getSession());
     CommunicationManager applicationManager=webApplicationContext.getApplicationManager(application,this);
+    if (requestType == RequestType.CONNECTOR_RESOURCE) {
+      String pathInfo=getRequestPathInfo(request);
+      String resourceName=pathInfo.substring(CONNECTOR_RESOURCE_PREFIX.length());
+      final String mimetype=getServletContext().getMimeType(resourceName);
+      applicationManager.serveConnectorResource(resourceName,request,response,mimetype);
+      return;
+    }
     webApplicationContext.getBrowser().updateRequestDetails(request);
     if (application instanceof HttpServletRequestListener) {
       ((HttpServletRequestListener)application).onRequestStart(request,response);

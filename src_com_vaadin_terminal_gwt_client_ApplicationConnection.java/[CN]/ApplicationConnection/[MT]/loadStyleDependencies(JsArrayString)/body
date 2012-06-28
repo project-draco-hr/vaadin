@@ -1,0 +1,18 @@
+{
+  ResourceLoadListener resourceLoadListener=new ResourceLoadListener(){
+    public void onLoad(    ResourceLoadEvent event){
+      ApplicationConfiguration.endDependencyLoading();
+    }
+    public void onError(    ResourceLoadEvent event){
+      VConsole.error(event.getResourceUrl() + " could not be loaded, or the load detection failed because the stylesheet is empty.");
+      onLoad(event);
+    }
+  }
+;
+  ResourceLoader loader=ResourceLoader.get();
+  for (int i=0; i < dependencies.length(); i++) {
+    String url=translateVaadinUri(dependencies.get(i));
+    ApplicationConfiguration.startDependencyLoading();
+    loader.loadStylesheet(url,resourceLoadListener);
+  }
+}

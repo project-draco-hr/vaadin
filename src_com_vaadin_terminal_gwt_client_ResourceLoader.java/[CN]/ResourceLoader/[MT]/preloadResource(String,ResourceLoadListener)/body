@@ -1,0 +1,23 @@
+{
+  url=getAbsoluteUrl(url);
+  ResourceLoadEvent event=new ResourceLoadEvent(this,url,true);
+  if (loadedResources.contains(url) || preloadedResources.contains(url)) {
+    if (resourceLoadListener != null) {
+      resourceLoadListener.onLoad(event);
+    }
+    return;
+  }
+  if (addListener(url,resourceLoadListener,preloadListeners) && !loadListeners.containsKey(url)) {
+    Element element=getPreloadElement(url);
+    addOnloadHandler(element,new ResourceLoadListener(){
+      public void onLoad(      ResourceLoadEvent event){
+        fireLoad(event);
+      }
+      public void onError(      ResourceLoadEvent event){
+        fireError(event);
+      }
+    }
+,event);
+    Document.get().getBody().appendChild(element);
+  }
+}
