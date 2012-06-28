@@ -33,31 +33,8 @@
     actions.add(savePosition);
     savePosition.setTitle("Saves the position and size of debug console to a cookie");
     actions.add(autoScroll);
-    actions.add(hostedMode);
-    if (Location.getParameter("gwt.codesvr") != null) {
-      hostedMode.setValue(true);
-    }
-    hostedMode.addClickHandler(new ClickHandler(){
-      public void onClick(      ClickEvent event){
-        if (hostedMode.getValue()) {
-          addHMParameter();
-        }
- else {
-          removeHMParameter();
-        }
-      }
-      private void addHMParameter(){
-        UrlBuilder createUrlBuilder=Location.createUrlBuilder();
-        createUrlBuilder.setParameter("gwt.codesvr","localhost:9997");
-        Location.assign(createUrlBuilder.buildString());
-      }
-      private void removeHMParameter(){
-        UrlBuilder createUrlBuilder=Location.createUrlBuilder();
-        createUrlBuilder.removeParameter("gwt.codesvr");
-        Location.assign(createUrlBuilder.buildString());
-      }
-    }
-);
+    addDevMode();
+    addSuperDevMode();
     autoScroll.setTitle("Automatically scroll so that new messages are visible");
     panel.add(actions);
     panel.add(new HTML("<i>" + help + "</i>"));
