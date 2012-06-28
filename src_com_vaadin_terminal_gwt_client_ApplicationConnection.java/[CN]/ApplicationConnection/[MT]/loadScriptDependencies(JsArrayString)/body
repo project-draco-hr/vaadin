@@ -3,12 +3,16 @@
     return;
   }
   ResourceLoadListener resourceLoadListener=new ResourceLoadListener(){
-    public void onResourceLoad(    ResourceLoadEvent event){
+    public void onLoad(    ResourceLoadEvent event){
       if (dependencies.length() != 0) {
         ApplicationConfiguration.startDependencyLoading();
         event.getResourceLoader().loadScript(dependencies.shift(),this);
       }
       ApplicationConfiguration.endDependencyLoading();
+    }
+    public void onError(    ResourceLoadEvent event){
+      VConsole.error(event.getResourceUrl() + " could not be loaded.");
+      onLoad(event);
     }
   }
 ;
