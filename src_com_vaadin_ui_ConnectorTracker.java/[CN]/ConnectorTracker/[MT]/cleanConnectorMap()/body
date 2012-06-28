@@ -3,11 +3,9 @@
   while (iterator.hasNext()) {
     String connectorId=iterator.next();
     ClientConnector connector=connectorIdToConnector.get(connectorId);
-    if (connector instanceof Component) {
-      Component component=(Component)connector;
-      if (component.getRoot() != root) {
-        iterator.remove();
-      }
+    if (getRootForConnector(connector) != root) {
+      getLogger().warning("cleanConnectorMap unregistered connector " + getConnectorAndParentInfo(connector) + "). This it should have been done when the connector was detached.");
+      iterator.remove();
     }
   }
 }
