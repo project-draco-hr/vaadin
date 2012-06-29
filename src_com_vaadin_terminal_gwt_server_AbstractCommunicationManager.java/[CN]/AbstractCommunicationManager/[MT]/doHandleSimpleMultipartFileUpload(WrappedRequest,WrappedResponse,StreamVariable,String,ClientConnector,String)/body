@@ -27,9 +27,13 @@
   final String filename=removePath(rawfilename);
   final String mimeType=rawMimeType;
   try {
-    Component component=(Component)owner;
-    if (component.isReadOnly()) {
-      throw new UploadException("Warning: file upload ignored because the componente was read-only");
+    if (owner == null) {
+      throw new UploadException("File upload ignored because the connector for the stream variable was not found");
+    }
+    if (owner instanceof Component) {
+      if (((Component)owner).isReadOnly()) {
+        throw new UploadException("Warning: file upload ignored because the componente was read-only");
+      }
     }
     boolean forgetVariable=streamToReceiver(simpleMultiPartReader,streamVariable,filename,mimeType,contentLength);
     if (forgetVariable) {
