@@ -2,7 +2,10 @@
   String contentType=request.getContentType();
   String name=request.getParameter("name");
   String ownerId=request.getParameter("rec-owner");
-  Connector owner=getConnector(root,ownerId);
+  String rootId=request.getParameter("rootId");
+  Root root=application.getRootById(Integer.parseInt(rootId));
+  Root.setCurrent(root);
+  ClientConnector owner=getConnector(root,ownerId);
   StreamVariable streamVariable=ownerToNameToStreamVariable.get(owner).get(name);
   if (contentType.contains("boundary")) {
     doHandleSimpleMultipartFileUpload(request,response,streamVariable,name,owner,contentType.split("boundary=")[1]);
