@@ -1,6 +1,19 @@
 {
   final int shadowSpace=10;
   popup=new VOverlay(true,false,true);
+  if (parentMenu == null) {
+    popup.setOwner(this);
+  }
+ else {
+    VMenuBar parent=parentMenu;
+    while (parent.getParentMenu() != null) {
+      parent=parent.getParentMenu();
+    }
+    popup.setOwner(parent);
+  }
+  if (client != null) {
+    client.getVTooltip().connectHandlersToWidget(popup);
+  }
   popup.setStyleName(CLASSNAME + "-popup");
   popup.setWidget(item.getSubMenu());
   popup.addCloseHandler(this);

@@ -1,25 +1,32 @@
 {
+  Element browseElement=element;
   Element rootElement=parent.getElement();
-  while (element != null && element != rootElement) {
-    ComponentConnector connector=ConnectorMap.get(client).getConnector(element);
+  while (browseElement != null && browseElement != rootElement) {
+    ComponentConnector connector=ConnectorMap.get(client).getConnector(browseElement);
     if (connector == null) {
-      String ownerPid=VCaption.getCaptionOwnerPid(element);
+      String ownerPid=VCaption.getCaptionOwnerPid(browseElement);
       if (ownerPid != null) {
         connector=(ComponentConnector)ConnectorMap.get(client).getConnector(ownerPid);
       }
     }
     if (connector != null) {
-      while (element != null && element != rootElement) {
-        element=(Element)element.getParentElement();
+      while (browseElement != null && browseElement != rootElement) {
+        browseElement=(Element)browseElement.getParentElement();
       }
-      if (element != rootElement) {
+      if (browseElement != rootElement) {
         return null;
       }
  else {
         return connector;
       }
     }
-    element=(Element)element.getParentElement();
+    browseElement=(Element)browseElement.getParentElement();
+  }
+  if (browseElement == null) {
+    VOverlay overlay=findWidget(element,VOverlay.class);
+    if (overlay != null && overlay.getOwner() != null) {
+      return getConnectorForElement(client,RootPanel.get(),overlay.getOwner().getElement());
+    }
   }
   return null;
 }
