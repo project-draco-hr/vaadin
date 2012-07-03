@@ -31,7 +31,12 @@
     return jsonArray;
   }
  else   if (valueType instanceof Class<?> && ((Class<?>)valueType).isArray()) {
-    JSONArray jsonArray=encodeArrayContents(value,connectorTracker);
+    JSONArray jsonArray=encodeArrayContents(((Class<?>)valueType).getComponentType(),value,connectorTracker);
+    return jsonArray;
+  }
+ else   if (valueType instanceof GenericArrayType) {
+    Type componentType=((GenericArrayType)valueType).getGenericComponentType();
+    JSONArray jsonArray=encodeArrayContents(componentType,value,connectorTracker);
     return jsonArray;
   }
  else   if (value instanceof Map) {
