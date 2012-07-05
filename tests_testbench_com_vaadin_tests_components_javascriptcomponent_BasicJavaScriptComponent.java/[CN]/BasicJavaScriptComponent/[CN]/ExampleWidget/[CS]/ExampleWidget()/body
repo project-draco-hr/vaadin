@@ -1,15 +1,36 @@
 {
-  registerRpc(new ExampleClickRpc(){
-    public void onClick(    String message){
-      Notification.show("Got a click: " + message);
+  registerRpc(new TestRpc(){
+    public void sendRpc(    String message){
+      log.log("Got RPC message: " + message);
     }
   }
 );
-  registerCallback("onclick",new JavaScriptCallback(){
+  registerCallback("messageToServer",new JavaScriptCallback(){
     public void call(    JSONArray arguments) throws JSONException {
-      Notification.show("Got a callback: " + arguments.getString(0));
+      log.log("Got callback message: " + arguments.getString(0));
     }
   }
 );
-  getState().setData(Arrays.asList("a","b","c"));
+  registerCallback("reportParentIds",new JavaScriptCallback(){
+    public void call(    JSONArray arguments) throws JSONException {
+      JSONArray parentIds=arguments.getJSONArray(0);
+      if (!parentIds.getString(0).equals(getConnectorId())) {
+        log.log("Connector ids doesn't match");
+      }
+      HasComponents parent=getParent();
+      int i=1;
+      while (parent != null) {
+        if (!parentIds.getString(i).equals(parent.getConnectorId())) {
+          log.log("parentIds[" + i + "] doesn't match");
+        }
+        i++;
+        parent=parent.getParent();
+      }
+      log.log("Parent ids checked");
+    }
+  }
+);
+  getRpcProxy(TestRpc.class).sendRpc("RPC message");
+  invokeCallback("messageToClient","Callback message");
+  getState().setMessages(Arrays.asList("First state message","Second state message"));
 }
