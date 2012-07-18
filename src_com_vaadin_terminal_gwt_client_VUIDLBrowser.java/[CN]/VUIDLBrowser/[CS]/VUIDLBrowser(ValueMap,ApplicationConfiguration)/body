@@ -7,9 +7,18 @@
   Set<String> keySet=u.getKeySet();
   for (  String key : keySet) {
     if (key.equals("state")) {
+      ValueMap stateJson=u.getValueMap(key);
+      for (      String stateKey : stateJson.getKeySet()) {
+        ValueMap valuesJson=stateJson.getValueMap(stateKey);
+        SimpleTree values=new SimpleTree("state pid=" + stateKey);
+        for (        String valueKey : valuesJson.getKeySet()) {
+          values.add(new HTML(valueKey + "=" + valuesJson.getAsString(valueKey)));
+        }
+        add(values);
+      }
     }
  else     if (key.equals("changes")) {
-      JsArray<UIDL> jsValueMapArray=u.getJSValueMapArray("changes").cast();
+      JsArray<UIDL> jsValueMapArray=u.getJSValueMapArray(key).cast();
       for (int i=0; i < jsValueMapArray.length(); i++) {
         UIDL uidl=jsValueMapArray.get(i);
         UIDLItem change=new UIDLItem(uidl,conf);
