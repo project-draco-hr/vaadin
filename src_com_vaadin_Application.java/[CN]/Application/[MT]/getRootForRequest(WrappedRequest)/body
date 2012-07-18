@@ -1,14 +1,18 @@
 {
+  System.out.println(" --- GET ROOT");
   Root root=Root.getCurrent();
   if (root != null) {
+    System.out.println(" ----- HAS CURRENT " + root.getRootId());
     return root;
   }
   Integer rootId=getRootId(request);
+  System.out.println(" ----- ROOT ID FROM REQUEST " + rootId);
 synchronized (this) {
     BrowserDetails browserDetails=request.getBrowserDetails();
     boolean hasBrowserDetails=browserDetails != null && browserDetails.getUriFragment() != null;
     root=roots.get(rootId);
     if (root == null && isRootPreserved()) {
+      System.out.println(" ----- ROOT NOT FOUND, CHECK IF PRESERVED");
       if (!retainOnRefreshRoots.isEmpty()) {
         Integer retainedRootId;
         if (!hasBrowserDetails) {
@@ -19,13 +23,16 @@ synchronized (this) {
           retainedRootId=retainOnRefreshRoots.get(windowName);
         }
         if (retainedRootId != null) {
+          System.out.println(" ----- RETAINED ROOT ID " + retainedRootId);
           rootId=retainedRootId;
           root=roots.get(rootId);
         }
       }
     }
     if (root == null) {
+      System.out.println(" ----- ROOT STILL NULL");
       root=getRoot(request);
+      System.out.println(" ----- GET ROOT " + root.getRootId());
       if (root.getApplication() == null) {
         root.setApplication(this);
       }
@@ -35,10 +42,12 @@ synchronized (this) {
         }
         root.setRootId(rootId.intValue());
         roots.put(rootId,root);
+        System.out.println(" ----- CREATED ROOT " + rootId);
       }
     }
     Root.setCurrent(root);
     if (!initedRoots.contains(rootId)) {
+      System.out.println(" ----- INIT ROOT " + rootId);
       boolean initRequiresBrowserDetails=isRootPreserved() || !root.getClass().isAnnotationPresent(EagerInit.class);
       if (!initRequiresBrowserDetails || hasBrowserDetails) {
         root.doInit(request);
@@ -50,5 +59,6 @@ synchronized (this) {
       }
     }
   }
+  System.out.println(" ----- USING ROOT " + root.getRootId());
   return root;
 }
