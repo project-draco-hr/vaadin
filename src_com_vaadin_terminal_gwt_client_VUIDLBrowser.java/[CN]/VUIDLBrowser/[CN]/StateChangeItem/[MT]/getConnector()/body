@@ -1,0 +1,10 @@
+{
+  List<ApplicationConnection> runningApplications=ApplicationConfiguration.getRunningApplications();
+  for (  ApplicationConnection applicationConnection : runningApplications) {
+    ServerConnector connector=ConnectorMap.get(applicationConnection).getConnector(getConnectorId());
+    if (connector instanceof ComponentConnector) {
+      return (ComponentConnector)connector;
+    }
+  }
+  return new UnknownComponentConnector();
+}
