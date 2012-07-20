@@ -8,14 +8,11 @@
   for (  String key : keySet) {
     if (key.equals("state")) {
       ValueMap stateJson=u.getValueMap(key);
+      SimpleTree stateChanges=new SimpleTree("Shared state");
       for (      String stateKey : stateJson.getKeySet()) {
-        ValueMap valuesJson=stateJson.getValueMap(stateKey);
-        SimpleTree values=new SimpleTree("state pid=" + stateKey);
-        for (        String valueKey : valuesJson.getKeySet()) {
-          values.add(new HTML(valueKey + "=" + valuesJson.getAsString(valueKey)));
-        }
-        add(values);
+        stateChanges.add(new SharedStateItem(stateKey,stateJson.getValueMap(stateKey)));
       }
+      add(stateChanges);
     }
  else     if (key.equals("changes")) {
       JsArray<UIDL> jsValueMapArray=u.getJSValueMapArray(key).cast();
