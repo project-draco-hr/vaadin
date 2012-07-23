@@ -13,7 +13,7 @@
   }
   table.addGeneratedColumn("Label",new ColumnGenerator(){
     private static final long serialVersionUID=-5042109683675242407L;
-    public Component generateCell(    Table source,    Object itemId,    Object columnId){
+    @Override public Component generateCell(    Table source,    Object itemId,    Object columnId){
       Item item=source.getItem(itemId);
       return new Label("" + item.getItemProperty("foo").getValue());
     }
@@ -21,7 +21,7 @@
 );
   table.addGeneratedColumn("textField",new ColumnGenerator(){
     private static final long serialVersionUID=-5042109683675242407L;
-    public Component generateCell(    Table source,    Object itemId,    Object columnId){
+    @Override public Component generateCell(    Table source,    Object itemId,    Object columnId){
       Item item=source.getItem(itemId);
       TextField textfield=new TextField();
       textfield.setValue(String.valueOf(item.getItemProperty("foo").getValue()));
@@ -31,7 +31,7 @@
 );
   table.addGeneratedColumn("readOnlyTextField",new ColumnGenerator(){
     private static final long serialVersionUID=-5042109683675242407L;
-    public Component generateCell(    Table source,    Object itemId,    Object columnId){
+    @Override public Component generateCell(    Table source,    Object itemId,    Object columnId){
       Item item=source.getItem(itemId);
       TextField textfield=new TextField();
       textfield.setValue(String.valueOf(item.getItemProperty("foo").getValue()));
@@ -42,7 +42,7 @@
 );
   table.addGeneratedColumn("embedded",new ColumnGenerator(){
     private static final long serialVersionUID=-5042109683675242407L;
-    public Component generateCell(    Table source,    Object itemId,    Object columnId){
+    @Override public Component generateCell(    Table source,    Object itemId,    Object columnId){
       Embedded embedded=new Embedded(null,new ThemeResource("../runo/icons/16/ok.png"));
       return embedded;
     }
@@ -50,10 +50,10 @@
 );
   table.setDragMode(TableDragMode.ROW);
   table.setDropHandler(new DropHandler(){
-    public AcceptCriterion getAcceptCriterion(){
+    @Override public AcceptCriterion getAcceptCriterion(){
       return AcceptAll.get();
     }
-    public void drop(    DragAndDropEvent event){
+    @Override public void drop(    DragAndDropEvent event){
       DataBoundTransferable t=(DataBoundTransferable)event.getTransferable();
       Object dragged=t.getItemId();
       AbstractSelectTargetDetails dropData=((AbstractSelectTargetDetails)event.getTargetDetails());

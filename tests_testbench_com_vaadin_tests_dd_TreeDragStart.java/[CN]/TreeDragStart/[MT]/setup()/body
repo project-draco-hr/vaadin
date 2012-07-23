@@ -4,7 +4,7 @@
   checkBox.setImmediate(true);
   checkBox.setValue(true);
   checkBox.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       tree.setEnabled(!tree.isEnabled());
     }
   }
@@ -14,7 +14,7 @@
   checkBox.setImmediate(true);
   checkBox.setValue(true);
   checkBox.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       if ((Boolean)((CheckBox)event.getProperty()).getValue()) {
         tree.setDragMode(TreeDragMode.NODE);
       }
@@ -36,10 +36,10 @@
   }
   tree.setDragMode(TreeDragMode.NODE);
   tree.setDropHandler(new DropHandler(){
-    public AcceptCriterion getAcceptCriterion(){
+    @Override public AcceptCriterion getAcceptCriterion(){
       return new Or(Tree.TargetItemAllowsChildren.get(),new Not(VerticalLocationIs.MIDDLE));
     }
-    public void drop(    DragAndDropEvent event){
+    @Override public void drop(    DragAndDropEvent event){
       DataBoundTransferable t=(DataBoundTransferable)event.getTransferable();
       TreeTargetDetails target=(TreeTargetDetails)event.getTargetDetails();
       Object sourceItemId=t.getData("itemId");
@@ -85,10 +85,10 @@
   table.setVisibleColumns(new String[]{"name","weight"});
   table.removeAllItems();
   table.setDropHandler(new DropHandler(){
-    public AcceptCriterion getAcceptCriterion(){
+    @Override public AcceptCriterion getAcceptCriterion(){
       return new Not(VerticalLocationIs.MIDDLE);
     }
-    public void drop(    DragAndDropEvent event){
+    @Override public void drop(    DragAndDropEvent event){
       DataBoundTransferable t=(DataBoundTransferable)event.getTransferable();
       if (t.getSourceComponent() != tree && t.getSourceComponent() != table) {
         return;

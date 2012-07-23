@@ -39,7 +39,7 @@
     panel.add(actions);
     panel.add(new HTML("<i>" + help + "</i>"));
     clear.addClickHandler(new ClickHandler(){
-      public void onClick(      ClickEvent event){
+      @Override public void onClick(      ClickEvent event){
         int width=panel.getOffsetWidth();
         int height=panel.getOffsetHeight();
         panel=new FlowPanel();
@@ -51,7 +51,7 @@
     }
 );
     restart.addClickHandler(new ClickHandler(){
-      public void onClick(      ClickEvent event){
+      @Override public void onClick(      ClickEvent event){
         String queryString=Window.Location.getQueryString();
         if (queryString != null && queryString.contains("restartApplications")) {
           Window.Location.reload();
@@ -76,7 +76,7 @@
     }
 );
     forceLayout.addClickHandler(new ClickHandler(){
-      public void onClick(      ClickEvent event){
+      @Override public void onClick(      ClickEvent event){
         for (        ApplicationConnection applicationConnection : ApplicationConfiguration.getRunningApplications()) {
           applicationConnection.forceLayout();
         }
@@ -84,7 +84,7 @@
     }
 );
     analyzeLayout.addClickHandler(new ClickHandler(){
-      public void onClick(      ClickEvent event){
+      @Override public void onClick(      ClickEvent event){
         List<ApplicationConnection> runningApplications=ApplicationConfiguration.getRunningApplications();
         for (        ApplicationConnection applicationConnection : runningApplications) {
           applicationConnection.analyzeLayouts();
@@ -94,14 +94,14 @@
 );
     analyzeLayout.setTitle("Analyzes currently rendered view and " + "reports possible common problems in usage of relative sizes." + "Will cause server visit/rendering of whole screen and loss of"+ " all non committed variables form client side.");
     savePosition.addClickHandler(new ClickHandler(){
-      public void onClick(      ClickEvent event){
+      @Override public void onClick(      ClickEvent event){
         String pos=getAbsoluteLeft() + "," + getAbsoluteTop()+ ","+ getOffsetWidth()+ ","+ getOffsetHeight()+ ","+ autoScroll.getValue();
         Cookies.setCookie(POS_COOKIE_NAME,pos);
       }
     }
 );
     highlight.addClickHandler(new ClickHandler(){
-      public void onClick(      ClickEvent event){
+      @Override public void onClick(      ClickEvent event){
         final Label label=new Label("--");
         log("<i>Use mouse to select a component or click ESC to exit highlight mode.</i>");
         panel.add(label);
@@ -111,7 +111,7 @@
 );
   }
   connectorStats.addClickHandler(new ClickHandler(){
-    public void onClick(    ClickEvent event){
+    @Override public void onClick(    ClickEvent event){
       for (      ApplicationConnection a : ApplicationConfiguration.getRunningApplications()) {
         dumpConnectorInfo(a);
       }

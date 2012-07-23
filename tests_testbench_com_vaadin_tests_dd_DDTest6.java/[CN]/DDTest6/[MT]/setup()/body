@@ -24,10 +24,10 @@
   tree1.setItemIconPropertyId("icon");
   tree1.setDragMode(TreeDragMode.NODE);
   DropHandler dropHandler=new DropHandler(){
-    public AcceptCriterion getAcceptCriterion(){
+    @Override public AcceptCriterion getAcceptCriterion(){
       return AcceptAll.get();
     }
-    public void drop(    DragAndDropEvent dropEvent){
+    @Override public void drop(    DragAndDropEvent dropEvent){
       File file=null;
       Folder folder=null;
       TreeTargetDetails dropTargetData=(TreeTargetDetails)dropEvent.getTargetDetails();
@@ -47,18 +47,18 @@
   tree1.setDropHandler(dropHandler);
   Handler actionHandler=new Handler(){
     private Action[] actions=new Action[]{new Action("Remove")};
-    public void handleAction(    Action action,    Object sender,    Object target){
+    @Override public void handleAction(    Action action,    Object sender,    Object target){
       ContainerHierarchicalWrapper containerDataSource=(ContainerHierarchicalWrapper)tree1.getContainerDataSource();
       containerDataSource.removeItemRecursively(target);
     }
-    public Action[] getActions(    Object target,    Object sender){
+    @Override public Action[] getActions(    Object target,    Object sender){
       return actions;
     }
   }
 ;
   tree1.addActionHandler(actionHandler);
   tree1.addListener(new Property.ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       Object value=event.getProperty().getValue();
       if (value != null && !(value instanceof Folder)) {
         value=tree1.getParent(value);

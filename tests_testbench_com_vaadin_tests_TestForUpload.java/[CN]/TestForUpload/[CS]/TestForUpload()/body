@@ -10,14 +10,14 @@
   up.setImmediate(true);
   up.addListener(new Listener(){
     private static final long serialVersionUID=-8319074730512324303L;
-    public void componentEvent(    Event event){
+    @Override public void componentEvent(    Event event){
       System.out.println("Upload fired event | " + event);
     }
   }
 );
   up.addListener(new StartedListener(){
     private static final long serialVersionUID=5508883803861085154L;
-    public void uploadStarted(    StartedEvent event){
+    @Override public void uploadStarted(    StartedEvent event){
       pi.setVisible(true);
       pi2.setVisible(true);
       l.setValue("Started uploading file " + event.getFilename());
@@ -27,7 +27,7 @@
 );
   up.addListener(new Upload.FinishedListener(){
     private static final long serialVersionUID=-3773034195991947371L;
-    public void uploadFinished(    FinishedEvent event){
+    @Override public void uploadFinished(    FinishedEvent event){
       pi.setVisible(false);
       pi2.setVisible(false);
       if (event instanceof Upload.FailedEvent) {
@@ -57,20 +57,20 @@
   }
 );
   up.addListener(new Upload.ProgressListener(){
-    public void updateProgress(    long readBytes,    long contentLenght){
+    @Override public void updateProgress(    long readBytes,    long contentLenght){
       pi2.setValue(new Float(readBytes / (float)contentLenght));
       refreshMemUsage();
     }
   }
 );
   final Button b=new Button("Reed state from upload",new Button.ClickListener(){
-    public void buttonClick(    ClickEvent event){
+    @Override public void buttonClick(    ClickEvent event){
       readState();
     }
   }
 );
   final Button c=new Button("Force GC",new Button.ClickListener(){
-    public void buttonClick(    ClickEvent event){
+    @Override public void buttonClick(    ClickEvent event){
       gc();
     }
   }
@@ -81,7 +81,7 @@
   main.addComponent(throwExecption);
   main.addComponent(interrupt);
   interrupt.addListener(new Button.ClickListener(){
-    public void buttonClick(    ClickEvent event){
+    @Override public void buttonClick(    ClickEvent event){
       up.interruptUpload();
     }
   }
@@ -92,7 +92,7 @@
   uploadBufferSelector.setValue("memory");
   uploadBufferSelector.addItem("tempfile");
   uploadBufferSelector.addListener(new AbstractField.ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       setBuffer();
     }
   }
@@ -113,7 +113,7 @@
   main.addComponent(status);
   final Button restart=new Button("R");
   restart.addListener(new Button.ClickListener(){
-    public void buttonClick(    ClickEvent event){
+    @Override public void buttonClick(    ClickEvent event){
       getApplication().close();
     }
   }

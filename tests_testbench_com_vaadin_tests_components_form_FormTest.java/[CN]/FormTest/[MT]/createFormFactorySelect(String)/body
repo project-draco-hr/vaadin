@@ -2,7 +2,7 @@
   LinkedHashMap<String,FormFieldFactory> options=new LinkedHashMap<String,FormFieldFactory>();
   options.put("Default",DefaultFieldFactory.get());
   options.put("Custom FieldFactory",new FormFieldFactory(){
-    public Field<?> createField(    Item item,    Object propertyId,    Component uiContext){
+    @Override public Field<?> createField(    Item item,    Object propertyId,    Component uiContext){
       Class<?> type=item.getItemProperty(propertyId).getType();
       Field<?> c=null;
       if (Number.class.isAssignableFrom(type)) {
@@ -33,7 +33,7 @@
   }
 );
   Command<Form,FormFieldFactory> formFactoryCommand=new Command<Form,FormFieldFactory>(){
-    public void execute(    Form c,    FormFieldFactory value,    Object data){
+    @Override public void execute(    Form c,    FormFieldFactory value,    Object data){
       c.setFormFieldFactory(value);
       c.setItemDataSource(c.getItemDataSource());
     }

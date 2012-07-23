@@ -24,7 +24,7 @@
   }
 ;
   tree3.setDropHandler(new DropHandler(){
-    public void drop(    DragAndDropEvent dropEvent){
+    @Override public void drop(    DragAndDropEvent dropEvent){
       Transferable transferable=dropEvent.getTransferable();
       String data=(String)transferable.getData("Text");
       if (transferable instanceof TableTransferable) {
@@ -40,7 +40,7 @@
       AbstractSelect.AbstractSelectTargetDetails dropTargetData=(AbstractSelect.AbstractSelectTargetDetails)dropEvent.getTargetDetails();
       tree3.setParent(data,dropTargetData.getItemIdOver());
     }
-    public AcceptCriterion getAcceptCriterion(){
+    @Override public AcceptCriterion getAcceptCriterion(){
       return crit;
     }
   }
@@ -54,7 +54,7 @@
   @SuppressWarnings("unused") SourceIs treeOrTable=new SourceIs(table,tree1);
   final And and=new And(fromTree1OrTable,onNode);
   DropHandler dropHandler=new DropHandler(){
-    public void drop(    DragAndDropEvent event){
+    @Override public void drop(    DragAndDropEvent event){
       DataBoundTransferable tr=(DataBoundTransferable)event.getTransferable();
       Object itemId=tr.getItemId();
       Container sourceContainer=tr.getSourceContainer();
@@ -70,14 +70,14 @@
       Object idOver=details.getItemIdOver();
       tree1.setParent(itemId,idOver);
     }
-    public AcceptCriterion getAcceptCriterion(){
+    @Override public AcceptCriterion getAcceptCriterion(){
       return and;
     }
   }
 ;
   tree1.setDropHandler(dropHandler);
   dropHandler=new DropHandler(){
-    public void drop(    DragAndDropEvent event){
+    @Override public void drop(    DragAndDropEvent event){
       AbstractSelectTargetDetails details=(AbstractSelectTargetDetails)event.getTargetDetails();
       Transferable transferable=event.getTransferable();
       if (transferable instanceof DataBoundTransferable) {
@@ -108,7 +108,7 @@
         }
       }
     }
-    public AcceptCriterion getAcceptCriterion(){
+    @Override public AcceptCriterion getAcceptCriterion(){
       return AcceptItem.ALL;
     }
   }

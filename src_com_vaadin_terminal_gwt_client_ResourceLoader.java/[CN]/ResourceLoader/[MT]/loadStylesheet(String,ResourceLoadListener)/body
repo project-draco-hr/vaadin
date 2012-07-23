@@ -9,10 +9,10 @@
   }
   if (preloadListeners.containsKey(url)) {
     preloadResource(url,new ResourceLoadListener(){
-      public void onLoad(      ResourceLoadEvent event){
+      @Override public void onLoad(      ResourceLoadEvent event){
         loadStylesheet(url,resourceLoadListener);
       }
-      public void onError(      ResourceLoadEvent event){
+      @Override public void onError(      ResourceLoadEvent event){
         if (resourceLoadListener != null) {
           resourceLoadListener.onError(event);
         }
@@ -29,7 +29,7 @@
     if (BrowserInfo.get().isSafari()) {
       Scheduler.get().scheduleFixedPeriod(new RepeatingCommand(){
         private final Duration duration=new Duration();
-        public boolean execute(){
+        @Override public boolean execute(){
           int styleSheetLength=getStyleSheetLength(url);
           if (getStyleSheetLength(url) > 0) {
             fireLoad(event);
@@ -52,7 +52,7 @@
     }
  else {
       addOnloadHandler(linkElement,new ResourceLoadListener(){
-        public void onLoad(        ResourceLoadEvent event){
+        @Override public void onLoad(        ResourceLoadEvent event){
           if (BrowserInfo.get().isChrome() || BrowserInfo.get().isIE()) {
             int styleSheetLength=getStyleSheetLength(url);
             if (styleSheetLength == 0) {
@@ -62,7 +62,7 @@
           }
           fireLoad(event);
         }
-        public void onError(        ResourceLoadEvent event){
+        @Override public void onError(        ResourceLoadEvent event){
           fireError(event);
         }
       }

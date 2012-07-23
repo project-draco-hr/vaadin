@@ -6,7 +6,7 @@
   b.setCallbackParam("_callback");
   b.setTimeout(COMPILE_TIMEOUT_IN_SECONDS * 1000);
   b.requestObject(serverUrl + "recompile/" + GWT.getModuleName()+ "?"+ getRecompileParameters(GWT.getModuleName()),new AsyncCallback<RecompileResult>(){
-    public void onSuccess(    RecompileResult result){
+    @Override public void onSuccess(    RecompileResult result){
       VConsole.log("JSONP compile call successful");
       if (!result.ok()) {
         VConsole.log("* result: " + result);
@@ -18,7 +18,7 @@
       VConsole.log("* result: OK. Reloading");
       Location.reload();
     }
-    public void onFailure(    Throwable caught){
+    @Override public void onFailure(    Throwable caught){
       VConsole.error("JSONP compile call failed");
       VConsole.error(Util.getSimpleName(caught) + ": " + caught.getMessage());
       failed();
@@ -26,7 +26,7 @@
     private void failed(){
       VNotification n=new VNotification();
       n.addEventListener(new EventListener(){
-        public void notificationHidden(        HideEvent event){
+        @Override public void notificationHidden(        HideEvent event){
           recompileWidgetsetAndStartInDevMode(serverUrl);
         }
       }

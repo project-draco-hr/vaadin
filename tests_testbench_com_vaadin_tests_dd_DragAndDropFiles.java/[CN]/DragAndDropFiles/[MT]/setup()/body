@@ -11,10 +11,10 @@
   DragAndDropWrapper dragAndDropWrapper=new DragAndDropWrapper(cssLayout);
   dragAndDropWrapper.setSizeUndefined();
   dragAndDropWrapper.setDropHandler(new DropHandler(){
-    public AcceptCriterion getAcceptCriterion(){
+    @Override public AcceptCriterion getAcceptCriterion(){
       return AcceptAll.get();
     }
-    public void drop(    DragAndDropEvent event){
+    @Override public void drop(    DragAndDropEvent event){
       WrapperTransferable transferable=(WrapperTransferable)event.getTransferable();
       Html5File[] files=transferable.getFiles();
       if (files != null) {
@@ -25,25 +25,25 @@
             continue;
           }
           StreamVariable streamVariable=new StreamVariable(){
-            public OutputStream getOutputStream(){
+            @Override public OutputStream getOutputStream(){
               return new NullOutputStream();
             }
-            public boolean listenProgress(){
+            @Override public boolean listenProgress(){
               return true;
             }
-            public void onProgress(            StreamingProgressEvent event){
+            @Override public void onProgress(            StreamingProgressEvent event){
               System.err.println("Progress" + event.getBytesReceived());
             }
-            public void streamingStarted(            StreamingStartEvent event){
+            @Override public void streamingStarted(            StreamingStartEvent event){
               getMainWindow().showNotification("Started uploading " + event.getFileName());
             }
-            public void streamingFinished(            StreamingEndEvent event){
+            @Override public void streamingFinished(            StreamingEndEvent event){
               getMainWindow().showNotification("Finished uploading " + event.getFileName());
             }
-            public void streamingFailed(            StreamingErrorEvent event){
+            @Override public void streamingFailed(            StreamingErrorEvent event){
               getMainWindow().showNotification("Failed uploading " + event.getFileName());
             }
-            public boolean isInterrupted(){
+            @Override public boolean isInterrupted(){
               return false;
             }
           }
