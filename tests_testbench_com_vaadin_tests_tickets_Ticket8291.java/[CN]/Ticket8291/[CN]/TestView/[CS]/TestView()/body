@@ -1,0 +1,42 @@
+{
+  final Table table=new Table();
+  List<TestObject> data=createData(1000);
+  final BeanItemContainer<TestObject> container=new BeanItemContainer<TestObject>(TestObject.class,data){
+    @Override public int size(){
+      if (reduceData) {
+        return 100;
+      }
+ else {
+        return super.size();
+      }
+    }
+  }
+;
+  table.setContainerDataSource(container);
+  addComponent(table);
+  Button button=new Button("Click");
+  button.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      reduceData=!reduceData;
+      table.refreshRowCache();
+    }
+  }
+);
+  addComponent(button);
+  Button button2=new Button("Filter");
+  button2.addListener(new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      if (filter != null) {
+        container.removeAllContainerFilters();
+        filter=null;
+      }
+ else {
+        filter=new DecimateFilter();
+        container.addContainerFilter(filter);
+      }
+      table.refreshRowCache();
+    }
+  }
+);
+  addComponent(button2);
+}
