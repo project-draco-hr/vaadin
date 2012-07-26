@@ -9,6 +9,9 @@
     }
     uidlUri=themeUri + uidlUri.substring(7);
   }
+  if (uidlUri.startsWith(CONNECTOR_PROTOCOL_PREFIX)) {
+    uidlUri="app://" + CONNECTOR_RESOURCE_PREFIX + uidlUri.substring(CONNECTOR_PROTOCOL_PREFIX.length());
+  }
   if (uidlUri.startsWith("app://")) {
     String relativeUrl=uidlUri.substring(6);
     if (getConfiguration().usePortletURLs()) {
@@ -29,9 +32,6 @@
  else {
       uidlUri=getAppUri() + relativeUrl;
     }
-  }
- else   if (uidlUri.startsWith(CONNECTOR_PROTOCOL_PREFIX)) {
-    uidlUri=getAppUri() + CONNECTOR_RESOURCE_PREFIX + uidlUri.substring(CONNECTOR_PROTOCOL_PREFIX.length());
   }
   return uidlUri;
 }

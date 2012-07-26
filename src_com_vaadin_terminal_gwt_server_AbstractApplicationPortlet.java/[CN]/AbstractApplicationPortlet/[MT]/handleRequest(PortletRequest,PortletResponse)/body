@@ -32,6 +32,10 @@
       applicationContext.setResponse(response);
       applicationContext.setPortletConfig(getPortletConfig());
       PortletCommunicationManager applicationManager=applicationContext.getApplicationManager(application);
+      if (requestType == RequestType.CONNECTOR_RESOURCE) {
+        applicationManager.serveConnectorResource(wrappedRequest,wrappedResponse);
+        return;
+      }
       applicationContext.getBrowser().updateRequestDetails(wrappedRequest);
       if (application instanceof PortletRequestListener) {
         ((PortletRequestListener)application).onRequestStart(request,response);
