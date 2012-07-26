@@ -1,3 +1,16 @@
 {
   root.getConnectorTracker().cleanConnectorMap();
+  if (pidToNameToStreamVariable != null) {
+    Iterator<String> iterator=pidToNameToStreamVariable.keySet().iterator();
+    while (iterator.hasNext()) {
+      String connectorId=iterator.next();
+      if (root.getConnectorTracker().getConnector(connectorId) == null) {
+        Map<String,StreamVariable> removed=pidToNameToStreamVariable.get(connectorId);
+        for (        String key : removed.keySet()) {
+          streamVariableToSeckey.remove(removed.get(key));
+        }
+        iterator.remove();
+      }
+    }
+  }
 }

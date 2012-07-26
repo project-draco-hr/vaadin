@@ -4,7 +4,7 @@
   AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
   WrappedPortletRequest wrappedRequest=createWrappedRequest(request);
   WrappedPortletResponse wrappedResponse=new WrappedPortletResponse(response,getDeploymentConfiguration());
-  RequestType requestType=getRequestType(request);
+  RequestType requestType=getRequestType(wrappedRequest);
   if (requestType == RequestType.UNKNOWN) {
     handleUnknownRequest(request,response);
   }
@@ -102,7 +102,7 @@ catch (final GeneralSecurityException e) {
 getLogger().fine("General security exception, the security key was probably incorrect.");
 }
 catch (final Throwable e) {
-handleServiceException(request,response,application,e);
+handleServiceException(wrappedRequest,wrappedResponse,application,e);
 }
  finally {
 try {
