@@ -1,7 +1,7 @@
 {
   final String[] ka=(String[])variables.get("selected");
   final String[] ranges=(String[])variables.get("selectedRanges");
-  Set<Object> renderedItemIds=getCurrentlyRenderedItemIds();
+  Set<Object> renderedButNotSelectedItemIds=getCurrentlyRenderedItemIds();
   @SuppressWarnings("unchecked") HashSet<Object> newValue=new LinkedHashSet<Object>((Collection<Object>)getValue());
   if (variables.containsKey("clearSelections")) {
     newValue.clear();
@@ -13,7 +13,7 @@
     }
  else     if (id != null && containsId(id)) {
       newValue.add(id);
-      renderedItemIds.remove(id);
+      renderedButNotSelectedItemIds.remove(id);
     }
   }
   if (ranges != null) {
@@ -21,12 +21,12 @@
       String[] split=range.split("-");
       Object startItemId=itemIdMapper.get(split[0]);
       int length=Integer.valueOf(split[1]);
-      Set<Object> itemIdsInRange=getItemIdsInRange(startItemId,length);
+      LinkedHashSet<Object> itemIdsInRange=getItemIdsInRange(startItemId,length);
       newValue.addAll(itemIdsInRange);
-      renderedItemIds.removeAll(itemIdsInRange);
+      renderedButNotSelectedItemIds.removeAll(itemIdsInRange);
     }
   }
-  newValue.removeAll(renderedItemIds);
+  newValue.removeAll(renderedButNotSelectedItemIds);
   if (!isNullSelectionAllowed() && newValue.isEmpty()) {
     requestRepaint();
     return;
