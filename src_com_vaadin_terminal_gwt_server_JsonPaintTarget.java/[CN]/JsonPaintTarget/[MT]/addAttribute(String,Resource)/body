@@ -1,21 +1,7 @@
 {
-  if (value instanceof ExternalResource) {
-    addAttribute(name,((ExternalResource)value).getURL());
+  if (value == null) {
+    throw new NullPointerException();
   }
- else   if (value instanceof ApplicationResource) {
-    final ApplicationResource r=(ApplicationResource)value;
-    final Application a=r.getApplication();
-    if (a == null) {
-      throw new PaintException("Application not specified for resorce " + value.getClass().getName());
-    }
-    final String uri=a.getRelativeLocation(r);
-    addAttribute(name,uri);
-  }
- else   if (value instanceof ThemeResource) {
-    final String uri="theme://" + ((ThemeResource)value).getResourceId();
-    addAttribute(name,uri);
-  }
- else {
-    throw new PaintException("Ajax adapter does not " + "support resources of type: " + value.getClass().getName());
-  }
+  ResourceReference reference=ResourceReference.create(value);
+  addAttribute(name,reference.getURL());
 }
