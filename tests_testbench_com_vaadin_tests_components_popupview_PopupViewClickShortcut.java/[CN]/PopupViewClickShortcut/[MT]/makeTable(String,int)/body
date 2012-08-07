@@ -1,0 +1,25 @@
+{
+  final Table t=new Table();
+  t.setSelectable(true);
+  t.setHeight("200px");
+  t.setWidth("200px");
+  t.addContainerProperty("foo",String.class,"foo");
+  for (int i=0; i < 5; i++) {
+    t.addItem(new String[]{"foo " + i},i);
+  }
+  final Layout l=new VerticalLayout();
+  l.setCaption(caption);
+  l.setWidth(null);
+  Button b=new Button("Submit " + caption + " (Ctrl+Alt+"+ String.valueOf(Character.toChars(keyCode))+ ")",new Button.ClickListener(){
+    private int i=5;
+    @Override public void buttonClick(    ClickEvent event){
+      log.log("Submitted from " + event.getButton().getParent().getCaption());
+      t.addItem(new String[]{"added " + i++},i);
+    }
+  }
+);
+  b.setClickShortcut(keyCode,ModifierKey.CTRL,ModifierKey.ALT);
+  l.addComponent(t);
+  l.addComponent(b);
+  return l;
+}

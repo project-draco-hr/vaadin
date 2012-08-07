@@ -3,12 +3,21 @@
   if (AbstractField.class.isAssignableFrom(getTestClass())) {
     MenuItem abstractField=settingsMenu.addItem("AbstractField",null);
     abstractField.addItem("Show value",new MenuBar.Command(){
-      public void menuSelected(      MenuItem selectedItem){
+      @Override public void menuSelected(      MenuItem selectedItem){
         for (        T a : getTestComponents()) {
           log(a.getClass().getSimpleName() + " value: " + getValue(a));
         }
       }
     }
 );
+    MenuItem sortValueChangesItem=abstractField.addItem("Show sorted value changes",new MenuBar.Command(){
+      @Override public void menuSelected(      MenuItem selectedItem){
+        sortValueChanges=selectedItem.isChecked();
+        log("Show sorted value changes: " + sortValueChanges);
+      }
+    }
+);
+    sortValueChangesItem.setCheckable(true);
+    sortValueChangesItem.setChecked(true);
   }
 }

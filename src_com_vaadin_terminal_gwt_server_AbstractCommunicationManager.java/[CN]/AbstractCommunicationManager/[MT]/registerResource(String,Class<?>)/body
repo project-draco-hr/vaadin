@@ -1,0 +1,18 @@
+{
+  try {
+    URI uri=new URI(resourceUri);
+    String protocol=uri.getScheme();
+    if ("connector".equals(protocol)) {
+      String resourceName=uri.getPath().substring(1);
+      return registerConnectorResource(resourceName,context);
+    }
+    if (protocol != null || uri.getHost() != null) {
+      return resourceUri;
+    }
+    return registerConnectorResource(resourceUri,context);
+  }
+ catch (  URISyntaxException e) {
+    getLogger().log(Level.WARNING,"Could not parse resource url " + resourceUri,e);
+    return resourceUri;
+  }
+}

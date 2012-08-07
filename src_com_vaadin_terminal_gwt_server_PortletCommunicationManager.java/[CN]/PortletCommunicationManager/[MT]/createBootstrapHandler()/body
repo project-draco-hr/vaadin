@@ -23,10 +23,9 @@
     }
     @Override protected JSONObject getDefaultParameters(    BootstrapContext context) throws JSONException {
       JSONObject defaults=super.getDefaultParameters(context);
-      defaults.put("usePortletURLs",true);
-      ResourceURL uidlUrlBase=getRenderResponse(context).createResourceURL();
-      uidlUrlBase.setResourceID("UIDL");
-      defaults.put("portletUidlURLBase",uidlUrlBase.toString());
+      ResourceURL portletResourceUrl=getRenderResponse(context).createResourceURL();
+      portletResourceUrl.setResourceID(AbstractApplicationPortlet.RESOURCE_URL_ID);
+      defaults.put(ApplicationConfiguration.PORTLET_RESOUCE_URL_BASE,portletResourceUrl.toString());
       defaults.put("pathInfo","");
       return defaults;
     }
@@ -42,7 +41,7 @@
       DeploymentConfiguration deploymentConfiguration=context.getRequest().getDeploymentConfiguration();
       return deploymentConfiguration.getApplicationOrSystemProperty(AbstractApplicationPortlet.PORTLET_PARAMETER_STYLE,null);
     }
-    @Override protected String getInitialUIDL(    WrappedRequest request,    Root root) throws PaintException {
+    @Override protected String getInitialUIDL(    WrappedRequest request,    Root root) throws PaintException, JSONException {
       return PortletCommunicationManager.this.getInitialUIDL(request,root);
     }
     @Override protected JSONObject getApplicationParameters(    BootstrapContext context) throws JSONException, PaintException {

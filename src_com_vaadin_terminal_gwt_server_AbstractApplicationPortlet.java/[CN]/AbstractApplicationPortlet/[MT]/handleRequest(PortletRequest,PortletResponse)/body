@@ -4,7 +4,7 @@
   AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
   WrappedPortletRequest wrappedRequest=createWrappedRequest(request);
   WrappedPortletResponse wrappedResponse=new WrappedPortletResponse(response,getDeploymentConfiguration());
-  RequestType requestType=getRequestType(request);
+  RequestType requestType=getRequestType(wrappedRequest);
   if (requestType == RequestType.UNKNOWN) {
     handleUnknownRequest(request,response);
   }
@@ -32,6 +32,10 @@
       applicationContext.setResponse(response);
       applicationContext.setPortletConfig(getPortletConfig());
       PortletCommunicationManager applicationManager=applicationContext.getApplicationManager(application);
+      if (requestType == RequestType.CONNECTOR_RESOURCE) {
+        applicationManager.serveConnectorResource(wrappedRequest,wrappedResponse);
+        return;
+      }
       applicationContext.getBrowser().updateRequestDetails(wrappedRequest);
       if (application instanceof PortletRequestListener) {
         ((PortletRequestListener)application).onRequestStart(request,response);
@@ -76,7 +80,7 @@ applicationContext.firePortletEventRequest(application,root,(EventRequest)reques
 applicationContext.firePortletResourceRequest(application,root,(ResourceRequest)request,(ResourceResponse)response);
 }
 if (requestType == RequestType.FILE_UPLOAD) {
-applicationManager.handleFileUpload(root,wrappedRequest,wrappedResponse);
+applicationManager.handleFileUpload(application,wrappedRequest,wrappedResponse);
 return;
 }
  else if (requestType == RequestType.BROWSER_DETAILS) {
@@ -102,7 +106,7 @@ catch (final GeneralSecurityException e) {
 getLogger().fine("General security exception, the security key was probably incorrect.");
 }
 catch (final Throwable e) {
-handleServiceException(request,response,application,e);
+handleServiceException(wrappedRequest,wrappedResponse,application,e);
 }
  finally {
 try {

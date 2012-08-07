@@ -1,0 +1,29 @@
+{
+  ComponentState state=getState();
+  String primaryStyleName=getWidget().getStylePrimaryName();
+  setWidgetStyleName("v-readonly",isReadOnly());
+  setWidgetStyleNameWithPrefix(primaryStyleName,ApplicationConnection.ERROR_CLASSNAME_EXT,null != state.getErrorMessage());
+  if (state.hasStyles()) {
+    List<String> newStyles=new ArrayList<String>();
+    newStyles.addAll(state.getStyles());
+    newStyles.removeAll(styleNames);
+    for (    String newStyle : newStyles) {
+      setWidgetStyleName(newStyle,true);
+      setWidgetStyleNameWithPrefix(primaryStyleName + "-",newStyle,true);
+    }
+    styleNames.removeAll(state.getStyles());
+    for (    String oldStyle : styleNames) {
+      setWidgetStyleName(oldStyle,false);
+      setWidgetStyleNameWithPrefix(primaryStyleName + "-",oldStyle,false);
+    }
+    styleNames.clear();
+    styleNames.addAll(state.getStyles());
+  }
+ else {
+    for (    String oldStyle : styleNames) {
+      setWidgetStyleName(oldStyle,false);
+      setWidgetStyleNameWithPrefix(primaryStyleName + "-",oldStyle,false);
+    }
+    styleNames.clear();
+  }
+}

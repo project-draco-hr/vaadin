@@ -1,0 +1,37 @@
+{
+  PortletRequest request=wrappedRequest.getPortletRequest();
+  if (request instanceof RenderRequest) {
+    return RequestType.RENDER;
+  }
+ else   if (request instanceof ResourceRequest) {
+    ResourceRequest resourceRequest=(ResourceRequest)request;
+    if (ServletPortletHelper.isUIDLRequest(wrappedRequest)) {
+      return RequestType.UIDL;
+    }
+ else     if (isBrowserDetailsRequest(resourceRequest)) {
+      return RequestType.BROWSER_DETAILS;
+    }
+ else     if (ServletPortletHelper.isFileUploadRequest(wrappedRequest)) {
+      return RequestType.FILE_UPLOAD;
+    }
+ else     if (ServletPortletHelper.isConnectorResourceRequest(wrappedRequest)) {
+      return RequestType.CONNECTOR_RESOURCE;
+    }
+ else     if (ServletPortletHelper.isApplicationResourceRequest(wrappedRequest)) {
+      return RequestType.APPLICATION_RESOURCE;
+    }
+ else     if (isDummyRequest(resourceRequest)) {
+      return RequestType.DUMMY;
+    }
+ else {
+      return RequestType.STATIC_FILE;
+    }
+  }
+ else   if (request instanceof ActionRequest) {
+    return RequestType.ACTION;
+  }
+ else   if (request instanceof EventRequest) {
+    return RequestType.EVENT;
+  }
+  return RequestType.UNKNOWN;
+}

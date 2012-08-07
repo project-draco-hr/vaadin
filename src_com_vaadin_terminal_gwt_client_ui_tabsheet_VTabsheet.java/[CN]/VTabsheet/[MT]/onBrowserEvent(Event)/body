@@ -1,19 +1,21 @@
 {
-  if (isScrolledTabs() && DOM.eventGetTarget(event) == scrollerPrev) {
-    int newFirstIndex=tb.scrollLeft(scrollerIndex);
-    if (newFirstIndex != -1) {
-      scrollerIndex=newFirstIndex;
-      updateTabScroller();
+  if (event.getTypeInt() == Event.ONCLICK) {
+    if (isScrolledTabs() && DOM.eventGetTarget(event) == scrollerPrev) {
+      int newFirstIndex=tb.scrollLeft(scrollerIndex);
+      if (newFirstIndex != -1) {
+        scrollerIndex=newFirstIndex;
+        updateTabScroller();
+      }
+      return;
+    }
+ else     if (isClippedTabs() && DOM.eventGetTarget(event) == scrollerNext) {
+      int newFirstIndex=tb.scrollRight(scrollerIndex);
+      if (newFirstIndex != -1) {
+        scrollerIndex=newFirstIndex;
+        updateTabScroller();
+      }
+      return;
     }
   }
- else   if (isClippedTabs() && DOM.eventGetTarget(event) == scrollerNext) {
-    int newFirstIndex=tb.scrollRight(scrollerIndex);
-    if (newFirstIndex != -1) {
-      scrollerIndex=newFirstIndex;
-      updateTabScroller();
-    }
-  }
- else {
-    super.onBrowserEvent(event);
-  }
+  super.onBrowserEvent(event);
 }

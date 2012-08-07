@@ -6,13 +6,13 @@
   tf.setRequired(true);
   tf.setImmediate(true);
   tf.addListener(new Property.ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       w.showNotification("TextField is " + (tf.isValid() ? "" : "in") + "valid, with error: "+ tf.getErrorMessage(),Notification.TYPE_WARNING_MESSAGE);
     }
   }
 );
   tf.addValidator(new Validator(){
-    public void validate(    Object value) throws InvalidValueException {
+    @Override public void validate(    Object value) throws InvalidValueException {
       if (value == null || value.toString().length() <= 3) {
         throw new InvalidValueException("Text length must exceed 3 characters");
       }
@@ -24,7 +24,7 @@
   w.addComponent(b);
   b.setImmediate(true);
   b.addListener(new Property.ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       tf.setRequiredError(b.getValue() ? "Field must not be empty" : null);
     }
   }

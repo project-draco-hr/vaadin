@@ -1,0 +1,49 @@
+{
+  final InputStream inputStream=request.getInputStream();
+  int contentLength=request.getContentLength();
+  boolean atStart=false;
+  boolean firstFileFieldFound=false;
+  String rawfilename="unknown";
+  String rawMimeType="application/octet-stream";
+  while (!atStart) {
+    String readLine=readLine(inputStream);
+    contentLength-=(readLine.length() + 2);
+    if (readLine.startsWith("Content-Disposition:") && readLine.indexOf("filename=") > 0) {
+      rawfilename=readLine.replaceAll(".*filename=","");
+      String parenthesis=rawfilename.substring(0,1);
+      rawfilename=rawfilename.substring(1);
+      rawfilename=rawfilename.substring(0,rawfilename.indexOf(parenthesis));
+      firstFileFieldFound=true;
+    }
+ else     if (firstFileFieldFound && readLine.equals("")) {
+      atStart=true;
+    }
+ else     if (readLine.startsWith("Content-Type")) {
+      rawMimeType=readLine.split(": ")[1];
+    }
+  }
+  contentLength-=(boundary.length() + CRLF.length() + 2 * DASHDASH.length() + 2);
+  InputStream simpleMultiPartReader=new SimpleMultiPartInputStream(inputStream,boundary);
+  final String filename=removePath(rawfilename);
+  final String mimeType=rawMimeType;
+  try {
+    if (owner == null) {
+      throw new UploadException("File upload ignored because the connector for the stream variable was not found");
+    }
+    if (owner instanceof Component) {
+      if (((Component)owner).isReadOnly()) {
+        throw new UploadException("Warning: file upload ignored because the componente was read-only");
+      }
+    }
+    boolean forgetVariable=streamToReceiver(simpleMultiPartReader,streamVariable,filename,mimeType,contentLength);
+    if (forgetVariable) {
+      cleanStreamVariable(owner,variableName);
+    }
+  }
+ catch (  Exception e) {
+synchronized (application) {
+      handleChangeVariablesError(application,(Component)owner,e,new HashMap<String,Object>());
+    }
+  }
+  sendUploadResponse(request,response);
+}

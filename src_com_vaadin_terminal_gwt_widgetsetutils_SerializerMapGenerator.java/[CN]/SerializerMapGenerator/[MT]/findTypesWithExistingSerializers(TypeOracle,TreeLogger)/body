@@ -1,13 +1,24 @@
 {
   JClassType serializerInterface=typeOracle.findType(JSONSerializer.class.getName());
+  JType[] deserializeParamTypes=new JType[]{typeOracle.findType(com.vaadin.terminal.gwt.client.communication.Type.class.getName()),typeOracle.findType(JSONValue.class.getName()),typeOracle.findType(ApplicationConnection.class.getName())};
+  String deserializeMethodName="deserialize";
+  try {
+    serializerInterface.getMethod(deserializeMethodName,deserializeParamTypes);
+  }
+ catch (  NotFoundException e) {
+    logger.log(Type.ERROR,"Could not find " + deserializeMethodName + " in "+ serializerInterface);
+    throw new UnableToCompleteException();
+  }
   Set<JClassType> types=new HashSet<JClassType>();
   for (  JClassType serializer : serializerInterface.getSubtypes()) {
-    JType[] deserializeParamTypes=new JType[]{typeOracle.findType(JSONObject.class.getName()),typeOracle.findType(ConnectorMap.class.getName()),typeOracle.findType(ApplicationConnection.class.getName())};
-    JMethod deserializeMethod=serializer.findMethod("deserialize",deserializeParamTypes);
+    JMethod deserializeMethod=serializer.findMethod(deserializeMethodName,deserializeParamTypes);
     if (deserializeMethod == null) {
+      logger.log(Type.DEBUG,"Could not find " + deserializeMethodName + " in "+ serializer);
       continue;
     }
-    types.add(deserializeMethod.getReturnType().isClass());
+    JType returnType=deserializeMethod.getReturnType();
+    logger.log(Type.DEBUG,"Found " + deserializeMethodName + " with return type "+ returnType+ " in "+ serializer);
+    types.add(returnType.isClass());
   }
   return types;
 }

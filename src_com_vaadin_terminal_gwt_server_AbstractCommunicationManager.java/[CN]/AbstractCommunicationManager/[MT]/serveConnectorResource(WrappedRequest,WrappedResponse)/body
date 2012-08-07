@@ -1,0 +1,52 @@
+{
+  String pathInfo=request.getRequestPathInfo();
+  String resourceName=pathInfo.substring(ApplicationConnection.CONNECTOR_RESOURCE_PREFIX.length() + 2);
+  final String mimetype=response.getDeploymentConfiguration().getMimeType(resourceName);
+  if (resourceName.startsWith("/")) {
+    getLogger().warning("Connector resource request starting with / rejected: " + resourceName);
+    response.sendError(HttpServletResponse.SC_NOT_FOUND,resourceName);
+    return;
+  }
+  Class<?> context;
+synchronized (connectorResourceContexts) {
+    context=connectorResourceContexts.get(resourceName);
+  }
+  if (context == null) {
+    getLogger().warning("Connector resource request for unknown resource rejected: " + resourceName);
+    response.sendError(HttpServletResponse.SC_NOT_FOUND,resourceName);
+    return;
+  }
+  InputStream in=context.getResourceAsStream(resourceName);
+  if (in == null) {
+    getLogger().warning(resourceName + " defined by " + context.getName()+ " not found. Verify that the file "+ context.getPackage().getName().replace('.','/')+ '/'+ resourceName+ " is available on the classpath.");
+    response.sendError(HttpServletResponse.SC_NOT_FOUND,resourceName);
+    return;
+  }
+  OutputStream out=null;
+  try {
+    if (mimetype != null) {
+      response.setContentType(mimetype);
+    }
+    out=response.getOutputStream();
+    final byte[] buffer=new byte[Constants.DEFAULT_BUFFER_SIZE];
+    int bytesRead=0;
+    while ((bytesRead=in.read(buffer)) > 0) {
+      out.write(buffer,0,bytesRead);
+    }
+    out.flush();
+  }
+  finally {
+    try {
+      in.close();
+    }
+ catch (    Exception e) {
+    }
+    if (out != null) {
+      try {
+        out.close();
+      }
+ catch (      Exception e) {
+      }
+    }
+  }
+}

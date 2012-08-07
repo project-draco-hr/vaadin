@@ -25,6 +25,10 @@
     Application.setCurrent(application);
     WebApplicationContext webApplicationContext=getApplicationContext(request.getSession());
     CommunicationManager applicationManager=webApplicationContext.getApplicationManager(application,this);
+    if (requestType == RequestType.CONNECTOR_RESOURCE) {
+      applicationManager.serveConnectorResource(request,response);
+      return;
+    }
     webApplicationContext.getBrowser().updateRequestDetails(request);
     if (application instanceof HttpServletRequestListener) {
       ((HttpServletRequestListener)application).onRequestStart(request,response);
@@ -34,11 +38,7 @@
     webApplicationContext.startTransaction(application,request);
     transactionStarted=true;
     if (requestType == RequestType.FILE_UPLOAD) {
-      Root root=application.getRootForRequest(request);
-      if (root == null) {
-        throw new ServletException(ERROR_NO_ROOT_FOUND);
-      }
-      applicationManager.handleFileUpload(root,request,response);
+      applicationManager.handleFileUpload(application,request,response);
       return;
     }
  else     if (requestType == RequestType.UIDL) {

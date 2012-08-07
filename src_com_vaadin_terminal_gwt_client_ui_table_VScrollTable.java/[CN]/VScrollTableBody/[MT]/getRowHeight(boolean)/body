@@ -9,7 +9,13 @@
       rowHeight=tableHeight / (double)rowCount;
     }
  else {
-      if (isAttached()) {
+      if (!Double.isNaN(lastKnownRowHeight)) {
+        if (BrowserInfo.get().isIE()) {
+          getTableHeight();
+        }
+        rowHeight=lastKnownRowHeight;
+      }
+ else       if (isAttached()) {
         VScrollTableRow scrollTableRow=new VScrollTableRow();
         tBodyElement.appendChild(scrollTableRow.getElement());
         getRowHeight(forceUpdate);
@@ -19,6 +25,7 @@
         return DEFAULT_ROW_HEIGHT;
       }
     }
+    lastKnownRowHeight=rowHeight;
     tBodyMeasurementsDone=true;
     return rowHeight;
   }

@@ -10,7 +10,7 @@
   EasyMock.expectLastCall().anyTimes();
   delegate.setFilters(EasyMock.isA(List.class));
   EasyMock.expectLastCall().andAnswer(new IAnswer<Object>(){
-    public Object answer() throws Throwable {
+    @Override public Object answer() throws Throwable {
       List<Filter> orders=(List<Filter>)EasyMock.getCurrentArguments()[0];
       filters.clear();
       filters.addAll(orders);
@@ -19,7 +19,7 @@
   }
 ).anyTimes();
   EasyMock.expect(delegate.getQueryStatement(EasyMock.anyInt(),EasyMock.anyInt())).andAnswer(new IAnswer<StatementHelper>(){
-    public StatementHelper answer() throws Throwable {
+    @Override public StatementHelper answer() throws Throwable {
       Object[] args=EasyMock.getCurrentArguments();
       int offset=(Integer)(args[0]);
       int limit=(Integer)(args[1]);
@@ -28,7 +28,7 @@
   }
 ).anyTimes();
   EasyMock.expect(delegate.getCountStatement()).andAnswer(new IAnswer<StatementHelper>(){
-    @SuppressWarnings("deprecation") public StatementHelper answer() throws Throwable {
+    @Override @SuppressWarnings("deprecation") public StatementHelper answer() throws Throwable {
       StatementHelper sh=new StatementHelper();
       StringBuffer query=new StringBuffer("SELECT COUNT(*) FROM people");
       if (!filters.isEmpty()) {

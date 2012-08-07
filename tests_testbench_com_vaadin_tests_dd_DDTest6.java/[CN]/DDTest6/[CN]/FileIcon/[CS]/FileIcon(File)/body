@@ -10,7 +10,7 @@
   l.addComponent(new Embedded(null,icon2));
   l.addComponent(new Label(name));
   l.addListener(new LayoutClickListener(){
-    @SuppressWarnings("static-access") public void layoutClick(    LayoutClickEvent event){
+    @Override @SuppressWarnings("static-access") public void layoutClick(    LayoutClickEvent event){
       if (event.isDoubleClick()) {
         if (file instanceof Folder) {
           get().tree1.setValue(file);
@@ -38,10 +38,10 @@
 );
   if (file instanceof Folder) {
     setDropHandler(new DropHandler(){
-      public AcceptCriterion getAcceptCriterion(){
+      @Override public AcceptCriterion getAcceptCriterion(){
         return new Not(SourceIsTarget.get());
       }
-      public void drop(      DragAndDropEvent dropEvent){
+      @Override public void drop(      DragAndDropEvent dropEvent){
         File f=null;
         if (dropEvent.getTransferable().getSourceComponent() instanceof FileIcon) {
           FileIcon new_name=(FileIcon)dropEvent.getTransferable().getSourceComponent();

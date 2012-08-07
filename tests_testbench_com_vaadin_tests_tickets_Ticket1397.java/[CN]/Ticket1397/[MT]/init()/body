@@ -5,10 +5,10 @@
   Panel panel=new Panel("PopupTest");
   final ObjectProperty<String> prop=new ObjectProperty<String>("fooTextField");
   PopupView.Content content=new PopupView.Content(){
-    public String getMinimizedValueAsHTML(){
+    @Override public String getMinimizedValueAsHTML(){
       return String.valueOf(prop.getValue());
     }
-    public Component getPopupComponent(){
+    @Override public Component getPopupComponent(){
       return new TextField("Edit foo",prop);
     }
   }
@@ -24,7 +24,7 @@ class myButton extends Button {
     public myButton(){
       super("Reverse the property");
       this.addListener(new Button.ClickListener(){
-        public void buttonClick(        Button.ClickEvent event){
+        @Override public void buttonClick(        Button.ClickEvent event){
           StringBuffer getContents=prop2.getValue();
           getContents.reverse();
         }
@@ -35,10 +35,10 @@ class myButton extends Button {
   final Panel panel2=new Panel("Editor with a button");
   panel2.addComponent(new myButton());
   PopupView.Content content2=new PopupView.Content(){
-    public String getMinimizedValueAsHTML(){
+    @Override public String getMinimizedValueAsHTML(){
       return String.valueOf(prop2.getValue());
     }
-    public Component getPopupComponent(){
+    @Override public Component getPopupComponent(){
       return panel2;
     }
   }
@@ -51,10 +51,10 @@ class myButton extends Button {
   tf2.setPropertyDataSource(op);
   panel3.addComponent(tf2);
   PopupView.Content content3=new PopupView.Content(){
-    public String getMinimizedValueAsHTML(){
+    @Override public String getMinimizedValueAsHTML(){
       return String.valueOf(op.getValue());
     }
-    public Component getPopupComponent(){
+    @Override public Component getPopupComponent(){
       return panel3;
     }
   }
@@ -71,10 +71,10 @@ class myButton extends Button {
   for (int i=0; i < 1000; i++) {
     final InlineDateField df=new InlineDateField("",new Date());
     PopupView pp=new PopupView(new PopupView.Content(){
-      public String getMinimizedValueAsHTML(){
+      @Override public String getMinimizedValueAsHTML(){
         return String.valueOf(df.getValue());
       }
-      public Component getPopupComponent(){
+      @Override public Component getPopupComponent(){
         return df;
       }
     }
@@ -82,10 +82,10 @@ class myButton extends Button {
     final int lineNum=i;
     PopupView pp2=new PopupView(new PopupView.Content(){
       TextField tf=new TextField("Editor for line " + lineNum,"Try to edit the contents for this textfield on line " + lineNum + " and see how the overview-version changes.");
-      public String getMinimizedValueAsHTML(){
+      @Override public String getMinimizedValueAsHTML(){
         return "" + String.valueOf(tf.getValue()).length() + " characters of info";
       }
-      public Component getPopupComponent(){
+      @Override public Component getPopupComponent(){
         return tf;
       }
     }

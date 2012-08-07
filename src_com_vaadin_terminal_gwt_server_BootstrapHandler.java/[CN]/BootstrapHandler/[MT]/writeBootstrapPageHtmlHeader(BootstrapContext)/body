@@ -12,19 +12,4 @@
   Root root=context.getRoot();
   String title=((root == null || root.getCaption() == null) ? "" : root.getCaption());
   page.write("<title>" + AbstractApplicationServlet.safeEscapeForHtml(title) + "</title>\n");
-  if (root != null) {
-    List<LoadScripts> loadScriptsAnnotations=getAnnotationsFor(root.getClass(),LoadScripts.class);
-    Collections.reverse(loadScriptsAnnotations);
-    for (int i=loadScriptsAnnotations.size() - 1; i >= 0; i--) {
-      LoadScripts loadScripts=loadScriptsAnnotations.get(i);
-      String[] value=loadScripts.value();
-      if (value != null) {
-        for (        String script : value) {
-          page.write("<script type='text/javascript' src='");
-          page.write(script);
-          page.write("'></script>\n");
-        }
-      }
-    }
-  }
 }
