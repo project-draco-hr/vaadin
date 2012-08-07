@@ -1,43 +1,33 @@
 {
   String beanQualifiedSourceName=beanType.getQualifiedSourceName();
-  sourceWriter.println("if (target == null) {");
-  sourceWriter.indent();
-  sourceWriter.println("target = GWT.create(" + beanQualifiedSourceName + ".class);");
-  sourceWriter.outdent();
-  sourceWriter.println("}");
   sourceWriter.println(JSONObject.class.getName() + " json = (" + JSONObject.class.getName()+ ")jsonValue;");
   for (  JMethod method : getSetters(beanType)) {
     String setterName=method.getName();
-    String fieldName=setterName.substring(3);
+    String baseName=setterName.substring(3);
+    String fieldName=getTransportFieldName(baseName);
     JType setterParameterType=method.getParameterTypes()[0];
     logger.log(Type.DEBUG,"* Processing field " + fieldName + " in "+ beanQualifiedSourceName+ " ("+ beanType.getName()+ ")");
     sourceWriter.println("if (json.containsKey(\"" + fieldName + "\")) {");
     sourceWriter.indent();
     String jsonFieldName="json_" + fieldName;
-    sourceWriter.println("JSONArray " + jsonFieldName + " = (JSONArray) json.get(\""+ fieldName+ "\");");
+    sourceWriter.println("JSONValue " + jsonFieldName + " = json.get(\""+ fieldName+ "\");");
     String fieldType;
-    String getterName="get" + fieldName;
+    String getterName="get" + baseName;
     JPrimitiveType primitiveType=setterParameterType.isPrimitive();
     if (primitiveType != null) {
       fieldType=primitiveType.getQualifiedBoxedSourceName();
       if (primitiveType == JPrimitiveType.BOOLEAN) {
-        getterName="is" + fieldName;
+        getterName="is" + baseName;
       }
     }
  else {
       fieldType=setterParameterType.getQualifiedSourceName();
     }
-    sourceWriter.println(fieldType + " referenceValue;");
-    sourceWriter.println("if (target == null) {");
-    sourceWriter.indent();
-    sourceWriter.println("referenceValue = null;");
-    sourceWriter.println("} else {");
-    sourceWriter.println("referenceValue = target." + getterName + "();");
+    sourceWriter.println(fieldType + " referenceValue = target." + getterName+ "();");
+    sourceWriter.print("target." + setterName + "(("+ fieldType+ ") "+ JsonDecoder.class.getName()+ ".decodeValue(");
+    GeneratedRpcMethodProviderGenerator.writeTypeCreator(sourceWriter,setterParameterType);
+    sourceWriter.println(", " + jsonFieldName + ", referenceValue, connection));");
     sourceWriter.outdent();
     sourceWriter.println("}");
-    sourceWriter.println("target." + setterName + "(("+ fieldType+ ") "+ JsonDecoder.class.getName()+ ".decodeValue("+ jsonFieldName+ ", referenceValue, idMapper, connection));");
-    sourceWriter.println("}");
-    sourceWriter.outdent();
   }
-  sourceWriter.println("return target;");
 }

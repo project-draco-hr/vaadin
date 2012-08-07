@@ -1,0 +1,32 @@
+{
+  IMocksControl control=EasyMock.createControl();
+  FragmentManager manager=control.createMock(FragmentManager.class);
+  ViewDisplay display=control.createMock(ViewDisplay.class);
+  ViewProvider provider=control.createMock(ViewProvider.class);
+  View view1=control.createMock(View.class);
+  View view2=control.createMock(View.class);
+  EasyMock.expect(provider.getViewName("test1")).andReturn("test1");
+  EasyMock.expect(provider.getView("test1")).andReturn(view1);
+  EasyMock.expect(manager.getFragment()).andReturn("");
+  view1.navigateTo(null);
+  display.showView(view1);
+  manager.setFragment("test1");
+  EasyMock.expect(provider.getViewName("test2/")).andReturn("test2");
+  EasyMock.expect(provider.getView("test2")).andReturn(view2);
+  EasyMock.expect(manager.getFragment()).andReturn("view1");
+  view2.navigateTo(null);
+  display.showView(view2);
+  manager.setFragment("test2");
+  EasyMock.expect(provider.getViewName("test1/params")).andReturn("test1");
+  EasyMock.expect(provider.getView("test1")).andReturn(view1);
+  EasyMock.expect(manager.getFragment()).andReturn("view2");
+  view1.navigateTo("params");
+  display.showView(view1);
+  manager.setFragment("test1/params");
+  control.replay();
+  Navigator navigator=new Navigator(manager,display);
+  navigator.registerProvider(provider);
+  navigator.navigateTo("test1");
+  navigator.navigateTo("test2/");
+  navigator.navigateTo("test1/params");
+}

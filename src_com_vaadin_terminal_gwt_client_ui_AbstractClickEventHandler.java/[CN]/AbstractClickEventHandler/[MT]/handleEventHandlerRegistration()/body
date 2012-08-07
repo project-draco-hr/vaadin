@@ -1,19 +1,22 @@
 {
   if (hasEventListener()) {
-    if (mouseUpHandlerRegistration == null) {
+    if (mouseDownHandlerRegistration == null) {
+      mouseDownHandlerRegistration=registerHandler(this,MouseDownEvent.getType());
       mouseUpHandlerRegistration=registerHandler(this,MouseUpEvent.getType());
-      contextMenuHandlerRegistration=registerHandler(this,ContextMenuEvent.getType());
       doubleClickHandlerRegistration=registerHandler(this,DoubleClickEvent.getType());
+      contextMenuHandlerRegistration=registerHandler(this,ContextMenuEvent.getType());
     }
   }
  else {
-    if (mouseUpHandlerRegistration != null) {
-      doubleClickHandlerRegistration.removeHandler();
+    if (mouseDownHandlerRegistration != null) {
+      mouseDownHandlerRegistration.removeHandler();
       mouseUpHandlerRegistration.removeHandler();
+      doubleClickHandlerRegistration.removeHandler();
       contextMenuHandlerRegistration.removeHandler();
-      contextMenuHandlerRegistration=null;
+      mouseDownHandlerRegistration=null;
       mouseUpHandlerRegistration=null;
       doubleClickHandlerRegistration=null;
+      contextMenuHandlerRegistration=null;
     }
   }
 }

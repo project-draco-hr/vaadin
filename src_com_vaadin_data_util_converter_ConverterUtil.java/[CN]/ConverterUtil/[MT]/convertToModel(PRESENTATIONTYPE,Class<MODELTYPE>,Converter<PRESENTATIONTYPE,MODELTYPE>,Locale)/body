@@ -1,0 +1,17 @@
+{
+  if (converter != null) {
+    return converter.convertToModel(presentationValue,locale);
+  }
+  if (presentationValue == null) {
+    return null;
+  }
+  if (modelType == null) {
+    return (MODELTYPE)presentationValue;
+  }
+ else   if (modelType.isAssignableFrom(presentationValue.getClass())) {
+    return modelType.cast(presentationValue);
+  }
+ else {
+    throw new Converter.ConversionException("Unable to convert value of type " + presentationValue.getClass().getName() + " to model type "+ modelType+ ". No converter is set and the types are not compatible.");
+  }
+}

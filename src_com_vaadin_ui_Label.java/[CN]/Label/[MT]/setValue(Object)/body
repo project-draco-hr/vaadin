@@ -1,6 +1,12 @@
 {
-  if (dataSource == null) {
-    throw new IllegalStateException(DATASOURCE_MUST_BE_SET);
+  if (newStringValue != null && newStringValue.getClass() != String.class) {
+    throw new Converter.ConversionException("Value of type " + newStringValue.getClass() + " cannot be assigned to "+ String.class.getName());
   }
-  dataSource.setValue(newValue);
+  if (getPropertyDataSource() == null) {
+    getState().setText((String)newStringValue);
+    requestRepaint();
+  }
+ else {
+    throw new IllegalStateException("Label is only a Property.Viewer and cannot update its data source");
+  }
 }

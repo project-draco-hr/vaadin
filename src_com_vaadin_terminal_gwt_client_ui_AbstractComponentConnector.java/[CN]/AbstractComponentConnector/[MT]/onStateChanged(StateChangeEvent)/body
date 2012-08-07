@@ -1,5 +1,4 @@
 {
-  super.onStateChanged(stateChangeEvent);
   ConnectorMap paintableMap=ConnectorMap.get(getConnection());
   if (getState().getDebugId() != null) {
     getWidget().getElement().setId(getState().getDebugId());
@@ -10,7 +9,7 @@
   if (getState() instanceof TabIndexState && getWidget() instanceof Focusable) {
     ((Focusable)getWidget()).setTabIndex(((TabIndexState)getState()).getTabIndex());
   }
-  setWidgetEnabled(isEnabled());
+  super.onStateChanged(stateChangeEvent);
   updateStyleNames();
   TooltipInfo tooltipInfo=paintableMap.getTooltipInfo(this,null);
   if (getState().hasDescription()) {
@@ -21,11 +20,11 @@
   }
   tooltipInfo.setErrorMessage(getState().getErrorMessage());
   if (delegateCaptionHandling()) {
-    ComponentContainerConnector parent=getParent();
-    if (parent != null) {
-      parent.updateCaption(this);
+    ServerConnector parent=getParent();
+    if (parent instanceof ComponentContainerConnector) {
+      ((ComponentContainerConnector)parent).updateCaption(this);
     }
- else     if (!(this instanceof RootConnector)) {
+ else     if (parent == null && !(this instanceof RootConnector)) {
       VConsole.error("Parent of connector " + Util.getConnectorString(this) + " is null. This is typically an indication of a broken component hierarchy");
     }
   }

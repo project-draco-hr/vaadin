@@ -24,10 +24,8 @@
     styles+=getWidget().getStylePrimaryName() + "-embedded";
   }
   getWidget().setStyleName(styles.trim());
+  getWidget().makeScrollable();
   clickEventHandler.handleEventHandlerRegistration();
-  if (!getWidget().isEmbedded() && getState().getCaption() != null) {
-    com.google.gwt.user.client.Window.setTitle(getState().getCaption());
-  }
   int childIndex=0;
   boolean isClosed=false;
   while (childIndex < uidl.getChildCount() && "open".equals(uidl.getChildUIDL(childIndex).getTag())) {
@@ -83,10 +81,6 @@
         getWidget().actionHandler=new ShortcutActionHandler(getWidget().id,client);
       }
       getWidget().actionHandler.updateActionMap(childUidl);
-    }
- else     if (tag == "execJS") {
-      String script=childUidl.getStringAttribute("script");
-      VRoot.eval(script);
     }
  else     if (tag == "notifications") {
       for (final Iterator<?> it=childUidl.getChildIterator(); it.hasNext(); ) {

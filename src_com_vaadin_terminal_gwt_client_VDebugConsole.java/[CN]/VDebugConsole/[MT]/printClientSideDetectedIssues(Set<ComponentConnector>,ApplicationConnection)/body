@@ -1,19 +1,21 @@
 {
   for (  final ComponentConnector paintable : zeroHeightComponents) {
-    final Widget layout=paintable.getParent().getWidget();
+    final ServerConnector parent=paintable.getParent();
     VerticalPanel errorDetails=new VerticalPanel();
-    errorDetails.add(new Label("" + Util.getSimpleName(paintable) + " inside "+ Util.getSimpleName(layout)));
-    final CheckBox emphasisInUi=new CheckBox("Emphasize components parent in UI (the actual component is not visible)");
-    emphasisInUi.addClickHandler(new ClickHandler(){
-      public void onClick(      ClickEvent event){
-        if (paintable != null) {
+    errorDetails.add(new Label("" + Util.getSimpleName(paintable) + " inside "+ Util.getSimpleName(parent)));
+    if (parent instanceof ComponentConnector) {
+      ComponentConnector parentComponent=(ComponentConnector)parent;
+      final Widget layout=parentComponent.getWidget();
+      final CheckBox emphasisInUi=new CheckBox("Emphasize components parent in UI (the actual component is not visible)");
+      emphasisInUi.addClickHandler(new ClickHandler(){
+        public void onClick(        ClickEvent event){
           Element element2=layout.getElement();
-          Widget.setStyleName(element2,"invalidlayout",emphasisInUi.getValue());
+          Widget.setStyleName(element2,"invalidlayout",emphasisInUi.getValue().booleanValue());
         }
       }
-    }
 );
-    errorDetails.add(emphasisInUi);
+      errorDetails.add(emphasisInUi);
+    }
     panel.add(errorDetails);
   }
 }

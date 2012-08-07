@@ -4,41 +4,63 @@
   if (printWriter == null) {
     return;
   }
-  boolean isEnum=(beanType.isEnum() != null);
-  Date date=new Date();
-  TypeOracle typeOracle=context.getTypeOracle();
-  String beanQualifiedSourceName=beanType.getQualifiedSourceName();
-  logger.log(Type.DEBUG,"Processing serializable type " + beanQualifiedSourceName + "...");
+  boolean isEnum=(type.isEnum() != null);
+  boolean isArray=(type.isArray() != null);
+  String qualifiedSourceName=type.getQualifiedSourceName();
+  logger.log(Type.DEBUG,"Processing serializable type " + qualifiedSourceName + "...");
   ClassSourceFileComposerFactory composer=null;
   composer=new ClassSourceFileComposerFactory(serializerPackageName,serializerClassName);
   composer.addImport(GWT.class.getName());
-  composer.addImport(JSONArray.class.getName());
+  composer.addImport(JSONValue.class.getName());
+  composer.addImport(com.vaadin.terminal.gwt.client.communication.Type.class.getName());
   composer.addImport(JsonDecoder.class.getName());
-  composer.addImplementedInterface(JSONSerializer.class.getName() + "<" + beanQualifiedSourceName+ ">");
+  if (isEnum || isArray) {
+    composer.addImplementedInterface(JSONSerializer.class.getName() + "<" + qualifiedSourceName+ ">");
+  }
+ else {
+    composer.addImplementedInterface(DiffJSONSerializer.class.getName() + "<" + qualifiedSourceName+ ">");
+  }
   SourceWriter sourceWriter=composer.createSourceWriter(context,printWriter);
   sourceWriter.indent();
-  sourceWriter.println("public " + JSONValue.class.getName() + " serialize("+ beanQualifiedSourceName+ " value, "+ ConnectorMap.class.getName()+ " idMapper, "+ ApplicationConnection.class.getName()+ " connection) {");
+  sourceWriter.println("public " + JSONValue.class.getName() + " serialize("+ qualifiedSourceName+ " value, "+ ApplicationConnection.class.getName()+ " connection) {");
   sourceWriter.indent();
-  sourceWriter.println(beanQualifiedSourceName + " castedValue = (" + beanQualifiedSourceName+ ") value;");
+  sourceWriter.println(qualifiedSourceName + " castedValue = (" + qualifiedSourceName+ ") value;");
   if (isEnum) {
-    writeEnumSerializer(logger,sourceWriter,beanType);
+    writeEnumSerializer(logger,sourceWriter,type);
+  }
+ else   if (isArray) {
+    writeArraySerializer(logger,sourceWriter,type.isArray());
   }
  else {
-    writeBeanSerializer(logger,sourceWriter,beanType);
+    writeBeanSerializer(logger,sourceWriter,type);
   }
+  sourceWriter.outdent();
   sourceWriter.println("}");
-  sourceWriter.println("public " + beanQualifiedSourceName + " deserialize("+ JSONValue.class.getName()+ " jsonValue, "+ beanQualifiedSourceName+ " target, "+ ConnectorMap.class.getName()+ " idMapper, "+ ApplicationConnection.class.getName()+ " connection) {");
+  sourceWriter.println();
+  if (!isEnum && !isArray) {
+    sourceWriter.println("public void update(" + qualifiedSourceName + " target, Type type, "+ JSONValue.class.getName()+ " jsonValue, "+ ApplicationConnection.class.getName()+ " connection) {");
+    sourceWriter.indent();
+    writeBeanDeserializer(logger,sourceWriter,type);
+    sourceWriter.outdent();
+    sourceWriter.println("}");
+  }
+  sourceWriter.println("public " + qualifiedSourceName + " deserialize(Type type, "+ JSONValue.class.getName()+ " jsonValue, "+ ApplicationConnection.class.getName()+ " connection) {");
   sourceWriter.indent();
   if (isEnum) {
-    writeEnumDeserializer(logger,sourceWriter,beanType.isEnum());
+    writeEnumDeserializer(logger,sourceWriter,type.isEnum());
+  }
+ else   if (isArray) {
+    writeArrayDeserializer(logger,sourceWriter,type.isArray());
   }
  else {
-    writeBeanDeserializer(logger,sourceWriter,beanType);
+    sourceWriter.println(qualifiedSourceName + " target = GWT.create(" + qualifiedSourceName+ ".class);");
+    sourceWriter.println("update(target, type, jsonValue, connection);");
+    sourceWriter.println("return target;");
   }
-  sourceWriter.println("}");
   sourceWriter.outdent();
   sourceWriter.println("}");
   sourceWriter.outdent();
+  sourceWriter.println("}");
   context.commit(logger,printWriter);
-  logger.log(TreeLogger.INFO,"Generated Serializer class " + getFullyQualifiedSerializerClassName(beanType));
+  logger.log(TreeLogger.INFO,"Generated Serializer class " + getFullyQualifiedSerializerClassName(type));
 }

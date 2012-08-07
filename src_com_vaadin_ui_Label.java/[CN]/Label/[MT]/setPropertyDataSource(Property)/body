@@ -2,6 +2,10 @@
   if (dataSource != null && Property.ValueChangeNotifier.class.isAssignableFrom(dataSource.getClass())) {
     ((Property.ValueChangeNotifier)dataSource).removeListener(this);
   }
+  if (!ConverterUtil.canConverterHandle(getConverter(),String.class,newDataSource.getType())) {
+    Converter<String,?> c=ConverterUtil.getConverter(String.class,newDataSource.getType(),getApplication());
+    setConverter(c);
+  }
   dataSource=newDataSource;
   if (dataSource != null && Property.ValueChangeNotifier.class.isAssignableFrom(dataSource.getClass())) {
     ((Property.ValueChangeNotifier)dataSource).addListener(this);

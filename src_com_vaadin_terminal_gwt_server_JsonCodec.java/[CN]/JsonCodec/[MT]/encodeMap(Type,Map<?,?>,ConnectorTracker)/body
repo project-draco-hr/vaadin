@@ -1,0 +1,22 @@
+{
+  Type keyType, valueType;
+  if (mapType instanceof ParameterizedType) {
+    keyType=((ParameterizedType)mapType).getActualTypeArguments()[0];
+    valueType=((ParameterizedType)mapType).getActualTypeArguments()[1];
+  }
+ else {
+    throw new JSONException("Map is missing generics");
+  }
+  if (map.isEmpty()) {
+    return new JSONArray();
+  }
+  if (keyType == String.class) {
+    return encodeStringMap(valueType,map,connectorTracker);
+  }
+ else   if (keyType == Connector.class) {
+    return encodeConnectorMap(valueType,map,connectorTracker);
+  }
+ else {
+    return encodeObjectMap(keyType,valueType,map,connectorTracker);
+  }
+}

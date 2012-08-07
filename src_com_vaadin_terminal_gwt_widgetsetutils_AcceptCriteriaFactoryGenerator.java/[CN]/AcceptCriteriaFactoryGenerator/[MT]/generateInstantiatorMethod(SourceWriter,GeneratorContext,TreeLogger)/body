@@ -2,17 +2,21 @@
   sourceWriter.println("public VAcceptCriterion get(String name) {");
   sourceWriter.indent();
   sourceWriter.println("name = name.intern();");
-  Collection<Class<? extends AcceptCriterion>> clientSideVerifiableCriterion=ClassPathExplorer.getCriterion();
-  for (  Class<? extends AcceptCriterion> class1 : clientSideVerifiableCriterion) {
-    logger.log(Type.INFO,"creating mapping for " + class1.getCanonicalName());
-    String canonicalName=class1.getCanonicalName();
-    Class<? extends VAcceptCriterion> clientClass=class1.getAnnotation(ClientCriterion.class).value();
-    sourceWriter.print("if (\"");
-    sourceWriter.print(canonicalName);
-    sourceWriter.print("\" == name) return GWT.create(");
-    sourceWriter.print(clientClass.getCanonicalName());
-    sourceWriter.println(".class );");
-    sourceWriter.print("else ");
+  JClassType criteriaType=context.getTypeOracle().findType(VAcceptCriterion.class.getName());
+  for (  JClassType clientClass : criteriaType.getSubtypes()) {
+    AcceptCriterion annotation=clientClass.getAnnotation(AcceptCriterion.class);
+    if (annotation != null) {
+      String clientClassName=clientClass.getQualifiedSourceName();
+      Class<?> serverClass=clientClass.getAnnotation(AcceptCriterion.class).value();
+      String serverClassName=serverClass.getCanonicalName();
+      logger.log(Type.INFO,"creating mapping for " + serverClassName);
+      sourceWriter.print("if (\"");
+      sourceWriter.print(serverClassName);
+      sourceWriter.print("\" == name) return GWT.create(");
+      sourceWriter.print(clientClassName);
+      sourceWriter.println(".class );");
+      sourceWriter.print("else ");
+    }
   }
   sourceWriter.println("return null;");
   sourceWriter.outdent();

@@ -1,0 +1,26 @@
+{
+  SimpleTree simpleTree=new SimpleTree(getConnectorString(connector)){
+    @Override protected void select(    ClickEvent event){
+      super.select(event);
+      if (connector instanceof ComponentConnector) {
+        VUIDLBrowser.highlight((ComponentConnector)connector);
+      }
+    }
+  }
+;
+  simpleTree.addDomHandler(new MouseOutHandler(){
+    public void onMouseOut(    MouseOutEvent event){
+      VUIDLBrowser.deHiglight();
+    }
+  }
+,MouseOutEvent.getType());
+  connectors.add(connector);
+  String msg=indent + "* " + getConnectorString(connector);
+  GWT.log(msg);
+  consoleLog(msg);
+  System.out.println(msg);
+  for (  ServerConnector c : connector.getChildren()) {
+    simpleTree.add(dumpConnectorHierarchy(c,indent + " ",connectors));
+  }
+  return simpleTree;
+}

@@ -1,0 +1,16 @@
+{
+  Class<? extends ServerConnector> classType=resolveInheritedConnectorType(conf,tag);
+  if (classType == null || classType == UnknownComponentConnector.class) {
+    String serverSideName=conf.getUnknownServerClassNameByTag(tag);
+    UnknownComponentConnector c=GWT.create(UnknownComponentConnector.class);
+    c.setServerSideClassName(serverSideName);
+    return c;
+  }
+ else {
+    ServerConnector connector=widgetMap.instantiate(classType);
+    if (connector instanceof HasJavaScriptConnectorHelper) {
+      ((HasJavaScriptConnectorHelper)connector).getJavascriptConnectorHelper().setTag(tag);
+    }
+    return connector;
+  }
+}

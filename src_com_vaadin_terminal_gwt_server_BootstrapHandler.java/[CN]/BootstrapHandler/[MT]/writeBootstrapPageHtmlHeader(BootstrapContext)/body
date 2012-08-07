@@ -3,13 +3,28 @@
   String themeName=context.getThemeName();
   page.write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n");
   page.write("<meta http-equiv=\"X-UA-Compatible\" content=\"chrome=1\"/>\n");
-  page.write("<style type=\"text/css\">" + "html, body {height:100%;margin:0;}</style>");
+  page.write("<style type=\"text/css\">" + "html, body {height:100%;margin:0;}</style>\n");
   if (themeName != null) {
     String themeUri=getThemeUri(context,themeName);
-    page.write("<link rel=\"shortcut icon\" type=\"image/vnd.microsoft.icon\" href=\"" + themeUri + "/favicon.ico\" />");
-    page.write("<link rel=\"icon\" type=\"image/vnd.microsoft.icon\" href=\"" + themeUri + "/favicon.ico\" />");
+    page.write("<link rel=\"shortcut icon\" type=\"image/vnd.microsoft.icon\" href=\"" + themeUri + "/favicon.ico\" />\n");
+    page.write("<link rel=\"icon\" type=\"image/vnd.microsoft.icon\" href=\"" + themeUri + "/favicon.ico\" />\n");
   }
   Root root=context.getRoot();
   String title=((root == null || root.getCaption() == null) ? "" : root.getCaption());
-  page.write("<title>" + AbstractApplicationServlet.safeEscapeForHtml(title) + "</title>");
+  page.write("<title>" + AbstractApplicationServlet.safeEscapeForHtml(title) + "</title>\n");
+  if (root != null) {
+    List<LoadScripts> loadScriptsAnnotations=getAnnotationsFor(root.getClass(),LoadScripts.class);
+    Collections.reverse(loadScriptsAnnotations);
+    for (int i=loadScriptsAnnotations.size() - 1; i >= 0; i--) {
+      LoadScripts loadScripts=loadScriptsAnnotations.get(i);
+      String[] value=loadScripts.value();
+      if (value != null) {
+        for (        String script : value) {
+          page.write("<script type='text/javascript' src='");
+          page.write(script);
+          page.write("'></script>\n");
+        }
+      }
+    }
+  }
 }

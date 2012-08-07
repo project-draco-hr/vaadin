@@ -29,7 +29,7 @@
       lastToBeRenderedInClient=((Integer)variables.get("lastToBeRendered")).intValue();
     }
  catch (    Exception e) {
-      logger.log(Level.FINER,"Could not parse the first and/or last rows.",e);
+      getLogger().log(Level.FINER,"Could not parse the first and/or last rows.",e);
     }
     if (!containerChangeToBeRendered) {
       Integer value=(Integer)variables.get("reqfirstrow");
@@ -44,10 +44,10 @@
         }
       }
     }
-    logger.finest("Client wants rows " + reqFirstRowToPaint + "-"+ (reqFirstRowToPaint + reqRowsToPaint - 1));
+    getLogger().finest("Client wants rows " + reqFirstRowToPaint + "-"+ (reqFirstRowToPaint + reqRowsToPaint - 1));
     clientNeedsContentRefresh=true;
   }
-  if (!sortDisabled) {
+  if (isSortEnabled()) {
     boolean doSort=false;
     if (variables.containsKey("sortcolumn")) {
       final String colId=(String)variables.get("sortcolumn");
@@ -81,7 +81,7 @@
         }
       }
  catch (      final Exception e) {
-        logger.log(Level.FINER,"Could not determine column collapsing state",e);
+        getLogger().log(Level.FINER,"Could not determine column collapsing state",e);
       }
       clientNeedsContentRefresh=true;
     }
@@ -100,7 +100,7 @@
         }
       }
  catch (      final Exception e) {
-        logger.log(Level.FINER,"Could not determine column reordering state",e);
+        getLogger().log(Level.FINER,"Could not determine column reordering state",e);
       }
       clientNeedsContentRefresh=true;
     }

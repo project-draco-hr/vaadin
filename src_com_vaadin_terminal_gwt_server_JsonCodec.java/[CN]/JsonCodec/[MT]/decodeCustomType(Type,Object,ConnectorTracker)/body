@@ -1,0 +1,23 @@
+{
+  if (isInternalType(targetType)) {
+    throw new JSONException("decodeCustomType cannot be used for " + targetType + ", which is an internal type");
+  }
+  if (value == JSONObject.NULL) {
+    return null;
+  }
+ else   if (targetType == byte.class || targetType == Byte.class) {
+    return Byte.valueOf(String.valueOf(value));
+  }
+ else   if (targetType == char.class || targetType == Character.class) {
+    return Character.valueOf(String.valueOf(value).charAt(0));
+  }
+ else   if (targetType instanceof Class<?> && ((Class<?>)targetType).isArray()) {
+    return decodeArray((Class<?>)targetType,(JSONArray)value,connectorTracker);
+  }
+ else   if (targetType == JSONObject.class || targetType == JSONArray.class) {
+    return value;
+  }
+ else {
+    return decodeObject(targetType,(JSONObject)value,connectorTracker);
+  }
+}

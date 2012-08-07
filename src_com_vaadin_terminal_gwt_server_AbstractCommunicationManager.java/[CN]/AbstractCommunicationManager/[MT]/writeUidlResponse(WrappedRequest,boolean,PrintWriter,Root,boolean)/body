@@ -1,22 +1,22 @@
 {
   ArrayList<ClientConnector> dirtyVisibleConnectors=new ArrayList<ClientConnector>();
   Application application=root.getApplication();
-  DirtyConnectorTracker rootConnectorTracker=root.getDirtyConnectorTracker();
-  logger.log(Level.FINE,"* Creating response to client");
+  ConnectorTracker rootConnectorTracker=root.getConnectorTracker();
+  getLogger().log(Level.FINE,"* Creating response to client");
   if (repaintAll) {
     getClientCache(root).clear();
-    rootConnectorTracker.markAllComponentsDirty();
+    rootConnectorTracker.markAllConnectorsDirty();
     locales=null;
     requireLocale(application.getLocale().toString());
   }
-  dirtyVisibleConnectors.addAll(getDirtyVisibleComponents(rootConnectorTracker));
-  logger.log(Level.FINE,"Found " + dirtyVisibleConnectors.size() + " dirty connectors to paint");
+  dirtyVisibleConnectors.addAll(getDirtyVisibleConnectors(rootConnectorTracker));
+  getLogger().log(Level.FINE,"Found " + dirtyVisibleConnectors.size() + " dirty connectors to paint");
   for (  ClientConnector connector : dirtyVisibleConnectors) {
     if (connector instanceof Component) {
       ((Component)connector).updateState();
     }
   }
-  rootConnectorTracker.markAllComponentsClean();
+  rootConnectorTracker.markAllConnectorsClean();
   outWriter.print("\"changes\":[");
   List<InvalidLayout> invalidComponentRelativeSizes=null;
   JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
@@ -43,11 +43,11 @@
             referenceState=stateType.newInstance();
           }
  catch (          Exception e) {
-            logger.log(Level.WARNING,"Error creating reference object for state of type " + stateType.getName());
+            getLogger().log(Level.WARNING,"Error creating reference object for state of type " + stateType.getName());
           }
         }
-        JSONArray stateJsonArray=JsonCodec.encode(state,referenceState,stateType,application);
-        sharedStates.put(connector.getConnectorId(),stateJsonArray);
+        Object stateJson=JsonCodec.encode(state,referenceState,stateType,root.getConnectorTracker());
+        sharedStates.put(connector.getConnectorId(),stateJson);
       }
  catch (      JSONException e) {
         throw new PaintException("Failed to serialize shared state for connector " + connector.getClass().getName() + " ("+ connector.getConnectorId()+ "): "+ e.getMessage(),e);
@@ -72,22 +72,19 @@
   outWriter.print(", ");
   outWriter.print("\"hierarchy\":");
   JSONObject hierarchyInfo=new JSONObject();
-  for (  Connector connector : dirtyVisibleConnectors) {
-    if (connector instanceof HasComponents) {
-      HasComponents parent=(HasComponents)connector;
-      String parentConnectorId=parent.getConnectorId();
-      JSONArray children=new JSONArray();
-      for (      Component child : getChildComponents(parent)) {
-        if (isVisible(child)) {
-          children.put(child.getConnectorId());
-        }
+  for (  ClientConnector connector : dirtyVisibleConnectors) {
+    String connectorId=connector.getConnectorId();
+    JSONArray children=new JSONArray();
+    for (    ClientConnector child : AbstractClientConnector.getAllChildrenIterable(connector)) {
+      if (isVisible(child)) {
+        children.put(child.getConnectorId());
       }
-      try {
-        hierarchyInfo.put(parentConnectorId,children);
-      }
- catch (      JSONException e) {
-        throw new PaintException("Failed to send hierarchy information about " + parentConnectorId + " to the client: "+ e.getMessage(),e);
-      }
+    }
+    try {
+      hierarchyInfo.put(connectorId,children);
+    }
+ catch (    JSONException e) {
+      throw new PaintException("Failed to send hierarchy information about " + connectorId + " to the client: "+ e.getMessage(),e);
     }
   }
   outWriter.append(hierarchyInfo.toString());
@@ -103,9 +100,9 @@
       invocationJson.put(invocation.getMethodName());
       JSONArray paramJson=new JSONArray();
       for (int i=0; i < invocation.getParameterTypes().length; ++i) {
-        Class<?> parameterType=invocation.getParameterTypes()[i];
+        Type parameterType=invocation.getParameterTypes()[i];
         Object referenceParameter=null;
-        paramJson.put(JsonCodec.encode(invocation.getParameters()[i],referenceParameter,parameterType,application));
+        paramJson.put(JsonCodec.encode(invocation.getParameters()[i],referenceParameter,parameterType,root.getConnectorTracker()));
       }
       invocationJson.put(paramJson);
       rpcCalls.put(invocationJson);
@@ -154,16 +151,16 @@
     ci=(Application.SystemMessages)m.invoke(null,(Object[])null);
   }
  catch (  NoSuchMethodException e) {
-    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+    getLogger().log(Level.WARNING,"getSystemMessages() failed - continuing",e);
   }
 catch (  IllegalArgumentException e) {
-    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+    getLogger().log(Level.WARNING,"getSystemMessages() failed - continuing",e);
   }
 catch (  IllegalAccessException e) {
-    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+    getLogger().log(Level.WARNING,"getSystemMessages() failed - continuing",e);
   }
 catch (  InvocationTargetException e) {
-    logger.log(Level.WARNING,"getSystemMessages() failed - continuing",e);
+    getLogger().log(Level.WARNING,"getSystemMessages() failed - continuing",e);
   }
   if (ci != null && ci.getSessionExpiredMessage() == null && ci.getSessionExpiredCaption() == null && ci.isSessionExpiredNotificationEnabled()) {
     int newTimeoutInterval=getTimeoutInterval();
@@ -186,7 +183,7 @@ catch (  InvocationTargetException e) {
       is=getThemeResourceAsStream(root,getTheme(root),resource);
     }
  catch (    final Exception e) {
-      logger.log(Level.FINER,"Failed to get theme resource stream.",e);
+      getLogger().log(Level.FINER,"Failed to get theme resource stream.",e);
     }
     if (is != null) {
       outWriter.print((resourceIndex++ > 0 ? ", " : "") + "\"" + resource+ "\" : ");
@@ -201,12 +198,12 @@ catch (  InvocationTargetException e) {
         r.close();
       }
  catch (      final java.io.IOException e) {
-        logger.log(Level.INFO,"Resource transfer failed",e);
+        getLogger().log(Level.INFO,"Resource transfer failed",e);
       }
       outWriter.print("\"" + JsonPaintTarget.escapeJSON(layout.toString()) + "\"");
     }
  else {
-      logger.severe("CustomLayout not found: " + resource);
+      getLogger().severe("CustomLayout not found: " + resource);
     }
   }
   outWriter.print("}");

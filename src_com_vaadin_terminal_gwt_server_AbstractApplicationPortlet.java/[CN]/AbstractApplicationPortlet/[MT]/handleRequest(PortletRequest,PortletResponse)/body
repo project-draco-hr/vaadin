@@ -2,17 +2,7 @@
   RequestTimer requestTimer=new RequestTimer();
   requestTimer.start();
   AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
-  WrappedPortletRequest wrappedRequest;
-  String portalInfo=request.getPortalContext().getPortalInfo().toLowerCase();
-  if (portalInfo.contains("liferay")) {
-    wrappedRequest=new WrappedLiferayRequest(request,getDeploymentConfiguration());
-  }
- else   if (portalInfo.contains("gatein")) {
-    wrappedRequest=new WrappedGateinRequest(request,getDeploymentConfiguration());
-  }
- else {
-    wrappedRequest=new WrappedPortletRequest(request,getDeploymentConfiguration());
-  }
+  WrappedPortletRequest wrappedRequest=createWrappedRequest(request);
   WrappedPortletResponse wrappedResponse=new WrappedPortletResponse(response,getDeploymentConfiguration());
   RequestType requestType=getRequestType(request);
   if (requestType == RequestType.UNKNOWN) {
@@ -37,7 +27,7 @@
       if (application == null) {
         return;
       }
-      Application.setCurrentApplication(application);
+      Application.setCurrent(application);
       PortletApplicationContext2 applicationContext=getApplicationContext(request.getPortletSession());
       applicationContext.setResponse(response);
       applicationContext.setPortletConfig(getPortletConfig());
@@ -86,7 +76,7 @@ applicationContext.firePortletEventRequest(application,root,(EventRequest)reques
 applicationContext.firePortletResourceRequest(application,root,(ResourceRequest)request,(ResourceResponse)response);
 }
 if (requestType == RequestType.FILE_UPLOAD) {
-applicationManager.handleFileUpload(wrappedRequest,wrappedResponse);
+applicationManager.handleFileUpload(root,wrappedRequest,wrappedResponse);
 return;
 }
  else if (requestType == RequestType.BROWSER_DETAILS) {
@@ -106,10 +96,10 @@ handleOtherRequest(wrappedRequest,wrappedResponse,requestType,application,applic
 }
 }
  catch (final SessionExpiredException e) {
-logger.finest("A user session has expired");
+getLogger().finest("A user session has expired");
 }
 catch (final GeneralSecurityException e) {
-logger.fine("General security exception, the security key was probably incorrect.");
+getLogger().fine("General security exception, the security key was probably incorrect.");
 }
 catch (final Throwable e) {
 handleServiceException(request,response,application,e);
@@ -127,9 +117,12 @@ if (requestStarted) {
 }
 }
   finally {
-Root.setCurrentRoot(null);
-Application.setCurrentApplication(null);
-requestTimer.stop((AbstractWebApplicationContext)application.getContext());
+Root.setCurrent(null);
+Application.setCurrent(null);
+PortletSession session=request.getPortletSession(false);
+if (session != null) {
+requestTimer.stop(getApplicationContext(session));
+}
 }
 }
 }

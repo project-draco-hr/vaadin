@@ -1,0 +1,18 @@
+{
+  List<T> list=new ArrayList<T>();
+  Class<?> currentType=type;
+  while (currentType != Object.class) {
+    T annotation=currentType.getAnnotation(annotationType);
+    if (annotation != null) {
+      list.add(annotation);
+    }
+    currentType=currentType.getSuperclass();
+  }
+  for (  Class<?> iface : type.getInterfaces()) {
+    T annotation=iface.getAnnotation(annotationType);
+    if (annotation != null) {
+      list.add(annotation);
+    }
+  }
+  return list;
+}

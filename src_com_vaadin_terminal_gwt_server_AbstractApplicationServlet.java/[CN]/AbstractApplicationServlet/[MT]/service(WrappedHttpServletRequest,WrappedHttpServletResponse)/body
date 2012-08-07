@@ -22,7 +22,7 @@
     if (application == null) {
       return;
     }
-    Application.setCurrentApplication(application);
+    Application.setCurrent(application);
     WebApplicationContext webApplicationContext=getApplicationContext(request.getSession());
     CommunicationManager applicationManager=webApplicationContext.getApplicationManager(application,this);
     webApplicationContext.getBrowser().updateRequestDetails(request);
@@ -34,13 +34,17 @@
     webApplicationContext.startTransaction(application,request);
     transactionStarted=true;
     if (requestType == RequestType.FILE_UPLOAD) {
-      applicationManager.handleFileUpload(application,request,response);
+      Root root=application.getRootForRequest(request);
+      if (root == null) {
+        throw new ServletException(ERROR_NO_ROOT_FOUND);
+      }
+      applicationManager.handleFileUpload(root,request,response);
       return;
     }
  else     if (requestType == RequestType.UIDL) {
       Root root=application.getRootForRequest(request);
       if (root == null) {
-        throw new ServletException(ERROR_NO_WINDOW_FOUND);
+        throw new ServletException(ERROR_NO_ROOT_FOUND);
       }
       applicationManager.handleUidlRequest(request,response,servletWrapper,root);
       return;
@@ -79,9 +83,12 @@ catch (  final Throwable e) {
         }
       }
   finally {
-        Root.setCurrentRoot(null);
-        Application.setCurrentApplication(null);
-        requestTimer.stop((AbstractWebApplicationContext)application.getContext());
+        Root.setCurrent(null);
+        Application.setCurrent(null);
+        HttpSession session=request.getSession(false);
+        if (session != null) {
+          requestTimer.stop(getApplicationContext(session));
+        }
       }
     }
   }
