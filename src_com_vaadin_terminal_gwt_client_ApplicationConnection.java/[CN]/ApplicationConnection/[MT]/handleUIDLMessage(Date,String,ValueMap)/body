@@ -85,11 +85,6 @@
       int startProcessing=updateDuration.elapsedMillis();
       createConnectorsIfNeeded(json);
       updateDuration.logDuration(" * Creating connectors completed",10);
-      if (debugLogging) {
-        VConsole.log(" * Dumping state changes to the console");
-        VConsole.dirUIDL(json,ApplicationConnection.this);
-        updateDuration.logDuration(" * Dumping state changes to the console completed",10);
-      }
       Collection<StateChangeEvent> pendingStateChangeEvents=updateConnectorState(json);
       updateDuration.logDuration(" * Update of connector states completed",10);
       Collection<ConnectorHierarchyChangeEvent> pendingHierarchyChangeEvents=updateConnectorHierarchy(json);
@@ -113,6 +108,11 @@
       layoutManager.setEverythingNeedsMeasure();
       layoutManager.layoutNow();
       updateDuration.logDuration(" * Layout processing completed",10);
+      if (ApplicationConfiguration.isDebugMode()) {
+        VConsole.log(" * Dumping state changes to the console");
+        VConsole.dirUIDL(json,ApplicationConnection.this);
+        updateDuration.logDuration(" * Dumping state changes to the console completed",10);
+      }
       if (meta != null) {
         if (meta.containsKey("appError")) {
           ValueMap error=meta.getValueMap("appError");
