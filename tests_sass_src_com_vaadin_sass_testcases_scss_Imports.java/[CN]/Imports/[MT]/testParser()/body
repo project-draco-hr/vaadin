@@ -1,0 +1,10 @@
+{
+  Parser parser=new Parser();
+  SCSSDocumentHandler handler=new SCSSDocumentHandlerImpl();
+  parser.setDocumentHandler(handler);
+  parser.parseStyleSheet(getClass().getResource(scss).getPath());
+  ScssStylesheet root=handler.getStyleSheet();
+  ImportNode importNode=(ImportNode)root.getChildren().get(0);
+  Assert.assertEquals("_partial-for-import",importNode.getUri());
+  Assert.assertFalse(importNode.isPureCssImport());
+}

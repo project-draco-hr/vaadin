@@ -1,0 +1,21 @@
+{
+  ScssStylesheet root=new ScssStylesheet();
+  MixinDefNode mixinDefNoArgs=new MixinDefNode("no-args",null);
+  BlockNode blockNode=new BlockNode(null);
+  mixinDefNoArgs.appendChild(blockNode);
+  root.appendChild(mixinDefNoArgs);
+  BlockNode blockWithMixin=new BlockNode(null);
+  MixinNode mixin=new MixinNode("no-args",null);
+  blockWithMixin.appendChild(mixin);
+  root.appendChild(blockWithMixin);
+  try {
+    mixinVisitor.traverse(root);
+  }
+ catch (  Exception e) {
+    Assert.fail(e.getMessage());
+  }
+  Assert.assertEquals(1,root.getChildren().size());
+  BlockNode child=(BlockNode)root.getChildren().get(0);
+  BlockNode fromMixin=(BlockNode)child.getChildren().get(0);
+  Assert.assertFalse(fromMixin.hasChildren());
+}

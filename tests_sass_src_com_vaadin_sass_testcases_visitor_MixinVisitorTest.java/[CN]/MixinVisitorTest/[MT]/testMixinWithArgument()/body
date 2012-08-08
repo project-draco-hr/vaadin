@@ -1,0 +1,32 @@
+{
+  ScssStylesheet root=new ScssStylesheet();
+  ArrayList<VariableNode> argNameList=new ArrayList<VariableNode>();
+  argNameList.add(new VariableNode("dist",null,false));
+  MixinDefNode mixinDef=new MixinDefNode("left",argNameList);
+  RuleNode floatRuleNode=new RuleNode("float",LexicalUnitImpl.createString(null,"left"),false,null);
+  mixinDef.appendChild(floatRuleNode);
+  RuleNode marginLeftRuleNode=new RuleNode("margin-left",com.vaadin.sass.parser.LexicalUnitImpl.createVariable(0,0,null,"dist"),false,null);
+  mixinDef.appendChild(marginLeftRuleNode);
+  root.appendChild(mixinDef);
+  BlockNode dataBlock=new BlockNode(null);
+  ArrayList<LexicalUnit> argValueList=new ArrayList<LexicalUnit>();
+  LexicalUnit arg=LexicalUnitImpl.createPixel(null,10f);
+  argValueList.add(arg);
+  MixinNode mixinNode=new MixinNode("left",argValueList);
+  dataBlock.appendChild(mixinNode);
+  root.appendChild(dataBlock);
+  try {
+    mixinVisitor.traverse(root);
+  }
+ catch (  Exception e) {
+    Assert.fail(e.getMessage());
+  }
+  Assert.assertEquals(1,root.getChildren().size());
+  BlockNode dataBlockNode=(BlockNode)root.getChildren().get(0);
+  VariableNode variable=(VariableNode)dataBlockNode.getChildren().get(0);
+  Assert.assertEquals("dist",variable.getName());
+  Assert.assertEquals("float",((RuleNode)dataBlockNode.getChildren().get(1)).getVariable());
+  Assert.assertEquals("left",((RuleNode)dataBlockNode.getChildren().get(1)).getValue().getStringValue());
+  Assert.assertEquals("margin-left",((RuleNode)dataBlockNode.getChildren().get(2)).getVariable());
+  Assert.assertEquals(SCSSLexicalUnit.SCSS_VARIABLE,((RuleNode)dataBlockNode.getChildren().get(2)).getValue().getLexicalUnitType());
+}

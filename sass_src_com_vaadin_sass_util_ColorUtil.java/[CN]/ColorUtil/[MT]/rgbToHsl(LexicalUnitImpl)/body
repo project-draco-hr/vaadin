@@ -1,0 +1,29 @@
+{
+  LexicalUnitImpl rgbParam=rgb.getParameters();
+  LexicalUnitImpl red=null;
+  LexicalUnitImpl green=null;
+  LexicalUnitImpl blue=null;
+  int i=0;
+  while (i < 5) {
+switch (i) {
+case 0:
+      red=rgbParam;
+    break;
+case 2:
+  green=rgbParam;
+break;
+case 4:
+blue=rgbParam;
+break;
+case 1:
+case 3:
+break;
+}
+rgbParam=(LexicalUnitImpl)rgbParam.getNextLexicalUnit();
+i++;
+}
+int hsl[]=calculateHsl(red.getIntegerValue(),green.getIntegerValue(),blue.getIntegerValue());
+rgbParam=rgb.getParameters();
+LexicalUnitImpl hslParams=createHslParameters(hsl[0],hsl[1],hsl[2],rgbParam.getLineNumber(),rgbParam.getColumnNumber(),(LexicalUnitImpl)rgbParam.getPreviousLexicalUnit());
+return LexicalUnitImpl.createFunction(rgb.getLineNumber(),rgb.getColumnNumber(),(LexicalUnitImpl)rgb.getPreviousLexicalUnit(),"hsl",hslParams);
+}

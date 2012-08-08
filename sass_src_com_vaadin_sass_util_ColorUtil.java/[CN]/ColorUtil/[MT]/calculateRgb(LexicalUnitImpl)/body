@@ -1,0 +1,36 @@
+{
+  LexicalUnitImpl hslParam=hsl.getParameters();
+  LexicalUnitImpl hue=null;
+  LexicalUnitImpl saturation=null;
+  LexicalUnitImpl lightness=null;
+  int i=0;
+  while (i < 5) {
+switch (i) {
+case 0:
+      hue=hslParam;
+    break;
+case 2:
+  saturation=hslParam;
+break;
+case 4:
+lightness=hslParam;
+break;
+case 1:
+case 3:
+break;
+}
+hslParam=(LexicalUnitImpl)hslParam.getNextLexicalUnit();
+i++;
+}
+float h=((hue.getFloatValue() % 360) + 360) % 360 / 360;
+float s=saturation.getFloatValue() / 100;
+float l=lightness.getFloatValue() / 100;
+float m2, m1;
+int[] rgb=new int[3];
+m2=l <= 0.5 ? l * (s + 1) : l + s - l * s;
+m1=l * 2 - m2;
+rgb[0]=Math.round(hueToRgb(m1,m2,h + 1f / 3) * 255);
+rgb[1]=Math.round(hueToRgb(m1,m2,h) * 255);
+rgb[2]=Math.round(hueToRgb(m1,m2,h - 1f / 3) * 255);
+return rgb;
+}

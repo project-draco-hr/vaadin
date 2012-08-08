@@ -1,0 +1,144 @@
+{
+  short type=getLexicalUnitType();
+  String text=null;
+switch (type) {
+case SCSS_VARIABLE:
+    text="$" + s;
+  break;
+case LexicalUnit.SAC_OPERATOR_COMMA:
+text=",";
+break;
+case LexicalUnit.SAC_OPERATOR_PLUS:
+text="+";
+break;
+case LexicalUnit.SAC_OPERATOR_MINUS:
+text="-";
+break;
+case LexicalUnit.SAC_OPERATOR_MULTIPLY:
+text="*";
+break;
+case LexicalUnit.SAC_OPERATOR_SLASH:
+text="/";
+break;
+case LexicalUnit.SAC_OPERATOR_MOD:
+text="%";
+break;
+case LexicalUnit.SAC_OPERATOR_EXP:
+text="^";
+break;
+case LexicalUnit.SAC_OPERATOR_LT:
+text="<";
+break;
+case LexicalUnit.SAC_OPERATOR_GT:
+text=">";
+break;
+case LexicalUnit.SAC_OPERATOR_LE:
+text="<=";
+break;
+case LexicalUnit.SAC_OPERATOR_GE:
+text="=>";
+break;
+case LexicalUnit.SAC_OPERATOR_TILDE:
+text="~";
+break;
+case LexicalUnit.SAC_INHERIT:
+text="inherit";
+break;
+case LexicalUnit.SAC_INTEGER:
+text=Integer.toString(getIntegerValue(),10);
+break;
+case LexicalUnit.SAC_REAL:
+text=getFloatValue() + "";
+break;
+case LexicalUnit.SAC_EM:
+case LexicalUnit.SAC_EX:
+case LexicalUnit.SAC_PIXEL:
+case LexicalUnit.SAC_INCH:
+case LexicalUnit.SAC_CENTIMETER:
+case LexicalUnit.SAC_MILLIMETER:
+case LexicalUnit.SAC_POINT:
+case LexicalUnit.SAC_PICA:
+case LexicalUnit.SAC_PERCENTAGE:
+case LexicalUnit.SAC_DEGREE:
+case LexicalUnit.SAC_GRADIAN:
+case LexicalUnit.SAC_RADIAN:
+case LexicalUnit.SAC_MILLISECOND:
+case LexicalUnit.SAC_SECOND:
+case LexicalUnit.SAC_HERTZ:
+case LexicalUnit.SAC_KILOHERTZ:
+case LexicalUnit.SAC_DIMENSION:
+float f=getFloatValue();
+int i=(int)f;
+if ((i) == f) {
+text=i + getDimensionUnitText();
+}
+ else {
+text=f + getDimensionUnitText();
+}
+break;
+case LexicalUnit.SAC_URI:
+text="url(" + getStringValue() + ")";
+break;
+case LexicalUnit.SAC_RGBCOLOR:
+case LexicalUnit.SAC_COUNTER_FUNCTION:
+case LexicalUnit.SAC_COUNTERS_FUNCTION:
+case LexicalUnit.SAC_RECT_FUNCTION:
+case LexicalUnit.SAC_FUNCTION:
+String funcName=getFunctionName();
+LexicalUnitImpl firstParam=getParameters();
+if ("round".equals(funcName)) {
+firstParam.setFloatValue(Math.round(firstParam.getFloatValue()));
+text=firstParam.toString();
+}
+ else if ("ceil".equals(funcName)) {
+firstParam.setFloatValue((float)Math.ceil(firstParam.getFloatValue()));
+text=firstParam.toString();
+}
+ else if ("floor".equals(funcName)) {
+firstParam.setFloatValue((float)Math.floor(firstParam.getFloatValue()));
+text=firstParam.toString();
+}
+ else if ("abs".equals(funcName)) {
+firstParam.setFloatValue(Math.abs(firstParam.getFloatValue()));
+text=firstParam.toString();
+}
+ else if ("darken".equals(funcName)) {
+LexicalUnitImpl dark=ColorUtil.darken(this);
+text=dark.toString();
+}
+ else if ("lighten".equals(funcName)) {
+text=ColorUtil.lighten(this).toString();
+}
+ else {
+text=getFunctionName() + "(" + getParameters()+ ")";
+}
+break;
+case LexicalUnit.SAC_IDENT:
+text=getStringValue();
+break;
+case LexicalUnit.SAC_STRING_VALUE:
+text="\"" + getStringValue() + "\"";
+break;
+case LexicalUnit.SAC_ATTR:
+text="attr(" + getStringValue() + ")";
+break;
+case LexicalUnit.SAC_UNICODERANGE:
+text="@@TODO";
+break;
+case LexicalUnit.SAC_SUB_EXPRESSION:
+text=getSubValues().toString();
+break;
+default :
+text="@unknown";
+break;
+}
+if (getNextLexicalUnit() != null) {
+if (getNextLexicalUnit().getLexicalUnitType() == SAC_OPERATOR_COMMA) {
+return text + getNextLexicalUnit();
+}
+return text + ' ' + getNextLexicalUnit();
+}
+ else {
+return text;
+}
+}

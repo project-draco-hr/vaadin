@@ -1,0 +1,33 @@
+{
+  if (color.getLexicalUnitType() == LexicalUnit.SAC_FUNCTION) {
+    LexicalUnit funcParam=color.getParameters();
+    if ("hsl".equals(color.getFunctionName())) {
+      LexicalUnit lightness=funcParam;
+      for (int index=0; index < 4; index++) {
+        lightness=lightness.getNextLexicalUnit();
+      }
+      float newValue=0f;
+      if (op == ColorOperation.Darken) {
+        newValue=lightness.getFloatValue() - amount.getFloatValue();
+        newValue=newValue < 0 ? 0 : newValue;
+      }
+ else       if (op == ColorOperation.Lighten) {
+        newValue=lightness.getFloatValue() + amount.getFloatValue();
+        newValue=newValue > 100 ? 100 : newValue;
+      }
+      ((LexicalUnitImpl)lightness).setFloatValue(newValue);
+      return LexicalUnitImpl.createFunction(color.getLineNumber(),color.getColumnNumber(),pre,color.getFunctionName(),funcParam);
+    }
+  }
+ else   if (color.getLexicalUnitType() == LexicalUnit.SAC_IDENT) {
+    if (color.getStringValue().startsWith("#")) {
+      return hslToHexColor(adjust(hexColorToHsl(color),amount,op,pre),color.getStringValue().substring(1).length());
+    }
+  }
+ else   if (color.getLexicalUnitType() == LexicalUnit.SAC_RGBCOLOR) {
+    LexicalUnitImpl hsl=rgbToHsl(color);
+    LexicalUnitImpl hslAfterDarken=adjust(hsl,amount,op,pre);
+    return hslToRgb(hslAfterDarken);
+  }
+  return color;
+}

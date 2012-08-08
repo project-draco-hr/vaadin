@@ -1,0 +1,50 @@
+{
+  if (selector == null) {
+    return "";
+  }
+  if (selector.getSelectorType() == Selector.SAC_CONDITIONAL_SELECTOR) {
+    StringBuilder stringBuilder=new StringBuilder();
+    ConditionalSelector conditionalSelector=(ConditionalSelector)selector;
+    String simpleSelectorString=toString(conditionalSelector.getSimpleSelector());
+    if (simpleSelectorString != null) {
+      stringBuilder.append(simpleSelectorString);
+    }
+    String conditionString=getConditionString(conditionalSelector.getCondition());
+    stringBuilder.append(conditionString);
+    return stringBuilder.toString();
+  }
+ else   if (selector.getSelectorType() == Selector.SAC_DESCENDANT_SELECTOR) {
+    return getDecendantSelectorString((DescendantSelector)selector," ");
+  }
+ else   if (selector.getSelectorType() == Selector.SAC_CHILD_SELECTOR) {
+    DescendantSelector childSelector=(DescendantSelector)selector;
+    String seperator=" > ";
+    if (childSelector.getSimpleSelector() instanceof PseudoElementSelectorImpl) {
+      seperator="::";
+    }
+    return getDecendantSelectorString((DescendantSelector)selector,seperator);
+  }
+ else   if (selector.getSelectorType() == Selector.SAC_ELEMENT_NODE_SELECTOR) {
+    ElementSelectorImpl elementSelector=(ElementSelectorImpl)selector;
+    return elementSelector.getLocalName() == null ? "" : elementSelector.getLocalName();
+  }
+ else   if (selector.getSelectorType() == Selector.SAC_DIRECT_ADJACENT_SELECTOR) {
+    DirectAdjacentSelectorImpl directAdjacentSelector=(DirectAdjacentSelectorImpl)selector;
+    StringBuilder stringBuilder=new StringBuilder();
+    stringBuilder.append(toString(directAdjacentSelector.getSelector()));
+    stringBuilder.append(" + ");
+    stringBuilder.append(toString(directAdjacentSelector.getSiblingSelector()));
+    return stringBuilder.toString();
+  }
+ else   if (selector.getSelectorType() == Selector.SAC_PSEUDO_ELEMENT_SELECTOR) {
+    PseudoElementSelectorImpl pseudoElementSelectorImpl=(PseudoElementSelectorImpl)selector;
+    return pseudoElementSelectorImpl.getLocalName();
+  }
+ else   if (selector.getSelectorType() == CompositeSelector.SCSS_COMPOSITE_SELECTOR) {
+    return toString((CompositeSelector)selector);
+  }
+ else {
+    System.out.println("SU !Unknown selector type, type: " + selector.getSelectorType() + ", "+ selector.toString());
+  }
+  return "";
+}

@@ -1,0 +1,28 @@
+{
+  if (node instanceof RuleNode) {
+    LexicalUnit value=((RuleNode)node).getValue();
+    for (    String variable : variables.keySet()) {
+      if (value.getLexicalUnitType() == SCSSLexicalUnit.SCSS_VARIABLE) {
+        if (value.getStringValue().contains(variable)) {
+          LexicalUnitImpl lexVal=(LexicalUnitImpl)value;
+          lexVal.replaceValue(variables.get(variable));
+        }
+      }
+    }
+  }
+ else {
+    Set<Node> toBeDeleted=new HashSet<Node>();
+    for (    Node child : node.getChildren()) {
+      if (child instanceof VariableNode) {
+        variables.put(((VariableNode)child).getName(),(LexicalUnitImpl)((VariableNode)child).getExpr());
+        toBeDeleted.add(child);
+      }
+ else {
+        traverse(child,new HashMap<String,LexicalUnitImpl>(variables));
+      }
+    }
+    for (    Node child : toBeDeleted) {
+      node.removeChild(child);
+    }
+  }
+}

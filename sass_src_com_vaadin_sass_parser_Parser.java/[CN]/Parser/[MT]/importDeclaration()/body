@@ -1,0 +1,77 @@
+{
+  Token n;
+  String uri;
+  MediaListImpl ml=new MediaListImpl();
+  boolean isURL=false;
+  try {
+    jj_consume_token(IMPORT_SYM);
+    label_10:     while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+        ;
+      break;
+default :
+    jj_la1[12]=jj_gen;
+  break label_10;
+}
+jj_consume_token(S);
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case STRING:
+n=jj_consume_token(STRING);
+uri=convertStringIndex(n.image,1,n.image.length() - 1);
+break;
+case URL:
+n=jj_consume_token(URL);
+isURL=true;
+uri=n.image.substring(4,n.image.length() - 1).trim();
+if ((uri.charAt(0) == '"') || (uri.charAt(0) == '\u005c'')) {
+uri=uri.substring(1,uri.length() - 1);
+}
+break;
+default :
+jj_la1[13]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
+label_11: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[14]=jj_gen;
+break label_11;
+}
+jj_consume_token(S);
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case IDENT:
+mediaStatement(ml);
+break;
+default :
+jj_la1[15]=jj_gen;
+;
+}
+jj_consume_token(SEMICOLON);
+label_12: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[16]=jj_gen;
+break label_12;
+}
+jj_consume_token(S);
+}
+if (ml.getLength() == 0) {
+ml.addItem("all");
+}
+documentHandler.importStyle(uri,ml,isURL);
+}
+ catch (ParseException e) {
+reportError(getLocator(),e);
+skipStatement();
+}
+}
