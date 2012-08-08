@@ -1,0 +1,38 @@
+{
+  StringBuffer cssHeader=new StringBuffer();
+  if (version == null) {
+    version="9.9.9.INTERNAL-DEBUG-BUILD";
+  }
+  version=version.replaceAll("\\.","_");
+  cssHeader.append(".v-theme-version:after {content:\"" + version + "\";}\n");
+  cssHeader.append(".v-theme-version-" + version + " {display: none;}\n");
+  if (useSmartSprites) {
+    cssHeader.append("/** sprite: verticals; sprite-image: url(common/img/vertical-sprites.png); sprite-layout: vertical */\n");
+    cssHeader.append("/** sprite: horizontals; sprite-image: url(common/img/horizontal-sprites.png); sprite-layout: horizontal */\n");
+    cssHeader.append("/** sprite: black-verticals; sprite-image: url(common/img/black-vertical-sprites.png); sprite-layout: vertical; sprite-matte-color: #1e2022 */\n");
+    cssHeader.append("/** sprite: black-horizontals; sprite-image: url(common/img/black-horizontal-sprites.png); sprite-layout: horizontal; sprite-matte-color: #1e2022 */\n");
+    cssHeader.append("/** sprite: buttons; sprite-image: url(button/img/button-sprites.png); sprite-layout: vertical */\n");
+    cssHeader.append("/** sprite: black-buttons; sprite-image: url(button/img/black-button-sprites.png); sprite-layout: vertical */\n");
+  }
+  String stylesCssDir=THEME_DIR + themeName + "/";
+  String stylesCssName=stylesCssDir + "styles.css";
+  File inputFile=new File(stylesCssDir + "styles.scss");
+  ScssStylesheet scss=ScssStylesheet.get(inputFile);
+  scss.compile();
+  BufferedWriter out=new BufferedWriter(new FileWriter(stylesCssName));
+  out.write(cssHeader.toString());
+  out.write(scss.toString());
+  out.close();
+  System.out.println("Compiled CSS to " + stylesCssName + " ("+ scss.toString().length()+ " bytes)");
+  if (useSmartSprites) {
+    createSprites(themeName);
+    System.out.println("Used SmartSprites to create sprites");
+    File oldCss=new File(stylesCssName);
+    oldCss.delete();
+    File newCss=new File(stylesCssDir + "styles-sprite.css");
+    boolean ok=newCss.renameTo(oldCss);
+    if (!ok) {
+      System.out.println("Rename " + newCss + " -> "+ oldCss+ " failed");
+    }
+  }
+}
