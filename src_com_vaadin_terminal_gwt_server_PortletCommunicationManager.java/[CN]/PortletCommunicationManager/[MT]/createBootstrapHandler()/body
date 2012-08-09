@@ -29,13 +29,13 @@
       defaults.put("pathInfo","");
       return defaults;
     }
-    @Override protected void writeMainScriptTagContents(    BootstrapContext context) throws JSONException, IOException {
+    @Override protected void appendMainScriptTagContents(    BootstrapContext context,    StringBuilder builder) throws JSONException, IOException {
       String portalTheme=WrappedPortletRequest.cast(context.getRequest()).getPortalProperty(AbstractApplicationPortlet.PORTAL_PARAMETER_VAADIN_THEME);
       if (portalTheme != null && !portalTheme.equals(context.getThemeName())) {
         String portalThemeUri=getThemeUri(context,portalTheme);
-        context.getWriter().write("vaadin.loadTheme('" + portalThemeUri + "');");
+        builder.append("vaadin.loadTheme('" + portalThemeUri + "');");
       }
-      super.writeMainScriptTagContents(context);
+      super.appendMainScriptTagContents(context,builder);
     }
     @Override protected String getMainDivStyle(    BootstrapContext context){
       DeploymentConfiguration deploymentConfiguration=context.getRequest().getDeploymentConfiguration();
