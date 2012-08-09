@@ -1,0 +1,17 @@
+{
+  URL in=req.url();
+  StringBuilder url=new StringBuilder();
+  boolean first=true;
+  url.append(in.getProtocol()).append("://").append(in.getAuthority()).append(in.getPath()).append("?");
+  if (in.getQuery() != null) {
+    url.append(in.getQuery());
+    first=false;
+  }
+  for (  Connection.KeyVal keyVal : req.data()) {
+    if (!first)     url.append('&');
+ else     first=false;
+    url.append(URLEncoder.encode(keyVal.key(),DataUtil.defaultCharset)).append('=').append(URLEncoder.encode(keyVal.value(),DataUtil.defaultCharset));
+  }
+  req.url(new URL(url.toString()));
+  req.data().clear();
+}

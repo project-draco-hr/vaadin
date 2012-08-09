@@ -1,0 +1,18 @@
+{
+  Properties properties=new Properties();
+  Map<String,Character> entities=new HashMap<String,Character>();
+  try {
+    InputStream in=Entities.class.getResourceAsStream(filename);
+    properties.load(in);
+    in.close();
+  }
+ catch (  IOException e) {
+    throw new MissingResourceException("Error loading entities resource: " + e.getMessage(),"Entities",filename);
+  }
+  for (  Map.Entry entry : properties.entrySet()) {
+    Character val=Character.valueOf((char)Integer.parseInt((String)entry.getValue(),16));
+    String name=(String)entry.getKey();
+    entities.put(name,val);
+  }
+  return entities;
+}
