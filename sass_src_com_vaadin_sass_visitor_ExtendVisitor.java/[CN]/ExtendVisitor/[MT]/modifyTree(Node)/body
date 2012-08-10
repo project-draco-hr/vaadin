@@ -1,0 +1,27 @@
+{
+  for (  Node child : node.getChildren()) {
+    if (child instanceof BlockNode) {
+      BlockNode blockNode=(BlockNode)child;
+      String selectorString=SelectorUtil.toString(blockNode.getSelectorList());
+      if (extendsMap.get(selectorString) != null) {
+        for (        SelectorList sList : extendsMap.get(selectorString)) {
+          SelectorList newList=SelectorUtil.createNewSelectorListFromAnOldOneWithSomPartReplaced(blockNode.getSelectorList(),selectorString,sList);
+          addAdditionalSelectorListToBlockNode(blockNode,newList);
+        }
+      }
+ else {
+        for (        Entry<String,List<SelectorList>> entry : extendsMap.entrySet()) {
+          if (selectorString.contains(entry.getKey())) {
+            for (            SelectorList sList : entry.getValue()) {
+              SelectorList newList=SelectorUtil.createNewSelectorListFromAnOldOneWithSomPartReplaced(blockNode.getSelectorList(),entry.getKey(),sList);
+              addAdditionalSelectorListToBlockNode(blockNode,newList);
+            }
+          }
+        }
+      }
+    }
+ else {
+      buildExtendsMap(child);
+    }
+  }
+}

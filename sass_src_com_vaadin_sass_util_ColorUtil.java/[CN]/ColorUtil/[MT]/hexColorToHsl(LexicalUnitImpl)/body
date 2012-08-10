@@ -1,0 +1,20 @@
+{
+  String s=hexColor.getStringValue().substring(1);
+  int r=0, g=0, b=0;
+  if (s.length() == 3) {
+    String sh=s.substring(0,1);
+    r=Integer.parseInt(sh + sh,16);
+    sh=s.substring(1,2);
+    g=Integer.parseInt(sh + sh,16);
+    sh=s.substring(2,3);
+    b=Integer.parseInt(sh + sh,16);
+  }
+ else   if (s.length() == 6) {
+    r=Integer.parseInt(s.substring(0,2),16);
+    g=Integer.parseInt(s.substring(2,4),16);
+    b=Integer.parseInt(s.substring(4,6),16);
+  }
+  int hsl[]=calculateHsl(r,g,b);
+  LexicalUnitImpl hslParams=createHslParameters(hsl[0],hsl[1],hsl[2],hexColor.getLineNumber(),hexColor.getColumnNumber(),(LexicalUnitImpl)hexColor.getPreviousLexicalUnit());
+  return LexicalUnitImpl.createFunction(hexColor.getLineNumber(),hexColor.getColumnNumber(),(LexicalUnitImpl)hexColor.getPreviousLexicalUnit(),"hsl",hslParams);
+}

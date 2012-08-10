@@ -1,0 +1,13 @@
+{
+  Parser parser=new Parser();
+  SCSSDocumentHandler handler=new SCSSDocumentHandlerImpl();
+  parser.setDocumentHandler(handler);
+  parser.parseStyleSheet(getClass().getResource(scss).getPath());
+  ScssStylesheet root=handler.getStyleSheet();
+  BlockNode blockNode=(BlockNode)root.getChildren().get(0);
+  Assert.assertEquals(4,blockNode.getChildren().size());
+  BlockNode nestedBlock1=(BlockNode)blockNode.getChildren().get(2);
+  Assert.assertEquals("&:hover",SelectorUtil.toString(nestedBlock1.getSelectorList()));
+  BlockNode nestedBlock2=(BlockNode)blockNode.getChildren().get(3);
+  Assert.assertEquals("body.firefox &",SelectorUtil.toString(nestedBlock2.getSelectorList()));
+}
