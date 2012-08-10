@@ -1,0 +1,14 @@
+{
+  method=Connection.Method.valueOf(conn.getRequestMethod());
+  url=conn.getURL();
+  statusCode=conn.getResponseCode();
+  statusMessage=conn.getResponseMessage();
+  contentType=conn.getContentType();
+  Map<String,List<String>> resHeaders=conn.getHeaderFields();
+  processResponseHeaders(resHeaders);
+  if (previousResponse != null) {
+    for (    Map.Entry<String,String> prevCookie : previousResponse.cookies().entrySet()) {
+      if (!hasCookie(prevCookie.getKey()))       cookie(prevCookie.getKey(),prevCookie.getValue());
+    }
+  }
+}

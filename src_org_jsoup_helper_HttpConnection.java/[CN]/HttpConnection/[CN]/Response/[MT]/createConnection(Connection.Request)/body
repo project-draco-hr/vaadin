@@ -1,0 +1,13 @@
+{
+  HttpURLConnection conn=(HttpURLConnection)req.url().openConnection();
+  conn.setRequestMethod(req.method().name());
+  conn.setInstanceFollowRedirects(false);
+  conn.setConnectTimeout(req.timeout());
+  conn.setReadTimeout(req.timeout());
+  if (req.method() == Method.POST)   conn.setDoOutput(true);
+  if (req.cookies().size() > 0)   conn.addRequestProperty("Cookie",getRequestCookieString(req));
+  for (  Map.Entry<String,String> header : req.headers().entrySet()) {
+    conn.addRequestProperty(header.getKey(),header.getValue());
+  }
+  return conn;
+}

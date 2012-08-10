@@ -1,0 +1,16 @@
+{
+  TagName tag=TagName.valueOf(tagName);
+  AttributeKey key=AttributeKey.valueOf(attr.getKey());
+  if (attributes.containsKey(tag)) {
+    if (attributes.get(tag).contains(key)) {
+      if (protocols.containsKey(tag)) {
+        Map<AttributeKey,Set<Protocol>> attrProts=protocols.get(tag);
+        return !attrProts.containsKey(key) || testValidProtocol(el,attr,attrProts.get(key));
+      }
+ else {
+        return true;
+      }
+    }
+  }
+  return !tagName.equals(":all") && isSafeAttribute(":all",el,attr);
+}

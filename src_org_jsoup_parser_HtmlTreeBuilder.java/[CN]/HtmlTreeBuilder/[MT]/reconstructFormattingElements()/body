@@ -1,0 +1,25 @@
+{
+  int size=formattingElements.size();
+  if (size == 0 || formattingElements.getLast() == null || onStack(formattingElements.getLast()))   return;
+  Element entry=formattingElements.getLast();
+  int pos=size - 1;
+  boolean skip=false;
+  while (true) {
+    if (pos == 0) {
+      skip=true;
+      break;
+    }
+    entry=formattingElements.get(--pos);
+    if (entry == null || onStack(entry))     break;
+  }
+  while (true) {
+    if (!skip)     entry=formattingElements.get(++pos);
+    Validate.notNull(entry);
+    skip=false;
+    Element newEl=insert(entry.nodeName());
+    newEl.attributes().addAll(entry.attributes());
+    formattingElements.add(pos,newEl);
+    formattingElements.remove(pos + 1);
+    if (pos == size - 1)     break;
+  }
+}
