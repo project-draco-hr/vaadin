@@ -28,7 +28,9 @@
     DOM.setStyleAttribute(shadow,"zIndex",zIndex);
     DOM.setStyleAttribute(shadow,"display",progress < 0.9 ? "none" : "");
   }
-  updatePositionAndSize((Element)Element.as(getShimElement()),positionAndSize);
+  if (useShimIframe()) {
+    updatePositionAndSize((Element)Element.as(getShimElement()),positionAndSize);
+  }
   if (BrowserInfo.get().isOpera() && isShadowEnabled()) {
     DOM.getChild(shadow,3).getStyle().setPropertyPx("height",DOM.getChild(shadow,3).getOffsetHeight());
     DOM.getChild(shadow,4).getStyle().setPropertyPx("height",DOM.getChild(shadow,4).getOffsetHeight());
@@ -38,7 +40,7 @@
     RootPanel.get().getElement().insertBefore(shadow,getElement());
     sinkShadowEvents();
   }
-  if (!isShimAttached()) {
+  if (useShimIframe() && !isShimAttached()) {
     RootPanel.get().getElement().insertBefore(shimElement,getElement());
   }
 }
