@@ -1,0 +1,16 @@
+{
+  Node pre=block;
+  for (  Node child : new ArrayList<Node>(block.getChildren())) {
+    if (child instanceof BlockNode) {
+      BlockNode blockChild=(BlockNode)child;
+      traverse(block,blockChild);
+      if (SelectorUtil.hasParentSelector(blockChild.getSelectorList())) {
+        parent.appendChild(child,pre);
+        pre=child;
+        block.removeChild(child);
+        SelectorList newSelectorList=SelectorUtil.createNewSelectorListFromAnOldOneWithSomPartReplaced(blockChild.getSelectorList(),"&",block.getSelectorList());
+        blockChild.setSelectorList(newSelectorList);
+      }
+    }
+  }
+}

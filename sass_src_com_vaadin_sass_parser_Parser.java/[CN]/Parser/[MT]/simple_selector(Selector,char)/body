@@ -1,0 +1,212 @@
+{
+  SimpleSelector simple_current=null;
+  Condition cond=null;
+  pseudoElt=null;
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case ANY:
+case PARENT:
+case IDENT:
+    simple_current=element_name();
+  label_45:   while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case LBRACKET:
+case DOT:
+case COLON:
+case HASH:
+      ;
+    break;
+default :
+  jj_la1[61]=jj_gen;
+break label_45;
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case HASH:
+cond=hash(cond);
+break;
+case DOT:
+cond=_class(cond);
+break;
+case LBRACKET:
+cond=attrib(cond);
+break;
+case COLON:
+cond=pseudo(cond);
+break;
+default :
+jj_la1[62]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
+}
+break;
+case HASH:
+cond=hash(cond);
+label_46: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case LBRACKET:
+case DOT:
+case COLON:
+;
+break;
+default :
+jj_la1[63]=jj_gen;
+break label_46;
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case DOT:
+cond=_class(cond);
+break;
+case LBRACKET:
+cond=attrib(cond);
+break;
+case COLON:
+cond=pseudo(cond);
+break;
+default :
+jj_la1[64]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
+}
+break;
+case DOT:
+cond=_class(cond);
+label_47: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case LBRACKET:
+case DOT:
+case COLON:
+case HASH:
+;
+break;
+default :
+jj_la1[65]=jj_gen;
+break label_47;
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case HASH:
+cond=hash(cond);
+break;
+case DOT:
+cond=_class(cond);
+break;
+case LBRACKET:
+cond=attrib(cond);
+break;
+case COLON:
+cond=pseudo(cond);
+break;
+default :
+jj_la1[66]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
+}
+break;
+case COLON:
+cond=pseudo(cond);
+label_48: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case LBRACKET:
+case DOT:
+case COLON:
+case HASH:
+;
+break;
+default :
+jj_la1[67]=jj_gen;
+break label_48;
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case HASH:
+cond=hash(cond);
+break;
+case DOT:
+cond=_class(cond);
+break;
+case LBRACKET:
+cond=attrib(cond);
+break;
+case COLON:
+cond=pseudo(cond);
+break;
+default :
+jj_la1[68]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
+}
+break;
+case LBRACKET:
+cond=attrib(cond);
+label_49: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case LBRACKET:
+case DOT:
+case COLON:
+case HASH:
+;
+break;
+default :
+jj_la1[69]=jj_gen;
+break label_49;
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case HASH:
+cond=hash(cond);
+break;
+case DOT:
+cond=_class(cond);
+break;
+case LBRACKET:
+cond=attrib(cond);
+break;
+case COLON:
+cond=pseudo(cond);
+break;
+default :
+jj_la1[70]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
+}
+break;
+default :
+jj_la1[71]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
+if (simple_current == null) {
+simple_current=selectorFactory.createElementSelector(null,null);
+}
+if (cond != null) {
+simple_current=selectorFactory.createConditionalSelector(simple_current,cond);
+}
+if (selector != null) {
+switch (comb) {
+case ' ':
+selector=selectorFactory.createDescendantSelector(selector,simple_current);
+break;
+case '+':
+selector=selectorFactory.createDirectAdjacentSelector((short)1,selector,simple_current);
+break;
+case '>':
+selector=selectorFactory.createChildSelector(selector,simple_current);
+break;
+default :
+{
+if (true) throw new ParseException("invalid state. send a bug report");
+}
+}
+}
+ else {
+selector=simple_current;
+}
+if (pseudoElt != null) {
+selector=selectorFactory.createChildSelector(selector,selectorFactory.createPseudoElementSelector(null,pseudoElt));
+}
+{
+if (true) return selector;
+}
+throw new Error("Missing return statement in function");
+}

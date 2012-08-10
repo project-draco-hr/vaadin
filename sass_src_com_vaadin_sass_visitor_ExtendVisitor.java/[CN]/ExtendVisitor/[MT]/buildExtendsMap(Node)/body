@@ -1,0 +1,24 @@
+{
+  if (node instanceof BlockNode) {
+    BlockNode blockNode=(BlockNode)node;
+    for (    Node child : new ArrayList<Node>(node.getChildren())) {
+      if (child instanceof ExtendNode) {
+        ExtendNode extendNode=(ExtendNode)child;
+        String extendedString=SelectorUtil.toString(extendNode.getList());
+        if (extendsMap.get(extendedString) == null) {
+          extendsMap.put(extendedString,new ArrayList<SelectorList>());
+        }
+        extendsMap.get(extendedString).add(blockNode.getSelectorList());
+        node.removeChild(child);
+      }
+ else {
+        buildExtendsMap(child);
+      }
+    }
+  }
+ else {
+    for (    Node child : node.getChildren()) {
+      buildExtendsMap(child);
+    }
+  }
+}
