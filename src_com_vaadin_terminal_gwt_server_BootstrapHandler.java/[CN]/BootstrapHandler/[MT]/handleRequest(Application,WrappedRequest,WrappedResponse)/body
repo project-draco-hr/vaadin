@@ -11,7 +11,22 @@
  catch (  RootRequiresMoreInformationException e) {
   }
   try {
-    writeBootstrapPage(request,response,application,rootId);
+    Map<String,Object> headers=new LinkedHashMap<String,Object>();
+    BootstrapContext context=createContext(request,response,application,rootId,headers);
+    BootstrapResponse bootstrapResponse=context.getBootstrapResponse();
+    setupMainDiv(context);
+    DeploymentConfiguration deploymentConfiguration=request.getDeploymentConfiguration();
+    boolean standalone=deploymentConfiguration.isStandalone(request);
+    if (standalone) {
+      setupStandaloneDocument(context);
+      deploymentConfiguration.getVaadinContext().fireModifyBootstrapEvent(bootstrapResponse);
+      sendBootstrapHeaders(response,headers);
+      writeBootstrapPage(response,bootstrapResponse.getDocument());
+    }
+ else {
+      deploymentConfiguration.getVaadinContext().fireModifyBootstrapEvent(bootstrapResponse);
+      writeBootstrapPage(response,bootstrapResponse.getApplicationTag());
+    }
   }
  catch (  JSONException e) {
     writeError(response,e);

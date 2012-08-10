@@ -1,8 +1,19 @@
 {
+  String style=getMainDivStyle(context);
+  String appClass="v-app-" + context.getApplication().getClass().getSimpleName();
+  String classNames="v-app " + appClass;
+  Element applicationTag=context.getBootstrapResponse().getApplicationTag();
+  Element mainDiv=applicationTag.appendElement("div");
+  mainDiv.attr("id",context.getAppId());
+  mainDiv.addClass(classNames);
+  if (style != null && style.length() != 0) {
+    mainDiv.attr("style",style);
+  }
+  mainDiv.appendElement("div").addClass("v-app-loading");
+  mainDiv.appendElement("noscript").append("You have to enable javascript in your browser to use an application built with Vaadin.");
   WrappedRequest request=context.getRequest();
   DeploymentConfiguration deploymentConfiguration=request.getDeploymentConfiguration();
   String staticFileLocation=deploymentConfiguration.getStaticFileLocation(request);
-  Element applicationTag=context.getBootstrapResponse().getApplicationTag();
   applicationTag.appendElement("iframe").attr("tabIndex","-1").attr("id","__gwt_historyFrame").attr("style","position:absolute;width:0;height:0;border:0;overflow:hidden").attr("src","javascript:false");
   String bootstrapLocation=staticFileLocation + "/VAADIN/vaadinBootstrap.js";
   applicationTag.appendElement("script").attr("type","text/javascript").attr("src",bootstrapLocation);
