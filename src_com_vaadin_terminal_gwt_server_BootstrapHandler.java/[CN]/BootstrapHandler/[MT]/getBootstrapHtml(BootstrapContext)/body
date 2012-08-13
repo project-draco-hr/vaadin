@@ -2,7 +2,6 @@
   WrappedRequest request=context.getRequest();
   WrappedResponse response=context.getResponse();
   DeploymentConfiguration deploymentConfiguration=request.getDeploymentConfiguration();
-  VaadinContext vContext=deploymentConfiguration.getVaadinContext();
   BootstrapFragmentResponse fragmentResponse=context.getBootstrapResponse();
   if (deploymentConfiguration.isStandalone(request)) {
     Map<String,Object> headers=new LinkedHashMap<String,Object>();
@@ -14,7 +13,7 @@
       body.appendChild(node);
     }
     setupStandaloneDocument(context,pageResponse);
-    vContext.fireModifyBootstrapEvent(pageResponse);
+    context.getApplication().modifyBootstrapResponse(pageResponse);
     sendBootstrapHeaders(response,headers);
     return document.outerHtml();
   }
