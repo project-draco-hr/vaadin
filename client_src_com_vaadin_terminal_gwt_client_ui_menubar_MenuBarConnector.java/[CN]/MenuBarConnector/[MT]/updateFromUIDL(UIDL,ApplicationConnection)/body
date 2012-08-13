@@ -2,8 +2,8 @@
   if (!isRealUpdate(uidl)) {
     return;
   }
-  getWidget().htmlContentAllowed=uidl.hasAttribute(VMenuBar.HTML_CONTENT_ALLOWED);
-  getWidget().openRootOnHover=uidl.getBooleanAttribute(VMenuBar.OPEN_ROOT_MENU_ON_HOWER);
+  getWidget().htmlContentAllowed=uidl.hasAttribute(MenuBarConstants.HTML_CONTENT_ALLOWED);
+  getWidget().openRootOnHover=uidl.getBooleanAttribute(MenuBarConstants.OPEN_ROOT_MENU_ON_HOWER);
   getWidget().enabled=isEnabled();
   getWidget().client=client;
   getWidget().uidlId=uidl.getId();
@@ -22,7 +22,7 @@
       moreItemText="&#x25BA;";
     }
     itemHTML.append(moreItemText);
-    getWidget().moreItem=GWT.create(CustomMenuItem.class);
+    getWidget().moreItem=GWT.create(VMenuBar.CustomMenuItem.class);
     getWidget().moreItem.setHTML(itemHTML.toString());
     getWidget().moreItem.setCommand(VMenuBar.emptyCommand);
     getWidget().collapsedRootItems=new VMenuBar(true,getWidget());
@@ -36,10 +36,10 @@
   VMenuBar currentMenu=getWidget();
   while (itr.hasNext()) {
     UIDL item=(UIDL)itr.next();
-    CustomMenuItem currentItem=null;
+    VMenuBar.CustomMenuItem currentItem=null;
     final int itemId=item.getIntAttribute("id");
     boolean itemHasCommand=item.hasAttribute("command");
-    boolean itemIsCheckable=item.hasAttribute(VMenuBar.ATTRIBUTE_CHECKED);
+    boolean itemIsCheckable=item.hasAttribute(MenuBarConstants.ATTRIBUTE_CHECKED);
     String itemHTML=getWidget().buildItemHTML(item);
     Command cmd=null;
     if (!item.hasAttribute("separator")) {
@@ -69,7 +69,7 @@
     }
     while (!itr.hasNext() && !iteratorStack.empty()) {
       boolean hasCheckableItem=false;
-      for (      CustomMenuItem menuItem : currentMenu.getItems()) {
+      for (      VMenuBar.CustomMenuItem menuItem : currentMenu.getItems()) {
         hasCheckableItem=hasCheckableItem || menuItem.isCheckable();
       }
       if (hasCheckableItem) {
