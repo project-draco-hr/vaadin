@@ -2,8 +2,8 @@
   String style=getMainDivStyle(context);
   String appClass="v-app-" + context.getApplication().getClass().getSimpleName();
   String classNames="v-app " + appClass;
-  Element applicationTag=context.getBootstrapResponse().getApplicationTag();
-  Element mainDiv=applicationTag.appendElement("div");
+  List<Node> fragmentNodes=context.getBootstrapResponse().getFragmentNodes();
+  Element mainDiv=new Element(Tag.valueOf("div"),"");
   mainDiv.attr("id",context.getAppId());
   mainDiv.addClass(classNames);
   if (style != null && style.length() != 0) {
@@ -11,17 +11,19 @@
   }
   mainDiv.appendElement("div").addClass("v-app-loading");
   mainDiv.appendElement("noscript").append("You have to enable javascript in your browser to use an application built with Vaadin.");
+  fragmentNodes.add(mainDiv);
   WrappedRequest request=context.getRequest();
   DeploymentConfiguration deploymentConfiguration=request.getDeploymentConfiguration();
   String staticFileLocation=deploymentConfiguration.getStaticFileLocation(request);
-  applicationTag.appendElement("iframe").attr("tabIndex","-1").attr("id","__gwt_historyFrame").attr("style","position:absolute;width:0;height:0;border:0;overflow:hidden").attr("src","javascript:false");
+  fragmentNodes.add(new Element(Tag.valueOf("iframe"),"").attr("tabIndex","-1").attr("id","__gwt_historyFrame").attr("style","position:absolute;width:0;height:0;border:0;overflow:hidden").attr("src","javascript:false"));
   String bootstrapLocation=staticFileLocation + "/VAADIN/vaadinBootstrap.js";
-  applicationTag.appendElement("script").attr("type","text/javascript").attr("src",bootstrapLocation);
-  Element mainScriptTag=applicationTag.appendElement("script").attr("type","text/javascript");
+  fragmentNodes.add(new Element(Tag.valueOf("script"),"").attr("type","text/javascript").attr("src",bootstrapLocation));
+  Element mainScriptTag=new Element(Tag.valueOf("script"),"").attr("type","text/javascript");
   StringBuilder builder=new StringBuilder();
   builder.append("//<![CDATA[\n");
   builder.append("if (!window.vaadin) alert(" + JSONObject.quote("Failed to load the bootstrap javascript: " + bootstrapLocation) + ");\n");
   appendMainScriptTagContents(context,builder);
   builder.append("//]]>");
   mainScriptTag.appendChild(new DataNode(builder.toString(),mainScriptTag.baseUri()));
+  fragmentNodes.add(mainScriptTag);
 }

@@ -11,22 +11,14 @@
  catch (  RootRequiresMoreInformationException e) {
   }
   try {
-    Map<String,Object> headers=new LinkedHashMap<String,Object>();
-    BootstrapContext context=createContext(request,response,application,rootId,headers);
-    BootstrapResponse bootstrapResponse=context.getBootstrapResponse();
+    BootstrapContext context=createContext(request,response,application,rootId);
     setupMainDiv(context);
     DeploymentConfiguration deploymentConfiguration=request.getDeploymentConfiguration();
-    boolean standalone=deploymentConfiguration.isStandalone(request);
-    if (standalone) {
-      setupStandaloneDocument(context);
-      deploymentConfiguration.getVaadinContext().fireModifyBootstrapEvent(bootstrapResponse);
-      sendBootstrapHeaders(response,headers);
-      writeBootstrapPage(response,bootstrapResponse.getDocument());
-    }
- else {
-      deploymentConfiguration.getVaadinContext().fireModifyBootstrapEvent(bootstrapResponse);
-      writeBootstrapPage(response,bootstrapResponse.getApplicationTag());
-    }
+    VaadinContext vContext=deploymentConfiguration.getVaadinContext();
+    BootstrapFragmentResponse fragmentResponse=context.getBootstrapResponse();
+    vContext.fireModifyBootstrapEvent(fragmentResponse);
+    String html=getBootstrapHtml(context);
+    writeBootstrapPage(response,html);
   }
  catch (  JSONException e) {
     writeError(response,e);
