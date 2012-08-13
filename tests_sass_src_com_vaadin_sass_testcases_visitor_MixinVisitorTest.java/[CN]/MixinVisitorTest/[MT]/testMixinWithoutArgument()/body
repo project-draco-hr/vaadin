@@ -1,0 +1,31 @@
+{
+  ScssStylesheet root=new ScssStylesheet();
+  MixinDefNode mixinDefNoArgs=new MixinDefNode("table-base",null);
+  BlockNode thBlockNode=new BlockNode(null);
+  RuleNode textAlignRuleNode=new RuleNode("text-align",LexicalUnitImpl.createString(null,"center"),false,null);
+  thBlockNode.appendChild(textAlignRuleNode);
+  RuleNode fontWeightRuleNode=new RuleNode("font-weight",LexicalUnitImpl.createString(null,"bold"),false,null);
+  thBlockNode.appendChild(fontWeightRuleNode);
+  mixinDefNoArgs.appendChild(thBlockNode);
+  BlockNode tdthBlockNode=new BlockNode(null);
+  RuleNode paddingRuleNode=new RuleNode("padding",LexicalUnitImpl.createPixel(null,2f),false,null);
+  tdthBlockNode.appendChild(paddingRuleNode);
+  mixinDefNoArgs.appendChild(tdthBlockNode);
+  root.appendChild(mixinDefNoArgs);
+  BlockNode dataBlock=new BlockNode(null);
+  MixinNode mixinNode=new MixinNode("table-base",null);
+  dataBlock.appendChild(mixinNode);
+  root.appendChild(dataBlock);
+  try {
+    mixinVisitor.traverse(root);
+  }
+ catch (  Exception e) {
+    Assert.fail(e.getMessage());
+  }
+  Assert.assertEquals(1,root.getChildren().size());
+  dataBlock=(BlockNode)root.getChildren().get(0);
+  BlockNode thBlock=(BlockNode)dataBlock.getChildren().get(0);
+  Assert.assertEquals(2,thBlock.getChildren().size());
+  BlockNode thtdBlock=(BlockNode)dataBlock.getChildren().get(1);
+  Assert.assertEquals(1,thtdBlock.getChildren().size());
+}

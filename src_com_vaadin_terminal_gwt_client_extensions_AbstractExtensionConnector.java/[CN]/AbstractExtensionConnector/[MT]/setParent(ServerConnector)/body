@@ -1,8 +1,14 @@
 {
   ServerConnector oldParent=getParent();
-  if (oldParent != null && oldParent != parent) {
+  if (oldParent == parent) {
+    return;
+  }
+  if (hasBeenAttached && parent != null) {
     throw new IllegalStateException("An extension can not be moved from one parent to another.");
   }
   super.setParent(parent);
-  extend(parent);
+  if (parent != null) {
+    extend(parent);
+    hasBeenAttached=true;
+  }
 }

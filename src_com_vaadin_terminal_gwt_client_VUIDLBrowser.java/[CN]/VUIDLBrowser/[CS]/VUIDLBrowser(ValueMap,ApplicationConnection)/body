@@ -1,0 +1,33 @@
+{
+  this.client=client;
+  ValueMap valueMap=u.getValueMap("meta");
+  if (valueMap.containsKey("hl")) {
+    highlightedPid=valueMap.getString("hl");
+  }
+  Set<String> keySet=u.getKeySet();
+  for (  String key : keySet) {
+    if (key.equals("state")) {
+      ValueMap stateJson=u.getValueMap(key);
+      SimpleTree stateChanges=new SimpleTree("shared state");
+      for (      String connectorId : stateJson.getKeySet()) {
+        stateChanges.add(new SharedStateItem(connectorId,stateJson.getValueMap(connectorId)));
+      }
+      add(stateChanges);
+    }
+ else     if (key.equals("changes")) {
+      JsArray<UIDL> jsValueMapArray=u.getJSValueMapArray(key).cast();
+      for (int i=0; i < jsValueMapArray.length(); i++) {
+        UIDL uidl=jsValueMapArray.get(i);
+        UIDLItem change=new UIDLItem(uidl);
+        change.setTitle("change " + i);
+        add(change);
+      }
+    }
+ else     if (key.equals("meta")) {
+    }
+ else {
+    }
+  }
+  open(highlightedPid != null);
+  setTitle(HELP);
+}

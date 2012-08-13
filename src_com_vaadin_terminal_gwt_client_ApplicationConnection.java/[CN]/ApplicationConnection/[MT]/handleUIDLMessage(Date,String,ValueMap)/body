@@ -45,11 +45,6 @@
     @Override public void execute(){
       handleUIDLDuration.logDuration(" * Loading widgets completed",10);
       MultiStepDuration updateDuration=new MultiStepDuration();
-      if (debugLogging) {
-        VConsole.log(" * Dumping UIDL to the console");
-        VConsole.dirUIDL(json,configuration);
-        updateDuration.logDuration(" * Dumping UIDL to the console completed",10);
-      }
       if (json.containsKey("locales")) {
         VConsole.log(" * Handling locales");
         JsArray<ValueMap> valueMapArray=json.getJSValueMapArray("locales");
@@ -113,6 +108,11 @@
       layoutManager.setEverythingNeedsMeasure();
       layoutManager.layoutNow();
       updateDuration.logDuration(" * Layout processing completed",10);
+      if (ApplicationConfiguration.isDebugMode()) {
+        VConsole.log(" * Dumping state changes to the console");
+        VConsole.dirUIDL(json,ApplicationConnection.this);
+        updateDuration.logDuration(" * Dumping state changes to the console completed",10);
+      }
       if (meta != null) {
         if (meta.containsKey("appError")) {
           ValueMap error=meta.getValueMap("appError");

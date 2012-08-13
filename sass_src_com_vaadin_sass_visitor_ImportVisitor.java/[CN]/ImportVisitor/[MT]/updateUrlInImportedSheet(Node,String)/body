@@ -1,0 +1,19 @@
+{
+  for (  Node child : node.getChildren()) {
+    if (child instanceof RuleNode) {
+      LexicalUnit value=((RuleNode)child).getValue();
+      while (value != null) {
+        if (value.getLexicalUnitType() == LexicalUnit.SAC_URI) {
+          String path=value.getStringValue();
+          if (!path.startsWith("/") && !path.contains(":")) {
+            path=prefix + path;
+            path=StringUtil.cleanPath(path);
+            ((LexicalUnitImpl)value).setStringValue(path);
+          }
+        }
+        value=value.getNextLexicalUnit();
+      }
+    }
+    updateUrlInImportedSheet(child,prefix);
+  }
+}

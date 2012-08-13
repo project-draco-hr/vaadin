@@ -1,0 +1,26 @@
+{
+  String cssPath=req.getRequestURI();
+  if (cssPath.endsWith(".css")) {
+    File cssFile=new File(cssPath);
+    if (cssFile.exists()) {
+    }
+ else {
+      String scssPath=cssPath.replace(".css",".scss");
+      File scssFile=new File(scssPath);
+      if (scssFile.exists()) {
+        ScssStylesheet scss=ScssStylesheet.get(new File(cssPath));
+        try {
+          scss.compile();
+        }
+ catch (        Exception e) {
+          e.printStackTrace();
+        }
+        resp.setContentType("text/css");
+        OutputStream fout=resp.getOutputStream();
+        OutputStream bos=new BufferedOutputStream(fout);
+        OutputStreamWriter outputwriter=new OutputStreamWriter(bos);
+        outputwriter.write(scss.toString());
+      }
+    }
+  }
+}

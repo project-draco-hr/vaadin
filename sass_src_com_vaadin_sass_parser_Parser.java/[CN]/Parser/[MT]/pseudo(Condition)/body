@@ -1,0 +1,98 @@
+{
+  Token n;
+  Token language;
+  boolean isPseudoElement=false;
+  jj_consume_token(COLON);
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case COLON:
+    jj_consume_token(COLON);
+  isPseudoElement=true;
+break;
+default :
+jj_la1[80]=jj_gen;
+;
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case IDENT:
+n=jj_consume_token(IDENT);
+String s=convertIdent(n.image);
+if (isPseudoElement) {
+if (pseudoElt != null) {
+{
+if (true) throw new CSSParseException("duplicate pseudo element definition " + s,getLocator());
+}
+}
+ else {
+pseudoElt=s;
+{
+if (true) return pred;
+}
+}
+}
+ else {
+Condition c=conditionFactory.createPseudoClassCondition(null,s);
+if (pred == null) {
+{
+if (true) return c;
+}
+}
+ else {
+{
+if (true) return conditionFactory.createAndCondition(pred,c);
+}
+}
+}
+break;
+case FUNCTION:
+n=jj_consume_token(FUNCTION);
+label_54: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[81]=jj_gen;
+break label_54;
+}
+jj_consume_token(S);
+}
+language=jj_consume_token(IDENT);
+label_55: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[82]=jj_gen;
+break label_55;
+}
+jj_consume_token(S);
+}
+jj_consume_token(RPARAN);
+String f=convertIdent(n.image);
+if (f.equals("lang(")) {
+Condition d=conditionFactory.createLangCondition(convertIdent(language.image));
+if (pred == null) {
+{
+if (true) return d;
+}
+}
+ else {
+{
+if (true) return conditionFactory.createAndCondition(pred,d);
+}
+}
+}
+ else {
+{
+if (true) throw new CSSParseException("invalid pseudo function name " + f,getLocator());
+}
+}
+break;
+default :
+jj_la1[83]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
+throw new Error("Missing return statement in function");
+}

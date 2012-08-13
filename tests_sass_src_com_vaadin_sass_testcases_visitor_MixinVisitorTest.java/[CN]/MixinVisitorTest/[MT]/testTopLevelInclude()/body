@@ -1,0 +1,17 @@
+{
+  ScssStylesheet root=new ScssStylesheet();
+  MixinDefNode defNode=new MixinDefNode("mixin",null);
+  defNode.appendChild(new RuleNode("var",null,false,null));
+  root.appendChild(defNode);
+  MixinNode mixinNode=new MixinNode("mixin",null);
+  root.appendChild(mixinNode);
+  try {
+    mixinVisitor.traverse(root);
+  }
+ catch (  Exception e) {
+    Assert.fail(e.getMessage());
+  }
+  Assert.assertEquals(1,root.getChildren().size());
+  RuleNode varRule=(RuleNode)root.getChildren().get(0);
+  Assert.assertEquals("var",varRule.getVariable());
+}
