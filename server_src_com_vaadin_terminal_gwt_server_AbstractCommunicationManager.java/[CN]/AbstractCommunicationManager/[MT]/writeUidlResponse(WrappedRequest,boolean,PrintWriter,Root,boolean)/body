@@ -6,15 +6,15 @@
   if (repaintAll) {
     getClientCache(root).clear();
     rootConnectorTracker.markAllConnectorsDirty();
+    rootConnectorTracker.markAllClientSidesUninitialized();
     locales=null;
     requireLocale(application.getLocale().toString());
   }
   dirtyVisibleConnectors.addAll(getDirtyVisibleConnectors(rootConnectorTracker));
   getLogger().log(Level.FINE,"Found " + dirtyVisibleConnectors.size() + " dirty connectors to paint");
   for (  ClientConnector connector : dirtyVisibleConnectors) {
-    if (connector instanceof Component) {
-      ((Component)connector).updateState();
-    }
+    boolean initialized=rootConnectorTracker.isClientSideInitialized(connector);
+    connector.beforeClientResponse(!initialized);
   }
   rootConnectorTracker.markAllConnectorsClean();
   outWriter.print("\"changes\":[");
@@ -292,6 +292,9 @@ catch (  InvocationTargetException e) {
   printLocaleDeclarations(outWriter);
   if (dragAndDropService != null) {
     dragAndDropService.printJSONResponse(outWriter);
+  }
+  for (  ClientConnector connector : dirtyVisibleConnectors) {
+    rootConnectorTracker.markClientSideInitialized(connector);
   }
   writePerformanceData(outWriter);
 }
