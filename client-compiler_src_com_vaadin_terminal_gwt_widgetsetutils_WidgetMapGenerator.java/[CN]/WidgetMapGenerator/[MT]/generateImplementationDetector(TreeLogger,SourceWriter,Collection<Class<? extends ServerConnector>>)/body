@@ -2,8 +2,14 @@
   sourceWriter.println("public Class<? extends " + serverConnectorClassName + "> "+ "getConnectorClassForServerSideClassName(String fullyQualifiedName) {");
   sourceWriter.indent();
   sourceWriter.println("fullyQualifiedName = fullyQualifiedName.intern();");
+  Map<Class<? extends ClientConnector>,Class<? extends ServerConnector>> mappings=new HashMap<Class<? extends ClientConnector>,Class<? extends ServerConnector>>();
   for (  Class<? extends ServerConnector> connectorClass : paintablesHavingWidgetAnnotation) {
     Class<? extends ClientConnector> clientConnectorClass=getClientConnectorClass(connectorClass);
+    Class<? extends ServerConnector> prevousMapping=mappings.put(clientConnectorClass,connectorClass);
+    if (prevousMapping != null) {
+      logger.log(Type.ERROR,"Both " + connectorClass.getName() + " and "+ prevousMapping.getName()+ " have @Connect referring to "+ clientConnectorClass.getName()+ ".");
+      throw new UnableToCompleteException();
+    }
     sourceWriter.print("if ( fullyQualifiedName == \"");
     sourceWriter.print(clientConnectorClass.getName());
     sourceWriter.print("\" ) { ensureInstantiator(" + connectorClass.getName() + ".class); return ");
