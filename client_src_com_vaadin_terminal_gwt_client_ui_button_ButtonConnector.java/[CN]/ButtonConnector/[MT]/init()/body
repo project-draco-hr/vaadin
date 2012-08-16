@@ -2,4 +2,38 @@
   super.init();
   getWidget().addClickHandler(this);
   getWidget().client=getConnection();
+  addStateChangeHandler("errorMessage",new StateChangeHandler(){
+    @Override public void onStateChanged(    StateChangeEvent stateChangeEvent){
+      if (null != getState().getErrorMessage()) {
+        if (getWidget().errorIndicatorElement == null) {
+          getWidget().errorIndicatorElement=DOM.createSpan();
+          getWidget().errorIndicatorElement.setClassName("v-errorindicator");
+        }
+        getWidget().wrapper.insertBefore(getWidget().errorIndicatorElement,getWidget().captionElement);
+      }
+ else       if (getWidget().errorIndicatorElement != null) {
+        getWidget().wrapper.removeChild(getWidget().errorIndicatorElement);
+        getWidget().errorIndicatorElement=null;
+      }
+    }
+  }
+);
+  addStateChangeHandler("icon",new StateChangeHandler(){
+    @Override public void onStateChanged(    StateChangeEvent stateChangeEvent){
+      if (getState().getIcon() != null) {
+        if (getWidget().icon == null) {
+          getWidget().icon=new Icon(getConnection());
+          getWidget().wrapper.insertBefore(getWidget().icon.getElement(),getWidget().captionElement);
+        }
+        getWidget().icon.setUri(getState().getIcon().getURL());
+      }
+ else {
+        if (getWidget().icon != null) {
+          getWidget().wrapper.removeChild(getWidget().icon.getElement());
+          getWidget().icon=null;
+        }
+      }
+    }
+  }
+);
 }

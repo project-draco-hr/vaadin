@@ -2,4 +2,12 @@
   if (handlerManager != null) {
     handlerManager.fireEvent(event);
   }
+  if (statePropertyHandlerManagers != null && event instanceof StateChangeEvent) {
+    for (    String property : ((StateChangeEvent)event).getChangedProperties()) {
+      HandlerManager manager=statePropertyHandlerManagers.get(property);
+      if (manager != null) {
+        manager.fireEvent(event);
+      }
+    }
+  }
 }
