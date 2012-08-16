@@ -37,17 +37,25 @@
     if (null != state) {
       try {
         Class<? extends SharedState> stateType=connector.getStateType();
-        SharedState referenceState=null;
-        if (repaintAll) {
-          try {
-            referenceState=stateType.newInstance();
+        Object diffState=rootConnectorTracker.getDiffState(connector);
+        if (diffState == null) {
+          diffState=new JSONObject();
+          boolean emptyInitialState=JavaScriptConnectorState.class.isAssignableFrom(stateType);
+          if (!emptyInitialState) {
+            try {
+              SharedState referenceState=stateType.newInstance();
+              diffState=JsonCodec.encode(referenceState,null,stateType,root.getConnectorTracker());
+            }
+ catch (            Exception e) {
+              getLogger().log(Level.WARNING,"Error creating reference object for state of type " + stateType.getName());
+            }
           }
- catch (          Exception e) {
-            getLogger().log(Level.WARNING,"Error creating reference object for state of type " + stateType.getName());
-          }
+          rootConnectorTracker.setDiffState(connector,diffState);
         }
-        Object stateJson=JsonCodec.encode(state,referenceState,stateType,root.getConnectorTracker());
-        sharedStates.put(connector.getConnectorId(),stateJson);
+        JSONObject stateJson=(JSONObject)JsonCodec.encode(state,diffState,stateType,root.getConnectorTracker());
+        if (stateJson.length() != 0) {
+          sharedStates.put(connector.getConnectorId(),stateJson);
+        }
       }
  catch (      JSONException e) {
         throw new PaintException("Failed to serialize shared state for connector " + connector.getClass().getName() + " ("+ connector.getConnectorId()+ "): "+ e.getMessage(),e);
