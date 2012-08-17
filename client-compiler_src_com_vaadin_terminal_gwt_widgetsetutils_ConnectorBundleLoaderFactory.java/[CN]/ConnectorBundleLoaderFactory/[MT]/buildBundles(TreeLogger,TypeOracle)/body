@@ -1,0 +1,34 @@
+{
+  Map<LoadStyle,Collection<JClassType>> connectorsByLoadStyle=new HashMap<LoadStyle,Collection<JClassType>>();
+  for (  LoadStyle loadStyle : LoadStyle.values()) {
+    connectorsByLoadStyle.put(loadStyle,new ArrayList<JClassType>());
+  }
+  JClassType connectorType=typeOracle.getType(ServerConnector.class.getName());
+  JClassType[] subtypes=connectorType.getSubtypes();
+  for (  JClassType connectorSubtype : subtypes) {
+    if (!connectorSubtype.isAnnotationPresent(Connect.class)) {
+      continue;
+    }
+    LoadStyle loadStyle=getLoadStyle(connectorSubtype);
+    if (loadStyle != null) {
+      connectorsByLoadStyle.get(loadStyle).add(connectorSubtype);
+    }
+  }
+  List<ConnectorBundle> bundles=new ArrayList<ConnectorBundle>();
+  Collection<TypeVisitor> visitors=getVisitors(typeOracle);
+  ConnectorBundle eagerBundle=new ConnectorBundle(ConnectorBundleLoader.EAGER_BUNDLE_NAME,null);
+  eagerBundle.visitTypes(connectorsByLoadStyle.get(LoadStyle.EAGER),visitors);
+  eagerBundle.visitSubTypes(typeOracle.getType(ClientRpc.class.getName()),visitors);
+  eagerBundle.visitSubTypes(typeOracle.getType(ServerRpc.class.getName()),visitors);
+  bundles.add(eagerBundle);
+  ConnectorBundle deferredBundle=new ConnectorBundle(ConnectorBundleLoader.DEFERRED_BUNDLE_NAME,eagerBundle);
+  deferredBundle.visitTypes(connectorsByLoadStyle.get(LoadStyle.DEFERRED),visitors);
+  bundles.add(deferredBundle);
+  Collection<JClassType> lazy=connectorsByLoadStyle.get(LoadStyle.LAZY);
+  for (  JClassType type : lazy) {
+    ConnectorBundle bundle=new ConnectorBundle(type.getName(),deferredBundle);
+    bundle.visitTypes(Collections.singleton(type),visitors);
+    bundles.add(bundle);
+  }
+  return bundles;
+}

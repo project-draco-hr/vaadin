@@ -1,0 +1,62 @@
+{
+  PrintWriter printWriter=context.tryCreate(logger,packageName,className);
+  if (printWriter == null) {
+    return;
+  }
+  List<ConnectorBundle> bundles=buildBundles(logger,context.getTypeOracle());
+  ClassSourceFileComposerFactory composer=new ClassSourceFileComposerFactory(packageName,className);
+  composer.setSuperclass(requestedType);
+  SourceWriter w=composer.createSourceWriter(context,printWriter);
+  w.println("public void init() {");
+  w.indent();
+  for (  ConnectorBundle bundle : bundles) {
+    String name=bundle.getName();
+    boolean isEager=name.equals(ConnectorBundleLoader.EAGER_BUNDLE_NAME);
+    w.print("addAsyncBlockLoader(new AsyncBundleLoader(\"");
+    w.print(escape(name));
+    w.print("\", ");
+    w.print("new String[] {");
+    for (    Entry<JClassType,Set<String>> entry : bundle.getIdentifiers().entrySet()) {
+      Set<String> identifiers=entry.getValue();
+      for (      String id : identifiers) {
+        w.print("\"");
+        w.print(escape(id));
+        w.print("\",");
+      }
+    }
+    w.println("}) {");
+    w.indent();
+    w.print("protected void load(final ");
+    w.print(TypeDataStore.class.getName());
+    w.println(" store) {");
+    w.indent();
+    if (!isEager) {
+      w.print(GWT.class.getName());
+      w.print(".runAsync(");
+    }
+    w.print("new ");
+    w.print(TypeDataBundle.class.getName());
+    w.println("(getName()) {");
+    w.indent();
+    w.println("public void load() {");
+    w.indent();
+    printBundleData(w,bundle);
+    w.outdent();
+    w.println("}");
+    w.outdent();
+    w.print("}");
+    if (isEager) {
+      w.println(".onSuccess();");
+    }
+ else {
+      w.println(");");
+    }
+    w.outdent();
+    w.println("}");
+    w.outdent();
+    w.println("});");
+  }
+  w.outdent();
+  w.println("}");
+  w.commit(logger);
+}

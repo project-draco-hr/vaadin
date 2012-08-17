@@ -1,0 +1,17 @@
+{
+  TypeOracle typeOracle=context.getTypeOracle();
+  try {
+    JClassType classType=typeOracle.getType(typeName);
+    String packageName=classType.getPackage().getName();
+    String className=classType.getSimpleSourceName() + "Impl";
+    generateClass(logger,context,packageName,className,typeName);
+    return packageName + "." + className;
+  }
+ catch (  UnableToCompleteException e) {
+    throw e;
+  }
+catch (  Exception e) {
+    logger.log(Type.ERROR,getClass() + " failed",e);
+    throw new UnableToCompleteException();
+  }
+}
