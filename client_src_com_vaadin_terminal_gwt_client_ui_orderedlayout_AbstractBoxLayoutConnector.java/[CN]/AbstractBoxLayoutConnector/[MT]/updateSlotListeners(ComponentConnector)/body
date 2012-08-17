@@ -1,0 +1,33 @@
+{
+  Slot slot=getWidget().getSlot(child);
+  dontListen(slot.getWidget().getElement(),childComponentResizeListener);
+  if (slot.hasCaption()) {
+    dontListen(slot.getCaptionElement(),slotCaptionResizeListener);
+  }
+  if (slot.hasSpacing()) {
+    dontListen(slot.getSpacingElement(),spacingResizeListener);
+  }
+  if (needsFixedHeight()) {
+    listen(slot.getWidget().getElement(),childComponentResizeListener);
+    if (slot.hasCaption()) {
+      listen(slot.getCaptionElement(),slotCaptionResizeListener);
+    }
+  }
+ else   if ((child.isRelativeHeight() || child.isRelativeWidth()) && slot.hasCaption()) {
+    listen(slot.getCaptionElement(),slotCaptionResizeListener);
+  }
+  if (needsExpand()) {
+    listen(slot.getWidget().getElement(),childComponentResizeListener);
+    if (slot.hasSpacing()) {
+      listen(slot.getSpacingElement(),spacingResizeListener);
+    }
+  }
+  if (child.isRelativeHeight()) {
+    hasRelativeHeight.add(child);
+    needsMeasure.remove(child.getWidget().getElement());
+  }
+ else {
+    hasRelativeHeight.remove(child);
+    needsMeasure.add(child.getWidget().getElement());
+  }
+}
