@@ -1,0 +1,26 @@
+{
+  if (enabled && event != null) {
+    if (isResizing || event.getEventTarget().cast() == colResizeWidget) {
+      if (dragging && (event.getTypeInt() == Event.ONMOUSEUP || event.getTypeInt() == Event.ONTOUCHEND)) {
+        handleCaptionEvent(event);
+      }
+ else {
+        onResizeEvent(event);
+      }
+    }
+ else {
+      if (event.getTypeInt() == Event.ONMOUSEDOWN || event.getTypeInt() == Event.ONTOUCHSTART) {
+        scrollBodyPanel.setFocus(true);
+      }
+      handleCaptionEvent(event);
+      boolean stopPropagation=true;
+      if (event.getTypeInt() == Event.ONCONTEXTMENU && !client.hasEventListeners(VScrollTable.this,TableConstants.HEADER_CLICK_EVENT_ID)) {
+        stopPropagation=false;
+      }
+      if (stopPropagation) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+    }
+  }
+}

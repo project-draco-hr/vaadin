@@ -1,0 +1,17 @@
+{
+  super.init(servletConfig);
+  Properties applicationProperties=getDeploymentConfiguration().getInitParameters();
+  final ServletContext context=servletConfig.getServletContext();
+  for (final Enumeration<String> e=context.getInitParameterNames(); e.hasMoreElements(); ) {
+    final String name=e.nextElement();
+    applicationProperties.setProperty(name,context.getInitParameter(name));
+  }
+  for (final Enumeration<String> e=servletConfig.getInitParameterNames(); e.hasMoreElements(); ) {
+    final String name=e.nextElement();
+    applicationProperties.setProperty(name,servletConfig.getInitParameter(name));
+  }
+  checkProductionMode();
+  checkCrossSiteProtection();
+  checkResourceCacheTime();
+  addonContext.init();
+}

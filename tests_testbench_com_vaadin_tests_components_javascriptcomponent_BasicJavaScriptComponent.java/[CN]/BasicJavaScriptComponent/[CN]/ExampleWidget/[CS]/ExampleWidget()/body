@@ -5,13 +5,13 @@
     }
   }
 );
-  registerCallback("messageToServer",new JavaScriptCallback(){
+  addFunction("messageToServer",new JavaScriptFunction(){
     @Override public void call(    JSONArray arguments) throws JSONException {
       log.log("Got callback message: " + arguments.getString(0));
     }
   }
 );
-  registerCallback("reportParentIds",new JavaScriptCallback(){
+  addFunction("reportParentIds",new JavaScriptFunction(){
     @Override public void call(    JSONArray arguments) throws JSONException {
       JSONArray parentIds=arguments.getJSONArray(0);
       if (!parentIds.getString(0).equals(getConnectorId())) {
@@ -31,7 +31,7 @@
   }
 );
   getRpcProxy(TestRpc.class).sendRpc("RPC message");
-  invokeCallback("messageToClient","Callback message");
+  callFunction("messageToClient","Callback message");
   getState().setMessages(Arrays.asList("First state message","Second state message"));
   ClassResource resource=new ClassResource("test",BasicJavaScriptComponent.this.getApplication());
   getState().setUrl(new ResourceReference(resource));

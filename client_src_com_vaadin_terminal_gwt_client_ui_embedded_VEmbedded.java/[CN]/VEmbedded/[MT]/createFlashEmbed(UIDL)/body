@@ -1,0 +1,58 @@
+{
+  StringBuilder html=new StringBuilder();
+  html.append("<object ");
+  if (uidl.hasAttribute("classid")) {
+    html.append("classid=\"" + Util.escapeAttribute(uidl.getStringAttribute("classid")) + "\" ");
+  }
+ else {
+    html.append("classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" ");
+  }
+  if (uidl.hasAttribute("codebase")) {
+    html.append("codebase=\"" + Util.escapeAttribute(uidl.getStringAttribute("codebase")) + "\" ");
+  }
+ else {
+    html.append("codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0\" ");
+  }
+  ComponentConnector paintable=ConnectorMap.get(client).getConnector(this);
+  String height=paintable.getState().getHeight();
+  String width=paintable.getState().getWidth();
+  html.append("width=\"" + Util.escapeAttribute(width) + "\" ");
+  html.append("height=\"" + Util.escapeAttribute(height) + "\" ");
+  html.append("type=\"application/x-shockwave-flash\" ");
+  if (uidl.hasAttribute("codetype")) {
+    html.append("codetype=\"" + Util.escapeAttribute(uidl.getStringAttribute("codetype")) + "\" ");
+  }
+  if (uidl.hasAttribute("standby")) {
+    html.append("standby=\"" + Util.escapeAttribute(uidl.getStringAttribute("standby")) + "\" ");
+  }
+  if (uidl.hasAttribute("archive")) {
+    html.append("archive=\"" + Util.escapeAttribute(uidl.getStringAttribute("archive")) + "\" ");
+  }
+  html.append(">");
+  Map<String,String> parameters=getParameters(uidl);
+  if (parameters.get("movie") == null) {
+    parameters.put("movie",getSrc(uidl,client));
+  }
+  for (  String name : parameters.keySet()) {
+    html.append("<param ");
+    html.append("name=\"" + Util.escapeAttribute(name) + "\" ");
+    html.append("value=\"" + Util.escapeAttribute(parameters.get(name)) + "\" ");
+    html.append("/>");
+  }
+  html.append("<embed ");
+  html.append("src=\"" + Util.escapeAttribute(getSrc(uidl,client)) + "\" ");
+  html.append("width=\"" + Util.escapeAttribute(width) + "\" ");
+  html.append("height=\"" + Util.escapeAttribute(height) + "\" ");
+  html.append("type=\"application/x-shockwave-flash\" ");
+  for (  String name : parameters.keySet()) {
+    html.append(Util.escapeAttribute(name));
+    html.append("=");
+    html.append("\"" + Util.escapeAttribute(parameters.get(name)) + "\"");
+  }
+  html.append("></embed>");
+  if (uidl.hasAttribute(EmbeddedConstants.ALTERNATE_TEXT)) {
+    html.append(uidl.getStringAttribute(EmbeddedConstants.ALTERNATE_TEXT));
+  }
+  html.append("</object>");
+  return html.toString();
+}

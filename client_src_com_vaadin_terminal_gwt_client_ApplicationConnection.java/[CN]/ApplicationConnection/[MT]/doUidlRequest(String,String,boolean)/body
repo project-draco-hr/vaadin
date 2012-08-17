@@ -1,0 +1,69 @@
+{
+  if (!synchronous) {
+    RequestCallback requestCallback=new RequestCallback(){
+      @Override public void onError(      Request request,      Throwable exception){
+        showCommunicationError(exception.getMessage(),-1);
+        endRequest();
+      }
+      @Override public void onResponseReceived(      Request request,      Response response){
+        VConsole.log("Server visit took " + String.valueOf((new Date()).getTime() - requestStartTime.getTime()) + "ms");
+        int statusCode=response.getStatusCode();
+switch (statusCode) {
+case 0:
+          showCommunicationError("Invalid status code 0 (server down?)",statusCode);
+        endRequest();
+      return;
+case 401:
+    showAuthenticationError("");
+  endRequest();
+return;
+case 503:
+String delay=response.getHeader("Retry-After");
+if (delay != null) {
+VConsole.log("503, retrying in " + delay + "msec");
+(new Timer(){
+@Override public void run(){
+  doUidlRequest(uri,payload,synchronous);
+}
+}
+).schedule(Integer.parseInt(delay));
+return;
+}
+}
+if ((statusCode / 100) == 4) {
+showCommunicationError("UIDL could not be read from server. Check servlets mappings. Error code: " + statusCode,statusCode);
+endRequest();
+return;
+}
+ else if ((statusCode / 100) == 5) {
+showCommunicationError("Server error. Error code: " + statusCode,statusCode);
+endRequest();
+return;
+}
+String contentType=response.getHeader("Content-Type");
+if (contentType == null || !contentType.startsWith("application/json")) {
+MatchResult refreshToken=RegExp.compile(UIDL_REFRESH_TOKEN + "(:\\s*(.*?))?(\\s|$)").exec(response.getText());
+if (refreshToken != null) {
+redirect(refreshToken.getGroup(2));
+return;
+}
+}
+final String jsonText=response.getText().substring(9,response.getText().length() - 1);
+handleJSONText(jsonText,statusCode);
+}
+}
+;
+try {
+doAsyncUIDLRequest(uri,payload,requestCallback);
+}
+ catch (RequestException e) {
+VConsole.error(e);
+endRequest();
+}
+}
+ else {
+SynchronousXHR syncXHR=(SynchronousXHR)SynchronousXHR.create();
+syncXHR.synchronousPost(uri + "&" + ApplicationConstants.PARAM_UNLOADBURST+ "=1",payload);
+endRequest();
+}
+}
