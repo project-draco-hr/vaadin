@@ -1,0 +1,95 @@
+{
+  RequestTimer requestTimer=new RequestTimer();
+  requestTimer.start();
+  AbstractApplicationServletWrapper servletWrapper=new AbstractApplicationServletWrapper(this);
+  RequestType requestType=getRequestType(request);
+  if (!ensureCookiesEnabled(requestType,request,response)) {
+    return;
+  }
+  if (requestType == RequestType.STATIC_FILE) {
+    serveStaticResources(request,response);
+    return;
+  }
+  Application application=null;
+  boolean transactionStarted=false;
+  boolean requestStarted=false;
+  try {
+    if (requestType == RequestType.UIDL && request.getParameterMap().containsKey(ApplicationConstants.PARAM_UNLOADBURST) && request.getContentLength() < 1 && getExistingApplication(request,false) == null) {
+      redirectToApplication(request,response);
+      return;
+    }
+    application=findApplicationInstance(request,requestType);
+    if (application == null) {
+      return;
+    }
+    Application.setCurrent(application);
+    WebApplicationContext webApplicationContext=getApplicationContext(request.getSession());
+    CommunicationManager applicationManager=webApplicationContext.getApplicationManager(application,this);
+    if (requestType == RequestType.CONNECTOR_RESOURCE) {
+      applicationManager.serveConnectorResource(request,response);
+      return;
+    }
+    webApplicationContext.getBrowser().updateRequestDetails(request);
+    if (application instanceof HttpServletRequestListener) {
+      ((HttpServletRequestListener)application).onRequestStart(request,response);
+      requestStarted=true;
+    }
+    startApplication(request,application,webApplicationContext);
+    webApplicationContext.startTransaction(application,request);
+    transactionStarted=true;
+    if (requestType == RequestType.FILE_UPLOAD) {
+      applicationManager.handleFileUpload(application,request,response);
+      return;
+    }
+ else     if (requestType == RequestType.UIDL) {
+      Root root=application.getRootForRequest(request);
+      if (root == null) {
+        throw new ServletException(ERROR_NO_ROOT_FOUND);
+      }
+      applicationManager.handleUidlRequest(request,response,servletWrapper,root);
+      return;
+    }
+ else     if (requestType == RequestType.BROWSER_DETAILS) {
+      applicationManager.handleBrowserDetailsRequest(request,response,application);
+      return;
+    }
+    if (!application.isRunning()) {
+      endApplication(request,response,application);
+      return;
+    }
+    if (applicationManager.handleApplicationRequest(request,response)) {
+      return;
+    }
+  }
+ catch (  final SessionExpiredException e) {
+    handleServiceSessionExpired(request,response);
+  }
+catch (  final GeneralSecurityException e) {
+    handleServiceSecurityException(request,response);
+  }
+catch (  final Throwable e) {
+    handleServiceException(request,response,application,e);
+  }
+ finally {
+    try {
+      if (transactionStarted) {
+        ((WebApplicationContext)application.getContext()).endTransaction(application,request);
+      }
+    }
+  finally {
+      try {
+        if (requestStarted) {
+          ((HttpServletRequestListener)application).onRequestEnd(request,response);
+        }
+      }
+  finally {
+        Root.setCurrent(null);
+        Application.setCurrent(null);
+        HttpSession session=request.getSession(false);
+        if (session != null) {
+          requestTimer.stop(getApplicationContext(session));
+        }
+      }
+    }
+  }
+}

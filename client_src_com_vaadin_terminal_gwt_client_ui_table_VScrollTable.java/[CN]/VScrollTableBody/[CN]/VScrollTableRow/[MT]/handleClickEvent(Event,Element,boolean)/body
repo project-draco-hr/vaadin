@@ -1,0 +1,15 @@
+{
+  if (!client.hasEventListeners(VScrollTable.this,TableConstants.ITEM_CLICK_EVENT_ID)) {
+    return false;
+  }
+  client.updateVariable(paintableId,"clickedKey","" + rowKey,false);
+  if (getElement() == targetTdOrTr.getParentElement()) {
+    int childIndex=DOM.getChildIndex(getElement(),targetTdOrTr);
+    String colKey=null;
+    colKey=tHead.getHeaderCell(childIndex).getColKey();
+    client.updateVariable(paintableId,"clickedColKey",colKey,false);
+  }
+  MouseEventDetails details=MouseEventDetailsBuilder.buildMouseEventDetails(event);
+  client.updateVariable(paintableId,"clickEvent",details.toString(),immediate);
+  return true;
+}

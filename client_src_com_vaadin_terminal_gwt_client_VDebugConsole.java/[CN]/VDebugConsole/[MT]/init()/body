@@ -1,0 +1,124 @@
+{
+  panel=new FlowPanel();
+  if (!quietMode) {
+    DOM.appendChild(getContainerElement(),caption);
+    setWidget(panel);
+    caption.setClassName("v-debug-console-caption");
+    setStyleName("v-debug-console");
+    getElement().getStyle().setZIndex(20000);
+    getElement().getStyle().setOverflow(Overflow.HIDDEN);
+    sinkEvents(Event.ONDBLCLICK);
+    sinkEvents(Event.MOUSEEVENTS);
+    panel.setStyleName("v-debug-console-content");
+    caption.setInnerHTML("Debug window");
+    caption.getStyle().setHeight(25,Unit.PX);
+    caption.setTitle(help);
+    show();
+    setToDefaultSizeAndPos();
+    actions=new HorizontalPanel();
+    Style style=actions.getElement().getStyle();
+    style.setPosition(Position.ABSOLUTE);
+    style.setBackgroundColor("#666");
+    style.setLeft(135,Unit.PX);
+    style.setHeight(25,Unit.PX);
+    style.setTop(0,Unit.PX);
+    actions.add(clear);
+    actions.add(restart);
+    actions.add(forceLayout);
+    actions.add(analyzeLayout);
+    actions.add(highlight);
+    actions.add(connectorStats);
+    connectorStats.setTitle("Show connector statistics for client");
+    highlight.setTitle("Select a component and print details about it to the server log and client side console.");
+    actions.add(savePosition);
+    savePosition.setTitle("Saves the position and size of debug console to a cookie");
+    actions.add(autoScroll);
+    addDevMode();
+    addSuperDevMode();
+    autoScroll.setTitle("Automatically scroll so that new messages are visible");
+    panel.add(actions);
+    panel.add(new HTML("<i>" + help + "</i>"));
+    clear.addClickHandler(new ClickHandler(){
+      @Override public void onClick(      ClickEvent event){
+        int width=panel.getOffsetWidth();
+        int height=panel.getOffsetHeight();
+        panel=new FlowPanel();
+        panel.setPixelSize(width,height);
+        panel.setStyleName("v-debug-console-content");
+        panel.add(actions);
+        setWidget(panel);
+      }
+    }
+);
+    restart.addClickHandler(new ClickHandler(){
+      @Override public void onClick(      ClickEvent event){
+        String queryString=Window.Location.getQueryString();
+        if (queryString != null && queryString.contains("restartApplications")) {
+          Window.Location.reload();
+        }
+ else {
+          String url=Location.getHref();
+          String separator="?";
+          if (url.contains("?")) {
+            separator="&";
+          }
+          if (!url.contains("restartApplication")) {
+            url+=separator;
+            url+="restartApplication";
+          }
+          if (!"".equals(Location.getHash())) {
+            String hash=Location.getHash();
+            url=url.replace(hash,"") + hash;
+          }
+          Window.Location.replace(url);
+        }
+      }
+    }
+);
+    forceLayout.addClickHandler(new ClickHandler(){
+      @Override public void onClick(      ClickEvent event){
+        for (        ApplicationConnection applicationConnection : ApplicationConfiguration.getRunningApplications()) {
+          applicationConnection.forceLayout();
+        }
+      }
+    }
+);
+    analyzeLayout.addClickHandler(new ClickHandler(){
+      @Override public void onClick(      ClickEvent event){
+        List<ApplicationConnection> runningApplications=ApplicationConfiguration.getRunningApplications();
+        for (        ApplicationConnection applicationConnection : runningApplications) {
+          applicationConnection.analyzeLayouts();
+        }
+      }
+    }
+);
+    analyzeLayout.setTitle("Analyzes currently rendered view and " + "reports possible common problems in usage of relative sizes." + "Will cause server visit/rendering of whole screen and loss of"+ " all non committed variables form client side.");
+    savePosition.addClickHandler(new ClickHandler(){
+      @Override public void onClick(      ClickEvent event){
+        String pos=getAbsoluteLeft() + "," + getAbsoluteTop()+ ","+ getOffsetWidth()+ ","+ getOffsetHeight()+ ","+ autoScroll.getValue();
+        Cookies.setCookie(POS_COOKIE_NAME,pos);
+      }
+    }
+);
+    highlight.addClickHandler(new ClickHandler(){
+      @Override public void onClick(      ClickEvent event){
+        final Label label=new Label("--");
+        log("<i>Use mouse to select a component or click ESC to exit highlight mode.</i>");
+        panel.add(label);
+        highlightModeRegistration=Event.addNativePreviewHandler(new HighlightModeHandler(label));
+      }
+    }
+);
+  }
+  connectorStats.addClickHandler(new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      for (      ApplicationConnection a : ApplicationConfiguration.getRunningApplications()) {
+        dumpConnectorInfo(a);
+      }
+    }
+  }
+);
+  log("Starting Vaadin client side engine. Widgetset: " + GWT.getModuleName());
+  log("Widget set is built on version: " + Version.getFullVersion());
+  logToDebugWindow("<div class=\"v-theme-version v-theme-version-" + Version.getFullVersion().replaceAll("\\.","_") + "\">Warning: widgetset version "+ Version.getFullVersion()+ " does not seem to match theme version </div>",true);
+}

@@ -1,0 +1,25 @@
+{
+  Integer rootId=null;
+  try {
+    Root root=application.getRootForRequest(request);
+    if (root == null) {
+      writeError(response,new Throwable("No Root found"));
+      return true;
+    }
+    rootId=Integer.valueOf(root.getRootId());
+  }
+ catch (  RootRequiresMoreInformationException e) {
+  }
+  try {
+    BootstrapContext context=createContext(request,response,application,rootId);
+    setupMainDiv(context);
+    BootstrapFragmentResponse fragmentResponse=context.getBootstrapResponse();
+    application.modifyBootstrapResponse(fragmentResponse);
+    String html=getBootstrapHtml(context);
+    writeBootstrapPage(response,html);
+  }
+ catch (  JSONException e) {
+    writeError(response,e);
+  }
+  return true;
+}

@@ -1,0 +1,389 @@
+{
+  VConsole.log("Handling message from server");
+  if (json.containsKey("redirect")) {
+    String url=json.getValueMap("redirect").getString("url");
+    VConsole.log("redirecting to " + url);
+    redirect(url);
+    return;
+  }
+  final MultiStepDuration handleUIDLDuration=new MultiStepDuration();
+  if (json.containsKey(ApplicationConstants.UIDL_SECURITY_TOKEN_ID)) {
+    uidlSecurityKey=json.getString(ApplicationConstants.UIDL_SECURITY_TOKEN_ID);
+  }
+  VConsole.log(" * Handling resources from server");
+  if (json.containsKey("resources")) {
+    ValueMap resources=json.getValueMap("resources");
+    JsArrayString keyArray=resources.getKeyArray();
+    int l=keyArray.length();
+    for (int i=0; i < l; i++) {
+      String key=keyArray.get(i);
+      resourcesMap.put(key,resources.getAsString(key));
+    }
+  }
+  handleUIDLDuration.logDuration(" * Handling resources from server completed",10);
+  VConsole.log(" * Handling type inheritance map from server");
+  if (json.containsKey("typeInheritanceMap")) {
+    configuration.addComponentInheritanceInfo(json.getValueMap("typeInheritanceMap"));
+  }
+  handleUIDLDuration.logDuration(" * Handling type inheritance map from server completed",10);
+  VConsole.log("Handling type mappings from server");
+  if (json.containsKey("typeMappings")) {
+    configuration.addComponentMappings(json.getValueMap("typeMappings"),widgetSet);
+  }
+  VConsole.log("Handling resource dependencies");
+  if (json.containsKey("scriptDependencies")) {
+    loadScriptDependencies(json.getJSStringArray("scriptDependencies"));
+  }
+  if (json.containsKey("styleDependencies")) {
+    loadStyleDependencies(json.getJSStringArray("styleDependencies"));
+  }
+  handleUIDLDuration.logDuration(" * Handling type mappings from server completed",10);
+  if (json.containsKey("timings")) {
+    serverTimingInfo=json.getValueMap("timings");
+  }
+  Command c=new Command(){
+    @Override public void execute(){
+      handleUIDLDuration.logDuration(" * Loading widgets completed",10);
+      MultiStepDuration updateDuration=new MultiStepDuration();
+      if (json.containsKey("locales")) {
+        VConsole.log(" * Handling locales");
+        JsArray<ValueMap> valueMapArray=json.getJSValueMapArray("locales");
+        LocaleService.addLocales(valueMapArray);
+      }
+      updateDuration.logDuration(" * Handling locales completed",10);
+      boolean repaintAll=false;
+      ValueMap meta=null;
+      if (json.containsKey("meta")) {
+        VConsole.log(" * Handling meta information");
+        meta=json.getValueMap("meta");
+        if (meta.containsKey("repaintAll")) {
+          repaintAll=true;
+          rootConnector.getWidget().clear();
+          getConnectorMap().clear();
+          if (meta.containsKey("invalidLayouts")) {
+            validatingLayouts=true;
+            zeroWidthComponents=new HashSet<ComponentConnector>();
+            zeroHeightComponents=new HashSet<ComponentConnector>();
+          }
+        }
+        if (meta.containsKey("timedRedirect")) {
+          final ValueMap timedRedirect=meta.getValueMap("timedRedirect");
+          redirectTimer=new Timer(){
+            @Override public void run(){
+              redirect(timedRedirect.getString("url"));
+            }
+          }
+;
+          sessionExpirationInterval=timedRedirect.getInt("interval");
+        }
+      }
+      updateDuration.logDuration(" * Handling meta information completed",10);
+      if (redirectTimer != null) {
+        redirectTimer.schedule(1000 * sessionExpirationInterval);
+      }
+      componentCaptionSizeChanges.clear();
+      int startProcessing=updateDuration.elapsedMillis();
+      createConnectorsIfNeeded(json);
+      updateDuration.logDuration(" * Creating connectors completed",10);
+      Collection<StateChangeEvent> pendingStateChangeEvents=updateConnectorState(json);
+      updateDuration.logDuration(" * Update of connector states completed",10);
+      Collection<ConnectorHierarchyChangeEvent> pendingHierarchyChangeEvents=updateConnectorHierarchy(json);
+      updateDuration.logDuration(" * Update of connector hierarchy completed",10);
+      sendHierarchyChangeEvents(pendingHierarchyChangeEvents);
+      updateDuration.logDuration(" * Hierarchy state change event processing completed",10);
+      sendStateChangeEvents(pendingStateChangeEvents);
+      updateDuration.logDuration(" * State change event processing completed",10);
+      updateVaadin6StyleConnectors(json);
+      updateDuration.logDuration(" * Vaadin 6 style connector updates (updateFromUidl) completed",10);
+      handleRpcInvocations(json);
+      updateDuration.logDuration(" * Processing of RPC invocations completed",10);
+      if (json.containsKey("dd")) {
+        VDragAndDropManager.get().handleServerResponse(json.getValueMap("dd"));
+      }
+      updateDuration.logDuration(" * Processing of drag and drop server response completed",10);
+      unregisterRemovedConnectors();
+      updateDuration.logDuration(" * Unregistering of removed components completed",10);
+      VConsole.log("handleUIDLMessage: " + (updateDuration.elapsedMillis() - startProcessing) + " ms");
+      LayoutManager layoutManager=getLayoutManager();
+      layoutManager.setEverythingNeedsMeasure();
+      layoutManager.layoutNow();
+      updateDuration.logDuration(" * Layout processing completed",10);
+      if (ApplicationConfiguration.isDebugMode()) {
+        VConsole.log(" * Dumping state changes to the console");
+        VConsole.dirUIDL(json,ApplicationConnection.this);
+        updateDuration.logDuration(" * Dumping state changes to the console completed",10);
+      }
+      if (meta != null) {
+        if (meta.containsKey("appError")) {
+          ValueMap error=meta.getValueMap("appError");
+          String html="";
+          if (error.containsKey("caption") && error.getString("caption") != null) {
+            html+="<h1>" + error.getAsString("caption") + "</h1>";
+          }
+          if (error.containsKey("message") && error.getString("message") != null) {
+            html+="<p>" + error.getAsString("message") + "</p>";
+          }
+          String url=null;
+          if (error.containsKey("url")) {
+            url=error.getString("url");
+          }
+          if (html.length() != 0) {
+            VNotification n=VNotification.createNotification(1000 * 60 * 45);
+            n.addEventListener(new NotificationRedirect(url));
+            n.show(html,VNotification.CENTERED_TOP,VNotification.STYLE_SYSTEM);
+          }
+ else {
+            redirect(url);
+          }
+          applicationRunning=false;
+        }
+        if (validatingLayouts) {
+          VConsole.printLayoutProblems(meta,ApplicationConnection.this,zeroHeightComponents,zeroWidthComponents);
+          zeroHeightComponents=null;
+          zeroWidthComponents=null;
+          validatingLayouts=false;
+        }
+      }
+      updateDuration.logDuration(" * Error handling completed",10);
+      lastProcessingTime=(int)((new Date().getTime()) - start.getTime());
+      totalProcessingTime+=lastProcessingTime;
+      VConsole.log(" Processing time was " + String.valueOf(lastProcessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
+      VConsole.log("Referenced paintables: " + connectorMap.size());
+      endRequest();
+    }
+    /** 
+ * Sends the state change events created while updating the state
+ * information.
+ * This must be called after hierarchy change listeners have been
+ * called. At least caption updates for the parent are strange if
+ * fired from state change listeners and thus calls the parent
+ * BEFORE the parent is aware of the child (through a
+ * ConnectorHierarchyChangedEvent)
+ * @param pendingStateChangeEventsThe events to send
+ */
+    private void sendStateChangeEvents(    Collection<StateChangeEvent> pendingStateChangeEvents){
+      VConsole.log(" * Sending state change events");
+      for (      StateChangeEvent sce : pendingStateChangeEvents) {
+        try {
+          sce.getConnector().fireEvent(sce);
+        }
+ catch (        final Throwable e) {
+          VConsole.error(e);
+        }
+      }
+    }
+    private void unregisterRemovedConnectors(){
+      int unregistered=0;
+      List<ServerConnector> currentConnectors=new ArrayList<ServerConnector>(connectorMap.getConnectors());
+      for (      ServerConnector c : currentConnectors) {
+        if (c.getParent() != null) {
+          if (!c.getParent().getChildren().contains(c)) {
+            VConsole.error("ERROR: Connector is connected to a parent but the parent does not contain the connector");
+          }
+        }
+ else         if ((c instanceof RootConnector && c == getRootConnector())) {
+        }
+ else         if (c instanceof WindowConnector && getRootConnector().hasSubWindow((WindowConnector)c)) {
+        }
+ else {
+          connectorMap.unregisterConnector(c);
+          unregistered++;
+        }
+      }
+      VConsole.log("* Unregistered " + unregistered + " connectors");
+    }
+    private void createConnectorsIfNeeded(    ValueMap json){
+      VConsole.log(" * Creating connectors (if needed)");
+      if (!json.containsKey("types")) {
+        return;
+      }
+      ValueMap types=json.getValueMap("types");
+      JsArrayString keyArray=types.getKeyArray();
+      for (int i=0; i < keyArray.length(); i++) {
+        try {
+          String connectorId=keyArray.get(i);
+          int connectorType=Integer.parseInt(types.getString((connectorId)));
+          ServerConnector connector=connectorMap.getConnector(connectorId);
+          if (connector != null) {
+            continue;
+          }
+          Class<? extends ServerConnector> connectorClass=configuration.getConnectorClassByEncodedTag(connectorType);
+          if (connectorClass != RootConnector.class) {
+            getConnector(connectorId,connectorType);
+          }
+ else {
+            connectorMap.registerConnector(connectorId,rootConnector);
+            rootConnector.doInit(connectorId,ApplicationConnection.this);
+          }
+        }
+ catch (        final Throwable e) {
+          VConsole.error(e);
+        }
+      }
+    }
+    private void updateVaadin6StyleConnectors(    ValueMap json){
+      JsArray<ValueMap> changes=json.getJSValueMapArray("changes");
+      int length=changes.length();
+      VConsole.log(" * Passing UIDL to Vaadin 6 style connectors");
+      for (int i=0; i < length; i++) {
+        try {
+          final UIDL change=changes.get(i).cast();
+          final UIDL uidl=change.getChildUIDL(0);
+          String connectorId=uidl.getId();
+          final ComponentConnector legacyConnector=(ComponentConnector)connectorMap.getConnector(connectorId);
+          if (legacyConnector instanceof Paintable) {
+            ((Paintable)legacyConnector).updateFromUIDL(uidl,ApplicationConnection.this);
+          }
+ else           if (legacyConnector == null) {
+            VConsole.error("Received update for " + uidl.getTag() + ", but there is no such paintable ("+ connectorId+ ") rendered.");
+          }
+ else {
+            VConsole.error("Server sent Vaadin 6 style updates for " + Util.getConnectorString(legacyConnector) + " but this is not a Vaadin 6 Paintable");
+          }
+        }
+ catch (        final Throwable e) {
+          VConsole.error(e);
+        }
+      }
+    }
+    private void sendHierarchyChangeEvents(    Collection<ConnectorHierarchyChangeEvent> pendingHierarchyChangeEvents){
+      if (pendingHierarchyChangeEvents.isEmpty()) {
+        return;
+      }
+      VConsole.log(" * Sending hierarchy change events");
+      for (      ConnectorHierarchyChangeEvent event : pendingHierarchyChangeEvents) {
+        try {
+          event.getConnector().fireEvent(event);
+        }
+ catch (        final Throwable e) {
+          VConsole.error(e);
+        }
+      }
+    }
+    private Collection<StateChangeEvent> updateConnectorState(    ValueMap json){
+      ArrayList<StateChangeEvent> events=new ArrayList<StateChangeEvent>();
+      VConsole.log(" * Updating connector states");
+      if (!json.containsKey("state")) {
+        return events;
+      }
+      ValueMap states=json.getValueMap("state");
+      JsArrayString keyArray=states.getKeyArray();
+      for (int i=0; i < keyArray.length(); i++) {
+        try {
+          String connectorId=keyArray.get(i);
+          ServerConnector connector=connectorMap.getConnector(connectorId);
+          if (null != connector) {
+            JSONObject stateJson=new JSONObject(states.getJavaScriptObject(connectorId));
+            if (connector instanceof HasJavaScriptConnectorHelper) {
+              ((HasJavaScriptConnectorHelper)connector).getJavascriptConnectorHelper().setNativeState(stateJson.getJavaScriptObject());
+            }
+            SharedState state=connector.getState();
+            JsonDecoder.decodeValue(new Type(state.getClass().getName(),null),stateJson,state,ApplicationConnection.this);
+            StateChangeEvent event=GWT.create(StateChangeEvent.class);
+            event.setConnector(connector);
+            events.add(event);
+          }
+        }
+ catch (        final Throwable e) {
+          VConsole.error(e);
+        }
+      }
+      return events;
+    }
+    /** 
+ * Updates the connector hierarchy and returns a list of events that
+ * should be fired after update of the hierarchy and the state is
+ * done.
+ * @param jsonThe JSON containing the hierarchy information
+ * @return A collection of events that should be fired when update
+ * of hierarchy and state is complete
+ */
+    private Collection<ConnectorHierarchyChangeEvent> updateConnectorHierarchy(    ValueMap json){
+      List<ConnectorHierarchyChangeEvent> events=new LinkedList<ConnectorHierarchyChangeEvent>();
+      VConsole.log(" * Updating connector hierarchy");
+      if (!json.containsKey("hierarchy")) {
+        return events;
+      }
+      ValueMap hierarchies=json.getValueMap("hierarchy");
+      JsArrayString hierarchyKeys=hierarchies.getKeyArray();
+      for (int i=0; i < hierarchyKeys.length(); i++) {
+        try {
+          String connectorId=hierarchyKeys.get(i);
+          ServerConnector parentConnector=connectorMap.getConnector(connectorId);
+          JsArrayString childConnectorIds=hierarchies.getJSStringArray(connectorId);
+          int childConnectorSize=childConnectorIds.length();
+          List<ServerConnector> newChildren=new ArrayList<ServerConnector>();
+          List<ComponentConnector> newComponents=new ArrayList<ComponentConnector>();
+          for (int connectorIndex=0; connectorIndex < childConnectorSize; connectorIndex++) {
+            String childConnectorId=childConnectorIds.get(connectorIndex);
+            ServerConnector childConnector=connectorMap.getConnector(childConnectorId);
+            if (childConnector == null) {
+              VConsole.error("Hierarchy claims that " + childConnectorId + " is a child for "+ connectorId+ " ("+ parentConnector.getClass().getName()+ ") but no connector with id "+ childConnectorId+ " has been registered");
+              continue;
+            }
+            newChildren.add(childConnector);
+            if (childConnector instanceof ComponentConnector) {
+              newComponents.add((ComponentConnector)childConnector);
+            }
+ else             if (!(childConnector instanceof AbstractExtensionConnector)) {
+              throw new IllegalStateException(Util.getConnectorString(childConnector) + " is not a ComponentConnector nor an AbstractExtensionConnector");
+            }
+            if (childConnector.getParent() != parentConnector) {
+              childConnector.setParent(parentConnector);
+            }
+          }
+          List<ServerConnector> oldChildren=parentConnector.getChildren();
+          boolean actuallyChanged=!Util.collectionsEquals(oldChildren,newChildren);
+          if (!actuallyChanged) {
+            continue;
+          }
+          if (parentConnector instanceof ComponentContainerConnector) {
+            ComponentContainerConnector ccc=(ComponentContainerConnector)parentConnector;
+            List<ComponentConnector> oldComponents=ccc.getChildComponents();
+            if (!Util.collectionsEquals(oldComponents,newComponents)) {
+              ConnectorHierarchyChangeEvent event=GWT.create(ConnectorHierarchyChangeEvent.class);
+              event.setOldChildren(oldComponents);
+              event.setConnector(parentConnector);
+              ccc.setChildComponents(newComponents);
+              events.add(event);
+            }
+          }
+ else           if (!newComponents.isEmpty()) {
+            VConsole.error("Hierachy claims " + Util.getConnectorString(parentConnector) + " has component children even though it isn't a ComponentContainerConnector");
+          }
+          parentConnector.setChildren(newChildren);
+          for (          ServerConnector oldChild : oldChildren) {
+            if (oldChild.getParent() != parentConnector) {
+              continue;
+            }
+            if (!newChildren.contains(oldChild)) {
+              oldChild.setParent(null);
+            }
+          }
+        }
+ catch (        final Throwable e) {
+          VConsole.error(e);
+        }
+      }
+      return events;
+    }
+    private void handleRpcInvocations(    ValueMap json){
+      if (json.containsKey("rpc")) {
+        VConsole.log(" * Performing server to client RPC calls");
+        JSONArray rpcCalls=new JSONArray(json.getJavaScriptObject("rpc"));
+        int rpcLength=rpcCalls.size();
+        for (int i=0; i < rpcLength; i++) {
+          try {
+            JSONArray rpcCall=(JSONArray)rpcCalls.get(i);
+            rpcManager.parseAndApplyInvocation(rpcCall,ApplicationConnection.this);
+          }
+ catch (          final Throwable e) {
+            VConsole.error(e);
+          }
+        }
+      }
+    }
+  }
+;
+  ApplicationConfiguration.runWhenDependenciesLoaded(c);
+}

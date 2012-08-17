@@ -1,0 +1,32 @@
+{
+  boolean sendUIDL=Root.getCurrent() == null;
+  try {
+    CombinedRequest combinedRequest=new CombinedRequest(request);
+    Root root=application.getRootForRequest(combinedRequest);
+    response.setContentType("application/json; charset=UTF-8");
+    BootstrapHandler bootstrapHandler=getBootstrapHandler();
+    BootstrapContext context=bootstrapHandler.createContext(combinedRequest,response,application,root.getRootId());
+    String widgetset=context.getWidgetsetName();
+    String theme=context.getThemeName();
+    String themeUri=bootstrapHandler.getThemeUri(context,theme);
+    JSONObject params=new JSONObject();
+    params.put("widgetset",widgetset);
+    params.put("themeUri",themeUri);
+    params.put(ApplicationConstants.ROOT_ID_PARAMETER,root.getRootId());
+    if (sendUIDL) {
+      String initialUIDL=getInitialUIDL(combinedRequest,root);
+      params.put("uidl",initialUIDL);
+    }
+    final OutputStream out=response.getOutputStream();
+    final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
+    outWriter.write(params.toString());
+    outWriter.flush();
+    out.flush();
+  }
+ catch (  RootRequiresMoreInformationException e) {
+    throw new RuntimeException(e);
+  }
+catch (  JSONException e) {
+    e.printStackTrace();
+  }
+}

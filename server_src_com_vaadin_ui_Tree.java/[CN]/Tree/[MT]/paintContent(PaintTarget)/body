@@ -1,0 +1,162 @@
+{
+  initialPaint=false;
+  if (partialUpdate) {
+    target.addAttribute("partialUpdate",true);
+    target.addAttribute("rootKey",itemIdMapper.key(expandedItemId));
+  }
+ else {
+    getCaptionChangeListener().clear();
+    if (getTabIndex() > 0) {
+      target.addAttribute("tabindex",getTabIndex());
+    }
+    if (isSelectable()) {
+      target.addAttribute("selectmode",(isMultiSelect() ? "multi" : "single"));
+      if (isMultiSelect()) {
+        target.addAttribute("multiselectmode",multiSelectMode.ordinal());
+      }
+    }
+ else {
+      target.addAttribute("selectmode","none");
+    }
+    if (isNewItemsAllowed()) {
+      target.addAttribute("allownewitem",true);
+    }
+    if (isNullSelectionAllowed()) {
+      target.addAttribute("nullselect",true);
+    }
+    if (dragMode != TreeDragMode.NONE) {
+      target.addAttribute("dragMode",dragMode.ordinal());
+    }
+  }
+  final Set<Action> actionSet=new LinkedHashSet<Action>();
+  LinkedList<String> selectedKeys=new LinkedList<String>();
+  final LinkedList<String> expandedKeys=new LinkedList<String>();
+  final Stack<Iterator<?>> iteratorStack=new Stack<Iterator<?>>();
+  Collection<?> ids;
+  if (partialUpdate) {
+    ids=getChildren(expandedItemId);
+  }
+ else {
+    ids=rootItemIds();
+  }
+  if (ids != null) {
+    iteratorStack.push(ids.iterator());
+  }
+  if (actionHandlers != null) {
+    final ArrayList<String> keys=new ArrayList<String>();
+    for (    Handler ah : actionHandlers) {
+      final Action[] aa=ah.getActions(null,this);
+      if (aa != null) {
+        for (int ai=0; ai < aa.length; ai++) {
+          final String akey=actionMapper.key(aa[ai]);
+          actionSet.add(aa[ai]);
+          keys.add(akey);
+        }
+      }
+    }
+    target.addAttribute("alb",keys.toArray());
+  }
+  while (!iteratorStack.isEmpty()) {
+    final Iterator<?> i=iteratorStack.peek();
+    if (!i.hasNext()) {
+      iteratorStack.pop();
+      if (!iteratorStack.isEmpty()) {
+        target.endTag("node");
+      }
+    }
+ else {
+      final Object itemId=i.next();
+      final boolean isNode=areChildrenAllowed(itemId);
+      if (isNode) {
+        target.startTag("node");
+      }
+ else {
+        target.startTag("leaf");
+      }
+      if (itemStyleGenerator != null) {
+        String stylename=itemStyleGenerator.getStyle(itemId);
+        if (stylename != null) {
+          target.addAttribute(TreeConstants.ATTRIBUTE_NODE_STYLE,stylename);
+        }
+      }
+      if (itemDescriptionGenerator != null) {
+        String description=itemDescriptionGenerator.generateDescription(this,itemId,null);
+        if (description != null && !description.equals("")) {
+          target.addAttribute("descr",description);
+        }
+      }
+      target.addAttribute(TreeConstants.ATTRIBUTE_NODE_CAPTION,getItemCaption(itemId));
+      final Resource icon=getItemIcon(itemId);
+      if (icon != null) {
+        target.addAttribute(TreeConstants.ATTRIBUTE_NODE_ICON,getItemIcon(itemId));
+      }
+      final String key=itemIdMapper.key(itemId);
+      target.addAttribute("key",key);
+      if (isSelected(itemId)) {
+        target.addAttribute("selected",true);
+        selectedKeys.add(key);
+      }
+      if (areChildrenAllowed(itemId) && isExpanded(itemId)) {
+        target.addAttribute("expanded",true);
+        expandedKeys.add(key);
+      }
+      getCaptionChangeListener().addNotifierForItem(itemId);
+      if (actionHandlers != null) {
+        final ArrayList<String> keys=new ArrayList<String>();
+        final Iterator<Action.Handler> ahi=actionHandlers.iterator();
+        while (ahi.hasNext()) {
+          final Action[] aa=ahi.next().getActions(itemId,this);
+          if (aa != null) {
+            for (int ai=0; ai < aa.length; ai++) {
+              final String akey=actionMapper.key(aa[ai]);
+              actionSet.add(aa[ai]);
+              keys.add(akey);
+            }
+          }
+        }
+        target.addAttribute("al",keys.toArray());
+      }
+      if (isExpanded(itemId) && hasChildren(itemId) && areChildrenAllowed(itemId)) {
+        iteratorStack.push(getChildren(itemId).iterator());
+      }
+ else {
+        if (isNode) {
+          target.endTag("node");
+        }
+ else {
+          target.endTag("leaf");
+        }
+      }
+    }
+  }
+  if (!actionSet.isEmpty()) {
+    target.addVariable(this,"action","");
+    target.startTag("actions");
+    final Iterator<Action> i=actionSet.iterator();
+    while (i.hasNext()) {
+      final Action a=i.next();
+      target.startTag("action");
+      if (a.getCaption() != null) {
+        target.addAttribute(TreeConstants.ATTRIBUTE_ACTION_CAPTION,a.getCaption());
+      }
+      if (a.getIcon() != null) {
+        target.addAttribute(TreeConstants.ATTRIBUTE_ACTION_ICON,a.getIcon());
+      }
+      target.addAttribute("key",actionMapper.key(a));
+      target.endTag("action");
+    }
+    target.endTag("actions");
+  }
+  if (partialUpdate) {
+    partialUpdate=false;
+  }
+ else {
+    target.addVariable(this,"selected",selectedKeys.toArray(new String[selectedKeys.size()]));
+    target.addVariable(this,"expand",new String[]{});
+    target.addVariable(this,"collapse",new String[]{});
+    target.addVariable(this,"newitem",new String[]{});
+    if (dropHandler != null) {
+      dropHandler.getAcceptCriterion().paint(target);
+    }
+  }
+}
