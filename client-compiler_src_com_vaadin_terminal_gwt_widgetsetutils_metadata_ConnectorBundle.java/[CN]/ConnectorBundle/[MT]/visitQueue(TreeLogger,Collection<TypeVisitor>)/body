@@ -1,0 +1,16 @@
+{
+  while (!visitQueue.isEmpty()) {
+    JClassType type=visitQueue.iterator().next();
+    for (    TypeVisitor typeVisitor : visitors) {
+      try {
+        typeVisitor.visit(type,this);
+      }
+ catch (      NotFoundException e) {
+        logger.log(Type.ERROR,e.getMessage(),e);
+        throw new UnableToCompleteException();
+      }
+    }
+    visitQueue.remove(type);
+    visitedTypes.add(type);
+  }
+}

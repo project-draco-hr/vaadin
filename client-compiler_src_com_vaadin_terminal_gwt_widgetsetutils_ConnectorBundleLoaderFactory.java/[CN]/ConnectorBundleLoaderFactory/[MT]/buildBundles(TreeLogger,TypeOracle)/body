@@ -17,17 +17,17 @@
   List<ConnectorBundle> bundles=new ArrayList<ConnectorBundle>();
   Collection<TypeVisitor> visitors=getVisitors(typeOracle);
   ConnectorBundle eagerBundle=new ConnectorBundle(ConnectorBundleLoader.EAGER_BUNDLE_NAME,null);
-  eagerBundle.visitTypes(connectorsByLoadStyle.get(LoadStyle.EAGER),visitors);
-  eagerBundle.visitSubTypes(typeOracle.getType(ClientRpc.class.getName()),visitors);
-  eagerBundle.visitSubTypes(typeOracle.getType(ServerRpc.class.getName()),visitors);
+  eagerBundle.visitTypes(logger,connectorsByLoadStyle.get(LoadStyle.EAGER),visitors);
+  eagerBundle.visitSubTypes(logger,typeOracle.getType(ClientRpc.class.getName()),visitors);
+  eagerBundle.visitSubTypes(logger,typeOracle.getType(ServerRpc.class.getName()),visitors);
   bundles.add(eagerBundle);
   ConnectorBundle deferredBundle=new ConnectorBundle(ConnectorBundleLoader.DEFERRED_BUNDLE_NAME,eagerBundle);
-  deferredBundle.visitTypes(connectorsByLoadStyle.get(LoadStyle.DEFERRED),visitors);
+  deferredBundle.visitTypes(logger,connectorsByLoadStyle.get(LoadStyle.DEFERRED),visitors);
   bundles.add(deferredBundle);
   Collection<JClassType> lazy=connectorsByLoadStyle.get(LoadStyle.LAZY);
   for (  JClassType type : lazy) {
     ConnectorBundle bundle=new ConnectorBundle(type.getName(),deferredBundle);
-    bundle.visitTypes(Collections.singleton(type),visitors);
+    bundle.visitTypes(logger,Collections.singleton(type),visitors);
     bundles.add(bundle);
   }
   return bundles;

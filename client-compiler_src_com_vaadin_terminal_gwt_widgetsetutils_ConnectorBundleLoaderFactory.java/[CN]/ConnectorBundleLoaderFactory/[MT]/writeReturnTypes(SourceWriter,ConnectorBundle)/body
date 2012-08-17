@@ -1,0 +1,16 @@
+{
+  Map<JClassType,Set<JMethod>> methodReturnTypes=bundle.getMethodReturnTypes();
+  for (  Entry<JClassType,Set<JMethod>> entry : methodReturnTypes.entrySet()) {
+    JClassType type=entry.getKey();
+    Set<JMethod> methods=entry.getValue();
+    for (    JMethod method : methods) {
+      w.print("store.setReturnType(");
+      printClassLiteral(w,type);
+      w.print(", \"");
+      w.print(method.getName());
+      w.print("\", ");
+      GeneratedRpcMethodProviderGenerator.writeTypeCreator(w,method.getReturnType());
+      w.println(");");
+    }
+  }
+}
