@@ -1,20 +1,10 @@
 {
-  String rootClassName=getRootClassName(request);
-  try {
-    ClassLoader classLoader=request.getDeploymentConfiguration().getClassLoader();
-    if (classLoader == null) {
-      classLoader=getClass().getClassLoader();
-    }
-    Class<? extends Root> rootClass=Class.forName(rootClassName,true,classLoader).asSubclass(Root.class);
-    try {
-      Root root=rootClass.newInstance();
-      return root;
-    }
- catch (    Exception e) {
-      throw new RuntimeException("Could not instantiate root class " + rootClassName,e);
+  for (int i=rootProviders.size() - 1; i >= 0; i--) {
+    RootProvider provider=rootProviders.get(i);
+    Class<? extends Root> rootClass=provider.getRootClass(this,request);
+    if (rootClass != null) {
+      return provider.instantiateRoot(this,rootClass,request);
     }
   }
- catch (  ClassNotFoundException e) {
-    throw new RuntimeException("Could not load root class " + rootClassName,e);
-  }
+  throw new RuntimeException("No root providers available or providers are not able to find root instance");
 }
