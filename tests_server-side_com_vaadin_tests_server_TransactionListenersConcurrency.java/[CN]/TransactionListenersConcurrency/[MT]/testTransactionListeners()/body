@@ -19,7 +19,11 @@
         }
 ;
         try {
-          app.start(new ApplicationStartEvent(new URL("http://localhost/"),new Properties(),context,true));
+          DeploymentConfiguration dc=EasyMock.createMock(DeploymentConfiguration.class);
+          EasyMock.expect(dc.isProductionMode()).andReturn(true);
+          EasyMock.expect(dc.getInitParameters()).andReturn(new Properties());
+          EasyMock.replay(dc);
+          app.start(new ApplicationStartEvent(new URL("http://localhost/"),dc,context));
         }
  catch (        MalformedURLException e) {
           e.printStackTrace();
@@ -38,7 +42,9 @@
     threads.add(t);
     t.setUncaughtExceptionHandler(new UncaughtExceptionHandler(){
       @Override public void uncaughtException(      Thread t,      Throwable e){
-        e=e.getCause();
+        if (e.getCause() != null) {
+          e=e.getCause();
+        }
         exceptions.add(e);
       }
     }
@@ -61,8 +67,10 @@
     if (t instanceof InvocationTargetException) {
       t=t.getCause();
     }
-    t.printStackTrace(System.err);
-    fail(t.getClass().getName());
+    if (t != null) {
+      t.printStackTrace(System.err);
+      fail(t.getClass().getName());
+    }
   }
   System.out.println("Done, all ok");
 }

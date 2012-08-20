@@ -1,6 +1,6 @@
 {
   super.init(servletConfig);
-  Properties applicationProperties=getDeploymentConfiguration().getInitParameters();
+  Properties applicationProperties=new Properties();
   final ServletContext context=servletConfig.getServletContext();
   for (final Enumeration<String> e=context.getInitParameterNames(); e.hasMoreElements(); ) {
     final String name=e.nextElement();
@@ -10,8 +10,25 @@
     final String name=e.nextElement();
     applicationProperties.setProperty(name,servletConfig.getInitParameter(name));
   }
-  checkProductionMode();
-  checkCrossSiteProtection();
-  checkResourceCacheTime();
+  deploymentConfiguration=new AbstractDeploymentConfiguration(getClass(),applicationProperties){
+    @Override public String getStaticFileLocation(    WrappedRequest request){
+      HttpServletRequest servletRequest=WrappedHttpServletRequest.cast(request);
+      return AbstractApplicationServlet.this.getStaticFilesLocation(servletRequest);
+    }
+    @Override public String getConfiguredWidgetset(    WrappedRequest request){
+      return getApplicationOrSystemProperty(AbstractApplicationServlet.PARAMETER_WIDGETSET,AbstractApplicationServlet.DEFAULT_WIDGETSET);
+    }
+    @Override public String getConfiguredTheme(    WrappedRequest request){
+      return AbstractApplicationServlet.getDefaultTheme();
+    }
+    @Override public boolean isStandalone(    WrappedRequest request){
+      return true;
+    }
+    @Override public String getMimeType(    String resourceName){
+      return getServletContext().getMimeType(resourceName);
+    }
+  }
+;
+  addonContext=new AddonContext(deploymentConfiguration);
   addonContext.init();
 }

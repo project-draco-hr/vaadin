@@ -2,34 +2,13 @@
   super.onStateChanged(stateChangeEvent);
   focusHandlerRegistration=EventHelper.updateFocusHandler(this,focusHandlerRegistration);
   blurHandlerRegistration=EventHelper.updateBlurHandler(this,blurHandlerRegistration);
-  if (getState().isHtmlContentAllowed()) {
-    getWidget().setHtml(getState().getCaption());
-  }
- else {
-    getWidget().setText(getState().getCaption());
-  }
-  if (null != getState().getErrorMessage()) {
-    if (getWidget().errorIndicatorElement == null) {
-      getWidget().errorIndicatorElement=DOM.createSpan();
-      getWidget().errorIndicatorElement.setClassName("v-errorindicator");
+  Set<String> changedProperties=stateChangeEvent.getChangedProperties();
+  if (changedProperties.contains("caption") || changedProperties.contains("htmlContentAllowed")) {
+    if (getState().isHtmlContentAllowed()) {
+      getWidget().setHtml(getState().getCaption());
     }
-    getWidget().wrapper.insertBefore(getWidget().errorIndicatorElement,getWidget().captionElement);
-  }
- else   if (getWidget().errorIndicatorElement != null) {
-    getWidget().wrapper.removeChild(getWidget().errorIndicatorElement);
-    getWidget().errorIndicatorElement=null;
-  }
-  if (getState().getIcon() != null) {
-    if (getWidget().icon == null) {
-      getWidget().icon=new Icon(getConnection());
-      getWidget().wrapper.insertBefore(getWidget().icon.getElement(),getWidget().captionElement);
-    }
-    getWidget().icon.setUri(getState().getIcon().getURL());
-  }
  else {
-    if (getWidget().icon != null) {
-      getWidget().wrapper.removeChild(getWidget().icon.getElement());
-      getWidget().icon=null;
+      getWidget().setText(getState().getCaption());
     }
   }
   getWidget().clickShortcut=getState().getClickShortcutKeyCode();

@@ -22,6 +22,10 @@
  else   if (targetType == JSONObject.class || targetType == JSONArray.class) {
     return value;
   }
+ else   if (Enum.class.isAssignableFrom(getClassForType(targetType))) {
+    Class<?> classForType=getClassForType(targetType);
+    return decodeEnum(classForType.asSubclass(Enum.class),(String)value);
+  }
  else {
     return decodeObject(targetType,(JSONObject)value,connectorTracker);
   }
