@@ -5,8 +5,14 @@
     if ((this instanceof MSSQLGenerator || this instanceof OracleGenerator) && cp.getPropertyId().equalsIgnoreCase("rownum")) {
       continue;
     }
-    Object value=cp.getValue() == null ? null : cp.getValue();
-    if (!cp.isReadOnlyChangeAllowed() || cp.isVersionColumn()) {
+    if (cp.isRowIdentifier()) {
+      Object value;
+      if (cp.isPrimaryKey()) {
+        value=cp.getOldValue();
+      }
+ else {
+        value=cp.getValue();
+      }
       rowIdentifiers.put(cp.getPropertyId(),value);
     }
   }

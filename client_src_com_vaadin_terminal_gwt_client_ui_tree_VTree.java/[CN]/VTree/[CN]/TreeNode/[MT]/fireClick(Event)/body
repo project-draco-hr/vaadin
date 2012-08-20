@@ -13,7 +13,7 @@
     }
   }
   final MouseEventDetails details=MouseEventDetailsBuilder.buildMouseEventDetails(evt);
-  ScheduledCommand command=new ScheduledCommand(){
+  executeEventCommand(new ScheduledCommand(){
     @Override public void execute(){
       boolean sendClickEventNow=true;
       if (details.getButton() == NativeEvent.BUTTON_LEFT && immediate && selectable) {
@@ -26,11 +26,5 @@
       client.updateVariable(paintableId,"clickEvent",details.toString(),sendClickEventNow);
     }
   }
-;
-  if (treeHasFocus) {
-    command.execute();
-  }
- else {
-    Scheduler.get().scheduleDeferred(command);
-  }
+);
 }

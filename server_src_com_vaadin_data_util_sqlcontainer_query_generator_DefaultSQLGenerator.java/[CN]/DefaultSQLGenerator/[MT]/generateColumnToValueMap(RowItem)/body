@@ -5,9 +5,8 @@
     if ((this instanceof MSSQLGenerator || this instanceof OracleGenerator) && cp.getPropertyId().equalsIgnoreCase("rownum")) {
       continue;
     }
-    Object value=cp.getValue() == null ? null : cp.getValue();
-    if (cp.isReadOnlyChangeAllowed() && !cp.isVersionColumn()) {
-      columnToValueMap.put(cp.getPropertyId(),value);
+    if (cp.isPersistent()) {
+      columnToValueMap.put(cp.getPropertyId(),cp.getValue());
     }
   }
   return columnToValueMap;
