@@ -1,4 +1,10 @@
 {
+  if (!renderingLocks.isEmpty()) {
+    VConsole.log("Postponing UIDL handling due to lock...");
+    pendingUIDLMessages.add(new PendingUIDLMessage(start,jsonText,json));
+    forceHandleMessage.schedule(MAX_SUSPENDED_TIMEOUT);
+    return;
+  }
   VConsole.log("Handling message from server");
   if (json.containsKey("redirect")) {
     String url=json.getValueMap("redirect").getString("url");
