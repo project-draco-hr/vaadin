@@ -4,7 +4,14 @@
     Integer currentTag=Integer.valueOf(tag);
     while (type == null && currentTag != null) {
       String serverSideClassNameForTag=getServerSideClassNameForTag(currentTag);
-      type=(Class<? extends ServerConnector>)TypeData.getClass(serverSideClassNameForTag);
+      if (TypeData.hasIdentifier(serverSideClassNameForTag)) {
+        try {
+          type=(Class<? extends ServerConnector>)TypeData.getClass(serverSideClassNameForTag);
+        }
+ catch (        NoDataException e) {
+          throw new RuntimeException(e);
+        }
+      }
       currentTag=getParentTag(currentTag.intValue());
     }
     if (type == null) {
