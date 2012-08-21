@@ -1,8 +1,10 @@
 {
   Method method=getMethod(invocation);
-  Type[] parameterTypes=method.getParameterTypes();
-  if (parameterTypes == null) {
-    throw new IllegalStateException("There is no information about " + method.getSignature() + ". Did you remember to compile the right widgetset?");
+  try {
+    Type[] parameterTypes=method.getParameterTypes();
+    return parameterTypes;
   }
-  return parameterTypes;
+ catch (  NoDataException e) {
+    throw new IllegalStateException("There is no information about " + method.getSignature() + ". Did you remember to compile the right widgetset?",e);
+  }
 }
