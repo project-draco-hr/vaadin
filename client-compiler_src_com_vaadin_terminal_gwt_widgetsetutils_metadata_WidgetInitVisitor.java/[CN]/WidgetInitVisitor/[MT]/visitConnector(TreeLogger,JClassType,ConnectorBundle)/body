@@ -1,5 +1,10 @@
 {
   if (ConnectorBundle.isConnectedComponentConnector(type)) {
+    JClassType createWidgetClass=findInheritedMethod(type,"createWidget").getEnclosingType();
+    boolean createWidgetOverridden=!createWidgetClass.getQualifiedSourceName().equals(AbstractComponentConnector.class.getCanonicalName());
+    if (createWidgetOverridden) {
+      return;
+    }
     JMethod getWidget=findInheritedMethod(type,"getWidget");
     bundle.setNeedsReturnType(type,getWidget);
     JType widgetType=getWidget.getReturnType();
