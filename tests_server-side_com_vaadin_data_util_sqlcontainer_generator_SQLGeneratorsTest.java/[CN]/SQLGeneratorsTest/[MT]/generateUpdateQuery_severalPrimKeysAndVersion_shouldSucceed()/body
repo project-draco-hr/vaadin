@@ -1,0 +1,16 @@
+{
+  if (AllTests.sqlGen instanceof MSSQLGenerator || AllTests.sqlGen instanceof OracleGenerator) {
+    return;
+  }
+  DefaultSQLGenerator sqlGen=new DefaultSQLGenerator();
+  ColumnProperty cp1=new ColumnProperty("FIRSTPK",false,true,false,true,new Integer(1),Integer.class);
+  ColumnProperty cp2=new ColumnProperty("SECONDPK",false,true,false,true,"primKeyValue",String.class);
+  ColumnProperty cp3=new ColumnProperty("NONPK",false,true,false,false,new Integer(1),Integer.class);
+  ColumnProperty cp4=new ColumnProperty("VERSION",false,true,false,false,new Integer(1),Integer.class);
+  cp4.setVersionColumn(true);
+  SQLContainer container=EasyMock.createNiceMock(SQLContainer.class);
+  RowItem ri=new RowItem(container,new RowId(new Object[]{0L}),Arrays.asList(cp1,cp2,cp3,cp4));
+  StatementHelper generateUpdateQuery=sqlGen.generateUpdateQuery("testTable",ri);
+  String queryString=generateUpdateQuery.getQueryString();
+  Assert.assertEquals("UPDATE testTable SET \"NONPK\" = ?, \"SECONDPK\" = ?, \"FIRSTPK\" = ? WHERE \"VERSION\" = ? AND \"SECONDPK\" = ? AND \"FIRSTPK\" = ?",queryString);
+}
