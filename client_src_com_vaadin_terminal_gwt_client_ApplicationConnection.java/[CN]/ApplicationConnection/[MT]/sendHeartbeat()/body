@@ -1,0 +1,27 @@
+{
+  final String uri=addGetParameters(translateVaadinUri(ApplicationConstants.APP_PROTOCOL_PREFIX + ApplicationConstants.HEARTBEAT_REQUEST_PATH),ApplicationConstants.ROOT_ID_PARAMETER + "=" + getConfiguration().getRootId());
+  final RequestBuilder rb=new RequestBuilder(RequestBuilder.POST,uri);
+  final RequestCallback callback=new RequestCallback(){
+    @Override public void onResponseReceived(    Request request,    Response response){
+      int status=response.getStatusCode();
+      if (status == Response.SC_OK) {
+        scheduleHeartbeat();
+      }
+ else {
+        VConsole.error("Heartbeat request failed with status code " + status);
+      }
+    }
+    @Override public void onError(    Request request,    Throwable exception){
+      VConsole.error("Heartbeat request resulted in exception");
+      VConsole.error(exception);
+    }
+  }
+;
+  rb.setCallback(callback);
+  try {
+    rb.send();
+  }
+ catch (  RequestException re) {
+    callback.onError(null,re);
+  }
+}
