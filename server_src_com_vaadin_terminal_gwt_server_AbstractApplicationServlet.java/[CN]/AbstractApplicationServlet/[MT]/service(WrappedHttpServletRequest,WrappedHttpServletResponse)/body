@@ -13,6 +13,7 @@
   Application application=null;
   boolean transactionStarted=false;
   boolean requestStarted=false;
+  boolean applicationRunning=false;
   try {
     if (requestType == RequestType.UIDL && request.getParameterMap().containsKey(ApplicationConstants.PARAM_UNLOADBURST) && request.getContentLength() < 1 && getExistingApplication(request,false) == null) {
       redirectToApplication(request,response);
@@ -29,12 +30,17 @@
       applicationManager.serveConnectorResource(request,response);
       return;
     }
+ else     if (requestType == RequestType.HEARTBEAT) {
+      applicationManager.handleHeartbeatRequest(request,response,application);
+      return;
+    }
     webApplicationContext.getBrowser().updateRequestDetails(request);
     if (application instanceof HttpServletRequestListener) {
       ((HttpServletRequestListener)application).onRequestStart(request,response);
       requestStarted=true;
     }
     startApplication(request,application,webApplicationContext);
+    applicationRunning=true;
     webApplicationContext.startTransaction(application,request);
     transactionStarted=true;
     if (requestType == RequestType.FILE_UPLOAD) {
@@ -71,6 +77,9 @@ catch (  final Throwable e) {
     handleServiceException(request,response,application,e);
   }
  finally {
+    if (applicationRunning) {
+      application.closeInactiveRoots();
+    }
     try {
       if (transactionStarted) {
         ((WebApplicationContext)application.getContext()).endTransaction(application,request);

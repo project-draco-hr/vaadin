@@ -22,6 +22,7 @@
     Application application=null;
     boolean transactionStarted=false;
     boolean requestStarted=false;
+    boolean applicationRunning=false;
     try {
       application=findApplicationInstance(wrappedRequest,requestType);
       if (application == null) {
@@ -36,12 +37,17 @@
         applicationManager.serveConnectorResource(wrappedRequest,wrappedResponse);
         return;
       }
+ else       if (requestType == RequestType.HEARTBEAT) {
+        applicationManager.handleHeartbeatRequest(wrappedRequest,wrappedResponse,application);
+        return;
+      }
       applicationContext.getBrowser().updateRequestDetails(wrappedRequest);
       if (application instanceof PortletRequestListener) {
         ((PortletRequestListener)application).onRequestStart(request,response);
         requestStarted=true;
       }
       startApplication(request,application,applicationContext);
+      applicationRunning=true;
       applicationContext.startTransaction(application,request);
       transactionStarted=true;
       Root root=null;
@@ -109,6 +115,9 @@ catch (final Throwable e) {
 handleServiceException(wrappedRequest,wrappedResponse,application,e);
 }
  finally {
+if (applicationRunning) {
+application.closeInactiveRoots();
+}
 try {
 if (transactionStarted) {
 ((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
