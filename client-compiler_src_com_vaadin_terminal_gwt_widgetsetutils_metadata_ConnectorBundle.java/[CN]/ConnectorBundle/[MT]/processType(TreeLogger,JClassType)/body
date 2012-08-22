@@ -1,4 +1,9 @@
 {
-  ensureVisited(type);
-  purgeQueue(logger);
+  if (!isTypeVisited(type)) {
+    for (    TypeVisitor typeVisitor : visitors) {
+      invokeVisitor(logger,type,typeVisitor);
+    }
+    visitedTypes.add(type);
+    purgeSerializeSupportQueue(logger);
+  }
 }
