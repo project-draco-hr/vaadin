@@ -1,0 +1,25 @@
+{
+  try {
+    VConsole.log("Variable burst to be sent to server:");
+    String curId=null;
+    ArrayList<MethodInvocation> invocations=new ArrayList<MethodInvocation>();
+    for (    MethodInvocation methodInvocation : loggedBurst) {
+      String id=methodInvocation.getConnectorId();
+      if (curId == null) {
+        curId=id;
+      }
+ else       if (!curId.equals(id)) {
+        printConnectorInvocations(invocations,curId,c);
+        invocations.clear();
+        curId=id;
+      }
+      invocations.add(methodInvocation);
+    }
+    if (!invocations.isEmpty()) {
+      printConnectorInvocations(invocations,curId,c);
+    }
+  }
+ catch (  Exception e) {
+    VConsole.error(e);
+  }
+}

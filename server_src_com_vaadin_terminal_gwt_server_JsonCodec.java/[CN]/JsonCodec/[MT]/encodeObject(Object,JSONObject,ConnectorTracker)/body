@@ -1,0 +1,37 @@
+{
+  JSONObject jsonMap=new JSONObject();
+  try {
+    for (    PropertyDescriptor pd : Introspector.getBeanInfo(value.getClass()).getPropertyDescriptors()) {
+      String fieldName=getTransportFieldName(pd);
+      if (fieldName == null) {
+        continue;
+      }
+      Method getterMethod=pd.getReadMethod();
+      Type fieldType=getterMethod.getGenericReturnType();
+      Object fieldValue=getterMethod.invoke(value,(Object[])null);
+      boolean equals=false;
+      Object diffStateValue=null;
+      if (diffState != null && diffState.has(fieldName)) {
+        diffStateValue=diffState.get(fieldName);
+        Object referenceFieldValue=decodeInternalOrCustomType(fieldType,diffStateValue,connectorTracker);
+        if (JSONObject.NULL.equals(diffStateValue)) {
+          diffStateValue=null;
+        }
+        equals=equals(fieldValue,referenceFieldValue);
+      }
+      if (!equals) {
+        if (jsonMap.has(fieldName)) {
+          throw new RuntimeException("Can't encode " + value.getClass().getName() + " as it has multiple fields with the name "+ fieldName.toLowerCase()+ ". This can happen if only casing distinguishes one property name from another.");
+        }
+        jsonMap.put(fieldName,encode(fieldValue,diffStateValue,fieldType,connectorTracker));
+        if (diffState != null) {
+          diffState.put(fieldName,encode(fieldValue,null,fieldType,connectorTracker));
+        }
+      }
+    }
+  }
+ catch (  Exception e) {
+    throw new JSONException(e);
+  }
+  return jsonMap;
+}

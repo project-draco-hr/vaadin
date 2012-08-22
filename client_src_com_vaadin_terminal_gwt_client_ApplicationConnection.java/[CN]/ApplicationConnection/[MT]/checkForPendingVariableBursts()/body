@@ -1,11 +1,10 @@
 {
   cleanVariableBurst(pendingInvocations);
   if (pendingBursts.size() > 0) {
-    for (Iterator<ArrayList<MethodInvocation>> iterator=pendingBursts.iterator(); iterator.hasNext(); ) {
-      cleanVariableBurst(iterator.next());
+    for (    LinkedHashMap<String,MethodInvocation> pendingBurst : pendingBursts) {
+      cleanVariableBurst(pendingBurst);
     }
-    ArrayList<MethodInvocation> nextBurst=pendingBursts.get(0);
-    pendingBursts.remove(0);
+    LinkedHashMap<String,MethodInvocation> nextBurst=pendingBursts.remove(0);
     buildAndSendVariableBurst(nextBurst,false);
   }
 }

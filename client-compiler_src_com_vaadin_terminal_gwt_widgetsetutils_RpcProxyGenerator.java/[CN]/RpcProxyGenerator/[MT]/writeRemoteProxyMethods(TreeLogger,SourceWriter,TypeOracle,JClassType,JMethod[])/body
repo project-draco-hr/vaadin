@@ -3,6 +3,9 @@
     writer.print(m.getReadableDeclaration(false,false,false,false,true));
     writer.println(" {");
     writer.indent();
+    Delayed delayedAnnotation=m.getAnnotation(Delayed.class);
+    boolean delayed=delayedAnnotation != null;
+    boolean lastonly=delayed && delayedAnnotation.lastonly();
     writer.print("this.connector.getConnection().addMethodInvocationToQueue(new MethodInvocation(this.connector.getConnectorId(), \"" + requestedType.getQualifiedBinaryName() + "\", \"");
     writer.print(m.getName());
     writer.print("\", new Object[] {");
@@ -15,7 +18,7 @@
       first=false;
       writer.print(p.getName());
     }
-    writer.println("}), true);");
+    writer.println("}), " + delayed + ", "+ lastonly+ ");");
     writer.outdent();
     writer.println("}");
   }

@@ -32,11 +32,16 @@
         }
       }
       boolean readOnly=rsmd.isAutoIncrement(i) || rsmd.isReadOnly(i);
-      if (delegate instanceof TableQuery && rsmd.getColumnLabel(i).equals(((TableQuery)delegate).getVersionColumn())) {
-        readOnly=true;
+      boolean persistable=!rsmd.isReadOnly(i);
+      if (delegate instanceof TableQuery) {
+        if (rsmd.getColumnLabel(i).equals(((TableQuery)delegate).getVersionColumn())) {
+          readOnly=true;
+        }
       }
       propertyReadOnly.put(colName,readOnly);
+      propertyPersistable.put(colName,persistable);
       propertyNullable.put(colName,rsmd.isNullable(i) == ResultSetMetaData.columnNullable);
+      propertyPrimaryKey.put(colName,delegate.getPrimaryKeyColumns().contains(rsmd.getColumnLabel(i)));
       propertyTypes.put(colName,type);
     }
     rs.getStatement().close();
