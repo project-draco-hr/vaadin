@@ -1,0 +1,56 @@
+{
+  StringBuilder html=new StringBuilder();
+  html.append("<object ");
+  if (classId != null) {
+    html.append("classid=\"" + Util.escapeAttribute(classId) + "\" ");
+  }
+ else {
+    html.append("classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" ");
+  }
+  if (codebase != null) {
+    html.append("codebase=\"" + Util.escapeAttribute(codebase) + "\" ");
+  }
+ else {
+    html.append("codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0\" ");
+  }
+  html.append("width=\"" + Util.escapeAttribute(width) + "\" ");
+  html.append("height=\"" + Util.escapeAttribute(height) + "\" ");
+  html.append("type=\"application/x-shockwave-flash\" ");
+  if (codetype != null) {
+    html.append("codetype=\"" + Util.escapeAttribute(codetype) + "\" ");
+  }
+  if (standby != null) {
+    html.append("standby=\"" + Util.escapeAttribute(standby) + "\" ");
+  }
+  if (archive != null) {
+    html.append("archive=\"" + Util.escapeAttribute(archive) + "\" ");
+  }
+  html.append(">");
+  if (embedParams.get("movie") == null) {
+    embedParams.put("movie",source);
+  }
+  for (  String name : embedParams.keySet()) {
+    html.append("<param ");
+    html.append("name=\"" + Util.escapeAttribute(name) + "\" ");
+    html.append("value=\"" + Util.escapeAttribute(embedParams.get(name)) + "\" ");
+    html.append("/>");
+  }
+  html.append("<embed ");
+  html.append("src=\"" + Util.escapeAttribute(source) + "\" ");
+  html.append("width=\"" + Util.escapeAttribute(width) + "\" ");
+  html.append("height=\"" + Util.escapeAttribute(height) + "\" ");
+  html.append("type=\"application/x-shockwave-flash\" ");
+  for (  String name : embedParams.keySet()) {
+    html.append(Util.escapeAttribute(name));
+    html.append("=");
+    html.append("\"" + Util.escapeAttribute(embedParams.get(name)) + "\"");
+  }
+  html.append("></embed>");
+  if (altText != null) {
+    html.append("<noembed>");
+    html.append(altText);
+    html.append("</noembed>");
+  }
+  html.append("</object>");
+  return html.toString();
+}
