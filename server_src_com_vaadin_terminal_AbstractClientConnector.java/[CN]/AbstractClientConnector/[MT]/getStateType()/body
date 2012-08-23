@@ -1,18 +1,6 @@
 {
-  try {
-    Method m=null;
-    Class<?> class1=getClass();
-    while (m == null && class1 != null) {
-      m=class1.getDeclaredMethod("getState",(Class[])null);
-      class1=class1.getSuperclass();
-    }
-    if (m == null) {
-      throw new NoSuchMethodException(getClass().getCanonicalName() + ".getState()");
-    }
-    Class<?> type=m.getReturnType();
-    return type.asSubclass(SharedState.class);
+  if (stateType == null) {
+    stateType=findStateType();
   }
- catch (  Exception e) {
-    throw new RuntimeException("Error finding state type for " + getClass().getName(),e);
-  }
+  return stateType;
 }
