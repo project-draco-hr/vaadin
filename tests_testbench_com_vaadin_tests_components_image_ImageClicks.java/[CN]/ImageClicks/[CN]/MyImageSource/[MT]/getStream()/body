@@ -1,0 +1,40 @@
+{
+  BufferedImage image=new BufferedImage(300,300,BufferedImage.TYPE_INT_RGB);
+  Graphics drawable=image.getGraphics();
+  drawable.setColor(Color.white);
+  drawable.fillRect(0,0,300,300);
+  final int rows=4;
+  final int cols=4;
+  for (int row=0; row < rows; row++) {
+    int gridy=intervalPos(row,300,rows);
+    int gridynext=intervalPos(row + 1,300,rows);
+    if (row > 0) {
+      drawable.setColor(Color.lightGray);
+      drawable.drawLine(0,gridy,300 - 1,gridy);
+    }
+    for (int col=0; col < cols; col++) {
+      int gridx=intervalPos(col,300,cols);
+      int gridxnext=intervalPos(col + 1,300,cols);
+      if (row == 0 && col > 0) {
+        drawable.setColor(Color.lightGray);
+        drawable.drawLine(gridx,0,gridx,300 - 1);
+      }
+      if (Math.random() < 0.5f) {
+        drawable.setColor(Color.white);
+      }
+ else {
+        drawable.setColor(Color.black);
+      }
+      drawable.fillRect(gridx + 1,gridy + 1,gridxnext - gridx - 1,gridynext - gridy - 1);
+    }
+  }
+  try {
+    ByteArrayOutputStream imagebuffer=new ByteArrayOutputStream();
+    ImageIO.write(image,"png",imagebuffer);
+    ByteArrayInputStream istream=new ByteArrayInputStream(imagebuffer.toByteArray());
+    return istream;
+  }
+ catch (  IOException e) {
+    return null;
+  }
+}
