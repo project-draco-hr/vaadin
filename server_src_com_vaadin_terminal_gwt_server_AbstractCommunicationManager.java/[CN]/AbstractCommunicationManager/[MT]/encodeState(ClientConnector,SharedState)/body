@@ -4,9 +4,9 @@
   Class<? extends SharedState> stateType=connector.getStateType();
   Object diffState=connectorTracker.getDiffState(connector);
   if (diffState == null) {
-    diffState=new JSONObject();
-    boolean emptyInitialState=JavaScriptConnectorState.class.isAssignableFrom(stateType);
-    if (!emptyInitialState) {
+    boolean supportsDiffState=!JavaScriptConnectorState.class.isAssignableFrom(stateType);
+    if (supportsDiffState) {
+      diffState=new JSONObject();
       try {
         SharedState referenceState=stateType.newInstance();
         diffState=JsonCodec.encode(referenceState,null,stateType,root.getConnectorTracker());
@@ -14,8 +14,8 @@
  catch (      Exception e) {
         getLogger().log(Level.WARNING,"Error creating reference object for state of type " + stateType.getName());
       }
+      connectorTracker.setDiffState(connector,diffState);
     }
-    connectorTracker.setDiffState(connector,diffState);
   }
   JSONObject stateJson=(JSONObject)JsonCodec.encode(state,diffState,stateType,root.getConnectorTracker());
   return stateJson;
