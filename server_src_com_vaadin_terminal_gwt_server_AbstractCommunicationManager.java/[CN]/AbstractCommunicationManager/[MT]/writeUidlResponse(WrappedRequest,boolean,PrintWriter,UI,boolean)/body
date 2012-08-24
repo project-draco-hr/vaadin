@@ -1,30 +1,30 @@
 {
   ArrayList<ClientConnector> dirtyVisibleConnectors=new ArrayList<ClientConnector>();
-  Application application=uI.getApplication();
-  ConnectorTracker rootConnectorTracker=uI.getConnectorTracker();
+  Application application=ui.getApplication();
+  ConnectorTracker uiConnectorTracker=ui.getConnectorTracker();
   getLogger().log(Level.FINE,"* Creating response to client");
   if (repaintAll) {
-    getClientCache(uI).clear();
-    rootConnectorTracker.markAllConnectorsDirty();
-    rootConnectorTracker.markAllClientSidesUninitialized();
+    getClientCache(ui).clear();
+    uiConnectorTracker.markAllConnectorsDirty();
+    uiConnectorTracker.markAllClientSidesUninitialized();
     locales=null;
     requireLocale(application.getLocale().toString());
   }
-  dirtyVisibleConnectors.addAll(getDirtyVisibleConnectors(rootConnectorTracker));
+  dirtyVisibleConnectors.addAll(getDirtyVisibleConnectors(uiConnectorTracker));
   getLogger().log(Level.FINE,"Found " + dirtyVisibleConnectors.size() + " dirty connectors to paint");
   for (  ClientConnector connector : dirtyVisibleConnectors) {
-    boolean initialized=rootConnectorTracker.isClientSideInitialized(connector);
+    boolean initialized=uiConnectorTracker.isClientSideInitialized(connector);
     connector.beforeClientResponse(!initialized);
   }
-  rootConnectorTracker.markAllConnectorsClean();
+  uiConnectorTracker.markAllConnectorsClean();
   outWriter.print("\"changes\":[");
   List<InvalidLayout> invalidComponentRelativeSizes=null;
   JsonPaintTarget paintTarget=new JsonPaintTarget(this,outWriter,!repaintAll);
   legacyPaint(paintTarget,dirtyVisibleConnectors);
   if (analyzeLayouts) {
-    invalidComponentRelativeSizes=ComponentSizeValidator.validateComponentRelativeSizes(uI.getContent(),null,null);
-    if (uI.getWindows() != null) {
-      for (      Window subWindow : uI.getWindows()) {
+    invalidComponentRelativeSizes=ComponentSizeValidator.validateComponentRelativeSizes(ui.getContent(),null,null);
+    if (ui.getWindows() != null) {
+      for (      Window subWindow : ui.getWindows()) {
         invalidComponentRelativeSizes=ComponentSizeValidator.validateComponentRelativeSizes(subWindow.getContent(),invalidComponentRelativeSizes,null);
       }
     }
@@ -91,7 +91,7 @@
       for (int i=0; i < invocation.getParameterTypes().length; ++i) {
         Type parameterType=invocation.getParameterTypes()[i];
         Object referenceParameter=null;
-        paramJson.put(JsonCodec.encode(invocation.getParameters()[i],referenceParameter,parameterType,uI.getConnectorTracker()));
+        paramJson.put(JsonCodec.encode(invocation.getParameters()[i],referenceParameter,parameterType,ui.getConnectorTracker()));
       }
       invocationJson.put(paramJson);
       rpcCalls.put(invocationJson);
@@ -169,7 +169,7 @@ catch (  InvocationTargetException e) {
     final String resource=(String)i.next();
     InputStream is=null;
     try {
-      is=getThemeResourceAsStream(uI,getTheme(uI),resource);
+      is=getThemeResourceAsStream(ui,getTheme(ui),resource);
     }
  catch (    final Exception e) {
       getLogger().log(Level.FINER,"Failed to get theme resource stream.",e);
@@ -198,7 +198,7 @@ catch (  InvocationTargetException e) {
   outWriter.print("}");
   Collection<Class<? extends ClientConnector>> usedClientConnectors=paintTarget.getUsedClientConnectors();
   boolean typeMappingsOpen=false;
-  ClientCache clientCache=getClientCache(uI);
+  ClientCache clientCache=getClientCache(ui);
   List<Class<? extends ClientConnector>> newConnectorTypes=new ArrayList<Class<? extends ClientConnector>>();
   for (  Class<? extends ClientConnector> class1 : usedClientConnectors) {
     if (clientCache.cache(class1)) {
@@ -283,7 +283,7 @@ catch (  InvocationTargetException e) {
     dragAndDropService.printJSONResponse(outWriter);
   }
   for (  ClientConnector connector : dirtyVisibleConnectors) {
-    rootConnectorTracker.markClientSideInitialized(connector);
+    uiConnectorTracker.markClientSideInitialized(connector);
   }
   writePerformanceData(outWriter);
 }

@@ -1,9 +1,9 @@
 {
   Application application=context.getApplication();
-  Integer rootId=context.getRootId();
+  Integer uiId=context.getUIId();
   JSONObject appConfig=new JSONObject();
-  if (rootId != null) {
-    appConfig.put(ApplicationConstants.ROOT_ID_PARAMETER,rootId);
+  if (uiId != null) {
+    appConfig.put(UIConstants.UI_ID_PARAMETER,uiId);
   }
   if (context.getThemeName() != null) {
     appConfig.put("themeUri",getThemeUri(context,context.getThemeName()));
@@ -13,13 +13,13 @@
   versionInfo.put("applicationVersion",application.getVersion());
   appConfig.put("versionInfo",versionInfo);
   appConfig.put("widgetset",context.getWidgetsetName());
-  if (rootId == null || application.isUIInitPending(rootId.intValue())) {
+  if (uiId == null || application.isUIInitPending(uiId.intValue())) {
     appConfig.put("initialPath",context.getRequest().getRequestPathInfo());
     Map<String,String[]> parameterMap=context.getRequest().getParameterMap();
     appConfig.put("initialParams",parameterMap);
   }
  else {
-    appConfig.put("uidl",getInitialUIDL(context.getRequest(),context.getRoot()));
+    appConfig.put("uidl",getInitialUIDL(context.getRequest(),context.getUI()));
   }
   return appConfig;
 }

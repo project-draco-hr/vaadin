@@ -1,29 +1,29 @@
 {
-  boolean onlyPlainText=notification.hasAttribute(RootConstants.NOTIFICATION_HTML_CONTENT_NOT_ALLOWED);
+  boolean onlyPlainText=notification.hasAttribute(UIConstants.NOTIFICATION_HTML_CONTENT_NOT_ALLOWED);
   String html="";
-  if (notification.hasAttribute(RootConstants.ATTRIBUTE_NOTIFICATION_ICON)) {
-    final String parsedUri=client.translateVaadinUri(notification.getStringAttribute(RootConstants.ATTRIBUTE_NOTIFICATION_ICON));
+  if (notification.hasAttribute(UIConstants.ATTRIBUTE_NOTIFICATION_ICON)) {
+    final String parsedUri=client.translateVaadinUri(notification.getStringAttribute(UIConstants.ATTRIBUTE_NOTIFICATION_ICON));
     html+="<img src=\"" + Util.escapeAttribute(parsedUri) + "\" />";
   }
-  if (notification.hasAttribute(RootConstants.ATTRIBUTE_NOTIFICATION_CAPTION)) {
-    String caption=notification.getStringAttribute(RootConstants.ATTRIBUTE_NOTIFICATION_CAPTION);
+  if (notification.hasAttribute(UIConstants.ATTRIBUTE_NOTIFICATION_CAPTION)) {
+    String caption=notification.getStringAttribute(UIConstants.ATTRIBUTE_NOTIFICATION_CAPTION);
     if (onlyPlainText) {
       caption=Util.escapeHTML(caption);
       caption=caption.replaceAll("\\n","<br />");
     }
     html+="<h1>" + caption + "</h1>";
   }
-  if (notification.hasAttribute(RootConstants.ATTRIBUTE_NOTIFICATION_MESSAGE)) {
-    String message=notification.getStringAttribute(RootConstants.ATTRIBUTE_NOTIFICATION_MESSAGE);
+  if (notification.hasAttribute(UIConstants.ATTRIBUTE_NOTIFICATION_MESSAGE)) {
+    String message=notification.getStringAttribute(UIConstants.ATTRIBUTE_NOTIFICATION_MESSAGE);
     if (onlyPlainText) {
       message=Util.escapeHTML(message);
       message=message.replaceAll("\\n","<br />");
     }
     html+="<p>" + message + "</p>";
   }
-  final String style=notification.hasAttribute(RootConstants.ATTRIBUTE_NOTIFICATION_STYLE) ? notification.getStringAttribute(RootConstants.ATTRIBUTE_NOTIFICATION_STYLE) : null;
-  final int pos=notification.getIntAttribute(RootConstants.ATTRIBUTE_NOTIFICATION_POSITION);
+  final String style=notification.hasAttribute(UIConstants.ATTRIBUTE_NOTIFICATION_STYLE) ? notification.getStringAttribute(UIConstants.ATTRIBUTE_NOTIFICATION_STYLE) : null;
+  final int pos=notification.getIntAttribute(UIConstants.ATTRIBUTE_NOTIFICATION_POSITION);
   Position position=Position.values()[pos];
-  final int delay=notification.getIntAttribute(RootConstants.ATTRIBUTE_NOTIFICATION_DELAY);
+  final int delay=notification.getIntAttribute(UIConstants.ATTRIBUTE_NOTIFICATION_DELAY);
   createNotification(delay).show(html,position,style);
 }

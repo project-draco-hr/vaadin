@@ -5,7 +5,7 @@
   boolean firstPaint=getWidget().connection == null;
   getWidget().connection=client;
   getWidget().immediate=getState().isImmediate();
-  getWidget().resizeLazy=uidl.hasAttribute(RootConstants.RESIZE_LAZY);
+  getWidget().resizeLazy=uidl.hasAttribute(UIConstants.RESIZE_LAZY);
   String newTheme=uidl.getStringAttribute("theme");
   if (getWidget().theme != null && !newTheme.equals(getWidget().theme)) {
     getWidget().reloadHostPage();
@@ -126,15 +126,15 @@
     final ComponentConnector connector=(ComponentConnector)uidl.getPaintableAttribute("scrollTo",getConnection());
     scrollIntoView(connector);
   }
-  if (uidl.hasAttribute(RootConstants.FRAGMENT_VARIABLE)) {
-    getWidget().currentFragment=uidl.getStringAttribute(RootConstants.FRAGMENT_VARIABLE);
+  if (uidl.hasAttribute(UIConstants.FRAGMENT_VARIABLE)) {
+    getWidget().currentFragment=uidl.getStringAttribute(UIConstants.FRAGMENT_VARIABLE);
     if (!getWidget().currentFragment.equals(History.getToken())) {
       History.newItem(getWidget().currentFragment,true);
     }
   }
  else {
     getWidget().currentFragment=History.getToken();
-    client.updateVariable(getWidget().id,RootConstants.FRAGMENT_VARIABLE,getWidget().currentFragment,false);
+    client.updateVariable(getWidget().id,UIConstants.FRAGMENT_VARIABLE,getWidget().currentFragment,false);
   }
   if (firstPaint) {
     getWidget().sendClientResized();
