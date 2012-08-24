@@ -1,13 +1,11 @@
 {
-  if (getHeartbeatTimeout() > 0) {
-    long now=System.currentTimeMillis();
-    for (Iterator<Root> i=roots.values().iterator(); i.hasNext(); ) {
-      Root root=i.next();
-      if (now - root.getLastHeartbeat() > 1000 * getHeartbeatTimeout()) {
-        i.remove();
-        retainOnRefreshRoots.values().remove(root.getRootId());
-        root.fireCloseEvent();
-      }
+  for (Iterator<Root> i=roots.values().iterator(); i.hasNext(); ) {
+    Root root=i.next();
+    if (!isRootAlive(root)) {
+      i.remove();
+      retainOnRefreshRoots.values().remove(root.getRootId());
+      root.fireCloseEvent();
+      getLogger().info("Closed root #" + root.getRootId() + " due to inactivity");
     }
   }
 }
