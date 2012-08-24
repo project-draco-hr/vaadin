@@ -1,0 +1,36 @@
+{
+  if (value < min) {
+    value=min;
+  }
+ else   if (value > max) {
+    value=max;
+  }
+  final String styleAttribute=isVertical() ? "marginTop" : "marginLeft";
+  final String domProperty=isVertical() ? "offsetHeight" : "offsetWidth";
+  final int handleSize=Integer.parseInt(DOM.getElementProperty(handle,domProperty));
+  final int baseSize=Integer.parseInt(DOM.getElementProperty(base,domProperty)) - (2 * BASE_BORDER_WIDTH);
+  final int range=baseSize - handleSize;
+  double v=value.doubleValue();
+  if (resolution > 0) {
+    v=Math.round(v * Math.pow(10,resolution));
+    v=v / Math.pow(10,resolution);
+  }
+ else {
+    v=Math.round(v);
+  }
+  final double valueRange=max - min;
+  double p=0;
+  if (valueRange > 0) {
+    p=range * ((v - min) / valueRange);
+  }
+  if (p < 0) {
+    p=0;
+  }
+  if (isVertical()) {
+    p=range - p;
+  }
+  final double pos=p;
+  DOM.setStyleAttribute(handle,styleAttribute,(Math.round(pos)) + "px");
+  this.value=new Double(v);
+  setFeedbackValue(v);
+}
