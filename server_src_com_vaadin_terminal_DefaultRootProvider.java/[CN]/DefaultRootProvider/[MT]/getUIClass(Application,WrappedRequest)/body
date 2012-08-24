@@ -1,0 +1,18 @@
+{
+  Object rootClassNameObj=application.getProperty(Application.UI_PARAMETER);
+  if (rootClassNameObj instanceof String) {
+    String rootClassName=rootClassNameObj.toString();
+    ClassLoader classLoader=request.getDeploymentConfiguration().getClassLoader();
+    if (classLoader == null) {
+      classLoader=getClass().getClassLoader();
+    }
+    try {
+      Class<? extends UI> rootClass=Class.forName(rootClassName,true,classLoader).asSubclass(UI.class);
+      return rootClass;
+    }
+ catch (    ClassNotFoundException e) {
+      throw new RuntimeException("Could not find root class",e);
+    }
+  }
+  return null;
+}

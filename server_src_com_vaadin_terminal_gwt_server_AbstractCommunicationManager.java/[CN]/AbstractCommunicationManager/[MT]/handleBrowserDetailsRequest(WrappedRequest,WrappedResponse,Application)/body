@@ -2,17 +2,17 @@
   boolean sendUIDL=UI.getCurrent() == null;
   try {
     CombinedRequest combinedRequest=new CombinedRequest(request);
-    UI uI=application.getRootForRequest(combinedRequest);
+    UI uI=application.getUIForRequest(combinedRequest);
     response.setContentType("application/json; charset=UTF-8");
     BootstrapHandler bootstrapHandler=getBootstrapHandler();
-    BootstrapContext context=bootstrapHandler.createContext(combinedRequest,response,application,uI.getRootId());
+    BootstrapContext context=bootstrapHandler.createContext(combinedRequest,response,application,uI.getUIId());
     String widgetset=context.getWidgetsetName();
     String theme=context.getThemeName();
     String themeUri=bootstrapHandler.getThemeUri(context,theme);
     JSONObject params=new JSONObject();
     params.put("widgetset",widgetset);
     params.put("themeUri",themeUri);
-    params.put(ApplicationConstants.ROOT_ID_PARAMETER,uI.getRootId());
+    params.put(ApplicationConstants.ROOT_ID_PARAMETER,uI.getUIId());
     if (sendUIDL) {
       String initialUIDL=getInitialUIDL(combinedRequest,uI);
       params.put("uidl",initialUIDL);
