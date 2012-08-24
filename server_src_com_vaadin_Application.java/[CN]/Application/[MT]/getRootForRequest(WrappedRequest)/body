@@ -1,14 +1,14 @@
 {
-  Root root=Root.getCurrent();
-  if (root != null) {
-    return root;
+  UI uI=UI.getCurrent();
+  if (uI != null) {
+    return uI;
   }
   Integer rootId=getRootId(request);
 synchronized (this) {
     BrowserDetails browserDetails=request.getBrowserDetails();
     boolean hasBrowserDetails=browserDetails != null && browserDetails.getUriFragment() != null;
-    root=roots.get(rootId);
-    if (root == null && isRootPreserved()) {
+    uI=uIs.get(rootId);
+    if (uI == null && isRootPreserved()) {
       if (!retainOnRefreshRoots.isEmpty()) {
         Integer retainedRootId;
         if (!hasBrowserDetails) {
@@ -20,28 +20,28 @@ synchronized (this) {
         }
         if (retainedRootId != null) {
           rootId=retainedRootId;
-          root=roots.get(rootId);
+          uI=uIs.get(rootId);
         }
       }
     }
-    if (root == null) {
-      root=getRoot(request);
-      if (root.getApplication() == null) {
-        root.setApplication(this);
+    if (uI == null) {
+      uI=getRoot(request);
+      if (uI.getApplication() == null) {
+        uI.setApplication(this);
       }
-      if (root.getRootId() < 0) {
+      if (uI.getRootId() < 0) {
         if (rootId == null) {
           rootId=Integer.valueOf(nextRootId++);
         }
-        root.setRootId(rootId.intValue());
-        roots.put(rootId,root);
+        uI.setRootId(rootId.intValue());
+        uIs.put(rootId,uI);
       }
     }
-    Root.setCurrent(root);
+    UI.setCurrent(uI);
     if (!initedRoots.contains(rootId)) {
-      boolean initRequiresBrowserDetails=isRootPreserved() || !root.getClass().isAnnotationPresent(EagerInit.class);
+      boolean initRequiresBrowserDetails=isRootPreserved() || !uI.getClass().isAnnotationPresent(EagerInit.class);
       if (!initRequiresBrowserDetails || hasBrowserDetails) {
-        root.doInit(request);
+        uI.doInit(request);
         initedRoots.add(rootId);
         if (isRootPreserved()) {
           String windowName=request.getBrowserDetails().getWindowName();
@@ -50,5 +50,5 @@ synchronized (this) {
       }
     }
   }
-  return root;
+  return uI;
 }

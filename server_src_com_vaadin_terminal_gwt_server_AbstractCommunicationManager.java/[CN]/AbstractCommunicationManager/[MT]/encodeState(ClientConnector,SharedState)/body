@@ -1,6 +1,6 @@
 {
-  Root root=connector.getRoot();
-  ConnectorTracker connectorTracker=root.getConnectorTracker();
+  UI uI=connector.getRoot();
+  ConnectorTracker connectorTracker=uI.getConnectorTracker();
   Class<? extends SharedState> stateType=connector.getStateType();
   Object diffState=connectorTracker.getDiffState(connector);
   if (diffState == null) {
@@ -9,7 +9,7 @@
       diffState=new JSONObject();
       try {
         SharedState referenceState=stateType.newInstance();
-        diffState=JsonCodec.encode(referenceState,null,stateType,root.getConnectorTracker());
+        diffState=JsonCodec.encode(referenceState,null,stateType,uI.getConnectorTracker());
       }
  catch (      Exception e) {
         getLogger().log(Level.WARNING,"Error creating reference object for state of type " + stateType.getName());
@@ -17,6 +17,6 @@
       connectorTracker.setDiffState(connector,diffState);
     }
   }
-  JSONObject stateJson=(JSONObject)JsonCodec.encode(state,diffState,stateType,root.getConnectorTracker());
+  JSONObject stateJson=(JSONObject)JsonCodec.encode(state,diffState,stateType,uI.getConnectorTracker());
   return stateJson;
 }

@@ -6,12 +6,12 @@
   String rootId=parts[0];
   String connectorId=parts[1];
   String variableName=parts[2];
-  Root root=application.getRootById(Integer.parseInt(rootId));
-  Root.setCurrent(root);
+  UI uI=application.getRootById(Integer.parseInt(rootId));
+  UI.setCurrent(uI);
   StreamVariable streamVariable=getStreamVariable(connectorId,variableName);
   String secKey=streamVariableToSeckey.get(streamVariable);
   if (secKey.equals(parts[3])) {
-    ClientConnector source=getConnector(root,connectorId);
+    ClientConnector source=getConnector(uI,connectorId);
     String contentType=request.getContentType();
     if (contentType.contains("boundary")) {
       doHandleSimpleMultipartFileUpload(request,response,streamVariable,variableName,source,contentType.split("boundary=")[1]);

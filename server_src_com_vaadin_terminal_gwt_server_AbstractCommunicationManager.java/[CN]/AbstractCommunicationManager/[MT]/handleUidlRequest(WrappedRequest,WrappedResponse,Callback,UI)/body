@@ -1,0 +1,54 @@
+{
+  checkWidgetsetVersion(request);
+  requestThemeName=request.getParameter("theme");
+  maxInactiveInterval=request.getSessionMaxInactiveInterval();
+  boolean repaintAll;
+  final OutputStream out;
+  repaintAll=(request.getParameter(GET_PARAM_REPAINT_ALL) != null);
+  out=response.getOutputStream();
+  boolean analyzeLayouts=false;
+  if (repaintAll) {
+    analyzeLayouts=(request.getParameter(GET_PARAM_ANALYZE_LAYOUTS) != null);
+    if (request.getParameter(GET_PARAM_HIGHLIGHT_COMPONENT) != null) {
+      String pid=request.getParameter(GET_PARAM_HIGHLIGHT_COMPONENT);
+      highlightedConnector=uI.getConnectorTracker().getConnector(pid);
+      highlightConnector(highlightedConnector);
+    }
+  }
+  final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
+synchronized (application) {
+    if (application.isRunning()) {
+      if (uI == null) {
+        getLogger().warning("Could not get root for application");
+        return;
+      }
+    }
+ else {
+      endApplication(request,response,application);
+      return;
+    }
+    if (!handleVariables(request,response,callback,application,uI)) {
+      SystemMessages ci=null;
+      try {
+        Method m=application.getClass().getMethod("getSystemMessages",(Class[])null);
+        ci=(Application.SystemMessages)m.invoke(null,(Object[])null);
+      }
+ catch (      Exception e2) {
+        getLogger().log(Level.WARNING,"getSystemMessages() failed - continuing",e2);
+      }
+      if (ci != null) {
+        String msg=ci.getOutOfSyncMessage();
+        String cap=ci.getOutOfSyncCaption();
+        if (msg != null || cap != null) {
+          callback.criticalNotification(request,response,cap,msg,null,ci.getOutOfSyncURL());
+          return;
+        }
+      }
+      repaintAll=true;
+    }
+    paintAfterVariableChanges(request,response,callback,repaintAll,outWriter,uI,analyzeLayouts);
+    postPaint(uI);
+  }
+  outWriter.close();
+  requestThemeName=null;
+}

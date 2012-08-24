@@ -1,0 +1,21 @@
+{
+  String key=request.getParameter(ActionRequest.ACTION_NAME);
+  if (eventActionDestinationMap.containsKey(key)) {
+    response.setEvent(eventActionDestinationMap.get(key),eventActionValueMap.get(key));
+    eventActionDestinationMap.remove(key);
+    eventActionValueMap.remove(key);
+  }
+ else   if (sharedParameterActionNameMap.containsKey(key)) {
+    response.setRenderParameter(sharedParameterActionNameMap.get(key),sharedParameterActionValueMap.get(key));
+    sharedParameterActionNameMap.remove(key);
+    sharedParameterActionValueMap.remove(key);
+  }
+ else {
+    Set<PortletListener> listeners=portletListeners.get(app);
+    if (listeners != null) {
+      for (      PortletListener l : listeners) {
+        l.handleActionRequest(request,response,uI);
+      }
+    }
+  }
+}
