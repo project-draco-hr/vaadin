@@ -58,7 +58,7 @@
         meta=json.getValueMap("meta");
         if (meta.containsKey("repaintAll")) {
           repaintAll=true;
-          rootConnector.getWidget().clear();
+          uIConnector.getWidget().clear();
           getConnectorMap().clear();
           if (meta.containsKey("invalidLayouts")) {
             validatingLayouts=true;
@@ -91,6 +91,7 @@
       updateDuration.logDuration(" * Update of connector hierarchy completed",10);
       sendHierarchyChangeEvents(pendingHierarchyChangeEvents);
       updateDuration.logDuration(" * Hierarchy state change event processing completed",10);
+      delegateToWidget(pendingStateChangeEvents);
       sendStateChangeEvents(pendingStateChangeEvents);
       updateDuration.logDuration(" * State change event processing completed",10);
       updateVaadin6StyleConnectors(json);
@@ -151,6 +152,43 @@
       VConsole.log("Referenced paintables: " + connectorMap.size());
       endRequest();
     }
+    private void delegateToWidget(    Collection<StateChangeEvent> pendingStateChangeEvents){
+      VConsole.log(" * Running @DelegateToWidget");
+      for (      StateChangeEvent sce : pendingStateChangeEvents) {
+        ServerConnector connector=sce.getConnector();
+        if (connector instanceof ComponentConnector) {
+          ComponentConnector component=(ComponentConnector)connector;
+          Type type=TypeData.getType(component.getClass());
+          Type stateType;
+          try {
+            stateType=type.getMethod("getState").getReturnType();
+          }
+ catch (          NoDataException e) {
+            throw new RuntimeException("Can not find the state type for " + type.getSignature(),e);
+          }
+          Set<String> changedProperties=sce.getChangedProperties();
+          for (          String propertyName : changedProperties) {
+            Property property=stateType.getProperty(propertyName);
+            String method=property.getDelegateToWidgetMethodName();
+            if (method != null) {
+              doDelegateToWidget(component,property,method);
+            }
+          }
+        }
+      }
+    }
+    private void doDelegateToWidget(    ComponentConnector component,    Property property,    String methodName){
+      Type type=TypeData.getType(component.getClass());
+      try {
+        Type widgetType=type.getMethod("getWidget").getReturnType();
+        Widget widget=component.getWidget();
+        Object propertyValue=property.getValue(component.getState());
+        widgetType.getMethod(methodName).invoke(widget,propertyValue);
+      }
+ catch (      NoDataException e) {
+        throw new RuntimeException("Missing data needed to invoke @DelegateToWidget for " + Util.getSimpleName(component),e);
+      }
+    }
     /** 
  * Sends the state change events created while updating the state
  * information.
@@ -181,7 +219,7 @@
             VConsole.error("ERROR: Connector is connected to a parent but the parent does not contain the connector");
           }
         }
- else         if ((c instanceof RootConnector && c == getRootConnector())) {
+ else         if ((c instanceof UIConnector && c == getRootConnector())) {
         }
  else         if (c instanceof WindowConnector && getRootConnector().hasSubWindow((WindowConnector)c)) {
         }
@@ -208,12 +246,12 @@
             continue;
           }
           Class<? extends ServerConnector> connectorClass=configuration.getConnectorClassByEncodedTag(connectorType);
-          if (connectorClass != RootConnector.class) {
+          if (connectorClass != UIConnector.class) {
             getConnector(connectorId,connectorType);
           }
  else {
-            connectorMap.registerConnector(connectorId,rootConnector);
-            rootConnector.doInit(connectorId,ApplicationConnection.this);
+            connectorMap.registerConnector(connectorId,uIConnector);
+            uIConnector.doInit(connectorId,ApplicationConnection.this);
           }
         }
  catch (        final Throwable e) {

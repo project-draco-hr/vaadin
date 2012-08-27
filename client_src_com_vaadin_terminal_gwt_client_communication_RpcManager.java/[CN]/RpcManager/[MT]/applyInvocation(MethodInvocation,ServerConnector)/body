@@ -1,8 +1,12 @@
 {
-  String signature=getSignature(invocation);
-  RpcMethod rpcMethod=getRpcMethod(signature);
+  Method method=getMethod(invocation);
   Collection<ClientRpc> implementations=connector.getRpcImplementations(invocation.getInterfaceName());
-  for (  ClientRpc clientRpc : implementations) {
-    rpcMethod.applyInvocation(clientRpc,invocation.getParameters());
+  try {
+    for (    ClientRpc clientRpc : implementations) {
+      method.invoke(clientRpc,invocation.getParameters());
+    }
+  }
+ catch (  NoDataException e) {
+    throw new IllegalStateException("There is no information about " + method.getSignature() + ". Did you remember to compile the right widgetset?",e);
   }
 }

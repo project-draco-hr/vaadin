@@ -12,7 +12,7 @@
     setInternalValue(newFieldValue);
     setModified(dataSource != null);
     valueWasModifiedByDataSourceDuringCommit=false;
-    if (isWriteThrough() && dataSource != null && (isInvalidCommitted() || isValid())) {
+    if (!isBuffered() && dataSource != null && (isInvalidCommitted() || isValid())) {
       try {
         committingValueToDataSource=true;
         getPropertyDataSource().setValue(convertToModel(newFieldValue));
@@ -20,7 +20,7 @@
       }
  catch (      final Throwable e) {
         currentBufferedSourceException=new Buffered.SourceException(this,e);
-        requestRepaint();
+        markAsDirty();
         throw currentBufferedSourceException;
       }
  finally {

@@ -1,0 +1,60 @@
+{
+  Set<JClassType> needsProxySupport=bundle.getNeedsProxySupport();
+  for (  JClassType type : needsProxySupport) {
+    w.print("store.setProxyHandler(");
+    writeClassLiteral(w,type);
+    w.print(", new ");
+    w.print(ProxyHandler.class.getCanonicalName());
+    w.println("() {");
+    w.indent();
+    w.println("public Object createProxy(final " + InvokationHandler.class.getName() + " handler) {");
+    w.indent();
+    w.print("return new ");
+    w.print(type.getQualifiedSourceName());
+    w.println("() {");
+    w.indent();
+    JMethod[] methods=type.getOverridableMethods();
+    for (    JMethod method : methods) {
+      if (method.isAbstract()) {
+        w.print("public ");
+        w.print(method.getReturnType().getQualifiedSourceName());
+        w.print(" ");
+        w.print(method.getName());
+        w.print("(");
+        JType[] types=method.getParameterTypes();
+        for (int i=0; i < types.length; i++) {
+          if (i != 0) {
+            w.print(", ");
+          }
+          w.print(types[i].getQualifiedSourceName());
+          w.print(" p");
+          w.print(Integer.toString(i));
+        }
+        w.println(") {");
+        w.indent();
+        if (!method.getReturnType().getQualifiedSourceName().equals("void")) {
+          w.print("return ");
+        }
+        w.print("handler.invoke(this, ");
+        w.print(TypeData.class.getCanonicalName());
+        w.print(".getType(");
+        writeClassLiteral(w,type);
+        w.print(").getMethod(\"");
+        w.print(escape(method.getName()));
+        w.print("\"), new Object [] {");
+        for (int i=0; i < types.length; i++) {
+          w.print("p" + i + ", ");
+        }
+        w.println("});");
+        w.outdent();
+        w.println("}");
+      }
+    }
+    w.outdent();
+    w.println("};");
+    w.outdent();
+    w.println("}");
+    w.outdent();
+    w.println("});");
+  }
+}

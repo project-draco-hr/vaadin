@@ -1,0 +1,13 @@
+{
+  StringWriter sWriter=new StringWriter();
+  PrintWriter pWriter=new PrintWriter(sWriter);
+  pWriter.print("{");
+  if (isXSRFEnabled(uI.getApplication())) {
+    pWriter.print(getSecurityKeyUIDL(request));
+  }
+  writeUidlResponse(request,true,pWriter,uI,false);
+  pWriter.print("}");
+  String initialUIDL=sWriter.toString();
+  getLogger().log(Level.FINE,"Initial UIDL:" + initialUIDL);
+  return initialUIDL;
+}

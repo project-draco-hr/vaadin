@@ -1,12 +1,7 @@
 {
-  BeanInfo beanInfo=Introspector.getBeanInfo(o1.getClass());
-  for (  PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
-    String fieldName=JsonCodec.getTransportFieldName(pd);
-    if (fieldName == null) {
-      continue;
-    }
-    Object c1=pd.getReadMethod().invoke(o1);
-    Object c2=pd.getReadMethod().invoke(o2);
+  for (  BeanProperty property : JsonCodec.getProperties(o1.getClass())) {
+    Object c1=property.getValue(o1);
+    Object c2=property.getValue(o2);
     if (!equals(c1,c2)) {
       return false;
     }

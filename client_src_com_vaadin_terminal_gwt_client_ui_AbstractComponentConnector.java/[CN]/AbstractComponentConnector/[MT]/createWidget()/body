@@ -1,3 +1,11 @@
 {
-  return ConnectorWidgetFactory.createWidget(getClass());
+  Type type=TypeData.getType(getClass());
+  try {
+    Type widgetType=type.getMethod("getWidget").getReturnType();
+    Object instance=widgetType.createInstance();
+    return (Widget)instance;
+  }
+ catch (  NoDataException e) {
+    throw new IllegalStateException("There is no information about the widget for " + Util.getSimpleName(this) + ". Did you remember to compile the right widgetset?",e);
+  }
 }

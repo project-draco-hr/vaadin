@@ -1,0 +1,42 @@
+{
+  hasSerializeSupport.add(type);
+  JParameterizedType parametrized=type.isParameterized();
+  if (parametrized != null) {
+    for (    JClassType parameterType : parametrized.getTypeArgs()) {
+      setNeedsSerialize(parameterType);
+    }
+  }
+  if (serializationHandledByFramework(type)) {
+    return;
+  }
+  JClassType customSerializer=customSerializers.get(type);
+  JClassType typeAsClass=type.isClass();
+  JEnumType enumType=type.isEnum();
+  JArrayType arrayType=type.isArray();
+  if (customSerializer != null) {
+    logger.log(Type.INFO,"Will serialize " + type + " using "+ customSerializer.getName());
+    setSerializer(type,new CustomSerializer(customSerializer));
+  }
+ else   if (arrayType != null) {
+    logger.log(Type.INFO,"Will serialize " + type + " as an array");
+    setSerializer(type,new ArraySerializer(arrayType));
+    setNeedsSerialize(arrayType.getComponentType());
+  }
+ else   if (enumType != null) {
+    logger.log(Type.INFO,"Will serialize " + type + " as an enum");
+    setSerializer(type,new EnumSerializer(enumType));
+  }
+ else   if (typeAsClass != null) {
+    checkSerializable(logger,typeAsClass);
+    logger.log(Type.INFO,"Will serialize " + type + " as a bean");
+    setNeedsPropertyList(typeAsClass);
+    for (    Property property : getProperties(typeAsClass)) {
+      setNeedsGwtConstructor(property.getBeanType());
+      setNeedsSetter(property);
+      setNeedsGetter(property);
+      setNeedsType(property);
+      JType propertyType=property.getPropertyType();
+      setNeedsSerialize(propertyType);
+    }
+  }
+}

@@ -2,31 +2,16 @@
   Class<?> targetClass=getClassForType(targetType);
   try {
     Object decodedObject=targetClass.newInstance();
-    for (    PropertyDescriptor pd : Introspector.getBeanInfo(targetClass).getPropertyDescriptors()) {
-      String fieldName=getTransportFieldName(pd);
-      if (fieldName == null) {
-        continue;
-      }
+    for (    BeanProperty property : getProperties(targetClass)) {
+      String fieldName=property.getName();
       Object encodedFieldValue=serializedObject.get(fieldName);
-      Type fieldType=pd.getReadMethod().getGenericReturnType();
+      Type fieldType=property.getType();
       Object decodedFieldValue=decodeInternalOrCustomType(fieldType,encodedFieldValue,connectorTracker);
-      pd.getWriteMethod().invoke(decodedObject,decodedFieldValue);
+      property.setValue(decodedObject,decodedFieldValue);
     }
     return decodedObject;
   }
- catch (  IllegalArgumentException e) {
-    throw new JSONException(e);
-  }
-catch (  IllegalAccessException e) {
-    throw new JSONException(e);
-  }
-catch (  InvocationTargetException e) {
-    throw new JSONException(e);
-  }
-catch (  InstantiationException e) {
-    throw new JSONException(e);
-  }
-catch (  IntrospectionException e) {
+ catch (  Exception e) {
     throw new JSONException(e);
   }
 }

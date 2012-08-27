@@ -1,0 +1,16 @@
+{
+  AsyncBundleLoader loader=asyncBlockLoaders.get(packageName);
+switch (loader.getState()) {
+case NOT_STARTED:
+    loader.load(callback,getTypeDataStore());
+  break;
+case LOADING:
+loader.addCallback(callback);
+break;
+case LOADED:
+callback.loaded();
+break;
+case ERROR:
+callback.failed(loader.getError());
+}
+}

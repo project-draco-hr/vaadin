@@ -50,16 +50,16 @@
       applicationRunning=true;
       applicationContext.startTransaction(application,request);
       transactionStarted=true;
-      Root root=null;
+      UI uI=null;
 synchronized (application) {
         if (application.isRunning()) {
 switch (requestType) {
 case RENDER:
 case ACTION:
             try {
-              root=application.getRootForRequest(wrappedRequest);
+              uI=application.getUIForRequest(wrappedRequest);
             }
- catch (            RootRequiresMoreInformationException e) {
+ catch (            UIRequiresMoreInformationException e) {
             }
           break;
 case BROWSER_DETAILS:
@@ -69,21 +69,21 @@ case FILE_UPLOAD:
 case APPLICATION_RESOURCE:
     break;
 default :
-  root=application.getRootForRequest(wrappedRequest);
+  uI=application.getUIForRequest(wrappedRequest);
 }
 }
 }
 if (request instanceof RenderRequest) {
-applicationContext.firePortletRenderRequest(application,root,(RenderRequest)request,(RenderResponse)response);
+applicationContext.firePortletRenderRequest(application,uI,(RenderRequest)request,(RenderResponse)response);
 }
  else if (request instanceof ActionRequest) {
-applicationContext.firePortletActionRequest(application,root,(ActionRequest)request,(ActionResponse)response);
+applicationContext.firePortletActionRequest(application,uI,(ActionRequest)request,(ActionResponse)response);
 }
  else if (request instanceof EventRequest) {
-applicationContext.firePortletEventRequest(application,root,(EventRequest)request,(EventResponse)response);
+applicationContext.firePortletEventRequest(application,uI,(EventRequest)request,(EventResponse)response);
 }
  else if (request instanceof ResourceRequest) {
-applicationContext.firePortletResourceRequest(application,root,(ResourceRequest)request,(ResourceResponse)response);
+applicationContext.firePortletResourceRequest(application,uI,(ResourceRequest)request,(ResourceResponse)response);
 }
 if (requestType == RequestType.FILE_UPLOAD) {
 applicationManager.handleFileUpload(application,wrappedRequest,wrappedResponse);
@@ -94,7 +94,7 @@ applicationManager.handleBrowserDetailsRequest(wrappedRequest,wrappedResponse,ap
 return;
 }
  else if (requestType == RequestType.UIDL) {
-applicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,portletWrapper,root);
+applicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,portletWrapper,uI);
 return;
 }
  else {
@@ -116,7 +116,7 @@ handleServiceException(wrappedRequest,wrappedResponse,application,e);
 }
  finally {
 if (applicationRunning) {
-application.closeInactiveRoots();
+application.closeInactiveUIs();
 }
 try {
 if (transactionStarted) {
@@ -130,7 +130,7 @@ if (requestStarted) {
 }
 }
   finally {
-Root.setCurrent(null);
+UI.setCurrent(null);
 Application.setCurrent(null);
 PortletSession session=request.getPortletSession(false);
 if (session != null) {

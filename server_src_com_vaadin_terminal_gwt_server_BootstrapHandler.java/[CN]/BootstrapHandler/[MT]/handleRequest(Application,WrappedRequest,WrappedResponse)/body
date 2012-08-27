@@ -1,17 +1,17 @@
 {
-  Integer rootId=null;
+  Integer uiId=null;
   try {
-    Root root=application.getRootForRequest(request);
-    if (root == null) {
-      writeError(response,new Throwable("No Root found"));
+    UI uI=application.getUIForRequest(request);
+    if (uI == null) {
+      writeError(response,new Throwable("No UI found"));
       return true;
     }
-    rootId=Integer.valueOf(root.getRootId());
+    uiId=Integer.valueOf(uI.getUIId());
   }
- catch (  RootRequiresMoreInformationException e) {
+ catch (  UIRequiresMoreInformationException e) {
   }
   try {
-    BootstrapContext context=createContext(request,response,application,rootId);
+    BootstrapContext context=createContext(request,response,application,uiId);
     setupMainDiv(context);
     BootstrapFragmentResponse fragmentResponse=context.getBootstrapResponse();
     application.modifyBootstrapResponse(fragmentResponse);

@@ -1,0 +1,14 @@
+{
+  if (!application.isRunning()) {
+    endApplication(request,response,application);
+    return;
+  }
+  openJsonMessage(outWriter,response);
+  Object writeSecurityTokenFlag=request.getAttribute(WRITE_SECURITY_TOKEN_FLAG);
+  if (writeSecurityTokenFlag != null) {
+    outWriter.print(getSecurityKeyUIDL(request));
+  }
+  writeUidlResponse(request,repaintAll,outWriter,uI,analyzeLayouts);
+  closeJsonMessage(outWriter);
+  outWriter.close();
+}

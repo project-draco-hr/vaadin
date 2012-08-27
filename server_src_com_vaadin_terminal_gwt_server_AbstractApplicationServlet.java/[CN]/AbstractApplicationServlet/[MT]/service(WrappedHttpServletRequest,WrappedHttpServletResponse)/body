@@ -48,11 +48,11 @@
       return;
     }
  else     if (requestType == RequestType.UIDL) {
-      Root root=application.getRootForRequest(request);
-      if (root == null) {
-        throw new ServletException(ERROR_NO_ROOT_FOUND);
+      UI uI=application.getUIForRequest(request);
+      if (uI == null) {
+        throw new ServletException(ERROR_NO_UI_FOUND);
       }
-      applicationManager.handleUidlRequest(request,response,servletWrapper,root);
+      applicationManager.handleUidlRequest(request,response,servletWrapper,uI);
       return;
     }
  else     if (requestType == RequestType.BROWSER_DETAILS) {
@@ -78,7 +78,7 @@ catch (  final Throwable e) {
   }
  finally {
     if (applicationRunning) {
-      application.closeInactiveRoots();
+      application.closeInactiveUIs();
     }
     try {
       if (transactionStarted) {
@@ -92,7 +92,7 @@ catch (  final Throwable e) {
         }
       }
   finally {
-        Root.setCurrent(null);
+        UI.setCurrent(null);
         Application.setCurrent(null);
         HttpSession session=request.getSession(false);
         if (session != null) {

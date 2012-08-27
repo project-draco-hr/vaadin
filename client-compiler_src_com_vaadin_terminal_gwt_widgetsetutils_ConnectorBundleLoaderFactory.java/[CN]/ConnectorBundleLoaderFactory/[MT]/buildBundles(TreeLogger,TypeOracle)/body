@@ -1,0 +1,37 @@
+{
+  Map<LoadStyle,Collection<JClassType>> connectorsByLoadStyle=new HashMap<LoadStyle,Collection<JClassType>>();
+  for (  LoadStyle loadStyle : LoadStyle.values()) {
+    connectorsByLoadStyle.put(loadStyle,new ArrayList<JClassType>());
+  }
+  JClassType connectorType=typeOracle.getType(ServerConnector.class.getName());
+  JClassType[] subtypes=connectorType.getSubtypes();
+  for (  JClassType connectorSubtype : subtypes) {
+    if (!connectorSubtype.isAnnotationPresent(Connect.class)) {
+      continue;
+    }
+    LoadStyle loadStyle=getLoadStyle(connectorSubtype);
+    if (loadStyle != null) {
+      connectorsByLoadStyle.get(loadStyle).add(connectorSubtype);
+    }
+  }
+  List<ConnectorBundle> bundles=new ArrayList<ConnectorBundle>();
+  Collection<TypeVisitor> visitors=getVisitors(typeOracle);
+  ConnectorBundle eagerBundle=new ConnectorBundle(ConnectorBundleLoader.EAGER_BUNDLE_NAME,visitors,typeOracle);
+  TreeLogger eagerLogger=logger.branch(Type.TRACE,"Populating eager bundle");
+  eagerBundle.processTypes(eagerLogger,connectorsByLoadStyle.get(LoadStyle.EAGER));
+  eagerBundle.processSubTypes(eagerLogger,typeOracle.getType(ClientRpc.class.getName()));
+  eagerBundle.processSubTypes(eagerLogger,typeOracle.getType(ServerRpc.class.getName()));
+  bundles.add(eagerBundle);
+  ConnectorBundle deferredBundle=new ConnectorBundle(ConnectorBundleLoader.DEFERRED_BUNDLE_NAME,eagerBundle);
+  TreeLogger deferredLogger=logger.branch(Type.TRACE,"Populating deferred bundle");
+  deferredBundle.processTypes(deferredLogger,connectorsByLoadStyle.get(LoadStyle.DEFERRED));
+  bundles.add(deferredBundle);
+  Collection<JClassType> lazy=connectorsByLoadStyle.get(LoadStyle.LAZY);
+  for (  JClassType type : lazy) {
+    ConnectorBundle bundle=new ConnectorBundle(type.getName(),eagerBundle);
+    TreeLogger subLogger=logger.branch(Type.TRACE,"Populating " + type.getName() + " bundle");
+    bundle.processType(subLogger,type);
+    bundles.add(bundle);
+  }
+  return bundles;
+}
