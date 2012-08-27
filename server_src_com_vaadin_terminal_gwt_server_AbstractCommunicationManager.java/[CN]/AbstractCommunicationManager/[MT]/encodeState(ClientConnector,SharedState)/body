@@ -3,20 +3,20 @@
   ConnectorTracker connectorTracker=uI.getConnectorTracker();
   Class<? extends SharedState> stateType=connector.getStateType();
   Object diffState=connectorTracker.getDiffState(connector);
-  if (diffState == null) {
-    boolean supportsDiffState=!JavaScriptConnectorState.class.isAssignableFrom(stateType);
-    if (supportsDiffState) {
-      diffState=new JSONObject();
-      try {
-        SharedState referenceState=stateType.newInstance();
-        diffState=JsonCodec.encode(referenceState,null,stateType,uI.getConnectorTracker());
-      }
- catch (      Exception e) {
-        getLogger().log(Level.WARNING,"Error creating reference object for state of type " + stateType.getName());
-      }
-      connectorTracker.setDiffState(connector,diffState);
+  boolean supportsDiffState=!JavaScriptConnectorState.class.isAssignableFrom(stateType);
+  if (diffState == null && supportsDiffState) {
+    try {
+      SharedState referenceState=stateType.newInstance();
+      EncodeResult encodeResult=JsonCodec.encode(referenceState,null,stateType,uI.getConnectorTracker());
+      diffState=encodeResult.getEncodedValue();
+    }
+ catch (    Exception e) {
+      getLogger().log(Level.WARNING,"Error creating reference object for state of type " + stateType.getName());
     }
   }
-  JSONObject stateJson=(JSONObject)JsonCodec.encode(state,diffState,stateType,uI.getConnectorTracker());
-  return stateJson;
+  EncodeResult encodeResult=JsonCodec.encode(state,diffState,stateType,uI.getConnectorTracker());
+  if (supportsDiffState) {
+    connectorTracker.setDiffState(connector,encodeResult.getEncodedValue());
+  }
+  return (JSONObject)encodeResult.getDiff();
 }
