@@ -3,11 +3,16 @@
   while (iterator.hasNext()) {
     String connectorId=iterator.next();
     ClientConnector connector=connectorIdToConnector.get(connectorId);
-    if (getRootForConnector(connector) != root) {
+    if (getUIForConnector(connector) != uI) {
       getLogger().warning("cleanConnectorMap unregistered connector " + getConnectorAndParentInfo(connector) + "). This should have been done when the connector was detached.");
       uninitializedConnectors.remove(connector);
       diffStates.remove(connector);
       iterator.remove();
+    }
+ else     if (!AbstractCommunicationManager.isVisible(connector) && !uninitializedConnectors.contains(connector)) {
+      uninitializedConnectors.add(connector);
+      diffStates.remove(connector);
+      getLogger().fine("cleanConnectorMap removed state for " + getConnectorAndParentInfo(connector) + " as it is not visible");
     }
   }
 }

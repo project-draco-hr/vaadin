@@ -1,11 +1,11 @@
 {
-  final String styleAttribute=vertical ? "height" : "width";
-  final String oppositeStyleAttribute=vertical ? "width" : "height";
-  final String domProperty=vertical ? "offsetHeight" : "offsetWidth";
+  final String styleAttribute=isVertical() ? "height" : "width";
+  final String oppositeStyleAttribute=isVertical() ? "width" : "height";
+  final String domProperty=isVertical() ? "offsetHeight" : "offsetWidth";
   DOM.setStyleAttribute(base,oppositeStyleAttribute,"");
   final Element p=DOM.getParent(getElement());
   if (DOM.getElementPropertyInt(p,domProperty) > 50) {
-    if (vertical) {
+    if (isVertical()) {
       setHeight();
     }
  else {
@@ -18,7 +18,7 @@
       @Override public void execute(){
         final Element p=DOM.getParent(getElement());
         if (DOM.getElementPropertyInt(p,domProperty) > (MIN_SIZE + 5)) {
-          if (vertical) {
+          if (isVertical()) {
             setHeight();
           }
  else {
@@ -29,5 +29,18 @@
       }
     }
 );
+  }
+  if (!isVertical()) {
+    Scheduler.get().scheduleDeferred(new Command(){
+      @Override public void execute(){
+        buildHandle();
+        setValue(value,false);
+      }
+    }
+);
+  }
+ else {
+    buildHandle();
+    setValue(value,false);
   }
 }

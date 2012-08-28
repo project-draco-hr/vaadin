@@ -1,20 +1,20 @@
 {
-  boolean sendUIDL=Root.getCurrent() == null;
+  boolean sendUIDL=UI.getCurrent() == null;
   try {
     CombinedRequest combinedRequest=new CombinedRequest(request);
-    Root root=application.getRootForRequest(combinedRequest);
+    UI uI=application.getUIForRequest(combinedRequest);
     response.setContentType("application/json; charset=UTF-8");
     BootstrapHandler bootstrapHandler=getBootstrapHandler();
-    BootstrapContext context=bootstrapHandler.createContext(combinedRequest,response,application,root.getRootId());
+    BootstrapContext context=bootstrapHandler.createContext(combinedRequest,response,application,uI.getUIId());
     String widgetset=context.getWidgetsetName();
     String theme=context.getThemeName();
     String themeUri=bootstrapHandler.getThemeUri(context,theme);
     JSONObject params=new JSONObject();
     params.put("widgetset",widgetset);
     params.put("themeUri",themeUri);
-    params.put(ApplicationConstants.ROOT_ID_PARAMETER,root.getRootId());
+    params.put(UIConstants.UI_ID_PARAMETER,uI.getUIId());
     if (sendUIDL) {
-      String initialUIDL=getInitialUIDL(combinedRequest,root);
+      String initialUIDL=getInitialUIDL(combinedRequest,uI);
       params.put("uidl",initialUIDL);
     }
     final OutputStream out=response.getOutputStream();
@@ -23,7 +23,7 @@
     outWriter.flush();
     out.flush();
   }
- catch (  RootRequiresMoreInformationException e) {
+ catch (  UIRequiresMoreInformationException e) {
     throw new RuntimeException(e);
   }
 catch (  JSONException e) {

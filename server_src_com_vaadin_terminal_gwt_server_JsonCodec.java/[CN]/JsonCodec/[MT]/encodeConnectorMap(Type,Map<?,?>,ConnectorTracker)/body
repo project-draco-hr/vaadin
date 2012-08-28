@@ -1,9 +1,11 @@
 {
   JSONObject jsonMap=new JSONObject();
   for (  Entry<?,?> entry : map.entrySet()) {
-    Connector key=(Connector)entry.getKey();
-    Object encodedValue=encode(entry.getValue(),null,valueType,connectorTracker);
-    jsonMap.put(key.getConnectorId(),encodedValue);
+    ClientConnector key=(ClientConnector)entry.getKey();
+    if (AbstractCommunicationManager.isVisible(key)) {
+      EncodeResult encodedValue=encode(entry.getValue(),null,valueType,connectorTracker);
+      jsonMap.put(key.getConnectorId(),encodedValue.getEncodedValue());
+    }
   }
   return jsonMap;
 }

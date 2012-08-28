@@ -1,0 +1,21 @@
+{
+  if (className == null) {
+    throw new ApplicationClassException(Application.UI_PARAMETER + " init parameter not defined");
+  }
+  try {
+    Class<?> uiClass=classLoader.loadClass(className);
+    if (!UI.class.isAssignableFrom(uiClass)) {
+      throw new ApplicationClassException(className + " does not implement UI");
+    }
+    uiClass.getConstructor();
+  }
+ catch (  ClassNotFoundException e) {
+    throw new ApplicationClassException(className + " could not be loaded",e);
+  }
+catch (  SecurityException e) {
+    throw new ApplicationClassException("Could not access " + className + " class",e);
+  }
+catch (  NoSuchMethodException e) {
+    throw new ApplicationClassException(className + " doesn't have a public no-args constructor");
+  }
+}

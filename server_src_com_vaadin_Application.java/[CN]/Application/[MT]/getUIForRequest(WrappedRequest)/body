@@ -1,0 +1,54 @@
+{
+  UI uI=UI.getCurrent();
+  if (uI != null) {
+    return uI;
+  }
+  Integer uiId=getUIId(request);
+synchronized (this) {
+    BrowserDetails browserDetails=request.getBrowserDetails();
+    boolean hasBrowserDetails=browserDetails != null && browserDetails.getUriFragment() != null;
+    uI=uIs.get(uiId);
+    if (uI == null && isUiPreserved()) {
+      if (!retainOnRefreshUIs.isEmpty()) {
+        Integer retainedUIId;
+        if (!hasBrowserDetails) {
+          throw new UIRequiresMoreInformationException();
+        }
+ else {
+          String windowName=browserDetails.getWindowName();
+          retainedUIId=retainOnRefreshUIs.get(windowName);
+        }
+        if (retainedUIId != null) {
+          uiId=retainedUIId;
+          uI=uIs.get(uiId);
+        }
+      }
+    }
+    if (uI == null) {
+      uI=getUI(request);
+      if (uI.getApplication() == null) {
+        uI.setApplication(this);
+      }
+      if (uI.getUIId() < 0) {
+        if (uiId == null) {
+          uiId=Integer.valueOf(nextUIId++);
+        }
+        uI.setUIId(uiId.intValue());
+        uIs.put(uiId,uI);
+      }
+    }
+    UI.setCurrent(uI);
+    if (!initedUIs.contains(uiId)) {
+      boolean initRequiresBrowserDetails=isUiPreserved() || !uI.getClass().isAnnotationPresent(EagerInit.class);
+      if (!initRequiresBrowserDetails || hasBrowserDetails) {
+        uI.doInit(request);
+        initedUIs.add(uiId);
+        if (isUiPreserved()) {
+          String windowName=request.getBrowserDetails().getWindowName();
+          retainOnRefreshUIs.put(windowName,uiId);
+        }
+      }
+    }
+  }
+  return uI;
+}
