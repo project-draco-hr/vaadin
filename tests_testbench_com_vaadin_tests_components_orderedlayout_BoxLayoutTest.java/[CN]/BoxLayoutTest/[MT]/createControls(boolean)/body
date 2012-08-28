@@ -10,7 +10,7 @@
   final CheckBox vertical=new CheckBox("Vertical",!horizontal);
   vertical.setImmediate(true);
   vertical.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       view.removeAllComponents();
       view.addComponent(createControls(!vertical.getValue().booleanValue()));
       view.addComponent(createTestLayout(!vertical.getValue().booleanValue()));
@@ -20,10 +20,10 @@
 );
   header.addComponent(vertical);
   Button addComponent=new Button("Add Component",new Button.ClickListener(){
-    public void buttonClick(    ClickEvent event){
+    @Override public void buttonClick(    ClickEvent event){
       GridLayout grid=new GridLayout(2,2);
       Button grow=new Button("Grow Me",new Button.ClickListener(){
-        public void buttonClick(        ClickEvent event){
+        @Override public void buttonClick(        ClickEvent event){
           if (event.getButton().getWidth() == -1) {
             event.getButton().setHeight("50px");
             event.getButton().setWidth("200px");
@@ -44,7 +44,7 @@
 );
   header.addComponent(addComponent);
   Button removeComponent=new Button("Remove Component",new Button.ClickListener(){
-    public void buttonClick(    ClickEvent event){
+    @Override public void buttonClick(    ClickEvent event){
       Component last=l.getComponent(l.getComponentCount() - 1);
       l.removeComponent(last);
     }
@@ -64,7 +64,7 @@
   final NativeSelect width=new NativeSelect(null,sizes);
   width.setImmediate(true);
   width.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       if (width.getValue() != null) {
         l.setWidth(width.getValue().toString());
       }
@@ -79,7 +79,7 @@
   final NativeSelect height=new NativeSelect(null,sizes);
   height.setImmediate(true);
   height.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       if (height.getValue() != null) {
         l.setHeight(height.getValue().toString());
       }
@@ -92,7 +92,7 @@
   layout.addComponent(height);
   final CheckBox margin=new CheckBox("Margin",false);
   margin.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       l.setMargin(margin.getValue().booleanValue());
     }
   }
@@ -102,7 +102,7 @@
   layout.addComponent(margin);
   final CheckBox spacing=new CheckBox("Spacing",false);
   spacing.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       l.setSpacing(spacing.getValue().booleanValue());
     }
   }
@@ -125,7 +125,7 @@
   align.setNullSelectionAllowed(false);
   align.select(Alignment.TOP_LEFT);
   align.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       if (target == null) {
         return;
       }
@@ -138,7 +138,7 @@
   expand.setImmediate(true);
   expand.setEnabled(false);
   expand.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       if (target != null) {
         l.setExpandRatio(target,expand.getValue() ? 1 : 0);
       }
@@ -157,7 +157,7 @@
   componentWidth.setImmediate(true);
   componentWidth.setEnabled(false);
   componentWidth.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       if (target == null) {
         return;
       }
@@ -176,7 +176,7 @@
   componentHeight.setImmediate(true);
   componentHeight.setEnabled(false);
   componentHeight.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       if (componentHeight.getValue() != null) {
         target.setHeight(componentHeight.getValue().toString());
       }
@@ -191,7 +191,7 @@
   componentCaption.setImmediate(true);
   componentCaption.setEnabled(false);
   componentCaption.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       if (componentCaption.getValue() != null) {
         target.setCaption(componentCaption.getValue().toString());
       }
@@ -206,7 +206,7 @@
   componentIcon.setImmediate(true);
   componentIcon.setEnabled(false);
   componentIcon.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       if (componentIcon.getValue() != null) {
         target.setIcon(new ThemeResource(componentIcon.getValue().toString()));
       }
@@ -221,7 +221,7 @@
   componentDescription.setImmediate(true);
   componentDescription.setEnabled(false);
   componentDescription.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       target.setDescription(componentDescription.getValue());
     }
   }
@@ -231,7 +231,7 @@
   componentError.setImmediate(true);
   componentError.setEnabled(false);
   componentError.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       if (target != null) {
         target.setComponentError(componentError.getValue() ? new UserError("Error message") : null);
       }
@@ -243,7 +243,7 @@
   componentRequired.setImmediate(true);
   componentRequired.setEnabled(false);
   componentRequired.addListener(new ValueChangeListener(){
-    public void valueChange(    ValueChangeEvent event){
+    @Override public void valueChange(    ValueChangeEvent event){
       if (target != null && target instanceof AbstractField) {
         ((AbstractField<?>)target).setRequired(componentRequired.getValue());
       }
