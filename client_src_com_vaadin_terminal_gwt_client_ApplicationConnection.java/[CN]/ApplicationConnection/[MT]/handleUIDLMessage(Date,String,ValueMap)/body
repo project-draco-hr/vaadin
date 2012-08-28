@@ -83,9 +83,9 @@
       }
       componentCaptionSizeChanges.clear();
       int startProcessing=updateDuration.elapsedMillis();
-      createConnectorsIfNeeded(json);
+      Set<ServerConnector> createdConnectors=createConnectorsIfNeeded(json);
       updateDuration.logDuration(" * Creating connectors completed",10);
-      Collection<StateChangeEvent> pendingStateChangeEvents=updateConnectorState(json);
+      Collection<StateChangeEvent> pendingStateChangeEvents=updateConnectorState(json,createdConnectors);
       updateDuration.logDuration(" * Update of connector states completed",10);
       Collection<ConnectorHierarchyChangeEvent> pendingHierarchyChangeEvents=updateConnectorHierarchy(json);
       updateDuration.logDuration(" * Update of connector hierarchy completed",10);
@@ -158,14 +158,7 @@
         ServerConnector connector=sce.getConnector();
         if (connector instanceof ComponentConnector) {
           ComponentConnector component=(ComponentConnector)connector;
-          Type type=TypeData.getType(component.getClass());
-          Type stateType;
-          try {
-            stateType=type.getMethod("getState").getReturnType();
-          }
- catch (          NoDataException e) {
-            throw new RuntimeException("Can not find the state type for " + type.getSignature(),e);
-          }
+          Type stateType=AbstractConnector.getStateType(component);
           Set<String> changedProperties=sce.getChangedProperties();
           for (          String propertyName : changedProperties) {
             Property property=stateType.getProperty(propertyName);
@@ -230,11 +223,12 @@
       }
       VConsole.log("* Unregistered " + unregistered + " connectors");
     }
-    private void createConnectorsIfNeeded(    ValueMap json){
+    private Set<ServerConnector> createConnectorsIfNeeded(    ValueMap json){
       VConsole.log(" * Creating connectors (if needed)");
       if (!json.containsKey("types")) {
-        return;
+        return Collections.emptySet();
       }
+      Set<ServerConnector> createdConnectors=new HashSet<ServerConnector>();
       ValueMap types=json.getValueMap("types");
       JsArrayString keyArray=types.getKeyArray();
       for (int i=0; i < keyArray.length(); i++) {
@@ -247,17 +241,20 @@
           }
           Class<? extends ServerConnector> connectorClass=configuration.getConnectorClassByEncodedTag(connectorType);
           if (connectorClass != UIConnector.class) {
-            getConnector(connectorId,connectorType);
+            connector=getConnector(connectorId,connectorType);
+            createdConnectors.add(connector);
           }
  else {
             connectorMap.registerConnector(connectorId,uIConnector);
             uIConnector.doInit(connectorId,ApplicationConnection.this);
+            createdConnectors.add(uIConnector);
           }
         }
  catch (        final Throwable e) {
           VConsole.error(e);
         }
       }
+      return createdConnectors;
     }
     private void updateVaadin6StyleConnectors(    ValueMap json){
       JsArray<ValueMap> changes=json.getJSValueMapArray("changes");
@@ -298,12 +295,13 @@
         }
       }
     }
-    private Collection<StateChangeEvent> updateConnectorState(    ValueMap json){
+    private Collection<StateChangeEvent> updateConnectorState(    ValueMap json,    Set<ServerConnector> newConnectors){
       ArrayList<StateChangeEvent> events=new ArrayList<StateChangeEvent>();
       VConsole.log(" * Updating connector states");
       if (!json.containsKey("state")) {
         return events;
       }
+      HashSet<ServerConnector> remainingNewConnectors=new HashSet<ServerConnector>(newConnectors);
       ValueMap states=json.getValueMap("state");
       JsArrayString keyArray=states.getKeyArray();
       for (int i=0; i < keyArray.length(); i++) {
@@ -319,6 +317,10 @@
             JsonDecoder.decodeValue(new Type(state.getClass().getName(),null),stateJson,state,ApplicationConnection.this);
             Set<String> changedProperties=new HashSet<String>();
             addJsonFields(stateJson,changedProperties,"");
+            if (newConnectors.contains(connector)) {
+              remainingNewConnectors.remove(connector);
+              addAllStateFields(AbstractConnector.getStateType(connector),changedProperties,"");
+            }
             StateChangeEvent event=new StateChangeEvent(connector,changedProperties);
             events.add(event);
           }
@@ -327,7 +329,36 @@
           VConsole.error(e);
         }
       }
+      for (      ServerConnector connector : remainingNewConnectors) {
+        Set<String> changedProperties=new HashSet<String>();
+        addAllStateFields(AbstractConnector.getStateType(connector),changedProperties,"");
+        StateChangeEvent event=new StateChangeEvent(connector,changedProperties);
+        events.add(event);
+      }
       return events;
+    }
+    /** 
+ * Recursively adds the names of all properties in the provided
+ * state type.
+ * @param typethe type to process
+ * @param foundPropertiesa set of all currently added properties
+ * @param contextthe base name of the current object
+ */
+    private void addAllStateFields(    Type type,    Set<String> foundProperties,    String context){
+      try {
+        Collection<Property> properties=type.getProperties();
+        for (        Property property : properties) {
+          String propertyName=context + property.getName();
+          foundProperties.add(propertyName);
+          Type propertyType=property.getType();
+          if (propertyType.hasProperties()) {
+            addAllStateFields(propertyType,foundProperties,propertyName + ".");
+          }
+        }
+      }
+ catch (      NoDataException e) {
+        throw new IllegalStateException("No property info for " + type + ". Did you remember to compile the right widgetset?",e);
+      }
     }
     /** 
  * Recursively adds the names of all fields in all objects in the
