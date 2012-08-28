@@ -1,0 +1,20 @@
+{
+  Set<JClassType> constructors=bundle.getGwtConstructors();
+  for (  JClassType type : constructors) {
+    w.print("store.setConstructor(");
+    writeClassLiteral(w,type);
+    w.println(", new Invoker() {");
+    w.indent();
+    w.println("public Object invoke(Object target, Object[] params) {");
+    w.indent();
+    w.print("return ");
+    w.print(GWT.class.getName());
+    w.print(".create(");
+    writeClassLiteral(w,type);
+    w.println(");");
+    w.outdent();
+    w.println("}");
+    w.outdent();
+    w.println("});");
+  }
+}

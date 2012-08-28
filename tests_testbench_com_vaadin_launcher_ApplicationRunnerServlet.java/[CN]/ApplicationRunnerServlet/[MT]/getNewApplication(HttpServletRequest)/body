@@ -2,7 +2,14 @@
   try {
     final Class<?> classToRun=getClassToRun();
     if (Root.class.isAssignableFrom(classToRun)) {
-      return new RootRunnerApplication(classToRun);
+      Application application=new Application();
+      application.addRootProvider(new AbstractRootProvider(){
+        @Override public Class<? extends Root> getRootClass(        Application application,        WrappedRequest request) throws RootRequiresMoreInformationException {
+          return (Class<? extends Root>)classToRun;
+        }
+      }
+);
+      return application;
     }
  else     if (Application.class.isAssignableFrom(classToRun)) {
       return (Application)classToRun.newInstance();

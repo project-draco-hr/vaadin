@@ -1,12 +1,36 @@
 {
-  JSONSerializer<Object> serializer=connection.getSerializerMap().getSerializer(type.getBaseTypeName());
-  if (target != null && serializer instanceof DiffJSONSerializer<?>) {
-    DiffJSONSerializer<Object> diffSerializer=(DiffJSONSerializer<Object>)serializer;
-    diffSerializer.update(target,type,jsonValue,connection);
-    return target;
+  JSONSerializer<Object> serializer=(JSONSerializer<Object>)type.findSerializer();
+  if (serializer != null) {
+    if (target != null && serializer instanceof DiffJSONSerializer<?>) {
+      DiffJSONSerializer<Object> diffSerializer=(DiffJSONSerializer<Object>)serializer;
+      diffSerializer.update(target,type,jsonValue,connection);
+      return target;
+    }
+ else {
+      Object object=serializer.deserialize(type,jsonValue,connection);
+      return object;
+    }
   }
  else {
-    Object object=serializer.deserialize(type,jsonValue,connection);
-    return object;
+    try {
+      Collection<Property> properties=type.getProperties();
+      if (target == null) {
+        target=type.createInstance();
+      }
+      JSONObject jsonObject=jsonValue.isObject();
+      for (      Property property : properties) {
+        JSONValue encodedPropertyValue=jsonObject.get(property.getName());
+        if (encodedPropertyValue == null) {
+          continue;
+        }
+        Object propertyReference=property.getValue(target);
+        Object decodedValue=decodeValue(property.getType(),encodedPropertyValue,propertyReference,connection);
+        property.setValue(target,decodedValue);
+      }
+      return target;
+    }
+ catch (    NoDataException e) {
+      throw new RuntimeException("Can not deserialize " + type.getSignature(),e);
+    }
   }
 }

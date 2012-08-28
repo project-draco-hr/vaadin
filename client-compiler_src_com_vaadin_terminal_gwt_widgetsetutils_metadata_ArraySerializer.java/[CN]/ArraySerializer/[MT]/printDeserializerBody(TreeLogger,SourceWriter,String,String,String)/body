@@ -1,0 +1,20 @@
+{
+  JType leafType=arrayType.getLeafType();
+  int rank=arrayType.getRank();
+  w.println(JSONArray.class.getName() + " jsonArray = " + jsonValue+ ".isArray();");
+  w.print(arrayType.getQualifiedSourceName() + " value = new " + leafType.getQualifiedSourceName()+ "[jsonArray.size()]");
+  for (int i=1; i < rank; i++) {
+    w.print("[]");
+  }
+  w.println(";");
+  w.println("for(int i = 0 ; i < value.length; i++) {");
+  w.indent();
+  JType componentType=arrayType.getComponentType();
+  w.print("value[i] = (" + ConnectorBundleLoaderFactory.getBoxedTypeName(componentType) + ") "+ JsonDecoder.class.getName()+ ".decodeValue(");
+  ConnectorBundleLoaderFactory.writeTypeCreator(w,componentType);
+  w.print(", jsonArray.get(i), null, " + connection + ")");
+  w.println(";");
+  w.outdent();
+  w.println("}");
+  w.println("return value;");
+}

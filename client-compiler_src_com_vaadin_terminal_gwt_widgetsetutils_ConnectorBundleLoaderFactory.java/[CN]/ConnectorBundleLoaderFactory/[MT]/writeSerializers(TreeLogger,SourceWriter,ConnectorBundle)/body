@@ -1,0 +1,20 @@
+{
+  Map<JType,GeneratedSerializer> serializers=bundle.getSerializers();
+  for (  Entry<JType,GeneratedSerializer> entry : serializers.entrySet()) {
+    JType type=entry.getKey();
+    GeneratedSerializer serializer=entry.getValue();
+    w.print("store.setSerializerFactory(");
+    writeClassLiteral(w,type);
+    w.print(", ");
+    w.println("new Invoker() {");
+    w.indent();
+    w.println("public Object invoke(Object target, Object[] params) {");
+    w.indent();
+    serializer.writeSerializerInstantiator(logger,w);
+    w.outdent();
+    w.println("}");
+    w.outdent();
+    w.print("}");
+    w.println(");");
+  }
+}

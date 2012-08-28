@@ -7,10 +7,15 @@
     return c;
   }
  else {
-    ServerConnector connector=widgetMap.instantiate(classType);
-    if (connector instanceof HasJavaScriptConnectorHelper) {
-      ((HasJavaScriptConnectorHelper)connector).getJavascriptConnectorHelper().setTag(tag);
+    try {
+      ServerConnector connector=(ServerConnector)TypeData.getType(classType).createInstance();
+      if (connector instanceof HasJavaScriptConnectorHelper) {
+        ((HasJavaScriptConnectorHelper)connector).getJavascriptConnectorHelper().setTag(tag);
+      }
+      return connector;
     }
-    return connector;
+ catch (    NoDataException e) {
+      throw new IllegalStateException("There is no information about " + classType + ". Did you remember to compile the right widgetset?",e);
+    }
   }
 }

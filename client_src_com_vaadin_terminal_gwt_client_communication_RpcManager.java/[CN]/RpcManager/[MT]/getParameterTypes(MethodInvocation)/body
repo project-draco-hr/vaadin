@@ -1,3 +1,10 @@
 {
-  return getRpcMethod(getSignature(invocation)).getParameterTypes();
+  Method method=getMethod(invocation);
+  try {
+    Type[] parameterTypes=method.getParameterTypes();
+    return parameterTypes;
+  }
+ catch (  NoDataException e) {
+    throw new IllegalStateException("There is no information about " + method.getSignature() + ". Did you remember to compile the right widgetset?",e);
+  }
 }

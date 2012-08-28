@@ -6,7 +6,14 @@
     }
     callbacks.clear();
   }
- else   if (dependenciesLoading == 0 && deferredWidgetLoader != null) {
-    deferredWidgetLoader.trigger();
+ else   if (dependenciesLoading == 0 && !ConnectorBundleLoader.get().isBundleLoaded(ConnectorBundleLoader.DEFERRED_BUNDLE_NAME)) {
+    ConnectorBundleLoader.get().loadBundle(ConnectorBundleLoader.DEFERRED_BUNDLE_NAME,new BundleLoadCallback(){
+      @Override public void loaded(){
+      }
+      @Override public void failed(      Throwable reason){
+        VConsole.error(reason);
+      }
+    }
+);
   }
 }

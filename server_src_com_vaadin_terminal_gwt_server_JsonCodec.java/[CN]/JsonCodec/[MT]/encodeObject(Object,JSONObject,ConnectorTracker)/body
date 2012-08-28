@@ -1,19 +1,18 @@
 {
   JSONObject jsonMap=new JSONObject();
   try {
-    for (    PropertyDescriptor pd : Introspector.getBeanInfo(value.getClass()).getPropertyDescriptors()) {
-      String fieldName=getTransportFieldName(pd);
-      if (fieldName == null) {
-        continue;
-      }
-      Method getterMethod=pd.getReadMethod();
-      Type fieldType=getterMethod.getGenericReturnType();
-      Object fieldValue=getterMethod.invoke(value,(Object[])null);
+    for (    BeanProperty property : getProperties(value.getClass())) {
+      String fieldName=property.getName();
+      Type fieldType=property.getType();
+      Object fieldValue=property.getValue(value);
       boolean equals=false;
       Object diffStateValue=null;
-      if (diffState != null) {
+      if (diffState != null && diffState.has(fieldName)) {
         diffStateValue=diffState.get(fieldName);
         Object referenceFieldValue=decodeInternalOrCustomType(fieldType,diffStateValue,connectorTracker);
+        if (JSONObject.NULL.equals(diffStateValue)) {
+          diffStateValue=null;
+        }
         equals=equals(fieldValue,referenceFieldValue);
       }
       if (!equals) {

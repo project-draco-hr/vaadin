@@ -50,9 +50,26 @@
       return new JSONString(String.valueOf(value));
     }
  else {
-      transportType=value.getClass().getName();
-      JSONSerializer serializer=connection.getSerializerMap().getSerializer(transportType);
-      return serializer.serialize(value,connection);
+      Type type=new Type(value.getClass());
+      JSONSerializer<Object> serializer=(JSONSerializer<Object>)type.findSerializer();
+      if (serializer != null) {
+        return serializer.serialize(value,connection);
+      }
+ else {
+        try {
+          Collection<Property> properties=type.getProperties();
+          JSONObject jsonObject=new JSONObject();
+          for (          Property property : properties) {
+            Object propertyValue=property.getValue(value);
+            JSONValue encodedPropertyValue=encode(propertyValue,restrictToInternalTypes,connection);
+            jsonObject.put(property.getName(),encodedPropertyValue);
+          }
+          return jsonObject;
+        }
+ catch (        NoDataException e) {
+          throw new RuntimeException("Can not encode " + type.getSignature(),e);
+        }
+      }
     }
   }
 }

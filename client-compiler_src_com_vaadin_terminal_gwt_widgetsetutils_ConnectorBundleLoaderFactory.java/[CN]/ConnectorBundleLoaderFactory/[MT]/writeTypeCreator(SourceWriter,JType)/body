@@ -1,0 +1,18 @@
+{
+  String typeName=ConnectorBundleLoaderFactory.getBoxedTypeName(type);
+  JParameterizedType parameterized=type.isParameterized();
+  if (parameterized != null) {
+    sourceWriter.print("new Type(\"" + typeName + "\", ");
+    sourceWriter.print("new Type[] {");
+    JClassType[] typeArgs=parameterized.getTypeArgs();
+    for (    JClassType jClassType : typeArgs) {
+      writeTypeCreator(sourceWriter,jClassType);
+      sourceWriter.print(", ");
+    }
+    sourceWriter.print("}");
+  }
+ else {
+    sourceWriter.print("new Type(" + typeName + ".class");
+  }
+  sourceWriter.print(")");
+}

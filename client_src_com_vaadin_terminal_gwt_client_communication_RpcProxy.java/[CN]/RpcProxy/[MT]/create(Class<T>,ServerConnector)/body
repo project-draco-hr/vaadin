@@ -1,3 +1,8 @@
 {
-  return impl.create(rpcInterface,connector);
+  try {
+    return (T)TypeData.getType(rpcInterface).createProxy(new RpcInvokationHandler(rpcInterface,connector));
+  }
+ catch (  NoDataException e) {
+    throw new IllegalStateException("There is no information about " + rpcInterface + ". Did you forget to compile the widgetset?");
+  }
 }

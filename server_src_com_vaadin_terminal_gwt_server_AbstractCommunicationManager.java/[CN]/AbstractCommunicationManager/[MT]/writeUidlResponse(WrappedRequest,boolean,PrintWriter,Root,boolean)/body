@@ -33,33 +33,14 @@
   outWriter.print("], ");
   JSONObject sharedStates=new JSONObject();
   for (  ClientConnector connector : dirtyVisibleConnectors) {
-    SharedState state=connector.getState();
-    if (null != state) {
-      try {
-        Class<? extends SharedState> stateType=connector.getStateType();
-        Object diffState=rootConnectorTracker.getDiffState(connector);
-        if (diffState == null) {
-          diffState=new JSONObject();
-          boolean emptyInitialState=JavaScriptConnectorState.class.isAssignableFrom(stateType);
-          if (!emptyInitialState) {
-            try {
-              SharedState referenceState=stateType.newInstance();
-              diffState=JsonCodec.encode(referenceState,null,stateType,root.getConnectorTracker());
-            }
- catch (            Exception e) {
-              getLogger().log(Level.WARNING,"Error creating reference object for state of type " + stateType.getName());
-            }
-          }
-          rootConnectorTracker.setDiffState(connector,diffState);
-        }
-        JSONObject stateJson=(JSONObject)JsonCodec.encode(state,diffState,stateType,root.getConnectorTracker());
-        if (stateJson.length() != 0) {
-          sharedStates.put(connector.getConnectorId(),stateJson);
-        }
+    try {
+      JSONObject stateJson=connector.encodeState();
+      if (stateJson != null && stateJson.length() != 0) {
+        sharedStates.put(connector.getConnectorId(),stateJson);
       }
- catch (      JSONException e) {
-        throw new PaintException("Failed to serialize shared state for connector " + connector.getClass().getName() + " ("+ connector.getConnectorId()+ "): "+ e.getMessage(),e);
-      }
+    }
+ catch (    JSONException e) {
+      throw new PaintException("Failed to serialize shared state for connector " + connector.getClass().getName() + " ("+ connector.getConnectorId()+ "): "+ e.getMessage(),e);
     }
   }
   outWriter.print("\"state\":");

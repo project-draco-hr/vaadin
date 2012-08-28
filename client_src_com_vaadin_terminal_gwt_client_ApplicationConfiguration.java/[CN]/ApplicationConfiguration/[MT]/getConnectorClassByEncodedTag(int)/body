@@ -1,8 +1,27 @@
 {
-  try {
-    return classes[tag];
+  Class<? extends ServerConnector> type=classes.get(tag);
+  if (type == null && !classes.containsKey(tag)) {
+    Integer currentTag=Integer.valueOf(tag);
+    while (type == null && currentTag != null) {
+      String serverSideClassNameForTag=getServerSideClassNameForTag(currentTag);
+      if (TypeData.hasIdentifier(serverSideClassNameForTag)) {
+        try {
+          type=(Class<? extends ServerConnector>)TypeData.getClass(serverSideClassNameForTag);
+        }
+ catch (        NoDataException e) {
+          throw new RuntimeException(e);
+        }
+      }
+      currentTag=getParentTag(currentTag.intValue());
+    }
+    if (type == null) {
+      type=UnknownComponentConnector.class;
+      if (unknownComponents == null) {
+        unknownComponents=new HashMap<Integer,String>();
+      }
+      unknownComponents.put(tag,getServerSideClassNameForTag(tag));
+    }
+    classes.put(tag,type);
   }
- catch (  Exception e) {
-    return UnknownComponentConnector.class;
-  }
+  return type;
 }

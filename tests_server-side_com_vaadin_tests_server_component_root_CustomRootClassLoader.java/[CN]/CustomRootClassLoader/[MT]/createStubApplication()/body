@@ -1,7 +1,15 @@
 {
   return new Application(){
-    @Override protected String getRootClassName(    WrappedRequest request){
-      return MyRoot.class.getName();
+{
+      addRootProvider(new DefaultRootProvider());
+    }
+    @Override public String getProperty(    String name){
+      if (name.equals(ROOT_PARAMETER)) {
+        return MyRoot.class.getName();
+      }
+ else {
+        return super.getProperty(name);
+      }
     }
     @Override public Root getRootForRequest(    WrappedRequest request) throws RootRequiresMoreInformationException {
       return getRoot(request);

@@ -1,0 +1,18 @@
+{
+  JClassType currentType=type;
+  while (currentType != null) {
+    JMethod method=currentType.findMethod(methodName,params);
+    if (method != null) {
+      return method;
+    }
+    currentType=currentType.getSuperclass();
+  }
+  JClassType[] interfaces=type.getImplementedInterfaces();
+  for (  JClassType iface : interfaces) {
+    JMethod method=iface.findMethod(methodName,params);
+    if (method != null) {
+      return method;
+    }
+  }
+  return null;
+}
