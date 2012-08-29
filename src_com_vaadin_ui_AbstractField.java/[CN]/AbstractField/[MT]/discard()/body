@@ -1,26 +1,3 @@
 {
-  if (dataSource != null) {
-    Object newValue;
-    try {
-      newValue=String.class == getType() ? dataSource.toString() : dataSource.getValue();
-      if (currentBufferedSourceException != null) {
-        currentBufferedSourceException=null;
-        requestRepaint();
-      }
-    }
- catch (    final Throwable e) {
-      currentBufferedSourceException=new Buffered.SourceException(this,e);
-      requestRepaint();
-      throw currentBufferedSourceException;
-    }
-    final boolean wasModified=isModified();
-    modified=false;
-    if ((newValue == null && value != null) || (newValue != null && !newValue.equals(value))) {
-      setInternalValue(newValue);
-      fireValueChange(false);
-    }
- else     if (wasModified) {
-      requestRepaint();
-    }
-  }
+  updateValueFromDataSource();
 }
