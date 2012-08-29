@@ -1,20 +1,32 @@
 {
   Object obj=null;
-  try {
-    FastByteArrayOutputStream fbos=new FastByteArrayOutputStream();
-    ObjectOutputStream out=new ObjectOutputStream(fbos);
-    out.writeObject(orig);
-    out.flush();
-    out.close();
-    ObjectInputStream in=new ObjectInputStream(fbos.getInputStream());
-    obj=in.readObject();
-    in.close();
+  if (!(orig instanceof Clonable)) {
+    try {
+      FastByteArrayOutputStream fbos=new FastByteArrayOutputStream();
+      ObjectOutputStream out=new ObjectOutputStream(fbos);
+      out.writeObject(orig);
+      out.flush();
+      out.close();
+      ObjectInputStream in=new ObjectInputStream(fbos.getInputStream());
+      obj=in.readObject();
+      in.close();
+    }
+ catch (    IOException e) {
+      e.printStackTrace();
+    }
+catch (    ClassNotFoundException cnfe) {
+      cnfe.printStackTrace();
+    }
+    return obj;
   }
- catch (  IOException e) {
-    e.printStackTrace();
+ else {
+    try {
+      obj=((Clonable)orig).clone();
+    }
+ catch (    ClassCastException e2) {
+    }
+catch (    CloneNotSupportedException e2) {
+    }
+    return obj;
   }
-catch (  ClassNotFoundException cnfe) {
-    cnfe.printStackTrace();
-  }
-  return obj;
 }
