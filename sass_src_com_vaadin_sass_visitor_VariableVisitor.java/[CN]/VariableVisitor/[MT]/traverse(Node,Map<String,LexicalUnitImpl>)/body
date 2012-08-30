@@ -1,13 +1,18 @@
 {
   if (node instanceof RuleNode) {
     LexicalUnit value=((RuleNode)node).getValue();
-    updateValue(value,variables);
+    while (updateValue(value,variables)) {
+      ;
+    }
   }
  else {
     Set<Node> toBeDeleted=new HashSet<Node>();
     for (    Node child : node.getChildren()) {
       if (child instanceof VariableNode) {
-        variables.put(((VariableNode)child).getName(),(LexicalUnitImpl)((VariableNode)child).getExpr());
+        VariableNode varChild=(VariableNode)child;
+        if (!varChild.isGuarded() || varChild.isGuarded() && variables.get(varChild.getName()) == null) {
+          variables.put(((VariableNode)child).getName(),(LexicalUnitImpl)((VariableNode)child).getExpr());
+        }
         toBeDeleted.add(child);
       }
  else {
