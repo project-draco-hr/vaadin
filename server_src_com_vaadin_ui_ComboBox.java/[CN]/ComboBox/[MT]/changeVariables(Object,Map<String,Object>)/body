@@ -1,44 +1,20 @@
 {
   if (variables.containsKey("selected")) {
     final String[] ka=(String[])variables.get("selected");
-    if (isMultiSelect()) {
-      final LinkedList<Object> s=new LinkedList<Object>();
-      for (int i=0; i < ka.length; i++) {
-        final Object id=itemIdMapper.get(ka[i]);
-        if (id != null && containsId(id)) {
-          s.add(id);
-        }
-      }
+    if (ka.length == 0) {
+      final Object current=getValue();
       final Collection<?> visible=getVisibleItemIds();
-      if (visible != null) {
-        @SuppressWarnings("unchecked") Set<Object> newsel=(Set<Object>)getValue();
-        if (newsel == null) {
-          newsel=new HashSet<Object>();
-        }
- else {
-          newsel=new HashSet<Object>(newsel);
-        }
-        newsel.removeAll(visible);
-        newsel.addAll(s);
-        setValue(newsel,true);
+      if (visible != null && visible.contains(current)) {
+        setValue(null,true);
       }
     }
  else {
-      if (ka.length == 0) {
-        final Object current=getValue();
-        final Collection<?> visible=getVisibleItemIds();
-        if (visible != null && visible.contains(current)) {
-          setValue(null,true);
-        }
+      final Object id=itemIdMapper.get(ka[0]);
+      if (id != null && id.equals(getNullSelectionItemId())) {
+        setValue(null,true);
       }
  else {
-        final Object id=itemIdMapper.get(ka[0]);
-        if (id != null && id.equals(getNullSelectionItemId())) {
-          setValue(null,true);
-        }
- else {
-          setValue(id,true);
-        }
+        setValue(id,true);
       }
     }
   }

@@ -5,11 +5,6 @@
   if (!textInputAllowed) {
     target.addAttribute(ComboBoxConstants.ATTR_NO_TEXT_INPUT,true);
   }
-  if (isMultiSelect()) {
-    super.paintContent(target);
-    target.addAttribute("type","legacy-multi");
-    return;
-  }
   getCaptionChangeListener().clear();
   if (getTabIndex() != 0) {
     target.addAttribute("tabindex",getTabIndex());
@@ -28,13 +23,7 @@
       target.addAttribute("nullselectitem",true);
     }
   }
-  String[] selectedKeys;
-  if (isMultiSelect()) {
-    selectedKeys=new String[((Set<?>)getValue()).size()];
-  }
- else {
-    selectedKeys=new String[(getValue() == null && getNullSelectionItemId() == null ? 0 : 1)];
-  }
+  String[] selectedKeys=new String[(getValue() == null && getNullSelectionItemId() == null ? 0 : 1)];
   target.addAttribute("pagelength",pageLength);
   target.addAttribute("filteringmode",getFilteringMode());
   int keyIndex=0;
