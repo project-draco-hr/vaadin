@@ -1,0 +1,14 @@
+{
+  Set<Resource> set=usedResources.remove(connector);
+  if (set == null) {
+    return;
+  }
+  for (  Resource resource : set) {
+    Set<ClientConnector> users=resourceUsers.get(resource);
+    users.remove(connector);
+    if (users.isEmpty()) {
+      resourceUsers.remove(resource);
+      unregisterResource(resource);
+    }
+  }
+}

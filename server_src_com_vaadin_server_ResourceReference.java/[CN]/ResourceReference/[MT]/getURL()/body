@@ -2,13 +2,41 @@
   if (resource instanceof ExternalResource) {
     return ((ExternalResource)resource).getURL();
   }
- else   if (resource instanceof ApplicationResource) {
-    final ApplicationResource r=(ApplicationResource)resource;
-    final Application a=r.getApplication();
-    if (a == null) {
-      throw new RuntimeException("An ApplicationResource (" + r.getClass().getName() + " must be attached to an application when it is sent to the client.");
+ else   if (resource instanceof DynamicConnectorResource) {
+    DynamicConnectorResource dcr=(DynamicConnectorResource)resource;
+    String filename=dcr.getPath();
+    StringBuilder builder=new StringBuilder(getConnectorResourceBase(filename,dcr.getConnector()));
+    Set<Entry<String,String>> entrySet=dcr.getParameters().entrySet();
+    boolean first=true;
+    for (    Entry<String,String> entry : entrySet) {
+      String key=entry.getKey();
+      String value=entry.getValue();
+      if (first) {
+        builder.append('?');
+        first=false;
+      }
+ else {
+        builder.append('&');
+      }
+      builder.append(key).append('=').append(value);
     }
-    final String uri=a.getRelativeLocation(r);
+    return builder.toString();
+  }
+ else   if (resource instanceof ConnectorResource) {
+    ConnectorResource connectorResource=(ConnectorResource)resource;
+    GlobalResourceHandler globalResourceHandler=connector.getUI().getApplication().getGlobalResourceHandler(false);
+    if (globalResourceHandler != null) {
+      String uri=globalResourceHandler.getUri(connector,connectorResource);
+      if (uri != null && !uri.isEmpty()) {
+        return uri;
+      }
+    }
+    String prefix=key;
+    String filename=connectorResource.getFilename();
+    if (filename != null && !filename.isEmpty()) {
+      prefix+='/' + filename;
+    }
+    String uri=getConnectorResourceBase(prefix,connector);
     return uri;
   }
  else   if (resource instanceof ThemeResource) {

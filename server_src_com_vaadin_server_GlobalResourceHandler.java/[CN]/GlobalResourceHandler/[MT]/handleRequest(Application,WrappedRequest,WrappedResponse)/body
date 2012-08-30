@@ -1,0 +1,38 @@
+{
+  String pathInfo=request.getRequestPathInfo();
+  if (pathInfo == null) {
+    return false;
+  }
+  matcher.reset(pathInfo);
+  if (!matcher.matches()) {
+    return false;
+  }
+  String uiid=matcher.group(1);
+  String type=matcher.group(3);
+  String key=matcher.group(2);
+  matcher.reset();
+  if (key == null) {
+    return error(request,response,pathInfo + " is not a valid global resource path");
+  }
+  UI ui=application.getUIById(Integer.parseInt(uiid));
+  if (ui == null) {
+    return error(request,response,"No UI found for id  " + uiid);
+  }
+  UI.setCurrent(ui);
+  ConnectorResource resource;
+  if (LEGACY_TYPE.equals(type)) {
+    resource=legacyResources.get(key);
+  }
+ else {
+    return error(request,response,"Unknown global resource type " + type + " in requested path "+ pathInfo);
+  }
+  if (resource == null) {
+    return error(request,response,"Global resource " + key + " not found");
+  }
+  DownloadStream stream=resource.getStream();
+  if (stream == null) {
+    return error(request,response,"Resource " + resource + " didn't produce any stream.");
+  }
+  stream.writeTo(response);
+  return true;
+}
