@@ -2,7 +2,12 @@
   if (!synchronous) {
     RequestCallback requestCallback=new RequestCallback(){
       @Override public void onError(      Request request,      Throwable exception){
-        showCommunicationError(exception.getMessage(),-1);
+        handleCommunicationError(exception.getMessage(),-1);
+      }
+      private void handleCommunicationError(      String details,      int statusCode){
+        if (!handleErrorInDelegate(details,statusCode)) {
+          showCommunicationError(details,statusCode);
+        }
         endRequest();
       }
       @Override public void onResponseReceived(      Request request,      Response response){
@@ -10,21 +15,20 @@
         int statusCode=response.getStatusCode();
 switch (statusCode) {
 case 0:
-          showCommunicationError("Invalid status code 0 (server down?)",statusCode);
-        endRequest();
-      return;
+          handleCommunicationError("Invalid status code 0 (server down?)",statusCode);
+        return;
 case 401:
-    showAuthenticationError("");
-  endRequest();
-return;
+      showAuthenticationError("");
+    endRequest();
+  return;
 case 503:
 String delay=response.getHeader("Retry-After");
 if (delay != null) {
 VConsole.log("503, retrying in " + delay + "msec");
 (new Timer(){
-@Override public void run(){
-  doUidlRequest(uri,payload,synchronous);
-}
+  @Override public void run(){
+    doUidlRequest(uri,payload,synchronous);
+  }
 }
 ).schedule(Integer.parseInt(delay));
 return;
@@ -36,8 +40,7 @@ endRequest();
 return;
 }
  else if ((statusCode / 100) == 5) {
-showCommunicationError("Server error. Error code: " + statusCode,statusCode);
-endRequest();
+handleCommunicationError("Server error. Error code: " + statusCode,statusCode);
 return;
 }
 String contentType=response.getHeader("Content-Type");
