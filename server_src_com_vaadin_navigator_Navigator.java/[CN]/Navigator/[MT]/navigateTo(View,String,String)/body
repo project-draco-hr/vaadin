@@ -1,18 +1,18 @@
 {
-  ViewChangeEvent event=new ViewChangeEvent(this,currentView,view,viewName,fragmentParameters);
+  ViewChangeEvent event=new ViewChangeEvent(this,currentView,view,viewName,parameters);
   if (!isViewChangeAllowed(event)) {
     return;
   }
-  if (null != viewName && getFragmentManager() != null) {
-    String currentFragment=viewName;
-    if (!fragmentParameters.equals("")) {
-      currentFragment+="/" + fragmentParameters;
+  if (null != viewName && getStateManager() != null) {
+    String navigationState=viewName;
+    if (!parameters.equals("")) {
+      navigationState+="/" + parameters;
     }
-    if (!currentFragment.equals(getFragmentManager().getState())) {
-      getFragmentManager().setState(currentFragment);
+    if (!navigationState.equals(getStateManager().getState())) {
+      getStateManager().setState(navigationState);
     }
   }
-  view.navigateTo(fragmentParameters);
+  view.navigateTo(parameters);
   currentView=view;
   if (display != null) {
     display.showView(view);
