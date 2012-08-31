@@ -11,7 +11,7 @@
     getWidget().clearItems();
   }
   UIDL options=uidl.getChildUIDL(0);
-  if (null != getState() && !getState().isUndefinedWidth()) {
+  if (null != getState() && !ComponentStateUtil.isUndefinedWidth(getState())) {
     UIDL moreItemUIDL=options.getChildUIDL(0);
     StringBuffer itemHTML=new StringBuffer();
     if (moreItemUIDL.hasAttribute("icon")) {
@@ -60,8 +60,8 @@
       itr=item.getChildIterator();
       currentMenu=new VMenuBar(true,currentMenu);
       client.getVTooltip().connectHandlersToWidget(currentMenu);
-      if (getState().hasStyles()) {
-        for (        String style : getState().getStyles()) {
+      if (getState().styles != null && !getState().styles.isEmpty()) {
+        for (        String style : getState().styles) {
           currentMenu.addStyleDependentName(style);
         }
       }
