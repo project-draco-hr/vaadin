@@ -1,17 +1,7 @@
 {
-  Integer uiId=null;
   try {
-    UI uI=application.getUIForRequest(request);
-    if (uI == null) {
-      writeError(response,new Throwable("No UI found"));
-      return true;
-    }
-    uiId=Integer.valueOf(uI.getUIId());
-  }
- catch (  UIRequiresMoreInformationException e) {
-  }
-  try {
-    BootstrapContext context=createContext(request,response,application,uiId);
+    Class<? extends UI> uiClass=application.getUIClass(request);
+    BootstrapContext context=createContext(request,response,application,uiClass);
     setupMainDiv(context);
     BootstrapFragmentResponse fragmentResponse=context.getBootstrapResponse();
     application.modifyBootstrapResponse(fragmentResponse);

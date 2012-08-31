@@ -1,6 +1,7 @@
 {
   Application application=createStubApplication();
   application.start(new ApplicationStartEvent(null,createConfigurationMock(),null));
-  UI uI=application.getUIForRequest(createRequestMock(null));
-  assertTrue(uI instanceof MyUI);
+  DefaultUIProvider uiProvider=new DefaultUIProvider();
+  Class<? extends UI> uiClass=uiProvider.getUIClass(application,createRequestMock(null));
+  assertEquals(MyUI.class,uiClass);
 }
