@@ -1,7 +1,7 @@
 {
   Connection conn=connectionPool.reserveConnection();
   Statement statement=conn.createStatement();
-  if (AllTests.db == DB.MSSQL) {
+  if (SQLTestsConstants.db == DB.MSSQL) {
     statement.executeUpdate("insert into people values('Bengt', 30)");
     statement.executeUpdate("insert into people values('Ingvar', 50)");
   }
@@ -12,6 +12,6 @@
   statement.close();
   conn.commit();
   connectionPool.releaseConnection(conn);
-  TableQuery tQuery=new TableQuery("people",connectionPool,AllTests.sqlGen);
+  TableQuery tQuery=new TableQuery("people",connectionPool,SQLTestsConstants.sqlGen);
   Assert.assertEquals(6,tQuery.getCount());
 }
