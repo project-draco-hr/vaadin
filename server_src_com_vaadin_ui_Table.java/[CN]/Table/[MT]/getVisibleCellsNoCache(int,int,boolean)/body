@@ -13,16 +13,6 @@
     unregisterPropertiesAndComponents(oldListenedProperties,oldVisibleComponents);
     return cells;
   }
-  Object id;
-  if (items instanceof Container.Indexed) {
-    id=getIdByIndex(firstIndex);
-  }
- else {
-    id=firstItemId();
-    for (int i=0; i < firstIndex; i++) {
-      id=nextItemId(id);
-    }
-  }
   final RowHeaderMode headmode=getRowHeaderMode();
   final boolean[] iscomponent=new boolean[cols];
   for (int i=0; i < cols; i++) {
@@ -36,106 +26,35 @@
     firstIndexNotInCache=-1;
   }
   int filledRows=0;
-  for (int i=0; i < rows && id != null; i++) {
-    cells[CELL_ITEMID][i]=id;
-    cells[CELL_KEY][i]=itemIdMapper.key(id);
-    if (headmode != ROW_HEADER_MODE_HIDDEN) {
-switch (headmode) {
-case INDEX:
-        cells[CELL_HEADER][i]=String.valueOf(i + firstIndex + 1);
-      break;
-default :
-    cells[CELL_HEADER][i]=getItemCaption(id);
-}
-cells[CELL_ICON][i]=getItemIcon(id);
-}
-GeneratedRow generatedRow=rowGenerator != null ? rowGenerator.generateRow(this,id) : null;
-cells[CELL_GENERATED_ROW][i]=generatedRow;
-for (int j=0; j < cols; j++) {
-if (isColumnCollapsed(colids[j])) {
-  continue;
-}
-Property<?> p=null;
-Object value="";
-boolean isGeneratedRow=generatedRow != null;
-boolean isGeneratedColumn=columnGenerators.containsKey(colids[j]);
-boolean isGenerated=isGeneratedRow || isGeneratedColumn;
-if (!isGenerated) {
-  p=getContainerProperty(id,colids[j]);
-}
-if (isGeneratedRow) {
-  if (generatedRow.isSpanColumns() && j > 0) {
-    value=null;
-  }
- else   if (generatedRow.isSpanColumns() && j == 0 && generatedRow.getValue() instanceof Component) {
-    value=generatedRow.getValue();
-  }
- else   if (generatedRow.getText().length > j) {
-    value=generatedRow.getText()[j];
-  }
-}
- else {
-  int index=firstIndex + i;
-  if (p != null || isGenerated) {
-    int indexInOldBuffer=index - pageBufferFirstIndex;
-    if (index < firstIndexNotInCache && index >= pageBufferFirstIndex && pageBuffer[CELL_GENERATED_ROW][indexInOldBuffer] == null && id.equals(pageBuffer[CELL_ITEMID][indexInOldBuffer])) {
-      value=pageBuffer[CELL_FIRSTCOL + j][indexInOldBuffer];
-      if (!isGeneratedColumn && iscomponent[j] || !(value instanceof Component)) {
-        listenProperty(p,oldListenedProperties);
-      }
-    }
- else {
-      if (isGeneratedColumn) {
-        ColumnGenerator cg=columnGenerators.get(colids[j]);
-        value=cg.generateCell(this,id,colids[j]);
-        if (value != null && !(value instanceof Component) && !(value instanceof String)) {
-          value=value.toString();
-        }
-      }
- else       if (iscomponent[j]) {
-        value=p.getValue();
-        listenProperty(p,oldListenedProperties);
-      }
- else       if (p != null) {
-        value=getPropertyValue(id,colids[j],p);
-        if (!(value instanceof Component)) {
-          listenProperty(p,oldListenedProperties);
-        }
-      }
- else {
-        value=getPropertyValue(id,colids[j],null);
-      }
+  if (items instanceof Container.Indexed) {
+    Container.Indexed indexed=((Container.Indexed)items);
+    List<?> itemIds=indexed.getItemIds(firstIndex,rows);
+    for (int i=0; i < rows && i < itemIds.size(); i++) {
+      Object id=itemIds.get(i);
+      parseItemIdToCells(cells,id,i,firstIndex,headmode,cols,colids,firstIndexNotInCache,iscomponent,oldListenedProperties);
+      filledRows++;
     }
   }
-}
-if (value instanceof Component) {
-  registerComponent((Component)value);
-}
-cells[CELL_FIRSTCOL + j][i]=value;
-}
-if (items instanceof Container.Indexed) {
-int index=firstIndex + i + 1;
-if (index < size()) {
-  id=getIdByIndex(index);
-}
  else {
-  id=null;
-}
-}
- else {
-id=nextItemId(id);
-}
-filledRows++;
-}
-if (filledRows != cells[0].length) {
-final Object[][] temp=new Object[cells.length][filledRows];
-for (int i=0; i < cells.length; i++) {
-for (int j=0; j < filledRows; j++) {
-  temp[i][j]=cells[i][j];
-}
-}
-cells=temp;
-}
-unregisterPropertiesAndComponents(oldListenedProperties,oldVisibleComponents);
-return cells;
+    Object id=firstItemId();
+    for (int i=0; i < firstIndex; i++) {
+      id=nextItemId(id);
+    }
+    for (int i=0; i < rows && id != null; i++) {
+      parseItemIdToCells(cells,id,i,firstIndex,headmode,cols,colids,firstIndexNotInCache,iscomponent,oldListenedProperties);
+      id=nextItemId(id);
+      filledRows++;
+    }
+  }
+  if (filledRows != cells[0].length) {
+    final Object[][] temp=new Object[cells.length][filledRows];
+    for (int i=0; i < cells.length; i++) {
+      for (int j=0; j < filledRows; j++) {
+        temp[i][j]=cells[i][j];
+      }
+    }
+    cells=temp;
+  }
+  unregisterPropertiesAndComponents(oldListenedProperties,oldVisibleComponents);
+  return cells;
 }
