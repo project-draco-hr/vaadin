@@ -1,0 +1,35 @@
+{
+  Container container=getContainerDataSource();
+  if (pageLength == 0) {
+    filteredSize=container.size();
+    return new ArrayList<Object>(container.getItemIds());
+  }
+  if (!(container instanceof Filterable) || !(container instanceof Indexed) || getItemCaptionMode() != ITEM_CAPTION_MODE_PROPERTY) {
+    return null;
+  }
+  Filterable filterable=(Filterable)container;
+  Filter filter=buildFilter(filterstring,filteringMode);
+  if (filter != null) {
+    filteringContainer=true;
+    filterable.addContainerFilter(filter);
+  }
+  Indexed indexed=(Indexed)container;
+  int indexToEnsureInView=-1;
+  Object selection=getValue();
+  if (isScrollToSelectedItem() && !optionRequest && selection != null) {
+    indexToEnsureInView=indexed.indexOfId(selection);
+  }
+  filteredSize=container.size();
+  currentPage=adjustCurrentPage(currentPage,needNullSelectOption,indexToEnsureInView,filteredSize);
+  int first=getFirstItemIndexOnCurrentPage(needNullSelectOption,filteredSize);
+  int last=getLastItemIndexOnCurrentPage(needNullSelectOption,filteredSize,first);
+  List<Object> options=new ArrayList<Object>();
+  for (int i=first; i <= last && i < filteredSize; ++i) {
+    options.add(indexed.getIdByIndex(i));
+  }
+  if (filter != null) {
+    filterable.removeContainerFilter(filter);
+    filteringContainer=false;
+  }
+  return options;
+}

@@ -1,0 +1,44 @@
+{
+  if (variables.containsKey("selected")) {
+    final String[] ka=(String[])variables.get("selected");
+    if (ka.length == 0) {
+      final Object current=getValue();
+      final Collection<?> visible=getVisibleItemIds();
+      if (visible != null && visible.contains(current)) {
+        setValue(null,true);
+      }
+    }
+ else {
+      final Object id=itemIdMapper.get(ka[0]);
+      if (id != null && id.equals(getNullSelectionItemId())) {
+        setValue(null,true);
+      }
+ else {
+        setValue(id,true);
+      }
+    }
+  }
+  String newFilter;
+  if ((newFilter=(String)variables.get("filter")) != null) {
+    currentPage=((Integer)variables.get("page")).intValue();
+    filterstring=newFilter;
+    if (filterstring != null) {
+      filterstring=filterstring.toLowerCase();
+    }
+    requestRepaint();
+  }
+ else   if (isNewItemsAllowed()) {
+    final String newitem=(String)variables.get("newitem");
+    if (newitem != null && newitem.length() > 0) {
+      getNewItemHandler().addNewItem(newitem);
+      filterstring=null;
+      prevfilterstring=null;
+    }
+  }
+  if (variables.containsKey(FocusEvent.EVENT_ID)) {
+    fireEvent(new FocusEvent(this));
+  }
+  if (variables.containsKey(BlurEvent.EVENT_ID)) {
+    fireEvent(new BlurEvent(this));
+  }
+}

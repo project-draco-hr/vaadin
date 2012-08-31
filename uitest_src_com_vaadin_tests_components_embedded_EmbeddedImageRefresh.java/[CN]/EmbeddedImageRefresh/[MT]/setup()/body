@@ -1,0 +1,43 @@
+{
+  final Embedded embedded=new Embedded();
+  embedded.setDescription("Click on the grid cells to switch them.");
+  addComponent(embedded);
+  final MyImageSource imageSource=new MyImageSource();
+  final StreamResource imageResource=new StreamResource(imageSource,"testimage.png");
+  imageResource.setCacheTime(0);
+  embedded.setSource(imageResource);
+  Button button=new Button("refr");
+  button.addListener(new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      embedded.markAsDirty();
+    }
+  }
+);
+  addComponent(button);
+  button=new Button("refr name");
+  button.addListener(new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      ((StreamResource)embedded.getSource()).setFilename(new Date().getTime() + ".png");
+      embedded.markAsDirty();
+    }
+  }
+);
+  addComponent(button);
+  button=new Button("200x200");
+  button.addListener(new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      embedded.setWidth("200px");
+      embedded.setHeight("200px");
+    }
+  }
+);
+  addComponent(button);
+  button=new Button("undef");
+  button.addListener(new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      embedded.setSizeUndefined();
+    }
+  }
+);
+  addComponent(button);
+}

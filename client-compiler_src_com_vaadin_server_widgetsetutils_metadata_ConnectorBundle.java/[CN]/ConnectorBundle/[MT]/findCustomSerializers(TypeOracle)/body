@@ -1,0 +1,16 @@
+{
+  Map<JType,JClassType> serializers=new HashMap<JType,JClassType>();
+  JClassType serializerInterface=oracle.findType(JSONSerializer.class.getName());
+  JType[] deserializeParamTypes=new JType[]{oracle.findType(com.vaadin.client.metadata.Type.class.getName()),oracle.findType(JSONValue.class.getName()),oracle.findType(ApplicationConnection.class.getName())};
+  String deserializeMethodName="deserialize";
+  serializerInterface.getMethod(deserializeMethodName,deserializeParamTypes);
+  for (  JClassType serializer : serializerInterface.getSubtypes()) {
+    JMethod deserializeMethod=serializer.findMethod(deserializeMethodName,deserializeParamTypes);
+    if (deserializeMethod == null) {
+      continue;
+    }
+    JType returnType=deserializeMethod.getReturnType();
+    serializers.put(returnType,serializer);
+  }
+  return serializers;
+}

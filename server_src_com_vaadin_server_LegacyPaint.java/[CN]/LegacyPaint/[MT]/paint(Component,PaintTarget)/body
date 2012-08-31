@@ -1,0 +1,16 @@
+{
+  if (!isVisibleInContext(component)) {
+    return;
+  }
+  final String tag=target.getTag(component);
+  final PaintStatus status=target.startPaintable(component,tag);
+  if (PaintStatus.CACHED == status) {
+    target.addAttribute("cached",true);
+  }
+ else {
+    if (component instanceof LegacyComponent) {
+      ((LegacyComponent)component).paintContent(target);
+    }
+  }
+  target.endPaintable(component);
+}

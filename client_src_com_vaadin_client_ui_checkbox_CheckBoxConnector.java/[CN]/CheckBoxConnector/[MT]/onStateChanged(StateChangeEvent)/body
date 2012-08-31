@@ -1,0 +1,39 @@
+{
+  super.onStateChanged(stateChangeEvent);
+  focusHandlerRegistration=EventHelper.updateFocusHandler(this,focusHandlerRegistration);
+  blurHandlerRegistration=EventHelper.updateBlurHandler(this,blurHandlerRegistration);
+  if (null != getState().getErrorMessage()) {
+    if (getWidget().errorIndicatorElement == null) {
+      getWidget().errorIndicatorElement=DOM.createSpan();
+      getWidget().errorIndicatorElement.setInnerHTML("&nbsp;");
+      DOM.setElementProperty(getWidget().errorIndicatorElement,"className","v-errorindicator");
+      DOM.appendChild(getWidget().getElement(),getWidget().errorIndicatorElement);
+      DOM.sinkEvents(getWidget().errorIndicatorElement,VTooltip.TOOLTIP_EVENTS | Event.ONCLICK);
+    }
+ else {
+      DOM.setStyleAttribute(getWidget().errorIndicatorElement,"display","");
+    }
+  }
+ else   if (getWidget().errorIndicatorElement != null) {
+    DOM.setStyleAttribute(getWidget().errorIndicatorElement,"display","none");
+  }
+  if (isReadOnly()) {
+    getWidget().setEnabled(false);
+  }
+  if (getIcon() != null) {
+    if (getWidget().icon == null) {
+      getWidget().icon=new Icon(getConnection());
+      DOM.insertChild(getWidget().getElement(),getWidget().icon.getElement(),1);
+      getWidget().icon.sinkEvents(VTooltip.TOOLTIP_EVENTS);
+      getWidget().icon.sinkEvents(Event.ONCLICK);
+    }
+    getWidget().icon.setUri(getIcon());
+  }
+ else   if (getWidget().icon != null) {
+    DOM.removeChild(getWidget().getElement(),getWidget().icon.getElement());
+    getWidget().icon=null;
+  }
+  getWidget().setText(getState().getCaption());
+  getWidget().setValue(getState().isChecked());
+  getWidget().immediate=getState().isImmediate();
+}

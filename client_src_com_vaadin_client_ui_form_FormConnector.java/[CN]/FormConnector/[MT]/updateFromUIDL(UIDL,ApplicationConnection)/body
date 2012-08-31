@@ -1,0 +1,103 @@
+{
+  getWidget().client=client;
+  getWidget().id=uidl.getId();
+  if (!isRealUpdate(uidl)) {
+    return;
+  }
+  boolean legendEmpty=true;
+  if (getState().getCaption() != null) {
+    getWidget().caption.setInnerText(getState().getCaption());
+    legendEmpty=false;
+  }
+ else {
+    getWidget().caption.setInnerText("");
+  }
+  if (getIcon() != null) {
+    if (getWidget().icon == null) {
+      getWidget().icon=new Icon(client);
+      getWidget().legend.insertFirst(getWidget().icon.getElement());
+    }
+    getWidget().icon.setUri(getIcon());
+    legendEmpty=false;
+  }
+ else {
+    if (getWidget().icon != null) {
+      getWidget().legend.removeChild(getWidget().icon.getElement());
+    }
+  }
+  if (legendEmpty) {
+    getWidget().addStyleDependentName("nocaption");
+  }
+ else {
+    getWidget().removeStyleDependentName("nocaption");
+  }
+  if (null != getState().getErrorMessage()) {
+    getWidget().errorMessage.updateMessage(getState().getErrorMessage());
+    getWidget().errorMessage.setVisible(true);
+  }
+ else {
+    getWidget().errorMessage.setVisible(false);
+  }
+  if (getState().hasDescription()) {
+    getWidget().desc.setInnerHTML(getState().getDescription());
+    if (getWidget().desc.getParentElement() == null) {
+      getWidget().fieldSet.insertAfter(getWidget().desc,getWidget().legend);
+    }
+  }
+ else {
+    getWidget().desc.setInnerHTML("");
+    if (getWidget().desc.getParentElement() != null) {
+      getWidget().fieldSet.removeChild(getWidget().desc);
+    }
+  }
+  if (getState().getFooter() != null) {
+    ComponentConnector newFooter=(ComponentConnector)getState().getFooter();
+    Widget newFooterWidget=newFooter.getWidget();
+    if (getWidget().footer == null) {
+      getLayoutManager().addElementResizeListener(newFooterWidget.getElement(),footerResizeListener);
+      getWidget().add(newFooter.getWidget(),getWidget().footerContainer);
+      getWidget().footer=newFooterWidget;
+    }
+ else     if (newFooter != getWidget().footer) {
+      getLayoutManager().removeElementResizeListener(getWidget().footer.getElement(),footerResizeListener);
+      getLayoutManager().addElementResizeListener(newFooterWidget.getElement(),footerResizeListener);
+      getWidget().remove(getWidget().footer);
+      getWidget().add(newFooter.getWidget(),getWidget().footerContainer);
+    }
+    getWidget().footer=newFooterWidget;
+  }
+ else {
+    if (getWidget().footer != null) {
+      getLayoutManager().removeElementResizeListener(getWidget().footer.getElement(),footerResizeListener);
+      getWidget().remove(getWidget().footer);
+      getWidget().footer=null;
+    }
+  }
+  ComponentConnector newLayout=(ComponentConnector)getState().getLayout();
+  Widget newLayoutWidget=newLayout.getWidget();
+  if (getWidget().lo == null) {
+    getWidget().lo=newLayoutWidget;
+    getWidget().add(newLayoutWidget,getWidget().fieldContainer);
+  }
+ else   if (getWidget().lo != newLayoutWidget) {
+    getWidget().remove(getWidget().lo);
+    getWidget().lo=newLayoutWidget;
+    getWidget().add(newLayoutWidget,getWidget().fieldContainer);
+  }
+  client.runDescendentsLayout(getWidget());
+  if (uidl.getChildCount() >= 1) {
+    UIDL childUidl=uidl.getChildByTagName("actions");
+    if (childUidl != null) {
+      if (getWidget().shortcutHandler == null) {
+        getWidget().shortcutHandler=new ShortcutActionHandler(getConnectorId(),client);
+        getWidget().keyDownRegistration=getWidget().addDomHandler(getWidget(),KeyDownEvent.getType());
+      }
+      getWidget().shortcutHandler.updateActionMap(childUidl);
+    }
+  }
+ else   if (getWidget().shortcutHandler != null) {
+    getWidget().keyDownRegistration.removeHandler();
+    getWidget().shortcutHandler=null;
+    getWidget().keyDownRegistration=null;
+  }
+}

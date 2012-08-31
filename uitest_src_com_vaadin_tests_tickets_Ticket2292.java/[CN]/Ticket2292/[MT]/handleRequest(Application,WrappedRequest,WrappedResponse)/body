@@ -1,0 +1,32 @@
+{
+  String relativeUri=request.getRequestPathInfo();
+  if (!relativeUri.contains("icon.png")) {
+    return false;
+  }
+  try {
+    Thread.sleep(2000);
+  }
+ catch (  InterruptedException e1) {
+    e1.printStackTrace();
+  }
+  BufferedImage image=new BufferedImage(200,200,BufferedImage.TYPE_INT_RGB);
+  Graphics drawable=image.getGraphics();
+  drawable.setColor(Color.lightGray);
+  drawable.fillRect(0,0,200,200);
+  drawable.setColor(Color.yellow);
+  drawable.fillOval(25,25,150,150);
+  drawable.setColor(Color.blue);
+  drawable.drawRect(0,0,199,199);
+  drawable.setColor(Color.black);
+  drawable.drawString("Tex",75,100);
+  try {
+    ByteArrayOutputStream imagebuffer=new ByteArrayOutputStream();
+    ImageIO.write(image,"png",imagebuffer);
+    ByteArrayInputStream istream=new ByteArrayInputStream(imagebuffer.toByteArray());
+    new DownloadStream(istream,null,null).writeResponse(request,response);
+    return true;
+  }
+ catch (  IOException e) {
+    return false;
+  }
+}

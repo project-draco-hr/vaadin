@@ -1,0 +1,19 @@
+{
+  PrintWriter printWriter=null;
+  printWriter=context.tryCreate(logger,packageName,className);
+  if (printWriter == null) {
+    return;
+  }
+  logger.log(Type.INFO,"Detecting available criteria ...");
+  Date date=new Date();
+  ClassSourceFileComposerFactory composer=null;
+  composer=new ClassSourceFileComposerFactory(packageName,className);
+  composer.addImport("com.google.gwt.core.client.GWT");
+  composer.setSuperclass("com.vaadin.client.ui.dd.VAcceptCriterionFactory");
+  SourceWriter sourceWriter=composer.createSourceWriter(context,printWriter);
+  generateInstantiatorMethod(sourceWriter,context,logger);
+  sourceWriter.outdent();
+  sourceWriter.println("}");
+  context.commit(logger,printWriter);
+  logger.log(Type.INFO,"Done. (" + (new Date().getTime() - date.getTime()) / 1000 + "seconds)");
+}

@@ -1,0 +1,18 @@
+{
+  if (resource instanceof ConnectorResource) {
+    if (!(ownerConnector instanceof LegacyComponent)) {
+      throw new IllegalArgumentException("A normal ConnectorResource can only be registered for legacy components.");
+    }
+    ConnectorResource connectorResource=(ConnectorResource)resource;
+    if (!legacyResourceKeys.containsKey(resource)) {
+      String uri=LEGACY_TYPE + '/' + Integer.toString(nextLegacyId++);
+      String filename=connectorResource.getFilename();
+      if (filename != null && !filename.isEmpty()) {
+        uri+='/' + filename;
+      }
+      legacyResourceKeys.put(connectorResource,uri);
+      legacyResources.put(uri,connectorResource);
+      registerResourceUsage(connectorResource,ownerConnector);
+    }
+  }
+}

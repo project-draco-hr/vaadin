@@ -1,0 +1,90 @@
+{
+  boolean wasPlacedAfterComponent=placedAfterComponent;
+  placedAfterComponent=true;
+  String style=CLASSNAME;
+  if (owner.getState().hasStyles()) {
+    for (    String customStyle : owner.getState().getStyles()) {
+      style+=" " + CLASSNAME + "-"+ customStyle;
+    }
+  }
+  if (!owner.isEnabled()) {
+    style+=" " + ApplicationConnection.DISABLED_CLASSNAME;
+  }
+  setStyleName(style);
+  boolean hasIcon=owner.getState().resources.containsKey(ComponentConstants.ICON_RESOURCE);
+  boolean showRequired=false;
+  boolean showError=owner.getState().getErrorMessage() != null;
+  if (owner.getState() instanceof AbstractFieldState) {
+    AbstractFieldState abstractFieldState=(AbstractFieldState)owner.getState();
+    showError=showError && !abstractFieldState.isHideErrors();
+  }
+  if (owner instanceof AbstractFieldConnector) {
+    showRequired=((AbstractFieldConnector)owner).isRequired();
+  }
+  if (hasIcon) {
+    if (icon == null) {
+      icon=new Icon(client);
+      icon.setWidth("0");
+      icon.setHeight("0");
+      DOM.insertChild(getElement(),icon.getElement(),getInsertPosition(InsertPosition.ICON));
+    }
+    placedAfterComponent=false;
+    icon.setUri(owner.getState().resources.get(ComponentConstants.ICON_RESOURCE).getURL());
+  }
+ else   if (icon != null) {
+    DOM.removeChild(getElement(),icon.getElement());
+    icon=null;
+  }
+  if (owner.getState().getCaption() != null) {
+    if (captionText == null) {
+      captionText=DOM.createDiv();
+      captionText.setClassName("v-captiontext");
+      DOM.insertChild(getElement(),captionText,getInsertPosition(InsertPosition.CAPTION));
+    }
+    String c=owner.getState().getCaption();
+    placedAfterComponent=false;
+    if (c == null || c.trim().equals("")) {
+      if (!hasIcon && !showRequired && !showError) {
+        captionText.setInnerHTML("&nbsp;");
+      }
+    }
+ else {
+      DOM.setInnerText(captionText,c);
+    }
+  }
+ else   if (captionText != null) {
+    DOM.removeChild(getElement(),captionText);
+    captionText=null;
+  }
+  if (owner.getState().hasDescription() && captionText != null) {
+    addStyleDependentName("hasdescription");
+  }
+ else {
+    removeStyleDependentName("hasdescription");
+  }
+  if (showRequired) {
+    if (requiredFieldIndicator == null) {
+      requiredFieldIndicator=DOM.createDiv();
+      requiredFieldIndicator.setClassName("v-required-field-indicator");
+      DOM.setInnerText(requiredFieldIndicator,"*");
+      DOM.insertChild(getElement(),requiredFieldIndicator,getInsertPosition(InsertPosition.REQUIRED));
+    }
+  }
+ else   if (requiredFieldIndicator != null) {
+    DOM.removeChild(getElement(),requiredFieldIndicator);
+    requiredFieldIndicator=null;
+  }
+  if (showError) {
+    if (errorIndicatorElement == null) {
+      errorIndicatorElement=DOM.createDiv();
+      DOM.setInnerHTML(errorIndicatorElement,"&nbsp;");
+      DOM.setElementProperty(errorIndicatorElement,"className","v-errorindicator");
+      DOM.insertChild(getElement(),errorIndicatorElement,getInsertPosition(InsertPosition.ERROR));
+    }
+  }
+ else   if (errorIndicatorElement != null) {
+    getElement().removeChild(errorIndicatorElement);
+    errorIndicatorElement=null;
+  }
+  return (wasPlacedAfterComponent != placedAfterComponent);
+}
