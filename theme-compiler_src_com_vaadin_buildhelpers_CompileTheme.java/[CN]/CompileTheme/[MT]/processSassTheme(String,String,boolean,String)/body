@@ -1,14 +1,15 @@
 {
   StringBuffer cssHeader=new StringBuffer();
-  if (version == null) {
-    version="9.9.9.INTERNAL-DEBUG-BUILD";
-  }
   version=version.replaceAll("\\.","_");
   cssHeader.append(".v-theme-version:after {content:\"" + version + "\";}\n");
   cssHeader.append(".v-theme-version-" + version + " {display: none;}\n");
-  String stylesCssDir=THEME_DIR + themeName + "/";
+  String stylesCssDir=themeFolder + File.separator + themeName+ File.separator;
   String stylesCssName=stylesCssDir + "styles.css";
-  ScssStylesheet scss=ScssStylesheet.get(stylesCssDir + "styles.scss");
+  String sassFile=stylesCssDir + "styles.scss";
+  ScssStylesheet scss=ScssStylesheet.get(sassFile);
+  if (scss == null) {
+    throw new IllegalArgumentException("SASS file: " + sassFile + " not found");
+  }
   scss.compile();
   BufferedWriter out=new BufferedWriter(new FileWriter(stylesCssName));
   out.write(cssHeader.toString());
@@ -16,7 +17,7 @@
   out.close();
   System.out.println("Compiled CSS to " + stylesCssName + " ("+ scss.toString().length()+ " bytes)");
   if (useSmartSprites) {
-    createSprites(themeName);
+    createSprites(themeFolder,themeName);
     System.out.println("Used SmartSprites to create sprites");
     File oldCss=new File(stylesCssName);
     oldCss.delete();
