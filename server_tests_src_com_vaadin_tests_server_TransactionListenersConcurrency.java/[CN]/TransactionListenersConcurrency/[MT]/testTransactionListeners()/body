@@ -1,7 +1,7 @@
 {
   final List<Throwable> exceptions=new ArrayList<Throwable>();
   HttpSession session=createSession();
-  final WebApplicationContext context=WebApplicationContext.getApplicationContext(session);
+  final ServletApplicationContext context=ServletApplicationContext.getApplicationContext(session);
   List<Thread> threads=new ArrayList<Thread>();
   for (int i=0; i < 5; i++) {
     Thread t=new Thread(new Runnable(){
@@ -29,7 +29,7 @@
           e.printStackTrace();
         }
         try {
-          Method m=AbstractWebApplicationContext.class.getDeclaredMethod("startTransaction",Application.class,Object.class);
+          Method m=ApplicationContext.class.getDeclaredMethod("startTransaction",Application.class,Object.class);
           m.setAccessible(true);
           m.invoke(context,app,null);
         }
