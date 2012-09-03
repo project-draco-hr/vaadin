@@ -2,8 +2,9 @@
   LoggingClassLoader loggingClassLoader=new LoggingClassLoader();
   Application application=createStubApplication();
   application.start(new ApplicationStartEvent(null,createConfigurationMock(),null));
-  UI uI=application.getUIForRequest(createRequestMock(loggingClassLoader));
-  assertTrue(uI instanceof MyUI);
+  DefaultUIProvider uiProvider=new DefaultUIProvider();
+  Class<? extends UI> uiClass=uiProvider.getUIClass(application,createRequestMock(loggingClassLoader));
+  assertEquals(MyUI.class,uiClass);
   assertEquals(1,loggingClassLoader.requestedClasses.size());
   assertEquals(MyUI.class.getName(),loggingClassLoader.requestedClasses.get(0));
 }

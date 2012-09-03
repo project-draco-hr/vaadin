@@ -3,23 +3,23 @@
   getWidget().client=client;
   DOM.setElementProperty(getWidget().closeBox,"id",getConnectorId() + "_window_close");
   if (isRealUpdate(uidl)) {
-    if (getState().isModal() != getWidget().vaadinModality) {
+    if (getState().modal != getWidget().vaadinModality) {
       getWidget().setVaadinModality(!getWidget().vaadinModality);
     }
     if (!getWidget().isAttached()) {
       getWidget().setVisible(false);
       getWidget().show();
     }
-    if (getState().isResizable() != getWidget().resizable) {
-      getWidget().setResizable(getState().isResizable());
+    if (getState().resizable != getWidget().resizable) {
+      getWidget().setResizable(getState().resizable);
     }
-    getWidget().resizeLazy=getState().isResizeLazy();
-    getWidget().setDraggable(getState().isDraggable());
+    getWidget().resizeLazy=getState().resizeLazy;
+    getWidget().setDraggable(getState().draggable);
     String iconURL=null;
     if (getIcon() != null) {
       iconURL=getIcon();
     }
-    getWidget().setCaption(getState().getCaption(),iconURL);
+    getWidget().setCaption(getState().caption,iconURL);
   }
   getWidget().visibilityChangesDisabled=true;
   if (!isRealUpdate(uidl)) {
@@ -27,10 +27,10 @@
   }
   getWidget().visibilityChangesDisabled=false;
   clickEventHandler.handleEventHandlerRegistration();
-  getWidget().immediate=getState().isImmediate();
+  getWidget().immediate=getState().immediate;
   getWidget().setClosable(!isReadOnly());
-  int positionx=getState().getPositionX();
-  int positiony=getState().getPositionY();
+  int positionx=getState().positionX;
+  int positiony=getState().positionY;
   if (positionx >= 0 || positiony >= 0) {
     if (positionx < 0) {
       positionx=0;
@@ -50,9 +50,9 @@
       getWidget().shortcutHandler.updateActionMap(childUidl);
     }
   }
-  getWidget().contentPanel.setScrollPosition(getState().getScrollTop());
-  getWidget().contentPanel.setHorizontalScrollPosition(getState().getScrollLeft());
-  getWidget().centered=getState().isCentered();
+  getWidget().contentPanel.setScrollPosition(getState().scrollTop);
+  getWidget().contentPanel.setHorizontalScrollPosition(getState().scrollLeft);
+  getWidget().centered=getState().centered;
   getWidget().setVisible(true);
   if (getWidget().getOffsetWidth() > Window.getClientWidth()) {
     getWidget().setWidth(Window.getClientWidth() + "px");

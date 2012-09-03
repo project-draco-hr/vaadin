@@ -13,23 +13,26 @@
     filteringContainer=true;
     filterable.addContainerFilter(filter);
   }
-  Indexed indexed=(Indexed)container;
-  int indexToEnsureInView=-1;
-  Object selection=getValue();
-  if (isScrollToSelectedItem() && !optionRequest && selection != null) {
-    indexToEnsureInView=indexed.indexOfId(selection);
+  try {
+    Indexed indexed=(Indexed)container;
+    int indexToEnsureInView=-1;
+    Object selection=getValue();
+    if (isScrollToSelectedItem() && !optionRequest && selection != null) {
+      indexToEnsureInView=indexed.indexOfId(selection);
+    }
+    filteredSize=container.size();
+    currentPage=adjustCurrentPage(currentPage,needNullSelectOption,indexToEnsureInView,filteredSize);
+    int first=getFirstItemIndexOnCurrentPage(needNullSelectOption,filteredSize);
+    int last=getLastItemIndexOnCurrentPage(needNullSelectOption,filteredSize,first);
+    int lastItemToFetch=Math.min(last,filteredSize - 1);
+    int nrOfItemsToFetch=(lastItemToFetch + 1) - first;
+    List<?> options=indexed.getItemIds(first,nrOfItemsToFetch);
+    return options;
   }
-  filteredSize=container.size();
-  currentPage=adjustCurrentPage(currentPage,needNullSelectOption,indexToEnsureInView,filteredSize);
-  int first=getFirstItemIndexOnCurrentPage(needNullSelectOption,filteredSize);
-  int last=getLastItemIndexOnCurrentPage(needNullSelectOption,filteredSize,first);
-  List<Object> options=new ArrayList<Object>();
-  for (int i=first; i <= last && i < filteredSize; ++i) {
-    options.add(indexed.getIdByIndex(i));
+  finally {
+    if (filter != null) {
+      filterable.removeContainerFilter(filter);
+      filteringContainer=false;
+    }
   }
-  if (filter != null) {
-    filterable.removeContainerFilter(filter);
-    filteringContainer=false;
-  }
-  return options;
 }

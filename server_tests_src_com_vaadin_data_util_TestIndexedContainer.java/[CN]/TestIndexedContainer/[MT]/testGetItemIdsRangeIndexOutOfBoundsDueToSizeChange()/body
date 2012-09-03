@@ -1,0 +1,20 @@
+{
+  IndexedContainer ic=new IndexedContainer();
+  ic.addItem(new Object());
+  try {
+    ic.getItemIds(0,10);
+    fail("Container returned items when the range was >> container size");
+  }
+ catch (  RangeOutOfContainerBoundsException e) {
+    assertTrue(e.isAdditionalParametersSet());
+    assertEquals(0,e.getStartIndex());
+    assertEquals(10,e.getNumberOfIds());
+    assertEquals(1,e.getContainerCurrentSize());
+  }
+catch (  IndexOutOfBoundsException e) {
+    fail("Container threw wrong exception when the range exceeded container size... ");
+  }
+catch (  Exception e) {
+    fail("Container threw unspecified exception when fetching a range of items and the range started from -1");
+  }
+}

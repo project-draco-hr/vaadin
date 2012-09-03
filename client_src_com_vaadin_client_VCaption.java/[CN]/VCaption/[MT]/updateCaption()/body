@@ -2,8 +2,8 @@
   boolean wasPlacedAfterComponent=placedAfterComponent;
   placedAfterComponent=true;
   String style=CLASSNAME;
-  if (owner.getState().hasStyles()) {
-    for (    String customStyle : owner.getState().getStyles()) {
+  if (ComponentStateUtil.hasStyles(owner.getState())) {
+    for (    String customStyle : owner.getState().styles) {
       style+=" " + CLASSNAME + "-"+ customStyle;
     }
   }
@@ -13,10 +13,10 @@
   setStyleName(style);
   boolean hasIcon=owner.getState().resources.containsKey(ComponentConstants.ICON_RESOURCE);
   boolean showRequired=false;
-  boolean showError=owner.getState().getErrorMessage() != null;
+  boolean showError=owner.getState().errorMessage != null;
   if (owner.getState() instanceof AbstractFieldState) {
     AbstractFieldState abstractFieldState=(AbstractFieldState)owner.getState();
-    showError=showError && !abstractFieldState.isHideErrors();
+    showError=showError && !abstractFieldState.hideErrors;
   }
   if (owner instanceof AbstractFieldConnector) {
     showRequired=((AbstractFieldConnector)owner).isRequired();
@@ -35,13 +35,13 @@
     DOM.removeChild(getElement(),icon.getElement());
     icon=null;
   }
-  if (owner.getState().getCaption() != null) {
+  if (owner.getState().caption != null) {
     if (captionText == null) {
       captionText=DOM.createDiv();
       captionText.setClassName("v-captiontext");
       DOM.insertChild(getElement(),captionText,getInsertPosition(InsertPosition.CAPTION));
     }
-    String c=owner.getState().getCaption();
+    String c=owner.getState().caption;
     placedAfterComponent=false;
     if (c == null || c.trim().equals("")) {
       if (!hasIcon && !showRequired && !showError) {
@@ -56,7 +56,7 @@
     DOM.removeChild(getElement(),captionText);
     captionText=null;
   }
-  if (owner.getState().hasDescription() && captionText != null) {
+  if (ComponentStateUtil.hasDescription(owner.getState()) && captionText != null) {
     addStyleDependentName("hasdescription");
   }
  else {

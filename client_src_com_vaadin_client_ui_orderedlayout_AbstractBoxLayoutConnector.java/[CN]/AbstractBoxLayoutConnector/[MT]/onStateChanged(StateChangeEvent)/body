@@ -1,15 +1,15 @@
 {
   super.onStateChanged(stateChangeEvent);
   clickEventHandler.handleEventHandlerRegistration();
-  getWidget().setMargin(new MarginInfo(getState().getMarginsBitmask()));
-  getWidget().setSpacing(getState().isSpacing());
+  getWidget().setMargin(new MarginInfo(getState().marginsBitmask));
+  getWidget().setSpacing(getState().spacing);
   hasExpandRatio.clear();
   hasVerticalAlignment.clear();
   hasRelativeHeight.clear();
   needsMeasure.clear();
   boolean equalExpandRatio=getWidget().vertical ? !isUndefinedHeight() : !isUndefinedWidth();
   for (  ComponentConnector child : getChildComponents()) {
-    double expandRatio=getState().getChildData().get(child).getExpandRatio();
+    double expandRatio=getState().childData.get(child).expandRatio;
     if (expandRatio > 0) {
       equalExpandRatio=false;
       break;
@@ -17,9 +17,9 @@
   }
   for (  ComponentConnector child : getChildComponents()) {
     Slot slot=getWidget().getSlot(child);
-    AlignmentInfo alignment=new AlignmentInfo(getState().getChildData().get(child).getAlignmentBitmask());
+    AlignmentInfo alignment=new AlignmentInfo(getState().childData.get(child).alignmentBitmask);
     slot.setAlignment(alignment);
-    double expandRatio=getState().getChildData().get(child).getExpandRatio();
+    double expandRatio=getState().childData.get(child).expandRatio;
     if (equalExpandRatio) {
       expandRatio=1;
     }
