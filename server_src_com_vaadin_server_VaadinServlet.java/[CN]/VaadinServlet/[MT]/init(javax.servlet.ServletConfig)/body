@@ -1,0 +1,37 @@
+{
+  super.init(servletConfig);
+  Properties applicationProperties=new Properties();
+  final ServletContext context=servletConfig.getServletContext();
+  for (final Enumeration<String> e=context.getInitParameterNames(); e.hasMoreElements(); ) {
+    final String name=e.nextElement();
+    applicationProperties.setProperty(name,context.getInitParameter(name));
+  }
+  for (final Enumeration<String> e=servletConfig.getInitParameterNames(); e.hasMoreElements(); ) {
+    final String name=e.nextElement();
+    applicationProperties.setProperty(name,servletConfig.getInitParameter(name));
+  }
+  deploymentConfiguration=new AbstractDeploymentConfiguration(getClass(),applicationProperties){
+    @Override public String getStaticFileLocation(    WrappedRequest request){
+      HttpServletRequest servletRequest=WrappedHttpServletRequest.cast(request);
+      return VaadinServlet.this.getStaticFilesLocation(servletRequest);
+    }
+    @Override public String getConfiguredWidgetset(    WrappedRequest request){
+      return getApplicationOrSystemProperty(VaadinServlet.PARAMETER_WIDGETSET,VaadinServlet.DEFAULT_WIDGETSET);
+    }
+    @Override public String getConfiguredTheme(    WrappedRequest request){
+      return VaadinServlet.getDefaultTheme();
+    }
+    @Override public boolean isStandalone(    WrappedRequest request){
+      return true;
+    }
+    @Override public String getMimeType(    String resourceName){
+      return getServletContext().getMimeType(resourceName);
+    }
+    @Override public SystemMessages getSystemMessages(){
+      return VaadinServlet.this.getSystemMessages();
+    }
+  }
+;
+  addonContext=new AddonContext(deploymentConfiguration);
+  addonContext.init();
+}
