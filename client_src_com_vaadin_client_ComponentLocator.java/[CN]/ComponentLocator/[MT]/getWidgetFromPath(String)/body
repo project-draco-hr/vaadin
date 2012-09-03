@@ -43,7 +43,7 @@
       if (w instanceof VBoxLayout && "ChildComponentContainer".equals(widgetClassName)) {
         widgetClassName="VBoxLayout$Slot";
       }
-      if ((w instanceof VMeasuringOrderedLayout || w instanceof VGridLayout) && "ChildComponentContainer".equals(widgetClassName) && i + 1 < parts.length) {
+      if ((w instanceof VMeasuringOrderedLayout || w instanceof VBoxLayout || w instanceof VGridLayout) && "ChildComponentContainer".equals(widgetClassName) && i + 1 < parts.length) {
         HasWidgets layout=(HasWidgets)w;
         String nextPart=parts[i + 1];
         String[] nextSplit=nextPart.split("\\[",2);
@@ -86,6 +86,10 @@
       while (iterator.hasNext()) {
         Widget child=iterator.next();
         String simpleName2=Util.getSimpleName(child);
+        if (simpleName2.equals("VBoxLayout$Slot")) {
+          child=((SimplePanel)child).getWidget();
+          simpleName2=Util.getSimpleName(child);
+        }
         if (widgetClassName.equals(simpleName2)) {
           if (widgetPosition == 0) {
             w=child;
