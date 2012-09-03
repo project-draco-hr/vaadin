@@ -24,13 +24,13 @@
     @Override protected JSONObject getDefaultParameters(    BootstrapContext context) throws JSONException {
       JSONObject defaults=super.getDefaultParameters(context);
       ResourceURL portletResourceUrl=getRenderResponse(context).createResourceURL();
-      portletResourceUrl.setResourceID(AbstractApplicationPortlet.RESOURCE_URL_ID);
+      portletResourceUrl.setResourceID(VaadinPortlet.RESOURCE_URL_ID);
       defaults.put(ApplicationConstants.PORTLET_RESOUCE_URL_BASE,portletResourceUrl.toString());
       defaults.put("pathInfo","");
       return defaults;
     }
     @Override protected void appendMainScriptTagContents(    BootstrapContext context,    StringBuilder builder) throws JSONException, IOException {
-      String portalTheme=WrappedPortletRequest.cast(context.getRequest()).getPortalProperty(AbstractApplicationPortlet.PORTAL_PARAMETER_VAADIN_THEME);
+      String portalTheme=WrappedPortletRequest.cast(context.getRequest()).getPortalProperty(VaadinPortlet.PORTAL_PARAMETER_VAADIN_THEME);
       if (portalTheme != null && !portalTheme.equals(context.getThemeName())) {
         String portalThemeUri=getThemeUri(context,portalTheme);
         builder.append("vaadin.loadTheme('" + portalThemeUri + "');");
@@ -39,7 +39,7 @@
     }
     @Override protected String getMainDivStyle(    BootstrapContext context){
       DeploymentConfiguration deploymentConfiguration=context.getRequest().getDeploymentConfiguration();
-      return deploymentConfiguration.getApplicationOrSystemProperty(AbstractApplicationPortlet.PORTLET_PARAMETER_STYLE,null);
+      return deploymentConfiguration.getApplicationOrSystemProperty(VaadinPortlet.PORTLET_PARAMETER_STYLE,null);
     }
     @Override protected JSONObject getApplicationParameters(    BootstrapContext context) throws JSONException, PaintException {
       JSONObject parameters=super.getApplicationParameters(context);
