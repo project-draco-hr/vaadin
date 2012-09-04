@@ -1,10 +1,11 @@
 {
+  HttpServletRequest servletRequest=WrappedHttpServletRequest.cast(request);
   String staticFileLocation;
-  staticFileLocation=getDeploymentConfiguration().getApplicationOrSystemProperty(PARAMETER_VAADIN_RESOURCES,null);
+  staticFileLocation=getApplicationOrSystemProperty(PARAMETER_VAADIN_RESOURCES,null);
   if (staticFileLocation != null) {
     return staticFileLocation;
   }
-  String ctxPath=request.getContextPath();
+  String ctxPath=servletRequest.getContextPath();
   if (ctxPath.length() == 0 && request.getAttribute("javax.servlet.include.context_path") != null) {
     ctxPath=(String)request.getAttribute("javax.servlet.include.context_path");
   }
