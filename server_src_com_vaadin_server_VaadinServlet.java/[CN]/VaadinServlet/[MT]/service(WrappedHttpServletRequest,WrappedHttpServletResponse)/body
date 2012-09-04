@@ -1,7 +1,8 @@
 {
   RequestTimer requestTimer=new RequestTimer();
   requestTimer.start();
-  currentRequest.set(request);
+  CurrentInstance.set(WrappedResponse.class,response);
+  CurrentInstance.set(WrappedRequest.class,request);
   AbstractApplicationServletWrapper servletWrapper=new AbstractApplicationServletWrapper(this);
   RequestType requestType=getRequestType(request);
   if (!ensureCookiesEnabled(requestType,request,response)) {
@@ -93,9 +94,7 @@ catch (  final Throwable e) {
         }
       }
   finally {
-        UI.setCurrent(null);
-        Application.setCurrent(null);
-        currentRequest.set(null);
+        CurrentInstance.clearAll();
         HttpSession session=request.getSession(false);
         if (session != null) {
           requestTimer.stop(getApplicationContext(session));

@@ -4,7 +4,8 @@
   AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
   WrappedPortletRequest wrappedRequest=createWrappedRequest(request);
   WrappedPortletResponse wrappedResponse=new WrappedPortletResponse(response,getDeploymentConfiguration());
-  currentResponse.set(wrappedResponse);
+  CurrentInstance.set(WrappedRequest.class,wrappedRequest);
+  CurrentInstance.set(WrappedResponse.class,wrappedResponse);
   RequestType requestType=getRequestType(wrappedRequest);
   if (requestType == RequestType.UNKNOWN) {
     handleUnknownRequest(request,response);
@@ -125,9 +126,7 @@ if (requestStarted) {
 }
 }
   finally {
-UI.setCurrent(null);
-Application.setCurrent(null);
-currentResponse.set(null);
+CurrentInstance.clearAll();
 PortletSession session=request.getPortletSession(false);
 if (session != null) {
 requestTimer.stop(getApplicationContext(session));
