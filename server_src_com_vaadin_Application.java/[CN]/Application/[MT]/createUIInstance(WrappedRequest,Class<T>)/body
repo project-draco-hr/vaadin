@@ -1,18 +1,4 @@
 {
-  int providersSize=uiProviders.size();
-  if (providersSize == 0) {
-    throw new IllegalStateException("There are no UI providers");
-  }
-  for (int i=providersSize - 1; i >= 0; i--) {
-    UIProvider provider=uiProviders.get(i);
-    Class<? extends UI> providerClass=provider.getUIClass(this,request);
-    if (providerClass != null) {
-      if (providerClass != uiClass) {
-        getLogger().warning("Mismatching UI classes. Expected " + uiClass + " but got "+ providerClass+ " from "+ provider);
-        continue;
-      }
-      return uiClass.cast(provider.createInstance(this,uiClass,request));
-    }
-  }
-  throw new RuntimeException("No UI provider created an UI instance for request");
+  UIProvider uiProvider=getUiProvider(request,uiClass);
+  return uiClass.cast(uiProvider.createInstance(this,uiClass,request));
 }

@@ -1,0 +1,22 @@
+{
+  int providersSize=uiProviders.size();
+  if (providersSize == 0) {
+    throw new IllegalStateException("There are no UI providers");
+  }
+  for (int i=providersSize - 1; i >= 0; i--) {
+    UIProvider provider=uiProviders.get(i);
+    Class<? extends UI> providerClass=provider.getUIClass(this,request);
+    if (providerClass != null) {
+      if (uiClass == null) {
+        return provider;
+      }
+ else       if (providerClass == uiClass) {
+        return provider;
+      }
+ else {
+        getLogger().warning("Mismatching UI classes. Expected " + uiClass + " but got "+ providerClass+ " from "+ provider);
+      }
+    }
+  }
+  throw new RuntimeException("No UI provider found for request");
+}

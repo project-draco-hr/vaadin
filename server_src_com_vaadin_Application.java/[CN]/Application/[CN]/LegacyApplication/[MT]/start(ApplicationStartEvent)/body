@@ -1,0 +1,30 @@
+{
+  super.start(event);
+  addUIProvider(new AbstractUIProvider(){
+    @Override public Class<? extends UI> getUIClass(    Application application,    WrappedRequest request){
+      if (application == LegacyApplication.this) {
+        UI uiInstance=getUIInstance(request);
+        if (uiInstance != null) {
+          return uiInstance.getClass();
+        }
+      }
+      return null;
+    }
+    @Override public UI createInstance(    Application application,    Class<? extends UI> type,    WrappedRequest request){
+      return getUIInstance(request);
+    }
+    @Override public String getThemeForUI(    WrappedRequest request,    Class<? extends UI> uiClass){
+      return theme;
+    }
+    @Override public String getPageTitleForUI(    WrappedRequest request,    Class<? extends UI> uiClass){
+      UI uiInstance=getUIInstance(request);
+      if (uiInstance != null) {
+        return uiInstance.getCaption();
+      }
+ else {
+        return super.getPageTitleForUI(request,uiClass);
+      }
+    }
+  }
+);
+}

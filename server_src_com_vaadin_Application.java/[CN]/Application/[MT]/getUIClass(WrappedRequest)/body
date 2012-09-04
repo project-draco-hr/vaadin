@@ -1,14 +1,4 @@
 {
-  int providersSize=uiProviders.size();
-  if (providersSize == 0) {
-    throw new IllegalStateException("There are no UI providers");
-  }
-  for (int i=providersSize - 1; i >= 0; i--) {
-    UIProvider provider=uiProviders.get(i);
-    Class<? extends UI> uiClass=provider.getUIClass(this,request);
-    if (uiClass != null) {
-      return uiClass;
-    }
-  }
-  throw new RuntimeException("No UI provider returned an UI class for request");
+  UIProvider uiProvider=getUiProvider(request,null);
+  return uiProvider.getUIClass(this,request);
 }
