@@ -1,0 +1,32 @@
+{
+  uriFragmentUtility.addListener(new FragmentChangedListener(){
+    public void fragmentChanged(    FragmentChangedEvent source){
+      status.setValue(++i + " fragment events");
+      VerticalLayout layoutNew=(layoutCurrent == layout1 ? layout2 : layout1);
+      replaceComponent(layoutCurrent,layoutNew);
+      layoutCurrent=layoutNew;
+    }
+  }
+);
+  layout1.setCaption("Layout 1");
+  layout2.setCaption("Layout 2");
+  addComponent(layout1);
+  layoutCurrent=layout1;
+  status=new Label("0 fragment events");
+  setToF=new Button("Set fragment to F",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      uriFragmentUtility.setFragment("F");
+    }
+  }
+);
+  addOne=new Button("Append '1' to fragment",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      uriFragmentUtility.setFragment(uriFragmentUtility.getFragment() + "1");
+    }
+  }
+);
+  addComponent(status);
+  addComponent(setToF);
+  addComponent(addOne);
+  addComponent(uriFragmentUtility);
+}
