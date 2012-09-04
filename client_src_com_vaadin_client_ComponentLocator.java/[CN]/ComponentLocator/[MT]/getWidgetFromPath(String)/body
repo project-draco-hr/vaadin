@@ -37,9 +37,6 @@
       if ("VVerticalLayout".equals(widgetClassName) || "VHorizontalLayout".equals(widgetClassName)) {
         widgetClassName="VBoxLayout";
       }
-      if (w instanceof VBoxLayout && "ChildComponentContainer".equals(widgetClassName)) {
-        widgetClassName="VBoxLayout$Slot";
-      }
       if (w instanceof VTabsheetPanel && widgetPosition != 0) {
         widgetPosition=0;
       }
@@ -86,6 +83,10 @@
       while (iterator.hasNext()) {
         Widget child=iterator.next();
         String simpleName2=Util.getSimpleName(child);
+        if ("VBoxLayout$Slot".equals(simpleName2)) {
+          child=((SimplePanel)child).getWidget();
+          simpleName2=Util.getSimpleName(child);
+        }
         if (widgetClassName.equals(simpleName2)) {
           if (widgetPosition == 0) {
             w=child;
