@@ -22,7 +22,6 @@
   }
  else {
     Application application=null;
-    boolean transactionStarted=false;
     boolean requestStarted=false;
     boolean applicationRunning=false;
     try {
@@ -48,8 +47,6 @@
       }
       startApplication(request,application,applicationContext);
       applicationRunning=true;
-      applicationContext.startTransaction(application,request);
-      transactionStarted=true;
       UI uI=null;
 synchronized (application) {
         if (application.isRunning()) {
@@ -115,12 +112,6 @@ if (applicationRunning) {
 application.closeInactiveUIs();
 }
 try {
-if (transactionStarted) {
-((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
-}
-}
-  finally {
-try {
 if (requestStarted) {
 ((PortletRequestListener)application).onRequestEnd(request,response);
 }
@@ -130,7 +121,6 @@ CurrentInstance.clearAll();
 PortletSession session=request.getPortletSession(false);
 if (session != null) {
 requestTimer.stop(getApplicationContext(session));
-}
 }
 }
 }

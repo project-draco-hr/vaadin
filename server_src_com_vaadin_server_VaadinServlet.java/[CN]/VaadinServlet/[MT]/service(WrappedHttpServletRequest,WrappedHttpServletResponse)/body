@@ -13,7 +13,6 @@
     return;
   }
   Application application=null;
-  boolean transactionStarted=false;
   boolean requestStarted=false;
   boolean applicationRunning=false;
   try {
@@ -43,8 +42,6 @@
     }
     startApplication(request,application,webApplicationContext);
     applicationRunning=true;
-    webApplicationContext.startTransaction(application,request);
-    transactionStarted=true;
     if (requestType == RequestType.FILE_UPLOAD) {
       applicationManager.handleFileUpload(application,request,response);
       return;
@@ -83,22 +80,15 @@ catch (  final Throwable e) {
       application.closeInactiveUIs();
     }
     try {
-      if (transactionStarted) {
-        ((ServletApplicationContext)application.getContext()).endTransaction(application,request);
+      if (requestStarted) {
+        ((HttpServletRequestListener)application).onRequestEnd(request,response);
       }
     }
   finally {
-      try {
-        if (requestStarted) {
-          ((HttpServletRequestListener)application).onRequestEnd(request,response);
-        }
-      }
-  finally {
-        CurrentInstance.clearAll();
-        HttpSession session=request.getSession(false);
-        if (session != null) {
-          requestTimer.stop(getApplicationContext(session));
-        }
+      CurrentInstance.clearAll();
+      HttpSession session=request.getSession(false);
+      if (session != null) {
+        requestTimer.stop(getApplicationContext(session));
       }
     }
   }
