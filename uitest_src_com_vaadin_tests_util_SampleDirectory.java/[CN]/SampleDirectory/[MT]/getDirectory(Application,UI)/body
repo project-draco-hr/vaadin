@@ -2,12 +2,13 @@
   String errorMessage="Access to application " + "context base directory failed, " + "possible security constraint with Application "+ "Server or Servlet Container.<br />";
   File file=application.getContext().getBaseDirectory();
   if ((file == null) || (!file.canRead()) || (file.getAbsolutePath() == null)) {
-    if (application.getProperty("sampleDirectory") != null) {
-      file=new File(application.getProperty("sampleDirectory"));
+    String sampleDirProperty=application.getConfiguration().getInitParameters().getProperty("sampleDirectory");
+    if (sampleDirProperty != null) {
+      file=new File(sampleDirProperty);
       if ((file != null) && (file.canRead()) && (file.getAbsolutePath() != null)) {
         return file;
       }
-      errorMessage+="Failed also to access sample directory <b>[" + application.getProperty("sampleDirectory") + "]</b> defined in <b>sampleDirectory property</b>.";
+      errorMessage+="Failed also to access sample directory <b>[" + sampleDirProperty + "]</b> defined in <b>sampleDirectory property</b>.";
     }
  else {
       errorMessage+="<b>Note: </b>You can set this manually in " + "web.xml by defining " + "sampleDirectory property.";
