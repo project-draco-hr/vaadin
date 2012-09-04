@@ -2,7 +2,11 @@
   page.write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n");
   WebBrowser browser=getApplicationContext(request.getSession()).getBrowser();
   if (browser.isIE()) {
-    page.write("<meta http-equiv=\"X-UA-Compatible\" content=\"chrome=1\"/>\n");
+    String content="chrome=1";
+    if (browser.getBrowserMajorVersion() == 10) {
+      content="IE=9; " + content;
+    }
+    page.write("<meta http-equiv=\"X-UA-Compatible\" content=\"" + content + "\"/>\n");
   }
   page.write("<style type=\"text/css\">" + "html, body {height:100%;margin:0;}</style>");
   page.write("<link rel=\"shortcut icon\" type=\"image/vnd.microsoft.icon\" href=\"" + themeUri + "/favicon.ico\" />");
