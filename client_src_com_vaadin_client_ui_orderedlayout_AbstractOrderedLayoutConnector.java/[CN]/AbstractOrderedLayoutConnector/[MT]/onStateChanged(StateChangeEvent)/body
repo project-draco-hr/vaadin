@@ -1,15 +1,39 @@
 {
   super.onStateChanged(stateChangeEvent);
   clickEventHandler.handleEventHandlerRegistration();
-  VMeasuringOrderedLayout layout=getWidget();
+  getWidget().setMargin(new MarginInfo(getState().marginsBitmask));
+  getWidget().setSpacing(getState().spacing);
+  hasExpandRatio.clear();
+  hasVerticalAlignment.clear();
+  hasRelativeHeight.clear();
+  needsMeasure.clear();
+  boolean equalExpandRatio=getWidget().vertical ? !isUndefinedHeight() : !isUndefinedWidth();
   for (  ComponentConnector child : getChildComponents()) {
-    VLayoutSlot slot=layout.getSlotForChild(child.getWidget());
+    double expandRatio=getState().childData.get(child).expandRatio;
+    if (expandRatio > 0) {
+      equalExpandRatio=false;
+      break;
+    }
+  }
+  for (  ComponentConnector child : getChildComponents()) {
+    Slot slot=getWidget().getSlot(child.getWidget());
     AlignmentInfo alignment=new AlignmentInfo(getState().childData.get(child).alignmentBitmask);
     slot.setAlignment(alignment);
     double expandRatio=getState().childData.get(child).expandRatio;
+    if (equalExpandRatio) {
+      expandRatio=1;
+    }
+ else     if (expandRatio == 0) {
+      expandRatio=-1;
+    }
     slot.setExpandRatio(expandRatio);
+    if (alignment.isVerticalCenter() || alignment.isBottom()) {
+      hasVerticalAlignment.add(child);
+    }
+    if (expandRatio > 0) {
+      hasExpandRatio.add(child);
+    }
   }
-  layout.updateMarginStyleNames(new MarginInfo(getState().marginsBitmask));
-  layout.updateSpacingStyleName(getState().spacing);
-  getLayoutManager().setNeedsLayout(this);
+  updateAllSlotListeners();
+  updateLayoutHeight();
 }

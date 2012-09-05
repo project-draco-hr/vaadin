@@ -2,21 +2,37 @@
   super.onConnectorHierarchyChange(event);
   List<ComponentConnector> previousChildren=event.getOldChildren();
   int currentIndex=0;
-  VMeasuringOrderedLayout layout=getWidget();
+  VOrderedLayout layout=getWidget();
   for (  ComponentConnector child : getChildComponents()) {
-    Widget childWidget=child.getWidget();
-    VLayoutSlot slot=layout.getSlotForChild(childWidget);
-    if (childWidget.getParent() != layout) {
-      slot=new ComponentConnectorLayoutSlot(getWidget().getStylePrimaryName(),child,this);
+    Slot slot=layout.getSlot(child.getWidget());
+    if (slot.getParent() != layout) {
+      child.addStateChangeHandler(childStateChangeHandler);
     }
-    layout.addOrMove(slot,currentIndex++);
-    if (child.isRelativeWidth()) {
-      slot.getWrapperElement().getStyle().setWidth(100,Unit.PCT);
-    }
+    layout.addOrMoveSlot(slot,currentIndex++);
   }
   for (  ComponentConnector child : previousChildren) {
     if (child.getParent() != this) {
-      layout.removeSlotForWidget(child.getWidget());
+      Slot slot=layout.getSlot(child.getWidget());
+      hasVerticalAlignment.remove(child);
+      hasRelativeHeight.remove(child);
+      hasExpandRatio.remove(child);
+      needsMeasure.remove(child.getWidget().getElement());
+      childCaptionElementHeight.remove(child.getWidget().getElement());
+      getLayoutManager().removeElementResizeListener(child.getWidget().getElement(),childComponentResizeListener);
+      if (slot.hasCaption()) {
+        getLayoutManager().removeElementResizeListener(slot.getCaptionElement(),slotCaptionResizeListener);
+      }
+      if (slot.getSpacingElement() != null) {
+        getLayoutManager().removeElementResizeListener(slot.getSpacingElement(),spacingResizeListener);
+      }
+      child.removeStateChangeHandler(childStateChangeHandler);
+      layout.removeWidget(child.getWidget());
     }
+  }
+  if (needsExpand()) {
+    getWidget().updateExpand();
+  }
+ else {
+    getWidget().clearExpand();
   }
 }

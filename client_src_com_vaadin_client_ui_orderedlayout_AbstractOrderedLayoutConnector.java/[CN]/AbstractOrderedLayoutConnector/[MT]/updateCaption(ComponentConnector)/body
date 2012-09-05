@@ -1,17 +1,38 @@
 {
-  VMeasuringOrderedLayout layout=getWidget();
-  if (VCaption.isNeeded(component.getState())) {
-    VLayoutSlot layoutSlot=layout.getSlotForChild(component.getWidget());
-    VCaption caption=layoutSlot.getCaption();
-    if (caption == null) {
-      caption=new VCaption(component,getConnection());
-      Widget widget=component.getWidget();
-      layout.setCaption(widget,caption);
+  Slot slot=getWidget().getSlot(child.getWidget());
+  String caption=child.getState().caption;
+  URLReference iconUrl=child.getState().resources.get(ComponentConstants.ICON_RESOURCE);
+  String iconUrlString=iconUrl != null ? iconUrl.toString() : null;
+  List<String> styles=child.getState().styles;
+  String error=child.getState().errorMessage;
+  boolean showError=error != null;
+  if (child.getState() instanceof AbstractFieldState) {
+    AbstractFieldState abstractFieldState=(AbstractFieldState)child.getState();
+    showError=showError && !abstractFieldState.hideErrors;
+  }
+  boolean required=false;
+  if (child instanceof AbstractFieldConnector) {
+    required=((AbstractFieldConnector)child).isRequired();
+  }
+  boolean enabled=child.getState().enabled;
+  slot.setCaption(caption,iconUrlString,styles,error,showError,required,enabled);
+  slot.setRelativeWidth(child.isRelativeWidth());
+  slot.setRelativeHeight(child.isRelativeHeight());
+  if (slot.hasCaption()) {
+    CaptionPosition pos=slot.getCaptionPosition();
+    getLayoutManager().addElementResizeListener(slot.getCaptionElement(),slotCaptionResizeListener);
+    if (child.isRelativeHeight() && (pos == CaptionPosition.TOP || pos == CaptionPosition.BOTTOM)) {
+      getWidget().updateCaptionOffset(slot.getCaptionElement());
     }
-    caption.updateCaption();
+ else     if (child.isRelativeWidth() && (pos == CaptionPosition.LEFT || pos == CaptionPosition.RIGHT)) {
+      getWidget().updateCaptionOffset(slot.getCaptionElement());
+    }
   }
  else {
-    layout.setCaption(component.getWidget(),null);
-    getLayoutManager().setNeedsLayout(this);
+    childCaptionElementHeight.remove(child.getWidget().getElement());
+  }
+  updateLayoutHeight();
+  if (needsExpand()) {
+    getWidget().updateExpand();
   }
 }

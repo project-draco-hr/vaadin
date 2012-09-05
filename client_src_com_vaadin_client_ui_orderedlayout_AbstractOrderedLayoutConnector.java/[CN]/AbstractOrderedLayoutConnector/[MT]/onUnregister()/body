@@ -1,9 +1,13 @@
 {
-  LayoutManager lm=getLayoutManager();
-  VMeasuringOrderedLayout layout=getWidget();
-  lm.unregisterDependency(this,layout.spacingMeasureElement);
   for (  ComponentConnector child : getChildComponents()) {
-    VLayoutSlot slot=layout.getSlotForChild(child.getWidget());
-    slot.setCaption(null);
+    Slot slot=getWidget().getSlot(child.getWidget());
+    if (slot.hasCaption()) {
+      rmeoveResizeListener(slot.getCaptionElement(),slotCaptionResizeListener);
+    }
+    if (slot.getSpacingElement() != null) {
+      rmeoveResizeListener(slot.getSpacingElement(),spacingResizeListener);
+    }
+    rmeoveResizeListener(slot.getWidget().getElement(),childComponentResizeListener);
   }
+  super.onUnregister();
 }
