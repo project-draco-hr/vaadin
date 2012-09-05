@@ -22,7 +22,6 @@
   }
  else {
     Application application=null;
-    boolean requestStarted=false;
     boolean applicationRunning=false;
     try {
       application=findApplicationInstance(wrappedRequest,requestType);
@@ -41,10 +40,6 @@
         return;
       }
       applicationContext.getBrowser().updateRequestDetails(wrappedRequest);
-      if (application instanceof PortletRequestListener) {
-        ((PortletRequestListener)application).onRequestStart(request,response);
-        requestStarted=true;
-      }
       startApplication(request,application,applicationContext);
       applicationRunning=true;
       UI uI=null;
@@ -111,17 +106,10 @@ handleServiceException(wrappedRequest,wrappedResponse,application,e);
 if (applicationRunning) {
 application.closeInactiveUIs();
 }
-try {
-if (requestStarted) {
-((PortletRequestListener)application).onRequestEnd(request,response);
-}
-}
-  finally {
 CurrentInstance.clearAll();
 PortletSession session=request.getPortletSession(false);
 if (session != null) {
 requestTimer.stop(getApplicationContext(session));
-}
 }
 }
 }

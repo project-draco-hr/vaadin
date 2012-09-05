@@ -13,7 +13,6 @@
     return;
   }
   Application application=null;
-  boolean requestStarted=false;
   boolean applicationRunning=false;
   try {
     if (requestType == RequestType.UIDL && request.getParameterMap().containsKey(ApplicationConstants.PARAM_UNLOADBURST) && request.getContentLength() < 1 && getExistingApplication(request,false) == null) {
@@ -36,10 +35,6 @@
       return;
     }
     webApplicationContext.getBrowser().updateRequestDetails(request);
-    if (application instanceof HttpServletRequestListener) {
-      ((HttpServletRequestListener)application).onRequestStart(request,response);
-      requestStarted=true;
-    }
     startApplication(request,application,webApplicationContext);
     applicationRunning=true;
     if (requestType == RequestType.FILE_UPLOAD) {
@@ -79,17 +74,10 @@ catch (  final Throwable e) {
     if (applicationRunning) {
       application.closeInactiveUIs();
     }
-    try {
-      if (requestStarted) {
-        ((HttpServletRequestListener)application).onRequestEnd(request,response);
-      }
-    }
-  finally {
-      CurrentInstance.clearAll();
-      HttpSession session=request.getSession(false);
-      if (session != null) {
-        requestTimer.stop(getApplicationContext(session));
-      }
+    CurrentInstance.clearAll();
+    HttpSession session=request.getSession(false);
+    if (session != null) {
+      requestTimer.stop(getApplicationContext(session));
     }
   }
 }
