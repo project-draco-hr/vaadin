@@ -1,0 +1,35 @@
+{
+  try {
+    final Class<?> classToRun=getClassToRun();
+    if (UI.class.isAssignableFrom(classToRun)) {
+      Application application=new Application();
+      application.addUIProvider(new AbstractUIProvider(){
+        @Override public Class<? extends UI> getUIClass(        Application application,        WrappedRequest request){
+          return (Class<? extends UI>)classToRun;
+        }
+      }
+);
+      return application;
+    }
+ else     if (LegacyApplication.class.isAssignableFrom(classToRun)) {
+      return super.createApplication(request);
+    }
+ else     if (UIProvider.class.isAssignableFrom(classToRun)) {
+      Application application=new Application();
+      application.addUIProvider((UIProvider)classToRun.newInstance());
+      return application;
+    }
+ else {
+      throw new ServletException(classToRun.getCanonicalName() + " is neither an Application nor a UI");
+    }
+  }
+ catch (  final IllegalAccessException e) {
+    throw new ServletException(e);
+  }
+catch (  final InstantiationException e) {
+    throw new ServletException(e);
+  }
+catch (  final ClassNotFoundException e) {
+    throw new ServletException(new InstantiationException("Failed to load application class: " + getApplicationRunnerApplicationClassName(request)));
+  }
+}

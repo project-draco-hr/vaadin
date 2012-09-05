@@ -1,6 +1,10 @@
 {
-  Application newApplication=getNewApplication(request);
-  final ServletApplicationContext context=getApplicationContext(request.getSession());
-  context.setApplication(newApplication,createCommunicationManager(newApplication));
+  Application newApplication=new Application();
+  try {
+    ServletPortletHelper.initDefaultUIProvider(newApplication,getDeploymentConfiguration());
+  }
+ catch (  ApplicationClassException e) {
+    throw new ServletException(e);
+  }
   return newApplication;
 }

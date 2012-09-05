@@ -1,5 +1,11 @@
 {
-  UIsInMultipleTabs application=(UIsInMultipleTabs)getApplication();
-  String message="This is UI number " + ++application.numberOfUIsOpened;
+  Application application=Application.getCurrent();
+  AtomicInteger count=numberOfUIsOpened.get(application);
+  if (count == null) {
+    numberOfUIsOpened.putIfAbsent(application,new AtomicInteger());
+    count=numberOfUIsOpened.get(application);
+  }
+  int currentCount=count.incrementAndGet();
+  String message="This is UI number " + currentCount;
   addComponent(new Label(message));
 }
