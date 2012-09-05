@@ -3,14 +3,13 @@
   if (session == null) {
     throw new SessionExpiredException();
   }
-  ServletApplicationContext context=getApplicationContext(session);
-  Application sessionApplication=context.getApplication();
+  Application sessionApplication=getApplicationContext(session);
   if (sessionApplication == null) {
     return null;
   }
-  if (sessionApplication.isRunning()) {
-    return sessionApplication;
+  if (!sessionApplication.isRunning()) {
+    sessionApplication.removeFromSession();
+    return null;
   }
-  getApplicationContext(session).removeApplication();
-  return null;
+  return sessionApplication;
 }

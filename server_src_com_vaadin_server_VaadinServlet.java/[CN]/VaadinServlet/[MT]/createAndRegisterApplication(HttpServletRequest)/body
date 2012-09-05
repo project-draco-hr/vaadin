@@ -6,7 +6,11 @@
  catch (  ApplicationClassException e) {
     throw new ServletException(e);
   }
-  final ServletApplicationContext context=getApplicationContext(request.getSession());
-  context.setApplication(newApplication,createCommunicationManager(newApplication));
+  newApplication.storeInSession(new WrappedHttpSession(request.getSession()));
+  final URL applicationUrl=getApplicationUrl(request);
+  Locale locale=request.getLocale();
+  newApplication.setLocale(locale);
+  newApplication.start(new ApplicationStartEvent(applicationUrl,getDeploymentConfiguration().getApplicationConfiguration(),createCommunicationManager(newApplication)));
+  addonContext.fireApplicationStarted(newApplication);
   return newApplication;
 }

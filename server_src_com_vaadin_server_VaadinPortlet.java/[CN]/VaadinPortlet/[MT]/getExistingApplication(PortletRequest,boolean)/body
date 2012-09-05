@@ -3,14 +3,13 @@
   if (session == null) {
     throw new SessionExpiredException();
   }
-  PortletApplicationContext2 context=getApplicationContext(session);
-  Application application=context.getApplication();
+  Application application=Application.getForSession(new WrappedPortletSession(session));
   if (application == null) {
     return null;
   }
-  if (application.isRunning()) {
-    return application;
+  if (!application.isRunning()) {
+    application.removeFromSession();
+    return null;
   }
-  context.removeApplication();
-  return null;
+  return application;
 }

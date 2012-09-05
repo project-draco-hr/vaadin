@@ -22,8 +22,8 @@
     ObjectInputStream ois;
     try {
       ois=new ObjectInputStream(bais);
-      ApplicationContext applicationContext=(ApplicationContext)ois.readObject();
-      session.setAttribute(ServletApplicationContext.class.getName(),applicationContext);
+      Application applicationContext=(Application)ois.readObject();
+      applicationContext.storeInSession(new WrappedHttpSession(session));
     }
  catch (    IOException e) {
       getLogger().log(Level.WARNING,"Could not de-serialize ApplicationContext for " + session.getId() + " A new one will be created. ",e);

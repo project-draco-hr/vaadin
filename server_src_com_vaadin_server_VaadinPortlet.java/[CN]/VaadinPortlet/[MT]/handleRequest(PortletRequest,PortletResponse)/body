@@ -29,7 +29,7 @@
         return;
       }
       Application.setCurrent(application);
-      PortletApplicationContext2 applicationContext=getApplicationContext(request.getPortletSession());
+      PortletApplicationContext2 applicationContext=(PortletApplicationContext2)application;
       PortletCommunicationManager applicationManager=(PortletCommunicationManager)applicationContext.getApplicationManager();
       if (requestType == RequestType.CONNECTOR_RESOURCE) {
         applicationManager.serveConnectorResource(wrappedRequest,wrappedResponse);
@@ -40,7 +40,6 @@
         return;
       }
       applicationContext.getBrowser().updateRequestDetails(wrappedRequest);
-      startApplication(request,application,applicationContext);
       applicationRunning=true;
       UI uI=null;
 synchronized (application) {
@@ -107,9 +106,8 @@ if (applicationRunning) {
 application.closeInactiveUIs();
 }
 CurrentInstance.clearAll();
-PortletSession session=request.getPortletSession(false);
-if (session != null) {
-requestTimer.stop(getApplicationContext(session));
+if (application != null) {
+requestTimer.stop(application);
 }
 }
 }

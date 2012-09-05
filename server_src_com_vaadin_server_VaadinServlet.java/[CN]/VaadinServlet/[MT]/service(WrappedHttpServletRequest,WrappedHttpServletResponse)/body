@@ -24,7 +24,7 @@
       return;
     }
     Application.setCurrent(application);
-    ServletApplicationContext webApplicationContext=getApplicationContext(request.getSession());
+    ServletApplicationContext webApplicationContext=(ServletApplicationContext)application;
     CommunicationManager applicationManager=(CommunicationManager)webApplicationContext.getApplicationManager();
     if (requestType == RequestType.CONNECTOR_RESOURCE) {
       applicationManager.serveConnectorResource(request,response);
@@ -35,7 +35,6 @@
       return;
     }
     webApplicationContext.getBrowser().updateRequestDetails(request);
-    startApplication(request,application,webApplicationContext);
     applicationRunning=true;
     if (requestType == RequestType.FILE_UPLOAD) {
       applicationManager.handleFileUpload(application,request,response);
@@ -75,9 +74,8 @@ catch (  final Throwable e) {
       application.closeInactiveUIs();
     }
     CurrentInstance.clearAll();
-    HttpSession session=request.getSession(false);
-    if (session != null) {
-      requestTimer.stop(getApplicationContext(session));
+    if (application != null) {
+      requestTimer.stop(application);
     }
   }
 }
