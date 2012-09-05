@@ -2,9 +2,9 @@
   try {
     final Class<?> classToRun=getClassToRun();
     if (UI.class.isAssignableFrom(classToRun)) {
-      ServletApplicationContext application=new ServletApplicationContext();
+      VaadinServletSession application=new VaadinServletSession();
       application.addUIProvider(new AbstractUIProvider(){
-        @Override public Class<? extends UI> getUIClass(        Application application,        WrappedRequest request){
+        @Override public Class<? extends UI> getUIClass(        VaadinSession application,        WrappedRequest request){
           return (Class<? extends UI>)classToRun;
         }
       }
@@ -15,7 +15,7 @@
       return super.createApplication(request);
     }
  else     if (UIProvider.class.isAssignableFrom(classToRun)) {
-      ServletApplicationContext application=new ServletApplicationContext();
+      VaadinServletSession application=new VaadinServletSession();
       application.addUIProvider((UIProvider)classToRun.newInstance());
       return application;
     }

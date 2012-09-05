@@ -21,15 +21,15 @@
     serveStaticResources((ResourceRequest)request,(ResourceResponse)response);
   }
  else {
-    Application application=null;
+    VaadinSession application=null;
     boolean applicationRunning=false;
     try {
       application=findApplicationInstance(wrappedRequest,requestType);
       if (application == null) {
         return;
       }
-      Application.setCurrent(application);
-      PortletApplicationContext2 applicationContext=(PortletApplicationContext2)application;
+      VaadinSession.setCurrent(application);
+      VaadinPortletSession applicationContext=(VaadinPortletSession)application;
       PortletCommunicationManager applicationManager=(PortletCommunicationManager)applicationContext.getApplicationManager();
       if (requestType == RequestType.CONNECTOR_RESOURCE) {
         applicationManager.serveConnectorResource(wrappedRequest,wrappedResponse);

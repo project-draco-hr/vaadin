@@ -12,7 +12,7 @@
     serveStaticResources(request,response);
     return;
   }
-  Application application=null;
+  VaadinSession application=null;
   boolean applicationRunning=false;
   try {
     if (requestType == RequestType.UIDL && request.getParameterMap().containsKey(ApplicationConstants.PARAM_UNLOADBURST) && request.getContentLength() < 1 && getExistingApplication(request,false) == null) {
@@ -23,8 +23,8 @@
     if (application == null) {
       return;
     }
-    Application.setCurrent(application);
-    ServletApplicationContext webApplicationContext=(ServletApplicationContext)application;
+    VaadinSession.setCurrent(application);
+    VaadinServletSession webApplicationContext=(VaadinServletSession)application;
     CommunicationManager applicationManager=(CommunicationManager)webApplicationContext.getApplicationManager();
     if (requestType == RequestType.CONNECTOR_RESOURCE) {
       applicationManager.serveConnectorResource(request,response);
