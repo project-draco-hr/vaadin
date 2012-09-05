@@ -4,18 +4,13 @@
     throw new SessionExpiredException();
   }
   ServletApplicationContext context=getApplicationContext(session);
-  final Collection<Application> applications=context.getApplications();
-  for (final Iterator<Application> i=applications.iterator(); i.hasNext(); ) {
-    final Application sessionApplication=i.next();
-    final String sessionApplicationPath=sessionApplication.getURL().getPath();
-    String requestApplicationPath=getApplicationUrl(request).getPath();
-    if (requestApplicationPath.equals(sessionApplicationPath)) {
-      if (sessionApplication.isRunning()) {
-        return sessionApplication;
-      }
-      getApplicationContext(session).removeApplication(sessionApplication);
-      break;
-    }
+  Application sessionApplication=context.getApplication();
+  if (sessionApplication == null) {
+    return null;
   }
+  if (sessionApplication.isRunning()) {
+    return sessionApplication;
+  }
+  getApplicationContext(session).removeApplication();
   return null;
 }
