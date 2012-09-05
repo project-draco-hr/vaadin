@@ -2,15 +2,23 @@
   Validate.notNull(req,"Request must not be null");
   String protocol=req.url().getProtocol();
   Validate.isTrue(protocol.equals("http") || protocol.equals("https"),"Only http & https protocols supported");
-  if (req.method() == Connection.Method.GET && req.data().size() > 0)   serialiseRequestUrl(req);
+  if (req.method() == Connection.Method.GET && req.data().size() > 0) {
+    serialiseRequestUrl(req);
+  }
   HttpURLConnection conn=createConnection(req);
   conn.connect();
-  if (req.method() == Connection.Method.POST)   writePost(req.data(),conn.getOutputStream());
+  if (req.method() == Connection.Method.POST) {
+    writePost(req.data(),conn.getOutputStream());
+  }
   int status=conn.getResponseCode();
   boolean needsRedirect=false;
   if (status != HttpURLConnection.HTTP_OK) {
-    if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM || status == HttpURLConnection.HTTP_SEE_OTHER)     needsRedirect=true;
- else     if (!req.ignoreHttpErrors())     throw new IOException(status + " error loading URL " + req.url().toString());
+    if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM || status == HttpURLConnection.HTTP_SEE_OTHER) {
+      needsRedirect=true;
+    }
+ else     if (!req.ignoreHttpErrors()) {
+      throw new IOException(status + " error loading URL " + req.url().toString());
+    }
   }
   Response res=new Response(previousResponse);
   res.setupFromConnection(conn,previousResponse);
@@ -33,8 +41,12 @@
     res.charset=DataUtil.getCharsetFromContentType(res.contentType);
   }
   finally {
-    if (bodyStream != null)     bodyStream.close();
-    if (dataStream != null)     dataStream.close();
+    if (bodyStream != null) {
+      bodyStream.close();
+    }
+    if (dataStream != null) {
+      dataStream.close();
+    }
   }
   res.executed=true;
   return res;

@@ -1,7 +1,13 @@
 {
-  if (reader.isEmpty())   return null;
-  if (additionalAllowedCharacter != null && additionalAllowedCharacter == reader.current())   return null;
-  if (reader.matchesAny('\t','\n','\f',' ','<','&'))   return null;
+  if (reader.isEmpty()) {
+    return null;
+  }
+  if (additionalAllowedCharacter != null && additionalAllowedCharacter == reader.current()) {
+    return null;
+  }
+  if (reader.matchesAny('\t','\n','\f',' ','<','&')) {
+    return null;
+  }
   reader.mark();
   if (reader.matchConsume("#")) {
     boolean isHexMode=reader.matchConsumeIgnoreCase("X");
@@ -11,7 +17,9 @@
       reader.rewindToMark();
       return null;
     }
-    if (!reader.matchConsume(";"))     characterReferenceError("missing semicolon");
+    if (!reader.matchConsume(";")) {
+      characterReferenceError("missing semicolon");
+    }
     int charval=-1;
     try {
       int base=isHexMode ? 16 : 10;
@@ -33,14 +41,18 @@
     boolean looksLegit=reader.matches(';');
     boolean found=false;
     while (nameRef.length() > 0 && !found) {
-      if (Entities.isNamedEntity(nameRef))       found=true;
+      if (Entities.isNamedEntity(nameRef)) {
+        found=true;
+      }
  else {
         nameRef=nameRef.substring(0,nameRef.length() - 1);
         reader.unconsume();
       }
     }
     if (!found) {
-      if (looksLegit)       characterReferenceError(String.format("invalid named referenece '%s'",origNameRef));
+      if (looksLegit) {
+        characterReferenceError(String.format("invalid named referenece '%s'",origNameRef));
+      }
       reader.rewindToMark();
       return null;
     }
@@ -48,7 +60,9 @@
       reader.rewindToMark();
       return null;
     }
-    if (!reader.matchConsume(";"))     characterReferenceError("missing semicolon");
+    if (!reader.matchConsume(";")) {
+      characterReferenceError("missing semicolon");
+    }
     return Entities.getCharacterByName(nameRef);
   }
 }

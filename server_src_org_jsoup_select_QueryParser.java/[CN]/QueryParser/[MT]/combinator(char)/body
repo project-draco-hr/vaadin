@@ -16,10 +16,18 @@
     rootEval=currentEval=new CombiningEvaluator.And(evals);
   }
   evals.clear();
-  if (combinator == '>')   currentEval=new CombiningEvaluator.And(newEval,new StructuralEvaluator.ImmediateParent(currentEval));
- else   if (combinator == ' ')   currentEval=new CombiningEvaluator.And(newEval,new StructuralEvaluator.Parent(currentEval));
- else   if (combinator == '+')   currentEval=new CombiningEvaluator.And(newEval,new StructuralEvaluator.ImmediatePreviousSibling(currentEval));
- else   if (combinator == '~')   currentEval=new CombiningEvaluator.And(newEval,new StructuralEvaluator.PreviousSibling(currentEval));
+  if (combinator == '>') {
+    currentEval=new CombiningEvaluator.And(newEval,new StructuralEvaluator.ImmediateParent(currentEval));
+  }
+ else   if (combinator == ' ') {
+    currentEval=new CombiningEvaluator.And(newEval,new StructuralEvaluator.Parent(currentEval));
+  }
+ else   if (combinator == '+') {
+    currentEval=new CombiningEvaluator.And(newEval,new StructuralEvaluator.ImmediatePreviousSibling(currentEval));
+  }
+ else   if (combinator == '~') {
+    currentEval=new CombiningEvaluator.And(newEval,new StructuralEvaluator.PreviousSibling(currentEval));
+  }
  else   if (combinator == ',') {
     CombiningEvaluator.Or or;
     if (currentEval instanceof CombiningEvaluator.Or) {
@@ -33,8 +41,14 @@
     }
     currentEval=or;
   }
- else   throw new Selector.SelectorParseException("Unknown combinator: " + combinator);
-  if (replaceRightMost)   ((CombiningEvaluator.Or)rootEval).replaceRightMostEvaluator(currentEval);
- else   rootEval=currentEval;
+ else {
+    throw new Selector.SelectorParseException("Unknown combinator: " + combinator);
+  }
+  if (replaceRightMost) {
+    ((CombiningEvaluator.Or)rootEval).replaceRightMostEvaluator(currentEval);
+  }
+ else {
+    rootEval=currentEval;
+  }
   evals.add(rootEval);
 }

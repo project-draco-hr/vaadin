@@ -5,20 +5,38 @@
   fragmentParsing=true;
   Element root=null;
   if (context != null) {
-    if (context.ownerDocument() != null)     doc.quirksMode(context.ownerDocument().quirksMode());
+    if (context.ownerDocument() != null) {
+      doc.quirksMode(context.ownerDocument().quirksMode());
+    }
     String contextTag=context.tagName();
-    if (StringUtil.in(contextTag,"title","textarea"))     tokeniser.transition(TokeniserState.Rcdata);
- else     if (StringUtil.in(contextTag,"iframe","noembed","noframes","style","xmp"))     tokeniser.transition(TokeniserState.Rawtext);
- else     if (contextTag.equals("script"))     tokeniser.transition(TokeniserState.ScriptData);
- else     if (contextTag.equals(("noscript")))     tokeniser.transition(TokeniserState.Data);
- else     if (contextTag.equals("plaintext"))     tokeniser.transition(TokeniserState.Data);
- else     tokeniser.transition(TokeniserState.Data);
+    if (StringUtil.in(contextTag,"title","textarea")) {
+      tokeniser.transition(TokeniserState.Rcdata);
+    }
+ else     if (StringUtil.in(contextTag,"iframe","noembed","noframes","style","xmp")) {
+      tokeniser.transition(TokeniserState.Rawtext);
+    }
+ else     if (contextTag.equals("script")) {
+      tokeniser.transition(TokeniserState.ScriptData);
+    }
+ else     if (contextTag.equals(("noscript"))) {
+      tokeniser.transition(TokeniserState.Data);
+    }
+ else     if (contextTag.equals("plaintext")) {
+      tokeniser.transition(TokeniserState.Data);
+    }
+ else {
+      tokeniser.transition(TokeniserState.Data);
+    }
     root=new Element(Tag.valueOf("html"),baseUri);
     doc.appendChild(root);
     stack.push(root);
     resetInsertionMode();
   }
   runParser();
-  if (context != null)   return root.childNodes();
- else   return doc.childNodes();
+  if (context != null) {
+    return root.childNodes();
+  }
+ else {
+    return doc.childNodes();
+  }
 }
