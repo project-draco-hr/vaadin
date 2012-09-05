@@ -3,7 +3,6 @@
   try {
     cl1=new CustomLayout(new ByteArrayInputStream(s.getBytes()));
     layout.addComponent(cl1);
-    ServletApplicationContext wc=((ServletApplicationContext)getContext());
     layout.addComponent(new Button("Disable/Enable",new ClickListener(){
       @Override public void buttonClick(      ClickEvent event){
         boolean e=cl1.isEnabled();
@@ -12,7 +11,8 @@
       }
     }
 ));
-    File f=new File(wc.getBaseDirectory().getAbsoluteFile() + "/VAADIN/themes/" + getTheme()+ "/layouts/Ticket1975.html");
+    File baseDir=CurrentInstance.get(WrappedRequest.class).getDeploymentConfiguration().getBaseDirectory().getAbsoluteFile();
+    File f=new File(baseDir + "/VAADIN/themes/" + getTheme()+ "/layouts/Ticket1975.html");
     cl2=new CustomLayout(new FileInputStream(f));
     layout.addComponent(cl2);
   }

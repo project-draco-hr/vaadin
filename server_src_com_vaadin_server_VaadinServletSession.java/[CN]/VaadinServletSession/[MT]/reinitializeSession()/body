@@ -1,0 +1,16 @@
+{
+  HttpSession oldSession=getHttpSession();
+  HashMap<String,Object> attrs=new HashMap<String,Object>();
+  for (Enumeration<String> e=oldSession.getAttributeNames(); e.hasMoreElements(); ) {
+    String name=e.nextElement();
+    attrs.put(name,oldSession.getAttribute(name));
+  }
+  reinitializingSession=true;
+  oldSession.invalidate();
+  reinitializingSession=false;
+  HttpSession newSession=WrappedHttpServletRequest.cast(CurrentInstance.get(WrappedRequest.class)).getSession();
+  for (  String name : attrs.keySet()) {
+    newSession.setAttribute(name,attrs.get(name));
+  }
+  storeInSession(new WrappedHttpSession(newSession));
+}

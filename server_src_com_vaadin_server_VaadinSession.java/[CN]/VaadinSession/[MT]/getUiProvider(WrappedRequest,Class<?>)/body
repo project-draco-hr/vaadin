@@ -1,0 +1,18 @@
+{
+  UIProvider provider=(UIProvider)request.getAttribute(UIProvider.class.getName());
+  if (provider != null) {
+    Class<? extends UI> providerClass=provider.getUIClass(this,request);
+    if (uiClass == null && providerClass != null) {
+      return provider;
+    }
+ else     if (uiClass == providerClass) {
+      return provider;
+    }
+ else {
+      request.setAttribute(UIProvider.class.getName(),null);
+    }
+  }
+  provider=doGetUiProvider(request,uiClass);
+  request.setAttribute(UIProvider.class.getName(),provider);
+  return provider;
+}

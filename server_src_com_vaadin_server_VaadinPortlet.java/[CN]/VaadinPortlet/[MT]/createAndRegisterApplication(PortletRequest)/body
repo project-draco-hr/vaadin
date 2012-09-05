@@ -1,0 +1,15 @@
+{
+  VaadinSession newApplication=createApplication(request);
+  try {
+    ServletPortletHelper.checkUiProviders(newApplication);
+  }
+ catch (  ApplicationClassException e) {
+    throw new PortletException(e);
+  }
+  newApplication.storeInSession(new WrappedPortletSession(request.getPortletSession()));
+  Locale locale=request.getLocale();
+  newApplication.setLocale(locale);
+  newApplication.start(new ApplicationStartEvent(null,getDeploymentConfiguration().getApplicationConfiguration(),new PortletCommunicationManager(newApplication)));
+  addonContext.fireApplicationStarted(newApplication);
+  return newApplication;
+}

@@ -1,0 +1,15 @@
+{
+  UI uI=UI.getCurrent();
+  if (uI != null) {
+    return uI;
+  }
+  Integer uiId=getUIId(request);
+synchronized (this) {
+    uI=uIs.get(uiId);
+    if (uI == null) {
+      uI=findExistingUi(request);
+    }
+  }
+  UI.setCurrent(uI);
+  return uI;
+}

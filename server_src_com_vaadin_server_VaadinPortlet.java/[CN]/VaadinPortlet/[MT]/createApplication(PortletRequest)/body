@@ -1,6 +1,10 @@
 {
-  Application newApplication=getNewApplication(request);
-  final PortletApplicationContext2 context=getApplicationContext(request.getPortletSession());
-  context.addApplication(newApplication,request.getWindowID());
-  return newApplication;
+  VaadinPortletSession application=new VaadinPortletSession();
+  try {
+    ServletPortletHelper.initDefaultUIProvider(application,getDeploymentConfiguration());
+  }
+ catch (  ApplicationClassException e) {
+    throw new PortletException(e);
+  }
+  return application;
 }

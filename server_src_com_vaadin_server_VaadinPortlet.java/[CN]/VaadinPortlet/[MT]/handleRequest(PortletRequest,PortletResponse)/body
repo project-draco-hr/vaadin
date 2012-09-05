@@ -4,6 +4,8 @@
   AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
   WrappedPortletRequest wrappedRequest=createWrappedRequest(request);
   WrappedPortletResponse wrappedResponse=new WrappedPortletResponse(response,getDeploymentConfiguration());
+  CurrentInstance.set(WrappedRequest.class,wrappedRequest);
+  CurrentInstance.set(WrappedResponse.class,wrappedResponse);
   RequestType requestType=getRequestType(wrappedRequest);
   if (requestType == RequestType.UNKNOWN) {
     handleUnknownRequest(request,response);
@@ -19,20 +21,16 @@
     serveStaticResources((ResourceRequest)request,(ResourceResponse)response);
   }
  else {
-    Application application=null;
-    boolean transactionStarted=false;
-    boolean requestStarted=false;
+    VaadinSession application=null;
     boolean applicationRunning=false;
     try {
       application=findApplicationInstance(wrappedRequest,requestType);
       if (application == null) {
         return;
       }
-      Application.setCurrent(application);
-      PortletApplicationContext2 applicationContext=getApplicationContext(request.getPortletSession());
-      applicationContext.setResponse(response);
-      applicationContext.setPortletConfig(getPortletConfig());
-      PortletCommunicationManager applicationManager=applicationContext.getApplicationManager(application);
+      VaadinSession.setCurrent(application);
+      VaadinPortletSession applicationContext=(VaadinPortletSession)application;
+      PortletCommunicationManager applicationManager=(PortletCommunicationManager)applicationContext.getApplicationManager();
       if (requestType == RequestType.CONNECTOR_RESOURCE) {
         applicationManager.serveConnectorResource(wrappedRequest,wrappedResponse);
         return;
@@ -42,14 +40,7 @@
         return;
       }
       applicationContext.getBrowser().updateRequestDetails(wrappedRequest);
-      if (application instanceof PortletRequestListener) {
-        ((PortletRequestListener)application).onRequestStart(request,response);
-        requestStarted=true;
-      }
-      startApplication(request,application,applicationContext);
       applicationRunning=true;
-      applicationContext.startTransaction(application,request);
-      transactionStarted=true;
       UI uI=null;
 synchronized (application) {
         if (application.isRunning()) {
@@ -70,16 +61,16 @@ default :
 }
 }
 if (request instanceof RenderRequest) {
-applicationContext.firePortletRenderRequest(application,uI,(RenderRequest)request,(RenderResponse)response);
+applicationContext.firePortletRenderRequest(uI,(RenderRequest)request,(RenderResponse)response);
 }
  else if (request instanceof ActionRequest) {
-applicationContext.firePortletActionRequest(application,uI,(ActionRequest)request,(ActionResponse)response);
+applicationContext.firePortletActionRequest(uI,(ActionRequest)request,(ActionResponse)response);
 }
  else if (request instanceof EventRequest) {
-applicationContext.firePortletEventRequest(application,uI,(EventRequest)request,(EventResponse)response);
+applicationContext.firePortletEventRequest(uI,(EventRequest)request,(EventResponse)response);
 }
  else if (request instanceof ResourceRequest) {
-applicationContext.firePortletResourceRequest(application,uI,(ResourceRequest)request,(ResourceResponse)response);
+applicationContext.firePortletResourceRequest(uI,(ResourceRequest)request,(ResourceResponse)response);
 }
 if (requestType == RequestType.FILE_UPLOAD) {
 applicationManager.handleFileUpload(application,wrappedRequest,wrappedResponse);
@@ -114,25 +105,9 @@ handleServiceException(wrappedRequest,wrappedResponse,application,e);
 if (applicationRunning) {
 application.closeInactiveUIs();
 }
-try {
-if (transactionStarted) {
-((PortletApplicationContext2)application.getContext()).endTransaction(application,request);
-}
-}
-  finally {
-try {
-if (requestStarted) {
-((PortletRequestListener)application).onRequestEnd(request,response);
-}
-}
-  finally {
-UI.setCurrent(null);
-Application.setCurrent(null);
-PortletSession session=request.getPortletSession(false);
-if (session != null) {
-requestTimer.stop(getApplicationContext(session));
-}
-}
+CurrentInstance.clearAll();
+if (application != null) {
+requestTimer.stop(application);
 }
 }
 }

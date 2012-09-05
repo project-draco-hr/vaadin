@@ -1,0 +1,26 @@
+{
+  for (int i=uiProviders.size() - 1; i >= 0; i--) {
+    UIProvider provider=uiProviders.get(i);
+    UI existingUi=provider.getExistingUI(request);
+    if (existingUi != null) {
+      return existingUi;
+    }
+  }
+  BrowserDetails browserDetails=request.getBrowserDetails();
+  boolean hasBrowserDetails=browserDetails != null && browserDetails.getUriFragment() != null;
+  if (hasBrowserDetails && !retainOnRefreshUIs.isEmpty()) {
+    @SuppressWarnings("null") String windowName=browserDetails.getWindowName();
+    Integer retainedUIId=retainOnRefreshUIs.get(windowName);
+    if (retainedUIId != null) {
+      Class<? extends UI> expectedUIClass=getUIClass(request);
+      UI retainedUI=uIs.get(retainedUIId);
+      if (retainedUI.getClass() == expectedUIClass) {
+        return retainedUI;
+      }
+ else {
+        getLogger().info("Not using retained UI in " + windowName + " because retained UI was of type "+ retainedUIId.getClass()+ " but "+ expectedUIClass+ " is expected for the request.");
+      }
+    }
+  }
+  return null;
+}

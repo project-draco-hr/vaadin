@@ -1,6 +1,8 @@
 {
   RequestTimer requestTimer=new RequestTimer();
   requestTimer.start();
+  CurrentInstance.set(WrappedResponse.class,response);
+  CurrentInstance.set(WrappedRequest.class,request);
   AbstractApplicationServletWrapper servletWrapper=new AbstractApplicationServletWrapper(this);
   RequestType requestType=getRequestType(request);
   if (!ensureCookiesEnabled(requestType,request,response)) {
@@ -10,9 +12,7 @@
     serveStaticResources(request,response);
     return;
   }
-  Application application=null;
-  boolean transactionStarted=false;
-  boolean requestStarted=false;
+  VaadinSession application=null;
   boolean applicationRunning=false;
   try {
     if (requestType == RequestType.UIDL && request.getParameterMap().containsKey(ApplicationConstants.PARAM_UNLOADBURST) && request.getContentLength() < 1 && getExistingApplication(request,false) == null) {
@@ -23,9 +23,9 @@
     if (application == null) {
       return;
     }
-    Application.setCurrent(application);
-    ServletApplicationContext webApplicationContext=getApplicationContext(request.getSession());
-    CommunicationManager applicationManager=webApplicationContext.getApplicationManager(application,this);
+    VaadinSession.setCurrent(application);
+    VaadinServletSession webApplicationContext=(VaadinServletSession)application;
+    CommunicationManager applicationManager=(CommunicationManager)webApplicationContext.getApplicationManager();
     if (requestType == RequestType.CONNECTOR_RESOURCE) {
       applicationManager.serveConnectorResource(request,response);
       return;
@@ -35,14 +35,7 @@
       return;
     }
     webApplicationContext.getBrowser().updateRequestDetails(request);
-    if (application instanceof HttpServletRequestListener) {
-      ((HttpServletRequestListener)application).onRequestStart(request,response);
-      requestStarted=true;
-    }
-    startApplication(request,application,webApplicationContext);
     applicationRunning=true;
-    webApplicationContext.startTransaction(application,request);
-    transactionStarted=true;
     if (requestType == RequestType.FILE_UPLOAD) {
       applicationManager.handleFileUpload(application,request,response);
       return;
@@ -80,25 +73,9 @@ catch (  final Throwable e) {
     if (applicationRunning) {
       application.closeInactiveUIs();
     }
-    try {
-      if (transactionStarted) {
-        ((ServletApplicationContext)application.getContext()).endTransaction(application,request);
-      }
-    }
-  finally {
-      try {
-        if (requestStarted) {
-          ((HttpServletRequestListener)application).onRequestEnd(request,response);
-        }
-      }
-  finally {
-        UI.setCurrent(null);
-        Application.setCurrent(null);
-        HttpSession session=request.getSession(false);
-        if (session != null) {
-          requestTimer.stop(getApplicationContext(session));
-        }
-      }
+    CurrentInstance.clearAll();
+    if (application != null) {
+      requestTimer.stop(application);
     }
   }
 }

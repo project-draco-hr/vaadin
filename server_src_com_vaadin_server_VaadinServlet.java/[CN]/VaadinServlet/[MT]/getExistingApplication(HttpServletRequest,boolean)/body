@@ -3,19 +3,13 @@
   if (session == null) {
     throw new SessionExpiredException();
   }
-  ServletApplicationContext context=getApplicationContext(session);
-  final Collection<Application> applications=context.getApplications();
-  for (final Iterator<Application> i=applications.iterator(); i.hasNext(); ) {
-    final Application sessionApplication=i.next();
-    final String sessionApplicationPath=sessionApplication.getURL().getPath();
-    String requestApplicationPath=getApplicationUrl(request).getPath();
-    if (requestApplicationPath.equals(sessionApplicationPath)) {
-      if (sessionApplication.isRunning()) {
-        return sessionApplication;
-      }
-      getApplicationContext(session).removeApplication(sessionApplication);
-      break;
-    }
+  VaadinSession sessionApplication=getApplicationContext(session);
+  if (sessionApplication == null) {
+    return null;
   }
-  return null;
+  if (!sessionApplication.isRunning()) {
+    sessionApplication.removeFromSession();
+    return null;
+  }
+  return sessionApplication;
 }
