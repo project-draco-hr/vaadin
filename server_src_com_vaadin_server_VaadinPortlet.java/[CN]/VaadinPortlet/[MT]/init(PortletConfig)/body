@@ -1,17 +1,17 @@
 {
   super.init(config);
-  Properties applicationProperties=new Properties();
+  Properties initParameters=new Properties();
   final PortletContext context=config.getPortletContext();
   for (final Enumeration<String> e=context.getInitParameterNames(); e.hasMoreElements(); ) {
     final String name=e.nextElement();
-    applicationProperties.setProperty(name,context.getInitParameter(name));
+    initParameters.setProperty(name,context.getInitParameter(name));
   }
   for (final Enumeration<String> e=config.getInitParameterNames(); e.hasMoreElements(); ) {
     final String name=e.nextElement();
-    applicationProperties.setProperty(name,config.getInitParameter(name));
+    initParameters.setProperty(name,config.getInitParameter(name));
   }
-  ApplicationConfiguration applicationConfiguration=createApplicationConfiguration(applicationProperties);
-  vaadinService=createPortletService(applicationConfiguration);
+  DeploymentConfiguration deploymentConfiguration=createDeploymentConfiguration(initParameters);
+  vaadinService=createPortletService(deploymentConfiguration);
   addonContext=new AddonContext(vaadinService);
   addonContext.init();
 }
