@@ -2,13 +2,13 @@
   if (streamVariable == null) {
     throw new IllegalStateException("StreamVariable for the post not found");
   }
-  final VaadinSession application=getApplication();
+  final VaadinSession session=getVaadinSession();
   OutputStream out=null;
   int totalBytes=0;
   StreamingStartEventImpl startedEvent=new StreamingStartEventImpl(filename,type,contentLength);
   try {
     boolean listenProgress;
-synchronized (application) {
+synchronized (session) {
       streamVariable.streamingStarted(startedEvent);
       out=streamVariable.getOutputStream();
       listenProgress=streamVariable.listenProgress();
@@ -25,7 +25,7 @@ synchronized (application) {
       out.write(buffer,0,bytesReadToBuffer);
       totalBytes+=bytesReadToBuffer;
       if (listenProgress) {
-synchronized (application) {
+synchronized (session) {
           StreamingProgressEventImpl progressEvent=new StreamingProgressEventImpl(filename,type,contentLength,totalBytes);
           streamVariable.onProgress(progressEvent);
         }
@@ -36,24 +36,22 @@ synchronized (application) {
     }
     out.close();
     StreamingEndEvent event=new StreamingEndEventImpl(filename,type,totalBytes);
-synchronized (application) {
+synchronized (session) {
       streamVariable.streamingFinished(event);
     }
   }
  catch (  UploadInterruptedException e) {
     tryToCloseStream(out);
     StreamingErrorEvent event=new StreamingErrorEventImpl(filename,type,contentLength,totalBytes,e);
-synchronized (application) {
+synchronized (session) {
       streamVariable.streamingFailed(event);
     }
   }
 catch (  final Exception e) {
     tryToCloseStream(out);
-synchronized (application) {
+synchronized (session) {
       StreamingErrorEvent event=new StreamingErrorEventImpl(filename,type,contentLength,totalBytes,e);
-synchronized (application) {
-        streamVariable.streamingFailed(event);
-      }
+      streamVariable.streamingFailed(event);
       throw new UploadException(e);
     }
   }

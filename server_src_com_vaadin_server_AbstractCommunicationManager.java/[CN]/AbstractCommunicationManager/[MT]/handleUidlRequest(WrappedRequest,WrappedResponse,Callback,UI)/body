@@ -16,19 +16,19 @@
     }
   }
   final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
-synchronized (application) {
-    if (application.isRunning()) {
+synchronized (session) {
+    if (session.isRunning()) {
       if (uI == null) {
-        getLogger().warning("Could not get UI for application");
+        getLogger().warning("Could not get UI for session");
         return;
       }
     }
  else {
-      endApplication(request,response,application);
+      endApplication(request,response,session);
       return;
     }
     uI.setLastUidlRequestTime(System.currentTimeMillis());
-    if (!handleVariables(request,response,callback,application,uI)) {
+    if (!handleVariables(request,response,callback,session,uI)) {
       SystemMessages ci=response.getVaadinService().getSystemMessages();
       String msg=ci.getOutOfSyncMessage();
       String cap=ci.getOutOfSyncCaption();
