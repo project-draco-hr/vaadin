@@ -1,3 +1,8 @@
 {
-  return application.handleRequest(request,response);
+  for (  RequestHandler handler : new ArrayList<RequestHandler>(application.getRequestHandlers())) {
+    if (handler.handleRequest(application,request,response)) {
+      return true;
+    }
+  }
+  return false;
 }
