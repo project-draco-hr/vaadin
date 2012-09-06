@@ -1,6 +1,6 @@
 {
   int startsAt=0;
-  jjnewStateCnt=1;
+  jjnewStateCnt=4;
   int i=1;
   jjstateSet[0]=startState;
   int kind=0x7fffffff;
@@ -11,11 +11,26 @@
       do {
 switch (jjstateSet[--i]) {
 case 0:
-          kind=3;
-        break;
-default :
+          if ((0xffffffffffffdbffL & l) != 0L) {
+            if (kind > 3)             kind=3;
+          }
+ else           if ((0x2400L & l) != 0L) {
+            if (kind > 4)             kind=4;
+          }
+        if (curChar == 13)         jjstateSet[jjnewStateCnt++]=2;
       break;
-  }
+case 1:
+    if ((0x2400L & l) != 0L && kind > 4)     kind=4;
+  break;
+case 2:
+if (curChar == 10 && kind > 4) kind=4;
+break;
+case 3:
+if (curChar == 13) jjstateSet[jjnewStateCnt++]=2;
+break;
+default :
+break;
+}
 }
  while (i != startsAt);
 }
@@ -24,8 +39,8 @@ long l=1L << (curChar & 077);
 do {
 switch (jjstateSet[--i]) {
 case 0:
-    if ((0xdfffffffffffffffL & l) != 0L)     kind=3;
-  break;
+kind=3;
+break;
 default :
 break;
 }
@@ -52,7 +67,7 @@ jjmatchedPos=curPos;
 kind=0x7fffffff;
 }
 ++curPos;
-if ((i=jjnewStateCnt) == (startsAt=1 - (jjnewStateCnt=startsAt))) return curPos;
+if ((i=jjnewStateCnt) == (startsAt=4 - (jjnewStateCnt=startsAt))) return curPos;
 try {
 curChar=input_stream.readChar();
 }
