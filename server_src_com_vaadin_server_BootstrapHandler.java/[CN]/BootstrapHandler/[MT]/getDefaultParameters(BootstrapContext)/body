@@ -2,8 +2,8 @@
   JSONObject defaults=new JSONObject();
   WrappedRequest request=context.getRequest();
   VaadinSession application=context.getApplication();
-  DeploymentConfiguration deploymentConfiguration=request.getDeploymentConfiguration();
-  SystemMessages systemMessages=deploymentConfiguration.getSystemMessages();
+  VaadinService vaadinService=request.getVaadinService();
+  SystemMessages systemMessages=vaadinService.getSystemMessages();
   if (systemMessages != null) {
     JSONObject comErrMsg=new JSONObject();
     comErrMsg.put("caption",systemMessages.getCommunicationErrorCaption());
@@ -16,16 +16,16 @@
     authErrMsg.put("url",systemMessages.getAuthenticationErrorURL());
     defaults.put("authErrMsg",authErrMsg);
   }
-  String staticFileLocation=deploymentConfiguration.getStaticFileLocation(request);
+  String staticFileLocation=vaadinService.getStaticFileLocation(request);
   String widgetsetBase=staticFileLocation + "/" + VaadinServlet.WIDGETSET_DIRECTORY_PATH;
   defaults.put("widgetsetBase",widgetsetBase);
   if (!application.isProductionMode()) {
     defaults.put("debug",true);
   }
-  if (deploymentConfiguration.isStandalone(request)) {
+  if (vaadinService.isStandalone(request)) {
     defaults.put("standalone",true);
   }
-  defaults.put("heartbeatInterval",deploymentConfiguration.getApplicationConfiguration().getHeartbeatInterval());
+  defaults.put("heartbeatInterval",vaadinService.getApplicationConfiguration().getHeartbeatInterval());
   defaults.put("appUri",getAppUri(context));
   return defaults;
 }

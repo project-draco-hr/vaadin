@@ -1,0 +1,14 @@
+{
+  Properties initParameters=vaadinService.getApplicationConfiguration().getInitParameters();
+  String applicationParameter=initParameters.getProperty("application");
+  ClassLoader classLoader=vaadinService.getClassLoader();
+  if (applicationParameter == null) {
+    throw new ApplicationClassException("No \"application\" init parameter found");
+  }
+  try {
+    return classLoader.loadClass(applicationParameter).asSubclass(Application.class);
+  }
+ catch (  final ClassNotFoundException e) {
+    throw new ApplicationClassException("Failed to load application class: " + applicationParameter,e);
+  }
+}

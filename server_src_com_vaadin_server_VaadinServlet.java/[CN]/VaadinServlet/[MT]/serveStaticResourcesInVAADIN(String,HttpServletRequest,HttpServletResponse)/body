@@ -3,7 +3,7 @@
   URL resourceUrl=sc.getResource(filename);
   if (resourceUrl == null) {
     filename=filename.substring(1);
-    resourceUrl=getDeploymentConfiguration().getClassLoader().getResource(filename);
+    resourceUrl=getVaadinService().getClassLoader().getResource(filename);
     if (resourceUrl == null) {
       getLogger().info("Requested resource [" + filename + "] not found from filesystem or through class loader."+ " Add widgetset and/or theme JAR to your classpath or add files to WebContent/VAADIN folder.");
       response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -48,7 +48,7 @@
   }
   if (lastModifiedTime > 0) {
     response.setDateHeader("Last-Modified",lastModifiedTime);
-    int resourceCacheTime=getDeploymentConfiguration().getApplicationConfiguration().getResourceCacheTime();
+    int resourceCacheTime=getVaadinService().getApplicationConfiguration().getResourceCacheTime();
     response.setHeader("Cache-Control","max-age= " + String.valueOf(resourceCacheTime));
   }
   final OutputStream os=response.getOutputStream();
