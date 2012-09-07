@@ -1,10 +1,13 @@
 {
   if (associatedClass == null) {
-    Class<? extends UI> associatedClass=UI.getCurrent().getClass();
-    if (associatedClass == LegacyWindow.class) {
-      return VaadinSession.getCurrent().getClass();
+    UI current=UI.getCurrent();
+    if (current instanceof LegacyWindow) {
+      LegacyWindow legacyWindow=(LegacyWindow)current;
+      return legacyWindow.getApplication().getClass();
     }
-    return associatedClass;
+ else {
+      return current.getClass();
+    }
   }
   return associatedClass;
 }
