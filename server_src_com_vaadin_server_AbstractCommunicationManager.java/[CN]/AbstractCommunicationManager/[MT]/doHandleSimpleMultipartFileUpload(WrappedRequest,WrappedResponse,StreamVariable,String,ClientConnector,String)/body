@@ -41,8 +41,12 @@
     }
   }
  catch (  Exception e) {
-synchronized (session) {
+    session.getLock().lock();
+    try {
       handleChangeVariablesError(session,(Component)owner,e,new HashMap<String,Object>());
+    }
+  finally {
+      session.getLock().unlock();
     }
   }
   sendUploadResponse(request,response);

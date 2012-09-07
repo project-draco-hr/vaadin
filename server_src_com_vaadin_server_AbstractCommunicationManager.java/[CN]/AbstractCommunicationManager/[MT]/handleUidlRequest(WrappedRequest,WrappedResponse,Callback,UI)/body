@@ -16,7 +16,8 @@
     }
   }
   final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
-synchronized (session) {
+  session.getLock().lock();
+  try {
     if (session.isRunning()) {
       if (uI == null) {
         getLogger().warning("Could not get UI for session");
@@ -40,6 +41,9 @@ synchronized (session) {
     }
     paintAfterVariableChanges(request,response,callback,repaintAll,outWriter,uI,analyzeLayouts);
     postPaint(uI);
+  }
+  finally {
+    session.getLock().unlock();
   }
   outWriter.close();
   requestThemeName=null;
