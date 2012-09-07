@@ -13,9 +13,13 @@
           c.getContainerProperty(id,"LAST_NAME").setValue(getRandonName());
         }
         c.commit();
-synchronized (MassInsertMemoryLeakTestApp.this) {
+        getContext().getLock().lock();
+        try {
           proggress.setValue(new Float((1.0f * cent) / cents));
           proggress.setCaption("" + 100 * cent + " rows inserted");
+        }
+  finally {
+          getContext().getLock().unlock();
         }
       }
     }
@@ -24,9 +28,13 @@ synchronized (MassInsertMemoryLeakTestApp.this) {
       e.printStackTrace();
     }
   }
-synchronized (MassInsertMemoryLeakTestApp.this) {
+  getContext().getLock().lock();
+  try {
     proggress.setVisible(false);
     proggress.setPollingInterval(0);
     process.setEnabled(true);
+  }
+  finally {
+    getContext().getLock().unlock();
   }
 }

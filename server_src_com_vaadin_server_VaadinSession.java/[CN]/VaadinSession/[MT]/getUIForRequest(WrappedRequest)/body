@@ -4,11 +4,15 @@
     return uI;
   }
   Integer uiId=getUIId(request);
-synchronized (this) {
+  getLock().lock();
+  try {
     uI=uIs.get(uiId);
     if (uI == null) {
       uI=findExistingUi(request);
     }
+  }
+  finally {
+    getLock().unlock();
   }
   UI.setCurrent(uI);
   return uI;

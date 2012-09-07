@@ -15,12 +15,16 @@
   Thread r=new Thread(){
     @Override public void run(){
       while (t != null) {
-synchronized (t.getUI().getSession()) {
+        t.getUI().getSession().getLock().lock();
+        try {
           int firstId=t.getCurrentPageFirstItemIndex();
           Object selected=t.getValue();
           t.setContainerDataSource(buildContainer());
           t.setValue(selected);
           t.setCurrentPageFirstItemIndex(firstId);
+        }
+  finally {
+          t.getUI().getSession().getLock().unlock();
         }
         try {
           Thread.sleep(500);

@@ -43,7 +43,8 @@
       applicationContext.getBrowser().updateRequestDetails(wrappedRequest);
       applicationRunning=true;
       UI uI=null;
-synchronized (application) {
+      application.getLock().lock();
+      try {
         if (application.isRunning()) {
 switch (requestType) {
 case RENDER:
@@ -60,6 +61,9 @@ default :
   uI=application.getUIForRequest(wrappedRequest);
 }
 }
+}
+  finally {
+application.getLock().unlock();
 }
 if (request instanceof RenderRequest) {
 applicationContext.firePortletRenderRequest(uI,(RenderRequest)request,(RenderResponse)response);
