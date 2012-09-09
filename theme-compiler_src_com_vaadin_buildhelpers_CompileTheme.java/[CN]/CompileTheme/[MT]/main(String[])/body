@@ -1,0 +1,25 @@
+{
+  Options options=new Options();
+  options.addOption("t","theme",true,"the theme to compile");
+  options.addOption("f","theme-folder",true,"the folder containing the theme");
+  options.addOption("s","sprites",true,"use smartsprites");
+  CommandLineParser parser=new PosixParser();
+  CommandLine params=parser.parse(options,args);
+  if (!params.hasOption("theme") || !params.hasOption("theme-folder")) {
+    HelpFormatter formatter=new HelpFormatter();
+    formatter.printHelp(CompileTheme.class.getName(),options);
+    return;
+  }
+  String themeName=params.getOptionValue("theme");
+  String themeFolder=params.getOptionValue("theme-folder");
+  boolean useSprites=params.hasOption("sprites");
+  String version=Version.getFullVersion();
+  try {
+    processSassTheme(themeFolder,themeName,useSprites,version);
+    System.out.println("Compiling theme " + themeName + " successful");
+  }
+ catch (  Exception e) {
+    System.err.println("Compiling theme " + themeName + " failed");
+    e.printStackTrace();
+  }
+}

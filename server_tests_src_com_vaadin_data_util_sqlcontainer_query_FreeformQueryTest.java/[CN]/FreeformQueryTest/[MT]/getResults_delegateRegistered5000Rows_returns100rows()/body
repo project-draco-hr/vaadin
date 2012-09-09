@@ -2,10 +2,10 @@
   DataGenerator.addFiveThousandPeople(connectionPool);
   FreeformQuery query=new FreeformQuery("SELECT * FROM people",Arrays.asList("ID"),connectionPool);
   FreeformQueryDelegate delegate=EasyMock.createMock(FreeformQueryDelegate.class);
-  if (AllTests.db == DB.MSSQL) {
+  if (SQLTestsConstants.db == DB.MSSQL) {
     EasyMock.expect(delegate.getQueryString(200,100)).andReturn("SELECT * FROM (SELECT row_number()" + "OVER (ORDER BY id ASC) AS rownum, * FROM people)" + " AS a WHERE a.rownum BETWEEN 201 AND 300");
   }
- else   if (AllTests.db == DB.ORACLE) {
+ else   if (SQLTestsConstants.db == DB.ORACLE) {
     EasyMock.expect(delegate.getQueryString(200,100)).andReturn("SELECT * FROM (SELECT  x.*, ROWNUM AS r FROM" + " (SELECT * FROM people ORDER BY ID ASC) x) WHERE r BETWEEN 201 AND 300");
   }
  else {

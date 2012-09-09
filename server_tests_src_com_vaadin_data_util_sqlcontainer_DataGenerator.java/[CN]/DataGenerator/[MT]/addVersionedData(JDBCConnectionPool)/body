@@ -3,7 +3,7 @@
   Statement statement=conn.createStatement();
   try {
     statement.execute("DROP TABLE VERSIONED");
-    if (AllTests.db == DB.ORACLE) {
+    if (SQLTestsConstants.db == DB.ORACLE) {
       statement.execute("drop sequence versioned_seq");
       statement.execute("drop sequence versioned_version");
     }
@@ -11,10 +11,10 @@
  catch (  SQLException e) {
     conn.rollback();
   }
-  for (  String stmtString : AllTests.versionStatements) {
+  for (  String stmtString : SQLTestsConstants.versionStatements) {
     statement.execute(stmtString);
   }
-  if (AllTests.db == DB.MSSQL) {
+  if (SQLTestsConstants.db == DB.MSSQL) {
     statement.executeUpdate("insert into VERSIONED values('Junk', default)");
   }
  else {

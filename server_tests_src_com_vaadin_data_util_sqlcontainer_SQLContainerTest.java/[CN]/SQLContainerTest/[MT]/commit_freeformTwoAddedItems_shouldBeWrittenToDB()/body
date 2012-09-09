@@ -5,7 +5,7 @@
       Connection conn=(Connection)EasyMock.getCurrentArguments()[0];
       RowItem item=(RowItem)EasyMock.getCurrentArguments()[1];
       Statement statement=conn.createStatement();
-      if (AllTests.db == DB.MSSQL) {
+      if (SQLTestsConstants.db == DB.MSSQL) {
         statement.executeUpdate("insert into people values('" + item.getItemProperty("NAME").getValue() + "', '"+ item.getItemProperty("AGE").getValue()+ "')");
       }
  else {
@@ -23,13 +23,13 @@
       Object[] args=EasyMock.getCurrentArguments();
       int offset=(Integer)(args[0]);
       int limit=(Integer)(args[1]);
-      if (AllTests.db == DB.MSSQL) {
+      if (SQLTestsConstants.db == DB.MSSQL) {
         int start=offset + 1;
         int end=offset + limit + 1;
         String q="SELECT * FROM (SELECT row_number() OVER" + " ( ORDER BY \"ID\" ASC) AS rownum, * FROM people)" + " AS a WHERE a.rownum BETWEEN " + start + " AND "+ end;
         return q;
       }
- else       if (AllTests.db == DB.ORACLE) {
+ else       if (SQLTestsConstants.db == DB.ORACLE) {
         int start=offset + 1;
         int end=offset + limit + 1;
         String q="SELECT * FROM (SELECT x.*, ROWNUM AS r FROM" + " (SELECT * FROM people ORDER BY \"ID\" ASC) x) " + " WHERE r BETWEEN " + start + " AND "+ end;
