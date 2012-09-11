@@ -1,0 +1,36 @@
+{
+  if (getVaadinService().getDeploymentConfiguration().isProductionMode()) {
+    return false;
+  }
+  if (!filename.endsWith(".css")) {
+    return false;
+  }
+  String scssFilename=filename.substring(0,filename.length() - 4) + ".scss";
+  URL scssUrl=findResourceURL(scssFilename,sc);
+  if (scssUrl == null) {
+    return false;
+  }
+  if (!isAllowedVAADINResourceUrl(request,scssUrl)) {
+    getLogger().info("Requested resource [" + filename + "] not accessible in the VAADIN directory or access to it is forbidden.");
+    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+    return true;
+  }
+  String realFilename=sc.getRealPath(scssFilename);
+  ScssStylesheet scss=ScssStylesheet.get(realFilename);
+  if (scss == null) {
+    getLogger().warning("Scss file " + scssFilename + " exists but ScssStylesheet was not able to find it");
+    return false;
+  }
+  try {
+    getLogger().fine("Compiling " + realFilename + " for request to "+ filename);
+    scss.compile();
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+    return false;
+  }
+  response.setHeader("Cache-Control","no-cache");
+  final String mimetype=getVaadinService().getMimeType(filename);
+  writeResponse(response,mimetype,scss.toString());
+  return true;
+}
