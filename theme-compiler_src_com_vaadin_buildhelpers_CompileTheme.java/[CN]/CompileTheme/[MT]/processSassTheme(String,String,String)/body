@@ -16,15 +16,15 @@
   out.write(scss.toString());
   out.close();
   System.out.println("Compiled CSS to " + stylesCssName + " ("+ scss.toString().length()+ " bytes)");
-  if (useSmartSprites) {
-    createSprites(themeFolder,themeName);
-    System.out.println("Used SmartSprites to create sprites");
-    File oldCss=new File(stylesCssName);
+  createSprites(themeFolder,themeName);
+  System.out.println("Used SmartSprites to create sprites");
+  File oldCss=new File(stylesCssName);
+  File newCss=new File(stylesCssDir + "styles-sprite.css");
+  if (newCss.exists()) {
     oldCss.delete();
-    File newCss=new File(stylesCssDir + "styles-sprite.css");
     boolean ok=newCss.renameTo(oldCss);
     if (!ok) {
-      System.out.println("Rename " + newCss + " -> "+ oldCss+ " failed");
+      throw new RuntimeException("Rename " + newCss + " -> "+ oldCss+ " failed");
     }
   }
 }
