@@ -1,0 +1,19 @@
+{
+  String[] itemNames=new String[]{"Foo","Baar"};
+  HierarchicalContainer hc=new HierarchicalContainer();
+  hc.addContainerProperty("NAME",String.class,null);
+  for (  String parentId : itemNames) {
+    Item parent=hc.addItem(parentId);
+    parent.getItemProperty("NAME").setValue(parentId);
+    hc.setChildrenAllowed(parent,true);
+    for (int i=0; i < 5; i++) {
+      String childId=parentId + i;
+      Item child=hc.addItem(childId);
+      child.getItemProperty("NAME").setValue(childId);
+      if (!hc.setParent(childId,parentId)) {
+        System.out.println("Unable to set parent \"" + parentId + "\" for child with id: \""+ childId+ "\"");
+      }
+    }
+  }
+  return hc;
+}
