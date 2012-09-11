@@ -1,2 +1,140 @@
 {
+  String evaluator="";
+  Token n=null;
+  jj_consume_token(ELSE_SYM);
+  label_66:   while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+      ;
+    break;
+default :
+  jj_la1[99]=jj_gen;
+break label_66;
+}
+jj_consume_token(S);
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case IF:
+jj_consume_token(IF);
+label_67: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+case EQ:
+case PLUS:
+case MINUS:
+case PRECEDES:
+case SUCCEEDS:
+case DIV:
+case ANY:
+case LPARAN:
+case RPARAN:
+case COMPARE:
+case OR:
+case AND:
+case NOT_EQ:
+case IDENT:
+case NUMBER:
+case VARIABLE:
+;
+break;
+default :
+jj_la1[100]=jj_gen;
+break label_67;
+}
+n=booleanExpressionToken();
+if (n != null) evaluator+=n.image;
+}
+break;
+default :
+jj_la1[101]=jj_gen;
+;
+}
+jj_consume_token(LBRACE);
+label_68: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[102]=jj_gen;
+break label_68;
+}
+jj_consume_token(S);
+}
+if (!evaluator.trim().equals("")) {
+documentHandler.ifDirective(evaluator);
+}
+ else {
+documentHandler.elseDirective();
+}
+label_69: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case LBRACKET:
+case ANY:
+case PARENT:
+case DOT:
+case COLON:
+case EACH_VAR:
+case INCLUDE_SYM:
+case EXTEND_SYM:
+case IDENT:
+case VARIABLE:
+case HASH:
+case MEDIA_SYM:
+;
+break;
+default :
+jj_la1[103]=jj_gen;
+break label_69;
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case INCLUDE_SYM:
+includeDirective();
+break;
+case MEDIA_SYM:
+media();
+break;
+case EXTEND_SYM:
+extendDirective();
+break;
+case VARIABLE:
+variable();
+break;
+default :
+jj_la1[104]=jj_gen;
+if (jj_2_4(3)) {
+declarationOrNestedProperties();
+}
+ else {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case LBRACKET:
+case ANY:
+case PARENT:
+case DOT:
+case COLON:
+case EACH_VAR:
+case IDENT:
+case HASH:
+styleRule();
+break;
+default :
+jj_la1[105]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
+}
+}
+}
+jj_consume_token(RBRACE);
+label_70: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[106]=jj_gen;
+break label_70;
+}
+jj_consume_token(S);
+}
 }
