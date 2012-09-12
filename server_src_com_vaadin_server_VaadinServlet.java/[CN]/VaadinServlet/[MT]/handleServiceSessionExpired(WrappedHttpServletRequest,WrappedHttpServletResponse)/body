@@ -4,12 +4,16 @@
   }
   try {
     SystemMessages ci=getVaadinService().getSystemMessages();
-    if (getRequestType(request) != RequestType.UIDL) {
-      response.sendRedirect(ci.getSessionExpiredURL());
-    }
- else {
+    RequestType requestType=getRequestType(request);
+    if (requestType == RequestType.UIDL) {
       request.getSession().invalidate();
       criticalNotification(request,response,ci.getSessionExpiredCaption(),ci.getSessionExpiredMessage(),null,ci.getSessionExpiredURL());
+    }
+ else     if (requestType == RequestType.HEARTBEAT) {
+      response.sendError(HttpServletResponse.SC_GONE,"Session expired");
+    }
+ else {
+      response.sendRedirect(ci.getSessionExpiredURL());
     }
   }
  catch (  SystemMessageException ee) {
