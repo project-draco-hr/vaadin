@@ -1,0 +1,18 @@
+{
+  final Widget passwordWidget=((ComponentConnector)target).getWidget();
+  final VOverlay warning=new VOverlay();
+  warning.add(new HTML("Caps Lock is enabled!"));
+  passwordWidget.addDomHandler(new KeyPressHandler(){
+    @Override public void onKeyPress(    KeyPressEvent event){
+      if (isEnabled() && isCapsLockOn(event)) {
+        warning.showRelativeTo(passwordWidget);
+        rpc.isCapsLockEnabled(true);
+      }
+ else {
+        warning.hide();
+        rpc.isCapsLockEnabled(false);
+      }
+    }
+  }
+,KeyPressEvent.getType());
+}
