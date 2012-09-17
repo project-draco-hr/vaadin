@@ -1,13 +1,15 @@
 {
   if (ConnectorBundle.isConnectedComponentConnector(type)) {
     JClassType createWidgetClass=findInheritedMethod(type,"createWidget").getEnclosingType();
-    boolean needsCreateWidgetSupport=createWidgetClass.getQualifiedSourceName().equals(AbstractComponentConnector.class.getCanonicalName());
     JMethod getWidget=findInheritedMethod(type,"getWidget");
     JClassType widgetType=getWidget.getReturnType().isClass();
+    if (createWidgetClass.getQualifiedSourceName().equals(AbstractComponentConnector.class.getCanonicalName())) {
+      bundle.setNeedsGwtConstructor(widgetType);
+      bundle.setNeedsReturnType(type,getWidget);
+    }
     JMethod getState=findInheritedMethod(type,"getState");
     JClassType stateType=getState.getReturnType().isClass();
     Collection<Property> properties=bundle.getProperties(stateType);
-    boolean hasDelegateToWidget=false;
     for (    Property property : properties) {
       DelegateToWidget delegateToWidget=property.getAnnotation(DelegateToWidget.class);
       if (delegateToWidget != null) {
@@ -19,12 +21,8 @@
           throw new UnableToCompleteException();
         }
         bundle.setNeedsInvoker(widgetType,delegatedSetter);
-        hasDelegateToWidget=true;
+        bundle.setNeedsReturnType(type,getWidget);
       }
-    }
-    if (hasDelegateToWidget || needsCreateWidgetSupport) {
-      bundle.setNeedsReturnType(type,getWidget);
-      bundle.setNeedsGwtConstructor(widgetType);
     }
   }
 }
