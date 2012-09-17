@@ -1,0 +1,21 @@
+{
+  final Action ACTION_ADD=new Action("Add child item");
+  final Action ACTION_DELETE=new Action("Delete");
+  final Action[] ACTIONS=new Action[]{ACTION_ADD,ACTION_DELETE};
+  final Tree tree=new Tree();
+  tree.setId("tree" + debugIdCounter++);
+  HierarchicalContainer hc=createHierarchicalContainer();
+  tree.setContainerDataSource(hc);
+  tree.addActionHandler(new Action.Handler(){
+    @Override public void handleAction(    Action action,    Object sender,    Object target){
+    }
+    @Override public Action[] getActions(    Object target,    Object sender){
+      return ACTIONS;
+    }
+  }
+);
+  for (  Object id : tree.rootItemIds()) {
+    tree.expandItemsRecursively(id);
+  }
+  parent.addComponent(tree);
+}

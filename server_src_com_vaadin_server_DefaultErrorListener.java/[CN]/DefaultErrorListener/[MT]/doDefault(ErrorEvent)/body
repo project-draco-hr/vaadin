@@ -1,0 +1,18 @@
+{
+  final Throwable t=event.getThrowable();
+  if (t instanceof SocketException) {
+    getLogger().info("SocketException in CommunicationManager." + " Most likely client (browser) closed socket.");
+    return;
+  }
+  Object owner=null;
+  if (event instanceof VariableOwner.ErrorEvent) {
+    owner=((VariableOwner.ErrorEvent)event).getVariableOwner();
+  }
+ else   if (event instanceof ChangeVariablesErrorEvent) {
+    owner=((ChangeVariablesErrorEvent)event).getComponent();
+  }
+  if (owner instanceof AbstractComponent) {
+    ((AbstractComponent)owner).setComponentError(AbstractErrorMessage.getErrorMessageForException(t));
+  }
+  getLogger().log(Level.SEVERE,"Terminal error:",t);
+}

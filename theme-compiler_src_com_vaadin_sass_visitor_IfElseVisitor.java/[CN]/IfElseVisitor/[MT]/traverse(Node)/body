@@ -1,0 +1,42 @@
+{
+  addControlDefs(node,node);
+  for (  final Entry<Node,IfElseDefNode> entry : controlDefs.entrySet()) {
+    IfElseDefNode defNode=entry.getValue();
+    Node parent=entry.getKey();
+    for (    final Node child : defNode.getChildren()) {
+      if (child instanceof IfNode) {
+        try {
+          String expression=((IfElseNode)child).getExpression();
+          expression=replaceStrings(expression);
+          Expression e=evaluator.createExpression(expression);
+          try {
+            Boolean result=(Boolean)e.evaluate(null);
+            if (result) {
+              replaceDefNodeWithCorrectChild(defNode,parent,child);
+              break;
+            }
+          }
+ catch (          ClassCastException ex) {
+            throw new ParseException("Invalid @if/@else in scss file, not a boolean expression : " + child.toString());
+          }
+catch (          NullPointerException ex) {
+            throw new ParseException("Invalid @if/@else in scss file, not a boolean expression : " + child.toString());
+          }
+        }
+ catch (        JexlException e) {
+          throw new ParseException("Invalid @if/@else in scss file for " + child.toString());
+        }
+      }
+ else {
+        if (!(child instanceof ElseNode) && defNode.getChildren().indexOf(child) == defNode.getChildren().size() - 1) {
+          throw new ParseException("Invalid @if/@else in scss file for " + defNode);
+        }
+ else {
+          replaceDefNodeWithCorrectChild(defNode,parent,child);
+          break;
+        }
+      }
+    }
+    parent.removeChild(defNode);
+  }
+}

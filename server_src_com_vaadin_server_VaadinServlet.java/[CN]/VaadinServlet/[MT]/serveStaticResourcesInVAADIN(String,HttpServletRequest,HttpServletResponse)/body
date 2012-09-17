@@ -1,19 +1,20 @@
 {
   final ServletContext sc=getServletContext();
-  URL resourceUrl=sc.getResource(filename);
+  URL resourceUrl=findResourceURL(filename,sc);
   if (resourceUrl == null) {
-    filename=filename.substring(1);
-    resourceUrl=getVaadinService().getClassLoader().getResource(filename);
-    if (resourceUrl == null) {
+    if (serveOnTheFlyCompiledScss(filename,request,response,sc)) {
+      return;
+    }
+ else {
       getLogger().info("Requested resource [" + filename + "] not found from filesystem or through class loader."+ " Add widgetset and/or theme JAR to your classpath or add files to WebContent/VAADIN folder.");
       response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-      return;
     }
-    if (!isAllowedVAADINResourceUrl(request,resourceUrl)) {
-      getLogger().info("Requested resource [" + filename + "] not accessible in the VAADIN directory or access to it is forbidden.");
-      response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-      return;
-    }
+    return;
+  }
+  if (!isAllowedVAADINResourceUrl(request,resourceUrl)) {
+    getLogger().info("Requested resource [" + filename + "] not accessible in the VAADIN directory or access to it is forbidden.");
+    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+    return;
   }
   long lastModifiedTime=0;
   URLConnection connection=null;

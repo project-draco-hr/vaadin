@@ -1,0 +1,19 @@
+{
+  ArrayList<VariableNode> variables=new ArrayList<VariableNode>(this.variables.values());
+  for (  Node node : children) {
+    if (node instanceof VariableNode) {
+      VariableNode variableNode=(VariableNode)node;
+      if (this.variables.containsKey(variableNode.getName()) && variableNode.isGuarded()) {
+        continue;
+      }
+      this.variables.put(variableNode.getName(),variableNode);
+    }
+ else     if (node instanceof IVariableNode) {
+      ((IVariableNode)node).replaceVariables(new ArrayList<VariableNode>(this.variables.values()));
+    }
+    replaceVariables(node,node.getChildren());
+  }
+  for (  final VariableNode v : variables) {
+    this.variables.put(v.getName(),v);
+  }
+}

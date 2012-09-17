@@ -1,0 +1,46 @@
+{
+  final HashSet<Object> markedRows=new HashSet<Object>();
+  final Table t;
+  if (caption != null) {
+    t=new Table(caption);
+  }
+ else {
+    t=new Table();
+  }
+  t.setId("table" + debugIdCounter++);
+  if (primaryStyleName != null) {
+    t.addStyleName(primaryStyleName);
+  }
+  t.setWidth("100%");
+  t.setHeight("100px");
+  t.setSelectable(true);
+  t.setMultiSelect(true);
+  t.setImmediate(true);
+  t.setContainerDataSource(TestUtils.getISO3166Container());
+  t.setColumnReorderingAllowed(true);
+  t.setColumnCollapsingAllowed(true);
+  t.setColumnIcon(TestUtils.iso3166_PROPERTY_NAME,new ThemeResource(parent.ICON_URL));
+  t.addActionHandler(new Action.Handler(){
+    public Action[] getActions(    Object target,    Object sender){
+      if (markedRows.contains(target)) {
+        return ACTIONS_MARKED;
+      }
+ else {
+        return ACTIONS_UNMARKED;
+      }
+    }
+    @Override public void handleAction(    Action action,    Object sender,    Object target){
+      if (ACTION_MARK == action) {
+        markedRows.add(target);
+        t.refreshRowCache();
+      }
+ else       if (ACTION_UNMARK == action) {
+        markedRows.remove(target);
+        t.refreshRowCache();
+      }
+    }
+  }
+);
+  addComponent(t);
+  parent.registerComponent(t);
+}
