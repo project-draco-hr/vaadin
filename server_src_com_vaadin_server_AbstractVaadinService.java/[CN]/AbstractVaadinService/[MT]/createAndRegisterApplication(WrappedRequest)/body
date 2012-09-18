@@ -1,0 +1,16 @@
+{
+  VaadinSession session=createVaadinSession(request);
+  session.storeInSession(request.getWrappedSession());
+  URL applicationUrl;
+  try {
+    applicationUrl=getApplicationUrl(request);
+  }
+ catch (  MalformedURLException e) {
+    throw new ServiceException(e);
+  }
+  Locale locale=request.getLocale();
+  session.setLocale(locale);
+  session.start(new SessionStartEvent(applicationUrl,getDeploymentConfiguration(),createCommunicationManager(session)));
+  onVaadinSessionStarted(request,session);
+  return session;
+}
