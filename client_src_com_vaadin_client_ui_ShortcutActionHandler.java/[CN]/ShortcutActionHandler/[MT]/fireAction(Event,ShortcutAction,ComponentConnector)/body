@@ -19,10 +19,17 @@
   }
   Scheduler.get().scheduleDeferred(new Command(){
     @Override public void execute(){
-      if (finalTarget != null) {
-        client.updateVariable(paintableId,"actiontarget",finalTarget,false);
+      Connector shortcutTarget=ConnectorMap.get(client).getConnector(a.getTargetCID());
+      boolean handledClientSide=false;
+      if (shortcutTarget instanceof ShortcutActionTarget) {
+        handledClientSide=((ShortcutActionTarget)shortcutTarget).handleAction(a);
       }
-      client.updateVariable(paintableId,"action",a.getKey(),true);
+      if (!handledClientSide) {
+        if (finalTarget != null) {
+          client.updateVariable(paintableId,ACTION_TARGET_VARIABLE,finalTarget,false);
+        }
+        client.updateVariable(paintableId,ACTION_TARGET_ACTION_VARIABLE,a.getKey(),true);
+      }
     }
   }
 );
