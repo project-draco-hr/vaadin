@@ -2,23 +2,15 @@
   Element e=element;
   String path="";
   while (true) {
-    Element parent=DOM.getParent(e);
-    if (parent == null) {
-      return null;
-    }
     int childIndex=-1;
-    int childCount=DOM.getChildCount(parent);
-    for (int i=0; i < childCount; i++) {
-      if (e == DOM.getChild(parent,i)) {
-        childIndex=i;
-        break;
-      }
-    }
-    if (childIndex == -1) {
-      return null;
+    Element siblingIterator=e;
+    while (siblingIterator != null) {
+      childIndex++;
+      siblingIterator=siblingIterator.getPreviousSiblingElement().cast();
     }
     path=PARENTCHILD_SEPARATOR + "domChild[" + childIndex+ "]"+ path;
-    if (parent == baseElement) {
+    Element parent=e.getParentElement().cast();
+    if (parent == baseElement || parent.getParentElement() == baseElement.getParentElement()) {
       break;
     }
     e=parent;
