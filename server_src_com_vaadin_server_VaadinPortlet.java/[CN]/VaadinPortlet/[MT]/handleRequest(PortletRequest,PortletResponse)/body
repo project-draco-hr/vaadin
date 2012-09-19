@@ -1,11 +1,12 @@
 {
   RequestTimer requestTimer=new RequestTimer();
   requestTimer.start();
+  CurrentInstance.clearAll();
+  setCurrent(this);
   AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
   WrappedPortletRequest wrappedRequest=createWrappedRequest(request);
   WrappedPortletResponse wrappedResponse=new WrappedPortletResponse(response,getVaadinService());
-  CurrentInstance.set(WrappedRequest.class,wrappedRequest);
-  CurrentInstance.set(WrappedResponse.class,wrappedResponse);
+  getVaadinService().setCurrentInstances(wrappedRequest,wrappedResponse);
   RequestType requestType=getRequestType(wrappedRequest);
   if (requestType == RequestType.UNKNOWN) {
     handleUnknownRequest(request,response);
