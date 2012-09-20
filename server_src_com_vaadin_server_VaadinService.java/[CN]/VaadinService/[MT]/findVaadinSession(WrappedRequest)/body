@@ -1,23 +1,23 @@
 {
-  boolean requestCanCreateApplication=requestCanCreateSession(request);
-  VaadinSession session=getExistingSession(request,requestCanCreateApplication);
+  boolean requestCanCreateSession=requestCanCreateSession(request);
+  VaadinSession session=getExistingSession(request,requestCanCreateSession);
   if (session != null) {
     final boolean restartApplication=(request.getParameter(URL_PARAMETER_RESTART_APPLICATION) != null);
     final boolean closeApplication=(request.getParameter(URL_PARAMETER_CLOSE_APPLICATION) != null);
     if (restartApplication) {
-      closeApplication(session,request.getWrappedSession(false));
-      return createAndRegisterApplication(request);
+      closeSession(session,request.getWrappedSession(false));
+      return createAndRegisterSession(request);
     }
  else     if (closeApplication) {
-      closeApplication(session,request.getWrappedSession(false));
+      closeSession(session,request.getWrappedSession(false));
       return null;
     }
  else {
       return session;
     }
   }
-  if (requestCanCreateApplication) {
-    return createAndRegisterApplication(request);
+  if (requestCanCreateSession) {
+    return createAndRegisterSession(request);
   }
  else {
     throw new SessionExpiredException();

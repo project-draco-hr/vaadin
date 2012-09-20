@@ -11,48 +11,47 @@
     serveStaticResources(request,response);
     return;
   }
-  VaadinSession application=null;
-  boolean applicationRunning=false;
+  VaadinServletSession vaadinSession=null;
+  boolean sessionProcessed=false;
   try {
     if (requestType == RequestType.UIDL && request.getParameterMap().containsKey(ApplicationConstants.PARAM_UNLOADBURST) && request.getContentLength() < 1 && getVaadinService().getExistingSession(request,false) == null) {
       redirectToApplication(request,response);
       return;
     }
-    application=getVaadinService().findVaadinSession(request);
-    if (application == null) {
+    vaadinSession=(VaadinServletSession)getVaadinService().findVaadinSession(request);
+    if (vaadinSession == null) {
       return;
     }
-    request.setAttribute(VaadinSession.class.getName(),application);
-    VaadinSession.setCurrent(application);
-    VaadinServletSession webApplicationContext=(VaadinServletSession)application;
-    CommunicationManager applicationManager=(CommunicationManager)webApplicationContext.getApplicationManager();
+    request.setAttribute(VaadinSession.class.getName(),vaadinSession);
+    VaadinSession.setCurrent(vaadinSession);
+    CommunicationManager communicationManager=(CommunicationManager)vaadinSession.getCommunicationManager();
     if (requestType == RequestType.CONNECTOR_RESOURCE) {
-      applicationManager.serveConnectorResource(request,response);
+      communicationManager.serveConnectorResource(request,response);
       return;
     }
  else     if (requestType == RequestType.HEARTBEAT) {
-      applicationManager.handleHeartbeatRequest(request,response,application);
+      communicationManager.handleHeartbeatRequest(request,response,vaadinSession);
       return;
     }
-    webApplicationContext.getBrowser().updateRequestDetails(request);
-    applicationRunning=true;
+    vaadinSession.getBrowser().updateRequestDetails(request);
+    sessionProcessed=true;
     if (requestType == RequestType.FILE_UPLOAD) {
-      applicationManager.handleFileUpload(application,request,response);
+      communicationManager.handleFileUpload(vaadinSession,request,response);
       return;
     }
  else     if (requestType == RequestType.UIDL) {
-      UI uI=application.getUIForRequest(request);
+      UI uI=vaadinSession.getUIForRequest(request);
       if (uI == null) {
         throw new ServletException(ERROR_NO_UI_FOUND);
       }
-      applicationManager.handleUidlRequest(request,response,servletWrapper,uI);
+      communicationManager.handleUidlRequest(request,response,servletWrapper,uI);
       return;
     }
  else     if (requestType == RequestType.BROWSER_DETAILS) {
-      applicationManager.handleBrowserDetailsRequest(request,response,application);
+      communicationManager.handleBrowserDetailsRequest(request,response,vaadinSession);
       return;
     }
-    if (applicationManager.handleApplicationRequest(request,response)) {
+    if (communicationManager.handleOtherRequest(request,response)) {
       return;
     }
   }
@@ -63,15 +62,15 @@ catch (  final GeneralSecurityException e) {
     handleServiceSecurityException(request,response);
   }
 catch (  final Throwable e) {
-    handleServiceException(request,response,application,e);
+    handleServiceException(request,response,vaadinSession,e);
   }
  finally {
-    if (applicationRunning) {
-      application.cleanupInactiveUIs();
+    if (sessionProcessed) {
+      vaadinSession.cleanupInactiveUIs();
     }
     CurrentInstance.clearAll();
-    if (application != null) {
-      requestTimer.stop(application);
+    if (vaadinSession != null) {
+      requestTimer.stop(vaadinSession);
     }
   }
 }

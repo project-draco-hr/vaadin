@@ -23,74 +23,73 @@
       serveStaticResources((ResourceRequest)request,(ResourceResponse)response);
     }
  else {
-      VaadinSession application=null;
-      boolean applicationRunning=false;
+      VaadinPortletSession vaadinSession=null;
+      boolean sessionProcessed=false;
       try {
-        application=getVaadinService().findVaadinSession(wrappedRequest);
-        if (application == null) {
+        vaadinSession=(VaadinPortletSession)getVaadinService().findVaadinSession(wrappedRequest);
+        if (vaadinSession == null) {
           return;
         }
-        VaadinSession.setCurrent(application);
-        request.setAttribute(VaadinSession.class.getName(),application);
-        VaadinPortletSession applicationContext=(VaadinPortletSession)application;
-        PortletCommunicationManager applicationManager=(PortletCommunicationManager)applicationContext.getApplicationManager();
+        VaadinSession.setCurrent(vaadinSession);
+        request.setAttribute(VaadinSession.class.getName(),vaadinSession);
+        PortletCommunicationManager communicationManager=(PortletCommunicationManager)vaadinSession.getCommunicationManager();
         if (requestType == RequestType.CONNECTOR_RESOURCE) {
-          applicationManager.serveConnectorResource(wrappedRequest,wrappedResponse);
+          communicationManager.serveConnectorResource(wrappedRequest,wrappedResponse);
           return;
         }
  else         if (requestType == RequestType.HEARTBEAT) {
-          applicationManager.handleHeartbeatRequest(wrappedRequest,wrappedResponse,application);
+          communicationManager.handleHeartbeatRequest(wrappedRequest,wrappedResponse,vaadinSession);
           return;
         }
-        applicationContext.getBrowser().updateRequestDetails(wrappedRequest);
-        applicationRunning=true;
+        vaadinSession.getBrowser().updateRequestDetails(wrappedRequest);
+        sessionProcessed=true;
         UI uI=null;
-        application.getLock().lock();
+        vaadinSession.getLock().lock();
         try {
 switch (requestType) {
 case RENDER:
 case ACTION:
-            uI=application.getUIForRequest(wrappedRequest);
+            uI=vaadinSession.getUIForRequest(wrappedRequest);
           break;
 case BROWSER_DETAILS:
         break;
 case FILE_UPLOAD:
       break;
-case APPLICATION_RESOURCE:
+case APP:
     break;
 default :
-  uI=application.getUIForRequest(wrappedRequest);
+  uI=vaadinSession.getUIForRequest(wrappedRequest);
 }
 }
   finally {
-application.getLock().unlock();
+vaadinSession.getLock().unlock();
 }
 if (request instanceof RenderRequest) {
-applicationContext.firePortletRenderRequest(uI,(RenderRequest)request,(RenderResponse)response);
+vaadinSession.firePortletRenderRequest(uI,(RenderRequest)request,(RenderResponse)response);
 }
  else if (request instanceof ActionRequest) {
-applicationContext.firePortletActionRequest(uI,(ActionRequest)request,(ActionResponse)response);
+vaadinSession.firePortletActionRequest(uI,(ActionRequest)request,(ActionResponse)response);
 }
  else if (request instanceof EventRequest) {
-applicationContext.firePortletEventRequest(uI,(EventRequest)request,(EventResponse)response);
+vaadinSession.firePortletEventRequest(uI,(EventRequest)request,(EventResponse)response);
 }
  else if (request instanceof ResourceRequest) {
-applicationContext.firePortletResourceRequest(uI,(ResourceRequest)request,(ResourceResponse)response);
+vaadinSession.firePortletResourceRequest(uI,(ResourceRequest)request,(ResourceResponse)response);
 }
 if (requestType == RequestType.FILE_UPLOAD) {
-applicationManager.handleFileUpload(application,wrappedRequest,wrappedResponse);
+communicationManager.handleFileUpload(vaadinSession,wrappedRequest,wrappedResponse);
 return;
 }
  else if (requestType == RequestType.BROWSER_DETAILS) {
-applicationManager.handleBrowserDetailsRequest(wrappedRequest,wrappedResponse,application);
+communicationManager.handleBrowserDetailsRequest(wrappedRequest,wrappedResponse,vaadinSession);
 return;
 }
  else if (requestType == RequestType.UIDL) {
-applicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,portletWrapper,uI);
+communicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,portletWrapper,uI);
 return;
 }
  else {
-handleOtherRequest(wrappedRequest,wrappedResponse,requestType,application,applicationContext,applicationManager);
+handleOtherRequest(wrappedRequest,wrappedResponse,requestType,vaadinSession,communicationManager);
 }
 }
  catch (final SessionExpiredException e) {
@@ -100,17 +99,14 @@ catch (final GeneralSecurityException e) {
 getLogger().fine("General security exception, the security key was probably incorrect.");
 }
 catch (final Throwable e) {
-handleServiceException(wrappedRequest,wrappedResponse,application,e);
+handleServiceException(wrappedRequest,wrappedResponse,vaadinSession,e);
 }
  finally {
-if (applicationRunning) {
-application.cleanupInactiveUIs();
+if (sessionProcessed) {
+vaadinSession.cleanupInactiveUIs();
 }
-if (applicationRunning) {
-application.cleanupInactiveUIs();
-}
-if (application != null) {
-requestTimer.stop(application);
+if (vaadinSession != null) {
+requestTimer.stop(vaadinSession);
 }
 }
 }
