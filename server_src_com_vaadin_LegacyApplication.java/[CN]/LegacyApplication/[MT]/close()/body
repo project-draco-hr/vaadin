@@ -1,3 +1,17 @@
 {
-  VaadinSession.getCurrent().close();
+  isRunning=false;
+  Collection<LegacyWindow> windows=getWindows();
+  for (  LegacyWindow legacyWindow : windows) {
+    String logoutUrl=getLogoutURL();
+    if (logoutUrl == null) {
+      URL url=getURL();
+      if (url != null) {
+        logoutUrl=url.toString();
+      }
+    }
+    if (logoutUrl != null) {
+      legacyWindow.getPage().setLocation(logoutUrl);
+    }
+    legacyWindow.getSession().cleanupUI(legacyWindow);
+  }
 }

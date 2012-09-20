@@ -47,21 +47,19 @@
         UI uI=null;
         application.getLock().lock();
         try {
-          if (application.isRunning()) {
 switch (requestType) {
 case RENDER:
 case ACTION:
-              uI=application.getUIForRequest(wrappedRequest);
-            break;
-case BROWSER_DETAILS:
+            uI=application.getUIForRequest(wrappedRequest);
           break;
-case FILE_UPLOAD:
+case BROWSER_DETAILS:
         break;
-case APPLICATION_RESOURCE:
+case FILE_UPLOAD:
       break;
+case APPLICATION_RESOURCE:
+    break;
 default :
-    uI=application.getUIForRequest(wrappedRequest);
-}
+  uI=application.getUIForRequest(wrappedRequest);
 }
 }
   finally {
@@ -92,10 +90,6 @@ applicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,portletWrapp
 return;
 }
  else {
-if (!application.isRunning()) {
-endApplication(request,response,application);
-return;
-}
 handleOtherRequest(wrappedRequest,wrappedResponse,requestType,application,applicationContext,applicationManager);
 }
 }
@@ -109,6 +103,9 @@ catch (final Throwable e) {
 handleServiceException(wrappedRequest,wrappedResponse,application,e);
 }
  finally {
+if (applicationRunning) {
+application.cleanupInactiveUIs();
+}
 if (applicationRunning) {
 application.cleanupInactiveUIs();
 }
