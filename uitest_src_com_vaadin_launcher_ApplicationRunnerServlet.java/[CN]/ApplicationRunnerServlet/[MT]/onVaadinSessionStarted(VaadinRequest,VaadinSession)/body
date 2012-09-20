@@ -1,0 +1,30 @@
+{
+  try {
+    final Class<?> classToRun=getClassToRun();
+    if (UI.class.isAssignableFrom(classToRun)) {
+      session.addUIProvider(new AbstractUIProvider(){
+        @Override public Class<? extends UI> getUIClass(        VaadinRequest request){
+          return (Class<? extends UI>)classToRun;
+        }
+      }
+);
+    }
+ else     if (LegacyApplication.class.isAssignableFrom(classToRun)) {
+    }
+ else     if (UIProvider.class.isAssignableFrom(classToRun)) {
+      session.addUIProvider((UIProvider)classToRun.newInstance());
+    }
+ else {
+      throw new ServiceException(classToRun.getCanonicalName() + " is neither an Application nor a UI");
+    }
+  }
+ catch (  final IllegalAccessException e) {
+    throw new ServiceException(e);
+  }
+catch (  final InstantiationException e) {
+    throw new ServiceException(e);
+  }
+catch (  final ClassNotFoundException e) {
+    throw new ServiceException(new InstantiationException("Failed to load application class: " + getApplicationRunnerApplicationClassName(VaadinServletRequest.cast(request))));
+  }
+}

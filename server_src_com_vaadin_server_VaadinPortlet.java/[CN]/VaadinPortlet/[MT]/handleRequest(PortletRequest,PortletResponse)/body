@@ -5,10 +5,10 @@
   setCurrent(this);
   try {
     AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
-    WrappedPortletRequest wrappedRequest=createWrappedRequest(request);
-    WrappedPortletResponse wrappedResponse=new WrappedPortletResponse(response,getVaadinService());
-    getVaadinService().setCurrentInstances(wrappedRequest,wrappedResponse);
-    RequestType requestType=getRequestType(wrappedRequest);
+    VaadinPortletRequest vaadinRequest=createVaadinRequest(request);
+    VaadinPortletResponse vaadinResponse=new VaadinPortletResponse(response,getVaadinService());
+    getVaadinService().setCurrentInstances(vaadinRequest,vaadinResponse);
+    RequestType requestType=getRequestType(vaadinRequest);
     if (requestType == RequestType.UNKNOWN) {
       handleUnknownRequest(request,response);
     }
@@ -26,7 +26,7 @@
       VaadinPortletSession vaadinSession=null;
       boolean sessionProcessed=false;
       try {
-        vaadinSession=(VaadinPortletSession)getVaadinService().findVaadinSession(wrappedRequest);
+        vaadinSession=(VaadinPortletSession)getVaadinService().findVaadinSession(vaadinRequest);
         if (vaadinSession == null) {
           return;
         }
@@ -34,14 +34,14 @@
         request.setAttribute(VaadinSession.class.getName(),vaadinSession);
         PortletCommunicationManager communicationManager=(PortletCommunicationManager)vaadinSession.getCommunicationManager();
         if (requestType == RequestType.CONNECTOR_RESOURCE) {
-          communicationManager.serveConnectorResource(wrappedRequest,wrappedResponse);
+          communicationManager.serveConnectorResource(vaadinRequest,vaadinResponse);
           return;
         }
  else         if (requestType == RequestType.HEARTBEAT) {
-          communicationManager.handleHeartbeatRequest(wrappedRequest,wrappedResponse,vaadinSession);
+          communicationManager.handleHeartbeatRequest(vaadinRequest,vaadinResponse,vaadinSession);
           return;
         }
-        vaadinSession.getBrowser().updateRequestDetails(wrappedRequest);
+        vaadinSession.getBrowser().updateRequestDetails(vaadinRequest);
         sessionProcessed=true;
         UI uI=null;
         vaadinSession.getLock().lock();
@@ -49,7 +49,7 @@
 switch (requestType) {
 case RENDER:
 case ACTION:
-            uI=vaadinSession.getUIForRequest(wrappedRequest);
+            uI=vaadinSession.getUIForRequest(vaadinRequest);
           break;
 case BROWSER_DETAILS:
         break;
@@ -58,7 +58,7 @@ case FILE_UPLOAD:
 case APP:
     break;
 default :
-  uI=vaadinSession.getUIForRequest(wrappedRequest);
+  uI=vaadinSession.getUIForRequest(vaadinRequest);
 }
 }
   finally {
@@ -77,19 +77,19 @@ vaadinSession.firePortletEventRequest(uI,(EventRequest)request,(EventResponse)re
 vaadinSession.firePortletResourceRequest(uI,(ResourceRequest)request,(ResourceResponse)response);
 }
 if (requestType == RequestType.FILE_UPLOAD) {
-communicationManager.handleFileUpload(vaadinSession,wrappedRequest,wrappedResponse);
+communicationManager.handleFileUpload(vaadinSession,vaadinRequest,vaadinResponse);
 return;
 }
  else if (requestType == RequestType.BROWSER_DETAILS) {
-communicationManager.handleBrowserDetailsRequest(wrappedRequest,wrappedResponse,vaadinSession);
+communicationManager.handleBrowserDetailsRequest(vaadinRequest,vaadinResponse,vaadinSession);
 return;
 }
  else if (requestType == RequestType.UIDL) {
-communicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,portletWrapper,uI);
+communicationManager.handleUidlRequest(vaadinRequest,vaadinResponse,portletWrapper,uI);
 return;
 }
  else {
-handleOtherRequest(wrappedRequest,wrappedResponse,requestType,vaadinSession,communicationManager);
+handleOtherRequest(vaadinRequest,vaadinResponse,requestType,vaadinSession,communicationManager);
 }
 }
  catch (final SessionExpiredException e) {
@@ -99,7 +99,7 @@ catch (final GeneralSecurityException e) {
 getLogger().fine("General security exception, the security key was probably incorrect.");
 }
 catch (final Throwable e) {
-handleServiceException(wrappedRequest,wrappedResponse,vaadinSession,e);
+handleServiceException(vaadinRequest,vaadinResponse,vaadinSession,e);
 }
  finally {
 if (sessionProcessed) {
