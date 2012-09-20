@@ -1,0 +1,15 @@
+{
+  final WrappedSession session=request.getWrappedSession(allowSessionCreation);
+  if (session == null) {
+    throw new SessionExpiredException();
+  }
+  VaadinSession sessionApplication=VaadinSession.getForSession(session);
+  if (sessionApplication == null) {
+    return null;
+  }
+  if (!sessionApplication.isRunning()) {
+    sessionApplication.removeFromSession();
+    return null;
+  }
+  return sessionApplication;
+}

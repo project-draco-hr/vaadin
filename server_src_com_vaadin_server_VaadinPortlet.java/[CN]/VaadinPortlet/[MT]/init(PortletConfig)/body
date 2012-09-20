@@ -1,4 +1,6 @@
 {
+  CurrentInstance.clearAll();
+  setCurrent(this);
   super.init(config);
   Properties initParameters=new Properties();
   final PortletContext context=config.getPortletContext();
@@ -12,6 +14,9 @@
   }
   DeploymentConfiguration deploymentConfiguration=createDeploymentConfiguration(initParameters);
   vaadinService=createPortletService(deploymentConfiguration);
+  vaadinService.setCurrentInstances(null,null);
   addonContext=new AddonContext(vaadinService);
   addonContext.init();
+  portletInitialized();
+  CurrentInstance.clearAll();
 }

@@ -1,8 +1,7 @@
 {
   RequestTimer requestTimer=new RequestTimer();
   requestTimer.start();
-  CurrentInstance.set(WrappedResponse.class,response);
-  CurrentInstance.set(WrappedRequest.class,request);
+  getVaadinService().setCurrentInstances(request,response);
   AbstractApplicationServletWrapper servletWrapper=new AbstractApplicationServletWrapper(this);
   RequestType requestType=getRequestType(request);
   if (!ensureCookiesEnabled(requestType,request,response)) {
@@ -15,11 +14,11 @@
   VaadinSession application=null;
   boolean applicationRunning=false;
   try {
-    if (requestType == RequestType.UIDL && request.getParameterMap().containsKey(ApplicationConstants.PARAM_UNLOADBURST) && request.getContentLength() < 1 && getExistingApplication(request,false) == null) {
+    if (requestType == RequestType.UIDL && request.getParameterMap().containsKey(ApplicationConstants.PARAM_UNLOADBURST) && request.getContentLength() < 1 && getVaadinService().getExistingSession(request,false) == null) {
       redirectToApplication(request,response);
       return;
     }
-    application=findApplicationInstance(request,requestType);
+    application=getVaadinService().findVaadinSession(request);
     if (application == null) {
       return;
     }
@@ -72,7 +71,7 @@ catch (  final Throwable e) {
   }
  finally {
     if (applicationRunning) {
-      application.closeInactiveUIs();
+      application.cleanupInactiveUIs();
     }
     CurrentInstance.clearAll();
     if (application != null) {

@@ -1,11 +1,12 @@
 {
   RequestTimer requestTimer=new RequestTimer();
   requestTimer.start();
+  CurrentInstance.clearAll();
+  setCurrent(this);
   AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
   WrappedPortletRequest wrappedRequest=createWrappedRequest(request);
   WrappedPortletResponse wrappedResponse=new WrappedPortletResponse(response,getVaadinService());
-  CurrentInstance.set(WrappedRequest.class,wrappedRequest);
-  CurrentInstance.set(WrappedResponse.class,wrappedResponse);
+  getVaadinService().setCurrentInstances(wrappedRequest,wrappedResponse);
   RequestType requestType=getRequestType(wrappedRequest);
   if (requestType == RequestType.UNKNOWN) {
     handleUnknownRequest(request,response);
@@ -24,7 +25,7 @@
     VaadinSession application=null;
     boolean applicationRunning=false;
     try {
-      application=findApplicationInstance(wrappedRequest,requestType);
+      application=getVaadinService().findVaadinSession(wrappedRequest);
       if (application == null) {
         return;
       }
@@ -108,7 +109,7 @@ handleServiceException(wrappedRequest,wrappedResponse,application,e);
 }
  finally {
 if (applicationRunning) {
-application.closeInactiveUIs();
+application.cleanupInactiveUIs();
 }
 CurrentInstance.clearAll();
 if (application != null) {

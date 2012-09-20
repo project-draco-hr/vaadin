@@ -32,5 +32,10 @@ catch (    ClassNotFoundException e) {
       getLogger().log(Level.WARNING,"Could not de-serialize ApplicationContext for " + session.getId() + " A new one will be created. ",e);
     }
   }
-  return getApplicationContext(session);
+  try {
+    return getVaadinService().findVaadinSession(createWrappedRequest(request));
+  }
+ catch (  Exception e) {
+    throw new ServletException(e);
+  }
 }

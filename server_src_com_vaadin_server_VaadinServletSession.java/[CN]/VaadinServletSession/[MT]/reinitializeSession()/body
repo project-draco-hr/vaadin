@@ -1,4 +1,8 @@
 {
+  WrappedHttpServletRequest currentRequest=ServletService.getCurrentRequest();
+  if (currentRequest == null) {
+    throw new IllegalStateException("Can not reinitialize session outside normal request handling.");
+  }
   HttpSession oldSession=getHttpSession();
   HashMap<String,Object> attrs=new HashMap<String,Object>();
   for (Enumeration<String> e=oldSession.getAttributeNames(); e.hasMoreElements(); ) {
@@ -8,7 +12,7 @@
   reinitializingSession=true;
   oldSession.invalidate();
   reinitializingSession=false;
-  HttpSession newSession=WrappedHttpServletRequest.cast(CurrentInstance.get(WrappedRequest.class)).getSession();
+  HttpSession newSession=currentRequest.getSession();
   for (  String name : attrs.keySet()) {
     newSession.setAttribute(name,attrs.get(name));
   }
