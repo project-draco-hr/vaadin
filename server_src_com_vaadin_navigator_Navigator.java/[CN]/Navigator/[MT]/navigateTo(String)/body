@@ -11,11 +11,18 @@
       }
     }
   }
+  if (viewWithLongestName == null && errorProvider != null) {
+    longestViewName=errorProvider.getViewName(navigationState);
+    viewWithLongestName=errorProvider.getView(longestViewName);
+  }
   if (viewWithLongestName != null) {
     String parameters="";
     if (navigationState.length() > longestViewName.length() + 1) {
       parameters=navigationState.substring(longestViewName.length() + 1);
     }
     navigateTo(viewWithLongestName,longestViewName,parameters);
+  }
+ else {
+    throw new IllegalArgumentException("Trying to navigate to an unknown state '" + navigationState + "' and an error view provider not present");
   }
 }
