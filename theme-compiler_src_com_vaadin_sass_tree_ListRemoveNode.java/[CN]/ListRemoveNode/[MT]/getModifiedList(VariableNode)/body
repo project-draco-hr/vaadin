@@ -1,0 +1,22 @@
+{
+  VariableNode clone=(VariableNode)DeepCopy.copy(variableNode);
+  LexicalUnitImpl first=null;
+  LexicalUnitImpl current=(LexicalUnitImpl)clone.getExpr();
+  LexicalUnitImpl lastAccepted=null;
+  while (current != null) {
+    if (shouldInclude(current,lastAccepted)) {
+      LexicalUnitImpl temp=current.clone();
+      temp.setNextLexicalUnit(null);
+      if (lastAccepted != null) {
+        lastAccepted.setNextLexicalUnit(temp);
+      }
+      lastAccepted=temp;
+      if (first == null) {
+        first=lastAccepted;
+      }
+    }
+    current=(LexicalUnitImpl)current.getNextLexicalUnit();
+  }
+  clone.setExpr(first);
+  return clone;
+}

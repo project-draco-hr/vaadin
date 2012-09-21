@@ -1,28 +1,61 @@
 {
   String name;
-  LexicalUnit value=null;
+  LexicalUnitImpl first=null;
+  LexicalUnitImpl next=null;
+  LexicalUnitImpl prev=null;
   name=variableName();
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case COLON:
     jj_consume_token(COLON);
-  label_88:   while (true) {
+  label_91:   while (true) {
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case S:
       ;
     break;
 default :
-  jj_la1[130]=jj_gen;
-break label_88;
+  jj_la1[136]=jj_gen;
+break label_91;
 }
 jj_consume_token(S);
 }
-value=term(null);
-break;
-default :
-jj_la1[131]=jj_gen;
+first=term(null);
+prev=first;
+label_92: while (true) {
+if (jj_2_7(2)) {
 ;
 }
-VariableNode arg=new VariableNode(name,value,false);
+ else {
+break label_92;
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case COMMA:
+jj_consume_token(COMMA);
+label_93: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[137]=jj_gen;
+break label_93;
+}
+jj_consume_token(S);
+}
+break;
+default :
+jj_la1[138]=jj_gen;
+;
+}
+next=term(prev);
+prev.setNextLexicalUnit(next);
+prev=next;
+}
+break;
+default :
+jj_la1[139]=jj_gen;
+;
+}
+VariableNode arg=new VariableNode(name,first,false);
 {
 if (true) return arg;
 }

@@ -2,19 +2,19 @@
   for (  Node child : node.getChildren()) {
     if (child instanceof BlockNode) {
       BlockNode blockNode=(BlockNode)child;
-      String selectorString=SelectorUtil.toString(blockNode.getSelectorList());
+      String selectorString=blockNode.getSelectors();
       if (extendsMap.get(selectorString) != null) {
-        for (        SelectorList sList : extendsMap.get(selectorString)) {
-          SelectorList newList=SelectorUtil.createNewSelectorListFromAnOldOneWithSomPartReplaced(blockNode.getSelectorList(),selectorString,sList);
-          addAdditionalSelectorListToBlockNode(blockNode,newList);
+        for (        ArrayList<String> sList : extendsMap.get(selectorString)) {
+          ArrayList<String> clone=(ArrayList<String>)sList.clone();
+          addAdditionalSelectorListToBlockNode(blockNode,clone,null);
         }
       }
  else {
-        for (        Entry<String,List<SelectorList>> entry : extendsMap.entrySet()) {
+        for (        Entry<String,List<ArrayList<String>>> entry : extendsMap.entrySet()) {
           if (selectorString.contains(entry.getKey())) {
-            for (            SelectorList sList : entry.getValue()) {
-              SelectorList newList=SelectorUtil.createNewSelectorListFromAnOldOneWithSomPartReplaced(blockNode.getSelectorList(),entry.getKey(),sList);
-              addAdditionalSelectorListToBlockNode(blockNode,newList);
+            for (            ArrayList<String> sList : entry.getValue()) {
+              ArrayList<String> clone=(ArrayList<String>)sList.clone();
+              addAdditionalSelectorListToBlockNode(blockNode,clone,entry.getKey());
             }
           }
         }

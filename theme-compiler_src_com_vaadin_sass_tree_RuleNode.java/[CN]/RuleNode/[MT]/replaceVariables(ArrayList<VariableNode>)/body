@@ -1,20 +1,32 @@
 {
   for (  final VariableNode node : variables) {
-    LexicalUnit current=value;
-    if (current.getLexicalUnitType() == LexicalUnitImpl.SAC_FUNCTION) {
-      if (current.getParameters().toString().contains(node.getName())) {
-        LexicalUnit param=value.getParameters();
-        if (param != null) {
-          if (param.toString().contains(node.getName())) {
-            ((LexicalUnitImpl)param).replaceValue(node.getExpr());
+    if (value.getLexicalUnitType() == LexicalUnitImpl.SAC_FUNCTION) {
+      if (value.getParameters().toString().contains(node.getName())) {
+        if (value.getParameters() != null) {
+          if (value.getParameters().toString().contains("$" + node.getName())) {
+            LexicalUnitImpl param=value.getParameters();
+            while (param != null) {
+              if (param.getValue().toString().contains(node.getName())) {
+                LexicalUnitImpl expr=node.getExpr();
+                LexicalUnitImpl prev=param.getPreviousLexicalUnit();
+                LexicalUnitImpl next=param.getNextLexicalUnit();
+                if (param.getLexicalUnitType() == LexicalUnitImpl.SCSS_VARIABLE) {
+                  param.replaceValue(expr);
+                  param.setPrevLexicalUnit(prev);
+                  param.setNextLexicalUnit(next);
+                }
+              }
+              param=param.getNextLexicalUnit();
+            }
           }
         }
       }
     }
  else {
+      LexicalUnitImpl current=value;
       while (current != null) {
-        if (current.getLexicalUnitType() == LexicalUnitImpl.SCSS_VARIABLE && current.toString().contains("$" + node.getName())) {
-          ((LexicalUnitImpl)current).replaceValue(node.getExpr());
+        if (current.getLexicalUnitType() == LexicalUnitImpl.SCSS_VARIABLE && current.getValue().toString().equals(node.getName())) {
+          current.replaceValue(node.getExpr());
         }
         current=current.getNextLexicalUnit();
       }

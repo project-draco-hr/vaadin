@@ -1,0 +1,33 @@
+{
+  ArrayList<String> list=new ArrayList<String>();
+  int nesting=nest;
+  Token t=null;
+  while (true) {
+    t=getToken(1);
+    if (t.kind == VARIABLE) {
+      list.add(t.image);
+    }
+ else     if (t.kind == STRING) {
+      list.add(t.image.substring(1,t.image.length()).substring(0,t.image.length() - 2));
+    }
+ else     if (t.kind == LPARAN) {
+      nesting++;
+      if (nesting > nest + 1) {
+        throw new CSSParseException("Only one ( ) pair per parameter allowed",getLocator());
+      }
+    }
+ else     if (t.kind == RPARAN) {
+      nesting--;
+      if (nesting == 0) {
+        getNextToken();
+        return list;
+      }
+    }
+ else     if (t.kind == COMMA) {
+      if (nesting == nest) {
+        return list;
+      }
+    }
+    getNextToken();
+  }
+}

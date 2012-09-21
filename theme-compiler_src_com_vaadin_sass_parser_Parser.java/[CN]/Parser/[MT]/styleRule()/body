@@ -1,26 +1,26 @@
 {
   boolean start=false;
-  SelectorList l=null;
+  ArrayList<String> l=null;
   Token save;
   Locator loc;
   try {
     l=selectorList();
     save=token;
     jj_consume_token(LBRACE);
-    label_38:     while (true) {
+    label_41:     while (true) {
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case S:
         ;
       break;
 default :
-    jj_la1[53]=jj_gen;
-  break label_38;
+    jj_la1[57]=jj_gen;
+  break label_41;
 }
 jj_consume_token(S);
 }
 start=true;
 documentHandler.startSelector(l);
-label_39: while (true) {
+label_42: while (true) {
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case LBRACKET:
 case ANY:
@@ -32,19 +32,24 @@ case INCLUDE_SYM:
 case EACH_SYM:
 case IF_SYM:
 case EXTEND_SYM:
+case MICROSOFT_RULE:
 case IDENT:
 case VARIABLE:
 case HASH:
 case MEDIA_SYM:
+case REMOVE:
 ;
 break;
 default :
-jj_la1[54]=jj_gen;
-break label_39;
+jj_la1[58]=jj_gen;
+break label_42;
 }
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case IF_SYM:
 ifDirective();
+break;
+case REMOVE:
+removeDirective();
 break;
 case INCLUDE_SYM:
 includeDirective();
@@ -62,9 +67,20 @@ case VARIABLE:
 variable();
 break;
 default :
-jj_la1[55]=jj_gen;
+jj_la1[60]=jj_gen;
 if (jj_2_1(3)) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case MICROSOFT_RULE:
+microsoftExtension();
+break;
+case IDENT:
 declarationOrNestedProperties();
+break;
+default :
+jj_la1[59]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
 }
  else {
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
@@ -79,7 +95,7 @@ case HASH:
 styleRule();
 break;
 default :
-jj_la1[56]=jj_gen;
+jj_la1[61]=jj_gen;
 jj_consume_token(-1);
 throw new ParseException();
 }
@@ -87,14 +103,14 @@ throw new ParseException();
 }
 }
 jj_consume_token(RBRACE);
-label_40: while (true) {
+label_43: while (true) {
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case S:
 ;
 break;
 default :
-jj_la1[57]=jj_gen;
-break label_40;
+jj_la1[62]=jj_gen;
+break label_43;
 }
 jj_consume_token(S);
 }
@@ -114,7 +130,7 @@ reportWarningSkipText(getLocator(),skipStatement());
 }
  finally {
 if (start) {
-documentHandler.endSelector(l);
+documentHandler.endSelector();
 }
 }
 }
