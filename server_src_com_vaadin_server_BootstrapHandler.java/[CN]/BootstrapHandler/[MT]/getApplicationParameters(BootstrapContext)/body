@@ -1,14 +1,16 @@
 {
   JSONObject appConfig=new JSONObject();
-  if (context.getThemeName() != null) {
-    appConfig.put("themeUri",getThemeUri(context,context.getThemeName()));
+  String themeName=context.getThemeName();
+  if (themeName != null) {
+    appConfig.put("themeUri",getThemeUri(context,themeName));
   }
   JSONObject versionInfo=new JSONObject();
   versionInfo.put("vaadinVersion",Version.getFullVersion());
   appConfig.put("versionInfo",versionInfo);
   appConfig.put("widgetset",context.getWidgetsetName());
   appConfig.put("initialPath",context.getRequest().getRequestPathInfo());
-  Map<String,String[]> parameterMap=context.getRequest().getParameterMap();
+  Map<String,String[]> parameterMap=new HashMap<String,String[]>(context.getRequest().getParameterMap());
+  parameterMap.put("theme",new String[]{themeName});
   appConfig.put("initialParams",parameterMap);
   return appConfig;
 }

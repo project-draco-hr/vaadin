@@ -1,0 +1,14 @@
+{
+  VaadinSession session=VaadinSession.getForSession(request.getWrappedSession());
+  String uiIdString=request.getParameter(UIConstants.UI_ID_PARAMETER);
+  int uiId=Integer.parseInt(uiIdString);
+  session.getLock().lock();
+  try {
+    UI ui=session.getUIById(uiId);
+    UI.setCurrent(ui);
+    return ui;
+  }
+  finally {
+    session.getLock().unlock();
+  }
+}

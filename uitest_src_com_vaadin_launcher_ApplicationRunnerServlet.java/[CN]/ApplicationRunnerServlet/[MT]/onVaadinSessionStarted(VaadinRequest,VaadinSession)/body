@@ -2,7 +2,7 @@
   try {
     final Class<?> classToRun=getClassToRun();
     if (UI.class.isAssignableFrom(classToRun)) {
-      session.addUIProvider(new AbstractUIProvider(){
+      getVaadinService().addUIProvider(session,new AbstractUIProvider(){
         @Override public Class<? extends UI> getUIClass(        VaadinRequest request){
           return (Class<? extends UI>)classToRun;
         }
@@ -12,7 +12,7 @@
  else     if (LegacyApplication.class.isAssignableFrom(classToRun)) {
     }
  else     if (UIProvider.class.isAssignableFrom(classToRun)) {
-      session.addUIProvider((UIProvider)classToRun.newInstance());
+      getVaadinService().addUIProvider(session,(UIProvider)classToRun.newInstance());
     }
  else {
       throw new ServiceException(classToRun.getCanonicalName() + " is neither an Application nor a UI");

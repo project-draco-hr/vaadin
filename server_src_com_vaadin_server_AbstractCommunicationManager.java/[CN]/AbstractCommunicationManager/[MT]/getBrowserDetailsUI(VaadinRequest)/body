@@ -1,0 +1,56 @@
+{
+  VaadinService vaadinService=request.getVaadinService();
+  VaadinSession session=VaadinSession.getForSession(request.getWrappedSession());
+  List<UIProvider> uiProviders=vaadinService.getUIProviders(session);
+  UIProvider provider=null;
+  Class<? extends UI> uiClass=null;
+  for (  UIProvider p : uiProviders) {
+    UI existingUi=p.getExistingUI(request);
+    if (existingUi != null) {
+      UI.setCurrent(existingUi);
+      return existingUi;
+    }
+    uiClass=p.getUIClass(request);
+    if (uiClass != null) {
+      provider=p;
+      break;
+    }
+  }
+  if (provider == null || uiClass == null) {
+    return null;
+  }
+  BrowserDetails browserDetails=request.getBrowserDetails();
+  boolean hasBrowserDetails=browserDetails != null && browserDetails.getUriFragment() != null;
+  Map<String,Integer> retainOnRefreshUIs=session.getPreserveOnRefreshUIs();
+  if (hasBrowserDetails && !retainOnRefreshUIs.isEmpty()) {
+    @SuppressWarnings("null") String windowName=browserDetails.getWindowName();
+    Integer retainedUIId=retainOnRefreshUIs.get(windowName);
+    if (retainedUIId != null) {
+      UI retainedUI=session.getUIById(retainedUIId.intValue());
+      if (uiClass.isInstance(retainedUI)) {
+        return retainedUI;
+      }
+ else {
+        getLogger().info("Not using retained UI in " + windowName + " because retained UI was of type "+ retainedUIId.getClass()+ " but "+ uiClass+ " is expected for the request.");
+      }
+    }
+  }
+  UI ui=uiClass.cast(provider.createInstance(request,uiClass));
+  if (ui.getSession() != session) {
+    ui.setSession(session);
+  }
+  Integer uiId=Integer.valueOf(session.getNextUIid());
+  UI.setCurrent(ui);
+  ui.doInit(request,uiId.intValue());
+  session.addUI(ui);
+  if (vaadinService.preserveUIOnRefresh(request,ui,provider)) {
+    String windowName=request.getBrowserDetails().getWindowName();
+    if (windowName == null) {
+      getLogger().warning("There is no window.name available for UI " + uiClass + " that should be preserved.");
+    }
+ else {
+      session.getPreserveOnRefreshUIs().put(windowName,uiId);
+    }
+  }
+  return ui;
+}

@@ -1,7 +1,19 @@
 {
   try {
-    Class<? extends UI> uiClass=session.getUIClass(request);
-    BootstrapContext context=createContext(request,response,session,uiClass);
+    List<UIProvider> uiProviders=request.getVaadinService().getUIProviders(session);
+    Class<? extends UI> uiClass=null;
+    UIProvider provider=null;
+    for (    UIProvider p : uiProviders) {
+      uiClass=p.getUIClass(request);
+      if (uiClass != null) {
+        provider=p;
+        break;
+      }
+    }
+    if (provider == null) {
+      return false;
+    }
+    BootstrapContext context=new BootstrapContext(response,new BootstrapFragmentResponse(this,request,session,uiClass,new ArrayList<Node>(),provider));
     setupMainDiv(context);
     BootstrapFragmentResponse fragmentResponse=context.getBootstrapResponse();
     session.modifyBootstrapResponse(fragmentResponse);
