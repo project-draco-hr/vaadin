@@ -5,10 +5,13 @@
   UIProvider provider=null;
   Class<? extends UI> uiClass=null;
   for (  UIProvider p : uiProviders) {
-    UI existingUi=p.getExistingUI(request);
-    if (existingUi != null) {
-      UI.setCurrent(existingUi);
-      return existingUi;
+    if (p instanceof LegacyApplicationUIProvider) {
+      LegacyApplicationUIProvider legacyProvider=(LegacyApplicationUIProvider)p;
+      UI existingUi=legacyProvider.getExistingUI(request);
+      if (existingUi != null) {
+        UI.setCurrent(existingUi);
+        return existingUi;
+      }
     }
     uiClass=p.getUIClass(request);
     if (uiClass != null) {
