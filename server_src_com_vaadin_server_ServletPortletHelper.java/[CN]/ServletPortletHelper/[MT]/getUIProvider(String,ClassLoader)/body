@@ -1,0 +1,19 @@
+{
+  try {
+    Class<?> providerClass=classLoader.loadClass(uiProviderProperty);
+    Class<? extends UIProvider> subclass=providerClass.asSubclass(UIProvider.class);
+    return subclass.newInstance();
+  }
+ catch (  ClassNotFoundException e) {
+    throw new ServiceException("Could not load UIProvider class " + uiProviderProperty,e);
+  }
+catch (  ClassCastException e) {
+    throw new ServiceException("UIProvider class " + uiProviderProperty + " does not extend UIProvider",e);
+  }
+catch (  InstantiationException e) {
+    throw new ServiceException("Could not instantiate UIProvider " + uiProviderProperty,e);
+  }
+catch (  IllegalAccessException e) {
+    throw new ServiceException("Could not instantiate UIProvider " + uiProviderProperty,e);
+  }
+}

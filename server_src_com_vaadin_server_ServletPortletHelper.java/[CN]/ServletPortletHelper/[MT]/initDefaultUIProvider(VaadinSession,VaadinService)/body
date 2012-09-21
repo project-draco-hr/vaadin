@@ -1,11 +1,12 @@
 {
-  Properties initParameters=vaadinService.getDeploymentConfiguration().getInitParameters();
-  String uiProperty=initParameters.getProperty(VaadinSession.UI_PARAMETER);
-  if (uiProperty == null) {
-    uiProperty=initParameters.getProperty(VaadinSession.UI_PARAMETER.toLowerCase());
-  }
+  String uiProperty=vaadinService.getDeploymentConfiguration().getApplicationOrSystemProperty(VaadinSession.UI_PARAMETER,null);
   if (uiProperty != null) {
     verifyUIClass(uiProperty,vaadinService.getClassLoader());
     vaadinService.addUIProvider(session,new DefaultUIProvider());
+  }
+  String uiProviderProperty=vaadinService.getDeploymentConfiguration().getApplicationOrSystemProperty(Constants.SERVLET_PARAMETER_UI_PROVIDER,null);
+  if (uiProviderProperty != null) {
+    UIProvider uiProvider=getUIProvider(uiProviderProperty,vaadinService.getClassLoader());
+    vaadinService.addUIProvider(session,uiProvider);
   }
 }
