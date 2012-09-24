@@ -39,12 +39,12 @@
       }
     }
   }
-  UICreateEvent event=new UICreateEvent(request,uiClass);
+  Integer uiId=Integer.valueOf(session.getNextUIid());
+  UICreateEvent event=new UICreateEvent(request,uiClass,uiId);
   UI ui=uiClass.cast(provider.createInstance(event));
   if (ui.getSession() != session) {
     ui.setSession(session);
   }
-  Integer uiId=Integer.valueOf(session.getNextUIid());
   UI.setCurrent(ui);
   ui.doInit(request,uiId.intValue());
   session.addUI(ui);
