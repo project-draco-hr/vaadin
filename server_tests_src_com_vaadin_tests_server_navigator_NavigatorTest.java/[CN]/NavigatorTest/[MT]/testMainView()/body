@@ -5,6 +5,7 @@
   ViewProvider provider=control.createMock(ViewProvider.class);
   View view1=control.createMock(View.class);
   View view2=control.createMock(View.class);
+  manager.setNavigator(EasyMock.anyObject(Navigator.class));
   EasyMock.expect(provider.getViewName("test2")).andReturn("test2");
   EasyMock.expect(provider.getView("test2")).andReturn(view2);
   EasyMock.expect(manager.getState()).andReturn("view1");
@@ -24,7 +25,7 @@
   display.showView(view1);
   manager.setState("test1/params");
   control.replay();
-  Navigator navigator=new Navigator(null,manager,display);
+  Navigator navigator=createNavigator(manager,display);
   navigator.addProvider(provider);
   navigator.navigateTo("test2");
   navigator.navigateTo("");
