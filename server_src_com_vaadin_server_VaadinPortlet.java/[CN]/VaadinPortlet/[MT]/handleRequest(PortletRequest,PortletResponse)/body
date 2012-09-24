@@ -3,50 +3,50 @@
   requestTimer.start();
   CurrentInstance.clearAll();
   setCurrent(this);
-  AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
-  WrappedPortletRequest wrappedRequest=createWrappedRequest(request);
-  WrappedPortletResponse wrappedResponse=new WrappedPortletResponse(response,getVaadinService());
-  getVaadinService().setCurrentInstances(wrappedRequest,wrappedResponse);
-  RequestType requestType=getRequestType(wrappedRequest);
-  if (requestType == RequestType.UNKNOWN) {
-    handleUnknownRequest(request,response);
-  }
- else   if (requestType == RequestType.DUMMY) {
-    ((ResourceResponse)response).setContentType("text/html");
-    final OutputStream out=((ResourceResponse)response).getPortletOutputStream();
-    final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
-    outWriter.print("<html><body>dummy page</body></html>");
-    outWriter.close();
-  }
- else   if (requestType == RequestType.STATIC_FILE) {
-    serveStaticResources((ResourceRequest)request,(ResourceResponse)response);
-  }
+  try {
+    AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
+    WrappedPortletRequest wrappedRequest=createWrappedRequest(request);
+    WrappedPortletResponse wrappedResponse=new WrappedPortletResponse(response,getVaadinService());
+    getVaadinService().setCurrentInstances(wrappedRequest,wrappedResponse);
+    RequestType requestType=getRequestType(wrappedRequest);
+    if (requestType == RequestType.UNKNOWN) {
+      handleUnknownRequest(request,response);
+    }
+ else     if (requestType == RequestType.DUMMY) {
+      ((ResourceResponse)response).setContentType("text/html");
+      final OutputStream out=((ResourceResponse)response).getPortletOutputStream();
+      final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
+      outWriter.print("<html><body>dummy page</body></html>");
+      outWriter.close();
+    }
+ else     if (requestType == RequestType.STATIC_FILE) {
+      serveStaticResources((ResourceRequest)request,(ResourceResponse)response);
+    }
  else {
-    VaadinSession application=null;
-    boolean applicationRunning=false;
-    try {
-      application=getVaadinService().findVaadinSession(wrappedRequest);
-      if (application == null) {
-        return;
-      }
-      VaadinSession.setCurrent(application);
-      request.setAttribute(VaadinSession.class.getName(),application);
-      VaadinPortletSession applicationContext=(VaadinPortletSession)application;
-      PortletCommunicationManager applicationManager=(PortletCommunicationManager)applicationContext.getApplicationManager();
-      if (requestType == RequestType.CONNECTOR_RESOURCE) {
-        applicationManager.serveConnectorResource(wrappedRequest,wrappedResponse);
-        return;
-      }
- else       if (requestType == RequestType.HEARTBEAT) {
-        applicationManager.handleHeartbeatRequest(wrappedRequest,wrappedResponse,application);
-        return;
-      }
-      applicationContext.getBrowser().updateRequestDetails(wrappedRequest);
-      applicationRunning=true;
-      UI uI=null;
-      application.getLock().lock();
+      VaadinSession application=null;
+      boolean applicationRunning=false;
       try {
-        if (application.isRunning()) {
+        application=getVaadinService().findVaadinSession(wrappedRequest);
+        if (application == null) {
+          return;
+        }
+        VaadinSession.setCurrent(application);
+        request.setAttribute(VaadinSession.class.getName(),application);
+        VaadinPortletSession applicationContext=(VaadinPortletSession)application;
+        PortletCommunicationManager applicationManager=(PortletCommunicationManager)applicationContext.getApplicationManager();
+        if (requestType == RequestType.CONNECTOR_RESOURCE) {
+          applicationManager.serveConnectorResource(wrappedRequest,wrappedResponse);
+          return;
+        }
+ else         if (requestType == RequestType.HEARTBEAT) {
+          applicationManager.handleHeartbeatRequest(wrappedRequest,wrappedResponse,application);
+          return;
+        }
+        applicationContext.getBrowser().updateRequestDetails(wrappedRequest);
+        applicationRunning=true;
+        UI uI=null;
+        application.getLock().lock();
+        try {
 switch (requestType) {
 case RENDER:
 case ACTION:
@@ -60,7 +60,6 @@ case APPLICATION_RESOURCE:
     break;
 default :
   uI=application.getUIForRequest(wrappedRequest);
-}
 }
 }
   finally {
@@ -91,10 +90,6 @@ applicationManager.handleUidlRequest(wrappedRequest,wrappedResponse,portletWrapp
 return;
 }
  else {
-if (!application.isRunning()) {
-endApplication(request,response,application);
-return;
-}
 handleOtherRequest(wrappedRequest,wrappedResponse,requestType,application,applicationContext,applicationManager);
 }
 }
@@ -111,10 +106,16 @@ handleServiceException(wrappedRequest,wrappedResponse,application,e);
 if (applicationRunning) {
 application.cleanupInactiveUIs();
 }
-CurrentInstance.clearAll();
+if (applicationRunning) {
+application.cleanupInactiveUIs();
+}
 if (application != null) {
 requestTimer.stop(application);
 }
 }
+}
+}
+  finally {
+CurrentInstance.clearAll();
 }
 }
