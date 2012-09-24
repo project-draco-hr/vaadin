@@ -1,0 +1,19 @@
+{
+  Class<?> currentType=event.getUIClass();
+  while (currentType != Object.class) {
+    T annotation=currentType.getAnnotation(annotationType);
+    if (annotation != null) {
+      return annotation;
+    }
+ else {
+      currentType=currentType.getSuperclass();
+    }
+  }
+  for (  Class<?> iface : event.getUIClass().getInterfaces()) {
+    T annotation=iface.getAnnotation(annotationType);
+    if (annotation != null) {
+      return annotation;
+    }
+  }
+  return null;
+}

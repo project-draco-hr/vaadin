@@ -1,0 +1,30 @@
+{
+  VaadinRequest request=event.getRequest();
+  if (request.getParameter("lazyCreate") != null) {
+    UI uI=new UI(){
+      @Override protected void init(      VaadinRequest request){
+        addComponent(getRequestInfo("LazyCreateUI",request));
+      }
+    }
+;
+    return uI;
+  }
+ else   if (request.getParameter("eagerInit") != null) {
+    return new EagerInitUI();
+  }
+ else {
+    UI uI=new UI(){
+      @Override protected void init(      VaadinRequest request){
+        addComponent(getRequestInfo("NormalUI",request));
+        Link lazyCreateLink=new Link("Open lazyCreate UI",new ExternalResource(VaadinSession.getCurrent().getURL() + "?lazyCreate#lazyCreate"));
+        lazyCreateLink.setTargetName("_blank");
+        addComponent(lazyCreateLink);
+        Link lazyInitLink=new Link("Open eagerInit UI",new ExternalResource(VaadinSession.getCurrent().getURL() + "?eagerInit#eagerInit"));
+        lazyInitLink.setTargetName("_blank");
+        addComponent(lazyInitLink);
+      }
+    }
+;
+    return uI;
+  }
+}

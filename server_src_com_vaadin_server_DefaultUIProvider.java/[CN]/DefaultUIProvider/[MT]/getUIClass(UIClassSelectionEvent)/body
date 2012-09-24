@@ -1,0 +1,19 @@
+{
+  VaadinRequest request=event.getRequest();
+  Object uiClassNameObj=request.getVaadinService().getDeploymentConfiguration().getInitParameters().getProperty(VaadinSession.UI_PARAMETER);
+  if (uiClassNameObj instanceof String) {
+    String uiClassName=uiClassNameObj.toString();
+    ClassLoader classLoader=request.getVaadinService().getClassLoader();
+    if (classLoader == null) {
+      classLoader=getClass().getClassLoader();
+    }
+    try {
+      Class<? extends UI> uiClass=Class.forName(uiClassName,true,classLoader).asSubclass(UI.class);
+      return uiClass;
+    }
+ catch (    ClassNotFoundException e) {
+      throw new RuntimeException("Could not find UI class",e);
+    }
+  }
+  return null;
+}

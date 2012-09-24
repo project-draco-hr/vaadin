@@ -2,18 +2,19 @@
   VaadinService vaadinService=request.getVaadinService();
   VaadinSession session=VaadinSession.getForSession(request.getWrappedSession());
   List<UIProvider> uiProviders=vaadinService.getUIProviders(session);
+  UIClassSelectionEvent classSelectionEvent=new UIClassSelectionEvent(request);
   UIProvider provider=null;
   Class<? extends UI> uiClass=null;
   for (  UIProvider p : uiProviders) {
     if (p instanceof LegacyApplicationUIProvider) {
       LegacyApplicationUIProvider legacyProvider=(LegacyApplicationUIProvider)p;
-      UI existingUi=legacyProvider.getExistingUI(request);
+      UI existingUi=legacyProvider.getExistingUI(classSelectionEvent);
       if (existingUi != null) {
         UI.setCurrent(existingUi);
         return existingUi;
       }
     }
-    uiClass=p.getUIClass(request);
+    uiClass=p.getUIClass(classSelectionEvent);
     if (uiClass != null) {
       provider=p;
       break;
@@ -38,7 +39,8 @@
       }
     }
   }
-  UI ui=uiClass.cast(provider.createInstance(request,uiClass));
+  UICreateEvent event=new UICreateEvent(request,uiClass);
+  UI ui=uiClass.cast(provider.createInstance(event));
   if (ui.getSession() != session) {
     ui.setSession(session);
   }
@@ -46,7 +48,7 @@
   UI.setCurrent(ui);
   ui.doInit(request,uiId.intValue());
   session.addUI(ui);
-  if (vaadinService.preserveUIOnRefresh(request,ui,provider)) {
+  if (vaadinService.preserveUIOnRefresh(provider,event)) {
     String windowName=request.getBrowserDetails().getWindowName();
     if (windowName == null) {
       getLogger().warning("There is no window.name available for UI " + uiClass + " that should be preserved.");
