@@ -1,7 +1,7 @@
 {
   RequestTimer requestTimer=new RequestTimer();
   requestTimer.start();
-  getVaadinService().setCurrentInstances(request,response);
+  getService().setCurrentInstances(request,response);
   AbstractApplicationServletWrapper servletWrapper=new AbstractApplicationServletWrapper(this);
   RequestType requestType=getRequestType(request);
   if (!ensureCookiesEnabled(requestType,request,response)) {
@@ -14,11 +14,11 @@
   VaadinServletSession vaadinSession=null;
   boolean sessionProcessed=false;
   try {
-    if (requestType == RequestType.UIDL && request.getParameterMap().containsKey(ApplicationConstants.PARAM_UNLOADBURST) && request.getContentLength() < 1 && getVaadinService().getExistingSession(request,false) == null) {
+    if (requestType == RequestType.UIDL && request.getParameterMap().containsKey(ApplicationConstants.PARAM_UNLOADBURST) && request.getContentLength() < 1 && getService().getExistingSession(request,false) == null) {
       redirectToApplication(request,response);
       return;
     }
-    vaadinSession=(VaadinServletSession)getVaadinService().findVaadinSession(request);
+    vaadinSession=(VaadinServletSession)getService().findVaadinSession(request);
     if (vaadinSession == null) {
       return;
     }
@@ -38,7 +38,7 @@
       return;
     }
  else     if (requestType == RequestType.UIDL) {
-      UI uI=getVaadinService().findUI(request);
+      UI uI=getService().findUI(request);
       if (uI == null) {
         throw new ServletException(ERROR_NO_UI_FOUND);
       }
