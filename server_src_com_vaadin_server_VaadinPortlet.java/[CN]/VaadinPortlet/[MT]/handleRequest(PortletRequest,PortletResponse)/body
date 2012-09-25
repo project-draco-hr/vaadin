@@ -6,8 +6,8 @@
   try {
     AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
     VaadinPortletRequest vaadinRequest=createVaadinRequest(request);
-    VaadinPortletResponse vaadinResponse=new VaadinPortletResponse(response,getVaadinService());
-    getVaadinService().setCurrentInstances(vaadinRequest,vaadinResponse);
+    VaadinPortletResponse vaadinResponse=new VaadinPortletResponse(response,getService());
+    getService().setCurrentInstances(vaadinRequest,vaadinResponse);
     RequestType requestType=getRequestType(vaadinRequest);
     if (requestType == RequestType.UNKNOWN) {
       handleUnknownRequest(request,response);
@@ -26,7 +26,7 @@
       VaadinPortletSession vaadinSession=null;
       boolean sessionProcessed=false;
       try {
-        vaadinSession=(VaadinPortletSession)getVaadinService().findVaadinSession(vaadinRequest);
+        vaadinSession=(VaadinPortletSession)getService().findVaadinSession(vaadinRequest);
         if (vaadinSession == null) {
           return;
         }
@@ -43,7 +43,7 @@
         sessionProcessed=true;
         UI uI=null;
         if (requestType == RequestType.UIDL) {
-          uI=getVaadinService().findUI(vaadinRequest);
+          uI=getService().findUI(vaadinRequest);
         }
         if (request instanceof RenderRequest) {
           vaadinSession.firePortletRenderRequest(uI,(RenderRequest)request,(RenderResponse)response);

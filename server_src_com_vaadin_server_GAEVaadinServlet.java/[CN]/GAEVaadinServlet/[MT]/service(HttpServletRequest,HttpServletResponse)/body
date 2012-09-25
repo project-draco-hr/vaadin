@@ -1,6 +1,6 @@
 {
-  VaadinServletRequest request=new VaadinServletRequest(unwrappedRequest,getVaadinService());
-  VaadinServletResponse response=new VaadinServletResponse(unwrappedResponse,getVaadinService());
+  VaadinServletRequest request=new VaadinServletRequest(unwrappedRequest,getService());
+  VaadinServletResponse response=new VaadinServletResponse(unwrappedResponse,getService());
   if (isCleanupRequest(request)) {
     cleanDatastore();
     return;
@@ -17,7 +17,7 @@
     cleanSession(request);
     return;
   }
-  final HttpSession session=request.getSession(getVaadinService().requestCanCreateSession(request));
+  final HttpSession session=request.getSession(getService().requestCanCreateSession(request));
   if (session == null) {
     handleServiceSessionExpired(request,response);
     cleanSession(request);

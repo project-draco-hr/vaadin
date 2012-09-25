@@ -2,8 +2,9 @@
   IMocksControl control=EasyMock.createControl();
   Navigator navigator=control.createMock(Navigator.class);
   Page page=control.createMock(Page.class);
-  UriFragmentManager manager=new UriFragmentManager(page,navigator);
-  EasyMock.expect(page.getFragment()).andReturn("test");
+  UriFragmentManager manager=new UriFragmentManager(page);
+  manager.setNavigator(navigator);
+  EasyMock.expect(page.getFragment()).andReturn("!test");
   navigator.navigateTo("test");
   control.replay();
   FragmentChangedEvent event=new FragmentChangedEvent(page,"oldtest");
