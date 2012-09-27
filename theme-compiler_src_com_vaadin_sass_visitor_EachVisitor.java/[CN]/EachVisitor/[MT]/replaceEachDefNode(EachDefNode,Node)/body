@@ -1,0 +1,24 @@
+{
+  Node last=defNode;
+  for (  final Node child : defNode.getChildren()) {
+    if (child instanceof BlockNode) {
+      BlockNode iNode=(BlockNode)child;
+      String interpolation="#{" + defNode.getVariableName() + "}";
+      if (iNode.containsInterpolationVariable(interpolation)) {
+        for (        final String variable : defNode.getVariables()) {
+          BlockNode copy=(BlockNode)DeepCopy.copy(child);
+          copy.replaceInterpolation(defNode.getVariableName(),variable);
+          for (          final Node blockChild : copy.getChildren()) {
+            if (blockChild instanceof RuleNode) {
+              ((RuleNode)blockChild).replaceInterpolation(defNode.getVariableName(),variable);
+            }
+          }
+          parent.appendChild(copy,last);
+          last=copy;
+        }
+      }
+    }
+    last=child;
+  }
+  rootNode.removeChild(defNode);
+}
