@@ -11,14 +11,10 @@
  else     if (node instanceof ListModifyNode) {
       ((IVariableNode)node).replaceVariables(new ArrayList<VariableNode>(this.variables.values()));
       ListModifyNode modify=(ListModifyNode)node;
-      if (modify.isModifyingVariable()) {
-        String variable=modify.getVariable();
-        if (!this.variables.containsKey(variable)) {
-          throw new ParseException("No variable with name $" + variable + " found.");
-        }
-        VariableNode modifiedList=modify.getModifiedList(this.variables.get(variable));
-        this.variables.put(variable,modifiedList);
-      }
+      String variable=modify.getNewVariable().substring(1,modify.getNewVariable().length());
+      VariableNode modifiedList=modify.getModifiedList(this.variables.get(modify.getModifyingList()));
+      modifiedList.setName(variable);
+      this.variables.put(variable,modifiedList);
     }
  else     if (node instanceof IVariableNode) {
       ((IVariableNode)node).replaceVariables(new ArrayList<VariableNode>(this.variables.values()));
