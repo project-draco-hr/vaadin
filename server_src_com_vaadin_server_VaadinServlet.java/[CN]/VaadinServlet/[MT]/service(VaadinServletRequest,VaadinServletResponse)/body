@@ -12,7 +12,6 @@
     return;
   }
   VaadinServletSession vaadinSession=null;
-  boolean sessionProcessed=false;
   try {
     if (requestType == RequestType.UIDL && request.getParameterMap().containsKey(ApplicationConstants.PARAM_UNLOADBURST) && request.getContentLength() < 1 && getService().getExistingSession(request,false) == null) {
       redirectToApplication(request,response);
@@ -32,7 +31,6 @@
       return;
     }
     vaadinSession.getBrowser().updateRequestDetails(request);
-    sessionProcessed=true;
     if (requestType == RequestType.FILE_UPLOAD) {
       communicationManager.handleFileUpload(vaadinSession,request,response);
       return;
@@ -64,7 +62,7 @@ catch (  final Throwable e) {
     handleServiceException(request,response,vaadinSession,e);
   }
  finally {
-    if (sessionProcessed) {
+    if (vaadinSession != null) {
       vaadinSession.cleanupInactiveUIs();
     }
     CurrentInstance.clearAll();

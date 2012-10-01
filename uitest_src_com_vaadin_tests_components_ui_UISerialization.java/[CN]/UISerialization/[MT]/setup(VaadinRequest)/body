@@ -27,6 +27,16 @@
       byte[] result=serialize(UISerialization.this);
       long elapsed=new Date().getTime() - d.getTime();
       log.log("Serialized UI in " + elapsed + "ms into "+ result.length+ " bytes");
+      Object diffStateBefore=getConnectorTracker().getDiffState(UISerialization.this);
+      UISerialization app=(UISerialization)deserialize(result);
+      log.log("Deserialized UI in " + elapsed + "ms");
+      Object diffStateAfter=getConnectorTracker().getDiffState(UISerialization.this);
+      if (diffStateBefore.equals(diffStateAfter)) {
+        log.log("Diff states match, size: " + diffStateBefore.toString().length());
+      }
+ else {
+        log.log("Diff states do not match");
+      }
     }
   }
 ));

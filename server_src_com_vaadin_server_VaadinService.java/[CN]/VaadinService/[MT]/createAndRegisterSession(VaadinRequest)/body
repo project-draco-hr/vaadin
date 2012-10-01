@@ -1,6 +1,6 @@
 {
-  VaadinSession session=createVaadinSession(request);
-  session.storeInSession(request.getWrappedSession());
+  VaadinServiceSession session=createVaadinSession(request);
+  session.storeInSession(this,request.getWrappedSession());
   URL applicationUrl;
   try {
     applicationUrl=getApplicationUrl(request);
@@ -11,5 +11,7 @@
   Locale locale=request.getLocale();
   session.setLocale(locale);
   session.start(new SessionStartEvent(applicationUrl,getDeploymentConfiguration(),createCommunicationManager(session)));
+  ServletPortletHelper.initDefaultUIProvider(session,this);
+  onVaadinSessionStarted(request,session);
   return session;
 }

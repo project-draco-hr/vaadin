@@ -24,7 +24,6 @@
     }
  else {
       VaadinPortletSession vaadinSession=null;
-      boolean sessionProcessed=false;
       try {
         vaadinSession=(VaadinPortletSession)getService().findVaadinSession(vaadinRequest);
         if (vaadinSession == null) {
@@ -40,7 +39,6 @@
           return;
         }
         vaadinSession.getBrowser().updateRequestDetails(vaadinRequest);
-        sessionProcessed=true;
         UI uI=null;
         if (requestType == RequestType.UIDL) {
           uI=getService().findUI(vaadinRequest);
@@ -83,10 +81,8 @@ catch (      final Throwable e) {
         handleServiceException(vaadinRequest,vaadinResponse,vaadinSession,e);
       }
  finally {
-        if (sessionProcessed) {
-          vaadinSession.cleanupInactiveUIs();
-        }
         if (vaadinSession != null) {
+          vaadinSession.cleanupInactiveUIs();
           requestTimer.stop(vaadinSession);
         }
       }

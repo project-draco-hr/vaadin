@@ -1,0 +1,23 @@
+{
+  WrappedSession oldSession=request.getWrappedSession();
+  HashMap<String,Object> attrs=new HashMap<String,Object>();
+  for (  String name : oldSession.getAttributeNames()) {
+    Object value=oldSession.getAttribute(name);
+    if (value instanceof VaadinServiceSession) {
+      VaadinServiceSession serviceSession=(VaadinServiceSession)value;
+      serviceSession.setAttribute(REINITIALIZING_SESSION_MARKER,Boolean.TRUE);
+    }
+    attrs.put(name,value);
+  }
+  oldSession.invalidate();
+  WrappedSession newSession=request.getWrappedSession();
+  for (  String name : attrs.keySet()) {
+    Object value=attrs.get(name);
+    newSession.setAttribute(name,value);
+    if (value instanceof VaadinServiceSession) {
+      VaadinServiceSession serviceSession=(VaadinServiceSession)value;
+      serviceSession.storeInSession(serviceSession.getService(),newSession);
+      serviceSession.setAttribute(REINITIALIZING_SESSION_MARKER,null);
+    }
+  }
+}

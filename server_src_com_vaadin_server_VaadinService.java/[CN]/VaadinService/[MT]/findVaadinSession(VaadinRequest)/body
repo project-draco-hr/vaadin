@@ -1,14 +1,9 @@
 {
-  VaadinSession vaadinSession=findOrCreateVaadinSession(request);
+  VaadinServiceSession vaadinSession=findOrCreateVaadinSession(request);
   if (vaadinSession == null) {
     return null;
   }
-  if (!vaadinSession.hasVaadinServiceData(this)) {
-    vaadinSession.addVaadinServiceData(new VaadinServiceData(this));
-    ServletPortletHelper.initDefaultUIProvider(vaadinSession,this);
-    onVaadinSessionStarted(request,vaadinSession);
-  }
-  VaadinSession.setCurrent(vaadinSession);
-  request.setAttribute(VaadinSession.class.getName(),vaadinSession);
+  VaadinServiceSession.setCurrent(vaadinSession);
+  request.setAttribute(VaadinServiceSession.class.getName(),vaadinSession);
   return vaadinSession;
 }
