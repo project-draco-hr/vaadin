@@ -1,4 +1,7 @@
 {
+  VaadinRequest request=context.getRequest();
+  VaadinServiceSession session=context.getSession();
+  VaadinService vaadinService=request.getService();
   JSONObject appConfig=new JSONObject();
   String themeName=context.getThemeName();
   if (themeName != null) {
@@ -8,9 +11,33 @@
   versionInfo.put("vaadinVersion",Version.getFullVersion());
   appConfig.put("versionInfo",versionInfo);
   appConfig.put("widgetset",context.getWidgetsetName());
-  appConfig.put("initialPath",context.getRequest().getRequestPathInfo());
-  Map<String,String[]> parameterMap=new HashMap<String,String[]>(context.getRequest().getParameterMap());
+  appConfig.put("initialPath",request.getRequestPathInfo());
+  Map<String,String[]> parameterMap=new HashMap<String,String[]>(request.getParameterMap());
   parameterMap.put("theme",new String[]{themeName});
   appConfig.put("initialParams",parameterMap);
+  SystemMessages systemMessages=vaadinService.getSystemMessages();
+  if (systemMessages != null) {
+    JSONObject comErrMsg=new JSONObject();
+    comErrMsg.put("caption",systemMessages.getCommunicationErrorCaption());
+    comErrMsg.put("message",systemMessages.getCommunicationErrorMessage());
+    comErrMsg.put("url",systemMessages.getCommunicationErrorURL());
+    appConfig.put("comErrMsg",comErrMsg);
+    JSONObject authErrMsg=new JSONObject();
+    authErrMsg.put("caption",systemMessages.getAuthenticationErrorCaption());
+    authErrMsg.put("message",systemMessages.getAuthenticationErrorMessage());
+    authErrMsg.put("url",systemMessages.getAuthenticationErrorURL());
+    appConfig.put("authErrMsg",authErrMsg);
+  }
+  String staticFileLocation=vaadinService.getStaticFileLocation(request);
+  String widgetsetBase=staticFileLocation + "/" + VaadinServlet.WIDGETSET_DIRECTORY_PATH;
+  appConfig.put("widgetsetBase",widgetsetBase);
+  if (!session.getConfiguration().isProductionMode()) {
+    appConfig.put("debug",true);
+  }
+  if (vaadinService.isStandalone(request)) {
+    appConfig.put("standalone",true);
+  }
+  appConfig.put("heartbeatInterval",vaadinService.getDeploymentConfiguration().getHeartbeatInterval());
+  appConfig.put("appUri",getAppUri(context));
   return appConfig;
 }
