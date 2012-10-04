@@ -1,0 +1,23 @@
+{
+  if (mixinNode.getArglist().size() > 0) {
+    ArrayList<VariableNode> remainingNodes=new ArrayList<VariableNode>(def.getArglist());
+    ArrayList<LexicalUnitImpl> remainingUnits=new ArrayList<LexicalUnitImpl>(mixinNode.getArglist());
+    for (    final LexicalUnitImpl unit : mixinNode.getArglist()) {
+      if (unit.getLexicalUnitType() == LexicalUnitImpl.SCSS_VARIABLE && unit.getNextLexicalUnit() != null) {
+        for (        final VariableNode node : def.getArglist()) {
+          if (node.getName().equals(unit.getValue().toString())) {
+            node.setExpr((LexicalUnitImpl)DeepCopy.copy(unit.getNextLexicalUnit()));
+            remainingNodes.remove(node);
+            remainingUnits.remove(unit);
+            break;
+          }
+        }
+      }
+    }
+    int i=0;
+    for (    final LexicalUnitImpl unit : remainingUnits) {
+      remainingNodes.get(i).setExpr((LexicalUnitImpl)DeepCopy.copy(unit));
+      i++;
+    }
+  }
+}
