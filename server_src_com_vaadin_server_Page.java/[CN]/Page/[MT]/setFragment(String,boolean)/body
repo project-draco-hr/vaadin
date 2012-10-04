@@ -1,9 +1,12 @@
 {
-  if (newFragment == null) {
-    throw new NullPointerException("The fragment may not be null");
-  }
-  if (!newFragment.equals(fragment)) {
-    fragment=newFragment;
+  String oldFragment=location.getFragment();
+  if (newFragment == null && oldFragment != null || !newFragment.equals(oldFragment)) {
+    try {
+      location=new URI(location.getScheme(),location.getSchemeSpecificPart(),newFragment);
+    }
+ catch (    URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
     if (fireEvents) {
       fireEvent(new FragmentChangedEvent(this,newFragment));
     }
