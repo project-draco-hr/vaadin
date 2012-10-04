@@ -4,12 +4,14 @@
   while (it.hasNext()) {
     final UIDL action=(UIDL)it.next();
     int[] modifiers=null;
-    if (action.hasAttribute("mk")) {
-      modifiers=action.getIntArrayAttribute("mk");
+    if (action.hasAttribute(ShortCutConstants.ACTION_MODIFIER_KEYS_ATTRIBUTE)) {
+      modifiers=action.getIntArrayAttribute(ShortCutConstants.ACTION_MODIFIER_KEYS_ATTRIBUTE);
     }
-    final ShortcutKeyCombination kc=new ShortcutKeyCombination(action.getIntAttribute("kc"),modifiers);
-    final String key=action.getStringAttribute("key");
-    final String caption=action.getStringAttribute("caption");
-    actions.add(new ShortcutAction(key,kc,caption));
+    final ShortcutKeyCombination kc=new ShortcutKeyCombination(action.getIntAttribute(ShortCutConstants.ACTION_SHORTCUT_KEY_ATTRIBUTE),modifiers);
+    final String key=action.getStringAttribute(ShortCutConstants.ACTION_KEY_ATTRIBUTE);
+    final String caption=action.getStringAttribute(ShortCutConstants.ACTION_CAPTION_ATTRIBUTE);
+    final String targetPID=action.getStringAttribute(ShortCutConstants.ACTION_TARGET_ATTRIBUTE);
+    final String targetAction=action.getStringAttribute(ShortCutConstants.ACTION_TARGET_ACTION_ATTRIBUTE);
+    actions.add(new ShortcutAction(key,kc,caption,targetPID,targetAction));
   }
 }
