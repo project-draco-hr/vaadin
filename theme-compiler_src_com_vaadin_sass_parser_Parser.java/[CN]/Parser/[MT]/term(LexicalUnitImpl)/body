@@ -2,7 +2,6 @@
   LexicalUnitImpl result=null;
   Token n=null;
   char op=' ';
-  String varName;
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case PLUS:
 case MINUS:
@@ -30,182 +29,13 @@ case DIMEN:
 case HASH:
 case UNICODERANGE:
 case FUNCTION:
-switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
-case PLUS:
-case MINUS:
-case NUMBER:
-case PERCENTAGE:
-case PT:
-case MM:
-case CM:
-case PC:
-case IN:
-case PX:
-case EMS:
-case EXS:
-case DEG:
-case RAD:
-case GRAD:
-case MS:
-case SECOND:
-case HZ:
-case KHZ:
-case DIMEN:
-case FUNCTION:
-switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
-case PLUS:
-case MINUS:
-        op=unaryOperator();
-      break;
-default :
-    jj_la1[195]=jj_gen;
-  ;
-}
-switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
-case NUMBER:
-n=jj_consume_token(NUMBER);
-result=LexicalUnitImpl.createNumber(n.beginLine,n.beginColumn,prev,number(op,n,0));
-break;
-case PERCENTAGE:
-n=jj_consume_token(PERCENTAGE);
-result=LexicalUnitImpl.createPercentage(n.beginLine,n.beginColumn,prev,number(op,n,1));
-break;
-case PT:
-n=jj_consume_token(PT);
-result=LexicalUnitImpl.createPT(n.beginLine,n.beginColumn,prev,number(op,n,2));
-break;
-case CM:
-n=jj_consume_token(CM);
-result=LexicalUnitImpl.createCM(n.beginLine,n.beginColumn,prev,number(op,n,2));
-break;
-case MM:
-n=jj_consume_token(MM);
-result=LexicalUnitImpl.createMM(n.beginLine,n.beginColumn,prev,number(op,n,2));
-break;
-case PC:
-n=jj_consume_token(PC);
-result=LexicalUnitImpl.createPC(n.beginLine,n.beginColumn,prev,number(op,n,2));
-break;
-case IN:
-n=jj_consume_token(IN);
-result=LexicalUnitImpl.createIN(n.beginLine,n.beginColumn,prev,number(op,n,2));
-break;
-case PX:
-n=jj_consume_token(PX);
-result=LexicalUnitImpl.createPX(n.beginLine,n.beginColumn,prev,number(op,n,2));
-break;
-case EMS:
-n=jj_consume_token(EMS);
-result=LexicalUnitImpl.createEMS(n.beginLine,n.beginColumn,prev,number(op,n,2));
-break;
-case EXS:
-n=jj_consume_token(EXS);
-result=LexicalUnitImpl.createEXS(n.beginLine,n.beginColumn,prev,number(op,n,2));
-break;
-case DEG:
-n=jj_consume_token(DEG);
-result=LexicalUnitImpl.createDEG(n.beginLine,n.beginColumn,prev,number(op,n,3));
-break;
-case RAD:
-n=jj_consume_token(RAD);
-result=LexicalUnitImpl.createRAD(n.beginLine,n.beginColumn,prev,number(op,n,3));
-break;
-case GRAD:
-n=jj_consume_token(GRAD);
-result=LexicalUnitImpl.createGRAD(n.beginLine,n.beginColumn,prev,number(op,n,3));
-break;
-case SECOND:
-n=jj_consume_token(SECOND);
-result=LexicalUnitImpl.createS(n.beginLine,n.beginColumn,prev,number(op,n,1));
-break;
-case MS:
-n=jj_consume_token(MS);
-result=LexicalUnitImpl.createMS(n.beginLine,n.beginColumn,prev,number(op,n,2));
-break;
-case HZ:
-n=jj_consume_token(HZ);
-result=LexicalUnitImpl.createHZ(n.beginLine,n.beginColumn,prev,number(op,n,2));
-break;
-case KHZ:
-n=jj_consume_token(KHZ);
-result=LexicalUnitImpl.createKHZ(n.beginLine,n.beginColumn,prev,number(op,n,3));
-break;
-case DIMEN:
-n=jj_consume_token(DIMEN);
-String s=n.image;
-int i=0;
-while (i < s.length() && (Character.isDigit(s.charAt(i)) || (s.charAt(i) == '.'))) {
-i++;
-}
-result=LexicalUnitImpl.createDimen(n.beginLine,n.beginColumn,prev,Float.valueOf(s.substring(0,i)).floatValue(),s.substring(i));
-break;
-case FUNCTION:
-result=function(op,prev);
+    result=nonVariableTerm(prev);
+  break;
+case VARIABLE:
+result=variableTerm(prev);
 break;
 default :
 jj_la1[196]=jj_gen;
-jj_consume_token(-1);
-throw new ParseException();
-}
-break;
-case STRING:
-case IDENT:
-case URL:
-case HASH:
-case UNICODERANGE:
-switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
-case STRING:
-n=jj_consume_token(STRING);
-result=LexicalUnitImpl.createString(n.beginLine,n.beginColumn,prev,convertStringIndex(n.image,1,n.image.length() - 1));
-break;
-case IDENT:
-n=jj_consume_token(IDENT);
-String s=convertIdent(n.image);
-if ("inherit".equals(s)) {
-result=LexicalUnitImpl.createInherit(n.beginLine,n.beginColumn,prev);
-}
- else {
-result=LexicalUnitImpl.createIdent(n.beginLine,n.beginColumn,prev,convertIdent(n.image));
-}
-break;
-case HASH:
-result=hexcolor(prev);
-break;
-case URL:
-result=url(prev);
-break;
-case UNICODERANGE:
-result=unicode(prev);
-break;
-default :
-jj_la1[197]=jj_gen;
-jj_consume_token(-1);
-throw new ParseException();
-}
-break;
-default :
-jj_la1[198]=jj_gen;
-jj_consume_token(-1);
-throw new ParseException();
-}
-label_131: while (true) {
-switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
-case S:
-;
-break;
-default :
-jj_la1[199]=jj_gen;
-break label_131;
-}
-jj_consume_token(S);
-}
-break;
-case VARIABLE:
-varName=variableName();
-result=LexicalUnitImpl.createVariable(token.beginLine,token.beginColumn,prev,varName);
-break;
-default :
-jj_la1[200]=jj_gen;
 jj_consume_token(-1);
 throw new ParseException();
 }
