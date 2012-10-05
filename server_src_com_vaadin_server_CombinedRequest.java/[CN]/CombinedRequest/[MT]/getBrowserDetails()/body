@@ -1,12 +1,17 @@
 {
   return new BrowserDetails(){
-    @Override public String getUriFragment(){
-      String fragment=secondRequest.getParameter("fr");
-      if (fragment == null) {
-        return "";
+    @Override public URI getLocation(){
+      String location=secondRequest.getParameter("loc");
+      if (location == null) {
+        return null;
       }
  else {
-        return fragment;
+        try {
+          return new URI(location);
+        }
+ catch (        URISyntaxException e) {
+          throw new RuntimeException("Invalid location URI received from client",e);
+        }
       }
     }
     @Override public String getWindowName(){
