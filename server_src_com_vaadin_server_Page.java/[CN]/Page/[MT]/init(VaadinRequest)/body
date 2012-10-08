@@ -1,6 +1,11 @@
 {
-  BrowserDetails browserDetails=request.getBrowserDetails();
-  if (browserDetails != null) {
-    location=browserDetails.getLocation();
+  String loc=request.getParameter("loc");
+  if (loc != null) {
+    try {
+      location=new URI(loc);
+    }
+ catch (    URISyntaxException e) {
+      throw new RuntimeException("Invalid location URI received from client",e);
+    }
   }
 }

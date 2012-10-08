@@ -23,11 +23,9 @@
   if (provider == null || uiClass == null) {
     return null;
   }
-  BrowserDetails browserDetails=request.getBrowserDetails();
-  boolean hasBrowserDetails=browserDetails != null && browserDetails.getLocation() != null;
+  String windowName=request.getParameter("wn");
   Map<String,Integer> retainOnRefreshUIs=session.getPreserveOnRefreshUIs();
-  if (hasBrowserDetails && !retainOnRefreshUIs.isEmpty()) {
-    @SuppressWarnings("null") String windowName=browserDetails.getWindowName();
+  if (windowName != null && !retainOnRefreshUIs.isEmpty()) {
     Integer retainedUIId=retainOnRefreshUIs.get(windowName);
     if (retainedUIId != null) {
       UI retainedUI=session.getUIById(retainedUIId.intValue());
@@ -49,7 +47,6 @@
   ui.doInit(request,uiId.intValue());
   session.addUI(ui);
   if (vaadinService.preserveUIOnRefresh(provider,event)) {
-    String windowName=request.getBrowserDetails().getWindowName();
     if (windowName == null) {
       getLogger().warning("There is no window.name available for UI " + uiClass + " that should be preserved.");
     }

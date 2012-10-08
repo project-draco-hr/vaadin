@@ -1,12 +1,10 @@
 {
-  if (request.getBrowserDetails() != null) {
-    WebBrowser b=request.getBrowserDetails().getWebBrowser();
-    if (b.isTooOldToFunctionProperly() && !b.isChromeFrameCapable()) {
-      String c=request.getHeader("Cookie");
-      if (c == null || !c.contains(FORCE_LOAD_COOKIE)) {
-        writeBrowserTooOldPage(request,response);
-        return true;
-      }
+  WebBrowser b=session.getBrowser();
+  if (b.isTooOldToFunctionProperly() && !b.isChromeFrameCapable()) {
+    String c=request.getHeader("Cookie");
+    if (c == null || !c.contains(FORCE_LOAD_COOKIE)) {
+      writeBrowserTooOldPage(request,response);
+      return true;
     }
   }
   return false;
