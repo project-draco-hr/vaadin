@@ -1,0 +1,22 @@
+{
+  String method=VaadinServletService.getCurrentServletRequest().getMethod();
+  if (!path.equals("login")) {
+    return super.handleConnectorRequest(request,response,path);
+  }
+  String responseString=null;
+  if (method.equalsIgnoreCase("post")) {
+    responseString=handleLogin(request);
+  }
+ else {
+    responseString=getLoginHTML();
+  }
+  if (responseString != null) {
+    response.setContentType("text/html; charset=utf-8");
+    response.setCacheTime(-1);
+    response.getWriter().write(responseString);
+    return true;
+  }
+ else {
+    return false;
+  }
+}
