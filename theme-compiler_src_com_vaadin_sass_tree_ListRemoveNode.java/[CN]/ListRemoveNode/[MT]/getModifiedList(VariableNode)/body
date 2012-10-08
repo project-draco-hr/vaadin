@@ -1,22 +1,40 @@
 {
-  VariableNode clone=(VariableNode)DeepCopy.copy(variableNode);
-  LexicalUnitImpl first=null;
-  LexicalUnitImpl current=clone.getExpr();
-  LexicalUnitImpl lastAccepted=null;
-  while (current != null) {
-    if (shouldInclude(current,lastAccepted)) {
-      LexicalUnitImpl temp=current.clone();
-      temp.setNextLexicalUnit(null);
-      if (lastAccepted != null) {
-        lastAccepted.setNextLexicalUnit(temp);
+  if (variableNode != null) {
+    VariableNode clone=(VariableNode)DeepCopy.copy(variableNode);
+    LexicalUnitImpl first=null;
+    LexicalUnitImpl current=(LexicalUnitImpl)clone.getExpr();
+    LexicalUnitImpl lastAccepted=null;
+    while (current != null) {
+      if (shouldInclude(current,lastAccepted)) {
+        LexicalUnitImpl temp=current.clone();
+        temp.setNextLexicalUnit(null);
+        if (lastAccepted != null) {
+          lastAccepted.setNextLexicalUnit(temp);
+        }
+        lastAccepted=temp;
+        if (first == null) {
+          first=lastAccepted;
+        }
       }
-      lastAccepted=temp;
-      if (first == null) {
-        first=lastAccepted;
+      current=(LexicalUnitImpl)current.getNextLexicalUnit();
+    }
+    clone.setExpr(first);
+    return clone;
+  }
+ else {
+    final ArrayList<String> newList=new ArrayList<String>(list);
+    newList.removeAll(remove);
+    LexicalUnitImpl unit=null;
+    if (newList.size() > 0) {
+      unit=LexicalUnitImpl.createString(newList.get(0));
+      LexicalUnitImpl last=unit;
+      for (int i=1; i < newList.size(); i++) {
+        LexicalUnitImpl current=LexicalUnitImpl.createString(newList.get(i));
+        last.setNextLexicalUnit(current);
+        last=current;
       }
     }
-    current=current.getNextLexicalUnit();
+    VariableNode node=new VariableNode(variable,unit,false);
+    return node;
   }
-  clone.setExpr(first);
-  return clone;
 }

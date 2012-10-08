@@ -1,14 +1,30 @@
 {
-  ArrayList<String> list=new ArrayList<String>();
+  String list="";
   int nesting=nest;
   Token t=null;
   while (true) {
     t=getToken(1);
-    if (t.kind == VARIABLE) {
-      list.add(t.image);
+    String s=t.image;
+    if (t.kind == VARIABLE || t.kind == IDENT) {
+      list+=s;
+    }
+ else     if (s.toLowerCase().equals("auto") || s.toLowerCase().equals("space") || s.toLowerCase().equals("comma")) {
+      int i=2;
+      Token temp=getToken(i);
+      boolean isLast=true;
+      while (temp.kind != SEMICOLON) {
+        if (temp.kind != RPARAN || temp.kind != S) {
+          isLast=false;
+        }
+        i++;
+        temp=getToken(i);
+      }
+      if (isLast) {
+        return list;
+      }
     }
  else     if (t.kind == STRING) {
-      list.add(t.image.substring(1,t.image.length()).substring(0,t.image.length() - 2));
+      list+=s.substring(1,s.length()).substring(0,s.length() - 2);
     }
  else     if (t.kind == LPARAN) {
       nesting++;
@@ -19,7 +35,6 @@
  else     if (t.kind == RPARAN) {
       nesting--;
       if (nesting == 0) {
-        getNextToken();
         return list;
       }
     }
@@ -27,6 +42,15 @@
       if (nesting == nest) {
         return list;
       }
+ else {
+        list+=",";
+      }
+    }
+ else     if (t.kind == S) {
+      list+=" ";
+    }
+ else     if (t.kind == LBRACE) {
+      throw new CSSParseException("Invalid token,'{' found",getLocator());
     }
     getNextToken();
   }
