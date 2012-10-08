@@ -16,46 +16,11 @@
   for (int i=1; i < args.length; i++) {
     acceptedPackagePrefixes.add(args[i]);
   }
-  HashSet<String> packages=new HashSet<String>();
-  for (Enumeration<JarEntry> it=jar.entries(); it.hasMoreElements(); ) {
-    JarEntry entry=it.nextElement();
-    if (!entry.getName().endsWith(".class")) {
-      continue;
-    }
-    boolean accept=false;
-    for (    String prefix : acceptedPackagePrefixes) {
-      if (entry.getName().startsWith(prefix)) {
-        accept=true;
-        break;
-      }
-    }
-    if (!accept) {
-      continue;
-    }
-    int lastSlash=entry.getName().lastIndexOf('/');
-    String pkg=entry.getName().substring(0,lastSlash).replace('/','.');
-    packages.add(pkg);
+  HashSet<String> packages=getPackages(jar,acceptedPackagePrefixes);
+  if (packages.isEmpty()) {
+    return;
   }
-  for (Enumeration<JarEntry> it=jar.entries(); it.hasMoreElements(); ) {
-    JarEntry entry=it.nextElement();
-    if (entry.isDirectory() && entry.getName().startsWith("VAADIN/themes")) {
-      int lastSlash=entry.getName().lastIndexOf('/');
-      String pkg=entry.getName().substring(0,lastSlash).replace('/','.');
-      packages.add(pkg);
-    }
-  }
-  String exportPackage="";
-  String packageArray[]=new String[packages.size()];
-  packages.toArray(packageArray);
-  Arrays.sort(packageArray);
-  for (int i=0; i < packageArray.length; i++) {
-    if (i == 0) {
-      exportPackage=packageArray[i];
-    }
- else {
-      exportPackage+=", " + packageArray[i];
-    }
-  }
+  String exportPackage=sortAndJoinPackages(packages);
   Manifest oldMF=null;
   try {
     oldMF=jar.getManifest();
@@ -63,11 +28,10 @@
  catch (  IOException e) {
     e.printStackTrace();
   }
-  Attributes mainAtts=oldMF.getMainAttributes();
-  Vector<String> keys=new Vector<String>(mainAtts.size());
-  for (Iterator<Object> attrit=mainAtts.keySet().iterator(); attrit.hasNext(); ) {
-    Name name=(Name)attrit.next();
-    keys.add(name.toString());
+  Attributes mainAttributes=oldMF.getMainAttributes();
+  String existingExportPackage=mainAttributes.getValue(EXPORT_PACKAGE_ATTRIBUTE);
+  if (existingExportPackage != null) {
+    exportPackage=existingExportPackage + "," + exportPackage;
   }
   try {
     jar.close();
@@ -75,20 +39,8 @@
  catch (  IOException e) {
     System.err.println("Unable to close JAR '" + jarFilename + "'");
   }
-  String orderedKeys[]=new String[keys.size()];
-  keys.toArray(orderedKeys);
-  Arrays.sort(orderedKeys);
-  int mvPos=Arrays.binarySearch(orderedKeys,"Manifest-Version");
-  orderedKeys[mvPos]=orderedKeys[0];
-  orderedKeys[0]="Manifest-Version";
-  Arrays.sort(orderedKeys,1,orderedKeys.length - 1);
   ManifestWriter manifest=new ManifestWriter();
-  for (int i=0; i < orderedKeys.length; i++) {
-    if (orderedKeys[i].equals("Export-Package")) {
-      manifest.writeAttribute(orderedKeys[i],mainAtts.getValue(orderedKeys[i]));
-    }
-  }
-  manifest.writeAttribute("Export-Package",exportPackage);
+  manifest.writeAttribute(EXPORT_PACKAGE_ATTRIBUTE,exportPackage);
   int status=manifest.updateJar(jarFilename);
   if (status != 0) {
     System.exit(status);
