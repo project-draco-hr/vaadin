@@ -1,10 +1,16 @@
 {
   JsoConfiguration jsoConfiguration=getJsoConfiguration(id);
-  appUri=jsoConfiguration.getConfigString("appUri");
-  if (appUri != null && !appUri.endsWith("/")) {
-    appUri+='/';
+  serviceUrl=jsoConfiguration.getConfigString(ApplicationConstants.SERVICE_URL);
+  if (serviceUrl == null || "".equals(serviceUrl)) {
+    serviceUrl=Window.Location.getHref().replaceFirst("[?#].*","");
   }
-  themeUri=jsoConfiguration.getConfigString("themeUri");
+ else {
+    serviceUrl=Util.getAbsoluteUrl(serviceUrl);
+  }
+  if (!useServiceUrlPathParam() && !serviceUrl.endsWith("/")) {
+    serviceUrl+='/';
+  }
+  vaadinDirUrl=Util.getAbsoluteUrl(jsoConfiguration.getConfigString(ApplicationConstants.VAADIN_DIR_URL));
   uiId=jsoConfiguration.getConfigInteger(UIConstants.UI_ID_PARAMETER).intValue();
   standalone=jsoConfiguration.getConfigBoolean("standalone") == Boolean.TRUE;
   heartbeatInterval=jsoConfiguration.getConfigInteger("heartbeatInterval");

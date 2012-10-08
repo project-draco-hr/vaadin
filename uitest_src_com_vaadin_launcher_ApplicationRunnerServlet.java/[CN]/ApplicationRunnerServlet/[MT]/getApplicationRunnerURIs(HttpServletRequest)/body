@@ -1,25 +1,20 @@
 {
   final String[] urlParts=request.getRequestURI().toString().split("\\/");
-  String context=null;
   URIS uris=new URIS();
   String applicationClassname=null;
   String contextPath=request.getContextPath();
   if (urlParts[1].equals(contextPath.replaceAll("\\/",""))) {
-    context=urlParts[1];
     if (urlParts.length == 3) {
       throw new IllegalArgumentException("No application specified");
     }
     applicationClassname=urlParts[3];
-    uris.staticFilesPath="/" + context;
     uris.applicationClassname=applicationClassname;
   }
  else {
-    context="";
     if (urlParts.length == 2) {
       throw new IllegalArgumentException("No application specified");
     }
     applicationClassname=urlParts[2];
-    uris.staticFilesPath="/";
     uris.applicationClassname=applicationClassname;
   }
   return uris;

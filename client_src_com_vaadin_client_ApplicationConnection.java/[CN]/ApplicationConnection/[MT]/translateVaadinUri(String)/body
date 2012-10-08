@@ -14,23 +14,24 @@
   }
   if (uidlUri.startsWith(ApplicationConstants.APP_PROTOCOL_PREFIX)) {
     String relativeUrl=uidlUri.substring(ApplicationConstants.APP_PROTOCOL_PREFIX.length());
-    if (getConfiguration().usePortletURLs()) {
+    ApplicationConfiguration conf=getConfiguration();
+    String serviceUrl=conf.getServiceUrl();
+    if (conf.useServiceUrlPathParam()) {
       String[] parts=relativeUrl.split("\\?",2);
       String path=parts[0];
-      String url=getConfiguration().getPortletResourceUrl();
       if (parts.length > 1) {
         String appUrlParams=parts[1];
-        url=addGetParameters(url,appUrlParams);
+        serviceUrl=addGetParameters(serviceUrl,appUrlParams);
       }
       if (!path.startsWith("/")) {
         path='/' + path;
       }
       String pathParam=ApplicationConstants.V_RESOURCE_PATH + "=" + URL.encodeQueryString(path);
-      url=addGetParameters(url,pathParam);
-      uidlUri=url;
+      serviceUrl=addGetParameters(serviceUrl,pathParam);
+      uidlUri=serviceUrl;
     }
  else {
-      uidlUri=getAppUri() + relativeUrl;
+      uidlUri=serviceUrl + relativeUrl;
     }
   }
   return uidlUri;

@@ -1,0 +1,19 @@
+{
+  String appId=null;
+  try {
+    URL appUrl=getServlet().getApplicationUrl(VaadinServletRequest.cast(request));
+    appId=appUrl.getPath();
+  }
+ catch (  MalformedURLException e) {
+  }
+  if (appId == null || "".equals(appId)) {
+    appId="ROOT";
+  }
+  appId=appId.replaceAll("[^a-zA-Z0-9]","");
+  int hashCode=appId.hashCode();
+  if (hashCode < 0) {
+    hashCode=-hashCode;
+  }
+  appId=appId + "-" + hashCode;
+  return appId;
+}

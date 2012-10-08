@@ -5,16 +5,12 @@
   JSONObject appConfig=new JSONObject();
   String themeName=context.getThemeName();
   if (themeName != null) {
-    appConfig.put("themeUri",getThemeUri(context,themeName));
+    appConfig.put("theme",themeName);
   }
   JSONObject versionInfo=new JSONObject();
   versionInfo.put("vaadinVersion",Version.getFullVersion());
   appConfig.put("versionInfo",versionInfo);
   appConfig.put("widgetset",context.getWidgetsetName());
-  appConfig.put("initialPath",request.getRequestPathInfo());
-  Map<String,String[]> parameterMap=new HashMap<String,String[]>(request.getParameterMap());
-  parameterMap.put("theme",new String[]{themeName});
-  appConfig.put("initialParams",parameterMap);
   Locale locale=ServletPortletHelper.findLocale(null,context.getSession(),context.getRequest());
   SystemMessages systemMessages=vaadinService.getSystemMessages(locale);
   if (systemMessages != null) {
@@ -29,9 +25,8 @@
     authErrMsg.put("url",systemMessages.getAuthenticationErrorURL());
     appConfig.put("authErrMsg",authErrMsg);
   }
-  String staticFileLocation=vaadinService.getStaticFileLocation(request);
-  String widgetsetBase=staticFileLocation + "/" + VaadinServlet.WIDGETSET_DIRECTORY_PATH;
-  appConfig.put("widgetsetBase",widgetsetBase);
+  String vaadinDir=vaadinService.getStaticFileLocation(request) + "/VAADIN/";
+  appConfig.put(ApplicationConstants.VAADIN_DIR_URL,vaadinDir);
   if (!session.getConfiguration().isProductionMode()) {
     appConfig.put("debug",true);
   }
@@ -39,6 +34,9 @@
     appConfig.put("standalone",true);
   }
   appConfig.put("heartbeatInterval",vaadinService.getDeploymentConfiguration().getHeartbeatInterval());
-  appConfig.put("appUri",getAppUri(context));
+  String serviceUrl=getServiceUrl(context);
+  if (serviceUrl != null) {
+    appConfig.put(ApplicationConstants.SERVICE_URL,serviceUrl);
+  }
   return appConfig;
 }

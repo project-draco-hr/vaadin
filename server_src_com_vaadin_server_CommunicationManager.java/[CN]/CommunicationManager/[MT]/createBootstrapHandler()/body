@@ -1,32 +1,13 @@
 {
   return new BootstrapHandler(){
-    @Override protected String getApplicationId(    BootstrapContext context){
-      String appUrl=getAppUri(context);
-      String appId=appUrl;
-      if ("".equals(appUrl)) {
-        appId="ROOT";
+    @Override protected String getServiceUrl(    BootstrapContext context){
+      String pathInfo=context.getRequest().getRequestPathInfo();
+      if (pathInfo == null) {
+        return null;
       }
-      appId=appId.replaceAll("[^a-zA-Z0-9]","");
-      int hashCode=appId.hashCode();
-      if (hashCode < 0) {
-        hashCode=-hashCode;
+ else {
+        return VaadinServletService.getCancelingRelativePath(pathInfo);
       }
-      appId=appId + "-" + hashCode;
-      return appId;
-    }
-    @Override protected String getAppUri(    BootstrapContext context){
-      URL url;
-      try {
-        url=context.getRequest().getService().getApplicationUrl(context.getRequest());
-      }
- catch (      MalformedURLException e) {
-        throw new RuntimeException(e);
-      }
-      String appUrl=url.getPath();
-      if (appUrl.endsWith("/")) {
-        appUrl=appUrl.substring(0,appUrl.length() - 1);
-      }
-      return appUrl;
     }
     @Override public String getThemeName(    BootstrapContext context){
       String themeName=context.getRequest().getParameter(VaadinServlet.URL_PARAMETER_THEME);

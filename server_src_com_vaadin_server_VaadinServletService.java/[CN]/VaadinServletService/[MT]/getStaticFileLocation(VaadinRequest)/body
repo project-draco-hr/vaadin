@@ -5,15 +5,10 @@
   if (staticFileLocation != null) {
     return staticFileLocation;
   }
-  String ctxPath=servletRequest.getContextPath();
-  if (ctxPath.length() == 0 && request.getAttribute("javax.servlet.include.context_path") != null) {
-    ctxPath=(String)request.getAttribute("javax.servlet.include.context_path");
+  String requestedPath=servletRequest.getServletPath();
+  String pathInfo=servletRequest.getPathInfo();
+  if (pathInfo != null) {
+    requestedPath+=pathInfo;
   }
-  ctxPath=VaadinServlet.removeHeadingOrTrailing(ctxPath,"/");
-  if (ctxPath.equals("")) {
-    return "";
-  }
- else {
-    return "/" + ctxPath;
-  }
+  return getCancelingRelativePath(requestedPath);
 }
