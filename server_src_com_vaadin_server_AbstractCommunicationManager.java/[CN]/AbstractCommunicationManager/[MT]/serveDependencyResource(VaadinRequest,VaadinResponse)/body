@@ -1,18 +1,18 @@
 {
   String pathInfo=request.getRequestPathInfo();
-  String resourceName=pathInfo.substring(ApplicationConstants.CONNECTOR_RESOURCE_PREFIX.length() + 2);
+  String resourceName=pathInfo.substring(ApplicationConstants.DEPENDENCY_RESOURCE_PREFIX.length() + 2);
   final String mimetype=response.getService().getMimeType(resourceName);
   if (resourceName.startsWith("/")) {
-    getLogger().warning("Connector resource request starting with / rejected: " + resourceName);
+    getLogger().warning("Dependency resource request starting with / rejected: " + resourceName);
     response.sendError(HttpServletResponse.SC_NOT_FOUND,resourceName);
     return;
   }
   Class<?> context;
-synchronized (connectorResourceContexts) {
-    context=connectorResourceContexts.get(resourceName);
+synchronized (dependencyResourceContexts) {
+    context=dependencyResourceContexts.get(resourceName);
   }
   if (context == null) {
-    getLogger().warning("Connector resource request for unknown resource rejected: " + resourceName);
+    getLogger().warning("Dependency resource request for unknown resource rejected: " + resourceName);
     response.sendError(HttpServletResponse.SC_NOT_FOUND,resourceName);
     return;
   }

@@ -1,0 +1,14 @@
+{
+synchronized (dependencyResourceContexts) {
+    if (dependencyResourceContexts.containsKey(name)) {
+      Class<?> oldContext=dependencyResourceContexts.get(name);
+      if (oldContext != context) {
+        getLogger().warning("Dependency " + name + " defined by both "+ context+ " and "+ oldContext+ ". Dependency from "+ oldContext+ " will be used.");
+      }
+    }
+ else {
+      dependencyResourceContexts.put(name,context);
+    }
+  }
+  return ApplicationConstants.DEPENDENCY_PROTOCOL_PREFIX + "/" + name;
+}
