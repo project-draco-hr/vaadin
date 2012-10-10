@@ -1,7 +1,11 @@
 {
   if ("/".equals(request.getPathInfo()) && "".equals(request.getServletPath()) && !request.getRequestURI().endsWith("/")) {
-    response.setStatus(HttpServletResponse.SC_FOUND);
-    response.setHeader("Location",request.getRequestURI() + "/");
+    String location=request.getRequestURI() + "/";
+    String queryString=request.getQueryString();
+    if (queryString != null) {
+      location+='?' + queryString;
+    }
+    response.sendRedirect(location);
     return true;
   }
  else {
