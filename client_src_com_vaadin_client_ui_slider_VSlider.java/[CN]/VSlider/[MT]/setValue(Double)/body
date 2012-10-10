@@ -7,8 +7,8 @@
   }
   final String styleAttribute=isVertical() ? "marginTop" : "marginLeft";
   final String domProperty=isVertical() ? "offsetHeight" : "offsetWidth";
-  final int handleSize=Integer.parseInt(DOM.getElementProperty(handle,domProperty));
-  final int baseSize=Integer.parseInt(DOM.getElementProperty(base,domProperty)) - (2 * BASE_BORDER_WIDTH);
+  final int handleSize=handle.getPropertyInt(domProperty);
+  final int baseSize=base.getPropertyInt(domProperty) - (2 * BASE_BORDER_WIDTH);
   final int range=baseSize - handleSize;
   double v=value.doubleValue();
   if (resolution > 0) {
@@ -30,7 +30,7 @@
     p=range - p;
   }
   final double pos=p;
-  DOM.setStyleAttribute(handle,styleAttribute,(Math.round(pos)) + "px");
+  handle.getStyle().setPropertyPx(styleAttribute,(int)Math.round(pos));
   this.value=new Double(v);
   setFeedbackValue(v);
 }
