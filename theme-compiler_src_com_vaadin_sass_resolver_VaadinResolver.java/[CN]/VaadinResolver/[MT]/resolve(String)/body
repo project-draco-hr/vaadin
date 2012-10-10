@@ -1,24 +1,29 @@
 {
-  String ext=".scss";
   if (identifier.endsWith(".css")) {
-    ext=".css";
+    ScssStylesheetResolver resolver=new FilesystemResolver();
+    return resolver.resolve(identifier);
   }
-  String fileName=identifier;
-  if (identifier.endsWith(ext)) {
-    identifier=identifier.substring(0,identifier.length() - ext.length());
-  }
-  String themeFile="VAADIN/themes/" + identifier + "/"+ fileName;
-  ScssStylesheetResolver resolver=new FilesystemResolver();
-  InputSource source=resolver.resolve(fileName);
-  if (source == null) {
-    source=resolver.resolve(themeFile);
-  }
-  if (source == null) {
-    resolver=new ClassloaderResolver();
+  InputSource source=null;
+  Pattern pattern=Pattern.compile("\\.\\.\\/([^\\/]+)\\/([^\\/]+\\.scss)");
+  Matcher matcher=pattern.matcher(identifier);
+  if (matcher.find()) {
+    ScssStylesheetResolver resolver=new FilesystemResolver();
     source=resolver.resolve(identifier);
+    if (source == null) {
+      String themeName=matcher.group(1);
+      String fileName=matcher.group(2);
+      resolver=new ClassloaderResolver();
+      String id="VAADIN/themes/" + themeName + "/"+ fileName;
+      source=resolver.resolve(id);
+    }
   }
-  if (source == null) {
-    source=resolver.resolve(themeFile);
+ else {
+    ScssStylesheetResolver resolver=new FilesystemResolver();
+    source=resolver.resolve(identifier);
+    if (source == null) {
+      resolver=new ClassloaderResolver();
+      source=resolver.resolve(identifier);
+    }
   }
   return source;
 }
