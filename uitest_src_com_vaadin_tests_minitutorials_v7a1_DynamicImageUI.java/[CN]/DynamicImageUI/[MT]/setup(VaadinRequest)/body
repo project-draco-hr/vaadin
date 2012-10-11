@@ -1,7 +1,7 @@
 {
-  getSession().addRequestHandler(new DynamicImageRequestHandler());
-  String imageUrl="app://" + DynamicImageRequestHandler.IMAGE_URL + "?text=Hello!";
-  Embedded embedded=new Embedded("A dynamically generated image",new ExternalResource(imageUrl));
-  embedded.setType(Embedded.TYPE_IMAGE);
-  getContent().addComponent(embedded);
+  HashMap<String,String> parameters=new HashMap<String,String>();
+  parameters.put("text","Hello!");
+  DynamicConnectorResource resource=new DynamicConnectorResource(this,IMAGE_URL,parameters);
+  Image image=new Image("A dynamically generated image",resource);
+  getContent().addComponent(image);
 }
