@@ -1,0 +1,47 @@
+{
+  Map<String,JClassType> mappings=new HashMap<String,JClassType>();
+  Map<JClassType,List<JClassType>> replaced=new HashMap<JClassType,List<JClassType>>();
+  for (  JClassType type : types) {
+    Connect connectAnnotation=type.getAnnotation(Connect.class);
+    if (connectAnnotation == null) {
+      continue;
+    }
+    String identifier=connectAnnotation.value().getCanonicalName();
+    JClassType previousMapping=mappings.put(identifier,type);
+    if (previousMapping != null) {
+      JClassType subclass;
+      JClassType superclass;
+      if (previousMapping.isAssignableFrom(type)) {
+        subclass=type;
+        superclass=previousMapping;
+      }
+ else       if (type.isAssignableFrom(previousMapping)) {
+        subclass=previousMapping;
+        superclass=type;
+      }
+ else {
+        logger.log(Type.ERROR,"Conflicting @Connect mappings detected for " + identifier + ": "+ type.getQualifiedSourceName()+ " and "+ previousMapping.getQualifiedSourceName()+ ". There can only be multiple @Connect mappings for the same server-side type if one is the subclass of the other.");
+        throw new UnableToCompleteException();
+      }
+      mappings.put(identifier,subclass);
+      List<JClassType> previousReplacements=replaced.remove(superclass);
+      if (previousReplacements == null) {
+        previousReplacements=new ArrayList<JClassType>();
+      }
+      previousReplacements.add(superclass);
+      replaced.put(subclass,previousReplacements);
+    }
+  }
+  for (  Entry<JClassType,List<JClassType>> entry : replaced.entrySet()) {
+    String msg=entry.getKey().getQualifiedSourceName() + " replaces ";
+    List<JClassType> list=entry.getValue();
+    for (int i=0; i < list.size(); i++) {
+      if (i != 0) {
+        msg+=", ";
+      }
+      msg+=list.get(i).getQualifiedSourceName();
+    }
+    logger.log(Type.INFO,msg);
+  }
+  return mappings.values();
+}

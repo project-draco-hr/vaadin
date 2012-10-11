@@ -5,10 +5,8 @@
   }
   JClassType connectorType=typeOracle.getType(ServerConnector.class.getName());
   JClassType[] subtypes=connectorType.getSubtypes();
-  for (  JClassType connectorSubtype : subtypes) {
-    if (!connectorSubtype.isAnnotationPresent(Connect.class)) {
-      continue;
-    }
+  Collection<JClassType> selectedTypes=getMappedTypes(logger,subtypes);
+  for (  JClassType connectorSubtype : selectedTypes) {
     LoadStyle loadStyle=getLoadStyle(connectorSubtype);
     if (loadStyle != null) {
       connectorsByLoadStyle.get(loadStyle).add(connectorSubtype);
