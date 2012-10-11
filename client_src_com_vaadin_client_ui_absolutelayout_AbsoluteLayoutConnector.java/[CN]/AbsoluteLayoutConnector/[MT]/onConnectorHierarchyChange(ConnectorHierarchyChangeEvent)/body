@@ -1,12 +1,12 @@
 {
   for (  ComponentConnector child : getChildComponents()) {
-    getWrapper(child);
+    if (!getWidget().contains(child.getWidget())) {
+      getWidget().add(child.getWidget());
+    }
   }
   for (  ComponentConnector oldChild : event.getOldChildren()) {
     if (oldChild.getParent() != this) {
-      String connectorId=oldChild.getConnectorId();
-      AbsoluteWrapper absoluteWrapper=connectorIdToComponentWrapper.remove(connectorId);
-      absoluteWrapper.destroy();
+      getWidget().remove(oldChild.getWidget());
     }
   }
 }

@@ -1,25 +1,8 @@
 {
-  VAbsoluteLayout layout=getWidget();
-  for (  ComponentConnector paintable : getChildComponents()) {
-    AbsoluteWrapper wrapper=getWrapper(paintable);
-    Style wrapperStyle=wrapper.getElement().getStyle();
-    if (paintable.isRelativeWidth()) {
-      int w;
-      if (wrapper.left != null && wrapper.right != null) {
-        w=wrapper.getOffsetWidth();
-      }
- else       if (wrapper.right != null) {
-        w=wrapper.getOffsetWidth() + wrapper.getElement().getOffsetLeft();
-      }
- else {
-        w=layout.canvas.getOffsetWidth() - wrapper.getElement().getOffsetLeft();
-      }
-      wrapperStyle.setWidth(w,Unit.PX);
-      getLayoutManager().reportWidthAssignedToRelative(paintable,w);
+  getWidget().layoutHorizontally();
+  for (  ComponentConnector connector : getChildComponents()) {
+    if (connector.isRelativeWidth()) {
+      getLayoutManager().reportWidthAssignedToRelative(connector,getWidget().getWidgetSlotWidth(connector.getWidget()));
     }
- else {
-      wrapperStyle.clearWidth();
-    }
-    wrapper.updateCaptionPosition();
   }
 }

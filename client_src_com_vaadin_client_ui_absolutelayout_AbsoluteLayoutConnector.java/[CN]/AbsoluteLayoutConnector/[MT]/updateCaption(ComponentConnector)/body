@@ -1,20 +1,14 @@
 {
   VAbsoluteLayout absoluteLayoutWidget=getWidget();
-  AbsoluteWrapper componentWrapper=getWrapper(component);
   boolean captionIsNeeded=VCaption.isNeeded(component.getState());
-  VCaption caption=componentWrapper.getCaption();
+  VCaption caption=absoluteLayoutWidget.getWidgetCaption(component.getWidget());
   if (captionIsNeeded) {
     if (caption == null) {
       caption=new VCaption(component,getConnection());
-      absoluteLayoutWidget.add(caption);
-      componentWrapper.setCaption(caption);
     }
-    caption.updateCaption();
-    componentWrapper.updateCaptionPosition();
+    absoluteLayoutWidget.setWidgetCaption(component.getWidget(),caption);
   }
- else {
-    if (caption != null) {
-      caption.removeFromParent();
-    }
+ else   if (caption != null) {
+    absoluteLayoutWidget.setWidgetCaption(component.getWidget(),null);
   }
 }
