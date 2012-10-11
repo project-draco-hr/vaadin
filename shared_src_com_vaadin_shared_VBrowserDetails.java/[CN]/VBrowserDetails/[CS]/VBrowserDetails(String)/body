@@ -24,6 +24,14 @@
       tmp=tmp.replaceFirst("([0-9]+)[^0-9].+","$1");
       browserEngineVersion=Float.parseFloat(tmp);
     }
+ else     if (isIE) {
+      int tridentPos=userAgent.indexOf("trident/");
+      if (tridentPos >= 0) {
+        String tmp=userAgent.substring(tridentPos + "Trident/".length());
+        tmp=tmp.replaceFirst("([0-9]+\\.[0-9]+).*","$1");
+        browserEngineVersion=Float.parseFloat(tmp);
+      }
+    }
   }
  catch (  Exception e) {
     System.err.println("Browser engine version parsing failed for: " + userAgent);
