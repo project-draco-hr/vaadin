@@ -7,18 +7,19 @@
   }
   offsetHeight=getOffsetHeight();
   final int desiredWidth=getMainWidth();
-  int naturalMenuWidth=DOM.getElementPropertyInt(DOM.getFirstChild(menu.getElement()),"offsetWidth");
+  Element menuFirstChild=menu.getElement().getFirstChildElement().cast();
+  int naturalMenuWidth=menuFirstChild.getOffsetWidth();
   if (popupOuterPadding == -1) {
     popupOuterPadding=Util.measureHorizontalPaddingAndBorder(getElement(),2);
   }
   if (naturalMenuWidth < desiredWidth) {
     menu.setWidth((desiredWidth - popupOuterPadding) + "px");
-    DOM.setStyleAttribute(DOM.getFirstChild(menu.getElement()),"width","100%");
+    menuFirstChild.getStyle().setWidth(100,Unit.PCT);
     naturalMenuWidth=desiredWidth;
   }
   if (BrowserInfo.get().isIE()) {
     int rootWidth=naturalMenuWidth - popupOuterPadding;
-    DOM.setStyleAttribute(getContainerElement(),"width",rootWidth + "px");
+    getContainerElement().getStyle().setWidth(rootWidth,Unit.PX);
   }
   if (offsetHeight + getPopupTop() > Window.getClientHeight() + Window.getScrollTop()) {
     top=getPopupTop() - offsetHeight - VFilterSelect.this.getOffsetHeight();
@@ -31,7 +32,7 @@
     int topMargin=(top - topPosition);
     top-=topMargin;
   }
-  offsetWidth=DOM.getElementPropertyInt(DOM.getFirstChild(menu.getElement()),"offsetWidth");
+  offsetWidth=menuFirstChild.getOffsetWidth();
   if (offsetWidth + getPopupLeft() > Window.getClientWidth() + Window.getScrollLeft()) {
     left=VFilterSelect.this.getAbsoluteLeft() + VFilterSelect.this.getOffsetWidth() + Window.getScrollLeft() - offsetWidth;
     if (left < 0) {
