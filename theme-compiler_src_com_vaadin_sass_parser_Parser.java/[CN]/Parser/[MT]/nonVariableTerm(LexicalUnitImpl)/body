@@ -3,6 +3,7 @@
   Token n=null;
   char op=' ';
   String varName;
+  String s="";
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case PLUS:
 case MINUS:
@@ -31,7 +32,7 @@ case MINUS:
       op=unaryOperator();
     break;
 default :
-  jj_la1[197]=jj_gen;
+  jj_la1[218]=jj_gen;
 ;
 }
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
@@ -105,7 +106,7 @@ result=LexicalUnitImpl.createKHZ(n.beginLine,n.beginColumn,prev,number(op,n,3));
 break;
 case DIMEN:
 n=jj_consume_token(DIMEN);
-String s=n.image;
+s=n.image;
 int i=0;
 while (i < s.length() && (Character.isDigit(s.charAt(i)) || (s.charAt(i) == '.'))) {
 i++;
@@ -116,11 +117,12 @@ case FUNCTION:
 result=function(op,prev);
 break;
 default :
-jj_la1[198]=jj_gen;
+jj_la1[219]=jj_gen;
 jj_consume_token(-1);
 throw new ParseException();
 }
 break;
+case DOT:
 case STRING:
 case IDENT:
 case URL:
@@ -131,9 +133,19 @@ case STRING:
 n=jj_consume_token(STRING);
 result=LexicalUnitImpl.createString(n.beginLine,n.beginColumn,prev,convertStringIndex(n.image,1,n.image.length() - 1));
 break;
+case DOT:
 case IDENT:
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case DOT:
+jj_consume_token(DOT);
+s+=".";
+break;
+default :
+jj_la1[220]=jj_gen;
+;
+}
 n=jj_consume_token(IDENT);
-String s=convertIdent(n.image);
+s+=convertIdent(n.image);
 if ("inherit".equals(s)) {
 result=LexicalUnitImpl.createInherit(n.beginLine,n.beginColumn,prev);
 }
@@ -151,24 +163,24 @@ case UNICODERANGE:
 result=unicode(prev);
 break;
 default :
-jj_la1[199]=jj_gen;
+jj_la1[221]=jj_gen;
 jj_consume_token(-1);
 throw new ParseException();
 }
 break;
 default :
-jj_la1[200]=jj_gen;
+jj_la1[222]=jj_gen;
 jj_consume_token(-1);
 throw new ParseException();
 }
-label_131: while (true) {
+label_147: while (true) {
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case S:
 ;
 break;
 default :
-jj_la1[201]=jj_gen;
-break label_131;
+jj_la1[223]=jj_gen;
+break label_147;
 }
 jj_consume_token(S);
 }

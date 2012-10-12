@@ -10,11 +10,19 @@
           expression=replaceStrings(expression);
           Expression e=evaluator.createExpression(expression);
           try {
-            Boolean result=(Boolean)e.evaluate(null);
+            Object eval=e.evaluate(null);
+            Boolean result=false;
+            if (eval instanceof Boolean) {
+              result=(Boolean)eval;
+            }
+ else             if (eval instanceof String) {
+              result=Boolean.valueOf((String)eval);
+            }
             if (result) {
               replaceDefNodeWithCorrectChild(defNode,parent,child);
               break;
             }
+            System.out.println();
           }
  catch (          ClassCastException ex) {
             throw new ParseException("Invalid @if/@else in scss file, not a boolean expression : " + child.toString());

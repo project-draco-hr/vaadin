@@ -11,10 +11,14 @@
  else     if (node instanceof ListModifyNode) {
       ((IVariableNode)node).replaceVariables(new ArrayList<VariableNode>(this.variables.values()));
       ListModifyNode modify=(ListModifyNode)node;
-      String variable=modify.getNewVariable().substring(1,modify.getNewVariable().length());
-      VariableNode modifiedList=modify.getModifiedList(this.variables.get(modify.getModifyingList()));
-      modifiedList.setName(variable);
-      this.variables.put(variable,modifiedList);
+      String variable=modify.getNewVariable().substring(1);
+      try {
+        VariableNode modifiedList=modify.getModifiedList();
+        this.variables.put(variable,modifiedList);
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
     }
  else     if (node instanceof IVariableNode) {
       ((IVariableNode)node).replaceVariables(new ArrayList<VariableNode>(this.variables.values()));
