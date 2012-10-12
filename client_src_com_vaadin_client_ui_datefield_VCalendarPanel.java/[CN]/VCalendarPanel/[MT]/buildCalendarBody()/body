@@ -6,15 +6,15 @@
   setCellPadding(0);
   setCellSpacing(0);
   getFlexCellFormatter().setColSpan(1,0,5);
-  getFlexCellFormatter().setStyleName(1,0,VDateField.CLASSNAME + "-calendarpanel-body");
+  getFlexCellFormatter().setStyleName(1,0,parent.getStylePrimaryName() + "-calendarpanel-body");
   days.getFlexCellFormatter().setStyleName(headerRow,weekColumn,"v-week");
   days.setHTML(headerRow,weekColumn,"<strong></strong>");
   days.getFlexCellFormatter().setVisible(headerRow,weekColumn,isShowISOWeekNumbers());
-  days.getRowFormatter().setStyleName(headerRow,VDateField.CLASSNAME + "-calendarpanel-weekdays");
+  days.getRowFormatter().setStyleName(headerRow,parent.getStylePrimaryName() + "-calendarpanel-weekdays");
   if (isShowISOWeekNumbers()) {
     days.getFlexCellFormatter().setStyleName(headerRow,weekColumn,"v-first");
     days.getFlexCellFormatter().setStyleName(headerRow,firstWeekdayColumn,"");
-    days.getRowFormatter().addStyleName(headerRow,VDateField.CLASSNAME + "-calendarpanel-weeknumbers");
+    days.getRowFormatter().addStyleName(headerRow,parent.getStylePrimaryName() + "-calendarpanel-weeknumbers");
   }
  else {
     days.getFlexCellFormatter().setStyleName(headerRow,weekColumn,"");
@@ -43,6 +43,7 @@
   for (int weekOfMonth=1; weekOfMonth < 7; weekOfMonth++) {
     for (int dayOfWeek=0; dayOfWeek < 7; dayOfWeek++) {
       Day day=new Day((Date)curr.clone());
+      day.setStyleName(parent.getStylePrimaryName() + "-calendarpanel-day");
       if (curr.equals(selectedDate)) {
         day.addStyleDependentName(CN_SELECTED);
         selectedDay=day;
@@ -63,7 +64,7 @@
       days.setWidget(weekOfMonth,firstWeekdayColumn + dayOfWeek,day);
       days.getCellFormatter().setVisible(weekOfMonth,weekColumn,isShowISOWeekNumbers());
       if (isShowISOWeekNumbers()) {
-        final String baseCssClass=VDateField.CLASSNAME + "-calendarpanel-weeknumber";
+        final String baseCssClass=parent.getStylePrimaryName() + "-calendarpanel-weeknumber";
         String weekCssClass=baseCssClass;
         int weekNumber=DateTimeService.getISOWeekNumber(curr);
         days.setHTML(weekOfMonth,0,"<span class=\"" + weekCssClass + "\""+ ">"+ weekNumber+ "</span>");
