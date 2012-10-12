@@ -2,27 +2,27 @@
   final String styleAttribute=isVertical() ? "height" : "width";
   final String oppositeStyleAttribute=isVertical() ? "width" : "height";
   final String domProperty=isVertical() ? "offsetHeight" : "offsetWidth";
-  DOM.setStyleAttribute(base,oppositeStyleAttribute,"");
-  final Element p=DOM.getParent(getElement());
-  if (DOM.getElementPropertyInt(p,domProperty) > 50) {
+  base.getStyle().clearProperty(oppositeStyleAttribute);
+  final Element p=getElement().getParentElement().cast();
+  if (p.getPropertyInt(domProperty) > 50) {
     if (isVertical()) {
       setHeight();
     }
  else {
-      DOM.setStyleAttribute(base,styleAttribute,"");
+      base.getStyle().clearProperty(styleAttribute);
     }
   }
  else {
-    DOM.setStyleAttribute(base,styleAttribute,MIN_SIZE + "px");
+    base.getStyle().setPropertyPx(styleAttribute,MIN_SIZE);
     Scheduler.get().scheduleDeferred(new Command(){
       @Override public void execute(){
-        final Element p=DOM.getParent(getElement());
-        if (DOM.getElementPropertyInt(p,domProperty) > (MIN_SIZE + 5)) {
+        final Element p=getElement().getParentElement().cast();
+        if (p.getPropertyInt(domProperty) > (MIN_SIZE + 5)) {
           if (isVertical()) {
             setHeight();
           }
  else {
-            DOM.setStyleAttribute(base,styleAttribute,"");
+            base.getStyle().clearProperty(styleAttribute);
           }
           setValue(value,false);
         }
