@@ -1,6 +1,9 @@
 {
   ArrayList<VariableNode> variables=new ArrayList<VariableNode>(this.variables.values());
   for (  Node node : children) {
+    if (node instanceof IVariableNode) {
+      ((IVariableNode)node).replaceVariables(new ArrayList<VariableNode>(this.variables.values()));
+    }
     if (node instanceof VariableNode) {
       VariableNode variableNode=(VariableNode)node;
       if (this.variables.containsKey(variableNode.getName()) && variableNode.isGuarded()) {
@@ -9,7 +12,6 @@
       this.variables.put(variableNode.getName(),variableNode);
     }
  else     if (node instanceof ListModifyNode) {
-      ((IVariableNode)node).replaceVariables(new ArrayList<VariableNode>(this.variables.values()));
       ListModifyNode modify=(ListModifyNode)node;
       String variable=modify.getNewVariable().substring(1);
       try {
@@ -19,9 +21,6 @@
  catch (      Exception e) {
         e.printStackTrace();
       }
-    }
- else     if (node instanceof IVariableNode) {
-      ((IVariableNode)node).replaceVariables(new ArrayList<VariableNode>(this.variables.values()));
     }
     replaceVariables(node,node.getChildren());
   }

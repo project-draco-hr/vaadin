@@ -1,17 +1,10 @@
 {
   for (  final VariableNode node : variables) {
     if (!equals(node)) {
-      if (name.equals(node.getName())) {
-        expr=(LexicalUnitImpl)DeepCopy.copy(node.getExpr());
-        guarded=node.isGuarded();
-        continue;
-      }
-      LexicalUnit current=expr;
-      while (current != null) {
-        if (current.toString().contains(node.getName())) {
-          ((LexicalUnitImpl)current).replaceValue(node.getExpr());
+      if (expr.toString().contains("$" + node.getName())) {
+        if (expr.getParameters() != null && expr.getParameters().toString().contains("$" + node.getName())) {
+          replaceValues(expr.getParameters(),node);
         }
-        current=current.getNextLexicalUnit();
       }
     }
   }
