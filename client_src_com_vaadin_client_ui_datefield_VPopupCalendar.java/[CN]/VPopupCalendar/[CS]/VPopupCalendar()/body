@@ -1,12 +1,11 @@
 {
   super();
-  calendarToggle=new Button();
-  calendarToggle.setStyleName(CLASSNAME + "-button");
   calendarToggle.setText("");
   calendarToggle.addClickHandler(this);
   calendarToggle.getElement().setTabIndex(-2);
   add(calendarToggle);
   calendar=GWT.create(VCalendarPanel.class);
+  calendar.setParentField(this);
   calendar.setFocusOutListener(new FocusOutListener(){
     @Override public boolean onFocusOut(    DomEvent<?> event){
       event.preventDefault();
@@ -27,9 +26,9 @@
   }
 );
   popup=new VOverlay(true,true,true);
-  popup.setStyleName(POPUP_PRIMARY_STYLE_NAME);
   popup.setWidget(calendar);
   popup.addCloseHandler(this);
   DOM.setElementProperty(calendar.getElement(),"id","PID_VAADIN_POPUPCAL");
   sinkEvents(Event.ONKEYDOWN);
+  updateStyleNames();
 }
