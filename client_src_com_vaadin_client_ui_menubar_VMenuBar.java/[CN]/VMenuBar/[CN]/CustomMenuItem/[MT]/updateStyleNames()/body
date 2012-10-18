@@ -1,0 +1,49 @@
+{
+  if (parentMenu == null) {
+    return;
+  }
+  String primaryStyleName=parentMenu.getStylePrimaryName();
+  if (parentMenu.subMenu) {
+    primaryStyleName=primaryStyleName.replace(SUBMENU_CLASSNAME_PREFIX,"");
+  }
+  if (isSeparator) {
+    super.setStyleName(primaryStyleName + "-separator");
+  }
+ else {
+    super.setStyleName(primaryStyleName + "-menuitem");
+  }
+  if (enabled) {
+    removeStyleDependentName("disabled");
+  }
+ else {
+    addStyleDependentName("disabled");
+  }
+  if (selected && isSelectable()) {
+    addStyleDependentName("selected");
+    if (checkable) {
+      if (checked) {
+        removeStyleDependentName("selected-unchecked");
+        addStyleDependentName("selected-checked");
+      }
+ else {
+        removeStyleDependentName("selected-checked");
+        addStyleDependentName("selected-unchecked");
+      }
+    }
+  }
+ else {
+    removeStyleDependentName("selected");
+    removeStyleDependentName("selected-checked");
+    removeStyleDependentName("selected-unchecked");
+  }
+  if (checkable && !isSeparator) {
+    if (checked) {
+      addStyleDependentName("checked");
+      removeStyleDependentName("unchecked");
+    }
+ else {
+      addStyleDependentName("unchecked");
+      removeStyleDependentName("checked");
+    }
+  }
+}
