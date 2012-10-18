@@ -1,6 +1,11 @@
 {
   final int shadowSpace=10;
   popup=new VOverlay(true,false,true);
+  String primaryStyleName=parentMenu != null ? parentMenu.getStylePrimaryName() : getStylePrimaryName();
+  if (subMenu) {
+    primaryStyleName=primaryStyleName.replace(SUBMENU_CLASSNAME_PREFIX,"");
+  }
+  popup.setStyleName(primaryStyleName + "-popup");
   if (parentMenu == null) {
     popup.setOwner(this);
   }
@@ -14,7 +19,6 @@
   if (client != null) {
     client.getVTooltip().connectHandlersToWidget(popup);
   }
-  popup.setStyleName(CLASSNAME + "-popup");
   popup.setWidget(item.getSubMenu());
   popup.addCloseHandler(this);
   popup.addAutoHidePartner(item.getElement());
