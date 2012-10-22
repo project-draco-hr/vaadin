@@ -1,25 +1,33 @@
 {
   for (  final VariableNode node : variables) {
+    String interpolation="#{$" + node.getName() + "}";
     if (value.getLexicalUnitType() == LexicalUnitImpl.SAC_FUNCTION) {
-      if (value.getParameters().toString().contains("$" + node.getName())) {
-        if (value.getParameters() != null) {
-          if (value.getParameters().toString().contains(node.getName())) {
-            LexicalUnitImpl param=value.getParameters();
-            while (param != null) {
-              if (param.getValue().toString().contains(node.getName())) {
-                LexicalUnitImpl expr=node.getExpr();
-                LexicalUnitImpl prev=param.getPreviousLexicalUnit();
-                LexicalUnitImpl next=param.getNextLexicalUnit();
-                if (param.getLexicalUnitType() == LexicalUnitImpl.SCSS_VARIABLE) {
-                  param.replaceValue(expr);
-                  param.setPrevLexicalUnit(prev);
-                  param.setNextLexicalUnit(next);
-                }
+      if (value.getParameters() != null) {
+        if (value.getParameters().toString().contains(node.getName())) {
+          LexicalUnitImpl param=value.getParameters();
+          while (param != null) {
+            if (param.getValue().toString().contains(node.getName())) {
+              LexicalUnitImpl expr=node.getExpr();
+              LexicalUnitImpl prev=param.getPreviousLexicalUnit();
+              LexicalUnitImpl next=param.getNextLexicalUnit();
+              if (param.getLexicalUnitType() == LexicalUnitImpl.SCSS_VARIABLE) {
+                param.replaceValue(expr);
+                param.setPrevLexicalUnit(prev);
+                param.setNextLexicalUnit(next);
               }
-              param=param.getNextLexicalUnit();
             }
+            param=param.getNextLexicalUnit();
           }
         }
+      }
+    }
+ else     if (value.getStringValue() != null && value.getStringValue().contains(interpolation)) {
+      LexicalUnitImpl current=value;
+      while (current != null) {
+        if (current.getValue().toString().contains(interpolation)) {
+          current.setStringValue(current.getValue().toString().replaceAll(Pattern.quote(interpolation),node.getExpr().toString()));
+        }
+        current=current.getNextLexicalUnit();
       }
     }
  else {
