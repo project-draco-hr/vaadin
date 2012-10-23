@@ -1,0 +1,27 @@
+{
+  HorizontalLayout layout=new HorizontalLayout();
+  layout.setCaption(caption);
+  for (  Class<? extends Component> cls : components) {
+    try {
+      AbstractComponent c=(AbstractComponent)cls.newInstance();
+      c.setId(cls.getName());
+      c.setCaption(cls.getName());
+      c.setDescription(resource.getMIMEType() + " / " + resource.getClass());
+      c.setWidth("100px");
+      c.setHeight("100px");
+      layout.addComponent(c);
+      new FileDownloader(resource).extend(c);
+      if (c instanceof Button) {
+        ((Button)c).addClickListener(new ClickListener(){
+          @Override public void buttonClick(          ClickEvent event){
+          }
+        }
+);
+      }
+    }
+ catch (    Exception e) {
+      System.err.println("Could not instatiate " + cls.getName());
+    }
+  }
+  addComponent(layout);
+}

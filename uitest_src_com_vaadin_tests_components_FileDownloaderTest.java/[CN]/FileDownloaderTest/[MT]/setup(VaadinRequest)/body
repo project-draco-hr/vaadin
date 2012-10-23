@@ -1,0 +1,43 @@
+{
+  List<Class<? extends Component>> components=new ArrayList<Class<? extends Component>>();
+  components.add(Button.class);
+  components.add(NativeButton.class);
+  components.add(CssLayout.class);
+  components.add(Label.class);
+  ConnectorResource resource;
+  resource=new StreamResource(new StreamResource.StreamSource(){
+    @Override public InputStream getStream(){
+      try {
+        BufferedImage img=getImage2("demo.png");
+        ByteArrayOutputStream imagebuffer=new ByteArrayOutputStream();
+        ImageIO.write(img,"png",imagebuffer);
+        Thread.sleep(5000);
+        return new ByteArrayInputStream(imagebuffer.toByteArray());
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+        return null;
+      }
+    }
+  }
+,"demo.png");
+  addComponents("Dynamic image",resource,components);
+  try {
+    File hugeFile=File.createTempFile("huge",".txt");
+    hugeFile.deleteOnExit();
+    BufferedOutputStream os=new BufferedOutputStream(new FileOutputStream(hugeFile));
+    int writeAtOnce=1024 * 1024;
+    byte[] b=new byte[writeAtOnce];
+    for (int i=0; i < 5l * 1024l * 1024l; i+=writeAtOnce) {
+      os.write(b);
+    }
+    os.close();
+    resource=new FileResource(hugeFile);
+    addComponents("Huge text file",resource,components);
+  }
+ catch (  IOException e) {
+    e.printStackTrace();
+  }
+  resource=new ClassResource(new EmbeddedPdf().getClass(),"test.pdf");
+  addComponents("Class resource pdf",resource,components);
+}
