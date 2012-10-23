@@ -2,6 +2,11 @@
   for (  Widget widget : getChildren()) {
     if (widget instanceof AbsoluteWrapper) {
       AbsoluteWrapper wrapper=(AbsoluteWrapper)widget;
+      if (wrapper.getWidget() == null) {
+        wrapper.destroy();
+        super.remove(wrapper);
+        continue;
+      }
       Style wrapperStyle=wrapper.getElement().getStyle();
       Style widgetStyle=wrapper.getWidget().getElement().getStyle();
       if (widgetStyle.getHeight() != null && widgetStyle.getHeight().endsWith("%")) {
