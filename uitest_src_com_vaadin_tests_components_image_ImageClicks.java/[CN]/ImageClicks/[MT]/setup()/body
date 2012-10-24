@@ -1,13 +1,15 @@
 {
   final Label label=new Label(labelText());
   addComponent(label);
-  Image image=new Image();
+  final Image image=new Image();
   final MyImageSource imageSource=new MyImageSource();
   final StreamResource imageResource=new StreamResource(imageSource,"testimage.png");
   image.setSource(imageResource);
   image.addClickListener(new ClickListener(){
     @Override public void click(    ClickEvent event){
       ++clickCounter;
+      imageResource.setFilename("testimage.png?" + new Date().getTime());
+      image.markAsDirty();
       label.setValue(labelText());
     }
   }
