@@ -1,8 +1,14 @@
 {
-  ComponentConnector connector=getConnector();
-  highlight(connector);
-  if (event != null && event.getNativeEvent().getShiftKey()) {
-    connector.getConnection().highlightComponent(connector);
+  ServerConnector connector=getConnector();
+  if (connector != null && event != null && event.getNativeEvent().getShiftKey()) {
+    connector.getConnection().highlightConnector(connector);
+  }
+  while (connector != null && !(connector instanceof ComponentConnector)) {
+    connector=connector.getParent();
+  }
+  if (connector != null) {
+    ComponentConnector cc=(ComponentConnector)connector;
+    highlight(cc);
   }
   super.select(event);
 }
