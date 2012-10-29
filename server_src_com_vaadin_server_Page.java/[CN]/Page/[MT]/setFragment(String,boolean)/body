@@ -1,15 +1,16 @@
 {
   String oldFragment=location.getFragment();
-  if (newFragment == null && oldFragment != null || !newFragment.equals(oldFragment)) {
-    try {
-      location=new URI(location.getScheme(),location.getSchemeSpecificPart(),newFragment);
-    }
- catch (    URISyntaxException e) {
-      throw new RuntimeException(e);
-    }
-    if (fireEvents) {
-      fireEvent(new FragmentChangedEvent(this,newFragment));
-    }
-    uI.markAsDirty();
+  if (newFragment == oldFragment || (newFragment != null && newFragment.equals(oldFragment))) {
+    return;
   }
+  try {
+    location=new URI(location.getScheme(),location.getSchemeSpecificPart(),newFragment);
+  }
+ catch (  URISyntaxException e) {
+    throw new RuntimeException(e);
+  }
+  if (fireEvents) {
+    fireEvent(new FragmentChangedEvent(this,newFragment));
+  }
+  uI.markAsDirty();
 }
