@@ -416,6 +416,7 @@
       if (!json.containsKey("hierarchy")) {
         return events;
       }
+      HashSet<ServerConnector> maybeDetached=new HashSet<ServerConnector>();
       ValueMap hierarchies=json.getValueMap("hierarchy");
       JsArrayString hierarchyKeys=hierarchies.getKeyArray();
       for (int i=0; i < hierarchyKeys.length(); i++) {
@@ -442,6 +443,7 @@
             }
             if (childConnector.getParent() != parentConnector) {
               childConnector.setParent(parentConnector);
+              maybeDetached.remove(childConnector);
             }
           }
           List<ServerConnector> oldChildren=parentConnector.getChildren();
@@ -469,7 +471,7 @@
               continue;
             }
             if (!newChildren.contains(oldChild)) {
-              oldChild.setParent(null);
+              maybeDetached.add(oldChild);
             }
           }
         }
@@ -477,7 +479,31 @@
           VConsole.error(e);
         }
       }
+      for (      ServerConnector removed : maybeDetached) {
+        recursivelyDetach(removed,events);
+      }
       return events;
+    }
+    private void recursivelyDetach(    ServerConnector connector,    List<ConnectorHierarchyChangeEvent> events){
+      for (      ServerConnector child : connector.getChildren()) {
+        if (child.getParent() != connector) {
+          continue;
+        }
+        recursivelyDetach(child,events);
+      }
+      connector.setChildren(Collections.<ServerConnector>emptyList());
+      connector.setParent(null);
+      if (connector instanceof ComponentContainerConnector) {
+        ComponentContainerConnector ccc=(ComponentContainerConnector)connector;
+        List<ComponentConnector> oldChildren=ccc.getChildComponents();
+        if (!oldChildren.isEmpty()) {
+          ccc.setChildComponents(Collections.<ComponentConnector>emptyList());
+          ConnectorHierarchyChangeEvent event=GWT.create(ConnectorHierarchyChangeEvent.class);
+          event.setConnector(connector);
+          event.setOldChildren(oldChildren);
+          events.add(event);
+        }
+      }
     }
     private void handleRpcInvocations(    ValueMap json){
       if (json.containsKey("rpc")) {
