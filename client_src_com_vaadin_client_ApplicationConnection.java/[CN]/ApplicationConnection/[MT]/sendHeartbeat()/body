@@ -8,13 +8,15 @@
         VConsole.log("Heartbeat response OK");
         scheduleHeartbeat();
       }
+ else       if (status == Response.SC_GONE) {
+        showSessionExpiredError(null);
+      }
  else {
-        VConsole.error("Heartbeat request failed with status code " + status);
+        VConsole.error("Failed sending heartbeat to server. Error code: " + status);
       }
     }
     @Override public void onError(    Request request,    Throwable exception){
-      VConsole.error("Heartbeat request resulted in exception");
-      VConsole.error(exception);
+      VConsole.error("Exception sending heartbeat: " + exception);
     }
   }
 ;

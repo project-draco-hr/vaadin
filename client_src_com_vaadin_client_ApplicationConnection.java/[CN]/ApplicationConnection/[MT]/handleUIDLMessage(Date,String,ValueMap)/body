@@ -124,25 +124,7 @@
       if (meta != null) {
         if (meta.containsKey("appError")) {
           ValueMap error=meta.getValueMap("appError");
-          String html="";
-          if (error.containsKey("caption") && error.getString("caption") != null) {
-            html+="<h1>" + error.getAsString("caption") + "</h1>";
-          }
-          if (error.containsKey("message") && error.getString("message") != null) {
-            html+="<p>" + error.getAsString("message") + "</p>";
-          }
-          String url=null;
-          if (error.containsKey("url")) {
-            url=error.getString("url");
-          }
-          if (html.length() != 0) {
-            VNotification n=VNotification.createNotification(1000 * 60 * 45,uIConnector.getWidget());
-            n.addEventListener(new NotificationRedirect(url));
-            n.show(html,VNotification.CENTERED_TOP,VNotification.STYLE_SYSTEM);
-          }
- else {
-            redirect(url);
-          }
+          showError(null,error.getString("caption"),error.getString("message"),error.getString("url"));
           applicationRunning=false;
         }
         if (validatingLayouts) {

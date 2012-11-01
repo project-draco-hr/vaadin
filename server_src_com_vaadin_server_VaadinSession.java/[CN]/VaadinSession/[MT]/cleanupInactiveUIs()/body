@@ -1,8 +1,13 @@
 {
-  for (  UI ui : new ArrayList<UI>(uIs.values())) {
-    if (!isUIAlive(ui)) {
-      cleanupUI(ui);
-      getLogger().fine("Closed UI #" + ui.getUIId() + " due to inactivity");
+  if (getUidlRequestTimeout() >= 0 && System.currentTimeMillis() - lastRequestTimestamp > 1000 * getUidlRequestTimeout()) {
+    close();
+  }
+ else {
+    for (    UI ui : new ArrayList<UI>(uIs.values())) {
+      if (!isUIAlive(ui)) {
+        cleanupUI(ui);
+        getLogger().fine("Closed UI #" + ui.getUIId() + " due to inactivity");
+      }
     }
   }
 }
