@@ -1,0 +1,21 @@
+{
+  Node pre=mixinNode;
+  MixinDefNode defClone=(MixinDefNode)DeepCopy.copy(mixinDef);
+  if (mixinDef.getArglist().isEmpty()) {
+    for (    Node child : new ArrayList<Node>(defClone.getChildren())) {
+      mixinNode.getParentNode().appendChild(child,pre);
+      pre=child;
+    }
+  }
+ else {
+    replacePossibleArguments(mixinNode,defClone);
+    Node previous=mixinNode;
+    for (    final Node child : defClone.getChildren()) {
+      Node clone=(Node)DeepCopy.copy(child);
+      replaceChildVariables(defClone,clone);
+      mixinNode.getParentNode().appendChild(clone,previous);
+      previous=clone;
+    }
+  }
+  mixinNode.getParentNode().removeChild(mixinNode);
+}

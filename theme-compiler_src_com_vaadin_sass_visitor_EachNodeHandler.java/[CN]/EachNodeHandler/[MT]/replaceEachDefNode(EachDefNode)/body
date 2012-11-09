@@ -1,0 +1,16 @@
+{
+  Node last=defNode;
+  for (  final String var : defNode.getVariables()) {
+    VariableNode varNode=new VariableNode(defNode.getVariableName().substring(1),LexicalUnitImpl.createIdent(var),false);
+    ArrayList<VariableNode> variables=new ArrayList<VariableNode>(ScssStylesheet.getVariables());
+    variables.add(varNode);
+    for (    final Node child : defNode.getChildren()) {
+      Node copy=(Node)DeepCopy.copy(child);
+      replaceInterpolation(copy,variables);
+      defNode.getParentNode().appendChild(copy,last);
+      last=copy;
+    }
+  }
+  defNode.setChildren(new ArrayList<Node>());
+  defNode.getParentNode().removeChild(defNode);
+}
