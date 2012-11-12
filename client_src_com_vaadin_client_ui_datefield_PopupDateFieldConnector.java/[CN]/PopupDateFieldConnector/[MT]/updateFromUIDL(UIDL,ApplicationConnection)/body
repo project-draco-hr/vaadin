@@ -1,19 +1,19 @@
 {
-  boolean lastReadOnlyState=getWidget().readonly;
+  boolean lastReadOnlyState=getWidget().isReadonly();
   boolean lastEnabledState=getWidget().isEnabled();
   getWidget().parsable=uidl.getBooleanAttribute("parsable");
   super.updateFromUIDL(uidl,client);
   getWidget().calendar.setDateTimeService(getWidget().getDateTimeService());
   getWidget().calendar.setShowISOWeekNumbers(getWidget().isShowISOWeekNumbers());
-  if (getWidget().calendar.getResolution() != getWidget().currentResolution) {
-    getWidget().calendar.setResolution(getWidget().currentResolution);
+  if (getWidget().calendar.getResolution() != getWidget().getCurrentResolution()) {
+    getWidget().calendar.setResolution(getWidget().getCurrentResolution());
     if (getWidget().calendar.getDate() != null) {
       getWidget().calendar.setDate((Date)getWidget().getCurrentDate().clone());
       getWidget().calendar.renderCalendar();
     }
   }
-  getWidget().calendarToggle.setEnabled(getWidget().enabled);
-  if (getWidget().currentResolution.getCalendarField() <= Resolution.MONTH.getCalendarField()) {
+  getWidget().calendarToggle.setEnabled(getWidget().isEnabled());
+  if (getWidget().getCurrentResolution().getCalendarField() <= Resolution.MONTH.getCalendarField()) {
     getWidget().calendar.setFocusChangeListener(new FocusChangeListener(){
       @Override public void focusChanged(      Date date){
         getWidget().updateValue(date);
@@ -28,7 +28,7 @@
  else {
     getWidget().calendar.setFocusChangeListener(null);
   }
-  if (getWidget().currentResolution.getCalendarField() > Resolution.DAY.getCalendarField()) {
+  if (getWidget().getCurrentResolution().getCalendarField() > Resolution.DAY.getCalendarField()) {
     getWidget().calendar.setTimeChangeListener(new TimeChangeListener(){
       @Override public void changed(      int hour,      int min,      int sec,      int msec){
         Date d=getWidget().getDate();
@@ -45,7 +45,7 @@
     }
 );
   }
-  if (getWidget().readonly) {
+  if (getWidget().isReadonly()) {
     getWidget().calendarToggle.addStyleName(VPopupCalendar.CLASSNAME + "-button-readonly");
   }
  else {
