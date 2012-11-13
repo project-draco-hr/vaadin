@@ -1,0 +1,16 @@
+{
+  HasComponents parent=content.getParent();
+  if (parent instanceof ComponentContainer) {
+    ComponentContainer oldParent=(ComponentContainer)parent;
+    oldParent.removeComponent(content);
+  }
+ else   if (parent instanceof SingleComponentContainer) {
+    SingleComponentContainer oldParent=(SingleComponentContainer)parent;
+    if (oldParent.getContent() == content) {
+      oldParent.setContent(null);
+    }
+  }
+ else   if (parent != null) {
+    throw new IllegalArgumentException("Content is already attached to another parent");
+  }
+}

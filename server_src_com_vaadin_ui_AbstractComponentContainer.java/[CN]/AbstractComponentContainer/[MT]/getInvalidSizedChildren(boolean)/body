@@ -1,24 +1,12 @@
 {
   HashSet<Component> components=null;
-  if (this instanceof Panel) {
-    Panel p=(Panel)this;
-    ComponentContainer content=p.getContent();
-    boolean valid=vertical ? ComponentSizeValidator.checkHeights(content) : ComponentSizeValidator.checkWidths(content);
+  for (  Component component : this) {
+    boolean valid=vertical ? ComponentSizeValidator.checkHeights(component) : ComponentSizeValidator.checkWidths(component);
     if (!valid) {
-      components=new HashSet<Component>(1);
-      components.add(content);
-    }
-  }
- else {
-    for (Iterator<Component> componentIterator=getComponentIterator(); componentIterator.hasNext(); ) {
-      Component component=componentIterator.next();
-      boolean valid=vertical ? ComponentSizeValidator.checkHeights(component) : ComponentSizeValidator.checkWidths(component);
-      if (!valid) {
-        if (components == null) {
-          components=new HashSet<Component>();
-        }
-        components.add(component);
+      if (components == null) {
+        components=new HashSet<Component>();
       }
+      components.add(component);
     }
   }
   return components;

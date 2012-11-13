@@ -1,0 +1,27 @@
+{
+  String errorMessage="Access to application " + "context base directory failed, " + "possible security constraint with Application "+ "Server or Servlet Container.<br />";
+  File file=VaadinService.getCurrent().getBaseDirectory();
+  if ((file == null) || (!file.canRead()) || (file.getAbsolutePath() == null)) {
+    String sampleDirProperty=application.getConfiguration().getInitParameters().getProperty("sampleDirectory");
+    if (sampleDirProperty != null) {
+      file=new File(sampleDirProperty);
+      if ((file != null) && (file.canRead()) && (file.getAbsolutePath() != null)) {
+        return file;
+      }
+      errorMessage+="Failed also to access sample directory <b>[" + sampleDirProperty + "]</b> defined in <b>sampleDirectory property</b>.";
+    }
+ else {
+      errorMessage+="<b>Note: </b>You can set this manually in " + "web.xml by defining " + "sampleDirectory property.";
+    }
+  }
+ else {
+    return file;
+  }
+  final Panel errorPanel=new Panel("Demo application error");
+  errorPanel.setStyleName("strong");
+  errorPanel.setComponentError(new SystemError("Cannot provide sample directory"));
+  errorPanel.addComponent(new Label(errorMessage,ContentMode.HTML));
+  uI.removeAllComponents();
+  uI.addComponent(errorPanel);
+  return null;
+}

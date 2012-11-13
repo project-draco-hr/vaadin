@@ -1,0 +1,13 @@
+{
+  boolean dirtyChild=false;
+  boolean childrenMayBecomeUndefined=false;
+  if (getHeight() == SIZE_UNDEFINED && height != SIZE_UNDEFINED) {
+    dirtyChild=getInvalidSizedChild(true);
+  }
+ else   if ((height == SIZE_UNDEFINED && getHeight() != SIZE_UNDEFINED) || (unit == Unit.PERCENTAGE && getHeightUnits() != Unit.PERCENTAGE && !ComponentSizeValidator.parentCanDefineHeight(this))) {
+    childrenMayBecomeUndefined=true;
+    dirtyChild=getInvalidSizedChild(true);
+  }
+  super.setHeight(height,unit);
+  repaintChangedChildTree(dirtyChild,childrenMayBecomeUndefined,true);
+}

@@ -1,0 +1,17 @@
+{
+  Component oldContent=getContent();
+  if (oldContent == content) {
+    return;
+  }
+  if (oldContent != null && oldContent.getParent() == this) {
+    oldContent.setParent(null);
+    fireComponentDetachEvent(oldContent);
+  }
+  this.content=content;
+  if (content != null) {
+    removeFromParent(content);
+    content.setParent(this);
+    fireComponentAttachEvent(content);
+  }
+  markAsDirty();
+}

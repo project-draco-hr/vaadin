@@ -1,0 +1,13 @@
+{
+  boolean dirtyChild=false;
+  boolean childrenMayBecomeUndefined=false;
+  if (getWidth() == SIZE_UNDEFINED && width != SIZE_UNDEFINED) {
+    dirtyChild=getInvalidSizedChild(false);
+  }
+ else   if ((width == SIZE_UNDEFINED && getWidth() != SIZE_UNDEFINED) || (unit == Unit.PERCENTAGE && getWidthUnits() != Unit.PERCENTAGE && !ComponentSizeValidator.parentCanDefineWidth(this))) {
+    childrenMayBecomeUndefined=true;
+    dirtyChild=getInvalidSizedChild(false);
+  }
+  super.setWidth(width,unit);
+  repaintChangedChildTree(dirtyChild,childrenMayBecomeUndefined,false);
+}
