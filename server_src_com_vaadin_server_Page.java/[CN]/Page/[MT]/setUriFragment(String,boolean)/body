@@ -1,0 +1,16 @@
+{
+  String oldUriFragment=location.getFragment();
+  if (newUriFragment == oldUriFragment || (newUriFragment != null && newUriFragment.equals(oldUriFragment))) {
+    return;
+  }
+  try {
+    location=new URI(location.getScheme(),location.getSchemeSpecificPart(),newUriFragment);
+  }
+ catch (  URISyntaxException e) {
+    throw new RuntimeException(e);
+  }
+  if (fireEvents) {
+    fireEvent(new UriFragmentChangedEvent(this,newUriFragment));
+  }
+  uI.markAsDirty();
+}
