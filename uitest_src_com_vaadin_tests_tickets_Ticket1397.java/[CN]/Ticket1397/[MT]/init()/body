@@ -2,7 +2,9 @@
   setTheme("runo");
   main=new LegacyWindow("PopupView test");
   setMainWindow(main);
-  Panel panel=new Panel("PopupTest");
+  VerticalLayout panelLayout=new VerticalLayout();
+  panelLayout.setMargin(true);
+  Panel panel=new Panel("PopupTest",panelLayout);
   final ObjectProperty<String> prop=new ObjectProperty<String>("fooTextField");
   PopupView.Content content=new PopupView.Content(){
     @Override public String getMinimizedValueAsHTML(){
@@ -15,10 +17,10 @@
 ;
   PopupView pe=new PopupView(content);
   pe.setDescription("Click to edit");
-  panel.addComponent(pe);
+  panelLayout.addComponent(pe);
   PopupView pe2=new PopupView("fooLabel",new Label("Foooooooooo..."));
   pe2.setDescription("Click to view");
-  panel.addComponent(pe2);
+  panelLayout.addComponent(pe2);
   final ObjectProperty<StringBuffer> prop2=new ObjectProperty<StringBuffer>(new StringBuffer("Text for button"));
 class myButton extends Button {
     public myButton(){
@@ -32,8 +34,10 @@ class myButton extends Button {
 );
     }
   }
-  final Panel panel2=new Panel("Editor with a button");
-  panel2.addComponent(new myButton());
+  VerticalLayout panel2Layout=new VerticalLayout();
+  panel2Layout.setMargin(true);
+  final Panel panel2=new Panel("Editor with a button",panel2Layout);
+  panel2Layout.addComponent(new myButton());
   PopupView.Content content2=new PopupView.Content(){
     @Override public String getMinimizedValueAsHTML(){
       return String.valueOf(prop2.getValue());
@@ -44,12 +48,14 @@ class myButton extends Button {
   }
 ;
   PopupView p3=new PopupView(content2);
-  panel.addComponent(p3);
-  final Panel panel3=new Panel("Editor popup for a property");
+  panelLayout.addComponent(p3);
+  VerticalLayout panel3Layout=new VerticalLayout();
+  panel3Layout.setMargin(true);
+  final Panel panel3=new Panel("Editor popup for a property",panel3Layout);
   TextField tf2=new TextField("TextField for editing a property");
   final ObjectProperty<String> op=new ObjectProperty<String>("This is property text.");
   tf2.setPropertyDataSource(op);
-  panel3.addComponent(tf2);
+  panel3Layout.addComponent(tf2);
   PopupView.Content content3=new PopupView.Content(){
     @Override public String getMinimizedValueAsHTML(){
       return String.valueOf(op.getValue());
@@ -60,7 +66,7 @@ class myButton extends Button {
   }
 ;
   PopupView p4=new PopupView(content3);
-  panel.addComponent(p4);
+  panelLayout.addComponent(p4);
   Table table=new Table("Table for testing purposes");
   for (int i=0; i < 5; i++) {
     table.addContainerProperty("" + (i + 1),String.class,"");

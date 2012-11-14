@@ -1,23 +1,25 @@
 {
   final HorizontalLayout ol=new HorizontalLayout();
   ol.addComponent(t);
-  final Panel status=new Panel("Events");
+  final VerticalLayout statusLayout=new VerticalLayout();
+  statusLayout.setMargin(true);
+  final Panel status=new Panel("Events",statusLayout);
   final Button clear=new Button("c");
-  clear.addListener(new ClickListener(){
+  clear.addClickListener(new ClickListener(){
     @Override public void buttonClick(    ClickEvent event){
-      status.removeAllComponents();
-      status.addComponent(clear);
+      statusLayout.removeAllComponents();
+      statusLayout.addComponent(clear);
     }
   }
 );
-  status.addComponent(clear);
+  statusLayout.addComponent(clear);
   status.setHeight("300px");
   status.setWidth("400px");
   ol.addComponent(status);
   t.addListener(new Listener(){
     @Override public void componentEvent(    Event event){
-      status.addComponent(new Label(event.getClass().getName()));
-      status.addComponent(new Label("selected: " + event.getSource().toString()));
+      statusLayout.addComponent(new Label(event.getClass().getName()));
+      statusLayout.addComponent(new Label("selected: " + event.getSource().toString()));
     }
   }
 );
