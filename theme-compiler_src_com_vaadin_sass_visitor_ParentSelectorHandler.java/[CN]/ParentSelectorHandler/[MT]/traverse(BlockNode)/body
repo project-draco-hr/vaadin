@@ -15,13 +15,14 @@
     if (isParentSelector) {
       block.setSelectorList(newList);
       Node oldparent=block.getParentNode();
-      if (parentSelectors.containsKey(block.getParentNode())) {
-        block.getParentNode().getParentNode().appendChild(block,parentSelectors.get(block.getParentNode()));
+      HashMap<Node,Node> lastNodeAdded=ScssStylesheet.getLastNodeAdded();
+      if (lastNodeAdded.containsKey(block.getParentNode())) {
+        block.getParentNode().getParentNode().appendChild(block,lastNodeAdded.get(block.getParentNode()));
       }
  else {
         block.getParentNode().getParentNode().appendChild(block,block.getParentNode());
       }
-      parentSelectors.put(oldparent,block);
+      lastNodeAdded.put(oldparent,block);
     }
   }
 }
