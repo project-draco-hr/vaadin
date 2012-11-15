@@ -15,4 +15,13 @@
   tooltip.setOwner(uIConnector.getWidget());
   showLoadingIndicator();
   scheduleHeartbeat();
+  Window.addWindowClosingHandler(new ClosingHandler(){
+    @Override public void onWindowClosing(    ClosingEvent event){
+      if (hasActiveRequest()) {
+        retryCanceledActiveRequest=true;
+      }
+      webkitMaybeIgnoringRequests=true;
+    }
+  }
+);
 }

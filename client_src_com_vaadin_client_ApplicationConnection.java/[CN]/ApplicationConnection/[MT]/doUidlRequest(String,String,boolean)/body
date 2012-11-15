@@ -15,7 +15,13 @@
         int statusCode=response.getStatusCode();
 switch (statusCode) {
 case 0:
-          handleCommunicationError("Invalid status code 0 (server down?)",statusCode);
+          if (retryCanceledActiveRequest) {
+            retryCanceledActiveRequest=false;
+            doUidlRequest(uri,payload,synchronous);
+          }
+ else {
+            handleCommunicationError("Invalid status code 0 (server down?)",statusCode);
+          }
         return;
 case 401:
       showAuthenticationError("");

@@ -3,5 +3,16 @@
   rb.setHeader("Content-Type","text/plain;charset=utf-8");
   rb.setRequestData(payload);
   rb.setCallback(requestCallback);
-  rb.send();
+  final Request request=rb.send();
+  if (webkitMaybeIgnoringRequests && BrowserInfo.get().isWebkit()) {
+    final int retryTimeout=250;
+    new Timer(){
+      @Override public void run(){
+        if (resendRequest(request) && webkitMaybeIgnoringRequests) {
+          schedule(retryTimeout);
+        }
+      }
+    }
+.schedule(retryTimeout);
+  }
 }
