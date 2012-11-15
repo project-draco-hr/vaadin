@@ -18,6 +18,12 @@
   String realFilename=sc.getRealPath(scssFilename);
   ScssStylesheet scss=ScssStylesheet.get(realFilename);
   if (scss == null) {
+    if (scssFilename.startsWith("/")) {
+      scssFilename=scssFilename.substring(1);
+    }
+    scss=ScssStylesheet.get(scssFilename);
+  }
+  if (scss == null) {
     getLogger().warning("Scss file " + scssFilename + " exists but ScssStylesheet was not able to find it");
     return false;
   }
