@@ -1,4 +1,5 @@
 {
+  addComponent(log);
   List<Class<? extends Component>> components=new ArrayList<Class<? extends Component>>();
   components.add(Button.class);
   components.add(NativeButton.class);
@@ -40,4 +41,19 @@
   }
   resource=new ClassResource(new EmbeddedPdf().getClass(),"test.pdf");
   addComponents("Class resource pdf",resource,components);
+  addComponent(new Button("Remove first download button",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      Layout parent=(Layout)firstDownloadComponent.getParent();
+      parent.removeComponent(firstDownloadComponent);
+    }
+  }
+));
+  addComponent(new Button("Detach FileDownloader from first download button",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      FileDownloader e=(FileDownloader)firstDownloadComponent.getExtensions().iterator().next();
+      e.removeFromTarget();
+      log.log("FileDownload detached");
+    }
+  }
+));
 }
