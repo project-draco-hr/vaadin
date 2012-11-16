@@ -3,8 +3,8 @@
   HashMap<String,Object> attrs=new HashMap<String,Object>();
   for (  String name : oldSession.getAttributeNames()) {
     Object value=oldSession.getAttribute(name);
-    if (value instanceof VaadinServiceSession) {
-      VaadinServiceSession serviceSession=(VaadinServiceSession)value;
+    if (value instanceof VaadinSession) {
+      VaadinSession serviceSession=(VaadinSession)value;
       serviceSession.setAttribute(REINITIALIZING_SESSION_MARKER,Boolean.TRUE);
     }
     attrs.put(name,value);
@@ -14,8 +14,8 @@
   for (  String name : attrs.keySet()) {
     Object value=attrs.get(name);
     newSession.setAttribute(name,value);
-    if (value instanceof VaadinServiceSession) {
-      VaadinServiceSession serviceSession=(VaadinServiceSession)value;
+    if (value instanceof VaadinSession) {
+      VaadinSession serviceSession=(VaadinSession)value;
       serviceSession.storeInSession(serviceSession.getService(),newSession);
       serviceSession.setAttribute(REINITIALIZING_SESSION_MARKER,null);
     }

@@ -1,11 +1,11 @@
 {
-  LegacyApplication application=VaadinServiceSession.getCurrent().getAttribute(LegacyApplication.class);
+  LegacyApplication application=VaadinSession.getCurrent().getAttribute(LegacyApplication.class);
   if (application == null) {
     application=createApplication();
     if (application == null) {
       return null;
     }
-    VaadinServiceSession.getCurrent().setAttribute(LegacyApplication.class,application);
+    VaadinSession.getCurrent().setAttribute(LegacyApplication.class,application);
     URL applicationUrl;
     try {
       applicationUrl=VaadinService.getCurrent().getApplicationUrl(VaadinService.getCurrentRequest());
@@ -16,7 +16,7 @@
     application.doInit(applicationUrl);
   }
   if (application != null && !application.isRunning()) {
-    VaadinServiceSession.getCurrent().setAttribute(LegacyApplication.class,null);
+    VaadinSession.getCurrent().setAttribute(LegacyApplication.class,null);
     return getApplication();
   }
   return application;
