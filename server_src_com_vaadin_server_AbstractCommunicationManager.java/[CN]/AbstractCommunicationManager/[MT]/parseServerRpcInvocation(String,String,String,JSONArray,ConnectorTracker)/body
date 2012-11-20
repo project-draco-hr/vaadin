@@ -1,5 +1,12 @@
 {
-  ServerRpcMethodInvocation invocation=new ServerRpcMethodInvocation(connectorId,interfaceName,methodName,parametersJson.length());
+  ClientConnector connector=connectorTracker.getConnector(connectorId);
+  RpcManager rpcManager=connector.getRpcManager(interfaceName);
+  if (!(rpcManager instanceof ServerRpcManager)) {
+    getLogger().warning("Ignoring RPC call to " + interfaceName + "."+ methodName+ " in connector "+ connector.getClass().getName()+ "("+ connectorId+ ") as no RPC implementation is regsitered");
+    return null;
+  }
+  Class<? extends ServerRpc> rpcInterface=((ServerRpcManager<?>)rpcManager).getRpcInterface();
+  ServerRpcMethodInvocation invocation=new ServerRpcMethodInvocation(connectorId,rpcInterface,methodName,parametersJson.length());
   Object[] parameters=new Object[parametersJson.length()];
   Type[] declaredRpcMethodParameterTypes=invocation.getMethod().getGenericParameterTypes();
   for (int j=0; j < parametersJson.length(); ++j) {
