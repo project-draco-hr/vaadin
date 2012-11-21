@@ -5,10 +5,15 @@
       if (visibleComponent == null) {
         throw new java.lang.IllegalStateException("PopupView.Content did not return Component to set visible");
       }
-      super.addComponent(visibleComponent);
+      if (visibleComponent.getParent() != null) {
+        AbstractSingleComponentContainer.removeFromParent(visibleComponent);
+      }
+      visibleComponent.setParent(this);
     }
  else {
-      super.removeComponent(visibleComponent);
+      if (visibleComponent.getParent() == this) {
+        visibleComponent.setParent(null);
+      }
       visibleComponent=null;
     }
     fireEvent(new PopupVisibilityEvent(this));
