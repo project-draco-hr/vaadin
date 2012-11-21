@@ -1,0 +1,26 @@
+{
+  if (connector != null) {
+    ErrorHandler errorHandler=connector.getErrorHandler();
+    if (errorHandler != null) {
+      return errorHandler;
+    }
+    ClientConnector parent=connector.getParent();
+    if (parent != null) {
+      return findErrorHandler(parent);
+    }
+    UI ui=connector.getUI();
+    if (ui != null) {
+      errorHandler=findErrorHandler(ui.getSession());
+      if (errorHandler != null) {
+        return errorHandler;
+      }
+    }
+  }
+  if (VaadinSession.getCurrent() != null) {
+    ErrorHandler errorHandler=VaadinSession.getCurrent().getErrorHandler();
+    if (errorHandler != null) {
+      return errorHandler;
+    }
+  }
+  return new DefaultErrorHandler();
+}
