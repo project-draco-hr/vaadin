@@ -296,7 +296,7 @@
       }
       VConsole.log(oldChildren);
       String newChildren="* New children: ";
-      ComponentContainerConnector parent=(ComponentContainerConnector)event.getConnector();
+      HasComponentsConnector parent=(HasComponentsConnector)event.getConnector();
       for (      ComponentConnector child : parent.getChildComponents()) {
         newChildren+=Util.getConnectorString(child) + " ";
       }
@@ -433,8 +433,8 @@
           if (!actuallyChanged) {
             continue;
           }
-          if (parentConnector instanceof ComponentContainerConnector) {
-            ComponentContainerConnector ccc=(ComponentContainerConnector)parentConnector;
+          if (parentConnector instanceof HasComponentsConnector) {
+            HasComponentsConnector ccc=(HasComponentsConnector)parentConnector;
             List<ComponentConnector> oldComponents=ccc.getChildComponents();
             if (!Util.collectionsEquals(oldComponents,newComponents)) {
               ConnectorHierarchyChangeEvent event=GWT.create(ConnectorHierarchyChangeEvent.class);
@@ -445,7 +445,7 @@
             }
           }
  else           if (!newComponents.isEmpty()) {
-            VConsole.error("Hierachy claims " + Util.getConnectorString(parentConnector) + " has component children even though it isn't a ComponentContainerConnector");
+            VConsole.error("Hierachy claims " + Util.getConnectorString(parentConnector) + " has component children even though it isn't a HasComponentsConnector");
           }
           parentConnector.setChildren(newChildren);
           for (          ServerConnector oldChild : oldChildren) {
@@ -475,8 +475,8 @@
       }
       connector.setChildren(Collections.<ServerConnector>emptyList());
       connector.setParent(null);
-      if (connector instanceof ComponentContainerConnector) {
-        ComponentContainerConnector ccc=(ComponentContainerConnector)connector;
+      if (connector instanceof HasComponentsConnector) {
+        HasComponentsConnector ccc=(HasComponentsConnector)connector;
         List<ComponentConnector> oldChildren=ccc.getChildComponents();
         if (!oldChildren.isEmpty()) {
           ccc.setChildComponents(Collections.<ComponentConnector>emptyList());
