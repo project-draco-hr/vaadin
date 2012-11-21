@@ -112,9 +112,14 @@
       unregisterRemovedConnectors();
       updateDuration.logDuration(" * Unregistering of removed components completed",10);
       VConsole.log("handleUIDLMessage: " + (updateDuration.elapsedMillis() - startProcessing) + " ms");
-      LayoutManager layoutManager=getLayoutManager();
-      layoutManager.setEverythingNeedsMeasure();
-      layoutManager.layoutNow();
+      try {
+        LayoutManager layoutManager=getLayoutManager();
+        layoutManager.setEverythingNeedsMeasure();
+        layoutManager.layoutNow();
+      }
+ catch (      final Throwable e) {
+        VConsole.error(e);
+      }
       updateDuration.logDuration(" * Layout processing completed",10);
       if (ApplicationConfiguration.isDebugMode()) {
         VConsole.log(" * Dumping state changes to the console");
