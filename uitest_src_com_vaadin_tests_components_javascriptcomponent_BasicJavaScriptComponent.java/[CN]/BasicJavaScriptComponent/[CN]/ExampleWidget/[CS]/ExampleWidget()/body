@@ -33,6 +33,17 @@
   getRpcProxy(TestRpc.class).sendRpc("RPC message");
   callFunction("messageToClient","Callback message");
   getState().setMessages(Arrays.asList("First state message","Second state message"));
-  Resource resource=new DynamicConnectorResource(this,"test");
-  getState().setUrl(new ResourceReference(resource,null,null));
+  Resource resource=new ConnectorResource(){
+    @Override public String getMIMEType(){
+      return null;
+    }
+    @Override public DownloadStream getStream(){
+      return null;
+    }
+    @Override public String getFilename(){
+      return null;
+    }
+  }
+;
+  getState().setUrl(new ResourceReference(resource,this,"test"));
 }

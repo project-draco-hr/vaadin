@@ -2,26 +2,6 @@
   if (resource instanceof ExternalResource) {
     return ((ExternalResource)resource).getURL();
   }
- else   if (resource instanceof DynamicConnectorResource) {
-    DynamicConnectorResource dcr=(DynamicConnectorResource)resource;
-    String filename=dcr.getPath();
-    StringBuilder builder=new StringBuilder(getConnectorResourceBase(filename,dcr.getConnector()));
-    Set<Entry<String,String>> entrySet=dcr.getParameters().entrySet();
-    boolean first=true;
-    for (    Entry<String,String> entry : entrySet) {
-      String key=entry.getKey();
-      String value=entry.getValue();
-      if (first) {
-        builder.append('?');
-        first=false;
-      }
- else {
-        builder.append('&');
-      }
-      builder.append(key).append('=').append(value);
-    }
-    return builder.toString();
-  }
  else   if (resource instanceof ConnectorResource) {
     ConnectorResource connectorResource=(ConnectorResource)resource;
     GlobalResourceHandler globalResourceHandler=connector.getUI().getSession().getGlobalResourceHandler(false);
