@@ -1,0 +1,14 @@
+{
+synchronized (publishedFileContexts) {
+    if (publishedFileContexts.containsKey(name)) {
+      Class<?> oldContext=publishedFileContexts.get(name);
+      if (oldContext != context) {
+        getLogger().warning(name + " published by both " + context+ " and "+ oldContext+ ". File from "+ oldContext+ " will be used.");
+      }
+    }
+ else {
+      publishedFileContexts.put(name,context);
+    }
+  }
+  return ApplicationConstants.PUBLISHED_PROTOCOL_PREFIX + "/" + name;
+}

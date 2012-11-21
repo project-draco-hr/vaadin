@@ -1,0 +1,52 @@
+{
+  String pathInfo=request.getPathInfo();
+  String fileName=pathInfo.substring(ApplicationConstants.PUBLISHED_FILE_PATH.length() + 2);
+  final String mimetype=response.getService().getMimeType(fileName);
+  if (fileName.startsWith("/")) {
+    getLogger().warning("Published file request starting with / rejected: " + fileName);
+    response.sendError(HttpServletResponse.SC_NOT_FOUND,fileName);
+    return;
+  }
+  Class<?> context;
+synchronized (publishedFileContexts) {
+    context=publishedFileContexts.get(fileName);
+  }
+  if (context == null) {
+    getLogger().warning("Rejecting published file request for file that has not been published: " + fileName);
+    response.sendError(HttpServletResponse.SC_NOT_FOUND,fileName);
+    return;
+  }
+  InputStream in=context.getResourceAsStream(fileName);
+  if (in == null) {
+    getLogger().warning(fileName + " published by " + context.getName()+ " not found. Verify that the file "+ context.getPackage().getName().replace('.','/')+ '/'+ fileName+ " is available on the classpath.");
+    response.sendError(HttpServletResponse.SC_NOT_FOUND,fileName);
+    return;
+  }
+  OutputStream out=null;
+  try {
+    if (mimetype != null) {
+      response.setContentType(mimetype);
+    }
+    out=response.getOutputStream();
+    final byte[] buffer=new byte[Constants.DEFAULT_BUFFER_SIZE];
+    int bytesRead=0;
+    while ((bytesRead=in.read(buffer)) > 0) {
+      out.write(buffer,0,bytesRead);
+    }
+    out.flush();
+  }
+  finally {
+    try {
+      in.close();
+    }
+ catch (    Exception e) {
+    }
+    if (out != null) {
+      try {
+        out.close();
+      }
+ catch (      Exception e) {
+      }
+    }
+  }
+}
