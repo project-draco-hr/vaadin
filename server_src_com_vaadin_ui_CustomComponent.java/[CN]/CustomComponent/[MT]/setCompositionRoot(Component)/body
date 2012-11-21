@@ -1,10 +1,13 @@
 {
   if (compositionRoot != root) {
-    if (root != null) {
-      super.removeComponent(root);
+    if (root != null && root.getParent() == this) {
+      root.setParent(null);
     }
     if (compositionRoot != null) {
-      super.addComponent(compositionRoot);
+      if (compositionRoot.getParent() != null) {
+        AbstractSingleComponentContainer.removeFromParent(compositionRoot);
+      }
+      compositionRoot.setParent(this);
     }
     root=compositionRoot;
     markAsDirty();
