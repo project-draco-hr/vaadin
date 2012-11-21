@@ -3,6 +3,15 @@
     if (isReadOnly()) {
       throw new Property.ReadOnlyException();
     }
+    try {
+      T doubleConvertedFieldValue=convertFromDataSource(convertToModel(newFieldValue));
+      if (!equals(newFieldValue,doubleConvertedFieldValue)) {
+        newFieldValue=doubleConvertedFieldValue;
+        repaintIsNotNeeded=false;
+      }
+    }
+ catch (    Throwable t) {
+    }
     if (repaintIsNotNeeded && (isRequired() || getValidators() != null || getConverter() != null)) {
       repaintIsNotNeeded=false;
     }
