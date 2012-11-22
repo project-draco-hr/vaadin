@@ -1,18 +1,3 @@
 {
-  final String classLoaderName=getDeploymentConfiguration().getApplicationOrSystemProperty("ClassLoader",null);
-  ClassLoader classLoader;
-  if (classLoaderName == null) {
-    classLoader=getClass().getClassLoader();
-  }
- else {
-    try {
-      final Class<?> classLoaderClass=getClass().getClassLoader().loadClass(classLoaderName);
-      final Constructor<?> c=classLoaderClass.getConstructor(new Class[]{ClassLoader.class});
-      classLoader=(ClassLoader)c.newInstance(new Object[]{getClass().getClassLoader()});
-    }
- catch (    final Exception e) {
-      throw new RuntimeException("Could not find specified class loader: " + classLoaderName,e);
-    }
-  }
   return classLoader;
 }

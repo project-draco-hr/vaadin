@@ -1,3 +1,14 @@
 {
   this.deploymentConfiguration=deploymentConfiguration;
+  final String classLoaderName=getDeploymentConfiguration().getApplicationOrSystemProperty("ClassLoader",null);
+  if (classLoaderName != null) {
+    try {
+      final Class<?> classLoaderClass=getClass().getClassLoader().loadClass(classLoaderName);
+      final Constructor<?> c=classLoaderClass.getConstructor(new Class[]{ClassLoader.class});
+      setClassLoader((ClassLoader)c.newInstance(new Object[]{getClass().getClassLoader()}));
+    }
+ catch (    final Exception e) {
+      throw new RuntimeException("Could not find specified class loader: " + classLoaderName,e);
+    }
+  }
 }
