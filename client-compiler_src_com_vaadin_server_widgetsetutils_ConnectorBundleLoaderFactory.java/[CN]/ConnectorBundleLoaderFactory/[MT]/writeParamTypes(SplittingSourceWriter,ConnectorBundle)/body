@@ -1,0 +1,20 @@
+{
+  Map<JClassType,Set<JMethod>> needsParamTypes=bundle.getNeedsParamTypes();
+  for (  Entry<JClassType,Set<JMethod>> entry : needsParamTypes.entrySet()) {
+    JClassType type=entry.getKey();
+    Set<JMethod> methods=entry.getValue();
+    for (    JMethod method : methods) {
+      w.print("store.setParamTypes(");
+      writeClassLiteral(w,type);
+      w.print(", \"");
+      w.print(escape(method.getName()));
+      w.print("\", new Type[] {");
+      for (      JType parameter : method.getParameterTypes()) {
+        ConnectorBundleLoaderFactory.writeTypeCreator(w,parameter);
+        w.print(", ");
+      }
+      w.println("});");
+      w.splitIfNeeded();
+    }
+  }
+}
