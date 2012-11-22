@@ -34,13 +34,22 @@
       w.print(GWT.class.getName());
       w.print(".runAsync(");
     }
-    w.print("new ");
-    w.print(TypeDataBundle.class.getName());
-    w.println("(getName()) {");
+    w.println("new %s() {",RunAsyncCallback.class.getName());
     w.indent();
-    w.println("public void load() {");
+    w.println("public void onSuccess() {");
+    w.indent();
+    w.println("load();");
+    w.println("%s.get().setLoaded(getName());",ConnectorBundleLoader.class.getName());
+    w.outdent();
+    w.println("}");
+    w.println("private void load() {");
     w.indent();
     printBundleData(logger,w,bundle);
+    w.outdent();
+    w.println("}");
+    w.println("public void onFailure(Throwable reason) {");
+    w.indent();
+    w.println("%s.get().setLoadFailure(getName(), reason);",ConnectorBundleLoader.class.getName());
     w.outdent();
     w.println("}");
     w.outdent();
