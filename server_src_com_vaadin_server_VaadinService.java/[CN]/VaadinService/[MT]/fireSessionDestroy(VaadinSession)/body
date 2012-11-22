@@ -3,7 +3,10 @@
     return;
   }
   for (  UI ui : new ArrayList<UI>(vaadinSession.getUIs())) {
-    vaadinSession.cleanupUI(ui);
+    if (!ui.isClosing()) {
+      ui.close();
+    }
+    vaadinSession.removeUI(ui);
   }
   eventRouter.fireEvent(new SessionDestroyEvent(this,vaadinSession));
 }
