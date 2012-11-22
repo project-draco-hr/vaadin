@@ -1,0 +1,20 @@
+{
+  Set<Property> properties=bundle.getNeedsSetter();
+  for (  Property property : properties) {
+    w.print("store.setGetter(");
+    writeClassLiteral(w,property.getBeanType());
+    w.print(", \"");
+    w.print(escape(property.getName()));
+    w.println("\", new Invoker() {");
+    w.indent();
+    w.println("public Object invoke(Object bean, Object[] params) {");
+    w.indent();
+    property.writeGetterBody(logger,w,"bean");
+    w.println();
+    w.outdent();
+    w.println("}");
+    w.outdent();
+    w.println("});");
+    w.splitIfNeeded();
+  }
+}

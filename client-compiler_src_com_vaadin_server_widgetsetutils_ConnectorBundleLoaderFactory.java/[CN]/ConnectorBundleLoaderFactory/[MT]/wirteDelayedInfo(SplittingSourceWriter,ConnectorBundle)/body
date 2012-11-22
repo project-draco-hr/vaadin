@@ -1,0 +1,26 @@
+{
+  Map<JClassType,Set<JMethod>> needsDelayedInfo=bundle.getNeedsDelayedInfo();
+  Set<Entry<JClassType,Set<JMethod>>> entrySet=needsDelayedInfo.entrySet();
+  for (  Entry<JClassType,Set<JMethod>> entry : entrySet) {
+    JClassType type=entry.getKey();
+    Set<JMethod> methods=entry.getValue();
+    for (    JMethod method : methods) {
+      Delayed annotation=method.getAnnotation(Delayed.class);
+      if (annotation != null) {
+        w.print("store.setDelayed(");
+        writeClassLiteral(w,type);
+        w.print(", \"");
+        w.print(escape(method.getName()));
+        w.println("\");");
+        if (annotation.lastOnly()) {
+          w.print("store.setLastOnly(");
+          writeClassLiteral(w,type);
+          w.print(", \"");
+          w.print(escape(method.getName()));
+          w.println("\");");
+        }
+        w.splitIfNeeded();
+      }
+    }
+  }
+}

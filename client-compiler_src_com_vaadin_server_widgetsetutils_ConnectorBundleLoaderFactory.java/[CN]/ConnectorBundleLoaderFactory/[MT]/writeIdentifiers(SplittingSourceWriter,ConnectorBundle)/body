@@ -1,0 +1,15 @@
+{
+  Map<JClassType,Set<String>> identifiers=bundle.getIdentifiers();
+  for (  Entry<JClassType,Set<String>> entry : identifiers.entrySet()) {
+    Set<String> ids=entry.getValue();
+    JClassType type=entry.getKey();
+    for (    String id : ids) {
+      w.print("store.setClass(\"");
+      w.print(escape(id));
+      w.print("\", ");
+      writeClassLiteral(w,type);
+      w.println(");");
+      w.splitIfNeeded();
+    }
+  }
+}
