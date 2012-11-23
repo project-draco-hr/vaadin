@@ -4,8 +4,8 @@
   cssHeader.append(".v-theme-version:after {content:\"" + version + "\";}\n");
   cssHeader.append(".v-theme-version-" + version + " {display: none;}\n");
   String stylesCssDir=themeFolder + File.separator + themeName+ File.separator;
-  String stylesCssName=stylesCssDir + "styles.css";
-  String sassFile=stylesCssDir + "styles.scss";
+  String stylesCssName=stylesCssDir + variant + ".css";
+  String sassFile=stylesCssDir + variant + ".scss";
   ScssStylesheet scss=ScssStylesheet.get(sassFile);
   if (scss == null) {
     throw new IllegalArgumentException("SASS file: " + sassFile + " not found");
@@ -18,7 +18,7 @@
   System.out.println("Compiled CSS to " + stylesCssName + " ("+ scss.toString().length()+ " bytes)");
   createSprites(themeFolder,themeName);
   File oldCss=new File(stylesCssName);
-  File newCss=new File(stylesCssDir + "styles-sprite.css");
+  File newCss=new File(stylesCssDir + variant + "-sprite.css");
   if (newCss.exists()) {
     oldCss.delete();
     boolean ok=newCss.renameTo(oldCss);
