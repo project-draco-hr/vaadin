@@ -4,7 +4,10 @@
     removeClosedUIs(session);
   }
  else {
-    getLogger().fine("Closed inactive session " + session.getSession().getId());
-    closeSession(session);
+    if (!session.isClosing()) {
+      getLogger().fine("Closing inactive session " + session.getSession().getId());
+      closeSession(session);
+    }
+    session.removeFromSession(this);
   }
 }
