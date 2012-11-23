@@ -1,17 +1,19 @@
 {
+  Node originalParent=node.getParentNode();
   node.traverse();
   @SuppressWarnings("unchecked") HashMap<String,VariableNode> variableScope=(HashMap<String,VariableNode>)variables.clone();
-  int maxSize=node.getChildren().size();
-  ArrayList<Node> oldChildren=new ArrayList<Node>(node.getChildren());
-  for (int i=0; i < maxSize; i++) {
+  for (int i=0; i < node.getChildren().size(); i++) {
     Node current=node.getChildren().get(i);
-    traverse(current);
-    if (!node.getChildren().equals(oldChildren)) {
-      oldChildren=new ArrayList<Node>(node.getChildren());
-      maxSize=node.getChildren().size();
-      i=i - 1;
+    if (traverse(current)) {
+      --i;
     }
   }
   variables.clear();
   variables.putAll(variableScope);
+  if (originalParent != null) {
+    return !originalParent.getChildren().contains(node);
+  }
+ else {
+    return false;
+  }
 }
