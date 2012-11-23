@@ -15,28 +15,30 @@
     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     return true;
   }
-  String realFilename=sc.getRealPath(scssFilename);
-  ScssStylesheet scss=ScssStylesheet.get(realFilename);
-  if (scss == null) {
-    if (scssFilename.startsWith("/")) {
-      scssFilename=scssFilename.substring(1);
+synchronized (SCSS_MUTEX) {
+    String realFilename=sc.getRealPath(scssFilename);
+    ScssStylesheet scss=ScssStylesheet.get(realFilename);
+    if (scss == null) {
+      if (scssFilename.startsWith("/")) {
+        scssFilename=scssFilename.substring(1);
+      }
+      scss=ScssStylesheet.get(scssFilename);
     }
-    scss=ScssStylesheet.get(scssFilename);
+    if (scss == null) {
+      getLogger().warning("Scss file " + scssFilename + " exists but ScssStylesheet was not able to find it");
+      return false;
+    }
+    try {
+      getLogger().fine("Compiling " + realFilename + " for request to "+ filename);
+      scss.compile();
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+    response.setHeader("Cache-Control","no-cache");
+    final String mimetype=getService().getMimeType(filename);
+    writeResponse(response,mimetype,scss.toString());
+    return true;
   }
-  if (scss == null) {
-    getLogger().warning("Scss file " + scssFilename + " exists but ScssStylesheet was not able to find it");
-    return false;
-  }
-  try {
-    getLogger().fine("Compiling " + realFilename + " for request to "+ filename);
-    scss.compile();
-  }
- catch (  Exception e) {
-    e.printStackTrace();
-    return false;
-  }
-  response.setHeader("Cache-Control","no-cache");
-  final String mimetype=getService().getMimeType(filename);
-  writeResponse(response,mimetype,scss.toString());
-  return true;
 }
