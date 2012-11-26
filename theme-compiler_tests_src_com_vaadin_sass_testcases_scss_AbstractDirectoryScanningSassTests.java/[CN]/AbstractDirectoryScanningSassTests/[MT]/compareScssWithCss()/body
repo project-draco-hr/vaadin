@@ -1,0 +1,10 @@
+{
+  String referenceCss;
+  File scssFile=getSassLangResourceFile(scssResourceName);
+  File cssFile=getCssFile(scssFile);
+  referenceCss=IOUtils.toString(new FileInputStream(cssFile));
+  ScssStylesheet scssStylesheet=ScssStylesheet.get(scssFile.getAbsolutePath());
+  scssStylesheet.compile();
+  String parsedCss=scssStylesheet.toString();
+  Assert.assertEquals("Original CSS and parsed CSS do not match for " + scssResourceName,normalize(referenceCss),normalize(parsedCss));
+}
