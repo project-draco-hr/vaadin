@@ -1,10 +1,11 @@
 {
   LayoutManager lm=getLayoutManager();
   VWindow window=getWidget();
-  ComponentConnector layout=window.layout;
+  ComponentConnector content=getContent();
+  boolean hasContent=(content != null);
   Element contentElement=window.contentPanel.getElement();
   if (!minWidthChecked) {
-    boolean needsMinWidth=!isUndefinedWidth() || layout.isRelativeWidth();
+    boolean needsMinWidth=!isUndefinedWidth() || !hasContent || content.isRelativeWidth();
     int minWidth=window.getMinWidth();
     if (needsMinWidth && lm.getInnerWidth(contentElement) < minWidth) {
       minWidthChecked=true;
@@ -12,7 +13,7 @@
     }
     minWidthChecked=true;
   }
-  boolean needsMinHeight=!isUndefinedHeight() || layout.isRelativeHeight();
+  boolean needsMinHeight=!isUndefinedHeight() || !hasContent || content.isRelativeHeight();
   int minHeight=window.getMinHeight();
   if (needsMinHeight && lm.getInnerHeight(contentElement) < minHeight) {
     window.setHeight(minHeight + "px");
@@ -24,20 +25,22 @@
   int footerHeight=lm.getOuterHeight(window.footer);
   contentStyle.setPaddingBottom(footerHeight,Unit.PX);
   contentStyle.setMarginBottom(-footerHeight,Unit.PX);
-  Element layoutElement=layout.getWidget().getElement();
-  Style childStyle=layoutElement.getStyle();
-  if (layout.isRelativeHeight() && !BrowserInfo.get().isIE9()) {
-    childStyle.setPosition(Position.ABSOLUTE);
-    Style wrapperStyle=contentElement.getStyle();
-    if (window.getElement().getStyle().getWidth().length() == 0 && !layout.isRelativeWidth()) {
-      int contentWidth=lm.getOuterWidth(layoutElement);
-      wrapperStyle.setWidth(contentWidth,Unit.PX);
+  if (hasContent) {
+    Element layoutElement=content.getWidget().getElement();
+    Style childStyle=layoutElement.getStyle();
+    if (content.isRelativeHeight() && !BrowserInfo.get().isIE9()) {
+      childStyle.setPosition(Position.ABSOLUTE);
+      Style wrapperStyle=contentElement.getStyle();
+      if (window.getElement().getStyle().getWidth().length() == 0 && !content.isRelativeWidth()) {
+        int contentWidth=lm.getOuterWidth(layoutElement);
+        wrapperStyle.setWidth(contentWidth,Unit.PX);
+      }
+ else {
+        wrapperStyle.clearWidth();
+      }
     }
  else {
-      wrapperStyle.clearWidth();
+      childStyle.clearPosition();
     }
-  }
- else {
-    childStyle.clearPosition();
   }
 }
