@@ -1,0 +1,39 @@
+{
+  float[] hsv=new float[3];
+  int maxColor=(red > green) ? red : green;
+  if (blue > maxColor) {
+    maxColor=blue;
+  }
+  int minColor=(red < green) ? red : green;
+  if (blue < minColor) {
+    minColor=blue;
+  }
+  float value=maxColor / 255.0f;
+  float saturation=0;
+  if (maxColor != 0) {
+    saturation=((float)(maxColor - minColor)) / ((float)maxColor);
+  }
+  float hue=0;
+  if (saturation != 0) {
+    float redF=((float)(maxColor - red)) / ((float)(maxColor - minColor));
+    float greenF=((float)(maxColor - green)) / ((float)(maxColor - minColor));
+    float blueF=((float)(maxColor - blue)) / ((float)(maxColor - minColor));
+    if (red == maxColor) {
+      hue=blueF - greenF;
+    }
+ else     if (green == maxColor) {
+      hue=2.0f + redF - blueF;
+    }
+ else {
+      hue=4.0f + greenF - redF;
+    }
+    hue=hue / 6.0f;
+    if (hue < 0) {
+      hue=hue + 1.0f;
+    }
+  }
+  hsv[0]=hue;
+  hsv[1]=saturation;
+  hsv[2]=value;
+  return hsv;
+}

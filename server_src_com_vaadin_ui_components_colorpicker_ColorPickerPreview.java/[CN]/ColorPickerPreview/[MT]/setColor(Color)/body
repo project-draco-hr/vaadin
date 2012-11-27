@@ -1,0 +1,24 @@
+{
+  this.color=color;
+  field.removeValueChangeListener(this);
+  field.setReadOnly(false);
+  String colorCSS=color.getCSS();
+  field.setValue(colorCSS);
+  if (field.isValid()) {
+    oldValue=colorCSS;
+  }
+ else {
+    field.setValue(oldValue);
+  }
+  field.setReadOnly(true);
+  field.addValueChangeListener(this);
+  field.removeStyleName(STYLE_DARK_COLOR);
+  field.removeStyleName(STYLE_LIGHT_COLOR);
+  if (this.color.getRed() + this.color.getGreen() + this.color.getBlue() < 3 * 128) {
+    field.addStyleName(STYLE_DARK_COLOR);
+  }
+ else {
+    field.addStyleName(STYLE_LIGHT_COLOR);
+  }
+  markAsDirty();
+}

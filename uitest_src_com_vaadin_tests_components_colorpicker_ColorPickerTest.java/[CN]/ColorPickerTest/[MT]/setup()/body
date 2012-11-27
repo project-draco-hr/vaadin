@@ -1,0 +1,165 @@
+{
+  getLayout().setWidth("1000px");
+  getLayout().setHeight(null);
+  getLayout().addStyleName("colorpicker-mainwindow-content");
+  display=new Embedded("Color preview");
+  display.setWidth("270px");
+  display.setHeight("270px");
+  HorizontalLayout mainLayout=new HorizontalLayout();
+  mainLayout.addStyleName("colorpicker-mainlayout");
+  mainLayout.setWidth("100%");
+  mainLayout.setHeight(null);
+  mainLayout.setMargin(true);
+  mainLayout.setSpacing(true);
+  getLayout().addComponent(mainLayout);
+  VerticalLayout layoutLeft=new VerticalLayout();
+  layoutLeft.setWidth("450px");
+  layoutLeft.setHeight(null);
+  layoutLeft.setSpacing(true);
+  GridLayout optLayout=new GridLayout(3,2);
+  optLayout.setWidth("100%");
+  optLayout.setHeight(null);
+  optLayout.setMargin(true);
+  optLayout.setSpacing(true);
+  rgbBox.setValue(rgbVisible);
+  rgbBox.addValueChangeListener(new CheckBox.ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      rgbVisible=(Boolean)event.getProperty().getValue();
+      setPopupVisibilities();
+    }
+  }
+);
+  rgbBox.setImmediate(true);
+  rgbBox.setId("rgbBox");
+  optLayout.addComponent(rgbBox);
+  hsvBox.setValue(hsvVisible);
+  hsvBox.addValueChangeListener(new CheckBox.ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      hsvVisible=(Boolean)event.getProperty().getValue();
+      setPopupVisibilities();
+    }
+  }
+);
+  hsvBox.setImmediate(true);
+  hsvBox.setId("hsvBox");
+  optLayout.addComponent(hsvBox);
+  swaBox.setValue(swaVisible);
+  swaBox.addValueChangeListener(new CheckBox.ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      swaVisible=(Boolean)event.getProperty().getValue();
+      setPopupVisibilities();
+    }
+  }
+);
+  swaBox.setImmediate(true);
+  swaBox.setId("swaBox");
+  optLayout.addComponent(swaBox);
+  hisBox.setValue(historyVisible);
+  hisBox.addValueChangeListener(new CheckBox.ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      historyVisible=(Boolean)event.getProperty().getValue();
+      setPopupVisibilities();
+    }
+  }
+);
+  hisBox.setImmediate(true);
+  hisBox.setId("hisBox");
+  optLayout.addComponent(hisBox);
+  txtBox.setValue(txtfieldVisible);
+  txtBox.addValueChangeListener(new CheckBox.ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      txtfieldVisible=(Boolean)event.getProperty().getValue();
+      setPopupVisibilities();
+    }
+  }
+);
+  txtBox.setImmediate(true);
+  txtBox.setId("txtBox");
+  optLayout.addComponent(txtBox);
+  Panel optPanel=new Panel("Customize the color picker popup window",optLayout);
+  layoutLeft.addComponent(optPanel);
+  HorizontalLayout layout1=createHorizontalLayout();
+  colorpicker1=new ColorPicker("Foreground",foregroundColor);
+  colorpicker1.setHtmlContentAllowed(true);
+  colorpicker1.addColorChangeListener(this);
+  colorpicker1.setId("colorpicker1");
+  layout1.addComponent(colorpicker1);
+  layout1.setComponentAlignment(colorpicker1,Alignment.MIDDLE_CENTER);
+  colorpicker2=new ColorPicker("Background",backgroundColor);
+  colorpicker2.addColorChangeListener(this);
+  colorpicker2.setId("colorpicker2");
+  layout1.addComponent(colorpicker2);
+  layout1.setComponentAlignment(colorpicker2,Alignment.MIDDLE_CENTER);
+  Panel panel1=new Panel("Button-like colorpicker with current color and CSS code",layout1);
+  layoutLeft.addComponent(panel1);
+  HorizontalLayout layout2=createHorizontalLayout();
+  colorpicker3=new ColorPicker("Foreground",foregroundColor);
+  colorpicker3.addColorChangeListener(this);
+  colorpicker3.setWidth("120px");
+  colorpicker3.setCaption("Foreground");
+  colorpicker3.setId("colorpicker3");
+  layout2.addComponent(colorpicker3);
+  layout2.setComponentAlignment(colorpicker3,Alignment.MIDDLE_CENTER);
+  colorpicker4=new ColorPicker("Background",backgroundColor);
+  colorpicker4.addColorChangeListener(this);
+  colorpicker4.setWidth("120px");
+  colorpicker4.setCaption("Background");
+  colorpicker4.setId("colorpicker4");
+  layout2.addComponent(colorpicker4);
+  layout2.setComponentAlignment(colorpicker4,Alignment.MIDDLE_CENTER);
+  Panel panel2=new Panel("Button-like colorpicker with current color and custom caption",layout2);
+  layoutLeft.addComponent(panel2);
+  HorizontalLayout layout3=createHorizontalLayout();
+  colorpicker5=new ColorPickerArea("Foreground",foregroundColor);
+  colorpicker5.setCaption("Foreground");
+  colorpicker5.addColorChangeListener(this);
+  colorpicker5.setId("colorpicker5");
+  layout3.addComponent(colorpicker5);
+  layout3.setComponentAlignment(colorpicker5,Alignment.MIDDLE_CENTER);
+  colorpicker6=new ColorPickerArea("Background",backgroundColor);
+  colorpicker6.setCaption("Background");
+  colorpicker6.setDefaultCaptionEnabled(false);
+  colorpicker6.addColorChangeListener(this);
+  colorpicker6.setId("colorpicker6");
+  layout3.addComponent(colorpicker6);
+  layout3.setComponentAlignment(colorpicker6,Alignment.MIDDLE_CENTER);
+  Panel panel3=new Panel("Color area colorpicker with caption",layout3);
+  panel3.setWidth("100%");
+  panel3.setHeight(null);
+  layoutLeft.addComponent(panel3);
+  Label divider1=new Label("<hr>",ContentMode.HTML);
+  layoutLeft.addComponent(divider1);
+  Label divider2=new Label("<hr>",ContentMode.HTML);
+  layoutLeft.addComponent(divider2);
+  HorizontalLayout layout4=createHorizontalLayout();
+  addShadeButton(new Color(Integer.parseInt("000000",16)),layout4);
+  addShadeButton(new Color(Integer.parseInt("333333",16)),layout4);
+  addShadeButton(new Color(Integer.parseInt("666666",16)),layout4);
+  addShadeButton(new Color(Integer.parseInt("999999",16)),layout4);
+  addShadeButton(new Color(Integer.parseInt("cccccc",16)),layout4);
+  addShadeButton(new Color(Integer.parseInt("ffffff",16)),layout4);
+  Panel panel4=new Panel("Button-like colorpickers with disabled caption (no effect on fg/bg colors)",layout4);
+  layoutLeft.addComponent(panel4);
+  HorizontalLayout layout5=createHorizontalLayout();
+  addShadeArea(new Color(Integer.parseInt("000000",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("111111",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("222222",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("333333",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("444444",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("555555",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("666666",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("777777",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("888888",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("999999",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("aaaaaa",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("bbbbbb",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("cccccc",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("dddddd",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("eeeeee",16)),layout5);
+  addShadeArea(new Color(Integer.parseInt("ffffff",16)),layout5);
+  Panel panel5=new Panel("Area colorpickers with no given caption (no effect on fg/bg colors)",layout5);
+  layoutLeft.addComponent(panel5);
+  mainLayout.addComponent(layoutLeft);
+  mainLayout.addComponent(display);
+  updateDisplay(foregroundColor,backgroundColor);
+}

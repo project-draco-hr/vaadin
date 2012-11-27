@@ -1,0 +1,45 @@
+{
+  if (open && !isReadOnly()) {
+    if (parent == null) {
+      parent=getUI();
+    }
+    if (window == null) {
+      window=new ColorPickerPopup(color);
+      window.setCaption(popupCaption);
+      window.setRGBTabVisible(rgbVisible);
+      window.setHSVTabVisible(hsvVisible);
+      window.setSwatchesTabVisible(swatchesVisible);
+      window.setHistoryVisible(historyVisible);
+      window.setPreviewVisible(textfieldVisible);
+      window.setImmediate(true);
+      window.addCloseListener(this);
+      window.addColorChangeListener(new ColorChangeListener(){
+        public void colorChanged(        ColorChangeEvent event){
+          AbstractColorPicker.this.colorChanged(event);
+        }
+      }
+);
+      window.getHistory().setColor(color);
+      parent.addWindow(window);
+      window.setVisible(true);
+      window.setPositionX(positionX);
+      window.setPositionY(positionY);
+    }
+ else     if (!parent.equals(window.getParent())) {
+      window.setRGBTabVisible(rgbVisible);
+      window.setHSVTabVisible(hsvVisible);
+      window.setSwatchesTabVisible(swatchesVisible);
+      window.setHistoryVisible(historyVisible);
+      window.setPreviewVisible(textfieldVisible);
+      window.setColor(color);
+      window.getHistory().setColor(color);
+      window.setVisible(true);
+      parent.addWindow(window);
+    }
+  }
+ else   if (window != null) {
+    window.setVisible(false);
+    parent.removeWindow(window);
+  }
+  getState().popupVisible=open;
+}

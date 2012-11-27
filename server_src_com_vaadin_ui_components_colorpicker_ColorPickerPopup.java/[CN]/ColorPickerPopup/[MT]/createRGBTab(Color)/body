@@ -1,0 +1,66 @@
+{
+  VerticalLayout rgbLayout=new VerticalLayout();
+  rgbLayout.setMargin(new MarginInfo(false,false,true,false));
+  rgbLayout.addComponent(rgbPreview);
+  rgbLayout.setStyleName("rgbtab");
+  rgbGradient=new ColorPickerGradient("rgb-gradient",RGBConverter);
+  rgbGradient.setColor(color);
+  rgbGradient.addColorChangeListener(this);
+  rgbLayout.addComponent(rgbGradient);
+  selectors.add(rgbGradient);
+  VerticalLayout sliders=new VerticalLayout();
+  sliders.setStyleName("rgb-sliders");
+  redSlider=createRGBSlider("Red","red");
+  try {
+    redSlider.setValue(((Integer)color.getRed()).doubleValue());
+  }
+ catch (  ValueOutOfBoundsException e) {
+  }
+  redSlider.addValueChangeListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      double red=(Double)event.getProperty().getValue();
+      if (!updatingColors) {
+        Color newColor=new Color((int)red,selectedColor.getGreen(),selectedColor.getBlue());
+        setColor(newColor);
+      }
+    }
+  }
+);
+  sliders.addComponent(redSlider);
+  greenSlider=createRGBSlider("Green","green");
+  try {
+    greenSlider.setValue(((Integer)color.getGreen()).doubleValue());
+  }
+ catch (  ValueOutOfBoundsException e) {
+  }
+  greenSlider.addValueChangeListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      double green=(Double)event.getProperty().getValue();
+      if (!updatingColors) {
+        Color newColor=new Color(selectedColor.getRed(),(int)green,selectedColor.getBlue());
+        setColor(newColor);
+      }
+    }
+  }
+);
+  sliders.addComponent(greenSlider);
+  blueSlider=createRGBSlider("Blue","blue");
+  try {
+    blueSlider.setValue(((Integer)color.getBlue()).doubleValue());
+  }
+ catch (  ValueOutOfBoundsException e) {
+  }
+  blueSlider.addValueChangeListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      double blue=(Double)event.getProperty().getValue();
+      if (!updatingColors) {
+        Color newColor=new Color(selectedColor.getRed(),selectedColor.getGreen(),(int)blue);
+        setColor(newColor);
+      }
+    }
+  }
+);
+  sliders.addComponent(blueSlider);
+  rgbLayout.addComponent(sliders);
+  return rgbLayout;
+}

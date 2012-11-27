@@ -1,0 +1,13 @@
+{
+  super.onStateChanged(stateChangeEvent);
+  Set<String> changedProperties=stateChangeEvent.getChangedProperties();
+  if (changedProperties.contains("rowCount") || changedProperties.contains("columnCount") || changedProperties.contains("updateGrid")) {
+    getWidget().updateGrid(getState().rowCount,getState().columnCount);
+  }
+  if (changedProperties.contains("changedX") || changedProperties.contains("changedY") || changedProperties.contains("changedColor")|| changedProperties.contains("updateColor")) {
+    getWidget().updateColor(getState().changedColor,getState().changedX,getState().changedY);
+    if (!getWidget().isGridLoaded()) {
+      rpc.refresh();
+    }
+  }
+}

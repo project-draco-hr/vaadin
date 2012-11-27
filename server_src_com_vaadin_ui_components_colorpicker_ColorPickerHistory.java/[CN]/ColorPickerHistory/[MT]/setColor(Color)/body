@@ -1,0 +1,34 @@
+{
+  ArrayBlockingQueue<Color> colorHistory=getColorHistory();
+  boolean exists=false;
+  Iterator<Color> iter=colorHistory.iterator();
+  while (iter.hasNext()) {
+    if (color.equals(iter.next())) {
+      exists=true;
+      break;
+    }
+  }
+  if (!exists) {
+    if (!colorHistory.offer(color)) {
+      colorHistory.poll();
+      colorHistory.offer(color);
+    }
+  }
+  List<Color> colorList=new ArrayList<Color>(colorHistory);
+  Collections.reverse(colorList);
+  Collections.swap(colorList,colorList.indexOf(color),0);
+  Color[][] colors=new Color[rows][columns];
+  iter=colorList.iterator();
+  for (int row=0; row < rows; row++) {
+    for (int col=0; col < columns; col++) {
+      if (iter.hasNext()) {
+        colors[row][col]=iter.next();
+      }
+ else {
+        colors[row][col]=Color.WHITE;
+      }
+    }
+  }
+  grid.setColorGrid(colors);
+  grid.markAsDirty();
+}

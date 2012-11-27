@@ -1,0 +1,85 @@
+{
+  VerticalLayout hsvLayout=new VerticalLayout();
+  hsvLayout.setMargin(new MarginInfo(false,false,true,false));
+  hsvLayout.addComponent(hsvPreview);
+  hsvLayout.setStyleName("hsvtab");
+  hsvGradient=new ColorPickerGradient("hsv-gradient",HSVConverter);
+  hsvGradient.setColor(color);
+  hsvGradient.addColorChangeListener(this);
+  hsvLayout.addComponent(hsvGradient);
+  selectors.add(hsvGradient);
+  float[] hsv=color.getHSV();
+  VerticalLayout sliders=new VerticalLayout();
+  sliders.setStyleName("hsv-sliders");
+  hueSlider=new Slider("Hue",0,360);
+  try {
+    hueSlider.setValue(((Float)hsv[0]).doubleValue());
+  }
+ catch (  ValueOutOfBoundsException e1) {
+  }
+  hueSlider.setStyleName("hsv-slider");
+  hueSlider.addStyleName("hue-slider");
+  hueSlider.setWidth("220px");
+  hueSlider.setImmediate(true);
+  hueSlider.addValueChangeListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      if (!updatingColors) {
+        float hue=(Float.parseFloat(event.getProperty().getValue().toString())) / 360f;
+        float saturation=(Float.parseFloat(saturationSlider.getValue().toString())) / 100f;
+        float value=(Float.parseFloat(valueSlider.getValue().toString())) / 100f;
+        Color color=new Color(Color.HSVtoRGB(hue,saturation,value));
+        setColor(color);
+        Color bgColor=new Color(Color.HSVtoRGB(hue,1f,1f));
+        hsvGradient.setBackgroundColor(bgColor);
+      }
+    }
+  }
+);
+  sliders.addComponent(hueSlider);
+  saturationSlider=new Slider("Saturation",0,100);
+  try {
+    saturationSlider.setValue(((Float)hsv[1]).doubleValue());
+  }
+ catch (  ValueOutOfBoundsException e1) {
+  }
+  saturationSlider.setStyleName("hsv-slider");
+  saturationSlider.setWidth("220px");
+  saturationSlider.setImmediate(true);
+  saturationSlider.addValueChangeListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      if (!updatingColors) {
+        float hue=(Float.parseFloat(hueSlider.getValue().toString())) / 360f;
+        float saturation=(Float.parseFloat(event.getProperty().getValue().toString())) / 100f;
+        float value=(Float.parseFloat(valueSlider.getValue().toString())) / 100f;
+        Color color=new Color(Color.HSVtoRGB(hue,saturation,value));
+        setColor(color);
+      }
+    }
+  }
+);
+  sliders.addComponent(saturationSlider);
+  valueSlider=new Slider("Value",0,100);
+  try {
+    valueSlider.setValue(((Float)hsv[2]).doubleValue());
+  }
+ catch (  ValueOutOfBoundsException e1) {
+  }
+  valueSlider.setStyleName("hsv-slider");
+  valueSlider.setWidth("220px");
+  valueSlider.setImmediate(true);
+  valueSlider.addValueChangeListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      if (!updatingColors) {
+        float hue=(Float.parseFloat(hueSlider.getValue().toString())) / 360f;
+        float saturation=(Float.parseFloat(saturationSlider.getValue().toString())) / 100f;
+        float value=(Float.parseFloat(event.getProperty().getValue().toString())) / 100f;
+        Color color=new Color(Color.HSVtoRGB(hue,saturation,value));
+        setColor(color);
+      }
+    }
+  }
+);
+  sliders.addComponent(valueSlider);
+  hsvLayout.addComponent(sliders);
+  return hsvLayout;
+}
