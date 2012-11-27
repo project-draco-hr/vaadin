@@ -50,7 +50,11 @@
   if (lastModifiedTime > 0) {
     response.setDateHeader("Last-Modified",lastModifiedTime);
     int resourceCacheTime=getService().getDeploymentConfiguration().getResourceCacheTime();
-    response.setHeader("Cache-Control","max-age= " + String.valueOf(resourceCacheTime));
+    String cacheControl="max-age=" + String.valueOf(resourceCacheTime);
+    if (filename.contains("nocache")) {
+      cacheControl="public, max-age=0, must-revalidate";
+    }
+    response.setHeader("Cache-Control",cacheControl);
   }
   final OutputStream os=response.getOutputStream();
   final byte buffer[]=new byte[DEFAULT_BUFFER_SIZE];
