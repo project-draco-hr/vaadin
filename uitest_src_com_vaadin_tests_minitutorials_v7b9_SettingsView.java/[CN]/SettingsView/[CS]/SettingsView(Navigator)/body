@@ -1,0 +1,56 @@
+{
+  this.navigator=navigator;
+  Layout layout=new VerticalLayout();
+  date=new InlineDateField("Birth date");
+  date.setImmediate(true);
+  layout.addComponent(date);
+  date.setPropertyDataSource(new ObjectProperty<Date>(new Date()));
+  date.setBuffered(true);
+  date.addValueChangeListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      hideOrShowButtons();
+      pendingViewAndParameters=null;
+    }
+  }
+);
+  apply=new Button("Apply",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      date.commit();
+      hideOrShowButtons();
+      processPendingView();
+    }
+  }
+);
+  layout.addComponent(apply);
+  cancel=new Button("Cancel",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      date.discard();
+      hideOrShowButtons();
+      processPendingView();
+    }
+  }
+);
+  cancel.setStyleName(Reindeer.BUTTON_LINK);
+  layout.addComponent(cancel);
+  navigator.addViewChangeListener(new ViewChangeListener(){
+    public boolean beforeViewChange(    ViewChangeEvent event){
+      if (event.getOldView() == SettingsView.this && date.isModified()) {
+        pendingViewAndParameters=event.getViewName();
+        if (event.getParameters() != null) {
+          pendingViewAndParameters+="/";
+          pendingViewAndParameters+=event.getParameters();
+        }
+        Notification.show("Please apply or cancel your changes",Type.WARNING_MESSAGE);
+        return false;
+      }
+ else {
+        return true;
+      }
+    }
+    public void afterViewChange(    ViewChangeEvent event){
+      pendingViewAndParameters=null;
+    }
+  }
+);
+  setContent(layout);
+}
