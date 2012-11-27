@@ -1,5 +1,6 @@
 {
   panel.clear();
+  optionsEnabled.clear();
   for (final Iterator<?> it=uidl.getChildIterator(); it.hasNext(); ) {
     final UIDL opUidl=(UIDL)it.next();
     CheckBox op;
@@ -26,9 +27,11 @@
     }
     op.addStyleName(CLASSNAME_OPTION);
     op.setValue(opUidl.getBooleanAttribute("selected"));
-    boolean enabled=!opUidl.getBooleanAttribute(OptionGroupConstants.ATTRIBUTE_OPTION_DISABLED) && !isReadonly() && !isDisabled();
+    boolean optionEnabled=!opUidl.getBooleanAttribute(OptionGroupConstants.ATTRIBUTE_OPTION_DISABLED);
+    boolean enabled=optionEnabled && !isReadonly() && isEnabled();
     op.setEnabled(enabled);
-    setStyleName(op.getElement(),ApplicationConnection.DISABLED_CLASSNAME,!enabled);
+    optionsEnabled.add(optionEnabled);
+    setStyleName(op.getElement(),ApplicationConnection.DISABLED_CLASSNAME,!(optionEnabled && isEnabled()));
     op.addClickHandler(this);
     optionsToKeys.put(op,opUidl.getStringAttribute("key"));
     panel.add(op);
