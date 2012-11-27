@@ -1,3 +1,11 @@
 {
-  return (ComponentConnector)getConnector(getConnectorId(element));
+  ServerConnector connector=getConnector(getConnectorId(element));
+  if (!(connector instanceof ComponentConnector)) {
+    return null;
+  }
+  ComponentConnector cc=(ComponentConnector)connector;
+  if (cc.getWidget() == null || cc.getWidget().getElement() != element) {
+    return null;
+  }
+  return cc;
 }
