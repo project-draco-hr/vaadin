@@ -5,9 +5,14 @@
   }
  else {
     if (!session.isClosing()) {
-      getLogger().fine("Closing inactive session " + session.getSession().getId());
       closeSession(session);
+      if (session.getSession() != null) {
+        getLogger().fine("Closing inactive session " + session.getSession().getId());
+      }
     }
-    session.removeFromSession(this);
+    if (session.getSession() != null) {
+      session.removeFromSession(this);
+    }
+    fireSessionDestroy(session);
   }
 }
