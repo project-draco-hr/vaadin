@@ -1,0 +1,18 @@
+{
+  if (slot == null || slot.getChild() != component) {
+    slot=new ComponentConnectorLayoutSlot(CLASSNAME,component,getConnector());
+    slot.setAlignment(alignment);
+    if (component.isRelativeWidth()) {
+      slot.getWrapperElement().getStyle().setWidth(100,Unit.PCT);
+    }
+    Element slotWrapper=slot.getWrapperElement();
+    getElement().appendChild(slotWrapper);
+    Widget widget=component.getWidget();
+    insert(widget,slotWrapper,getWidgetCount(),false);
+    Cell oldCell=widgetToCell.put(widget,this);
+    if (oldCell != null) {
+      oldCell.slot.getWrapperElement().removeFromParent();
+      oldCell.slot=null;
+    }
+  }
+}

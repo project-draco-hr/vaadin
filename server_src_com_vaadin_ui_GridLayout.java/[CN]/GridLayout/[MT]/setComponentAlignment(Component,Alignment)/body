@@ -1,4 +1,14 @@
 {
-  componentToAlignment.put(childComponent,alignment);
-  markAsDirty();
+  ChildComponentData childComponentData=getState().childData.get(childComponent);
+  if (childComponentData == null) {
+    throw new IllegalArgumentException("Component must be added to layout before using setComponentAlignment()");
+  }
+ else {
+    if (alignment == null) {
+      childComponentData.alignment=GridLayoutState.ALIGNMENT_DEFAULT.getBitMask();
+    }
+ else {
+      childComponentData.alignment=alignment.getBitMask();
+    }
+  }
 }

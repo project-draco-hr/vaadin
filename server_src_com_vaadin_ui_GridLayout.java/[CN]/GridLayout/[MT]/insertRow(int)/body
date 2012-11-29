@@ -2,8 +2,7 @@
   if (row > getRows()) {
     throw new IllegalArgumentException("Cannot insert row at " + row + " in a gridlayout with height "+ getRows());
   }
-  for (Iterator<Area> i=areas.iterator(); i.hasNext(); ) {
-    Area existingArea=i.next();
+  for (  ChildComponentData existingArea : getState().childData.values()) {
     if (existingArea.row2 >= row) {
       existingArea.row2++;
       if (existingArea.row1 >= row) {
@@ -15,6 +14,5 @@
     cursorY++;
   }
   setRows(getRows() + 1);
-  structuralChange=true;
   markAsDirty();
 }

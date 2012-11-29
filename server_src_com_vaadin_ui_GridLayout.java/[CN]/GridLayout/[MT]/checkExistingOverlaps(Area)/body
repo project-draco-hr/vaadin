@@ -1,8 +1,7 @@
 {
-  for (final Iterator<Area> i=areas.iterator(); i.hasNext(); ) {
-    final Area existingArea=i.next();
-    if (existingArea.overlaps(area)) {
-      throw new OverlapsException(existingArea);
+  for (  Entry<Connector,ChildComponentData> entry : getState().childData.entrySet()) {
+    if (componentsOverlap(entry.getValue(),area.childData)) {
+      throw new OverlapsException(new Area(entry.getValue(),(Component)entry.getKey()));
     }
   }
 }

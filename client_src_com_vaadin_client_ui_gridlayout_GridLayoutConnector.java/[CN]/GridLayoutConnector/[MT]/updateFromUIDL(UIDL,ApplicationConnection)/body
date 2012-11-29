@@ -1,50 +1,18 @@
 {
   VGridLayout layout=getWidget();
-  layout.client=client;
   if (!isRealUpdate(uidl)) {
     return;
   }
-  int cols=getState().columns;
-  int rows=getState().rows;
-  layout.columnWidths=new int[cols];
-  layout.rowHeights=new int[rows];
-  layout.setSize(rows,cols);
-  final int[] alignments=uidl.getIntArrayAttribute("alignments");
-  int alignmentIndex=0;
-  for (final Iterator<?> i=uidl.getChildIterator(); i.hasNext(); ) {
-    final UIDL r=(UIDL)i.next();
-    if ("gr".equals(r.getTag())) {
-      for (final Iterator<?> j=r.getChildIterator(); j.hasNext(); ) {
-        final UIDL cellUidl=(UIDL)j.next();
-        if ("gc".equals(cellUidl.getTag())) {
-          int row=cellUidl.getIntAttribute("y");
-          int col=cellUidl.getIntAttribute("x");
-          Widget previousWidget=null;
-          Cell cell=layout.getCell(row,col);
-          if (cell != null && cell.slot != null) {
-            previousWidget=cell.slot.getWidget();
-          }
-          cell=layout.createCell(row,col);
-          cell.updateFromUidl(cellUidl);
-          if (cell.hasContent()) {
-            cell.setAlignment(new AlignmentInfo(alignments[alignmentIndex++]));
-            if (cell.slot.getWidget() != previousWidget) {
-              updateCaption(ConnectorMap.get(getConnection()).getConnector(cell.slot.getWidget()));
-            }
-          }
-        }
-      }
-    }
+  initSize();
+  for (  Entry<Connector,ChildComponentData> entry : getState().childData.entrySet()) {
+    ComponentConnector child=(ComponentConnector)entry.getKey();
+    Cell cell=getCell(child);
+    ChildComponentData childComponentData=entry.getValue();
+    cell.updateCell(childComponentData);
   }
   layout.colExpandRatioArray=uidl.getIntArrayAttribute("colExpand");
   layout.rowExpandRatioArray=uidl.getIntArrayAttribute("rowExpand");
   layout.updateMarginStyleNames(new MarginInfo(getState().marginsBitmask));
   layout.updateSpacingStyleName(getState().spacing);
-  if (needCaptionUpdate) {
-    needCaptionUpdate=false;
-    for (    ComponentConnector child : getChildComponents()) {
-      updateCaption(child);
-    }
-  }
   getLayoutManager().setNeedsLayout(this);
 }

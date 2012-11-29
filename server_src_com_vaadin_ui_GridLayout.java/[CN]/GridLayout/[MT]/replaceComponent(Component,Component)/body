@@ -1,26 +1,18 @@
 {
-  Area oldLocation=null;
-  Area newLocation=null;
-  for (final Iterator<Area> i=areas.iterator(); i.hasNext(); ) {
-    final Area location=i.next();
-    final Component component=location.getComponent();
-    if (component == oldComponent) {
-      oldLocation=location;
-    }
-    if (component == newComponent) {
-      newLocation=location;
-    }
-  }
+  ChildComponentData oldLocation=getState().childData.get(oldComponent);
+  ChildComponentData newLocation=getState().childData.get(newComponent);
   if (oldLocation == null) {
     addComponent(newComponent);
   }
  else   if (newLocation == null) {
     removeComponent(oldComponent);
-    addComponent(newComponent,oldLocation.getColumn1(),oldLocation.getRow1(),oldLocation.getColumn2(),oldLocation.getRow2());
+    addComponent(newComponent,oldLocation.column1,oldLocation.row1,oldLocation.column2,oldLocation.row2);
   }
  else {
-    oldLocation.setComponent(newComponent);
-    newLocation.setComponent(oldComponent);
-    markAsDirty();
+    int oldAlignment=oldLocation.alignment;
+    oldLocation.alignment=newLocation.alignment;
+    newLocation.alignment=oldAlignment;
+    getState().childData.put(newComponent,oldLocation);
+    getState().childData.put(oldComponent,newLocation);
   }
 }

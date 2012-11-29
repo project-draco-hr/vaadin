@@ -13,27 +13,27 @@
     throw new OutOfBoundsException(area);
   }
   checkExistingOverlaps(area);
-  final Iterator<Area> i=areas.iterator();
+  final Iterator<Component> i=components.iterator();
+  final Map<Connector,ChildComponentData> childDataMap=getState().childData;
   int index=0;
   boolean done=false;
   while (!done && i.hasNext()) {
-    final Area existingArea=i.next();
+    final ChildComponentData existingArea=childDataMap.get(i.next());
     if ((existingArea.row1 >= row1 && existingArea.column1 > column1) || existingArea.row1 > row1) {
-      areas.add(index,area);
       components.add(index,component);
       done=true;
     }
     index++;
   }
   if (!done) {
-    areas.addLast(area);
     components.addLast(component);
   }
+  childDataMap.put(component,area.childData);
   try {
     super.addComponent(component);
   }
  catch (  IllegalArgumentException e) {
-    areas.remove(area);
+    childDataMap.remove(component);
     components.remove(component);
     throw e;
   }
