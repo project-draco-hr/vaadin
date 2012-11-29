@@ -6,11 +6,35 @@
     }
   }
 );
+  registerRpc(ScrollClientRpc.class,new ScrollClientRpc(){
+    @Override public void setScrollTop(    int scrollTop){
+      getWidget().getElement().setScrollTop(scrollTop);
+    }
+    @Override public void setScrollLeft(    int scrollLeft){
+      getWidget().getElement().setScrollLeft(scrollLeft);
+    }
+  }
+);
   getWidget().addResizeHandler(new ResizeHandler(){
     @Override public void onResize(    ResizeEvent event){
       getRpcProxy(UIServerRpc.class).resize(event.getHeight(),event.getWidth(),Window.getClientWidth(),Window.getClientHeight());
       if (getState().immediate) {
         getConnection().sendPendingVariableChanges();
+      }
+    }
+  }
+);
+  getWidget().addScrollHandler(new ScrollHandler(){
+    private int lastSentScrollTop=Integer.MAX_VALUE;
+    private int lastSentScrollLeft=Integer.MAX_VALUE;
+    @Override public void onScroll(    ScrollEvent event){
+      Element element=getWidget().getElement();
+      int newScrollTop=element.getScrollTop();
+      int newScrollLeft=element.getScrollLeft();
+      if (newScrollTop != lastSentScrollTop || newScrollLeft != lastSentScrollLeft) {
+        lastSentScrollTop=newScrollTop;
+        lastSentScrollLeft=newScrollLeft;
+        getRpcProxy(UIServerRpc.class).scroll(newScrollTop,newScrollLeft);
       }
     }
   }
