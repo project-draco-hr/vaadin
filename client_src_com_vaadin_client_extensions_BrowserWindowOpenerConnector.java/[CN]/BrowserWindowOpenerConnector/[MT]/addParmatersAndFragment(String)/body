@@ -1,0 +1,24 @@
+{
+  if (url == null) {
+    return null;
+  }
+  if (!getState().parameters.isEmpty()) {
+    StringBuilder params=new StringBuilder();
+    for (    Entry<String,String> entry : getState().parameters.entrySet()) {
+      if (params.length() != 0) {
+        params.append('&');
+      }
+      params.append(URL.encodeQueryString(entry.getKey()));
+      params.append('=');
+      String value=entry.getValue();
+      if (value != null) {
+        params.append(URL.encodeQueryString(value));
+      }
+    }
+    url=ApplicationConnection.addGetParameters(url,params.toString());
+  }
+  if (getState().uriFragment != null) {
+    url=url.replaceFirst("#.*|$","#" + getState().uriFragment);
+  }
+  return url;
+}
