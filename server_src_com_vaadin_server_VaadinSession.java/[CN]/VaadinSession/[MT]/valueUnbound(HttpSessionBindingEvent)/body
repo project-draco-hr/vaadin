@@ -3,6 +3,9 @@
     getLogger().warning("A VaadinSession instance not associated to any service is getting unbound. " + "Session destroy events will not be fired and UIs in the session will not get detached. " + "This might happen if a session is deserialized but never used before it expires.");
   }
  else   if (VaadinService.getCurrentRequest() != null && getCurrent() == this) {
+    if (getAttribute(VaadinService.REINITIALIZING_SESSION_MARKER) == Boolean.TRUE) {
+      return;
+    }
     if (!isClosing()) {
       close();
     }
