@@ -472,6 +472,17 @@
       return events;
     }
     private void recursivelyDetach(    ServerConnector connector,    List<ConnectorHierarchyChangeEvent> events){
+      try {
+        Type stateType=AbstractConnector.getStateType(connector);
+        Object defaultState=stateType.createInstance();
+        SharedState state=connector.getState();
+        for (        Property property : stateType.getProperties()) {
+          property.setValue(state,property.getValue(defaultState));
+        }
+      }
+ catch (      NoDataException e) {
+        throw new RuntimeException("Can't reset state for " + Util.getConnectorString(connector),e);
+      }
       for (      ServerConnector child : connector.getChildren()) {
         if (child.getParent() != connector) {
           continue;
