@@ -11,17 +11,14 @@
   componentContainerSelect.setWidth("300px");
   componentContainerSelect.setImmediate(true);
   componentContainerSelect.setNullSelectionAllowed(false);
-  for (  Class<? extends ComponentContainer> cls : VaadinClasses.getComponentContainers()) {
-    if (cls == CustomLayout.class) {
-      continue;
-    }
+  for (  Class<? extends HasComponents> cls : getComponentContainers()) {
     componentContainerSelect.addItem(cls);
   }
   componentContainerSelect.addListener(new ValueChangeListener(){
     @Override @SuppressWarnings("unchecked") public void valueChange(    ValueChangeEvent event){
-      ComponentContainer oldCC=cc;
-      cc=createComponentContainer((Class<? extends ComponentContainer>)event.getProperty().getValue());
-      cc.addComponent(lab);
+      HasComponents oldCC=cc;
+      cc=createComponentContainer((Class<? extends HasComponents>)event.getProperty().getValue());
+      addToCC(lab);
       replaceComponent(oldCC,cc);
     }
   }
@@ -35,7 +32,7 @@
         lab.setValue(lab.getValue().replace("inside","outside"));
       }
  else {
-        cc.addComponent(lab);
+        addToCC(lab);
         lab.setValue(lab.getValue().replace("outside","inside"));
       }
     }
