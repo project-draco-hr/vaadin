@@ -1,10 +1,13 @@
 {
   ConnectorMap paintableMap=ConnectorMap.get(getConnection());
-  if (getState().id != null) {
-    getWidget().getElement().setId(getState().id);
-  }
- else {
-    getWidget().getElement().removeAttribute("id");
+  Set<String> changedProperties=stateChangeEvent.getChangedProperties();
+  if (changedProperties.contains("id")) {
+    if (getState().id != null) {
+      getWidget().getElement().setId(getState().id);
+    }
+ else     if (!initialStateEvent) {
+      getWidget().getElement().removeAttribute("id");
+    }
   }
   if (getState() instanceof TabIndexState && getWidget() instanceof Focusable) {
     ((Focusable)getWidget()).setTabIndex(((TabIndexState)getState()).tabIndex);
@@ -21,4 +24,5 @@
     }
   }
   updateComponentSize();
+  initialStateEvent=false;
 }
