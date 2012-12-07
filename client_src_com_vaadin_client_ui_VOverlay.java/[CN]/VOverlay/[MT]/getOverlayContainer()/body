@@ -1,19 +1,10 @@
 {
   ApplicationConnection ac=getApplicationConnection();
   if (ac == null) {
+    VConsole.error("Could not determin ApplicationConnection for Overlay. Overlay will be attached directly to the root panel");
     return RootPanel.get().getElement();
   }
  else {
-    String id=ac.getConfiguration().getRootPanelId();
-    id=id+="-overlays";
-    Element container=DOM.getElementById(id);
-    if (container == null) {
-      container=DOM.createDiv();
-      container.setId(id);
-      String styles=ac.getUIConnector().getWidget().getParent().getStyleName();
-      container.setClassName(styles);
-      RootPanel.get().getElement().appendChild(container);
-    }
-    return container;
+    return getOverlayContainer(ac);
   }
 }
