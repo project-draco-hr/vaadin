@@ -1,0 +1,32 @@
+{
+  double total=0;
+  for (  Slot slot : widgetToSlot.values()) {
+    if (slot.getExpandRatio() > -1) {
+      total+=slot.getExpandRatio();
+    }
+ else {
+      if (vertical) {
+        slot.getElement().getStyle().clearHeight();
+      }
+ else {
+        slot.getElement().getStyle().clearWidth();
+      }
+    }
+  }
+  for (  Slot slot : widgetToSlot.values()) {
+    if (slot.getExpandRatio() > -1) {
+      if (vertical) {
+        slot.setHeight((100 * (slot.getExpandRatio() / total)) + "%");
+        if (slot.hasRelativeHeight()) {
+          Util.notifyParentOfSizeChange(this,true);
+        }
+      }
+ else {
+        slot.setWidth((100 * (slot.getExpandRatio() / total)) + "%");
+        if (slot.hasRelativeWidth()) {
+          Util.notifyParentOfSizeChange(this,true);
+        }
+      }
+    }
+  }
+}
