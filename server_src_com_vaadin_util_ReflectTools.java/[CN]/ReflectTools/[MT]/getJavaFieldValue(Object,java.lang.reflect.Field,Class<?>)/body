@@ -1,0 +1,21 @@
+{
+  PropertyDescriptor pd;
+  try {
+    pd=new PropertyDescriptor(field.getName(),object.getClass());
+    if (propertyType.isAssignableFrom(pd.getPropertyType())) {
+      Method getter=pd.getReadMethod();
+      if (getter != null) {
+        return getter.invoke(object,(Object[])null);
+      }
+    }
+  }
+ catch (  IntrospectionException e1) {
+  }
+  if (!propertyType.isAssignableFrom(field.getType())) {
+    throw new IllegalArgumentException();
+  }
+  if (!field.isAccessible()) {
+    field.setAccessible(true);
+  }
+  return field.get(object);
+}
