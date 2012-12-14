@@ -1,8 +1,12 @@
 {
   for (  final VariableNode var : variables) {
     for (    final LexicalUnitImpl arg : new ArrayList<LexicalUnitImpl>(arglist)) {
-      if (arg.getLexicalUnitType() == LexicalUnitImpl.SCSS_VARIABLE && arg.getStringValue().equals(var.getName())) {
-        arg.replaceValue(var.getExpr());
+      LexicalUnitImpl unit=arg;
+      if (unit.getNextLexicalUnit() != null) {
+        unit=unit.getNextLexicalUnit();
+      }
+      if (unit.getLexicalUnitType() == LexicalUnitImpl.SCSS_VARIABLE && unit.getStringValue().equals(var.getName())) {
+        unit.replaceValue(var.getExpr());
       }
     }
     if (name.startsWith("$")) {
