@@ -1,0 +1,55 @@
+{
+  if (!onePermutation) {
+    ArtifactSet toReturn=new ArtifactSet(artifacts);
+    List<FileInfo> sassFiles=new ArrayList<FileInfo>();
+    String tempFolderName=new Date().getTime() + File.separator;
+    File tempFolder=createTempDir(tempFolderName);
+    for (    EmittedArtifact resource : artifacts.find(EmittedArtifact.class)) {
+      String partialPath=resource.getPartialPath();
+      if (partialPath.endsWith(".scss")) {
+        String fileName=partialPath;
+        File path=tempFolder;
+        int separatorIndex=fileName.lastIndexOf(File.separator);
+        if (-1 != separatorIndex) {
+          fileName=fileName.substring(separatorIndex + 1);
+          String filePath=partialPath.substring(0,separatorIndex);
+          path=createTempDir(tempFolderName + filePath);
+        }
+        File tempfile=new File(path,fileName);
+        try {
+          boolean fileCreated=tempfile.createNewFile();
+          if (fileCreated) {
+            writeFromInputStream(resource.getContents(logger),tempfile);
+            sassFiles.add(new FileInfo(tempfile,partialPath));
+            toReturn.remove(resource);
+          }
+        }
+ catch (        IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    logger.log(TreeLogger.INFO,"Processing " + sassFiles.size() + " Sass file(s)");
+    for (    FileInfo fileInfo : sassFiles) {
+      logger.log(TreeLogger.INFO,"   " + fileInfo.originalScssPath + " -> "+ fileInfo.getOriginalCssPath());
+      ScssStylesheet scss;
+      try {
+        scss=ScssStylesheet.get(fileInfo.getAbsolutePath());
+        scss.compile();
+        InputStream is=new ByteArrayInputStream(scss.toString().getBytes());
+        toReturn.add(this.emitInputStream(logger,is,fileInfo.getOriginalCssPath()));
+      }
+ catch (      CSSException e) {
+        e.printStackTrace();
+      }
+catch (      IOException e) {
+        e.printStackTrace();
+      }
+catch (      Exception e) {
+        e.printStackTrace();
+      }
+    }
+    return toReturn;
+  }
+  return artifacts;
+}
