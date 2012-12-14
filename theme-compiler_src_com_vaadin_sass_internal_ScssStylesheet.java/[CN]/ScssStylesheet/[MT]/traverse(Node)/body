@@ -1,15 +1,14 @@
 {
   Node originalParent=node.getParentNode();
   node.traverse();
-  @SuppressWarnings("unchecked") HashMap<String,VariableNode> variableScope=(HashMap<String,VariableNode>)variables.clone();
+  Map<String,VariableNode> variableScope=openVariableScope();
   for (int i=0; i < node.getChildren().size(); i++) {
     Node current=node.getChildren().get(i);
     if (traverse(current)) {
       --i;
     }
   }
-  variables.clear();
-  variables.putAll(variableScope);
+  closeVariableScope(variableScope);
   lastNodeAdded.remove(originalParent);
   if (originalParent != null) {
     boolean removed=!originalParent.getChildren().contains(node);
