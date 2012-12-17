@@ -1,4 +1,7 @@
 {
+  if (getItemDataSource() == null) {
+    return;
+  }
   Class<?> objectClass=objectWithMemberFields.getClass();
   for (  java.lang.reflect.Field memberField : getFieldsInDeclareOrder(objectClass)) {
     if (!Field.class.isAssignableFrom(memberField.getType())) {
@@ -11,7 +14,10 @@
       propertyId=propertyIdAnnotation.value();
     }
  else {
-      propertyId=memberField.getName();
+      propertyId=findPropertyId(memberField);
+      if (propertyId == null) {
+        continue;
+      }
     }
     Class<?> propertyType;
     try {
