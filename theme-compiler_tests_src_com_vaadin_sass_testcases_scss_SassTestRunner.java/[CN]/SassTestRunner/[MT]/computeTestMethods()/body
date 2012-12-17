@@ -1,0 +1,27 @@
+{
+  List<FrameworkMethod> tests=new LinkedList<FrameworkMethod>();
+  for (  FrameworkMethod method : getTestClass().getAnnotatedMethods(TestFactory.class)) {
+    if (!Modifier.isStatic(method.getMethod().getModifiers())) {
+      throw new IllegalArgumentException("TestFactory " + method + " must be static.");
+    }
+    Object params;
+    try {
+      params=method.getMethod().invoke(getTestClass().getJavaClass());
+    }
+ catch (    Throwable t) {
+      throw new RuntimeException("Could not run test factory method " + method.getName());
+    }
+    if (params.getClass().isArray()) {
+      params=Arrays.asList((Object[])params);
+    }
+    if (!(params instanceof Iterable<?>)) {
+      params=Collections.singletonList(params);
+    }
+    for (    Object param : (Iterable<?>)params) {
+      for (      FrameworkMethod m : getTestClass().getAnnotatedMethods(FactoryTest.class)) {
+        tests.add(new ParameterizedFrameworkMethod(m.getMethod(),new Object[]{param}));
+      }
+    }
+  }
+  return tests;
+}
