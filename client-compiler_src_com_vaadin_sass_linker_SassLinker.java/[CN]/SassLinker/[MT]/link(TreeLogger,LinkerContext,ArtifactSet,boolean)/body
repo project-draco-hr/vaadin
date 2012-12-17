@@ -1,7 +1,7 @@
 {
   if (!onePermutation) {
     ArtifactSet toReturn=new ArtifactSet(artifacts);
-    List<FileInfo> sassFiles=new ArrayList<FileInfo>();
+    List<FileInfo> scssFiles=new ArrayList<FileInfo>();
     String tempFolderName=new Date().getTime() + File.separator;
     File tempFolder=createTempDir(tempFolderName);
     for (    EmittedArtifact resource : artifacts.find(EmittedArtifact.class)) {
@@ -20,33 +20,38 @@
           boolean fileCreated=tempfile.createNewFile();
           if (fileCreated) {
             writeFromInputStream(resource.getContents(logger),tempfile);
-            sassFiles.add(new FileInfo(tempfile,partialPath));
+            scssFiles.add(new FileInfo(tempfile,partialPath));
             toReturn.remove(resource);
+          }
+ else {
+            logger.log(TreeLogger.WARN,"Duplicate file " + tempfile.getPath());
           }
         }
  catch (        IOException e) {
-          e.printStackTrace();
+          logger.log(TreeLogger.ERROR,"Could not write temporary file " + fileName,e);
         }
       }
     }
-    logger.log(TreeLogger.INFO,"Processing " + sassFiles.size() + " Sass file(s)");
-    for (    FileInfo fileInfo : sassFiles) {
+    logger.log(TreeLogger.INFO,"Processing " + scssFiles.size() + " Sass file(s)");
+    for (    FileInfo fileInfo : scssFiles) {
       logger.log(TreeLogger.INFO,"   " + fileInfo.originalScssPath + " -> "+ fileInfo.getOriginalCssPath());
-      ScssStylesheet scss;
       try {
-        scss=ScssStylesheet.get(fileInfo.getAbsolutePath());
-        scss.compile();
-        InputStream is=new ByteArrayInputStream(scss.toString().getBytes());
-        toReturn.add(this.emitInputStream(logger,is,fileInfo.getOriginalCssPath()));
+        ScssStylesheet scss=ScssStylesheet.get(fileInfo.getAbsolutePath());
+        if (!fileInfo.isMixin()) {
+          scss.compile();
+          InputStream is=new ByteArrayInputStream(scss.toString().getBytes());
+          toReturn.add(this.emitInputStream(logger,is,fileInfo.getOriginalCssPath()));
+        }
+        fileInfo.getFile().delete();
       }
  catch (      CSSException e) {
-        e.printStackTrace();
+        logger.log(TreeLogger.ERROR,"SCSS compilation failed for " + fileInfo.getOriginalCssPath(),e);
       }
 catch (      IOException e) {
-        e.printStackTrace();
+        logger.log(TreeLogger.ERROR,"Could not write CSS file for " + fileInfo.getOriginalCssPath(),e);
       }
 catch (      Exception e) {
-        e.printStackTrace();
+        logger.log(TreeLogger.ERROR,"SCSS compilation failed for " + fileInfo.getOriginalCssPath(),e);
       }
     }
     return toReturn;
