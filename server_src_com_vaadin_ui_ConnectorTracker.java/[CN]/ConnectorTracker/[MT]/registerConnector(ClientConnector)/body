@@ -1,4 +1,5 @@
 {
+  boolean wasUnregistered=unregisteredConnectors.remove(connector);
   String connectorId=connector.getConnectorId();
   ClientConnector previouslyRegistered=connectorIdToConnector.get(connectorId);
   if (previouslyRegistered == null) {
@@ -9,7 +10,8 @@
  else   if (previouslyRegistered != connector) {
     throw new RuntimeException("A connector with id " + connectorId + " is already registered!");
   }
- else {
+ else   if (!wasUnregistered) {
     getLogger().warning("An already registered connector was registered again: " + connector.getClass().getSimpleName() + " ("+ connectorId+ ")");
   }
+  dirtyConnectors.add(connector);
 }
