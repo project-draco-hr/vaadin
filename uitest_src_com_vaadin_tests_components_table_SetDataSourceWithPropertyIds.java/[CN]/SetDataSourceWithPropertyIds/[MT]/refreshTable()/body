@@ -1,0 +1,16 @@
+{
+  table.setEditable(table.getParent() == null || !table.isEditable());
+  jobContainer.removeAllItems();
+  jobContainer.addAll(getBeanList());
+  try {
+    table.setContainerDataSource(jobContainer);
+    table.setVisibleColumns(new String[]{"jobId"});
+    label.setValue("no ConversionException");
+  }
+ catch (  ConversionException e) {
+    ArrayList<String> propertyIds=new ArrayList<String>();
+    propertyIds.add("jobId");
+    table.setContainerDataSource(jobContainer,propertyIds);
+    label.setValue("ConversionException caught");
+  }
+}
