@@ -1,30 +1,25 @@
 {
-  disableContentRefreshing();
   if (newDataSource == null) {
     newDataSource=new IndexedContainer();
   }
-  if (newDataSource instanceof Container.Ordered) {
-    super.setContainerDataSource(newDataSource);
+  Collection<Object> generated;
+  if (columnGenerators != null) {
+    generated=columnGenerators.keySet();
   }
  else {
-    super.setContainerDataSource(new ContainerOrderedWrapper(newDataSource));
+    generated=Collections.emptyList();
   }
-  currentPageFirstItemId=null;
-  currentPageFirstItemIndex=0;
-  if (collapsedColumns != null) {
-    collapsedColumns.clear();
+  List<Object> visibleIds=new ArrayList<Object>();
+  if (generated.isEmpty()) {
+    visibleIds.addAll(newDataSource.getContainerPropertyIds());
   }
-  Collection<Object> col=new LinkedList<Object>();
-  for (Iterator<?> it=getContainerPropertyIds().iterator(); it.hasNext(); ) {
-    Object id=it.next();
-    if (columnGenerators == null || !columnGenerators.containsKey(id)) {
-      col.add(id);
+ else {
+    for (    Object id : newDataSource.getContainerPropertyIds()) {
+      if (!generated.contains(id)) {
+        visibleIds.add(id);
+      }
     }
+    visibleIds.addAll(generated);
   }
-  if (columnGenerators != null && columnGenerators.size() > 0) {
-    col.addAll(columnGenerators.keySet());
-  }
-  setVisibleColumns(col.toArray());
-  resetPageBuffer();
-  enableContentRefreshing(true);
+  setContainerDataSource(newDataSource,visibleIds);
 }

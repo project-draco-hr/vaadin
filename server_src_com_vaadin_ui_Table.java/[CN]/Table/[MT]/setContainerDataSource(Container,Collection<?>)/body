@@ -1,0 +1,30 @@
+{
+  disableContentRefreshing();
+  if (newDataSource == null) {
+    newDataSource=new IndexedContainer();
+  }
+  if (visibleIds == null) {
+    visibleIds=new ArrayList<Object>();
+  }
+  if (newDataSource instanceof Container.Ordered) {
+    super.setContainerDataSource(newDataSource);
+  }
+ else {
+    super.setContainerDataSource(new ContainerOrderedWrapper(newDataSource));
+  }
+  currentPageFirstItemId=null;
+  currentPageFirstItemIndex=0;
+  if (collapsedColumns != null) {
+    collapsedColumns.clear();
+  }
+  Collection<Object> col=new LinkedList<Object>();
+  for (Iterator<?> it=visibleIds.iterator(); it.hasNext(); ) {
+    Object id=it.next();
+    if (!col.contains(id)) {
+      col.add(id);
+    }
+  }
+  setVisibleColumns(col.toArray());
+  resetPageBuffer();
+  enableContentRefreshing(true);
+}
