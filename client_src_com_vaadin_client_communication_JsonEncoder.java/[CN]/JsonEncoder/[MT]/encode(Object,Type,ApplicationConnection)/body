@@ -25,51 +25,55 @@
  else   if (value instanceof Character) {
     return new JSONString(String.valueOf(value));
   }
- else   if (value instanceof Object[]) {
-    return encodeObjectArray((Object[])value,restrictToInternalTypes,connection);
+ else   if (value instanceof Object[] && type == null) {
+    return encodeLegacyObjectArray((Object[])value,connection);
   }
  else   if (value instanceof Enum) {
     return encodeEnum((Enum<?>)value,connection);
   }
  else   if (value instanceof Map) {
-    return encodeMap((Map)value,restrictToInternalTypes,connection);
+    return encodeMap((Map)value,type,connection);
   }
  else   if (value instanceof Connector) {
     Connector connector=(Connector)value;
     return new JSONString(connector.getConnectorId());
   }
  else   if (value instanceof Collection) {
-    return encodeCollection((Collection)value,restrictToInternalTypes,connection);
+    return encodeCollection((Collection)value,type,connection);
   }
  else   if (value instanceof UidlValue) {
     return encodeVariableChange((UidlValue)value,connection);
   }
  else {
+    JSONSerializer<Object> serializer=null;
+    if (type != null) {
+      serializer=(JSONSerializer<Object>)type.findSerializer();
+      if (serializer != null) {
+        return serializer.serialize(value,connection);
+      }
+    }
     String transportType=getTransportType(value);
     if (transportType != null) {
       return new JSONString(String.valueOf(value));
     }
- else {
-      Type type=new Type(value.getClass());
-      JSONSerializer<Object> serializer=(JSONSerializer<Object>)type.findSerializer();
-      if (serializer != null) {
-        return serializer.serialize(value,connection);
-      }
- else {
-        try {
-          Collection<Property> properties=type.getProperties();
-          JSONObject jsonObject=new JSONObject();
-          for (          Property property : properties) {
-            Object propertyValue=property.getValue(value);
-            JSONValue encodedPropertyValue=encode(propertyValue,restrictToInternalTypes,connection);
-            jsonObject.put(property.getName(),encodedPropertyValue);
-          }
-          return jsonObject;
+ else     if (type != null) {
+      try {
+        Collection<Property> properties=type.getProperties();
+        JSONObject jsonObject=new JSONObject();
+        for (        Property property : properties) {
+          Object propertyValue=property.getValue(value);
+          Type propertyType=property.getType();
+          JSONValue encodedPropertyValue=encode(propertyValue,propertyType,connection);
+          jsonObject.put(property.getName(),encodedPropertyValue);
         }
- catch (        NoDataException e) {
-          throw new RuntimeException("Can not encode " + type.getSignature(),e);
-        }
+        return jsonObject;
       }
+ catch (      NoDataException e) {
+        throw new RuntimeException("Can not encode " + type.getSignature(),e);
+      }
+    }
+ else {
+      throw new RuntimeException("Can't encode " + value.getClass() + " without type information");
     }
   }
 }

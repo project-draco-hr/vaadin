@@ -26,12 +26,12 @@
     @Override public void sendNestedArray(    int[][] nestedIntArray,    SimpleTestBean[][] nestedBeanArray){
       rpc.sendNestedArray(new int[][]{{nestedIntArray[1][0],nestedIntArray[0][0]}},new SimpleTestBean[][]{{nestedBeanArray[0][1]},{nestedBeanArray[0][0]}});
     }
-    @Override public void sendMap(    Map<String,SimpleTestBean> stringMap,    Map<Connector,Boolean> connectorMap,    Map<Integer,Connector> intMap,    Map<SimpleTestBean,SimpleTestBean> beanMap){
+    @Override public void sendMap(    Map<String,SimpleTestBean> stringMap,    Map<Connector,SimpleTestBean> connectorMap,    Map<Integer,Connector> intMap,    Map<SimpleTestBean,SimpleTestBean> beanMap){
       Map<SimpleTestBean,SimpleTestBean> updatedBeanMap=new HashMap<SimpleTestBean,SimpleTestBean>();
       for (      Entry<SimpleTestBean,SimpleTestBean> entry : beanMap.entrySet()) {
         updatedBeanMap.put(entry.getValue(),entry.getKey());
       }
-      rpc.sendMap(Collections.singletonMap("a",stringMap.get("b")),Collections.singletonMap(getThisConnector(),connectorMap.get(getUIConnector())),Collections.singletonMap(Integer.valueOf(stringMap.size()),getThisConnector()),updatedBeanMap);
+      rpc.sendMap(Collections.singletonMap("a",stringMap.get("1")),Collections.singletonMap(getThisConnector(),connectorMap.get(getUIConnector())),Collections.singletonMap(Integer.valueOf(stringMap.size()),getThisConnector()),updatedBeanMap);
     }
     @Override public void sendLong(    long value,    Long boxedValue,    long[] array){
       rpc.sendLong(array[0],Long.valueOf(value),new long[]{array[1],boxedValue.longValue()});
@@ -96,6 +96,14 @@
     @Override public void sendEnum(    ContentMode contentMode,    ContentMode[] array,    List<ContentMode> list){
       ContentMode nextContentMode=ContentMode.values()[contentMode.ordinal() + 1];
       rpc.sendEnum(nextContentMode,list.toArray(new ContentMode[list.size()]),Arrays.asList(array));
+    }
+    @Override public void sendBeanSubclass(    final SimpleTestBean bean){
+      rpc.sendBeanSubclass(new SimpleTestBean(){
+        @Override public int getValue(){
+          return bean.getValue() + 1;
+        }
+      }
+);
     }
   }
 );

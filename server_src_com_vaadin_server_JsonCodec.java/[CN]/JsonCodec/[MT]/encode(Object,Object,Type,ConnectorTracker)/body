@@ -59,7 +59,10 @@
  else   if (value instanceof JSONArray || value instanceof JSONObject) {
     return new EncodeResult(value);
   }
+ else   if (valueType instanceof Class<?>) {
+    return encodeObject(value,(Class<?>)valueType,(JSONObject)diffState,connectorTracker);
+  }
  else {
-    return encodeObject(value,(JSONObject)diffState,connectorTracker);
+    throw new JSONException("Can not encode " + valueType);
   }
 }
