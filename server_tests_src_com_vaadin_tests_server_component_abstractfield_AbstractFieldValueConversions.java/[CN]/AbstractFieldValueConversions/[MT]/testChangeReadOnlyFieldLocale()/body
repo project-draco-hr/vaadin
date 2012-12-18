@@ -1,0 +1,13 @@
+{
+  VaadinSession.setCurrent(new VaadinSession(null));
+  TextField tf=new TextField("salary");
+  tf.setLocale(new Locale("en","US"));
+  ObjectProperty<Integer> ds=new ObjectProperty<Integer>(123456789);
+  ds.setReadOnly(true);
+  tf.setPropertyDataSource(ds);
+  assertEquals((Integer)123456789,ds.getValue());
+  assertEquals("123,456,789",tf.getValue());
+  tf.setLocale(new Locale("fi","FI"));
+  assertEquals((Integer)123456789,ds.getValue());
+  assertEquals("123" + FORMATTED_SPACE + "456"+ FORMATTED_SPACE+ "789",tf.getValue());
+}
