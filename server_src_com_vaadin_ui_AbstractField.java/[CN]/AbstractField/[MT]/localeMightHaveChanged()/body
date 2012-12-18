@@ -1,6 +1,9 @@
 {
   if (!equals(valueLocale,getLocale()) && dataSource != null && !isBuffered() && !isModified()) {
-    Object modelValue=convertToModel(getInternalValue(),valueLocale);
-    setValue(convertFromModel(modelValue));
+    T newInternalValue=convertFromModel(getPropertyDataSource().getValue());
+    if (!equals(newInternalValue,getInternalValue())) {
+      setInternalValue(newInternalValue);
+      fireValueChange(false);
+    }
   }
 }
