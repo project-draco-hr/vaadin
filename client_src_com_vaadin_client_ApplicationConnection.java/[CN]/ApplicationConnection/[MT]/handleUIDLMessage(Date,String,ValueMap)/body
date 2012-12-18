@@ -95,10 +95,11 @@
       updateDuration.logDuration(" * Creating connectors completed",10);
       Collection<StateChangeEvent> pendingStateChangeEvents=updateConnectorState(json,createdConnectors);
       updateDuration.logDuration(" * Update of connector states completed",10);
-      Collection<ConnectorHierarchyChangeEvent> pendingHierarchyChangeEvents=updateConnectorHierarchy(json);
+      ConnectorHierarchyUpdateResult connectorHierarchyUpdateResult=updateConnectorHierarchy(json);
       updateDuration.logDuration(" * Update of connector hierarchy completed",10);
-      sendHierarchyChangeEvents(pendingHierarchyChangeEvents);
+      sendHierarchyChangeEvents(connectorHierarchyUpdateResult.events);
       updateDuration.logDuration(" * Hierarchy state change event processing completed",10);
+      updateCaptions(pendingStateChangeEvents,connectorHierarchyUpdateResult.parentChanged);
       delegateToWidget(pendingStateChangeEvents);
       sendStateChangeEvents(pendingStateChangeEvents);
       updateDuration.logDuration(" * State change event processing completed",10);
@@ -146,6 +147,21 @@
       VConsole.log(" Processing time was " + String.valueOf(lastProcessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
       VConsole.log("Referenced paintables: " + connectorMap.size());
       endRequest();
+    }
+    private void updateCaptions(    Collection<StateChangeEvent> pendingStateChangeEvents,    Collection<ServerConnector> parentChanged){
+      HashSet<ServerConnector> needsCaptionUpdate=new HashSet<ServerConnector>(parentChanged);
+      for (      StateChangeEvent event : pendingStateChangeEvents) {
+        ServerConnector connector=event.getConnector();
+        needsCaptionUpdate.add(connector);
+      }
+      for (      ServerConnector child : needsCaptionUpdate) {
+        if (child instanceof ComponentConnector && ((ComponentConnector)child).delegateCaptionHandling()) {
+          ServerConnector parent=child.getParent();
+          if (parent instanceof HasComponentsConnector) {
+            ((HasComponentsConnector)parent).updateCaption((ComponentConnector)child);
+          }
+        }
+      }
     }
     private void delegateToWidget(    Collection<StateChangeEvent> pendingStateChangeEvents){
       VConsole.log(" * Running @DelegateToWidget");
@@ -396,13 +412,14 @@
  * done.
  * @param jsonThe JSON containing the hierarchy information
  * @return A collection of events that should be fired when update
- * of hierarchy and state is complete
+ * of hierarchy and state is complete and a list of all
+ * connectors for which the parent has changed
  */
-    private Collection<ConnectorHierarchyChangeEvent> updateConnectorHierarchy(    ValueMap json){
-      List<ConnectorHierarchyChangeEvent> events=new LinkedList<ConnectorHierarchyChangeEvent>();
+    private ConnectorHierarchyUpdateResult updateConnectorHierarchy(    ValueMap json){
+      ConnectorHierarchyUpdateResult result=new ConnectorHierarchyUpdateResult();
       VConsole.log(" * Updating connector hierarchy");
       if (!json.containsKey("hierarchy")) {
-        return events;
+        return result;
       }
       HashSet<ServerConnector> maybeDetached=new HashSet<ServerConnector>();
       ValueMap hierarchies=json.getValueMap("hierarchy");
@@ -431,6 +448,7 @@
             }
             if (childConnector.getParent() != parentConnector) {
               childConnector.setParent(parentConnector);
+              result.parentChanged.add(childConnector);
               maybeDetached.remove(childConnector);
             }
           }
@@ -447,7 +465,7 @@
               event.setOldChildren(oldComponents);
               event.setConnector(parentConnector);
               ccc.setChildComponents(newComponents);
-              events.add(event);
+              result.events.add(event);
             }
           }
  else           if (!newComponents.isEmpty()) {
@@ -468,9 +486,9 @@
         }
       }
       for (      ServerConnector removed : maybeDetached) {
-        recursivelyDetach(removed,events);
+        recursivelyDetach(removed,result.events);
       }
-      return events;
+      return result;
     }
     private void recursivelyDetach(    ServerConnector connector,    List<ConnectorHierarchyChangeEvent> events){
       try {
