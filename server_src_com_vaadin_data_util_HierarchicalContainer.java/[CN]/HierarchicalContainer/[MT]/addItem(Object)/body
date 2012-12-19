@@ -1,15 +1,19 @@
 {
   disableContentsChangeEvents();
-  final Item item=super.addItem(itemId);
-  if (item == null) {
-    return null;
-  }
-  roots.add(itemId);
-  if (filteredRoots != null) {
-    if (passesFilters(itemId)) {
-      filteredRoots.add(itemId);
+  try {
+    final Item item=super.addItem(itemId);
+    if (item == null) {
+      return null;
     }
+    roots.add(itemId);
+    if (filteredRoots != null) {
+      if (passesFilters(itemId)) {
+        filteredRoots.add(itemId);
+      }
+    }
+    return item;
   }
-  enableAndFireContentsChangeEvents();
-  return item;
+  finally {
+    enableAndFireContentsChangeEvents();
+  }
 }

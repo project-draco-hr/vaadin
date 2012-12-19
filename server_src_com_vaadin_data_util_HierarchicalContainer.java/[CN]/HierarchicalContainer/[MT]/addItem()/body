@@ -1,17 +1,21 @@
 {
   disableContentsChangeEvents();
-  final Object itemId=super.addItem();
-  if (itemId == null) {
-    return null;
-  }
-  if (!roots.contains(itemId)) {
-    roots.add(itemId);
-    if (filteredRoots != null) {
-      if (passesFilters(itemId)) {
-        filteredRoots.add(itemId);
+  try {
+    final Object itemId=super.addItem();
+    if (itemId == null) {
+      return null;
+    }
+    if (!roots.contains(itemId)) {
+      roots.add(itemId);
+      if (filteredRoots != null) {
+        if (passesFilters(itemId)) {
+          filteredRoots.add(itemId);
+        }
       }
     }
+    return itemId;
   }
-  enableAndFireContentsChangeEvents();
-  return itemId;
+  finally {
+    enableAndFireContentsChangeEvents();
+  }
 }

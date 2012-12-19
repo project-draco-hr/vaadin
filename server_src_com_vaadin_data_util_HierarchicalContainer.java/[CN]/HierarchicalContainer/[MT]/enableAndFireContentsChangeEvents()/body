@@ -1,7 +1,15 @@
 {
-  contentChangedEventsDisabled=false;
-  if (contentsChangedEventPending) {
-    fireItemSetChange();
+  if (contentChangedEventsDisabledCount <= 0) {
+    getLogger().log(Level.WARNING,"Mismatched calls to disable and enable contents change events in HierarchicalContainer");
+    contentChangedEventsDisabledCount=0;
   }
-  contentsChangedEventPending=false;
+ else {
+    contentChangedEventsDisabledCount--;
+  }
+  if (contentChangedEventsDisabledCount == 0) {
+    if (contentsChangedEventPending) {
+      fireItemSetChange();
+    }
+    contentsChangedEventPending=false;
+  }
 }

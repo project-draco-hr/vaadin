@@ -1,21 +1,25 @@
 {
   disableContentsChangeEvents();
-  final boolean success=super.removeAllItems();
-  if (success) {
-    roots.clear();
-    parent.clear();
-    children.clear();
-    noChildrenAllowed.clear();
-    if (filteredRoots != null) {
-      filteredRoots=null;
+  try {
+    final boolean success=super.removeAllItems();
+    if (success) {
+      roots.clear();
+      parent.clear();
+      children.clear();
+      noChildrenAllowed.clear();
+      if (filteredRoots != null) {
+        filteredRoots=null;
+      }
+      if (filteredChildren != null) {
+        filteredChildren=null;
+      }
+      if (filteredParent != null) {
+        filteredParent=null;
+      }
     }
-    if (filteredChildren != null) {
-      filteredChildren=null;
-    }
-    if (filteredParent != null) {
-      filteredParent=null;
-    }
+    return success;
   }
-  enableAndFireContentsChangeEvents();
-  return success;
+  finally {
+    enableAndFireContentsChangeEvents();
+  }
 }
