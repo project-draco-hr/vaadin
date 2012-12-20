@@ -1,46 +1,50 @@
 {
   disableContentsChangeEvents();
-  final boolean success=super.removeItem(itemId);
-  if (success) {
-    if (roots.remove(itemId)) {
-      if (filteredRoots != null) {
-        filteredRoots.remove(itemId);
-      }
-    }
-    LinkedList<Object> childNodeIds=children.remove(itemId);
-    if (childNodeIds != null) {
-      if (filteredChildren != null) {
-        filteredChildren.remove(itemId);
-      }
-      for (      Object childId : childNodeIds) {
-        setParent(childId,null);
-      }
-    }
-    final Object parentItemId=parent.get(itemId);
-    if (parentItemId != null) {
-      final LinkedList<Object> c=children.get(parentItemId);
-      if (c != null) {
-        c.remove(itemId);
-        if (c.isEmpty()) {
-          children.remove(parentItemId);
+  try {
+    final boolean success=super.removeItem(itemId);
+    if (success) {
+      if (roots.remove(itemId)) {
+        if (filteredRoots != null) {
+          filteredRoots.remove(itemId);
         }
+      }
+      LinkedList<Object> childNodeIds=children.remove(itemId);
+      if (childNodeIds != null) {
         if (filteredChildren != null) {
-          LinkedList<Object> f=filteredChildren.get(parentItemId);
-          if (f != null) {
-            f.remove(itemId);
-            if (f.isEmpty()) {
-              filteredChildren.remove(parentItemId);
+          filteredChildren.remove(itemId);
+        }
+        for (        Object childId : childNodeIds) {
+          setParent(childId,null);
+        }
+      }
+      final Object parentItemId=parent.get(itemId);
+      if (parentItemId != null) {
+        final LinkedList<Object> c=children.get(parentItemId);
+        if (c != null) {
+          c.remove(itemId);
+          if (c.isEmpty()) {
+            children.remove(parentItemId);
+          }
+          if (filteredChildren != null) {
+            LinkedList<Object> f=filteredChildren.get(parentItemId);
+            if (f != null) {
+              f.remove(itemId);
+              if (f.isEmpty()) {
+                filteredChildren.remove(parentItemId);
+              }
             }
           }
         }
       }
+      parent.remove(itemId);
+      if (filteredParent != null) {
+        filteredParent.remove(itemId);
+      }
+      noChildrenAllowed.remove(itemId);
     }
-    parent.remove(itemId);
-    if (filteredParent != null) {
-      filteredParent.remove(itemId);
-    }
-    noChildrenAllowed.remove(itemId);
+    return success;
   }
-  enableAndFireContentsChangeEvents();
-  return success;
+  finally {
+    enableAndFireContentsChangeEvents();
+  }
 }
