@@ -7,6 +7,7 @@
     for (    EmittedArtifact resource : artifacts.find(EmittedArtifact.class)) {
       String partialPath=resource.getPartialPath();
       if (partialPath.endsWith(".scss")) {
+        toReturn.remove(resource);
         String fileName=partialPath;
         File path=tempFolder;
         int separatorIndex=fileName.lastIndexOf(File.separator);
@@ -21,7 +22,6 @@
           if (fileCreated) {
             writeFromInputStream(resource.getContents(logger),tempfile);
             scssFiles.add(new FileInfo(tempfile,partialPath));
-            toReturn.remove(resource);
           }
  else {
             logger.log(TreeLogger.WARN,"Duplicate file " + tempfile.getPath());
