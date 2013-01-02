@@ -1,0 +1,27 @@
+{
+  Object value=getValue();
+  if (value == null) {
+    return;
+  }
+  boolean changed=false;
+  if (isMultiSelect()) {
+    Collection<Object> valueAsCollection=(Collection<Object>)value;
+    List<Object> newSelection=new ArrayList<Object>(valueAsCollection.size());
+    for (    Object subValue : valueAsCollection) {
+      if (containsId(subValue)) {
+        newSelection.add(subValue);
+      }
+ else {
+        changed=true;
+      }
+    }
+    if (changed) {
+      setValue(newSelection);
+    }
+  }
+ else {
+    if (!containsId(value)) {
+      setValue(null);
+    }
+  }
+}
