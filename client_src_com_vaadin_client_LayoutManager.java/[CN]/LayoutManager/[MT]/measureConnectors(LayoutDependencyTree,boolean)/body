@@ -37,14 +37,20 @@
   }
   int measureCount=0;
   if (measureAll) {
-    ComponentConnector[] connectors=ConnectorMap.get(connection).getComponentConnectors();
+    ComponentConnector[] allConnectors=ConnectorMap.get(connection).getComponentConnectors();
+    ArrayList<ComponentConnector> connectors=new ArrayList<ComponentConnector>();
+    for (    ComponentConnector candidate : allConnectors) {
+      if (needsMeasure(candidate.getWidget().getElement())) {
+        connectors.add(candidate);
+      }
+    }
     for (    ComponentConnector connector : connectors) {
       measureConnector(connector);
     }
     for (    ComponentConnector connector : connectors) {
       layoutDependencyTree.setNeedsMeasure(connector,false);
     }
-    measureCount+=connectors.length;
+    measureCount+=connectors.size();
   }
   while (layoutDependencyTree.hasConnectorsToMeasure()) {
     Collection<ComponentConnector> measureTargets=layoutDependencyTree.getMeasureTargets();
