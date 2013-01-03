@@ -13,11 +13,6 @@
   for (  ComponentConnector child : previousChildren) {
     if (child.getParent() != this) {
       Slot slot=layout.getSlot(child.getWidget());
-      hasVerticalAlignment.remove(child);
-      hasRelativeHeight.remove(child);
-      hasExpandRatio.remove(child);
-      needsMeasure.remove(child.getWidget().getElement());
-      childCaptionElementHeight.remove(child.getWidget().getElement());
       slot.setWidgetResizeListener(null);
       if (slot.hasCaption()) {
         slot.setCaptionResizeListener(null);
@@ -29,10 +24,5 @@
       layout.removeWidget(child.getWidget());
     }
   }
-  if (needsExpand()) {
-    getWidget().updateExpand();
-  }
- else {
-    getWidget().clearExpand();
-  }
+  updateInternalState();
 }

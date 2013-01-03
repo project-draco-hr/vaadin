@@ -1,34 +1,16 @@
 {
   boolean isExpanding=false;
   for (  Widget slot : getChildren()) {
-    if (((Slot)slot).getExpandRatio() > -1) {
+    if (((Slot)slot).getExpandRatio() != 0) {
       isExpanding=true;
+      break;
     }
- else {
-      if (vertical) {
-        slot.getElement().getStyle().clearHeight();
-      }
- else {
-        slot.getElement().getStyle().clearWidth();
-      }
-    }
-    slot.getElement().getStyle().clearMarginLeft();
-    slot.getElement().getStyle().clearMarginTop();
   }
   if (isExpanding) {
-    if (expandWrapper == null) {
-      expandWrapper=DOM.createDiv();
-      expandWrapper.setClassName("v-expand");
-      for (; getElement().getChildCount() > 0; ) {
-        Node el=getElement().getChild(0);
-        expandWrapper.appendChild(el);
-      }
-      getElement().appendChild(expandWrapper);
-    }
     int totalSize=0;
     for (    Widget w : getChildren()) {
       Slot slot=(Slot)w;
-      if (slot.getExpandRatio() == -1) {
+      if (slot.getExpandRatio() == 0) {
         if (layoutManager != null) {
           if (vertical) {
             int size=layoutManager.getOuterHeight(slot.getWidget().getElement()) - layoutManager.getMarginHeight(slot.getWidget().getElement());
@@ -68,6 +50,19 @@
       expandWrapper.getStyle().setPaddingLeft(totalSize,Unit.PX);
       expandWrapper.getFirstChildElement().getStyle().setMarginLeft(-totalSize,Unit.PX);
     }
-    recalculateExpands();
+    if (totalSize != lastExpandSize) {
+      lastExpandSize=totalSize;
+      for (      Widget w : getChildren()) {
+        Slot slot=(Slot)w;
+        if (slot.getExpandRatio() != 0) {
+          if (layoutManager != null) {
+            layoutManager.setNeedsMeasure(Util.findConnectorFor(slot.getWidget()));
+          }
+ else           if (slot.getWidget() instanceof RequiresResize) {
+            ((RequiresResize)slot.getWidget()).onResize();
+          }
+        }
+      }
+    }
   }
 }

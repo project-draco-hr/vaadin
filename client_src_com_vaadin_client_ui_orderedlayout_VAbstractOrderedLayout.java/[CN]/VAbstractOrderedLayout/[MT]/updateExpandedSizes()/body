@@ -1,7 +1,16 @@
 {
+  if (expandWrapper == null) {
+    expandWrapper=DOM.createDiv();
+    expandWrapper.setClassName("v-expand");
+    while (getElement().getChildCount() > 0) {
+      Node el=getElement().getChild(0);
+      expandWrapper.appendChild(el);
+    }
+    getElement().appendChild(expandWrapper);
+  }
   double total=0;
   for (  Slot slot : widgetToSlot.values()) {
-    if (slot.getExpandRatio() > -1) {
+    if (slot.getExpandRatio() != 0) {
       total+=slot.getExpandRatio();
     }
  else {
@@ -12,9 +21,11 @@
         slot.getElement().getStyle().clearWidth();
       }
     }
+    slot.getElement().getStyle().clearMarginLeft();
+    slot.getElement().getStyle().clearMarginTop();
   }
   for (  Slot slot : widgetToSlot.values()) {
-    if (slot.getExpandRatio() > -1) {
+    if (slot.getExpandRatio() != 0) {
       if (vertical) {
         slot.setHeight((100 * (slot.getExpandRatio() / total)) + "%");
         if (slot.hasRelativeHeight()) {

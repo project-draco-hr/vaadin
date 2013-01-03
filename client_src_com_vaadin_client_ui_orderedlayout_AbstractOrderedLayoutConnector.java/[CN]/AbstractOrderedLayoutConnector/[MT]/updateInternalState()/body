@@ -1,0 +1,54 @@
+{
+  int lastResponseId=getConnection().getLastResponseId();
+  if (processedResponseId == lastResponseId) {
+    return;
+  }
+  processedResponseId=lastResponseId;
+  hasChildrenWithRelativeHeight=false;
+  needsExpand=getWidget().vertical ? !isUndefinedHeight() : !isUndefinedWidth();
+  boolean onlyZeroExpands=true;
+  if (needsExpand) {
+    for (    ComponentConnector child : getChildComponents()) {
+      double expandRatio=getState().childData.get(child).expandRatio;
+      if (expandRatio != 0) {
+        onlyZeroExpands=false;
+        break;
+      }
+    }
+  }
+  for (  ComponentConnector child : getChildComponents()) {
+    if (child.delegateCaptionHandling()) {
+      updateCaptionInternal(child);
+    }
+    Slot slot=getWidget().getSlot(child.getWidget());
+    List<String> childStyles=child.getState().styles;
+    if (childStyles == null) {
+      getWidget().setSlotStyleNames(child.getWidget(),(String[])null);
+    }
+ else {
+      getWidget().setSlotStyleNames(child.getWidget(),childStyles.toArray(new String[childStyles.size()]));
+    }
+    AlignmentInfo alignment=new AlignmentInfo(getState().childData.get(child).alignmentBitmask);
+    slot.setAlignment(alignment);
+    double expandRatio=onlyZeroExpands ? 1 : getState().childData.get(child).expandRatio;
+    slot.setExpandRatio(expandRatio);
+    if (child.isRelativeHeight()) {
+      hasChildrenWithRelativeHeight=true;
+    }
+  }
+  if (needsFixedHeight()) {
+    getLayoutManager().addElementResizeListener(getWidget().getElement(),childComponentResizeListener);
+  }
+ else {
+    getLayoutManager().removeElementResizeListener(getWidget().getElement(),childComponentResizeListener);
+  }
+  updateAllSlotListeners();
+  updateLayoutHeight();
+  if (needsExpand()) {
+    getWidget().updateExpandedSizes();
+    getWidget().updateExpandCompensation();
+  }
+ else {
+    getWidget().clearExpand();
+  }
+}

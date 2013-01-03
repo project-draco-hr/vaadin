@@ -1,26 +1,35 @@
 {
   int highestNonRelative=-1;
   int highestRelative=-1;
+  LayoutManager layoutManager=getLayoutManager();
   for (  ComponentConnector child : getChildComponents()) {
-    Element el=child.getWidget().getElement();
-    CaptionPosition pos=getWidget().getCaptionPositionFromElement((Element)el.getParentElement().cast());
-    int h=getLayoutManager().getOuterHeight(el);
+    Slot slot=getWidget().getSlot(child.getWidget());
+    Element captionElement=slot.getCaptionElement();
+    CaptionPosition pos=slot.getCaptionPosition();
+    Element childElement=child.getWidget().getElement();
+    int h=layoutManager.getOuterHeight(childElement);
     if (h == -1) {
-      h=Util.getRequiredHeight(el);
+      return -1;
     }
-    if (needsMeasure.contains(el)) {
-      String sHeight=el.getStyle().getHeight();
-      if (childCaptionElementHeight.containsKey(el) && (sHeight == null || !sHeight.endsWith("%")) && (pos == CaptionPosition.TOP || pos == CaptionPosition.BOTTOM)) {
-        h+=childCaptionElementHeight.get(el);
+    boolean hasRelativeHeight=slot.hasRelativeHeight();
+    boolean includeCaptionHeight=captionElement != null && (pos == CaptionPosition.TOP || pos == CaptionPosition.BOTTOM);
+    if (!hasRelativeHeight && !includeCaptionHeight && captionElement != null) {
+      String sHeight=childElement.getStyle().getHeight();
+      includeCaptionHeight=(sHeight == null || !sHeight.endsWith("%"));
+    }
+    if (includeCaptionHeight) {
+      int captionHeight=layoutManager.getOuterHeight(captionElement) - getLayoutManager().getMarginHeight(captionElement);
+      if (captionHeight == -1) {
+        return -1;
       }
+      h+=captionHeight;
+    }
+    if (!hasRelativeHeight) {
       if (h > highestNonRelative) {
         highestNonRelative=h;
       }
     }
  else {
-      if (childCaptionElementHeight.containsKey(el) && (pos == CaptionPosition.TOP || pos == CaptionPosition.BOTTOM)) {
-        h+=childCaptionElementHeight.get(el);
-      }
       if (h > highestRelative) {
         highestRelative=h;
       }
