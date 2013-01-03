@@ -1,0 +1,36 @@
+{
+  if (pos == null) {
+    return;
+  }
+  pos=checkSplitPositionLimits(pos);
+  if (rememberPosition && !pos.equals(position)) {
+    position=convertToPositionUnits(pos);
+  }
+  if (pos.indexOf("%") > 0) {
+    int size=orientation == Orientation.HORIZONTAL ? getOffsetWidth() : getOffsetHeight();
+    float percentage=Float.parseFloat(pos.substring(0,pos.length() - 1));
+    pos=percentage / 100 * size + "px";
+  }
+  String attributeName;
+  if (orientation == Orientation.HORIZONTAL) {
+    if (positionReversed) {
+      attributeName="right";
+    }
+ else {
+      attributeName="left";
+    }
+  }
+ else {
+    if (positionReversed) {
+      attributeName="bottom";
+    }
+ else {
+      attributeName="top";
+    }
+  }
+  Style style=splitter.getStyle();
+  if (!pos.equals(style.getProperty(attributeName))) {
+    style.setProperty(attributeName,pos);
+    updateSizes();
+  }
+}
