@@ -1,19 +1,44 @@
 {
-  Token n;
-  n=jj_consume_token(IDENT);
+  Token t;
+  String s="";
   label_39:   while (true) {
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
-case S:
-      ;
-    break;
+case IDENT:
+      t=jj_consume_token(IDENT);
+    s+=t.image;
+  break;
+case INTERPOLATION:
+t=jj_consume_token(INTERPOLATION);
+s+=t.image;
+break;
 default :
-  jj_la1[55]=jj_gen;
+jj_la1[55]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case INTERPOLATION:
+case IDENT:
+;
+break;
+default :
+jj_la1[56]=jj_gen;
 break label_39;
+}
+}
+label_40: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[57]=jj_gen;
+break label_40;
 }
 jj_consume_token(S);
 }
 {
-if (true) return convertIdent(n.image);
+if (true) return s;
 }
 throw new Error("Missing return statement in function");
 }
