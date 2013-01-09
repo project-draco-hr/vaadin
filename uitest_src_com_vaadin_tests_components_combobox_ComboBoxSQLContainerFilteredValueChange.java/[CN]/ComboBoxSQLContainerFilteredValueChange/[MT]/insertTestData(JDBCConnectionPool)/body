@@ -1,0 +1,19 @@
+{
+  Connection conn=null;
+  try {
+    conn=connectionPool.reserveConnection();
+    Statement statement=conn.createStatement();
+    statement.executeUpdate("INSERT INTO mytable VALUES(1, 'A0')");
+    statement.executeUpdate("INSERT INTO mytable VALUES(2, 'A1')");
+    statement.executeUpdate("INSERT INTO mytable VALUES(3, 'B0')");
+    statement.executeUpdate("INSERT INTO mytable VALUES(4, 'B1')");
+    statement.close();
+    conn.commit();
+  }
+ catch (  SQLException e) {
+    e.printStackTrace();
+  }
+ finally {
+    connectionPool.releaseConnection(conn);
+  }
+}

@@ -1,0 +1,31 @@
+{
+  VerticalLayout layout=new VerticalLayout();
+  addComponent(layout);
+  final ComboBox myCombo=new ComboBox("MyCaption");
+  layout.addComponent(myCombo);
+  final Label selectedLabel=new Label("Selected: null");
+  layout.addComponent(selectedLabel);
+  try {
+    JDBCConnectionPool connectionPool=new SimpleJDBCConnectionPool("org.hsqldb.jdbc.JDBCDriver","jdbc:hsqldb:mem:sqlcontainer","SA","",2,20);
+    createTestTable(connectionPool);
+    insertTestData(connectionPool);
+    TableQuery q=new TableQuery("mytable",connectionPool);
+    q.setVersionColumn("version");
+    SQLContainer myContainer=new SQLContainer(q);
+    myCombo.setContainerDataSource(myContainer);
+  }
+ catch (  SQLException e) {
+    e.printStackTrace();
+  }
+  myCombo.setItemCaptionPropertyId("MYFIELD");
+  myCombo.setFilteringMode(Filtering.FILTERINGMODE_CONTAINS);
+  myCombo.setImmediate(true);
+  myCombo.setWidth("100.0%");
+  myCombo.setHeight("-1px");
+  myCombo.addListener(new Property.ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      selectedLabel.setValue("Selected: " + event.getProperty().getValue());
+    }
+  }
+);
+}

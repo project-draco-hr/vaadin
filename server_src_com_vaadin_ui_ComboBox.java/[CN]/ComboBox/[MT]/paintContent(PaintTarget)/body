@@ -1,89 +1,95 @@
 {
-  if (inputPrompt != null) {
-    target.addAttribute(ComboBoxConstants.ATTR_INPUTPROMPT,inputPrompt);
-  }
-  if (!textInputAllowed) {
-    target.addAttribute(ComboBoxConstants.ATTR_NO_TEXT_INPUT,true);
-  }
-  getCaptionChangeListener().clear();
-  if (getTabIndex() != 0) {
-    target.addAttribute("tabindex",getTabIndex());
-  }
-  if (isModified()) {
-    target.addAttribute("modified",true);
-  }
-  if (isNewItemsAllowed()) {
-    target.addAttribute("allownewitem",true);
-  }
-  boolean needNullSelectOption=false;
-  if (isNullSelectionAllowed()) {
-    target.addAttribute("nullselect",true);
-    needNullSelectOption=(getNullSelectionItemId() == null);
-    if (!needNullSelectOption) {
-      target.addAttribute("nullselectitem",true);
+  isPainting=true;
+  try {
+    if (inputPrompt != null) {
+      target.addAttribute(ComboBoxConstants.ATTR_INPUTPROMPT,inputPrompt);
     }
-  }
-  String[] selectedKeys=new String[(getValue() == null && getNullSelectionItemId() == null ? 0 : 1)];
-  target.addAttribute("pagelength",pageLength);
-  target.addAttribute("filteringmode",getFilteringMode().toString());
-  int keyIndex=0;
-  target.startTag("options");
-  if (currentPage < 0) {
-    optionRequest=false;
-    currentPage=0;
-    filterstring="";
-  }
-  boolean nullFilteredOut=filterstring != null && !"".equals(filterstring) && filteringMode != FilteringMode.OFF;
-  boolean nullOptionVisible=needNullSelectOption && !nullFilteredOut;
-  List<?> options=getOptionsWithFilter(nullOptionVisible);
-  if (null == options) {
-    options=getFilteredOptions();
-    filteredSize=options.size();
-    options=sanitetizeList(options,nullOptionVisible);
-  }
-  final boolean paintNullSelection=needNullSelectOption && currentPage == 0 && !nullFilteredOut;
-  if (paintNullSelection) {
-    target.startTag("so");
-    target.addAttribute("caption","");
-    target.addAttribute("key","");
-    target.endTag("so");
-  }
-  final Iterator<?> i=options.iterator();
-  while (i.hasNext()) {
-    final Object id=i.next();
-    if (!isNullSelectionAllowed() && id != null && id.equals(getNullSelectionItemId()) && !isSelected(id)) {
-      continue;
+    if (!textInputAllowed) {
+      target.addAttribute(ComboBoxConstants.ATTR_NO_TEXT_INPUT,true);
     }
-    final String key=itemIdMapper.key(id);
-    final String caption=getItemCaption(id);
-    final Resource icon=getItemIcon(id);
-    getCaptionChangeListener().addNotifierForItem(id);
-    target.startTag("so");
-    if (icon != null) {
-      target.addAttribute("icon",icon);
+    getCaptionChangeListener().clear();
+    if (getTabIndex() != 0) {
+      target.addAttribute("tabindex",getTabIndex());
     }
-    target.addAttribute("caption",caption);
-    if (id != null && id.equals(getNullSelectionItemId())) {
-      target.addAttribute("nullselection",true);
+    if (isModified()) {
+      target.addAttribute("modified",true);
     }
-    target.addAttribute("key",key);
-    if (isSelected(id) && keyIndex < selectedKeys.length) {
-      target.addAttribute("selected",true);
-      selectedKeys[keyIndex++]=key;
+    if (isNewItemsAllowed()) {
+      target.addAttribute("allownewitem",true);
     }
-    target.endTag("so");
+    boolean needNullSelectOption=false;
+    if (isNullSelectionAllowed()) {
+      target.addAttribute("nullselect",true);
+      needNullSelectOption=(getNullSelectionItemId() == null);
+      if (!needNullSelectOption) {
+        target.addAttribute("nullselectitem",true);
+      }
+    }
+    String[] selectedKeys=new String[(getValue() == null && getNullSelectionItemId() == null ? 0 : 1)];
+    target.addAttribute("pagelength",pageLength);
+    target.addAttribute("filteringmode",getFilteringMode().toString());
+    int keyIndex=0;
+    target.startTag("options");
+    if (currentPage < 0) {
+      optionRequest=false;
+      currentPage=0;
+      filterstring="";
+    }
+    boolean nullFilteredOut=filterstring != null && !"".equals(filterstring) && filteringMode != FilteringMode.OFF;
+    boolean nullOptionVisible=needNullSelectOption && !nullFilteredOut;
+    List<?> options=getOptionsWithFilter(nullOptionVisible);
+    if (null == options) {
+      options=getFilteredOptions();
+      filteredSize=options.size();
+      options=sanitetizeList(options,nullOptionVisible);
+    }
+    final boolean paintNullSelection=needNullSelectOption && currentPage == 0 && !nullFilteredOut;
+    if (paintNullSelection) {
+      target.startTag("so");
+      target.addAttribute("caption","");
+      target.addAttribute("key","");
+      target.endTag("so");
+    }
+    final Iterator<?> i=options.iterator();
+    while (i.hasNext()) {
+      final Object id=i.next();
+      if (!isNullSelectionAllowed() && id != null && id.equals(getNullSelectionItemId()) && !isSelected(id)) {
+        continue;
+      }
+      final String key=itemIdMapper.key(id);
+      final String caption=getItemCaption(id);
+      final Resource icon=getItemIcon(id);
+      getCaptionChangeListener().addNotifierForItem(id);
+      target.startTag("so");
+      if (icon != null) {
+        target.addAttribute("icon",icon);
+      }
+      target.addAttribute("caption",caption);
+      if (id != null && id.equals(getNullSelectionItemId())) {
+        target.addAttribute("nullselection",true);
+      }
+      target.addAttribute("key",key);
+      if (isSelected(id) && keyIndex < selectedKeys.length) {
+        target.addAttribute("selected",true);
+        selectedKeys[keyIndex++]=key;
+      }
+      target.endTag("so");
+    }
+    target.endTag("options");
+    target.addAttribute("totalitems",size() + (needNullSelectOption ? 1 : 0));
+    if (filteredSize > 0 || nullOptionVisible) {
+      target.addAttribute("totalMatches",filteredSize + (nullOptionVisible ? 1 : 0));
+    }
+    target.addVariable(this,"selected",selectedKeys);
+    if (isNewItemsAllowed()) {
+      target.addVariable(this,"newitem","");
+    }
+    target.addVariable(this,"filter",filterstring);
+    target.addVariable(this,"page",currentPage);
+    currentPage=-1;
+    optionRequest=true;
   }
-  target.endTag("options");
-  target.addAttribute("totalitems",size() + (needNullSelectOption ? 1 : 0));
-  if (filteredSize > 0 || nullOptionVisible) {
-    target.addAttribute("totalMatches",filteredSize + (nullOptionVisible ? 1 : 0));
+  finally {
+    isPainting=false;
   }
-  target.addVariable(this,"selected",selectedKeys);
-  if (isNewItemsAllowed()) {
-    target.addVariable(this,"newitem","");
-  }
-  target.addVariable(this,"filter",filterstring);
-  target.addVariable(this,"page",currentPage);
-  currentPage=-1;
-  optionRequest=true;
 }
