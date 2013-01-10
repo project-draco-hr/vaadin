@@ -1,4 +1,13 @@
 {
+  JClassType serverConnectorType;
+  try {
+    serverConnectorType=typeOracle.getType(ServerConnector.class.getName());
+  }
+ catch (  NotFoundException e) {
+    logger.log(Type.ERROR,"Can't find " + ServerConnector.class.getName());
+    throw new UnableToCompleteException();
+  }
+  JClassType[] types=serverConnectorType.getSubtypes();
   Map<String,JClassType> mappings=new HashMap<String,JClassType>();
   Map<JClassType,List<JClassType>> replaced=new HashMap<JClassType,List<JClassType>>();
   for (  JClassType type : types) {
