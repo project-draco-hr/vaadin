@@ -73,11 +73,20 @@
     if (variables.containsKey("collapsedcolumns")) {
       try {
         final Object[] ids=(Object[])variables.get("collapsedcolumns");
-        for (final Iterator<Object> it=visibleColumns.iterator(); it.hasNext(); ) {
-          setColumnCollapsed(it.next(),false);
+        Set<Object> idSet=new HashSet<Object>();
+        for (        Object id : ids) {
+          idSet.add(columnIdMap.get(id.toString()));
         }
-        for (int i=0; i < ids.length; i++) {
-          setColumnCollapsed(columnIdMap.get(ids[i].toString()),true);
+        for (final Iterator<Object> it=visibleColumns.iterator(); it.hasNext(); ) {
+          Object propertyId=it.next();
+          if (isColumnCollapsed(propertyId)) {
+            if (!idSet.contains(propertyId)) {
+              setColumnCollapsed(propertyId,false);
+            }
+          }
+ else           if (idSet.contains(propertyId)) {
+            setColumnCollapsed(propertyId,true);
+          }
         }
       }
  catch (      final Exception e) {
