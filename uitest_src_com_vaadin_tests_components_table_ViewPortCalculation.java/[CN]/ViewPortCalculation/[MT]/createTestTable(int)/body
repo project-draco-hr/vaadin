@@ -1,0 +1,32 @@
+{
+  final Table table=new Table();
+  table.setId("table");
+  table.setSelectable(true);
+  table.setPageLength(0);
+  table.addContainerProperty("col1",String.class,null);
+  table.addContainerProperty("col2",String.class,null);
+  table.addContainerProperty("col3",String.class,null);
+  for (int i=1; i <= rows; ++i) {
+    testData(table.addItem("row" + i),i);
+  }
+  table.setCellStyleGenerator(new CellStyleGenerator(){
+    public String getStyle(    Table source,    Object itemId,    Object propertyId){
+      if (itemId.equals(lastDoubleClickedItemId)) {
+        return "bold";
+      }
+      return null;
+    }
+  }
+);
+  table.addItemClickListener(new ItemClickListener(){
+    public void itemClick(    ItemClickEvent event){
+      if (event.isDoubleClick()) {
+        lastDoubleClickedItemId=event.getItemId();
+        table.refreshRowCache();
+        table.select(event.getItemId());
+      }
+    }
+  }
+);
+  return table;
+}
