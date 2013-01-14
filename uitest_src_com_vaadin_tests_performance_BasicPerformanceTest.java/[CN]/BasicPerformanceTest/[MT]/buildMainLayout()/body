@@ -1,0 +1,79 @@
+{
+  contentLayout.addComponent(new Label("Content lives here"));
+  Panel contentScroller=new Panel(contentLayout);
+  contentScroller.setStyleName(Reindeer.PANEL_LIGHT);
+  contentScroller.setSizeFull();
+  TextArea performanceReportArea=new TextArea();
+  performanceReportArea.setWidth("200px");
+  TestUtils.installPerformanceReporting(performanceReportArea);
+  VerticalLayout leftBar=new VerticalLayout();
+  leftBar.setSizeUndefined();
+  leftBar.addComponent(new Label("This is the left bar"));
+  leftBar.addComponent(performanceReportArea);
+  leftBar.addComponent(reportPerformanceButton);
+  leftBar.addComponent(new Button("Set 20 panels as content",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      popupateContent(contentLayout,20,true);
+      updatePerformanceReporting("20 panels",100,100);
+    }
+  }
+));
+  leftBar.addComponent(new Button("Set 40 panels as content",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      popupateContent(contentLayout,40,true);
+      updatePerformanceReporting("40 panels",100,100);
+    }
+  }
+));
+  leftBar.addComponent(new Button("Set 40 layouts as content",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      popupateContent(contentLayout,40,false);
+      updatePerformanceReporting("40 layouts",100,100);
+    }
+  }
+));
+  leftBar.addComponent(new Button("Update all labels",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      Iterator<Component> componentIterator=contentLayout.getComponentIterator();
+      while (componentIterator.hasNext()) {
+        Iterator<Component> columHolderIterator;
+        Component child=componentIterator.next();
+        if (child instanceof Panel) {
+          columHolderIterator=((ComponentContainer)((Panel)child).getContent()).getComponentIterator();
+        }
+ else {
+          columHolderIterator=((ComponentContainer)child).getComponentIterator();
+        }
+        while (columHolderIterator.hasNext()) {
+          VerticalLayout column=(VerticalLayout)columHolderIterator.next();
+          Iterator<Component> columnIterator=column.getComponentIterator();
+          while (columnIterator.hasNext()) {
+            Label label=(Label)columnIterator.next();
+            label.setValue("New value");
+          }
+        }
+      }
+      updatePerformanceReporting("Update labels",100,100);
+    }
+  }
+));
+  leftBar.addComponent(new Button("Clear content",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      contentLayout.removeAllComponents();
+      contentLayout.addComponent(new Label("No content"));
+      updatePerformanceReporting("No content",100,100);
+    }
+  }
+));
+  HorizontalLayout intermediateLayout=new HorizontalLayout();
+  intermediateLayout.setSizeFull();
+  intermediateLayout.addComponent(leftBar);
+  intermediateLayout.addComponent(contentScroller);
+  intermediateLayout.setExpandRatio(contentScroller,1);
+  VerticalLayout mainLayout=new VerticalLayout();
+  mainLayout.setSizeFull();
+  mainLayout.addComponent(new Label("This is a header"));
+  mainLayout.addComponent(intermediateLayout);
+  mainLayout.setExpandRatio(intermediateLayout,1);
+  return mainLayout;
+}
