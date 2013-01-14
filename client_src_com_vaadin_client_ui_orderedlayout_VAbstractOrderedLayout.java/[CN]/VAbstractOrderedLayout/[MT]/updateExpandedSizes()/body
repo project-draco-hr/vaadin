@@ -2,11 +2,17 @@
   if (expandWrapper == null) {
     expandWrapper=DOM.createDiv();
     expandWrapper.setClassName("v-expand");
+    for (    Widget widget : getChildren()) {
+      orphan(widget);
+    }
     while (getElement().getChildCount() > 0) {
       Node el=getElement().getChild(0);
       expandWrapper.appendChild(el);
     }
     getElement().appendChild(expandWrapper);
+    for (    Widget widget : getChildren()) {
+      adopt(widget);
+    }
   }
   double total=0;
   for (  Slot slot : widgetToSlot.values()) {
