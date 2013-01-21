@@ -70,8 +70,6 @@
           getConnectorMap().clear();
           if (meta.containsKey("invalidLayouts")) {
             validatingLayouts=true;
-            zeroWidthComponents=new HashSet<ComponentConnector>();
-            zeroHeightComponents=new HashSet<ComponentConnector>();
           }
         }
         if (meta.containsKey("timedRedirect")) {
@@ -135,9 +133,10 @@
           applicationRunning=false;
         }
         if (validatingLayouts) {
+          Set<ComponentConnector> zeroHeightComponents=new HashSet<ComponentConnector>();
+          Set<ComponentConnector> zeroWidthComponents=new HashSet<ComponentConnector>();
+          findZeroSizeComponents(zeroHeightComponents,zeroWidthComponents,getUIConnector());
           VConsole.printLayoutProblems(meta,ApplicationConnection.this,zeroHeightComponents,zeroWidthComponents);
-          zeroHeightComponents=null;
-          zeroWidthComponents=null;
           validatingLayouts=false;
         }
       }
