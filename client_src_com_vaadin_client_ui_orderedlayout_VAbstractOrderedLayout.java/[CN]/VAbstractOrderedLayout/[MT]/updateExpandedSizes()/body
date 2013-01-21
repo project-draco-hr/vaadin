@@ -16,33 +16,46 @@
   }
   double total=0;
   for (  Slot slot : widgetToSlot.values()) {
-    if (slot.getExpandRatio() != 0) {
-      total+=slot.getExpandRatio();
-    }
- else {
-      if (vertical) {
-        slot.getElement().getStyle().clearHeight();
-      }
- else {
-        slot.getElement().getStyle().clearWidth();
-      }
-    }
-    slot.getElement().getStyle().clearMarginLeft();
-    slot.getElement().getStyle().clearMarginTop();
+    total+=slot.getExpandRatio();
   }
   for (  Slot slot : widgetToSlot.values()) {
+    Element slotElement=slot.getElement();
+    slotElement.removeAttribute("aria-hidden");
+    Style slotStyle=slotElement.getStyle();
+    slotStyle.clearVisibility();
+    slotStyle.clearMarginLeft();
+    slotStyle.clearMarginTop();
     if (slot.getExpandRatio() != 0) {
+      double size=100 * (slot.getExpandRatio() / total);
       if (vertical) {
-        slot.setHeight((100 * (slot.getExpandRatio() / total)) + "%");
+        slot.setHeight(size + "%");
         if (slot.hasRelativeHeight()) {
           Util.notifyParentOfSizeChange(this,true);
         }
       }
  else {
-        slot.setWidth((100 * (slot.getExpandRatio() / total)) + "%");
+        slot.setWidth(size + "%");
         if (slot.hasRelativeWidth()) {
           Util.notifyParentOfSizeChange(this,true);
         }
+      }
+    }
+ else     if (slot.isRelativeInDirection(vertical)) {
+      if (vertical) {
+        slot.setHeight("0");
+      }
+ else {
+        slot.setWidth("0");
+      }
+      slotStyle.setVisibility(Visibility.HIDDEN);
+      slotElement.setAttribute("aria-hidden","true");
+    }
+ else {
+      if (vertical) {
+        slotStyle.clearHeight();
+      }
+ else {
+        slotStyle.clearWidth();
       }
     }
   }
