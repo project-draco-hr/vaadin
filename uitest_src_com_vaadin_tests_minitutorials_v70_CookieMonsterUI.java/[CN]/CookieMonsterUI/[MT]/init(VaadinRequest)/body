@@ -1,0 +1,33 @@
+{
+  final VerticalLayout layout=new VerticalLayout();
+  layout.setMargin(true);
+  setContent(layout);
+  final TextField nameField=new TextField();
+  layout.addComponent(nameField);
+  Cookie nameCookie=getCookieByName(NAME_COOKIE);
+  if (getCookieByName(NAME_COOKIE) != null) {
+    nameField.setValue(nameCookie.getValue());
+  }
+  Button button=new Button("Store name in cookie");
+  button.addClickListener(new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      String name=nameField.getValue();
+      Cookie nameCookie=getCookieByName(NAME_COOKIE);
+      if (nameCookie != null) {
+        String oldName=nameCookie.getValue();
+        nameCookie.setValue(name);
+        Notification.show("Updated name in cookie from " + oldName + " to "+ name);
+      }
+ else {
+        nameCookie=new Cookie(NAME_COOKIE,name);
+        nameCookie.setComment("Cookie for storing the name of the user");
+        Notification.show("Stored name " + name + " in cookie");
+      }
+      nameCookie.setMaxAge(120);
+      nameCookie.setPath(VaadinService.getCurrentRequest().getContextPath());
+      VaadinService.getCurrentResponse().addCookie(nameCookie);
+    }
+  }
+);
+  layout.addComponent(button);
+}
