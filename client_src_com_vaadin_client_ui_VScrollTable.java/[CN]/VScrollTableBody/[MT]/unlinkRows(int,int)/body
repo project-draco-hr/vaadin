@@ -3,6 +3,7 @@
     return;
   }
   if (firstRendered > firstIndex && firstRendered < firstIndex + count) {
+    count=count - (firstRendered - firstIndex);
     firstIndex=firstRendered;
   }
   int lastIndex=firstIndex + count - 1;
@@ -11,7 +12,12 @@
   }
   for (int ix=lastIndex; ix >= firstIndex; ix--) {
     unlinkRowAtActualIndex(actualIndex(ix));
-    lastRendered--;
+    if (postponeSanityCheckForLastRendered) {
+      lastRendered--;
+    }
+ else {
+      setLastRendered(lastRendered - 1);
+    }
   }
   fixSpacers();
 }

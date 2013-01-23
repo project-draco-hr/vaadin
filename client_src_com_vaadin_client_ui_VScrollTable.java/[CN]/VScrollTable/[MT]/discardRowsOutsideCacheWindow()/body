@@ -1,6 +1,12 @@
 {
   int firstRowToKeep=(int)(firstRowInViewPort - pageLength * cache_rate);
   int lastRowToKeep=(int)(firstRowInViewPort + pageLength + pageLength * cache_rate);
+  if (firstRowToKeep < 0) {
+    firstRowToKeep=0;
+  }
+  if (lastRowToKeep > totalRows) {
+    lastRowToKeep=totalRows - 1;
+  }
   debug("Client side calculated cache rows to keep: " + firstRowToKeep + "-"+ lastRowToKeep);
   if (serverCacheFirst != -1) {
     firstRowToKeep=serverCacheFirst;
