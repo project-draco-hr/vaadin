@@ -1,4 +1,6 @@
 {
+  log.setId("log");
+  table.setId("table");
   table.setSelectable(true);
   table.addContainerProperty(PROPERTY_ID,Integer.class,null);
   table.setImmediate(true);
@@ -12,6 +14,7 @@
   addComponent(table);
   final CheckBox multiselect=new CheckBox("Multiselect");
   multiselect.setImmediate(true);
+  multiselect.setId("multiselect");
   multiselect.addValueChangeListener(new ValueChangeListener(){
     public void valueChange(    ValueChangeEvent event){
       Boolean value=multiselect.getValue();
@@ -20,7 +23,7 @@
   }
 );
   addComponent(multiselect);
-  addComponent(new Button("Add table items",new Button.ClickListener(){
+  Button addItemsButton=new Button("Add table items",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
       if (!table.getItemIds().isEmpty()) {
         Notification.show("Only possible when the table is empty");
@@ -33,33 +36,43 @@
       }
     }
   }
-));
-  addComponent(new Button("Show value",new Button.ClickListener(){
+);
+  addItemsButton.setId("addItemsButton");
+  addComponent(addItemsButton);
+  Button showValueButton=new Button("Show value",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
       log.log("Table selection: " + table.getValue());
     }
   }
-));
-  addComponent(new Button("Remove items from table",new Button.ClickListener(){
+);
+  showValueButton.setId("showValueButton");
+  addComponent(showValueButton);
+  Button removeItemsFromTableButton=new Button("Remove items from table",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
       table.removeAllItems();
     }
   }
-));
-  addComponent(new Button("Remove items from container",new Button.ClickListener(){
+);
+  removeItemsFromTableButton.setId("removeItemsFromTableButton");
+  addComponent(removeItemsFromTableButton);
+  Button removeItemsFromContainerButton=new Button("Remove items from container",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
       table.getContainerDataSource().removeAllItems();
     }
   }
-));
-  addComponent(new Button("Remove items from container and sanitize",new Button.ClickListener(){
+);
+  removeItemsFromContainerButton.setId("removeItemsFromContainerButton");
+  addComponent(removeItemsFromContainerButton);
+  Button removeItemsFromContainerAndSanitizeButton=new Button("Remove items from container and sanitize",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
       table.getContainerDataSource().removeAllItems();
       table.sanitizeSelection();
     }
   }
-));
-  addComponent(new Button("Remove selected item from table",new Button.ClickListener(){
+);
+  removeItemsFromContainerAndSanitizeButton.setId("removeItemsFromContainerAndSanitizeButton");
+  addComponent(removeItemsFromContainerAndSanitizeButton);
+  Button removeSelectedFromTableButton=new Button("Remove selected item from table",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
       Object selection=table.getValue();
       if (selection == null) {
@@ -71,8 +84,10 @@
       }
     }
   }
-));
-  addComponent(new Button("Remove selected item from container",new Button.ClickListener(){
+);
+  removeSelectedFromTableButton.setId("removeSelectedFromTableButton");
+  addComponent(removeSelectedFromTableButton);
+  Button removeSelectedFromContainer=new Button("Remove selected item from container",new Button.ClickListener(){
     public void buttonClick(    ClickEvent event){
       Object selection=table.getValue();
       if (selection == null) {
@@ -84,5 +99,7 @@
       }
     }
   }
-));
+);
+  removeSelectedFromContainer.setId("removeSelectedFromContainer");
+  addComponent(removeSelectedFromContainer);
 }
