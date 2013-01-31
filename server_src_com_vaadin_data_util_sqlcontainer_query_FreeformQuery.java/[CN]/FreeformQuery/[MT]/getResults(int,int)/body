@@ -21,6 +21,17 @@
     }
   }
   Statement statement=activeConnection.createStatement();
-  ResultSet rs=statement.executeQuery(query);
+  ResultSet rs;
+  try {
+    rs=statement.executeQuery(query);
+  }
+ catch (  SQLException e) {
+    try {
+      statement.close();
+    }
+  finally {
+      throw e;
+    }
+  }
   return rs;
 }

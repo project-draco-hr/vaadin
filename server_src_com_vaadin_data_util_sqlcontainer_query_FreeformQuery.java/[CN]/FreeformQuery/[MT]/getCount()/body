@@ -1,18 +1,22 @@
 {
   int count=countByDelegate();
   if (count < 0) {
+    Statement statement=null;
+    ResultSet rs=null;
     Connection conn=getConnection();
-    Statement statement=conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-    ResultSet rs=statement.executeQuery(queryString);
-    if (rs.last()) {
-      count=rs.getRow();
-    }
+    try {
+      statement=conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+      rs=statement.executeQuery(queryString);
+      if (rs.last()) {
+        count=rs.getRow();
+      }
  else {
-      count=0;
+        count=0;
+      }
     }
-    rs.close();
-    statement.close();
-    releaseConnection(conn);
+  finally {
+      releaseConnection(conn,statement,rs);
+    }
   }
   return count;
 }
