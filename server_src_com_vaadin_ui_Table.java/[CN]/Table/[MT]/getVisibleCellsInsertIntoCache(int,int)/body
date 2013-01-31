@@ -1,5 +1,5 @@
 {
-  getLogger().finest("Insert " + rows + " rows at index "+ firstIndex+ " to existing page buffer requested");
+  getLogger().log(Level.FINEST,"Insert {0} rows at index {1} to existing page buffer requested",new Object[]{rows,firstIndex});
   int minPageBufferIndex=getCurrentPageFirstItemIndex() - (int)(getPageLength() * getCacheRate());
   if (minPageBufferIndex < 0) {
     minPageBufferIndex=0;
@@ -43,6 +43,8 @@
     }
   }
   pageBuffer=newPageBuffer;
-  getLogger().finest("Page Buffer now contains " + pageBuffer[CELL_ITEMID].length + " rows ("+ pageBufferFirstIndex+ "-"+ (pageBufferFirstIndex + pageBuffer[CELL_ITEMID].length - 1)+ ")");
+  if (getLogger().isLoggable(Level.FINEST)) {
+    getLogger().log(Level.FINEST,"Page Buffer now contains {0} rows ({1}-{2})",new Object[]{pageBuffer[CELL_ITEMID].length,pageBufferFirstIndex,(pageBufferFirstIndex + pageBuffer[CELL_ITEMID].length - 1)});
+  }
   return cells;
 }

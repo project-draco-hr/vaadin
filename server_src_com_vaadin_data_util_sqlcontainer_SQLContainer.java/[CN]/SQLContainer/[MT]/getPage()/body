@@ -12,7 +12,8 @@
       getLogger().log(Level.FINE,"The query delegate doesn't support sorting",e);
     }
     delegate.beginTransaction();
-    rs=delegate.getResults(currentOffset,pageLength * CACHE_RATIO);
+    int fetchedRows=pageLength * CACHE_RATIO;
+    rs=delegate.getResults(currentOffset,fetchedRows);
     rsmd=rs.getMetaData();
     List<String> pKeys=delegate.getPrimaryKeyColumns();
     ColumnProperty cp=null;
@@ -71,7 +72,7 @@
     rs.getStatement().close();
     rs.close();
     delegate.commit();
-    getLogger().log(Level.FINER,"Fetched " + pageLength * CACHE_RATIO + " rows starting from " + currentOffset);
+    getLogger().log(Level.FINER,"Fetched {0} rows starting from {1}",new Object[]{fetchedRows,currentOffset});
   }
  catch (  SQLException e) {
     getLogger().log(Level.WARNING,"Failed to fetch rows, rolling back",e);
