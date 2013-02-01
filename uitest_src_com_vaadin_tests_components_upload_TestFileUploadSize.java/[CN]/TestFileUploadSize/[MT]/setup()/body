@@ -1,0 +1,35 @@
+{
+  getLayout().setMargin(new MarginInfo(true,false,false,false));
+  getLayout().setSpacing(true);
+  Upload u=new Upload("Upload",new Upload.Receiver(){
+    public OutputStream receiveUpload(    String filename,    String mimeType){
+      return baos;
+    }
+  }
+);
+  u.setId("UPL");
+  u.addStartedListener(new Upload.StartedListener(){
+    public void uploadStarted(    StartedEvent event){
+      expectedSize.setValue(String.valueOf(event.getContentLength()));
+    }
+  }
+);
+  u.addFinishedListener(new Upload.FinishedListener(){
+    public void uploadFinished(    FinishedEvent event){
+      label.setValue("Upload finished. Name: " + event.getFilename());
+      receivedSize.setValue(String.valueOf(baos.size()));
+      baos.reset();
+    }
+  }
+);
+  expectedSize.setId("expected");
+  receivedSize.setId("received");
+  GridLayout grid=new GridLayout(2,2);
+  grid.addComponent(new Label("Expected size:"),0,0);
+  grid.addComponent(new Label("Received size:"),0,1);
+  grid.addComponent(expectedSize,1,0);
+  grid.addComponent(receivedSize,1,1);
+  addComponent(label);
+  addComponent(grid);
+  addComponent(u);
+}
