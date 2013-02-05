@@ -1,8 +1,14 @@
 {
-  boolean blockerAdded=measureBlockers.add(blocker);
-  if (blockerAdded && measureBlockers.size() == 1) {
+  String blockerId=blocker.getConnectorId();
+  boolean alreadyAdded=measureBlockers.contains(blockerId);
+  if (alreadyAdded) {
+    return;
+  }
+  boolean wasEmpty=measureBlockers.isEmpty();
+  measureBlockers.add(blockerId);
+  if (wasEmpty) {
     if (needsMeasure) {
-      getMeasureQueue(direction).remove(connector);
+      getMeasureQueue(direction).remove(connector.getConnectorId());
     }
  else {
       propagatePotentialResize();

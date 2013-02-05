@@ -1,11 +1,15 @@
 {
-  boolean blockerAdded=layoutBlockers.add(blocker);
-  if (blockerAdded && layoutBlockers.size() == 1) {
-    if (needsLayout) {
-      getLayoutQueue(direction).remove(connector);
-    }
+  String blockerId=blocker.getConnectorId();
+  if (!layoutBlockers.contains(blockerId)) {
+    boolean wasEmpty=layoutBlockers.isEmpty();
+    layoutBlockers.add(blockerId);
+    if (wasEmpty) {
+      if (needsLayout) {
+        getLayoutQueue(direction).remove(connector.getConnectorId());
+      }
  else {
-      propagatePotentialLayout();
+        propagatePotentialLayout();
+      }
     }
   }
 }

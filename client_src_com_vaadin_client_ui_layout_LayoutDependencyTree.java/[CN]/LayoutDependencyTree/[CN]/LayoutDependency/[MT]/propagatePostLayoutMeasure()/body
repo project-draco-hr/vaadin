@@ -1,10 +1,13 @@
 {
-  for (  ComponentConnector resized : getResizedByLayout()) {
-    LayoutDependency layoutDependency=getDependency(resized,direction);
+  JsArrayString resizedByLayout=getResizedByLayout();
+  int length=resizedByLayout.length();
+  for (int i=0; i < length; i++) {
+    String resizedId=resizedByLayout.get(i);
+    LayoutDependency layoutDependency=getDependency(resizedId,direction);
     layoutDependency.setNeedsMeasure(true);
   }
   if (direction == HORIZONTAL && !connector.isUndefinedWidth() && connector.isUndefinedHeight()) {
-    LayoutDependency dependency=getDependency(connector,VERTICAL);
+    LayoutDependency dependency=getDependency(connector.getConnectorId(),VERTICAL);
     dependency.setNeedsMeasure(true);
   }
 }
