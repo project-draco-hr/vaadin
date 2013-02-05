@@ -7,23 +7,17 @@
   setWidgetStyleName(StyleConstants.UI_WIDGET,true);
   setWidgetStyleName("v-readonly",isReadOnly());
   setWidgetStyleNameWithPrefix(primaryStyleName,ApplicationConnection.ERROR_CLASSNAME_EXT,null != state.errorMessage);
+  for (int i=0; i < styleNames.length(); i++) {
+    String oldStyle=styleNames.get(i);
+    setWidgetStyleName(oldStyle,false);
+    setWidgetStyleNameWithPrefix(primaryStyleName + "-",oldStyle,false);
+  }
+  styleNames.setLength(0);
   if (ComponentStateUtil.hasStyles(state)) {
-    for (    String oldStyle : styleNames) {
-      setWidgetStyleName(oldStyle,false);
-      setWidgetStyleNameWithPrefix(primaryStyleName + "-",oldStyle,false);
-    }
     for (    String newStyle : state.styles) {
       setWidgetStyleName(newStyle,true);
       setWidgetStyleNameWithPrefix(primaryStyleName + "-",newStyle,true);
+      styleNames.push(newStyle);
     }
-    styleNames.clear();
-    styleNames.addAll(state.styles);
-  }
- else {
-    for (    String oldStyle : styleNames) {
-      setWidgetStyleName(oldStyle,false);
-      setWidgetStyleNameWithPrefix(primaryStyleName + "-",oldStyle,false);
-    }
-    styleNames.clear();
   }
 }
