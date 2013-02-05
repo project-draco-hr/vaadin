@@ -169,8 +169,10 @@
         if (connector instanceof ComponentConnector) {
           ComponentConnector component=(ComponentConnector)connector;
           Type stateType=AbstractConnector.getStateType(component);
-          Set<String> changedProperties=sce.getChangedProperties();
-          for (          String propertyName : changedProperties) {
+          FastStringSet changedProperties=sce.getChangedPropertiesFastSet();
+          JsArrayString dump=changedProperties.dump();
+          for (int i=0; i < dump.length(); i++) {
+            String propertyName=dump.get(i);
             Property property=stateType.getProperty(propertyName);
             String method=property.getDelegateToWidgetMethodName();
             if (method != null) {
@@ -215,8 +217,10 @@
     }
     private void unregisterRemovedConnectors(){
       int unregistered=0;
-      List<ServerConnector> currentConnectors=new ArrayList<ServerConnector>(connectorMap.getConnectors());
-      for (      ServerConnector c : currentConnectors) {
+      JsArrayObject<ServerConnector> currentConnectors=connectorMap.getConnectorsAsJsArray();
+      int size=currentConnectors.size();
+      for (int i=0; i < size; i++) {
+        ServerConnector c=currentConnectors.get(i);
         if (c.getParent() != null) {
           if (!c.getParent().getChildren().contains(c)) {
             VConsole.error("ERROR: Connector is connected to a parent but the parent does not contain the connector");
@@ -343,11 +347,12 @@
             }
             SharedState state=connector.getState();
             JsonDecoder.decodeValue(new Type(state.getClass().getName(),null),stateJson,state,ApplicationConnection.this);
-            Set<String> changedProperties=new HashSet<String>();
+            FastStringSet changedProperties=FastStringSet.create();
             addJsonFields(stateJson,changedProperties,"");
             if (newConnectors.contains(connector)) {
               remainingNewConnectors.remove(connector);
-              addAllStateFields(AbstractConnector.getStateType(connector),changedProperties,"");
+              FastStringSet allStateFields=getAllStateFields(AbstractConnector.getStateType(connector));
+              changedProperties.addAll(allStateFields);
             }
             StateChangeEvent event=new StateChangeEvent(connector,changedProperties);
             events.add(event);
@@ -358,12 +363,21 @@
         }
       }
       for (      ServerConnector connector : remainingNewConnectors) {
-        Set<String> changedProperties=new HashSet<String>();
-        addAllStateFields(AbstractConnector.getStateType(connector),changedProperties,"");
+        FastStringSet changedProperties=getAllStateFields(AbstractConnector.getStateType(connector));
         StateChangeEvent event=new StateChangeEvent(connector,changedProperties);
         events.add(event);
       }
       return events;
+    }
+    private FastStringSet getAllStateFields(    Type type){
+      FastStringSet fields;
+      fields=allStateFieldsCache.get(type.getBaseTypeName());
+      if (fields == null) {
+        fields=FastStringSet.create();
+        addAllStateFields(type,fields,"");
+        allStateFieldsCache.put(type.getBaseTypeName(),fields);
+      }
+      return fields;
     }
     /** 
  * Recursively adds the names of all properties in the provided
@@ -372,7 +386,7 @@
  * @param foundPropertiesa set of all currently added properties
  * @param contextthe base name of the current object
  */
-    private void addAllStateFields(    Type type,    Set<String> foundProperties,    String context){
+    private void addAllStateFields(    Type type,    FastStringSet foundProperties,    String context){
       try {
         JsArrayObject<Property> properties=type.getPropertiesAsArray();
         int size=properties.size();
@@ -397,7 +411,7 @@
  * @param fieldsa set of all currently added fields
  * @param contextthe base name of the current object
  */
-    private void addJsonFields(    JSONObject json,    Set<String> fields,    String context){
+    private void addJsonFields(    JSONObject json,    FastStringSet fields,    String context){
       for (      String key : json.keySet()) {
         String fieldName=context + key;
         fields.add(fieldName);
@@ -422,7 +436,7 @@
       if (!json.containsKey("hierarchy")) {
         return result;
       }
-      HashSet<ServerConnector> maybeDetached=new HashSet<ServerConnector>();
+      FastStringSet maybeDetached=FastStringSet.create();
       ValueMap hierarchies=json.getValueMap("hierarchy");
       JsArrayString hierarchyKeys=hierarchies.getKeyArray();
       for (int i=0; i < hierarchyKeys.length(); i++) {
@@ -450,7 +464,7 @@
             if (childConnector.getParent() != parentConnector) {
               childConnector.setParent(parentConnector);
               result.parentChanged.add(childConnector);
-              maybeDetached.remove(childConnector);
+              maybeDetached.remove(childConnectorId);
             }
           }
           List<ServerConnector> oldChildren=parentConnector.getChildren();
@@ -478,7 +492,7 @@
               continue;
             }
             if (!newChildren.contains(oldChild)) {
-              maybeDetached.add(oldChild);
+              maybeDetached.add(oldChild.getConnectorId());
             }
           }
         }
@@ -486,7 +500,9 @@
           VConsole.error(e);
         }
       }
-      for (      ServerConnector removed : maybeDetached) {
+      JsArrayString maybeDetachedArray=maybeDetached.dump();
+      for (int i=0; i < maybeDetachedArray.length(); i++) {
+        ServerConnector removed=connectorMap.getConnector(maybeDetachedArray.get(i));
         recursivelyDetach(removed,result.events);
       }
       return result;

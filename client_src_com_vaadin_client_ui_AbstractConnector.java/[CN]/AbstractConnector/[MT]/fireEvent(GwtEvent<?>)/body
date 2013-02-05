@@ -3,10 +3,12 @@
     handlerManager.fireEvent(event);
   }
   if (statePropertyHandlerManagers != null && event instanceof StateChangeEvent) {
-    for (    String property : ((StateChangeEvent)event).getChangedProperties()) {
-      HandlerManager manager=statePropertyHandlerManagers.get(property);
-      if (manager != null) {
-        manager.fireEvent(event);
+    StateChangeEvent stateChangeEvent=(StateChangeEvent)event;
+    JsArrayString keys=statePropertyHandlerManagers.getKeys();
+    for (int i=0; i < keys.length(); i++) {
+      String property=keys.get(i);
+      if (stateChangeEvent.hasPropertyChanged(property)) {
+        statePropertyHandlerManagers.get(property).fireEvent(event);
       }
     }
   }
