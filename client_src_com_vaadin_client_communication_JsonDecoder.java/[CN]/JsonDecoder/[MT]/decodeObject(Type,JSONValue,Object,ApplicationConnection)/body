@@ -23,8 +23,15 @@
         if (encodedPropertyValue == null) {
           continue;
         }
-        Object propertyReference=property.getValue(target);
-        Object decodedValue=decodeValue(property.getType(),encodedPropertyValue,propertyReference,connection);
+        Type propertyType=property.getType();
+        Object propertyReference;
+        if (needsReferenceValue(propertyType)) {
+          propertyReference=property.getValue(target);
+        }
+ else {
+          propertyReference=null;
+        }
+        Object decodedValue=decodeValue(propertyType,encodedPropertyValue,propertyReference,connection);
         property.setValue(target,decodedValue);
       }
       return target;
