@@ -5,6 +5,7 @@
   }
   processedResponseId=lastResponseId;
   hasChildrenWithRelativeHeight=false;
+  hasChildrenWithMiddleAlignment=false;
   needsExpand=getWidget().vertical ? !isUndefinedHeight() : !isUndefinedWidth();
   boolean onlyZeroExpands=true;
   if (needsExpand) {
@@ -32,6 +33,9 @@
     }
     AlignmentInfo alignment=new AlignmentInfo(getState().childData.get(child).alignmentBitmask);
     slot.setAlignment(alignment);
+    if (alignment.isVerticalCenter()) {
+      hasChildrenWithMiddleAlignment=true;
+    }
     double expandRatio=onlyZeroExpands ? 1 : getState().childData.get(child).expandRatio;
     slot.setExpandRatio(expandRatio);
     if (child.isRelativeHeight()) {
