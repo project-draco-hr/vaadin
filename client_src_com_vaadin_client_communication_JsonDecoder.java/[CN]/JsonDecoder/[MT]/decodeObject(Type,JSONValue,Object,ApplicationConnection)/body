@@ -13,12 +13,14 @@
   }
  else {
     try {
-      Collection<Property> properties=type.getProperties();
+      JsArrayObject<Property> properties=type.getPropertiesAsArray();
       if (target == null) {
         target=type.createInstance();
       }
       JSONObject jsonObject=jsonValue.isObject();
-      for (      Property property : properties) {
+      int size=properties.size();
+      for (int i=0; i < size; i++) {
+        Property property=properties.get(i);
         JSONValue encodedPropertyValue=jsonObject.get(property.getName());
         if (encodedPropertyValue == null) {
           continue;
