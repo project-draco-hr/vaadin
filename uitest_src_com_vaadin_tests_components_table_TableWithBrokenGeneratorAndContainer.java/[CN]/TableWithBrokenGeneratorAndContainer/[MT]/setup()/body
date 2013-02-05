@@ -1,0 +1,28 @@
+{
+  brokenContainer.setImmediate(true);
+  brokenGenerator.setImmediate(true);
+  clearTableOnError.setImmediate(true);
+  clearTableOnError.addValueChangeListener(new ValueChangeListener(){
+    public void valueChange(    ValueChangeEvent event){
+      Boolean value=clearTableOnError.getValue();
+      setErrorHandler(value != null ? value : false);
+    }
+  }
+);
+  final Table table=new Table("Semi-broken table");
+  table.setContainerDataSource(createBrokenContainer(10,4));
+  table.addGeneratedColumn("Gen",new BrokenColumnGenerator(4));
+  table.setPageLength(20);
+  Button refreshTableCache=new Button("Refresh table cache",new Button.ClickListener(){
+    public void buttonClick(    ClickEvent event){
+      table.markAsDirty();
+      table.refreshRowCache();
+    }
+  }
+);
+  addComponent(refreshTableCache);
+  addComponent(brokenContainer);
+  addComponent(brokenGenerator);
+  addComponent(clearTableOnError);
+  addComponent(table);
+}

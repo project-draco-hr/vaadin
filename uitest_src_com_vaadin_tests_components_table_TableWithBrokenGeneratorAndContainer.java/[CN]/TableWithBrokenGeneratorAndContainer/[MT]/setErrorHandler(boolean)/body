@@ -1,0 +1,27 @@
+{
+  if (enabled) {
+    VaadinSession.getCurrent().setErrorHandler(new ErrorHandler(){
+      @Override public void error(      ErrorEvent event){
+        Throwable t=event.getThrowable();
+        if (t instanceof RpcInvocationException) {
+          t=t.getCause();
+          if (t instanceof InvocationTargetException) {
+            t=t.getCause();
+            if (t instanceof MethodException) {
+              t=t.getCause();
+              if (t instanceof CacheUpdateException) {
+                Table table=((CacheUpdateException)t).getTable();
+                table.removeAllItems();
+                Notification.show("Problem updating table. Please try again later",Notification.Type.ERROR_MESSAGE);
+              }
+            }
+          }
+        }
+      }
+    }
+);
+  }
+ else {
+    VaadinSession.getCurrent().setErrorHandler(this);
+  }
+}
