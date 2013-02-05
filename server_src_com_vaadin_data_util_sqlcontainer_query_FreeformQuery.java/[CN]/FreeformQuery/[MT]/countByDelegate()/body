@@ -6,16 +6,19 @@
   if (delegate instanceof FreeformStatementDelegate) {
     try {
       StatementHelper sh=((FreeformStatementDelegate)delegate).getCountStatement();
+      PreparedStatement pstmt=null;
+      ResultSet rs=null;
       Connection c=getConnection();
-      PreparedStatement pstmt=c.prepareStatement(sh.getQueryString());
-      sh.setParameterValuesToStatement(pstmt);
-      ResultSet rs=pstmt.executeQuery();
-      rs.next();
-      count=rs.getInt(1);
-      rs.close();
-      pstmt.clearParameters();
-      pstmt.close();
-      releaseConnection(c);
+      try {
+        pstmt=c.prepareStatement(sh.getQueryString());
+        sh.setParameterValuesToStatement(pstmt);
+        rs=pstmt.executeQuery();
+        rs.next();
+        count=rs.getInt(1);
+      }
+  finally {
+        releaseConnection(c,pstmt,rs);
+      }
       return count;
     }
  catch (    UnsupportedOperationException e) {
@@ -24,15 +27,19 @@
   try {
     String countQuery=delegate.getCountQuery();
     if (countQuery != null) {
+      Statement statement=null;
+      ResultSet rs=null;
       Connection conn=getConnection();
-      Statement statement=conn.createStatement();
-      ResultSet rs=statement.executeQuery(countQuery);
-      rs.next();
-      count=rs.getInt(1);
-      rs.close();
-      statement.close();
-      releaseConnection(conn);
-      return count;
+      try {
+        statement=conn.createStatement();
+        rs=statement.executeQuery(countQuery);
+        rs.next();
+        count=rs.getInt(1);
+        return count;
+      }
+  finally {
+        releaseConnection(conn,statement,rs);
+      }
     }
   }
  catch (  UnsupportedOperationException e) {

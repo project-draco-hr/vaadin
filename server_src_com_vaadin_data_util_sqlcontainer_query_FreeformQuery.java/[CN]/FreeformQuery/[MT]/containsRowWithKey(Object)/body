@@ -5,16 +5,19 @@
     if (delegate instanceof FreeformStatementDelegate) {
       try {
         StatementHelper sh=((FreeformStatementDelegate)delegate).getContainsRowQueryStatement(keys);
+        PreparedStatement pstmt=null;
+        ResultSet rs=null;
         Connection c=getConnection();
-        PreparedStatement pstmt=c.prepareStatement(sh.getQueryString());
-        sh.setParameterValuesToStatement(pstmt);
-        ResultSet rs=pstmt.executeQuery();
-        contains=rs.next();
-        rs.close();
-        pstmt.clearParameters();
-        pstmt.close();
-        releaseConnection(c);
-        return contains;
+        try {
+          pstmt=c.prepareStatement(sh.getQueryString());
+          sh.setParameterValuesToStatement(pstmt);
+          rs=pstmt.executeQuery();
+          contains=rs.next();
+          return contains;
+        }
+  finally {
+          releaseConnection(c,pstmt,rs);
+        }
       }
  catch (      UnsupportedOperationException e) {
       }
@@ -29,16 +32,16 @@
  else {
     query=modifyWhereClause(keys);
   }
+  Statement statement=null;
+  ResultSet rs=null;
   Connection conn=getConnection();
   try {
-    Statement statement=conn.createStatement();
-    ResultSet rs=statement.executeQuery(query);
+    statement=conn.createStatement();
+    rs=statement.executeQuery(query);
     contains=rs.next();
-    rs.close();
-    statement.close();
   }
   finally {
-    releaseConnection(conn);
+    releaseConnection(conn,statement,rs);
   }
   return contains;
 }
