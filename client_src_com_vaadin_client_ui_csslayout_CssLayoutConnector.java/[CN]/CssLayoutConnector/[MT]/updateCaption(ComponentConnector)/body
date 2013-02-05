@@ -1,11 +1,12 @@
 {
   Widget childWidget=child.getWidget();
   int widgetPosition=getWidget().getWidgetIndex(childWidget);
-  VCaption caption=childToCaption.get(child);
+  String childId=child.getConnectorId();
+  VCaption caption=childIdToCaption.get(childId);
   if (VCaption.isNeeded(child.getState())) {
     if (caption == null) {
       caption=new VCaption(child,getConnection());
-      childToCaption.put(child,caption);
+      childIdToCaption.put(childId,caption);
     }
     if (!caption.isAttached()) {
       getWidget().insert(caption,widgetPosition);
@@ -13,7 +14,7 @@
     caption.updateCaption();
   }
  else   if (caption != null) {
-    childToCaption.remove(child);
+    childIdToCaption.remove(childId);
     getWidget().remove(caption);
   }
 }
