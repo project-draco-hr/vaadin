@@ -1,7 +1,10 @@
 {
-  for (  ComponentConnector connector : getNeedsSizeForLayout()) {
-    LayoutDependency layoutDependency=getDependency(connector,direction);
-    if (connector instanceof ManagedLayout) {
+  JsArrayString needsSizeForLayout=getNeedsSizeForLayout();
+  int length=needsSizeForLayout.length();
+  for (int i=0; i < length; i++) {
+    String connectorId=needsSizeForLayout.get(i);
+    LayoutDependency layoutDependency=getDependency(connectorId,direction);
+    if (layoutDependency.connector instanceof ManagedLayout) {
       layoutDependency.setNeedsLayout(true);
     }
  else {
@@ -10,6 +13,6 @@
   }
   ComponentConnector scrollingBoundary=getScrollingBoundary(connector);
   if (scrollingBoundary != null) {
-    getDependency(scrollingBoundary,getOppositeDirection()).setNeedsMeasure(true);
+    getDependency(scrollingBoundary.getConnectorId(),getOppositeDirection()).setNeedsMeasure(true);
   }
 }

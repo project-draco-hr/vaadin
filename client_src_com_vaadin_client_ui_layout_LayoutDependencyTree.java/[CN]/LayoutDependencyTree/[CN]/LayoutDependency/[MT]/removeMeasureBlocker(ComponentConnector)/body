@@ -1,8 +1,13 @@
 {
-  boolean removed=measureBlockers.remove(blocker);
-  if (removed && measureBlockers.isEmpty()) {
+  String blockerId=blocker.getConnectorId();
+  boolean alreadyRemoved=!measureBlockers.contains(blockerId);
+  if (alreadyRemoved) {
+    return;
+  }
+  measureBlockers.remove(blockerId);
+  if (measureBlockers.isEmpty()) {
     if (needsMeasure) {
-      getMeasureQueue(direction).add(connector);
+      getMeasureQueue(direction).add(connector.getConnectorId());
     }
  else {
       propagateNoUpcomingResize();

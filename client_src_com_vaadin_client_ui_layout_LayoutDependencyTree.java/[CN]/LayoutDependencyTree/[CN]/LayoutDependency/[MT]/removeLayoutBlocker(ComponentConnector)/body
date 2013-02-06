@@ -1,11 +1,14 @@
 {
-  boolean removed=layoutBlockers.remove(blocker);
-  if (removed && layoutBlockers.isEmpty()) {
-    if (needsLayout) {
-      getLayoutQueue(direction).add((ManagedLayout)connector);
-    }
+  String blockerId=blocker.getConnectorId();
+  if (layoutBlockers.contains(blockerId)) {
+    layoutBlockers.remove(blockerId);
+    if (layoutBlockers.isEmpty()) {
+      if (needsLayout) {
+        getLayoutQueue(direction).add(connector.getConnectorId());
+      }
  else {
-      propagateNoUpcomingLayout();
+        propagateNoUpcomingLayout();
+      }
     }
   }
 }

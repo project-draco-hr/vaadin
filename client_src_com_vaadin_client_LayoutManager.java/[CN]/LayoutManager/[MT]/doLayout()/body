@@ -1,20 +1,30 @@
 {
   VConsole.log("Starting layout phase");
-  Map<ManagedLayout,Integer> layoutCounts=new HashMap<ManagedLayout,Integer>();
+  FastStringMap<Integer> layoutCounts=FastStringMap.create();
   int passes=0;
   Duration totalDuration=new Duration();
-  for (  ManagedLayout layout : needsHorizontalLayout) {
-    currentDependencyTree.setNeedsHorizontalLayout(layout,true);
+  ConnectorMap connectorMap=ConnectorMap.get(connection);
+  JsArrayString dump=needsHorizontalLayout.dump();
+  int dumpLength=dump.length();
+  for (int i=0; i < dumpLength; i++) {
+    String layoutId=dump.get(i);
+    currentDependencyTree.setNeedsHorizontalLayout(layoutId,true);
   }
-  for (  ManagedLayout layout : needsVerticalLayout) {
-    currentDependencyTree.setNeedsVerticalLayout(layout,true);
+  dump=needsVerticalLayout.dump();
+  dumpLength=dump.length();
+  for (int i=0; i < dumpLength; i++) {
+    String layoutId=dump.get(i);
+    currentDependencyTree.setNeedsVerticalLayout(layoutId,true);
   }
-  needsHorizontalLayout.clear();
-  needsVerticalLayout.clear();
-  for (  ComponentConnector connector : needsMeasure) {
-    currentDependencyTree.setNeedsMeasure(connector,true);
+  needsHorizontalLayout=FastStringSet.create();
+  needsVerticalLayout=FastStringSet.create();
+  dump=needsMeasure.dump();
+  dumpLength=dump.length();
+  for (int i=0; i < dumpLength; i++) {
+    String layoutId=dump.get(i);
+    currentDependencyTree.setNeedsMeasure(layoutId,true);
   }
-  needsMeasure.clear();
+  needsMeasure=FastStringSet.create();
   measureNonConnectors();
   VConsole.log("Layout init in " + totalDuration.elapsedMillis() + " ms");
   while (true) {
@@ -52,7 +62,10 @@
     }
     FastStringSet updatedSet=FastStringSet.create();
     while (currentDependencyTree.hasHorizontalConnectorToLayout() || currentDependencyTree.hasVerticaConnectorToLayout()) {
-      for (      ManagedLayout layout : currentDependencyTree.getHorizontalLayoutTargets()) {
+      JsArrayString layoutTargets=currentDependencyTree.getHorizontalLayoutTargetsJsArray();
+      int length=layoutTargets.length();
+      for (int i=0; i < length; i++) {
+        ManagedLayout layout=(ManagedLayout)connectorMap.getConnector(layoutTargets.get(i));
         if (layout instanceof DirectionalManagedLayout) {
           currentDependencyTree.markAsHorizontallyLayouted(layout);
           DirectionalManagedLayout cl=(DirectionalManagedLayout)layout;
@@ -80,7 +93,10 @@
           updatedSet.add(layout.getConnectorId());
         }
       }
-      for (      ManagedLayout layout : currentDependencyTree.getVerticalLayoutTargets()) {
+      layoutTargets=currentDependencyTree.getVerticalLayoutTargetsJsArray();
+      length=layoutTargets.length();
+      for (int i=0; i < length; i++) {
+        ManagedLayout layout=(ManagedLayout)connectorMap.getConnector(layoutTargets.get(i));
         if (layout instanceof DirectionalManagedLayout) {
           currentDependencyTree.markAsVerticallyLayouted(layout);
           DirectionalManagedLayout cl=(DirectionalManagedLayout)layout;
@@ -144,15 +160,18 @@
     }
   }
   int postLayoutStart=totalDuration.elapsedMillis();
-  for (  ComponentConnector connector : connection.getConnectorMap().getComponentConnectors()) {
+  JsArrayObject<ComponentConnector> componentConnectors=connectorMap.getComponentConnectorsAsJsArray();
+  int size=componentConnectors.size();
+  for (int i=0; i < size; i++) {
+    ComponentConnector connector=componentConnectors.get(i);
     if (connector instanceof PostLayoutListener) {
       ((PostLayoutListener)connector).postLayout();
     }
   }
-  int postLayoutDone=(totalDuration.elapsedMillis() - postLayoutStart);
-  VConsole.log("Invoke post layout listeners in " + postLayoutDone + " ms");
+  int postLayoutDone=totalDuration.elapsedMillis();
+  VConsole.log("Invoke post layout listeners in " + (postLayoutDone - postLayoutStart) + " ms");
   cleanMeasuredSizes();
-  int cleaningDone=(totalDuration.elapsedMillis() - postLayoutDone);
-  VConsole.log("Cleaned old measured sizes in " + cleaningDone + "ms");
+  int cleaningTime=(totalDuration.elapsedMillis() - postLayoutDone);
+  VConsole.log("Cleaned old measured sizes in " + cleaningTime + "ms");
   VConsole.log("Total layout phase time: " + totalDuration.elapsedMillis() + "ms");
 }
