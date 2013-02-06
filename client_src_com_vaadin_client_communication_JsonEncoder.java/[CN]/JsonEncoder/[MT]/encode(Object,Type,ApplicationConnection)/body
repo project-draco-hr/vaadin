@@ -58,9 +58,11 @@
     }
  else     if (type != null) {
       try {
-        Collection<Property> properties=type.getProperties();
+        JsArrayObject<Property> properties=type.getPropertiesAsArray();
         JSONObject jsonObject=new JSONObject();
-        for (        Property property : properties) {
+        int size=properties.size();
+        for (int i=0; i < size; i++) {
+          Property property=properties.get(i);
           Object propertyValue=property.getValue(value);
           Type propertyType=property.getType();
           JSONValue encodedPropertyValue=encode(propertyValue,propertyType,connection);
