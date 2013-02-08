@@ -6,8 +6,16 @@
   }
 );
   u.setId("UPL");
-  u.addListener(new Upload.FinishedListener(){
-    @Override public void uploadFinished(    FinishedEvent event){
+  u.addFailedListener(new FailedListener(){
+    @Override public void uploadFailed(    FailedEvent event){
+      String hash=DigestUtils.md5Hex(baos.toByteArray());
+      log.log("<span style=\"color: red;\">Upload failed. Name: " + event.getFilename() + ", Size: "+ baos.size()+ ", md5: "+ hash+ "</span>");
+      baos.reset();
+    }
+  }
+);
+  u.addSucceededListener(new SucceededListener(){
+    @Override public void uploadSucceeded(    SucceededEvent event){
       String hash=DigestUtils.md5Hex(baos.toByteArray());
       log.log("Upload finished. Name: " + event.getFilename() + ", Size: "+ baos.size()+ ", md5: "+ hash);
       baos.reset();

@@ -4,16 +4,5 @@
     return;
   }
   client.sendPendingVariableChanges();
-  element.submit();
-  submitted=true;
-  VConsole.log("Submitted form");
-  disableUpload();
-  t=new Timer(){
-    @Override public void run(){
-      VConsole.log("Visiting server to see if upload started event changed UI.");
-      client.updateVariable(paintableId,"pollForStart",nextUploadId,true);
-    }
-  }
-;
-  t.schedule(800);
+  Scheduler.get().scheduleDeferred(startUploadCmd);
 }
