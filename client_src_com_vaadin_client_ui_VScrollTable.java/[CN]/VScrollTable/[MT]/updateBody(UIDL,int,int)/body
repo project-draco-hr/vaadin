@@ -1,4 +1,5 @@
 {
+  int oldIndent=scrollBody.getMaxIndent();
   if (uidl == null || reqRows < 1) {
     if (firstRow <= 0) {
       postponeSanityCheckForLastRendered=true;
@@ -12,4 +13,8 @@
   }
   scrollBody.renderRows(uidl,firstRow,reqRows);
   discardRowsOutsideCacheWindow();
+  scrollBody.calculateMaxIndent();
+  if (oldIndent != scrollBody.getMaxIndent()) {
+    headerChangedDuringUpdate=true;
+  }
 }

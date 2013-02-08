@@ -14,13 +14,22 @@
  else {
     tHead.resizeCaptionContainer(this);
     if (scrollBody != null) {
-      int tdWidth=width + scrollBody.getCellExtraWidth();
+      int maxIndent=scrollBody.getMaxIndent();
+      if (w < maxIndent && isHierarchyColumn()) {
+        w=maxIndent;
+      }
+      int tdWidth=w + scrollBody.getCellExtraWidth();
       setWidth(tdWidth + "px");
     }
  else {
       Scheduler.get().scheduleDeferred(new Command(){
         @Override public void execute(){
-          int tdWidth=width + scrollBody.getCellExtraWidth();
+          int maxIndent=scrollBody.getMaxIndent();
+          int tdWidth=width;
+          if (tdWidth < maxIndent && isHierarchyColumn()) {
+            tdWidth=maxIndent;
+          }
+          tdWidth+=scrollBody.getCellExtraWidth();
           setWidth(tdWidth + "px");
         }
       }

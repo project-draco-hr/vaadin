@@ -1,5 +1,16 @@
 {
   final Element cell=DOM.getChild(getElement(),cellIx);
-  cell.getFirstChildElement().getStyle().setPropertyPx("width",width);
+  Style wrapperStyle=cell.getFirstChildElement().getStyle();
+  int wrapperWidth=width;
+  if (BrowserInfo.get().isWebkit() || BrowserInfo.get().isOpera10()) {
+    if (width == 0) {
+      wrapperWidth=1;
+      wrapperStyle.setMarginRight(-1,Unit.PX);
+    }
+ else {
+      wrapperStyle.clearMarginRight();
+    }
+  }
+  wrapperStyle.setPropertyPx("width",wrapperWidth);
   cell.getStyle().setPropertyPx("width",width);
 }
