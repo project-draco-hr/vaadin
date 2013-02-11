@@ -1,37 +1,152 @@
 {
-  if (jj_2_9(5)) {
-    removeDirective();
-  }
- else   if (jj_2_10(5)) {
-    appendDirective();
-  }
- else   if (jj_2_11(5)) {
-    containsDirective();
-  }
- else {
-    jj_consume_token(-1);
-    throw new ParseException();
-  }
+  String list=null;
+  String remove=null;
+  String separator=null;
+  String variable=null;
+  Token n=null;
+  Token type=null;
+  n=jj_consume_token(VARIABLE);
+  variable=n.image;
   label_114:   while (true) {
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case S:
       ;
     break;
 default :
-  jj_la1[161]=jj_gen;
+  jj_la1[163]=jj_gen;
 break label_114;
 }
 jj_consume_token(S);
 }
-jj_consume_token(SEMICOLON);
+jj_consume_token(COLON);
 label_115: while (true) {
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case S:
 ;
 break;
 default :
-jj_la1[162]=jj_gen;
+jj_la1[164]=jj_gen;
 break label_115;
+}
+jj_consume_token(S);
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case APPEND:
+type=jj_consume_token(APPEND);
+break;
+case REMOVE:
+type=jj_consume_token(REMOVE);
+break;
+case CONTAINS:
+type=jj_consume_token(CONTAINS);
+break;
+default :
+jj_la1[165]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
+label_116: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[166]=jj_gen;
+break label_116;
+}
+jj_consume_token(S);
+}
+list=listModifyDirectiveArgs(0);
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case RPARAN:
+jj_consume_token(RPARAN);
+break;
+default :
+jj_la1[167]=jj_gen;
+;
+}
+jj_consume_token(COMMA);
+label_117: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[168]=jj_gen;
+break label_117;
+}
+jj_consume_token(S);
+}
+remove=listModifyDirectiveArgs(1);
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case COMMA:
+jj_consume_token(COMMA);
+label_118: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[169]=jj_gen;
+break label_118;
+}
+jj_consume_token(S);
+}
+n=jj_consume_token(IDENT);
+separator=n.image;
+label_119: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[170]=jj_gen;
+break label_119;
+}
+jj_consume_token(S);
+}
+break;
+default :
+jj_la1[171]=jj_gen;
+;
+}
+jj_consume_token(RPARAN);
+switch (type.kind) {
+case APPEND:
+documentHandler.appendDirective(variable,list,remove,separator);
+break;
+case REMOVE:
+documentHandler.removeDirective(variable,list,remove,separator);
+break;
+case CONTAINS:
+if (variable == null) {
+variable="$var_" + UUID.randomUUID();
+}
+documentHandler.containsDirective(variable,list,remove,separator);
+break;
+default :
+break;
+}
+label_120: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[172]=jj_gen;
+break label_120;
+}
+jj_consume_token(S);
+}
+jj_consume_token(SEMICOLON);
+label_121: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[173]=jj_gen;
+break label_121;
 }
 jj_consume_token(S);
 }
