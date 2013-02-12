@@ -1,0 +1,70 @@
+{
+  if (!isEnabled()) {
+    VConsole.log("Profiler is not enabled, no data has been collected.");
+    return;
+  }
+  LinkedList<Node> stack=new LinkedList<Node>();
+  Node rootNode=new Node(null);
+  stack.add(rootNode);
+  for (int i=0; i < events.length(); i++) {
+    ProfilerEvent event=events.get(i);
+    if (event.isStart()) {
+      Node stackTop=stack.getLast().addEvent(event);
+      stack.add(stackTop);
+    }
+ else {
+      Node stackTop=stack.removeLast();
+      if (stackTop == null) {
+        VConsole.error("Leaving " + event.getName() + " that was never entered.");
+        return;
+      }
+      if (!stackTop.getName().equals(event.getName())) {
+        VConsole.error("Invalid profiling event order, leaving " + event.getName() + " but "+ stackTop.getName()+ " was expected");
+        return;
+      }
+      stackTop.registerEnd(event);
+    }
+  }
+  if (stack.size() != 1) {
+    VConsole.log("Not all nodes are left, the last node is " + stack.getLast().getName());
+    return;
+  }
+  StringBuilder stringBuilder=new StringBuilder();
+  rootNode.buildRecursiveString(stringBuilder,"");
+  Console implementation=VConsole.getImplementation();
+  if (implementation instanceof VDebugConsole) {
+    VDebugConsole console=(VDebugConsole)implementation;
+    SimpleTree tree=(SimpleTree)stack.getFirst().buildTree();
+    tree.setText("Profiler data");
+    console.showTree(tree,stringBuilder.toString());
+  }
+ else {
+    VConsole.log(stringBuilder.toString());
+  }
+  Map<String,Node> totals=new HashMap<String,Node>();
+  rootNode.sumUpTotals(totals);
+  ArrayList<Node> totalList=new ArrayList<Node>(totals.values());
+  Collections.sort(totalList,new Comparator<Node>(){
+    @Override public int compare(    Node o1,    Node o2){
+      return (int)(o2.getTimeSpent() - o1.getTimeSpent());
+    }
+  }
+);
+  double total=0;
+  double top20total=0;
+  for (int i=0; i < totalList.size(); i++) {
+    Node node=totalList.get(i);
+    double timeSpent=node.getTimeSpent();
+    total+=timeSpent;
+    if (i < 20) {
+      top20total+=timeSpent;
+    }
+  }
+  VConsole.log("Largest individual contributors using " + top20total + " ms out of "+ total+ " ms");
+  for (int i=0; i < 20 && i < totalList.size(); i++) {
+    Node node=totalList.get(i);
+    double timeSpent=node.getTimeSpent();
+    total+=timeSpent;
+    VConsole.log(" * " + node.getName() + ": "+ timeSpent+ " ms in "+ node.getCount()+ " invokations.");
+  }
+}

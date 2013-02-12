@@ -1,9 +1,11 @@
 {
+  Profiler.enter("WidgetSet.createConnector");
   Class<? extends ServerConnector> classType=resolveInheritedConnectorType(conf,tag);
   if (classType == null || classType == UnknownComponentConnector.class) {
     String serverSideName=conf.getUnknownServerClassNameByTag(tag);
     UnknownComponentConnector c=GWT.create(UnknownComponentConnector.class);
     c.setServerSideClassName(serverSideName);
+    Profiler.leave("WidgetSet.createConnector");
     return c;
   }
  else {
@@ -12,9 +14,11 @@
       if (connector instanceof HasJavaScriptConnectorHelper) {
         ((HasJavaScriptConnectorHelper)connector).getJavascriptConnectorHelper().setTag(tag);
       }
+      Profiler.leave("WidgetSet.createConnector");
       return connector;
     }
  catch (    NoDataException e) {
+      Profiler.leave("WidgetSet.createConnector");
       throw new IllegalStateException("There is no information about " + classType + ". Did you remember to compile the right widgetset?",e);
     }
   }

@@ -1,4 +1,9 @@
 {
+  String profilerKey=null;
+  if (Profiler.isEnabled()) {
+    profilerKey="Fire " + Util.getSimpleName(event) + " for "+ Util.getSimpleName(this);
+    Profiler.enter(profilerKey);
+  }
   if (handlerManager != null) {
     handlerManager.fireEvent(event);
   }
@@ -11,5 +16,8 @@
         statePropertyHandlerManagers.get(property).fireEvent(event);
       }
     }
+  }
+  if (Profiler.isEnabled()) {
+    Profiler.leave(profilerKey);
   }
 }
