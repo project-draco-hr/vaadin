@@ -1,9 +1,9 @@
 {
+  Profiler.enter("Layout overflow fix handling");
   JsArrayString pendingOverflowConnectorsIds=pendingOverflowFixes.dump();
   int pendingOverflowCount=pendingOverflowConnectorsIds.length();
   ConnectorMap connectorMap=ConnectorMap.get(connection);
   if (pendingOverflowCount > 0) {
-    Duration duration=new Duration();
     HashMap<Element,String> originalOverflows=new HashMap<Element,String>();
     FastStringSet delayedOverflowFixes=FastStringSet.create();
     for (int i=0; i < pendingOverflowCount; i++) {
@@ -18,6 +18,7 @@
       if (debugLogging) {
         VConsole.log("Doing overflow fix for " + Util.getConnectorString(componentConnector) + " in "+ Util.getConnectorString(componentConnector.getParent()));
       }
+      Profiler.enter("Overflow fix apply");
       Element parentElement=componentConnector.getWidget().getElement().getParentElement();
       Style style=parentElement.getStyle();
       String originalOverflow=style.getOverflow();
@@ -25,14 +26,18 @@
         originalOverflows.put(parentElement,originalOverflow);
       }
       style.setOverflow(Overflow.HIDDEN);
+      Profiler.leave("Overflow fix apply");
     }
     pendingOverflowFixes.removeAll(delayedOverflowFixes);
     JsArrayString remainingOverflowFixIds=pendingOverflowFixes.dump();
     int remainingCount=remainingOverflowFixIds.length();
+    Profiler.enter("Overflow fix reflow");
     for (int i=0; i < remainingCount; i++) {
       ComponentConnector componentConnector=(ComponentConnector)connectorMap.getConnector(remainingOverflowFixIds.get(i));
       componentConnector.getWidget().getElement().getParentElement().getOffsetHeight();
     }
+    Profiler.leave("Overflow fix reflow");
+    Profiler.enter("Overflow fix restore");
     for (int i=0; i < remainingCount; i++) {
       String connectorId=remainingOverflowFixIds.get(i);
       ComponentConnector componentConnector=(ComponentConnector)connectorMap.getConnector(connectorId);
@@ -40,13 +45,16 @@
       parentElement.getStyle().setProperty("overflow",originalOverflows.get(parentElement));
       layoutDependencyTree.setNeedsMeasure(connectorId,true);
     }
+    Profiler.leave("Overflow fix restore");
     if (!pendingOverflowFixes.isEmpty()) {
-      VConsole.log("Did overflow fix for " + remainingCount + " elements  in "+ duration.elapsedMillis()+ " ms");
+      VConsole.log("Did overflow fix for " + remainingCount + " elements");
     }
     pendingOverflowFixes=delayedOverflowFixes;
   }
+  Profiler.leave("Layout overflow fix handling");
   int measureCount=0;
   if (measureAll) {
+    Profiler.enter("Layout measureAll");
     JsArrayObject<ComponentConnector> allConnectors=connectorMap.getComponentConnectorsAsJsArray();
     int size=allConnectors.size();
     JsArrayObject<ComponentConnector> connectors=JsArrayObject.createArray().cast();
@@ -64,7 +72,9 @@
       layoutDependencyTree.setNeedsMeasure(connectors.get(i).getConnectorId(),false);
     }
     measureCount+=connectorCount;
+    Profiler.leave("Layout measureAll");
   }
+  Profiler.enter("Layout measure from tree");
   while (layoutDependencyTree.hasConnectorsToMeasure()) {
     JsArrayString measureTargets=layoutDependencyTree.getMeasureTargetsJsArray();
     int length=measureTargets.length();
@@ -78,5 +88,6 @@
       layoutDependencyTree.setNeedsMeasure(connectorId,false);
     }
   }
+  Profiler.leave("Layout measure from tree");
   return measureCount;
 }
