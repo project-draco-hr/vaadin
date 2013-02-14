@@ -11,7 +11,12 @@
   Parser parser=new Parser();
   parser.setErrorHandler(new SCSSErrorHandler());
   parser.setDocumentHandler(handler);
-  parser.parseStyleSheet(source);
+  try {
+    parser.parseStyleSheet(source);
+  }
+ catch (  ParseException e) {
+    throw new SCSSParseException(e,identifier);
+  }
   stylesheet.setCharset(parser.getInputSource().getEncoding());
   return stylesheet;
 }
