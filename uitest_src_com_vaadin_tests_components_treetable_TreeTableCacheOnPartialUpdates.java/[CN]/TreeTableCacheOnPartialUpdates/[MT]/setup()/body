@@ -1,8 +1,7 @@
 {
-  setTheme("reindeer-tests");
   Button b=new Button("Show first");
   addComponent(b);
-  b.addListener(new ClickListener(){
+  b.addClickListener(new ClickListener(){
     @Override public void buttonClick(    ClickEvent event){
       log.log("First visible item id is: " + treeTable.getCurrentPageFirstItemId());
     }
@@ -15,7 +14,7 @@
   cacheRateSelect.addItem(new Integer(1));
   cacheRateSelect.addItem(new Integer(2));
   cacheRateSelect.setValue(2);
-  cacheRateSelect.addListener(new ValueChangeListener(){
+  cacheRateSelect.addValueChangeListener(new ValueChangeListener(){
     @Override public void valueChange(    ValueChangeEvent event){
       treeTable.setCacheRate((Integer)event.getProperty().getValue());
     }
@@ -35,20 +34,21 @@
   hasChildren.put("99",20);
   treeTable.setContainerDataSource(createContainer(100,hasChildren));
   treeTable.addGeneratedColumn("col3",new Col3ColumnGenerator());
-  treeTable.addListener(new ExpandListener(){
+  treeTable.addGeneratedColumn("col4",new Col4ColumnGenerator());
+  treeTable.addExpandListener(new ExpandListener(){
     @Override public void nodeExpand(    ExpandEvent event){
       logExpandCollapse(event.getItemId(),"expanded");
     }
   }
 );
-  treeTable.addListener(new CollapseListener(){
+  treeTable.addCollapseListener(new CollapseListener(){
     @Override public void nodeCollapse(    CollapseEvent event){
       logExpandCollapse(event.getItemId(),"collapsed");
     }
   }
 );
-  treeTable.setColumnHeaders(columnHeaders);
   treeTable.setVisibleColumns(visibleColumns);
+  treeTable.setColumnHeaders(columnHeaders);
   treeTable.setColumnWidth("col1",150);
   treeTable.setColumnWidth("col2",50);
   treeTable.setHeight("430px");

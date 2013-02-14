@@ -5,7 +5,7 @@
     while (it.hasNext()) {
       final VScrollTableRow row=prepareRow((UIDL)it.next());
       addRow(row);
-      lastRendered++;
+      setLastRendered(lastRendered + 1);
     }
     fixSpacers();
   }
@@ -22,19 +22,22 @@
     }
   }
  else {
+    boolean temp=postponeSanityCheckForLastRendered;
+    postponeSanityCheckForLastRendered=true;
     while (lastRendered + 1 > firstRendered) {
       unlinkRow(false);
     }
-    final VScrollTableRow row=prepareRow((UIDL)it.next());
+    postponeSanityCheckForLastRendered=temp;
+    VScrollTableRow row=prepareRow((UIDL)it.next());
     firstRendered=firstIndex;
-    lastRendered=firstIndex - 1;
+    setLastRendered(firstIndex - 1);
     addRow(row);
-    lastRendered++;
+    setLastRendered(lastRendered + 1);
     setContainerHeight();
     fixSpacers();
     while (it.hasNext()) {
       addRow(prepareRow((UIDL)it.next()));
-      lastRendered++;
+      setLastRendered(lastRendered + 1);
     }
     fixSpacers();
   }

@@ -1,0 +1,19 @@
+{
+  int minPageBufferIndex=getMinPageBufferIndex();
+  int maxPageBufferIndex=getMaxPageBufferIndex();
+  int maxBufferSize=maxPageBufferIndex - minPageBufferIndex + 1;
+  int currentlyCachedRowCount=pageBuffer[CELL_ITEMID].length;
+  if (currentlyCachedRowCount <= maxBufferSize) {
+    return;
+  }
+  int firstCacheRowToRemoveInPageBuffer=-1;
+  if (minPageBufferIndex > pageBufferFirstIndex) {
+    firstCacheRowToRemoveInPageBuffer=pageBufferFirstIndex;
+  }
+ else   if (maxPageBufferIndex < pageBufferFirstIndex + currentlyCachedRowCount) {
+    firstCacheRowToRemoveInPageBuffer=maxPageBufferIndex + 1;
+  }
+  if (firstCacheRowToRemoveInPageBuffer - pageBufferFirstIndex < currentlyCachedRowCount) {
+    unregisterComponentsAndPropertiesInRows(firstCacheRowToRemoveInPageBuffer,currentlyCachedRowCount - firstCacheRowToRemoveInPageBuffer);
+  }
+}
