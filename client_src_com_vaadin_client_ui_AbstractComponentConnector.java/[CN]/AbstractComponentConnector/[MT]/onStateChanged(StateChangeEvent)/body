@@ -18,6 +18,12 @@
   super.onStateChanged(stateChangeEvent);
   updateWidgetStyleNames();
   updateComponentSize();
+  Profiler.enter("AbstractComponentContainer.onStateChanged check tooltip");
+  if (!tooltipListenersAttached && hasTooltip()) {
+    tooltipListenersAttached=true;
+    getConnection().getVTooltip().connectHandlersToWidget(getWidget());
+  }
+  Profiler.leave("AbstractComponentContainer.onStateChanged check tooltip");
   initialStateEvent=false;
   Profiler.leave("AbstractComponentConnector.onStateChanged");
 }
