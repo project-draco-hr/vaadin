@@ -1,10 +1,12 @@
 {
   Scheduler.get().scheduleDeferred(new ScheduledCommand(){
     @Override public void execute(){
+      Profiler.enter("ApplicationConfiguration.startApplication");
       ApplicationConfiguration appConf=getConfigFromDOM(applicationId);
       ApplicationConnection a=GWT.create(ApplicationConnection.class);
       a.init(widgetSet,appConf);
       runningApplications.add(a);
+      Profiler.leave("ApplicationConfiguration.startApplication");
       a.start();
     }
   }

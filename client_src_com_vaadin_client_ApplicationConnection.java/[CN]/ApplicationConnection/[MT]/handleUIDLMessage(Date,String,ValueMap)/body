@@ -5,7 +5,6 @@
     forceHandleMessage.schedule(MAX_SUSPENDED_TIMEOUT);
     return;
   }
-  Profiler.reset();
   VConsole.log("Handling message from server");
   eventBus.fireEvent(new ResponseHandlingStartedEvent(this));
   if (json.containsKey("redirect")) {
@@ -403,11 +402,13 @@
           VConsole.error(e);
         }
       }
+      Profiler.enter("updateConnectorState newWithoutState");
       for (      ServerConnector connector : remainingNewConnectors) {
         FastStringSet changedProperties=getAllStateFields(AbstractConnector.getStateType(connector));
         StateChangeEvent event=new StateChangeEvent(connector,changedProperties);
         events.add(event);
       }
+      Profiler.leave("updateConnectorState newWithoutState");
       Profiler.leave("updateConnectorState");
       return events;
     }
