@@ -4,7 +4,13 @@
     schedule(250);
   }
  else {
-    int firstToBeRendered=scrollBody.firstRendered;
+    int firstRendered=scrollBody.getFirstRendered();
+    int lastRendered=scrollBody.getLastRendered();
+    if (lastRendered > totalRows) {
+      lastRendered=totalRows - 1;
+    }
+    boolean rendered=firstRendered >= 0 && lastRendered >= 0;
+    int firstToBeRendered=firstRendered;
     if (reqFirstRow < firstToBeRendered) {
       firstToBeRendered=reqFirstRow;
     }
@@ -14,18 +20,40 @@
         firstToBeRendered=0;
       }
     }
-    int lastToBeRendered=scrollBody.lastRendered;
-    if (reqFirstRow + reqRows - 1 > lastToBeRendered) {
-      lastToBeRendered=reqFirstRow + reqRows - 1;
+ else     if (rendered && firstRendered + 1 < reqFirstRow && lastRendered + 1 < reqFirstRow) {
+      firstToBeRendered=reqFirstRow;
+    }
+    if (firstToBeRendered + reqRows < firstRendered) {
+      setReqRows(firstRendered - firstToBeRendered);
+    }
+    int lastToBeRendered=lastRendered;
+    int lastReqRow=reqFirstRow + reqRows - 1;
+    if (lastReqRow > lastToBeRendered) {
+      lastToBeRendered=lastReqRow;
     }
  else     if (firstRowInViewPort + pageLength + pageLength * cache_rate < lastToBeRendered) {
       lastToBeRendered=(firstRowInViewPort + pageLength + (int)(pageLength * cache_rate));
       if (lastToBeRendered >= totalRows) {
         lastToBeRendered=totalRows - 1;
       }
-      if (reqFirstRow + reqRows - 1 > lastToBeRendered) {
-        reqRows=lastToBeRendered - reqFirstRow;
+      if (lastReqRow > lastToBeRendered) {
+        setReqRows(lastToBeRendered - reqFirstRow);
       }
+    }
+ else     if (rendered && lastRendered - 1 > lastReqRow && firstRendered - 1 > lastReqRow) {
+      lastToBeRendered=lastReqRow;
+    }
+    if (lastToBeRendered > totalRows) {
+      lastToBeRendered=totalRows - 1;
+    }
+    if (reqFirstRow < firstToBeRendered || (reqFirstRow > firstToBeRendered && (reqFirstRow < firstRendered || reqFirstRow > lastRendered + 1))) {
+      setReqFirstRow(firstToBeRendered);
+    }
+    if (lastRendered < lastToBeRendered && lastRendered + reqRows < lastToBeRendered) {
+      setReqRows(lastToBeRendered - lastRendered);
+    }
+ else     if (lastToBeRendered >= firstRendered && reqFirstRow + reqRows < firstRendered) {
+      setReqRows(lastToBeRendered - lastRendered);
     }
     client.updateVariable(paintableId,"firstToBeRendered",firstToBeRendered,false);
     client.updateVariable(paintableId,"lastToBeRendered",lastToBeRendered,false);
