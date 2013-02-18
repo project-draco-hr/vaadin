@@ -1,0 +1,18 @@
+{
+  String version=System.getProperty("vaadin.version");
+  if (version == null || version.equals("")) {
+    usage();
+  }
+  URL url=new URL(queryURL.replace("@version@",version));
+  URLConnection connection=url.openConnection();
+  InputStream urlStream=connection.getInputStream();
+  @SuppressWarnings("unchecked") List<String> tickets=IOUtils.readLines(urlStream);
+  for (  String ticket : tickets) {
+    String[] fields=ticket.split("\t");
+    if ("id".equals(fields[0])) {
+      continue;
+    }
+    System.out.println(ticketTemplate.replace("@ticket@",fields[0]).replace("@description@",fields[1]));
+  }
+  urlStream.close();
+}
