@@ -60,15 +60,12 @@
       }
       Profiler.leave("Handling locales");
       Profiler.enter("Handling meta information");
-      boolean repaintAll=false;
       ValueMap meta=null;
       if (json.containsKey("meta")) {
         VConsole.log(" * Handling meta information");
         meta=json.getValueMap("meta");
         if (meta.containsKey("repaintAll")) {
-          repaintAll=true;
-          uIConnector.getWidget().clear();
-          getConnectorMap().clear();
+          prepareRepaintAll();
           if (meta.containsKey("invalidLayouts")) {
             validatingLayouts=true;
           }
@@ -145,6 +142,25 @@
         Profiler.logTimings();
         Profiler.reset();
       }
+    }
+    /** 
+ * Properly clean up any old stuff to ensure everything is properly
+ * reinitialized.
+ */
+    private void prepareRepaintAll(){
+      String uiConnectorId=uIConnector.getConnectorId();
+      if (uiConnectorId == null) {
+        return;
+      }
+      JSONObject fakeHierarchy=new JSONObject();
+      fakeHierarchy.put(uiConnectorId,new JSONArray());
+      JSONObject fakeJson=new JSONObject();
+      fakeJson.put("hierarchy",fakeHierarchy);
+      ValueMap fakeValueMap=fakeJson.getJavaScriptObject().cast();
+      ConnectorHierarchyUpdateResult connectorHierarchyUpdateResult=updateConnectorHierarchy(fakeValueMap);
+      sendHierarchyChangeEvents(connectorHierarchyUpdateResult.events);
+      unregisterRemovedConnectors();
+      getLayoutManager().cleanMeasuredSizes();
     }
     private void updateCaptions(    Collection<StateChangeEvent> pendingStateChangeEvents,    Collection<ServerConnector> parentChanged){
       Profiler.enter("updateCaptions");
