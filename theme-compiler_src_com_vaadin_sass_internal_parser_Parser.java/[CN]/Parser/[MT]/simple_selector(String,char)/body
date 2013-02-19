@@ -8,7 +8,7 @@ case PARENT:
 case INTERPOLATION:
 case IDENT:
     simple_current=element_name();
-  label_60:   while (true) {
+  label_57:   while (true) {
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case LBRACKET:
 case DOT:
@@ -17,13 +17,43 @@ case HASH:
       ;
     break;
 default :
-  jj_la1[81]=jj_gen;
-break label_60;
+  jj_la1[79]=jj_gen;
+break label_57;
 }
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case HASH:
 cond=hash(cond);
 break;
+case DOT:
+cond=_class(cond);
+break;
+case LBRACKET:
+cond=attrib(cond);
+break;
+case COLON:
+cond=pseudo(cond);
+break;
+default :
+jj_la1[80]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
+}
+break;
+case HASH:
+cond=hash(cond);
+label_58: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case LBRACKET:
+case DOT:
+case COLON:
+;
+break;
+default :
+jj_la1[81]=jj_gen;
+break label_58;
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case DOT:
 cond=_class(cond);
 break;
@@ -40,20 +70,24 @@ throw new ParseException();
 }
 }
 break;
-case HASH:
-cond=hash(cond);
-label_61: while (true) {
+case DOT:
+cond=_class(cond);
+label_59: while (true) {
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case LBRACKET:
 case DOT:
 case COLON:
+case HASH:
 ;
 break;
 default :
 jj_la1[83]=jj_gen;
-break label_61;
+break label_59;
 }
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case HASH:
+cond=hash(cond);
+break;
 case DOT:
 cond=_class(cond);
 break;
@@ -70,9 +104,9 @@ throw new ParseException();
 }
 }
 break;
-case DOT:
-cond=_class(cond);
-label_62: while (true) {
+case COLON:
+cond=pseudo(cond);
+label_60: while (true) {
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case LBRACKET:
 case DOT:
@@ -82,7 +116,7 @@ case HASH:
 break;
 default :
 jj_la1[85]=jj_gen;
-break label_62;
+break label_60;
 }
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case HASH:
@@ -104,9 +138,9 @@ throw new ParseException();
 }
 }
 break;
-case COLON:
-cond=pseudo(cond);
-label_63: while (true) {
+case LBRACKET:
+cond=attrib(cond);
+label_61: while (true) {
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case LBRACKET:
 case DOT:
@@ -116,7 +150,7 @@ case HASH:
 break;
 default :
 jj_la1[87]=jj_gen;
-break label_63;
+break label_61;
 }
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case HASH:
@@ -138,42 +172,8 @@ throw new ParseException();
 }
 }
 break;
-case LBRACKET:
-cond=attrib(cond);
-label_64: while (true) {
-switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
-case LBRACKET:
-case DOT:
-case COLON:
-case HASH:
-;
-break;
 default :
 jj_la1[89]=jj_gen;
-break label_64;
-}
-switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
-case HASH:
-cond=hash(cond);
-break;
-case DOT:
-cond=_class(cond);
-break;
-case LBRACKET:
-cond=attrib(cond);
-break;
-case COLON:
-cond=pseudo(cond);
-break;
-default :
-jj_la1[90]=jj_gen;
-jj_consume_token(-1);
-throw new ParseException();
-}
-}
-break;
-default :
-jj_la1[91]=jj_gen;
 jj_consume_token(-1);
 throw new ParseException();
 }
@@ -183,15 +183,20 @@ simple_current="";
 if (cond != null) {
 simple_current=simple_current + cond;
 }
-if (selector != null) {
+StringBuilder builder=new StringBuilder();
 switch (comb) {
 case ' ':
-selector=selector + comb + simple_current;
+if (selector != null) {
+builder.append(selector).append(" ");
+}
 break;
 case '+':
 case '>':
 case '~':
-selector=selector + " " + comb+ " "+ simple_current;
+if (selector != null) {
+builder.append(selector).append(" ");
+}
+builder.append(comb).append(" ");
 break;
 default :
 {
@@ -200,10 +205,8 @@ throw new ParseException("invalid state. send a bug report");
 }
 }
 }
-}
- else {
-selector=simple_current;
-}
+builder.append(simple_current);
+selector=builder.toString();
 if (pseudoElt != null) {
 selector=selector + pseudoElt;
 }
