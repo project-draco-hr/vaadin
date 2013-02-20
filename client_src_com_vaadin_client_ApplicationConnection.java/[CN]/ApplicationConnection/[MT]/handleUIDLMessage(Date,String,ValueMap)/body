@@ -166,8 +166,10 @@
       Profiler.enter("updateCaptions");
       HashSet<ServerConnector> needsCaptionUpdate=new HashSet<ServerConnector>(parentChanged);
       for (      StateChangeEvent event : pendingStateChangeEvents) {
-        ServerConnector connector=event.getConnector();
-        needsCaptionUpdate.add(connector);
+        if (VCaption.mightChange(event)) {
+          ServerConnector connector=event.getConnector();
+          needsCaptionUpdate.add(connector.getConnectorId());
+        }
       }
       for (      ServerConnector child : needsCaptionUpdate) {
         if (child instanceof ComponentConnector && ((ComponentConnector)child).delegateCaptionHandling()) {
