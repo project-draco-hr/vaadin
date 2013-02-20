@@ -1,3 +1,19 @@
 {
-  return changedProperties.contains(property);
+  if (isNewConnector) {
+    return true;
+  }
+ else   if (stateJson != null) {
+    return isInJson(property,stateJson.getJavaScriptObject());
+  }
+ else {
+    if (changedProperties != null) {
+      return changedProperties.contains(property);
+    }
+ else     if (changedPropertiesSet != null) {
+      return changedPropertiesSet.contains(property);
+    }
+ else {
+      throw new IllegalStateException("StateChangeEvent should have either stateJson, changedProperties or changePropertiesSet");
+    }
+  }
 }
