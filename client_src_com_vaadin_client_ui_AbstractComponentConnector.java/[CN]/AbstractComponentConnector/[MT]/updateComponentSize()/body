@@ -1,29 +1,3 @@
 {
-  Profiler.enter("AbstractComponentConnector.updateComponentSize");
-  String newWidth=getState().width == null ? "" : getState().width;
-  String newHeight=getState().height == null ? "" : getState().height;
-  if (newWidth.endsWith("%") != lastKnownWidth.endsWith("%")) {
-    Connector parent=getParent();
-    if (parent instanceof ManagedLayout) {
-      getLayoutManager().setNeedsHorizontalLayout((ManagedLayout)parent);
-    }
-  }
-  if (newHeight.endsWith("%") != lastKnownHeight.endsWith("%")) {
-    Connector parent=getParent();
-    if (parent instanceof ManagedLayout) {
-      getLayoutManager().setNeedsVerticalLayout((ManagedLayout)parent);
-    }
-  }
-  lastKnownWidth=newWidth;
-  lastKnownHeight=newHeight;
-  Widget widget=getWidget();
-  Profiler.enter("AbstractComponentConnector.updateComponentSize update styleNames");
-  widget.setStyleName("v-has-width",!isUndefinedWidth());
-  widget.setStyleName("v-has-height",!isUndefinedHeight());
-  Profiler.leave("AbstractComponentConnector.updateComponentSize update styleNames");
-  Profiler.enter("AbstractComponentConnector.updateComponentSize update DOM");
-  widget.setHeight(newHeight);
-  widget.setWidth(newWidth);
-  Profiler.leave("AbstractComponentConnector.updateComponentSize update DOM");
-  Profiler.leave("AbstractComponentConnector.updateComponentSize");
+  updateComponentSize(getState().width == null ? "" : getState().width,getState().height == null ? "" : getState().height);
 }
