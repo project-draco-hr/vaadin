@@ -139,8 +139,13 @@
       VConsole.log("Referenced paintables: " + connectorMap.size());
       endRequest();
       if (Profiler.isEnabled()) {
-        Profiler.logTimings();
-        Profiler.reset();
+        Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+          @Override public void execute(){
+            Profiler.logTimings();
+            Profiler.reset();
+          }
+        }
+);
       }
     }
     /** 
