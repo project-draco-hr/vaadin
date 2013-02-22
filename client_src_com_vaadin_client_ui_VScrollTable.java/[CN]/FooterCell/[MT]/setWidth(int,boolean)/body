@@ -18,13 +18,22 @@
     final int borderWidths=1;
     captionContainer.getStyle().setPropertyPx("width",Math.max(w - borderWidths,0));
     if (scrollBody != null) {
-      int tdWidth=width + scrollBody.getCellExtraWidth() - borderWidths;
+      int maxIndent=scrollBody.getMaxIndent();
+      if (w < maxIndent && tFoot.visibleCells.indexOf(this) == getHierarchyColumnIndex()) {
+        w=maxIndent;
+      }
+      int tdWidth=w + scrollBody.getCellExtraWidth() - borderWidths;
       setWidth(Math.max(tdWidth,0) + "px");
     }
  else {
       Scheduler.get().scheduleDeferred(new Command(){
         @Override public void execute(){
-          int tdWidth=width + scrollBody.getCellExtraWidth() - borderWidths;
+          int tdWidth=width;
+          int maxIndent=scrollBody.getMaxIndent();
+          if (tdWidth < maxIndent && tFoot.visibleCells.indexOf(this) == getHierarchyColumnIndex()) {
+            tdWidth=maxIndent;
+          }
+          tdWidth+=scrollBody.getCellExtraWidth() - borderWidths;
           setWidth(Math.max(tdWidth,0) + "px");
         }
       }

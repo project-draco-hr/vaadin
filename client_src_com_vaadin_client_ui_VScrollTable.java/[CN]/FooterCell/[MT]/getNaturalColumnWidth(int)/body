@@ -1,10 +1,14 @@
 {
+  final int iw=columnIndex == getHierarchyColumnIndex() ? scrollBody.getMaxIndent() : 0;
   if (isDefinedWidth()) {
+    if (iw > width) {
+      return iw;
+    }
     return width;
   }
  else {
     if (naturalWidth < 0) {
-      final int hw=((Element)getElement().getLastChild()).getOffsetWidth() + scrollBody.getCellExtraWidth();
+      final int hw=((Element)getElement().getLastChild()).getOffsetWidth() + getHeaderPadding();
       if (columnIndex < 0) {
         columnIndex=0;
         for (Iterator<Widget> it=tHead.iterator(); it.hasNext(); columnIndex++) {
@@ -16,6 +20,11 @@
       final int cw=scrollBody.getColWidth(columnIndex);
       naturalWidth=(hw > cw ? hw : cw);
     }
-    return naturalWidth;
+    if (iw > naturalWidth) {
+      return iw;
+    }
+ else {
+      return naturalWidth;
+    }
   }
 }

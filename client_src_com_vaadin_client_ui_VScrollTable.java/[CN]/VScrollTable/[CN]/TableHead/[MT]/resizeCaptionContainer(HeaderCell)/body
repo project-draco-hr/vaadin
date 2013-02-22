@@ -1,19 +1,32 @@
 {
   HeaderCell lastcell=getHeaderCell(visibleCells.size() - 1);
-  int columnTotalWidth=0;
-  for (  Widget w : visibleCells) {
-    columnTotalWidth+=w.getOffsetWidth();
-  }
-  if (cell == lastcell && columnSelector.getOffsetWidth() > 0 && columnTotalWidth >= div.getOffsetWidth() - columnSelector.getOffsetWidth() && !hasVerticalScrollbar()) {
-    int offset=0;
-    int diff=div.getOffsetWidth() - columnTotalWidth;
-    if (diff < columnSelector.getOffsetWidth() && diff > 0) {
-      offset=columnSelector.getOffsetWidth() - diff;
+  int columnSelectorOffset=columnSelector.getOffsetWidth();
+  if (cell == lastcell && columnSelectorOffset > 0 && !hasVerticalScrollbar()) {
+    int columnTotalWidth=0;
+    for (    Widget w : visibleCells) {
+      int cellExtraWidth=w.getOffsetWidth();
+      if (scrollBody != null && visibleCells.indexOf(w) == getHierarchyColumnIndex() && cellExtraWidth < scrollBody.getMaxIndent()) {
+        columnTotalWidth+=scrollBody.getMaxIndent();
+      }
+ else {
+        columnTotalWidth+=cellExtraWidth;
+      }
+    }
+    int divOffset=div.getOffsetWidth();
+    if (columnTotalWidth >= divOffset - columnSelectorOffset) {
+      int offset=0;
+      int diff=divOffset - columnTotalWidth;
+      if (diff < columnSelectorOffset && diff > 0) {
+        offset=columnSelectorOffset - diff;
+      }
+ else {
+        offset=columnSelectorOffset;
+      }
+      lastcell.resizeCaptionContainer(offset);
     }
  else {
-      offset=columnSelector.getOffsetWidth();
+      cell.resizeCaptionContainer(0);
     }
-    lastcell.resizeCaptionContainer(offset);
   }
  else {
     cell.resizeCaptionContainer(0);

@@ -1,11 +1,16 @@
 {
   final HeaderCell hcell=tHead.getHeaderCell(colIndex);
-  if (w < hcell.getMinWidth()) {
-    w=hcell.getMinWidth();
+  int minWidth=hcell.getMinWidth(false,false);
+  if (w < minWidth) {
+    w=minWidth;
   }
   hcell.setWidth(w,isDefinedWidth);
-  tHead.resizeCaptionContainer(hcell);
-  scrollBody.setColWidth(colIndex,w);
   FooterCell fcell=tFoot.getFooterCell(colIndex);
   fcell.setWidth(w,isDefinedWidth);
+  tHead.resizeCaptionContainer(hcell);
+  minWidth=hcell.getMinWidth(true,false);
+  if (w < minWidth) {
+    w=minWidth;
+  }
+  scrollBody.setColWidth(colIndex,w);
 }

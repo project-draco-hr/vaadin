@@ -8,7 +8,7 @@ case Event.ONMOUSEDOWN:
 DOM.setCapture(getElement());
 dragStartX=DOM.eventGetClientX(event);
 colIndex=getColIndexByKey(cid);
-originalWidth=getWidth();
+originalWidth=getWidthWithIndent();
 DOM.eventPreventDefault(event);
 break;
 case Event.ONMOUSEUP:
@@ -34,8 +34,9 @@ return;
 }
 tHead.disableAutoColumnWidthCalculation(this);
 int newWidth=originalWidth + deltaX;
-if (newWidth < getMinWidth()) {
-newWidth=getMinWidth();
+int minWidth=getMinWidth(true,false);
+if (newWidth < minWidth) {
+newWidth=minWidth;
 }
 setColWidth(colIndex,newWidth,true);
 triggerLazyColumnAdjustment(false);
