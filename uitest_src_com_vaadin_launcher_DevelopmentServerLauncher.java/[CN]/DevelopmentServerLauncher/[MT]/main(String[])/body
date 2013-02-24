@@ -2,8 +2,9 @@
   System.setProperty("java.awt.headless","true");
   assertAssertionsEnabled();
   final Map<String,String> serverArgs=parseArguments(args);
-  if (serverArgs.containsKey("shutdownPort")) {
-    int port=Integer.parseInt(serverArgs.get("shutdownPort"));
+  if (!serverArgs.containsKey("shutdownPort"))   serverArgs.put("shutdownPort","8889");
+  int port=Integer.parseInt(serverArgs.get("shutdownPort"));
+  if (port > 0) {
     try {
       Socket socket=new Socket((String)null,port);
       socket.getInputStream().read();
