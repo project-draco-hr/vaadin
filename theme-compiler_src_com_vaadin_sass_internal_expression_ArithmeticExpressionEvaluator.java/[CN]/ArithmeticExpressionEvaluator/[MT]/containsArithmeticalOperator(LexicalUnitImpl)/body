@@ -1,0 +1,19 @@
+{
+  LexicalUnitImpl current=term;
+  while (current != null) {
+    for (    BinaryOperator operator : BinaryOperator.values()) {
+      if (current.getLexicalUnitType() == operator.type) {
+        if (current.getLexicalUnitType() != BinaryOperator.DIV.type) {
+          return true;
+        }
+ else {
+          if (current.getPreviousLexicalUnit().getLexicalUnitType() == SCSS_VARIABLE || current.getNextLexicalUnit().getLexicalUnitType() == SCSS_VARIABLE) {
+            return true;
+          }
+        }
+      }
+    }
+    current=current.getNextLexicalUnit();
+  }
+  return false;
+}
