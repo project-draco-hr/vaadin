@@ -142,7 +142,9 @@
       }
       VConsole.log(" Processing time was " + String.valueOf(lastProcessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
       VConsole.log("Referenced paintables: " + connectorMap.size());
-      endRequest();
+      if (meta == null || !meta.containsKey("async")) {
+        endRequest();
+      }
       if (Profiler.isEnabled()) {
         Scheduler.get().scheduleDeferred(new ScheduledCommand(){
           @Override public void execute(){

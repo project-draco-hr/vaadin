@@ -1,0 +1,17 @@
+{
+  if (!ServletPortletHelper.isPushRequest(request)) {
+    return false;
+  }
+  if (request instanceof VaadinServletRequest) {
+    try {
+      atmosphere.doCometSupport(AtmosphereRequest.wrap((VaadinServletRequest)request),AtmosphereResponse.wrap((VaadinServletResponse)response));
+    }
+ catch (    ServletException e) {
+      throw new RuntimeException(e);
+    }
+  }
+ else {
+    throw new IllegalArgumentException("Portlets not currently supported");
+  }
+  return true;
+}
