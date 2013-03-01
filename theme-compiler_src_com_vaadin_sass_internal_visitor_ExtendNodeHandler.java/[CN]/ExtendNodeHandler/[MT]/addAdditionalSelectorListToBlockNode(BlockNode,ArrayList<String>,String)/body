@@ -1,14 +1,17 @@
 {
-  if (list != null) {
-    for (int i=0; i < list.size(); i++) {
-      if (selectorString == null) {
-        blockNode.getSelectorList().add(list.get(i));
+  if (extendingSelectors != null) {
+    for (    String extendingSelector : extendingSelectors) {
+      if (extendedSelector == null) {
+        blockNode.getSelectorList().add(extendingSelector);
       }
  else {
         ArrayList<String> newTags=new ArrayList<String>();
-        for (        final String existing : blockNode.getSelectorList()) {
-          if (existing.contains(selectorString)) {
-            newTags.add(existing.replace(selectorString,list.get(i)));
+        for (        final String selectorString : blockNode.getSelectorList()) {
+          if (StringUtil.containsSubString(selectorString,extendedSelector)) {
+            String newTag=generateExtendingSelectors(selectorString,extendedSelector,extendingSelector);
+            if (!blockNode.getSelectorList().contains(newTag) && !newTags.contains(newTag)) {
+              newTags.add(newTag);
+            }
           }
         }
         blockNode.getSelectorList().addAll(newTags);

@@ -1,7 +1,7 @@
 {
   String connectorId=connector.getConnectorId();
   if (!connectorIdToConnector.containsKey(connectorId)) {
-    getLogger().warning("Tried to unregister " + connector.getClass().getSimpleName() + " ("+ connectorId+ ") which is not registered");
+    getLogger().log(Level.WARNING,"Tried to unregister {0} ({1}) which is not registered",new Object[]{connector.getClass().getSimpleName(),connectorId});
     return;
   }
   if (connectorIdToConnector.get(connectorId) != connector) {
@@ -9,9 +9,11 @@
   }
   dirtyConnectors.remove(connector);
   if (unregisteredConnectors.add(connector)) {
-    getLogger().fine("Unregistered " + connector.getClass().getSimpleName() + " ("+ connectorId+ ")");
+    if (getLogger().isLoggable(Level.FINE)) {
+      getLogger().log(Level.FINE,"Unregistered {0} ({1})",new Object[]{connector.getClass().getSimpleName(),connectorId});
+    }
   }
  else {
-    getLogger().warning("Unregistered " + connector.getClass().getSimpleName() + " ("+ connectorId+ ") that was already unregistered.");
+    getLogger().log(Level.WARNING,"Unregistered {0} ({1}) that was already unregistered.",new Object[]{connector.getClass().getSimpleName(),connectorId});
   }
 }

@@ -1,3 +1,10 @@
 {
-  delegateToWidget.put(new Property(getType(clazz),propertyName).getSignature(),delegateValue);
+  Type type=getType(clazz);
+  delegateToWidget.put(new Property(type,propertyName).getSignature(),delegateValue);
+  JsArrayString typeProperties=delegateToWidgetProperties.get(type.getSignature());
+  if (typeProperties == null) {
+    typeProperties=JavaScriptObject.createArray().cast();
+    delegateToWidgetProperties.put(type.getSignature(),typeProperties);
+  }
+  typeProperties.push(propertyName);
 }

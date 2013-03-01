@@ -3,7 +3,7 @@
   String fileName=pathInfo.substring(ApplicationConstants.PUBLISHED_FILE_PATH.length() + 2);
   final String mimetype=response.getService().getMimeType(fileName);
   if (fileName.startsWith("/")) {
-    getLogger().warning("Published file request starting with / rejected: " + fileName);
+    getLogger().log(Level.WARNING,"Published file request starting with / rejected: {0}",fileName);
     response.sendError(HttpServletResponse.SC_NOT_FOUND,fileName);
     return;
   }
@@ -12,13 +12,13 @@ synchronized (publishedFileContexts) {
     context=publishedFileContexts.get(fileName);
   }
   if (context == null) {
-    getLogger().warning("Rejecting published file request for file that has not been published: " + fileName);
+    getLogger().log(Level.WARNING,"Rejecting published file request for file that has not been published: {0}",fileName);
     response.sendError(HttpServletResponse.SC_NOT_FOUND,fileName);
     return;
   }
   InputStream in=context.getResourceAsStream(fileName);
   if (in == null) {
-    getLogger().warning(fileName + " published by " + context.getName()+ " not found. Verify that the file "+ context.getPackage().getName().replace('.','/')+ '/'+ fileName+ " is available on the classpath.");
+    getLogger().log(Level.WARNING,"{0} published by {1} not found. Verify that the file {2}/{3} is available on the classpath.",new Object[]{fileName,context.getName(),context.getPackage().getName().replace('.','/'),fileName});
     response.sendError(HttpServletResponse.SC_NOT_FOUND,fileName);
     return;
   }

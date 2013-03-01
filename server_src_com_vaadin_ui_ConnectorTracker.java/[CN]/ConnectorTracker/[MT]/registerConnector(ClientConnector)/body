@@ -5,13 +5,15 @@
   if (previouslyRegistered == null) {
     connectorIdToConnector.put(connectorId,connector);
     uninitializedConnectors.add(connector);
-    getLogger().fine("Registered " + connector.getClass().getSimpleName() + " ("+ connectorId+ ")");
+    if (getLogger().isLoggable(Level.FINE)) {
+      getLogger().log(Level.FINE,"Registered {0} ({1})",new Object[]{connector.getClass().getSimpleName(),connectorId});
+    }
   }
  else   if (previouslyRegistered != connector) {
     throw new RuntimeException("A connector with id " + connectorId + " is already registered!");
   }
  else   if (!wasUnregistered) {
-    getLogger().warning("An already registered connector was registered again: " + connector.getClass().getSimpleName() + " ("+ connectorId+ ")");
+    getLogger().log(Level.WARNING,"An already registered connector was registered again: {0} ({1})",new Object[]{connector.getClass().getSimpleName(),connectorId});
   }
   dirtyConnectors.add(connector);
 }

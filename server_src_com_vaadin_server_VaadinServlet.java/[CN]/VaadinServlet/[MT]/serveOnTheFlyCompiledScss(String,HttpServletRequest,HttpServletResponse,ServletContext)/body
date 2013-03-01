@@ -11,7 +11,7 @@
     return false;
   }
   if (!isAllowedVAADINResourceUrl(request,scssUrl)) {
-    getLogger().info("Requested resource [" + filename + "] not accessible in the VAADIN directory or access to it is forbidden.");
+    getLogger().log(Level.INFO,"Requested resource [{0}] not accessible in the VAADIN directory or access to it is forbidden.",filename);
     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     return true;
   }
@@ -25,11 +25,11 @@ synchronized (SCSS_MUTEX) {
       scss=ScssStylesheet.get(scssFilename);
     }
     if (scss == null) {
-      getLogger().warning("Scss file " + scssFilename + " exists but ScssStylesheet was not able to find it");
+      getLogger().log(Level.WARNING,"Scss file {0} exists but ScssStylesheet was not able to find it",scssFilename);
       return false;
     }
     try {
-      getLogger().fine("Compiling " + realFilename + " for request to "+ filename);
+      getLogger().log(Level.FINE,"Compiling {0} for request to {1}",new Object[]{realFilename,filename});
       scss.compile();
     }
  catch (    Exception e) {
