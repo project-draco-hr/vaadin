@@ -6,23 +6,40 @@
   LinkedList<Node> stack=new LinkedList<Node>();
   Node rootNode=new Node(null);
   stack.add(rootNode);
-  for (int i=0; i < events.length(); i++) {
-    ProfilerEvent event=events.get(i);
-    if (event.isStart()) {
-      Node stackTop=stack.getLast().addEvent(event);
-      stack.add(stackTop);
+  JsArray<GwtStatsEvent> gwtStatsEvents=getGwtStatsEvents();
+  if (gwtStatsEvents.length() == 0) {
+    VConsole.log("No profiling events recorded, this might happen if another __gwtStatsEvent handler is installed.");
+    return;
+  }
+  for (int i=0; i < gwtStatsEvents.length(); i++) {
+    GwtStatsEvent gwtStatsEvent=gwtStatsEvents.get(i);
+    String eventName=gwtStatsEvent.getEventName();
+    String type=gwtStatsEvent.getType();
+    boolean isBeginEvent="begin".equals(type);
+    Node stackTop=stack.getLast();
+    boolean inEvent=eventName.equals(stackTop.getName()) && !isBeginEvent;
+    if (!inEvent && stack.size() >= 2 && eventName.equals(stack.get(stack.size() - 2).name) && !isBeginEvent) {
+      stackTop.time+=gwtStatsEvent.getMillis();
+      stack.removeLast();
+      stackTop=stack.getLast();
+      inEvent=true;
+    }
+    if (type.equals("end")) {
+      if (!inEvent) {
+        VConsole.error("Got end event for " + eventName + " but is currently in "+ stackTop.getName());
+        return;
+      }
+      Node previousStackTop=stack.removeLast();
+      previousStackTop.time+=gwtStatsEvent.getMillis();
     }
  else {
-      Node stackTop=stack.removeLast();
-      if (stackTop == null) {
-        VConsole.error("Leaving " + event.getName() + " that was never entered.");
-        return;
+      if (!inEvent) {
+        stackTop=stackTop.accessChild(eventName,gwtStatsEvent.getMillis());
+        stack.add(stackTop);
       }
-      if (!stackTop.getName().equals(event.getName())) {
-        VConsole.error("Invalid profiling event order, leaving " + event.getName() + " but "+ stackTop.getName()+ " was expected");
-        return;
+      if (!isBeginEvent) {
+        stack.add(stackTop.accessChild(eventName + "." + type,gwtStatsEvent.getMillis()));
       }
-      stackTop.registerEnd(event);
     }
   }
   if (stack.size() != 1) {
