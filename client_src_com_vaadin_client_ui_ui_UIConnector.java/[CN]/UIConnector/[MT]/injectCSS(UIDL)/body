@@ -1,0 +1,45 @@
+{
+  final HeadElement head=HeadElement.as(Document.get().getElementsByTagName(HeadElement.TAG).getItem(0));
+  final List<String> resourcesToInject=new LinkedList<String>();
+  final StringBuilder cssToInject=new StringBuilder();
+  for (Iterator<?> it=uidl.getChildIterator(); it.hasNext(); ) {
+    UIDL cssInjectionsUidl=(UIDL)it.next();
+    if (cssInjectionsUidl.getTag().equals("css-resource")) {
+      String url=getWidget().connection.translateVaadinUri(cssInjectionsUidl.getStringAttribute("url"));
+      boolean injected=false;
+      NodeList<com.google.gwt.dom.client.Element> links=head.getElementsByTagName(LinkElement.TAG);
+      for (int i=0; i < links.getLength(); i++) {
+        LinkElement link=LinkElement.as(links.getItem(i));
+        if (link.getHref().equals(url)) {
+          injected=true;
+          break;
+        }
+      }
+      if (!injected) {
+        resourcesToInject.add(url);
+      }
+    }
+ else     if (cssInjectionsUidl.getTag().equals("css-string")) {
+      for (Iterator<?> it2=cssInjectionsUidl.getChildIterator(); it2.hasNext(); ) {
+        cssToInject.append((String)it2.next());
+      }
+    }
+  }
+  if (!resourcesToInject.isEmpty()) {
+    Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+      @Override public void execute(){
+        for (        String url : resourcesToInject) {
+          LinkElement link=LinkElement.as(DOM.createElement(LinkElement.TAG));
+          link.setRel("stylesheet");
+          link.setHref(url);
+          link.setType("text/css");
+          head.appendChild(link);
+        }
+      }
+    }
+);
+  }
+  if (cssToInject.length() > 0) {
+    StyleInjector.injectAtEnd(cssToInject.toString());
+  }
+}
