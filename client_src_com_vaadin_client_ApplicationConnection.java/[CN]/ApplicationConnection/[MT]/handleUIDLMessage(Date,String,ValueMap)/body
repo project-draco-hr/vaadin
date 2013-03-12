@@ -134,6 +134,12 @@
       }
       lastProcessingTime=(int)((new Date().getTime()) - start.getTime());
       totalProcessingTime+=lastProcessingTime;
+      if (bootstrapTime == 0) {
+        bootstrapTime=calculateBootstrapTime();
+        if (Profiler.isEnabled() && bootstrapTime != -1) {
+          Profiler.logBootstrapTimings();
+        }
+      }
       VConsole.log(" Processing time was " + String.valueOf(lastProcessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
       VConsole.log("Referenced paintables: " + connectorMap.size());
       endRequest();
@@ -309,7 +315,7 @@
           }
           int connectorType=Integer.parseInt(types.getString(connectorId));
           Class<? extends ServerConnector> connectorClass=configuration.getConnectorClassByEncodedTag(connectorType);
-          if (connectorClass != UIConnector.class) {
+          if (connectorClass != uIConnector.getClass()) {
             Profiler.enter("ApplicationConnection.getConnector");
             connector=getConnector(connectorId,connectorType);
             Profiler.leave("ApplicationConnection.getConnector");
