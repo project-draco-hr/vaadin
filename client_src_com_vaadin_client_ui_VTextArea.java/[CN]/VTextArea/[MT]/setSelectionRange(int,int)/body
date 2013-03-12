@@ -1,0 +1,32 @@
+{
+  super.setSelectionRange(pos,length);
+  final String value=getValue();
+  int index=pos;
+  if (index < 0) {
+    index=0;
+  }
+  if (index > value.length()) {
+    index=value.length();
+  }
+  int scrollTop=getScrollTop(value,index);
+  int scrollLeft=-1;
+  if (!isWordwrap()) {
+    scrollLeft=getScrollLeft(value,index);
+  }
+  if (!isWordwrap() || index < value.length()) {
+    setValue(value,false);
+  }
+  super.setSelectionRange(pos,length);
+  if (scrollTop > 0) {
+    scrollTop+=getElement().getClientHeight() / 2;
+  }
+  if (scrollLeft > 0) {
+    scrollLeft+=getElement().getClientWidth() / 2;
+  }
+  if (getElement().getScrollTop() < scrollTop) {
+    getElement().setScrollTop(scrollTop);
+  }
+  if (getElement().getScrollLeft() < scrollLeft) {
+    getElement().setScrollLeft(scrollLeft);
+  }
+}
