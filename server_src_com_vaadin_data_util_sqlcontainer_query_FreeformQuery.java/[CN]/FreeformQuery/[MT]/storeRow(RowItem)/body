@@ -1,12 +1,12 @@
 {
-  if (activeConnection == null) {
+  if (!isInTransaction()) {
     throw new IllegalStateException("No transaction is active!");
   }
  else   if (primaryKeyColumns.isEmpty()) {
     throw new UnsupportedOperationException("Cannot store items fetched with a read-only freeform query!");
   }
   if (delegate != null) {
-    return delegate.storeRow(activeConnection,row);
+    return delegate.storeRow(getConnection(),row);
   }
  else {
     throw new UnsupportedOperationException("FreeFormQueryDelegate not set!");

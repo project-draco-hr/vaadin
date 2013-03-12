@@ -1,15 +1,10 @@
 {
-  Connection c=null;
   PreparedStatement pstmt=null;
   ResultSet genKeys=null;
+  Connection connection=null;
   try {
-    if (transactionOpen && activeConnection != null) {
-      c=activeConnection;
-    }
- else {
-      c=connectionPool.reserveConnection();
-    }
-    pstmt=c.prepareStatement(sh.getQueryString(),primaryKeyColumns.toArray(new String[0]));
+    connection=getConnection();
+    pstmt=connection.prepareStatement(sh.getQueryString(),primaryKeyColumns.toArray(new String[0]));
     sh.setParameterValuesToStatement(pstmt);
     getLogger().log(Level.FINE,"DB -> {0}",sh.getQueryString());
     int result=pstmt.executeUpdate();
@@ -19,15 +14,6 @@
     return result;
   }
   finally {
-    if (genKeys != null) {
-      genKeys.close();
-    }
-    if (pstmt != null) {
-      pstmt.clearParameters();
-      pstmt.close();
-    }
-    if (!transactionOpen) {
-      connectionPool.releaseConnection(c);
-    }
+    releaseConnection(connection,pstmt,genKeys);
   }
 }

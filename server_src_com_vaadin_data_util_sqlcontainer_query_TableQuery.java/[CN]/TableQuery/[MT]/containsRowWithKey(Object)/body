@@ -10,7 +10,7 @@
   }
   StatementHelper sh=sqlGenerator.generateSelectQuery(tableName,filtersAndKeys,orderBys,0,0,"*");
   boolean shouldCloseTransaction=false;
-  if (!transactionOpen) {
+  if (!isInTransaction()) {
     shouldCloseTransaction=true;
     beginTransaction();
   }
@@ -21,14 +21,15 @@
     return contains;
   }
   finally {
-    if (rs != null) {
-      if (rs.getStatement() != null) {
-        rs.getStatement().close();
+    try {
+      if (rs != null) {
+        releaseConnection(rs.getStatement().getConnection(),rs.getStatement(),rs);
       }
-      rs.close();
     }
-    if (shouldCloseTransaction) {
-      commit();
+  finally {
+      if (shouldCloseTransaction) {
+        commit();
+      }
     }
   }
 }

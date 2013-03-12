@@ -1,0 +1,10 @@
+{
+  if (!isInTransaction()) {
+    throw new SQLException("No active transaction");
+  }
+  if (!activeConnection.getAutoCommit()) {
+    activeConnection.commit();
+  }
+  connectionPool.releaseConnection(activeConnection);
+  activeConnection=null;
+}

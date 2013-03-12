@@ -1,13 +1,15 @@
 {
-  Connection c=null;
-  if (transactionOpen && activeConnection != null) {
-    c=activeConnection;
+  ensureTransaction();
+  Connection connection=getConnection();
+  PreparedStatement pstmt=null;
+  try {
+    pstmt=connection.prepareStatement(sh.getQueryString());
+    sh.setParameterValuesToStatement(pstmt);
+    getLogger().log(Level.FINE,"DB -> {0}",sh.getQueryString());
+    return pstmt.executeQuery();
   }
- else {
-    throw new SQLException("No active transaction!");
+ catch (  SQLException e) {
+    releaseConnection(null,pstmt,null);
+    throw e;
   }
-  PreparedStatement pstmt=c.prepareStatement(sh.getQueryString());
-  sh.setParameterValuesToStatement(pstmt);
-  getLogger().log(Level.FINE,"DB -> {0}",sh.getQueryString());
-  return pstmt.executeQuery();
 }

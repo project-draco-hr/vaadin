@@ -1,13 +1,6 @@
 {
-  if (transactionOpen && activeConnection != null) {
-    getLogger().log(Level.FINE,"DB -> commit");
-    activeConnection.commit();
-    connectionPool.releaseConnection(activeConnection);
-  }
- else {
-    throw new SQLException("No active transaction");
-  }
-  transactionOpen=false;
+  getLogger().log(Level.FINE,"DB -> commit");
+  super.commit();
   RowIdChangeEvent[] unFiredEvents=bufferedEvents.toArray(new RowIdChangeEvent[]{});
   bufferedEvents.clear();
   if (rowIdChangeListeners != null && !rowIdChangeListeners.isEmpty()) {
