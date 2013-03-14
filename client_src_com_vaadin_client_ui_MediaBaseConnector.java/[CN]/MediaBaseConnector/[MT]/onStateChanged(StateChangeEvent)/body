@@ -1,9 +1,18 @@
 {
-  super.onStateChanged(stateChangeEvent);
-  for (int i=0; i < getState().sources.size(); i++) {
-    URLReference source=getState().sources.get(i);
-    String sourceType=getState().sourceTypes.get(i);
-    getWidget().addSource(source.getURL(),sourceType);
+  super.onStateChanged(event);
+  final VMediaBase widget=getWidget();
+  final AbstractMediaState state=getState();
+  setAltText(state.altText);
+  widget.setAutoplay(state.autoplay);
+  widget.setMuted(state.muted);
+  widget.setControls(state.showControls);
+  if (event.hasPropertyChanged("sources")) {
+    widget.removeAllSources();
+    for (int i=0; i < state.sources.size(); i++) {
+      URLReference source=state.sources.get(i);
+      String sourceType=state.sourceTypes.get(i);
+      widget.addSource(source.getURL(),sourceType);
+    }
+    widget.load();
   }
-  setAltText(getState().altText);
 }
