@@ -1,0 +1,41 @@
+{
+  contentElement=content.getElement();
+  content.setStylePrimaryName(VDebugWindow.STYLENAME + "-log");
+  controls.add(clear);
+  clear.setStylePrimaryName(VDebugWindow.STYLENAME_BUTTON);
+  clear.addClickHandler(new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      clear();
+    }
+  }
+);
+  controls.add(reset);
+  reset.setStylePrimaryName(VDebugWindow.STYLENAME_BUTTON);
+  reset.addClickHandler(new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      resetTimer();
+    }
+  }
+);
+  controls.add(scroll);
+  scroll.setStylePrimaryName(VDebugWindow.STYLENAME_BUTTON);
+  scroll.addClickHandler(new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      toggleScrollLock();
+    }
+  }
+);
+  content.addClickHandler(new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      Element el=Element.as(event.getNativeEvent().getEventTarget());
+      while (!el.getClassName().contains(VDebugWindow.STYLENAME + "-message")) {
+        el=el.getParentElement();
+        if (el == contentElement) {
+          return;
+        }
+      }
+      selectText(el);
+    }
+  }
+);
+}

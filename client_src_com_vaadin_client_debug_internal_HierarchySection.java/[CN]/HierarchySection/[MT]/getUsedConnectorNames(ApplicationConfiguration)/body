@@ -1,0 +1,23 @@
+{
+  int tag=0;
+  Set<String> usedConnectors=new HashSet<String>();
+  while (true) {
+    String serverSideClass=configuration.getServerSideClassNameForTag(tag);
+    if (serverSideClass == null) {
+      break;
+    }
+    Class<? extends ServerConnector> connectorClass=configuration.getConnectorClassByEncodedTag(tag);
+    if (connectorClass == null) {
+      break;
+    }
+    if (connectorClass != UnknownComponentConnector.class) {
+      usedConnectors.add(connectorClass.getName());
+    }
+    tag++;
+    if (tag > 10000) {
+      VConsole.error("Search for used connector classes was forcefully terminated");
+      break;
+    }
+  }
+  return usedConnectors;
+}
