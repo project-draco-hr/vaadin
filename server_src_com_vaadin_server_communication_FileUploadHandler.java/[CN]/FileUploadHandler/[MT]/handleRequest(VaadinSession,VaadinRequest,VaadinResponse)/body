@@ -6,21 +6,28 @@
   String uiId=parts[0];
   String connectorId=parts[1];
   String variableName=parts[2];
-  UI uI=session.getUIById(Integer.parseInt(uiId));
-  UI.setCurrent(uI);
-  StreamVariable streamVariable=uI.getConnectorTracker().getStreamVariable(connectorId,variableName);
-  String secKey=uI.getConnectorTracker().getSeckey(streamVariable);
-  if (secKey.equals(parts[3])) {
-    ClientConnector source=session.getCommunicationManager().getConnector(uI,connectorId);
-    String contentType=request.getContentType();
-    if (contentType.contains("boundary")) {
-      doHandleSimpleMultipartFileUpload(session,request,response,streamVariable,variableName,source,contentType.split("boundary=")[1]);
+  ClientConnector source;
+  StreamVariable streamVariable;
+  session.lock();
+  try {
+    UI uI=session.getUIById(Integer.parseInt(uiId));
+    UI.setCurrent(uI);
+    streamVariable=uI.getConnectorTracker().getStreamVariable(connectorId,variableName);
+    String secKey=uI.getConnectorTracker().getSeckey(streamVariable);
+    if (!secKey.equals(parts[3])) {
+      return true;
     }
- else {
-      doHandleXhrFilePost(session,request,response,streamVariable,variableName,source,request.getContentLength());
-    }
+    source=session.getCommunicationManager().getConnector(uI,connectorId);
+  }
+  finally {
+    session.unlock();
+  }
+  String contentType=request.getContentType();
+  if (contentType.contains("boundary")) {
+    doHandleSimpleMultipartFileUpload(session,request,response,streamVariable,variableName,source,contentType.split("boundary=")[1]);
   }
  else {
+    doHandleXhrFilePost(session,request,response,streamVariable,variableName,source,request.getContentLength());
   }
   return true;
 }

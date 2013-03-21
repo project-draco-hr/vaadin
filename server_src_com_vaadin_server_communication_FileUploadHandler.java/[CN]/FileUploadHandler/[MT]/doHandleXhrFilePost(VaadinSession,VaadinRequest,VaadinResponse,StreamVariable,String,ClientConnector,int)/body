@@ -3,23 +3,10 @@
   final String mimeType=filename;
   final InputStream stream=request.getInputStream();
   try {
-    Component component=(Component)owner;
-    if (component.isReadOnly()) {
-      throw new UploadException("Warning: file upload ignored because the component was read-only");
-    }
-    boolean forgetVariable=streamToReceiver(session,stream,streamVariable,filename,mimeType,contentLength);
-    if (forgetVariable) {
-      cleanStreamVariable(owner,variableName);
-    }
+    handleFileUploadValidationAndData(session,stream,streamVariable,filename,mimeType,contentLength,owner,variableName);
   }
- catch (  Exception e) {
-    session.lock();
-    try {
-      session.getCommunicationManager().handleConnectorRelatedException(owner,e);
-    }
-  finally {
-      session.unlock();
-    }
+ catch (  UploadException e) {
+    session.getCommunicationManager().handleConnectorRelatedException(owner,e);
   }
   sendUploadResponse(request,response);
 }
