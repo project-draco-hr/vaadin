@@ -1,0 +1,20 @@
+{
+  File addonImports=new File(themeDirectory,ADDON_IMPORTS_FILE);
+  if (!addonImports.exists()) {
+    addonImports.getParentFile().mkdirs();
+    addonImports.createNewFile();
+  }
+  LocationInfo info=ClassPathExplorer.getAvailableWidgetSetsAndStylesheets();
+  try {
+    PrintStream printStream=new PrintStream(new FileOutputStream(addonImports));
+    printStream.println("/* " + ADDON_IMPORTS_FILE_TEXT + " */");
+    printStream.println();
+    Map<String,URL> addonThemes=info.getAddonStyles();
+    for (    String path : addonThemes.keySet()) {
+      addImport(printStream,path,addonThemes.get(path));
+    }
+  }
+ catch (  FileNotFoundException e) {
+    e.printStackTrace();
+  }
+}
