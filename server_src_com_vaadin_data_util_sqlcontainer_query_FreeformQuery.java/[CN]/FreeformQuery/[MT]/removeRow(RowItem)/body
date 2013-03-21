@@ -1,12 +1,12 @@
 {
-  if (activeConnection == null) {
+  if (!isInTransaction()) {
     throw new IllegalStateException("No transaction is active!");
   }
  else   if (primaryKeyColumns.isEmpty()) {
     throw new UnsupportedOperationException("Cannot remove items fetched with a read-only freeform query!");
   }
   if (delegate != null) {
-    return delegate.removeRow(activeConnection,row);
+    return delegate.removeRow(getConnection(),row);
   }
  else {
     throw new UnsupportedOperationException("FreeFormQueryDelegate not set!");

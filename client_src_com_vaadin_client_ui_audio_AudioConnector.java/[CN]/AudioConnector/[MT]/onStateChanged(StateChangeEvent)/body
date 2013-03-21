@@ -1,12 +1,20 @@
 {
   super.onStateChanged(stateChangeEvent);
-  Style style=getWidget().getElement().getStyle();
-  if (getState().showControls && (style.getHeight() == null || "".equals(style.getHeight()))) {
-    if (BrowserInfo.get().isChrome()) {
-      style.setHeight(32,Unit.PX);
+  if (BrowserInfo.get().isOpera() && stateChangeEvent.hasPropertyChanged("showControls")) {
+    Style style=getWidget().getElement().getStyle();
+    if (!getState().showControls) {
+      if (isUndefinedHeight() && isUndefinedWidth() && getWidget().getOffsetHeight() == 150 && getWidget().getOffsetWidth() == 300) {
+        style.setWidth(0,Unit.PX);
+        style.setHeight(0,Unit.PX);
+      }
     }
  else {
-      style.setHeight(25,Unit.PX);
+      if (isUndefinedHeight()) {
+        style.clearHeight();
+      }
+      if (isUndefinedWidth()) {
+        style.clearWidth();
+      }
     }
   }
 }

@@ -2,22 +2,24 @@
   beginTransaction();
   setVersionColumnFlagInProperty(row);
   StatementHelper sh=sqlGenerator.generateInsertQuery(tableName,row);
-  PreparedStatement pstmt=activeConnection.prepareStatement(sh.getQueryString(),primaryKeyColumns.toArray(new String[0]));
-  sh.setParameterValuesToStatement(pstmt);
-  getLogger().log(Level.FINE,"DB -> {0}",sh.getQueryString());
-  int result=pstmt.executeUpdate();
-  if (result > 0) {
-    ResultSet generatedKeys=pstmt.getGeneratedKeys();
-    RowId newId=getNewRowId(row,generatedKeys);
-    generatedKeys.close();
-    pstmt.clearParameters();
-    pstmt.close();
+  Connection connection=null;
+  PreparedStatement pstmt=null;
+  ResultSet generatedKeys=null;
+  connection=getConnection();
+  try {
+    pstmt=connection.prepareStatement(sh.getQueryString(),primaryKeyColumns.toArray(new String[0]));
+    sh.setParameterValuesToStatement(pstmt);
+    getLogger().log(Level.FINE,"DB -> {0}",sh.getQueryString());
+    int result=pstmt.executeUpdate();
+    RowId newId=null;
+    if (result > 0) {
+      generatedKeys=pstmt.getGeneratedKeys();
+      newId=getNewRowId(row,generatedKeys);
+    }
     commit();
     return newId;
   }
- else {
-    pstmt.clearParameters();
-    pstmt.close();
-    return null;
+  finally {
+    releaseConnection(connection,pstmt,generatedKeys);
   }
 }

@@ -1,26 +1,15 @@
 {
-  Connection c=null;
   PreparedStatement pstmt=null;
+  Connection connection=null;
   try {
-    if (transactionOpen && activeConnection != null) {
-      c=activeConnection;
-    }
- else {
-      c=connectionPool.reserveConnection();
-    }
-    pstmt=c.prepareStatement(sh.getQueryString());
+    connection=getConnection();
+    pstmt=connection.prepareStatement(sh.getQueryString());
     sh.setParameterValuesToStatement(pstmt);
     getLogger().log(Level.FINE,"DB -> {0}",sh.getQueryString());
     int retval=pstmt.executeUpdate();
     return retval;
   }
   finally {
-    if (pstmt != null) {
-      pstmt.clearParameters();
-      pstmt.close();
-    }
-    if (!transactionOpen) {
-      connectionPool.releaseConnection(c);
-    }
+    releaseConnection(connection,pstmt,null);
   }
 }

@@ -1,11 +1,13 @@
 {
-  Connection c=null;
+  Connection connection=null;
+  ResultSet rs=null;
+  ResultSet tables=null;
   try {
-    c=connectionPool.reserveConnection();
-    DatabaseMetaData dbmd=c.getMetaData();
+    connection=getConnection();
+    DatabaseMetaData dbmd=connection.getMetaData();
     if (dbmd != null) {
       tableName=SQLUtil.escapeSQL(tableName);
-      ResultSet tables=dbmd.getTables(null,null,tableName,null);
+      tables=dbmd.getTables(null,null,tableName,null);
       if (!tables.next()) {
         tables=dbmd.getTables(null,null,tableName.toUpperCase(),null);
         if (!tables.next()) {
@@ -16,7 +18,7 @@
         }
       }
       tables.close();
-      ResultSet rs=dbmd.getPrimaryKeys(null,null,tableName);
+      rs=dbmd.getPrimaryKeys(null,null,tableName);
       List<String> names=new ArrayList<String>();
       while (rs.next()) {
         names.add(rs.getString("COLUMN_NAME"));
@@ -41,6 +43,17 @@
     throw new RuntimeException(e);
   }
  finally {
-    connectionPool.releaseConnection(c);
+    try {
+      releaseConnection(connection,null,rs);
+    }
+ catch (    SQLException ignore) {
+    }
+ finally {
+      try {
+        tables.close();
+      }
+ catch (      SQLException ignore) {
+      }
+    }
   }
 }
