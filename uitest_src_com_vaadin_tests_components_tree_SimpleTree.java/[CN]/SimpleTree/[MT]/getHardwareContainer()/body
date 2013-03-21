@@ -1,0 +1,27 @@
+{
+  Item item=null;
+  int itemId=0;
+  HierarchicalContainer hwContainer=new HierarchicalContainer();
+  hwContainer.addContainerProperty("name",String.class,null);
+  hwContainer.addContainerProperty("icon",ThemeResource.class,new ThemeResource("../runo/icons/16/document.png"));
+  for (int i=0; i < hardware.length; i++) {
+    item=hwContainer.addItem(itemId);
+    item.getItemProperty("name").setValue(hardware[i][0]);
+    hwContainer.setChildrenAllowed(itemId,true);
+    itemId++;
+    for (int j=1; j < hardware[i].length; j++) {
+      if (j == 1) {
+        item.getItemProperty("icon").setValue(new ThemeResource("../runo/icons/16/folder.png"));
+      }
+      item=hwContainer.addItem(itemId);
+      item.getItemProperty("name").setValue(hardware[i][j]);
+      hwContainer.setParent(itemId,itemId - j);
+      hwContainer.setChildrenAllowed(itemId,false);
+      if (j == 2) {
+        hwContainer.setChildrenAllowed(itemId,true);
+      }
+      itemId++;
+    }
+  }
+  return hwContainer;
+}

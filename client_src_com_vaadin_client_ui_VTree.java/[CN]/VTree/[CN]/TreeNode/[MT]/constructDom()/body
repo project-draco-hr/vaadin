@@ -1,8 +1,14 @@
 {
+  String labelId=DOM.createUniqueId();
   addStyleName(CLASSNAME);
+  getElement().setId(DOM.createUniqueId());
+  Roles.getTreeitemRole().set(getElement());
+  Roles.getTreeitemRole().setAriaSelectedState(getElement(),SelectedValue.FALSE);
+  Roles.getTreeitemRole().setAriaLabelledbyProperty(getElement(),Id.of(labelId));
   nodeCaptionDiv=DOM.createDiv();
   DOM.setElementProperty(nodeCaptionDiv,"className",CLASSNAME + "-caption");
   Element wrapper=DOM.createDiv();
+  wrapper.setId(labelId);
   nodeCaptionSpan=DOM.createSpan();
   DOM.appendChild(getElement(),nodeCaptionDiv);
   DOM.appendChild(nodeCaptionDiv,wrapper);
@@ -12,5 +18,6 @@
   }
   childNodeContainer=new FlowPanel();
   childNodeContainer.setStyleName(CLASSNAME + "-children");
+  Roles.getGroupRole().set(childNodeContainer.getElement());
   setWidget(childNodeContainer);
 }
