@@ -1,0 +1,14 @@
+{
+  Map<Class<?>,CurrentInstance> old=null;
+  lock();
+  try {
+    old=CurrentInstance.setThreadLocals(this);
+    runnable.run();
+  }
+  finally {
+    unlock();
+    if (old != null) {
+      CurrentInstance.restoreThreadLocals(old);
+    }
+  }
+}

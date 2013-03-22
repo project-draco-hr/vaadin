@@ -1,0 +1,19 @@
+{
+  Map<Class<?>,CurrentInstance> old=null;
+  VaadinSession session=getSession();
+  if (session != null) {
+    session.lock();
+  }
+  try {
+    old=CurrentInstance.setThreadLocals(this);
+    runnable.run();
+  }
+  finally {
+    if (session != null) {
+      session.unlock();
+    }
+    if (old != null) {
+      CurrentInstance.restoreThreadLocals(old);
+    }
+  }
+}
