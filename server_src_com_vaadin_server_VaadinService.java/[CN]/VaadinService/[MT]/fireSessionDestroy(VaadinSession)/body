@@ -1,9 +1,21 @@
 {
-  for (  UI ui : new ArrayList<UI>(vaadinSession.getUIs())) {
-    if (!ui.isClosing()) {
-      ui.close();
+  final VaadinSession session=vaadinSession;
+  session.runSafely(new Runnable(){
+    @Override public void run(){
+      ArrayList<UI> uis=new ArrayList<UI>(session.getUIs());
+      for (      final UI ui : uis) {
+        ui.runSafely(new Runnable(){
+          @Override public void run(){
+            if (!ui.isClosing()) {
+              ui.close();
+            }
+            session.removeUI(ui);
+          }
+        }
+);
+      }
+      eventRouter.fireEvent(new SessionDestroyEvent(VaadinService.this,session));
     }
-    vaadinSession.removeUI(ui);
   }
-  eventRouter.fireEvent(new SessionDestroyEvent(this,vaadinSession));
+);
 }

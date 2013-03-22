@@ -1,0 +1,61 @@
+{
+  final VaadinServlet mockServlet=new VaadinServlet(){
+    @Override public String getServletName(){
+      return "mockServlet";
+    }
+  }
+;
+  final VaadinServletService mockService=new VaadinServletService(mockServlet,EasyMock.createMock(DeploymentConfiguration.class));
+  HttpSession mockHttpSession=EasyMock.createMock(HttpSession.class);
+  WrappedSession mockWrappedSession=new WrappedHttpSession(mockHttpSession){
+    final ReentrantLock lock=new ReentrantLock();
+    @Override public Object getAttribute(    String name){
+      if ("mockServlet.lock".equals(name)) {
+        return lock;
+      }
+      return super.getAttribute(name);
+    }
+  }
+;
+  final VaadinSession session=new VaadinSession(mockService);
+  session.storeInSession(mockService,mockWrappedSession);
+  final UI ui=new UI(){
+    Page page=new Page(this){
+      @Override public void init(      VaadinRequest request){
+      }
+    }
+;
+    @Override protected void init(    VaadinRequest request){
+    }
+    @Override public Page getPage(){
+      return page;
+    }
+  }
+;
+  VaadinServletRequest vaadinRequest=new VaadinServletRequest(EasyMock.createMock(HttpServletRequest.class),mockService){
+    @Override public String getParameter(    String name){
+      if ("theme".equals(name)) {
+        return null;
+      }
+      return super.getParameter(name);
+    }
+  }
+;
+  ui.doInit(vaadinRequest,session.getNextUIid());
+  ui.setSession(session);
+  session.addUI(ui);
+  final AtomicBoolean detachCalled=new AtomicBoolean(false);
+  ui.addDetachListener(new DetachListener(){
+    @Override public void detach(    DetachEvent event){
+      detachCalled.set(true);
+      Assert.assertEquals(ui,UI.getCurrent());
+      Assert.assertEquals(ui.getPage(),Page.getCurrent());
+      Assert.assertEquals(session,VaadinSession.getCurrent());
+      Assert.assertEquals(mockService,VaadinService.getCurrent());
+      Assert.assertEquals(mockServlet,VaadinServlet.getCurrent());
+    }
+  }
+);
+  session.valueUnbound(EasyMock.createMock(HttpSessionBindingEvent.class));
+  Assert.assertTrue(detachCalled.get());
+}
