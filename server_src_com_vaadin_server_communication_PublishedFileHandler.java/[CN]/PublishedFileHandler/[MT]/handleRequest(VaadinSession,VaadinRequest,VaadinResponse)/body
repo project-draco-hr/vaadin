@@ -7,9 +7,13 @@
     response.sendError(HttpServletResponse.SC_NOT_FOUND,fileName);
     return true;
   }
+  session.lock();
   Class<?> context;
-synchronized (session.getCommunicationManager().getDependencies()) {
+  try {
     context=session.getCommunicationManager().getDependencies().get(fileName);
+  }
+  finally {
+    session.unlock();
   }
   if (context == null) {
     getLogger().warning("Rejecting published file request for file that has not been published: " + fileName);
