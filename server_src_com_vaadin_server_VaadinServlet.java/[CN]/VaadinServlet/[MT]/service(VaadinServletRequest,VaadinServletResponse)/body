@@ -1,58 +1,54 @@
 {
-  RequestTimer requestTimer=new RequestTimer();
-  requestTimer.start();
-  getService().setCurrentInstances(request,response);
-  AbstractApplicationServletWrapper servletWrapper=new AbstractApplicationServletWrapper(this);
-  RequestType requestType=getRequestType(request);
-  if (!ensureCookiesEnabled(requestType,request,response)) {
-    return;
-  }
-  if (requestType == RequestType.STATIC_FILE) {
-    serveStaticResources(request,response);
-    return;
-  }
+  getService().requestStart(request,response);
   VaadinSession vaadinSession=null;
   try {
-    vaadinSession=getService().findVaadinSession(request);
-    if (vaadinSession == null) {
+    AbstractApplicationServletWrapper servletWrapper=new AbstractApplicationServletWrapper(this);
+    RequestType requestType=getRequestType(request);
+    if (!ensureCookiesEnabled(requestType,request,response)) {
       return;
     }
-    if (requestType == RequestType.PUBLISHED_FILE) {
-      new PublishedFileHandler().handleRequest(vaadinSession,request,response);
+    if (requestType == RequestType.STATIC_FILE) {
+      serveStaticResources(request,response);
       return;
     }
- else     if (requestType == RequestType.HEARTBEAT) {
-      new HeartbeatHandler().handleRequest(vaadinSession,request,response);
-      return;
+    try {
+      vaadinSession=getService().findVaadinSession(request);
+      if (vaadinSession == null) {
+        return;
+      }
+      if (requestType == RequestType.PUBLISHED_FILE) {
+        new PublishedFileHandler().handleRequest(vaadinSession,request,response);
+        return;
+      }
+ else       if (requestType == RequestType.HEARTBEAT) {
+        new HeartbeatHandler().handleRequest(vaadinSession,request,response);
+        return;
+      }
+ else       if (requestType == RequestType.FILE_UPLOAD) {
+        new FileUploadHandler().handleRequest(vaadinSession,request,response);
+        return;
+      }
+ else       if (requestType == RequestType.UIDL) {
+        new UidlRequestHandler(servletWrapper).handleRequest(vaadinSession,request,response);
+        return;
+      }
+ else       if (requestType == RequestType.BROWSER_DETAILS) {
+        new UIInitHandler().handleRequest(vaadinSession,request,response);
+        return;
+      }
+ else       if (vaadinSession.getCommunicationManager().handleOtherRequest(request,response)) {
+        return;
+      }
+      response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
- else     if (requestType == RequestType.FILE_UPLOAD) {
-      new FileUploadHandler().handleRequest(vaadinSession,request,response);
-      return;
+ catch (    final SessionExpiredException e) {
+      handleServiceSessionExpired(request,response);
     }
- else     if (requestType == RequestType.UIDL) {
-      new UidlRequestHandler(servletWrapper).handleRequest(vaadinSession,request,response);
-      return;
+catch (    final Throwable e) {
+      handleServiceException(request,response,vaadinSession,e);
     }
- else     if (requestType == RequestType.BROWSER_DETAILS) {
-      new UIInitHandler().handleRequest(vaadinSession,request,response);
-      return;
-    }
- else     if (vaadinSession.getCommunicationManager().handleOtherRequest(request,response)) {
-      return;
-    }
-    response.sendError(HttpServletResponse.SC_NOT_FOUND);
   }
- catch (  final SessionExpiredException e) {
-    handleServiceSessionExpired(request,response);
-  }
-catch (  final Throwable e) {
-    handleServiceException(request,response,vaadinSession,e);
-  }
- finally {
-    if (vaadinSession != null) {
-      getService().cleanupSession(vaadinSession);
-      requestTimer.stop(vaadinSession);
-    }
-    CurrentInstance.clearAll();
+  finally {
+    getService().requestEnd(request,response,vaadinSession);
   }
 }

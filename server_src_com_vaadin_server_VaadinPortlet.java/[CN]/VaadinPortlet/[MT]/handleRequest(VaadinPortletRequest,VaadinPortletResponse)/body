@@ -1,9 +1,8 @@
 {
-  RequestTimer requestTimer=new RequestTimer();
-  requestTimer.start();
-  getService().setCurrentInstances(request,response);
-  AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
+  getService().requestStart(request,response);
+  VaadinPortletSession vaadinSession=null;
   try {
+    AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
     RequestType requestType=getRequestType(request);
     if (requestType == RequestType.UNKNOWN) {
       handleUnknownRequest(request,response);
@@ -19,7 +18,6 @@
       serveStaticResources((ResourceRequest)request,(ResourceResponse)response);
     }
  else {
-      VaadinPortletSession vaadinSession=null;
       try {
         vaadinSession=(VaadinPortletSession)getService().findVaadinSession(request);
         if (vaadinSession == null) {
@@ -56,15 +54,9 @@
 catch (      final Throwable e) {
         handleServiceException(request,response,vaadinSession,e);
       }
- finally {
-        if (vaadinSession != null) {
-          getService().cleanupSession(vaadinSession);
-          requestTimer.stop(vaadinSession);
-        }
-      }
     }
   }
   finally {
-    CurrentInstance.clearAll();
+    getService().requestEnd(request,response,vaadinSession);
   }
 }
