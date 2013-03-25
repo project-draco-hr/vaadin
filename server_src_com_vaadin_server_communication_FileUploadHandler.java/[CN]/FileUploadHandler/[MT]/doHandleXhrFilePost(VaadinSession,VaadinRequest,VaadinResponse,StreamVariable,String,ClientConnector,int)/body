@@ -1,0 +1,25 @@
+{
+  final String filename="unknown";
+  final String mimeType=filename;
+  final InputStream stream=request.getInputStream();
+  try {
+    Component component=(Component)owner;
+    if (component.isReadOnly()) {
+      throw new UploadException("Warning: file upload ignored because the component was read-only");
+    }
+    boolean forgetVariable=streamToReceiver(session,stream,streamVariable,filename,mimeType,contentLength);
+    if (forgetVariable) {
+      cleanStreamVariable(owner,variableName);
+    }
+  }
+ catch (  Exception e) {
+    session.lock();
+    try {
+      session.getCommunicationManager().handleConnectorRelatedException(owner,e);
+    }
+  finally {
+      session.unlock();
+    }
+  }
+  sendUploadResponse(request,response);
+}

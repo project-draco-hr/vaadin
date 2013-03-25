@@ -1,0 +1,17 @@
+{
+  StringWriter writer=new StringWriter();
+  try {
+    writer.write("{");
+    if (uI.getSession().getConfiguration().isXsrfProtectionEnabled()) {
+      writer.write(uI.getSession().getCommunicationManager().getSecurityKeyUIDL(request));
+    }
+    new UidlWriter().write(uI,writer,true,false);
+    writer.write("}");
+    String initialUIDL=writer.toString();
+    getLogger().log(Level.FINE,"Initial UIDL:" + initialUIDL);
+    return initialUIDL;
+  }
+  finally {
+    writer.close();
+  }
+}

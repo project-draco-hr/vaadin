@@ -1,0 +1,20 @@
+{
+  Collection<ClientConnector> dirtyVisibleConnectors=ui.getConnectorTracker().getDirtyVisibleConnectors();
+  List<Component> legacyComponents=new ArrayList<Component>();
+  for (  ClientConnector connector : dirtyVisibleConnectors) {
+    if (connector instanceof LegacyComponent) {
+      legacyComponents.add((Component)connector);
+    }
+  }
+  sortByHierarchy(legacyComponents);
+  writer.write("[");
+  for (  Component c : legacyComponents) {
+    getLogger().fine("Painting LegacyComponent " + c.getClass().getName() + "@"+ Integer.toHexString(c.hashCode()));
+    target.startTag("change");
+    final String pid=c.getConnectorId();
+    target.addAttribute("pid",pid);
+    LegacyPaint.paint(c,target);
+    target.endTag("change");
+  }
+  writer.write("]");
+}

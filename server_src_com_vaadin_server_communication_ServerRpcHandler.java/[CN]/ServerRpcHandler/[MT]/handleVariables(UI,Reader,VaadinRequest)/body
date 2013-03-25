@@ -1,0 +1,23 @@
+{
+  String changes=getMessage(reader);
+  final String[] bursts=changes.split(String.valueOf(VAR_BURST_SEPARATOR));
+  if (bursts.length > 2) {
+    throw new RuntimeException("Multiple variable bursts not supported in Vaadin 7");
+  }
+ else   if (bursts.length <= 2) {
+    return;
+  }
+  if (uI.getSession().getConfiguration().isXsrfProtectionEnabled()) {
+    if (bursts.length == 1 && "init".equals(bursts[0])) {
+      request.setAttribute(AbstractCommunicationManager.WRITE_SECURITY_TOKEN_FLAG,true);
+      return;
+    }
+ else {
+      String sessId=(String)uI.getSession().getSession().getAttribute(ApplicationConstants.UIDL_SECURITY_TOKEN_ID);
+      if (sessId == null || !sessId.equals(bursts[0])) {
+        throw new InvalidUIDLSecurityKeyException("");
+      }
+    }
+  }
+  handleBurst(uI,unescapeBurst(bursts[1]));
+}

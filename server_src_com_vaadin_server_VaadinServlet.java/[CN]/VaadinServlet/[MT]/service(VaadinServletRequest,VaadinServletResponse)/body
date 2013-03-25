@@ -21,43 +21,33 @@
     if (vaadinSession == null) {
       return;
     }
-    CommunicationManager communicationManager=(CommunicationManager)vaadinSession.getCommunicationManager();
     if (requestType == RequestType.PUBLISHED_FILE) {
-      communicationManager.servePublishedFile(request,response);
+      new PublishedFileHandler().handleRequest(vaadinSession,request,response);
       return;
     }
  else     if (requestType == RequestType.HEARTBEAT) {
-      communicationManager.handleHeartbeatRequest(request,response,vaadinSession);
+      new HeartbeatHandler().handleRequest(vaadinSession,request,response);
       return;
     }
-    vaadinSession.getBrowser().updateRequestDetails(request);
-    if (requestType == RequestType.FILE_UPLOAD) {
-      communicationManager.handleFileUpload(vaadinSession,request,response);
+ else     if (requestType == RequestType.FILE_UPLOAD) {
+      new FileUploadHandler().handleRequest(vaadinSession,request,response);
       return;
     }
  else     if (requestType == RequestType.UIDL) {
-      UI uI=getService().findUI(request);
-      if (uI == null) {
-        throw new ServletException(ERROR_NO_UI_FOUND);
-      }
-      communicationManager.handleUidlRequest(request,response,servletWrapper,uI);
-      response.setHeader("Cache-Control","no-cache");
+      new UidlRequestHandler(servletWrapper).handleRequest(vaadinSession,request,response);
       return;
     }
  else     if (requestType == RequestType.BROWSER_DETAILS) {
-      communicationManager.handleBrowserDetailsRequest(request,response,vaadinSession);
+      new UIInitHandler().handleRequest(vaadinSession,request,response);
       return;
     }
-    if (communicationManager.handleOtherRequest(request,response)) {
+ else     if (vaadinSession.getCommunicationManager().handleOtherRequest(request,response)) {
       return;
     }
     response.sendError(HttpServletResponse.SC_NOT_FOUND);
   }
  catch (  final SessionExpiredException e) {
     handleServiceSessionExpired(request,response);
-  }
-catch (  final GeneralSecurityException e) {
-    handleServiceSecurityException(request,response);
   }
 catch (  final Throwable e) {
     handleServiceException(request,response,vaadinSession,e);

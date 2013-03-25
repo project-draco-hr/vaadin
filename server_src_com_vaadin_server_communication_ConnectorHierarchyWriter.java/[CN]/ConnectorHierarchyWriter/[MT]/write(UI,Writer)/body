@@ -1,0 +1,20 @@
+{
+  Collection<ClientConnector> dirtyVisibleConnectors=ui.getConnectorTracker().getDirtyVisibleConnectors();
+  JSONObject hierarchyInfo=new JSONObject();
+  for (  ClientConnector connector : dirtyVisibleConnectors) {
+    String connectorId=connector.getConnectorId();
+    JSONArray children=new JSONArray();
+    for (    ClientConnector child : AbstractClientConnector.getAllChildrenIterable(connector)) {
+      if (AbstractCommunicationManager.isConnectorVisibleToClient(child)) {
+        children.put(child.getConnectorId());
+      }
+    }
+    try {
+      hierarchyInfo.put(connectorId,children);
+    }
+ catch (    JSONException e) {
+      throw new PaintException("Failed to send hierarchy information about " + connectorId + " to the client: "+ e.getMessage(),e);
+    }
+  }
+  writer.write(hierarchyInfo.toString());
+}
