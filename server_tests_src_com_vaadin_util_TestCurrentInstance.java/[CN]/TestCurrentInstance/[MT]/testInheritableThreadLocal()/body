@@ -1,0 +1,19 @@
+{
+  final AtomicBoolean threadFailed=new AtomicBoolean(true);
+  CurrentInstance.setInheritable(TestCurrentInstance.class,this);
+  Assert.assertEquals(this,CurrentInstance.get(TestCurrentInstance.class));
+  Thread t=new Thread(){
+    @Override public void run(){
+      Assert.assertEquals(TestCurrentInstance.this,CurrentInstance.get(TestCurrentInstance.class));
+      threadFailed.set(false);
+    }
+  }
+;
+  t.start();
+  CurrentInstance.set(TestCurrentInstance.class,null);
+  assertCleared();
+  while (t.isAlive()) {
+    Thread.sleep(1000);
+  }
+  Assert.assertFalse("Thread failed",threadFailed.get());
+}
