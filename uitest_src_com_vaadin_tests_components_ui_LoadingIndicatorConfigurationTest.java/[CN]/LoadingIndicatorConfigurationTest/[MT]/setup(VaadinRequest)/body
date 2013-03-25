@@ -1,0 +1,44 @@
+{
+  final TextField delayField=new TextField("Delay (ms)");
+  delayField.setConverter(Integer.class);
+  delayField.setConvertedValue(1000);
+  NativeButton delayButton=new NativeButton("Wait");
+  delayButton.addClickListener(new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      try {
+        Thread.sleep((Integer)delayField.getConvertedValue());
+      }
+ catch (      InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+);
+  initialDelay=createIntegerTextField("Initial delay (ms)",getState().loadingIndicatorConfiguration.initialDelay);
+  initialDelay.addValueChangeListener(new Property.ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      getLoadingIndicator().setInitialDelay((Integer)initialDelay.getConvertedValue());
+    }
+  }
+);
+  delayStateDelay=createIntegerTextField("Delay state delay (ms)",getState().loadingIndicatorConfiguration.delayStateDelay);
+  delayStateDelay.addValueChangeListener(new Property.ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      getLoadingIndicator().setDelayStateDelay((Integer)delayStateDelay.getConvertedValue());
+    }
+  }
+);
+  waitStateDelay=createIntegerTextField("Wait state delay (ms)",getState().loadingIndicatorConfiguration.waitStateDelay);
+  waitStateDelay.addValueChangeListener(new Property.ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      getLoadingIndicator().setWaitStateDelay((Integer)waitStateDelay.getConvertedValue());
+    }
+  }
+);
+  getLayout().addComponents(initialDelay,delayStateDelay,waitStateDelay);
+  HorizontalLayout hl=new HorizontalLayout();
+  hl.setMargin(true);
+  hl.setDefaultComponentAlignment(Alignment.BOTTOM_RIGHT);
+  hl.addComponents(delayField,delayButton);
+  addComponent(hl);
+}
