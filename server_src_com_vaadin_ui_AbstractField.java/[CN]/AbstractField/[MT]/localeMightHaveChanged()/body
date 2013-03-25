@@ -1,9 +1,18 @@
 {
-  if (!equals(valueLocale,getLocale()) && dataSource != null && !isModified()) {
-    T newInternalValue=convertFromModel(getPropertyDataSource().getValue());
-    if (!equals(newInternalValue,getInternalValue())) {
-      setInternalValue(newInternalValue);
-      fireValueChange(false);
+  if (!equals(valueLocale,getLocale())) {
+    if (dataSource != null && !isModified()) {
+      T newInternalValue=convertFromModel(getPropertyDataSource().getValue());
+      if (!equals(newInternalValue,getInternalValue())) {
+        setInternalValue(newInternalValue);
+        fireValueChange(false);
+      }
+    }
+ else     if (dataSource == null && converter != null) {
+      Object convertedValue=convertToModel(getInternalValue(),valueLocale);
+      T newinternalValue=convertFromModel(convertedValue);
+      if (!equals(getInternalValue(),newinternalValue)) {
+        setConvertedValue(convertedValue);
+      }
     }
   }
 }
