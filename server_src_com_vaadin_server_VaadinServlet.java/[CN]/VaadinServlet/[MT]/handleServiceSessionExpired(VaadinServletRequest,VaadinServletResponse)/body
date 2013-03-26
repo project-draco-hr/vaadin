@@ -10,7 +10,13 @@
       response.sendError(HttpServletResponse.SC_GONE,"Session expired");
     }
  else {
-      response.sendRedirect(ci.getSessionExpiredURL());
+      String sessionExpiredURL=ci.getSessionExpiredURL();
+      if (sessionExpiredURL != null) {
+        response.sendRedirect(sessionExpiredURL);
+      }
+ else {
+        response.sendError(HttpServletResponse.SC_GONE,"Session expired");
+      }
     }
   }
  catch (  SystemMessageException ee) {
