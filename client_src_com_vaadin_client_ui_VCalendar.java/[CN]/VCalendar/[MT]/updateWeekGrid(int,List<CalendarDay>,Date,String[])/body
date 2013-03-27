@@ -1,0 +1,32 @@
+{
+  weekGrid.setFirstHour(getFirstHourOfTheDay());
+  weekGrid.setLastHour(getLastHourOfTheDay());
+  weekGrid.getTimeBar().updateTimeBar(is24HFormat());
+  dayToolbar.clear();
+  dayToolbar.addBackButton();
+  dayToolbar.setVerticalSized(isHeightUndefined);
+  dayToolbar.setHorizontalSized(isWidthUndefined);
+  weekGrid.clearDates();
+  weekGrid.setDisabled(isDisabledOrReadOnly());
+  for (  CalendarDay day : days) {
+    String date=day.getDate();
+    String localized_date_format=day.getLocalizedDateFormat();
+    Date d=dateformat_date.parse(date);
+    int dayOfWeek=day.getDayOfWeek();
+    if (dayOfWeek < getFirstDayNumber() || dayOfWeek > getLastDayNumber()) {
+      continue;
+    }
+    boolean isToday=false;
+    int dayOfMonth=d.getDate();
+    if (today.getDate() == dayOfMonth && today.getYear() == d.getYear() && today.getMonth() == d.getMonth()) {
+      isToday=true;
+    }
+    dayToolbar.add(realDayNames[dayOfWeek - 1],date,localized_date_format,isToday ? "today" : null);
+    weeklyLongEvents.addDate(d);
+    weekGrid.addDate(d);
+    if (isToday) {
+      weekGrid.setToday(d,today);
+    }
+  }
+  dayToolbar.addNextButton();
+}

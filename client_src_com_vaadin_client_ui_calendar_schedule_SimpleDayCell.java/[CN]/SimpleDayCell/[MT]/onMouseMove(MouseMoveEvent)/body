@@ -1,0 +1,59 @@
+{
+  if (clickedWidget instanceof MonthEventLabel && !monthEventMouseDown || (startY < 0 && startX < 0)) {
+    return;
+  }
+  MonthEventLabel w=(MonthEventLabel)clickedWidget;
+  if (calendar.isDisabledOrReadOnly()) {
+    Event.releaseCapture(getElement());
+    monthEventMouseDown=false;
+    startY=-1;
+    startX=-1;
+    return;
+  }
+  int currentY=event.getClientY();
+  int currentX=event.getClientX();
+  int moveY=(currentY - startY);
+  int moveX=(currentX - startX);
+  if ((moveY < 5 && moveY > -6) && (moveX < 5 && moveX > -6)) {
+    return;
+  }
+  int dateCellWidth=getWidth();
+  int dateCellHeigth=getHeigth();
+  Element parent=getMonthGrid().getElement();
+  int relativeX=event.getRelativeX(parent);
+  int relativeY=event.getRelativeY(parent);
+  int weekDiff=0;
+  if (moveY > 0) {
+    weekDiff=(startYrelative + moveY) / dateCellHeigth;
+  }
+ else {
+    weekDiff=(moveY - (dateCellHeigth - startYrelative)) / dateCellHeigth;
+  }
+  int dayDiff=0;
+  if (moveX >= 0) {
+    dayDiff=(startXrelative + moveX) / dateCellWidth;
+  }
+ else {
+    dayDiff=(moveX - (dateCellWidth - startXrelative)) / dateCellWidth;
+  }
+  if (relativeY < 0 || relativeY >= (calendar.getMonthGrid().getRowCount() * dateCellHeigth) || relativeX < 0 || relativeX >= (calendar.getMonthGrid().getColumnCount() * dateCellWidth)) {
+    return;
+  }
+  GWT.log("Event moving delta: " + weekDiff + " weeks "+ dayDiff+ " days"+ " ("+ getCell()+ ","+ getRow()+ ")");
+  CalendarEvent e=moveEvent;
+  if (e == null) {
+    e=getEventByWidget(w);
+  }
+  Date from=e.getStart();
+  Date to=e.getEnd();
+  long duration=to.getTime() - from.getTime();
+  long daysMs=dayDiff * DateConstants.DAYINMILLIS;
+  long weeksMs=weekDiff * DateConstants.WEEKINMILLIS;
+  from.setTime(startDateFrom.getTime() + weeksMs + daysMs);
+  to.setTime((from.getTime() + duration));
+  e.setStart(from);
+  e.setEnd(to);
+  e.setStartTime(new Date(from.getTime()));
+  e.setEndTime(new Date(to.getTime()));
+  updateDragPosition(w,dayDiff,weekDiff);
+}

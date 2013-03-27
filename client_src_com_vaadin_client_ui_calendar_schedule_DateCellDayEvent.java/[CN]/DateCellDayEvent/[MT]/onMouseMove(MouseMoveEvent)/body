@@ -1,0 +1,111 @@
+{
+  if (startY < 0 && startX < 0) {
+    return;
+  }
+  if (isDisabled()) {
+    Event.releaseCapture(getElement());
+    mouseMoveStarted=false;
+    startY=-1;
+    startX=-1;
+    removeGlobalResizeStyle();
+    return;
+  }
+  int currentY=event.getClientY();
+  int currentX=event.getClientX();
+  int moveY=(currentY - startY);
+  int moveX=(currentX - startX);
+  if ((moveY < 5 && moveY > -6) && (moveX < 5 && moveX > -6)) {
+    return;
+  }
+  if (!mouseMoveStarted) {
+    setWidth(moveWidth);
+    getElement().getStyle().setMarginLeft(0,Unit.PX);
+    mouseMoveStarted=true;
+  }
+  HorizontalPanel parent=(HorizontalPanel)getParent().getParent();
+  int relativeX=event.getRelativeX(parent.getElement()) - weekGrid.timebar.getOffsetWidth();
+  int halfHourDiff=0;
+  if (moveY > 0) {
+    halfHourDiff=(startYrelative + moveY) / slotHeight;
+  }
+ else {
+    halfHourDiff=(moveY - startYrelative) / slotHeight;
+  }
+  int dateCellWidth=getDateCellWidth();
+  long dayDiff=0;
+  if (moveX >= 0) {
+    dayDiff=(startXrelative + moveX) / dateCellWidth;
+  }
+ else {
+    dayDiff=(moveX - (dateCellWidth - startXrelative)) / dateCellWidth;
+  }
+  int dayOffset=relativeX / dateCellWidth;
+  int dateCellCount=weekGrid.getDateCellCount();
+  if (dayOffset >= dateCellCount) {
+    dayOffset--;
+    dayDiff--;
+  }
+  int dayOffsetPx=calculateDateCellOffsetPx(dayOffset) + weekGrid.timebar.getOffsetWidth();
+  GWT.log("DateCellWidth: " + dateCellWidth + " dayDiff: "+ dayDiff+ " dayOffset: "+ dayOffset+ " dayOffsetPx: "+ dayOffsetPx+ " startXrelative: "+ startXrelative+ " moveX: "+ moveX);
+  if (relativeX < 0 || relativeX >= getDatesWidth()) {
+    return;
+  }
+  Style s=getElement().getStyle();
+  Date from=calendarEvent.getStartTime();
+  Date to=calendarEvent.getEndTime();
+  long duration=to.getTime() - from.getTime();
+  if (!clickTargetsResize() && weekGrid.getCalendar().isEventMoveAllowed()) {
+    long daysMs=dayDiff * DateConstants.DAYINMILLIS;
+    from.setTime(startDatetimeFrom.getTime() + daysMs);
+    from.setTime(from.getTime() + ((long)halfHourInMilliSeconds * halfHourDiff));
+    to.setTime((from.getTime() + duration));
+    calendarEvent.setStartTime(from);
+    calendarEvent.setEndTime(to);
+    calendarEvent.setStart(new Date(from.getTime()));
+    calendarEvent.setEnd(new Date(to.getTime()));
+    long startFromMinutes=(from.getHours() * 60) + from.getMinutes();
+    long range=calendarEvent.getRangeInMinutes();
+    startFromMinutes=calculateStartFromMinute(startFromMinutes,from,to,dayOffsetPx);
+    if (startFromMinutes < 0) {
+      range+=startFromMinutes;
+    }
+    updatePosition(startFromMinutes,range);
+    s.setLeft(dayOffsetPx,Unit.PX);
+    if (weekGrid.getDateCellWidths() != null) {
+      s.setWidth(weekGrid.getDateCellWidths()[dayOffset],Unit.PX);
+    }
+ else {
+      setWidth(moveWidth);
+    }
+  }
+ else   if (clickTarget == topResizeBar) {
+    long oldStartTime=startDatetimeFrom.getTime();
+    long newStartTime=oldStartTime + ((long)halfHourInMilliSeconds * halfHourDiff);
+    if (!isTimeRangeTooSmall(newStartTime,startDatetimeTo.getTime())) {
+      newStartTime=startDatetimeTo.getTime() - getMinTimeRange();
+    }
+    from.setTime(newStartTime);
+    calendarEvent.setStartTime(from);
+    calendarEvent.setStart(new Date(from.getTime()));
+    long startFromMinutes=(from.getHours() * 60) + from.getMinutes();
+    long range=calendarEvent.getRangeInMinutes();
+    updatePosition(startFromMinutes,range);
+  }
+ else   if (clickTarget == bottomResizeBar) {
+    long oldEndTime=startDatetimeTo.getTime();
+    long newEndTime=oldEndTime + ((long)halfHourInMilliSeconds * halfHourDiff);
+    if (!isTimeRangeTooSmall(startDatetimeFrom.getTime(),newEndTime)) {
+      newEndTime=startDatetimeFrom.getTime() + getMinTimeRange();
+    }
+    to.setTime(newEndTime);
+    calendarEvent.setEndTime(to);
+    calendarEvent.setEnd(new Date(to.getTime()));
+    long startFromMinutes=(startDatetimeFrom.getHours() * 60) + startDatetimeFrom.getMinutes();
+    long range=calendarEvent.getRangeInMinutes();
+    startFromMinutes=calculateStartFromMinute(startFromMinutes,from,to,dayOffsetPx);
+    if (startFromMinutes < 0) {
+      range+=startFromMinutes;
+    }
+    updatePosition(startFromMinutes,range);
+  }
+}

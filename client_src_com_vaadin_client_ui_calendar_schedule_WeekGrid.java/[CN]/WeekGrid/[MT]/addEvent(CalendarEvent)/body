@@ -1,0 +1,14 @@
+{
+  int dateCount=content.getWidgetCount();
+  Date from=e.getStart();
+  Date toTime=e.getEndTime();
+  for (int i=1; i < dateCount; i++) {
+    DateCell dc=(DateCell)content.getWidget(i);
+    Date dcDate=dc.getDate();
+    int comp=dcDate.compareTo(from);
+    int comp2=dcDate.compareTo(toTime);
+    if (comp >= 0 && comp2 < 0 || (comp == 0 && comp2 == 0 && VCalendar.isZeroLengthMidnightEvent(e))) {
+      dc.addEvent(dcDate,e);
+    }
+  }
+}

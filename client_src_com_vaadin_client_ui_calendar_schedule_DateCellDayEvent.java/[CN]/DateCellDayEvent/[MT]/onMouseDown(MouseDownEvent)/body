@@ -1,0 +1,31 @@
+{
+  startX=event.getClientX();
+  startY=event.getClientY();
+  if (isDisabled() || event.getNativeButton() != NativeEvent.BUTTON_LEFT) {
+    return;
+  }
+  clickTarget=Element.as(event.getNativeEvent().getEventTarget());
+  mouseMoveCanceled=false;
+  if (weekGrid.getCalendar().isEventMoveAllowed() || clickTargetsResize()) {
+    moveRegistration=addMouseMoveHandler(this);
+    setFocus(true);
+    try {
+      startYrelative=(int)((double)event.getRelativeY(caption) % slotHeight);
+      startXrelative=(event.getRelativeX(weekGrid.getElement()) - weekGrid.timebar.getOffsetWidth()) % getDateCellWidth();
+    }
+ catch (    Exception e) {
+      GWT.log("Exception calculating relative start position",e);
+    }
+    mouseMoveStarted=false;
+    Style s=getElement().getStyle();
+    s.setZIndex(1000);
+    startDatetimeFrom=(Date)calendarEvent.getStartTime().clone();
+    startDatetimeTo=(Date)calendarEvent.getEndTime().clone();
+    Event.setCapture(getElement());
+  }
+  if (clickTargetsResize()) {
+    addGlobalResizeStyle();
+  }
+  event.stopPropagation();
+  event.preventDefault();
+}

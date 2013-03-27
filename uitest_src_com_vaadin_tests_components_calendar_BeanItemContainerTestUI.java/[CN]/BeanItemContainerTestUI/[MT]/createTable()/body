@@ -1,0 +1,33 @@
+{
+  Table table=new Table();
+  table.setSizeFull();
+  table.addActionHandler(new Action.Handler(){
+    private final Action ADD=new Action("Add event");
+    private final Action EDIT=new Action("Edit event");
+    private final Action REMOVE=new Action("Remove event");
+    public void handleAction(    Action action,    Object sender,    Object target){
+      if (action == ADD) {
+        BasicEvent event=new BasicEvent();
+        event.setStart(new Date(100,1,1));
+        event.setEnd(new Date(100,1,1));
+        editEvent(event);
+      }
+ else       if (action == EDIT) {
+        editEvent((BasicEvent)target);
+      }
+ else       if (action == REMOVE) {
+        events.removeItem(target);
+      }
+    }
+    public Action[] getActions(    Object target,    Object sender){
+      if (target == null) {
+        return new Action[]{ADD};
+      }
+ else {
+        return new Action[]{EDIT,REMOVE};
+      }
+    }
+  }
+);
+  return table;
+}

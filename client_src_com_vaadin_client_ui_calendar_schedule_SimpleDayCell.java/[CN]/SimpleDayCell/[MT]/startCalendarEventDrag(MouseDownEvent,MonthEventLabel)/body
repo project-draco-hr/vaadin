@@ -1,0 +1,24 @@
+{
+  if (w.isTimeSpecificEvent()) {
+    return;
+  }
+  moveRegistration=addMouseMoveHandler(this);
+  startX=event.getClientX();
+  startY=event.getClientY();
+  startYrelative=event.getRelativeY(w.getParent().getElement()) % getHeigth();
+  startXrelative=event.getRelativeX(w.getParent().getElement()) % getWidth();
+  CalendarEvent e=getEventByWidget(w);
+  startDateFrom=(Date)e.getStart().clone();
+  startDateTo=(Date)e.getEnd().clone();
+  Event.setCapture(getElement());
+  keyDownHandler=addKeyDownHandler(new KeyDownHandler(){
+    public void onKeyDown(    KeyDownEvent event){
+      if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+        cancelEventDrag(w);
+      }
+    }
+  }
+);
+  focus();
+  GWT.log("Start drag");
+}

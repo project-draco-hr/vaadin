@@ -1,0 +1,23 @@
+{
+  int freeSpot=-1;
+  int skipIndex=-1;
+  for (  Integer eventIndex : order) {
+    int col=columns.get(eventIndex);
+    if (col == skipIndex) {
+      continue;
+    }
+    if (freeSpot != -1 && freeSpot != col) {
+      return freeSpot;
+    }
+    DateCellDayEvent d=(DateCellDayEvent)getWidget(eventIndex);
+    WeekGridMinuteTimeRange nextRange=new WeekGridMinuteTimeRange(d.getCalendarEvent().getStartTime(),d.getCalendarEvent().getEndTime());
+    if (WeekGridMinuteTimeRange.doesOverlap(dateRange,nextRange)) {
+      skipIndex=col;
+      freeSpot=-1;
+    }
+ else {
+      freeSpot=col;
+    }
+  }
+  return freeSpot;
+}

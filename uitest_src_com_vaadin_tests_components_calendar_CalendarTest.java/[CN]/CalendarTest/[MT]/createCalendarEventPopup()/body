@@ -1,0 +1,50 @@
+{
+  VerticalLayout layout=new VerticalLayout();
+  layout.setMargin(true);
+  layout.setSpacing(true);
+  scheduleEventPopup=new Window(null,layout);
+  scheduleEventPopup.setWidth("400px");
+  scheduleEventPopup.setModal(true);
+  scheduleEventPopup.center();
+  layout.addComponent(scheduleEventFieldLayout);
+  applyEventButton=new Button("Apply",new ClickListener(){
+    private static final long serialVersionUID=1L;
+    public void buttonClick(    ClickEvent event){
+      try {
+        commitCalendarEvent();
+      }
+ catch (      CommitException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+);
+  Button cancel=new Button("Cancel",new ClickListener(){
+    private static final long serialVersionUID=1L;
+    public void buttonClick(    ClickEvent event){
+      discardCalendarEvent();
+    }
+  }
+);
+  deleteEventButton=new Button("Delete",new ClickListener(){
+    private static final long serialVersionUID=1L;
+    public void buttonClick(    ClickEvent event){
+      deleteCalendarEvent();
+    }
+  }
+);
+  scheduleEventPopup.addCloseListener(new Window.CloseListener(){
+    private static final long serialVersionUID=1L;
+    public void windowClose(    Window.CloseEvent e){
+      discardCalendarEvent();
+    }
+  }
+);
+  HorizontalLayout buttons=new HorizontalLayout();
+  buttons.setSpacing(true);
+  buttons.addComponent(deleteEventButton);
+  buttons.addComponent(applyEventButton);
+  buttons.addComponent(cancel);
+  layout.addComponent(buttons);
+  layout.setComponentAlignment(buttons,Alignment.BOTTOM_RIGHT);
+}

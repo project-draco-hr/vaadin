@@ -1,0 +1,19 @@
+{
+  CalendarEvent ce=event.getCalendarEvent();
+  if (eventCache.contains(ce)) {
+    int index;
+    if (ce instanceof ContainerCalendarEvent) {
+      index=((ContainerCalendarEvent)ce).getContainerIndex();
+    }
+ else {
+      index=container.indexOfId(ce);
+    }
+    long eventLength=ce.getEnd().getTime() - ce.getStart().getTime();
+    Date newEnd=new Date(event.getNewStart().getTime() + eventLength);
+    ignoreContainerEvents();
+    Item item=container.getItem(container.getIdByIndex(index));
+    item.getItemProperty(startDateProperty).setValue(event.getNewStart());
+    item.getItemProperty(endDateProperty).setValue(newEnd);
+    listenToContainerEvents();
+  }
+}

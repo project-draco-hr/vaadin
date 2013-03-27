@@ -1,0 +1,37 @@
+{
+  for (  DateCellGroup g : groups) {
+    int col=0;
+    int colCount=0;
+    List<Integer> order=new ArrayList<Integer>();
+    Map<Integer,Integer> columns=new HashMap<Integer,Integer>();
+    for (    Integer eventIndex : g.getItems()) {
+      DateCellDayEvent d=(DateCellDayEvent)getWidget(eventIndex);
+      d.setMoveWidth(width);
+      int freeSpaceCol=findFreeColumnSpaceOnLeft(new WeekGridMinuteTimeRange(d.getCalendarEvent().getStartTime(),d.getCalendarEvent().getEndTime()),order,columns);
+      if (freeSpaceCol >= 0) {
+        col=freeSpaceCol;
+        columns.put(eventIndex,col);
+        int newOrderindex=0;
+        for (        Integer i : order) {
+          if (columns.get(i) >= col) {
+            newOrderindex=order.indexOf(i);
+            break;
+          }
+        }
+        order.add(newOrderindex,eventIndex);
+      }
+ else {
+        col=colCount++;
+        columns.put(eventIndex,col);
+        order.add(eventIndex);
+      }
+    }
+    int eventWidth=(width / colCount);
+    for (    Integer index : g.getItems()) {
+      DateCellDayEvent d=(DateCellDayEvent)getWidget(index);
+      d.getElement().getStyle().setMarginLeft((eventWidth * columns.get(index)),Unit.PX);
+      d.setWidth(eventWidth + "px");
+      d.setSlotHeightInPX(getSlotHeight());
+    }
+  }
+}

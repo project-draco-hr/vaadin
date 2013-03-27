@@ -1,0 +1,24 @@
+{
+  if (actionMap.isEmpty()) {
+    return null;
+  }
+  List<CalendarState.Action> calendarActions=new ArrayList<CalendarState.Action>();
+  SimpleDateFormat formatter=new SimpleDateFormat(DateConstants.ACTION_DATE_FORMAT_PATTERN);
+  formatter.setTimeZone(getTimeZone());
+  for (  Entry<CalendarDateRange,Set<Action>> entry : actionMap.entrySet()) {
+    CalendarDateRange range=entry.getKey();
+    Set<Action> actions=entry.getValue();
+    for (    Action action : actions) {
+      String key=actionMapper.key(action);
+      CalendarState.Action calendarAction=new CalendarState.Action();
+      calendarAction.actionKey=key;
+      calendarAction.caption=action.getCaption();
+      setResource(key,action.getIcon());
+      calendarAction.iconKey=key;
+      calendarAction.startDate=formatter.format(range.getStart());
+      calendarAction.endDate=formatter.format(range.getEnd());
+      calendarActions.add(calendarAction);
+    }
+  }
+  return calendarActions;
+}

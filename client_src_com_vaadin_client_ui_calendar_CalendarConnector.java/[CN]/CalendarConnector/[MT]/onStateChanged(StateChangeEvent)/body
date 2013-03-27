@@ -1,0 +1,32 @@
+{
+  super.onStateChanged(stateChangeEvent);
+  CalendarState state=getState();
+  VCalendar widget=getWidget();
+  boolean monthView=state.days.size() > 7;
+  widget.setForwardNavigationEnabled(hasEventListener(CalendarEventId.FORWARD));
+  widget.setBackwardNavigationEnabled(hasEventListener(CalendarEventId.BACKWARD));
+  widget.set24HFormat(state.format24H);
+  widget.setDayNames(state.dayNames);
+  widget.setMonthNames(state.monthNames);
+  widget.setFirstDayNumber(state.firstVisibleDayOfWeek);
+  widget.setLastDayNumber(state.lastVisibleDayOfWeek);
+  widget.setFirstHourOfTheDay(state.firstHourOfDay);
+  widget.setLastHourOfTheDay(state.lastHourOfDay);
+  widget.setReadOnly(state.readOnly);
+  widget.setDisabled(!state.enabled);
+  widget.setRangeSelectAllowed(hasEventListener(CalendarEventId.RANGESELECT));
+  widget.setRangeMoveAllowed(hasEventListener(CalendarEventId.EVENTMOVE));
+  widget.setEventMoveAllowed(hasEventListener(CalendarEventId.EVENTMOVE));
+  widget.setEventResizeAllowed(hasEventListener(CalendarEventId.EVENTRESIZE));
+  List<CalendarState.Day> days=state.days;
+  List<CalendarState.Event> events=state.events;
+  if (monthView) {
+    updateMonthView(days,events);
+  }
+ else {
+    updateWeekView(days,events);
+  }
+  updateSizes();
+  registerEventToolTips(state.events);
+  updateActionMap(state.actions);
+}

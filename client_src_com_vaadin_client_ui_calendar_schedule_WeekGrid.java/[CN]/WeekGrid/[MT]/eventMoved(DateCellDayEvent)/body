@@ -1,0 +1,16 @@
+{
+  Style s=dayEvent.getElement().getStyle();
+  int left=Integer.parseInt(s.getLeft().substring(0,s.getLeft().length() - 2));
+  DateCell previousParent=(DateCell)dayEvent.getParent();
+  DateCell newParent=(DateCell)content.getWidget((left / getDateCellWidth()) + 1);
+  CalendarEvent se=dayEvent.getCalendarEvent();
+  previousParent.removeEvent(dayEvent);
+  newParent.addEvent(dayEvent);
+  if (!previousParent.equals(newParent)) {
+    previousParent.recalculateEventWidths();
+  }
+  newParent.recalculateEventWidths();
+  if (calendar.getEventMovedListener() != null) {
+    calendar.getEventMovedListener().eventMoved(se);
+  }
+}
