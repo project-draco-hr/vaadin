@@ -4,5 +4,19 @@
   }
   CurrentInstance.clearAll();
   setCurrent(this);
-  service(createVaadinRequest(request),createVaadinResponse(response));
+  VaadinServletRequest vaadinRequest=createVaadinRequest(request);
+  VaadinServletResponse vaadinResponse=createVaadinResponse(response);
+  if (!ensureCookiesEnabled(vaadinRequest,vaadinResponse)) {
+    return;
+  }
+  if (isStaticResourceRequest(request)) {
+    serveStaticResources(request,response);
+    return;
+  }
+  try {
+    getService().handleRequest(vaadinRequest,vaadinResponse);
+  }
+ catch (  ServiceException e) {
+    throw new ServletException(e);
+  }
 }

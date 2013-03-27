@@ -1,0 +1,29 @@
+{
+  if (!(request instanceof VaadinServletRequest)) {
+    throw new ServiceException(new IllegalArgumentException("handleSessionExpired called with a non-VaadinServletRequest: " + request.getClass().getName()));
+  }
+  VaadinServletRequest servletRequest=(VaadinServletRequest)request;
+  VaadinServletResponse servletResponse=(VaadinServletResponse)response;
+  try {
+    SystemMessages ci=getSystemMessages(ServletPortletHelper.findLocale(null,null,request),request);
+    if (ServletPortletHelper.isUIDLRequest(request)) {
+      servletRequest.getSession().invalidate();
+      criticalNotification(request,response,ci.getSessionExpiredCaption(),ci.getSessionExpiredMessage(),null,ci.getSessionExpiredURL());
+    }
+ else     if (ServletPortletHelper.isHeartbeatRequest(request)) {
+      response.sendError(HttpServletResponse.SC_GONE,"Session expired");
+    }
+ else {
+      String sessionExpiredURL=ci.getSessionExpiredURL();
+      if (sessionExpiredURL != null) {
+        servletResponse.sendRedirect(sessionExpiredURL);
+      }
+ else {
+        response.sendError(HttpServletResponse.SC_GONE,"Session expired");
+      }
+    }
+  }
+ catch (  IOException e) {
+    throw new ServiceException(e);
+  }
+}
