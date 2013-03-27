@@ -1,0 +1,26 @@
+{
+  if (target.isFullRepaint()) {
+    nextInjectionPosition=0;
+  }
+  if (injectionCounter > nextInjectionPosition) {
+    target.startTag("css-injections");
+    while (injectionCounter > nextInjectionPosition) {
+      String stringInjection=stringInjections.get(nextInjectionPosition);
+      if (stringInjection != null) {
+        target.startTag("css-string");
+        target.addAttribute("id",nextInjectionPosition);
+        target.addText(stringInjection);
+        target.endTag("css-string");
+      }
+      Resource resourceInjection=resourceInjections.get(nextInjectionPosition);
+      if (resourceInjection != null) {
+        target.startTag("css-resource");
+        target.addAttribute("id",nextInjectionPosition);
+        target.addAttribute("url",resourceInjection);
+        target.endTag("css-resource");
+      }
+      nextInjectionPosition++;
+    }
+    target.endTag("css-injections");
+  }
+}

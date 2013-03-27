@@ -1,6 +1,6 @@
 {
-  final StyleSheet stylesheet=Page.getCurrent().getStyleSheet();
-  stylesheet.inject(new StreamResource(new StreamResource.StreamSource(){
+  final Styles stylesheet=Page.getCurrent().getStyles();
+  stylesheet.add(new StreamResource(new StreamResource.StreamSource(){
     @Override public InputStream getStream(){
       return new ByteArrayInputStream(".hello, .world { color:silver; }".getBytes());
     }
@@ -13,7 +13,7 @@
   addComponent(cssToInject);
   Button inject=new Button("Inject!",new Button.ClickListener(){
     @Override public void buttonClick(    ClickEvent event){
-      stylesheet.inject(cssToInject.getValue());
+      stylesheet.add(cssToInject.getValue());
       cssToInject.setValue("");
     }
   }
@@ -22,7 +22,7 @@
   Button injectRandom=new Button("Inject as resource!",new Button.ClickListener(){
     @Override public void buttonClick(    ClickEvent event){
       final String css=cssToInject.getValue();
-      stylesheet.inject(new StreamResource(new StreamResource.StreamSource(){
+      stylesheet.add(new StreamResource(new StreamResource.StreamSource(){
         @Override public InputStream getStream(){
           return new ByteArrayInputStream(css.getBytes());
         }
