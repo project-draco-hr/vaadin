@@ -24,15 +24,14 @@
   finally {
       session.unlock();
     }
-    Map<Class<?>,Object> oldThreadLocals=new HashMap<Class<?>,Object>();
-    CurrentInstance.setThreadLocals(ui,oldThreadLocals);
+    Map<Class<?>,CurrentInstance> oldThreadLocals=CurrentInstance.setThreadLocals(ui);
     try {
       if (!connector.handleConnectorRequest(request,response,key)) {
         return error(request,response,connector.getClass().getSimpleName() + " (" + connector.getConnectorId()+ ") did not handle connector request for "+ key);
       }
     }
   finally {
-      CurrentInstance.setThreadLocals(oldThreadLocals);
+      CurrentInstance.restoreThreadLocals(oldThreadLocals);
     }
     return true;
   }
