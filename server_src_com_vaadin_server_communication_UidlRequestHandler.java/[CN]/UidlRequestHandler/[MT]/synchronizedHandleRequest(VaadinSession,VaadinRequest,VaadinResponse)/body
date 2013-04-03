@@ -7,7 +7,6 @@
   String requestThemeName=request.getParameter("theme");
   ClientConnector highlightedConnector;
   boolean repaintAll;
-  final OutputStream out=response.getOutputStream();
   repaintAll=(request.getParameter(ApplicationConstants.URL_PARAMETER_REPAINT_ALL) != null);
   boolean analyzeLayouts=false;
   if (repaintAll) {
@@ -18,27 +17,28 @@
       highlightConnector(highlightedConnector);
     }
   }
-  final Writer outWriter=new BufferedWriter(new OutputStreamWriter(out,"UTF-8"));
+  StringWriter stringWriter=new StringWriter();
   try {
     rpcHandler.handleRpc(uI,request.getReader(),request);
     if (repaintAll) {
       session.getCommunicationManager().repaintAll(uI);
     }
-    writeUidl(request,response,uI,outWriter,repaintAll,analyzeLayouts);
+    writeUidl(request,response,uI,stringWriter,repaintAll,analyzeLayouts);
     postHandleRequest(uI);
   }
  catch (  JSONException e) {
     getLogger().log(Level.SEVERE,"Error writing JSON to response",e);
     criticalNotifier.criticalNotification(request,response,null,null,null,null);
+    return true;
   }
 catch (  InvalidUIDLSecurityKeyException e) {
     getLogger().log(Level.WARNING,"Invalid security key received from {}",request.getRemoteHost());
     criticalNotifier.criticalNotification(request,response,null,null,null,null);
+    return true;
   }
  finally {
-    outWriter.close();
+    stringWriter.close();
     requestThemeName=null;
   }
-  response.setHeader("Cache-Control","no-cache");
-  return true;
+  return UIInitHandler.commitJsonResponse(request,response,stringWriter.toString());
 }
