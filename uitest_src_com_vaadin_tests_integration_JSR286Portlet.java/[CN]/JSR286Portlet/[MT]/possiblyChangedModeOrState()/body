@@ -1,0 +1,67 @@
+{
+  VaadinPortletRequest request=(VaadinPortletRequest)VaadinPortletService.getCurrentRequest();
+  boolean inViewMode=(request.getPortletMode() == PortletMode.VIEW);
+  boolean inNormalState=(request.getWindowState() == WindowState.NORMAL);
+  portletEdit.setEnabled(true);
+  portletMax.setEnabled(true);
+  tf.setEnabled(!inViewMode);
+  getPage().showNotification(new Notification("Portlet status","Mode: " + request.getPortletMode() + " State: "+ request.getWindowState(),Type.WARNING_MESSAGE));
+  Map<?,?> uinfo=(Map<?,?>)request.getAttribute(PortletRequest.USER_INFO);
+  if (uinfo != null) {
+    String s="";
+    for (Iterator<?> it=uinfo.keySet().iterator(); it.hasNext(); ) {
+      Object key=it.next();
+      Object val=uinfo.get(key);
+      s+=key + ": " + val+ "\n";
+    }
+    if (request.isUserInRole("administrator")) {
+      s+="(administrator)";
+    }
+    userInfo.setValue(s);
+  }
+ else {
+    userInfo.setValue("-");
+  }
+  PortletURL url=getSession().generateActionURL("changeMode");
+  try {
+    if (inViewMode) {
+      url.setPortletMode(PortletMode.EDIT);
+      portletEdit.setCaption("Edit");
+    }
+ else {
+      url.setPortletMode(PortletMode.VIEW);
+      portletEdit.setCaption("Done");
+    }
+    portletEdit.setResource(new ExternalResource(url.toString()));
+  }
+ catch (  Exception e) {
+    portletEdit.setEnabled(false);
+    Logger.getLogger(getClass().getName()).log(Level.SEVERE,"Error creating edit mode link",e);
+  }
+  url=getSession().generateActionURL("changeState");
+  try {
+    if (inNormalState) {
+      url.setWindowState(WindowState.MAXIMIZED);
+      portletMax.setCaption("Maximize");
+    }
+ else {
+      url.setWindowState(WindowState.NORMAL);
+      portletMax.setCaption("Back to normal");
+    }
+    portletMax.setResource(new ExternalResource(url.toString()));
+  }
+ catch (  Exception e) {
+    portletMax.setEnabled(false);
+    Logger.getLogger(getClass().getName()).log(Level.SEVERE,"Error creating state change link",e);
+  }
+  if (someAction == null) {
+    url=getSession().generateActionURL("someAction");
+    try {
+      someAction=new Link("An action",new ExternalResource(url.toString()));
+      main.addComponent(someAction);
+    }
+ catch (    Exception e) {
+      System.err.println("Could not create someAction: " + e);
+    }
+  }
+}
