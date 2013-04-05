@@ -1,6 +1,6 @@
 {
   getWidget().setListener(new DateClickListener(){
-    public void dateClick(    String date){
+    @Override public void dateClick(    String date){
       if (!getWidget().isDisabledOrReadOnly() && hasEventListener(CalendarEventId.DATECLICK)) {
         rpc.dateClick(date);
       }
@@ -8,7 +8,7 @@
   }
 );
   getWidget().setListener(new ForwardListener(){
-    public void forward(){
+    @Override public void forward(){
       if (hasEventListener(CalendarEventId.FORWARD)) {
         rpc.forward();
       }
@@ -16,7 +16,7 @@
   }
 );
   getWidget().setListener(new BackwardListener(){
-    public void backward(){
+    @Override public void backward(){
       if (hasEventListener(CalendarEventId.BACKWARD)) {
         rpc.backward();
       }
@@ -24,7 +24,7 @@
   }
 );
   getWidget().setListener(new RangeSelectListener(){
-    public void rangeSelected(    String value){
+    @Override public void rangeSelected(    String value){
       if (hasEventListener(CalendarEventId.RANGESELECT)) {
         rpc.rangeSelect(value);
       }
@@ -32,7 +32,7 @@
   }
 );
   getWidget().setListener(new WeekClickListener(){
-    public void weekClick(    String event){
+    @Override public void weekClick(    String event){
       if (!getWidget().isDisabledOrReadOnly() && hasEventListener(CalendarEventId.WEEKCLICK)) {
         rpc.weekClick(event);
       }
@@ -40,7 +40,7 @@
   }
 );
   getWidget().setListener(new EventMovedListener(){
-    public void eventMoved(    CalendarEvent event){
+    @Override public void eventMoved(    CalendarEvent event){
       if (hasEventListener(CalendarEventId.EVENTMOVE)) {
         StringBuilder sb=new StringBuilder();
         sb.append(DateUtil.formatClientSideDate(event.getStart()));
@@ -52,7 +52,7 @@
   }
 );
   getWidget().setListener(new EventResizeListener(){
-    public void eventResized(    CalendarEvent event){
+    @Override public void eventResized(    CalendarEvent event){
       if (hasEventListener(CalendarEventId.EVENTRESIZE)) {
         StringBuilder buffer=new StringBuilder();
         buffer.append(DateUtil.formatClientSideDate(event.getStart()));
@@ -70,13 +70,13 @@
   }
 );
   getWidget().setListener(new VCalendar.ScrollListener(){
-    public void scroll(    int scrollPosition){
+    @Override public void scroll(    int scrollPosition){
       rpc.scroll(scrollPosition);
     }
   }
 );
   getWidget().setListener(new EventClickListener(){
-    public void eventClick(    CalendarEvent event){
+    @Override public void eventClick(    CalendarEvent event){
       if (hasEventListener(CalendarEventId.EVENTCLICK)) {
         rpc.eventClick(event.getIndex());
       }
@@ -84,20 +84,20 @@
   }
 );
   getWidget().setListener(new MouseEventListener(){
-    public void contextMenu(    ContextMenuEvent event,    final Widget widget){
+    @Override public void contextMenu(    ContextMenuEvent event,    final Widget widget){
       final NativeEvent ne=event.getNativeEvent();
       int left=ne.getClientX();
       int top=ne.getClientY();
       top+=Window.getScrollTop();
       left+=Window.getScrollLeft();
       getClient().getContextMenu().showAt(new ActionOwner(){
-        public String getPaintableId(){
+        @Override public String getPaintableId(){
           return CalendarConnector.this.getPaintableId();
         }
-        public ApplicationConnection getClient(){
+        @Override public ApplicationConnection getClient(){
           return CalendarConnector.this.getClient();
         }
-        @SuppressWarnings("deprecation") public Action[] getActions(){
+        @Override @SuppressWarnings("deprecation") public Action[] getActions(){
           if (widget instanceof SimpleDayCell) {
             SimpleDayCell cell=(SimpleDayCell)widget;
             Date start=new Date(cell.getDate().getYear(),cell.getDate().getMonth(),cell.getDate().getDate(),0,0,0);

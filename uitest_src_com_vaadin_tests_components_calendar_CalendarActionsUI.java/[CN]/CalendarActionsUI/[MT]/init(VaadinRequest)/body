@@ -11,14 +11,14 @@
     public final Action NEW_EVENT=new Action("Add event");
     public final Action EDIT_EVENT=new Action("Edit event");
     public final Action REMOVE_EVENT=new Action("Remove event");
-    public void handleAction(    Action action,    Object sender,    Object target){
+    @Override public void handleAction(    Action action,    Object sender,    Object target){
       Date date=(Date)target;
       if (action == NEW_EVENT) {
         BasicEvent event=new BasicEvent("New event","Hello world",date,date);
         calendar.addEvent(event);
       }
     }
-    public Action[] getActions(    Object target,    Object sender){
+    @Override public Action[] getActions(    Object target,    Object sender){
       CalendarDateRange date=(CalendarDateRange)target;
       java.util.Calendar cal=java.util.Calendar.getInstance();
       cal.set(2000,1,1,12,0,0);
@@ -35,7 +35,7 @@
 );
   content.addComponent(calendar);
   content.addComponent(new Button("Set week view",new Button.ClickListener(){
-    public void buttonClick(    ClickEvent event){
+    @Override public void buttonClick(    ClickEvent event){
       calendar.setEndDate(new Date(100,1,7));
     }
   }
