@@ -43,8 +43,12 @@
   curr.setDate(1 - startWeekDay);
   for (int weekOfMonth=1; weekOfMonth < 7; weekOfMonth++) {
     for (int dayOfWeek=0; dayOfWeek < 7; dayOfWeek++) {
-      Day day=new Day((Date)curr.clone());
+      Date dayDate=(Date)curr.clone();
+      Day day=new Day(dayDate);
       day.setStyleName(parent.getStylePrimaryName() + "-calendarpanel-day");
+      if (!isDateInsideRange(dayDate,Resolution.DAY)) {
+        day.addStyleDependentName(CN_OUTSIDE_RANGE);
+      }
       if (curr.equals(selectedDate)) {
         day.addStyleDependentName(CN_SELECTED);
         Roles.getGridcellRole().setAriaSelectedState(day.getElement(),SelectedValue.TRUE);
