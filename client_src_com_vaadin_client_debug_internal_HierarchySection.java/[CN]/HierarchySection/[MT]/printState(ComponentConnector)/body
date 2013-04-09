@@ -8,13 +8,20 @@
   html+=getRowHTML("Description",state.description);
   html+=getRowHTML("Width",state.width + " (actual: " + connector.getWidget().getOffsetWidth()+ "px)");
   html+=getRowHTML("Height",state.height + " (actual: " + connector.getWidget().getOffsetHeight()+ "px)");
-  html+=getRowHTML("Enabled",state.enabled);
-  html+=getRowHTML("Read only",state.readOnly);
-  html+=getRowHTML("Immediate",state.immediate);
-  html+=getRowHTML("Error message",state.errorMessage);
-  html+=getRowHTML("Primary stylename",state.primaryStyleName);
-  html+=getRowHTML("Styles",state.styles);
-  html+=getRowHTML("Resources",state.resources);
+  try {
+    JsArrayObject<Property> properties=AbstractConnector.getStateType(connector).getPropertiesAsArray();
+    for (int i=0; i < properties.size(); i++) {
+      Property property=properties.get(i);
+      String name=property.getName();
+      if (!ignoreProperties.contains(name)) {
+        html+=getRowHTML(property.getDisplayName(),property.getValue(state));
+      }
+    }
+  }
+ catch (  NoDataException e) {
+    html+="<div>Could not read state, error has been logged to the console</div>";
+    VConsole.error(e);
+  }
   content.clear();
   content.add(new HTML(html));
 }
