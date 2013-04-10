@@ -5,6 +5,8 @@
     forceHandleMessage.schedule(MAX_SUSPENDED_TIMEOUT);
     return;
   }
+  final Object lock=new Object();
+  suspendReponseHandling(lock);
   VConsole.log("Handling message from server");
   eventBus.fireEvent(new ResponseHandlingStartedEvent(this));
   if (json.containsKey("redirect")) {
@@ -145,6 +147,7 @@
       if (meta == null || !meta.containsKey("async")) {
         endRequest();
       }
+      resumeResponseHandling(lock);
       if (Profiler.isEnabled()) {
         Scheduler.get().scheduleDeferred(new ScheduledCommand(){
           @Override public void execute(){

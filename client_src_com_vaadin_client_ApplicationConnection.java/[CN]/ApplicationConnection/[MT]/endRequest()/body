@@ -9,6 +9,17 @@
     checkForPendingVariableBursts();
     runPostRequestHooks(configuration.getRootPanelId());
   }
+  if (!initJsonHandled) {
+    initJsonHandled=true;
+    int queueLength=incommingPushMessageQueue.length();
+    if (queueLength > 0) {
+      VConsole.log("Init handled, processing " + queueLength + " enqueued messages");
+      for (int i=0; i < queueLength; i++) {
+        handlePushMessage(incommingPushMessageQueue.get(i));
+      }
+      incommingPushMessageQueue.setLength(0);
+    }
+  }
   Scheduler.get().scheduleDeferred(new Command(){
     @Override public void execute(){
       if (!hasActiveRequest()) {
