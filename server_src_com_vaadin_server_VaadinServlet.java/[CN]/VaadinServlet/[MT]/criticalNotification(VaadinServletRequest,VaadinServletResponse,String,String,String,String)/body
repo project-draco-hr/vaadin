@@ -1,24 +1,7 @@
 {
   if (ServletPortletHelper.isUIDLRequest(request)) {
-    if (caption != null) {
-      caption="\"" + JsonPaintTarget.escapeJSON(caption) + "\"";
-    }
-    if (details != null) {
-      if (message == null) {
-        message=details;
-      }
- else {
-        message+="<br/><br/>" + details;
-      }
-    }
-    if (message != null) {
-      message="\"" + JsonPaintTarget.escapeJSON(message) + "\"";
-    }
-    if (url != null) {
-      url="\"" + JsonPaintTarget.escapeJSON(url) + "\"";
-    }
-    String output="for(;;);[{\"changes\":[], \"meta\" : {" + "\"appError\": {" + "\"caption\":" + caption + ","+ "\"message\" : "+ message+ ","+ "\"url\" : "+ url+ "}}, \"resources\": {}, \"locales\":[]}]";
-    writeResponse(response,"application/json; charset=UTF-8",output);
+    String output=VaadinService.createCriticalNotificationJSON(caption,message,details,url);
+    getService().writeStringResponse(response,JsonConstants.JSON_CONTENT_TYPE,output);
   }
  else {
     String output="";
@@ -39,6 +22,6 @@
     if (url != null) {
       output+="</a>";
     }
-    writeResponse(response,"text/html; charset=UTF-8",output);
+    getService().writeStringResponse(response,"text/html; charset=UTF-8",output);
   }
 }

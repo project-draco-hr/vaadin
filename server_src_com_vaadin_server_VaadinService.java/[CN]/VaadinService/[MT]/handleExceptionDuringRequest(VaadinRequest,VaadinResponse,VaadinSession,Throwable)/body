@@ -7,7 +7,7 @@
     if (ServletPortletHelper.isUIDLRequest(request)) {
       SystemMessages ci=getSystemMessages(ServletPortletHelper.findLocale(null,vaadinSession,request),request);
       try {
-        criticalNotification(request,response,ci.getInternalErrorCaption(),ci.getInternalErrorMessage(),null,ci.getInternalErrorURL());
+        writeStringResponse(response,JsonConstants.JSON_CONTENT_TYPE,createCriticalNotificationJSON(ci.getInternalErrorCaption(),ci.getInternalErrorMessage(),null,ci.getInternalErrorURL()));
       }
  catch (      IOException e) {
         getLogger().log(Level.WARNING,"Failed to write critical notification response to the client",e);

@@ -8,7 +8,7 @@
     SystemMessages ci=getSystemMessages(ServletPortletHelper.findLocale(null,null,request),request);
     if (ServletPortletHelper.isUIDLRequest(request)) {
       servletRequest.getSession().invalidate();
-      criticalNotification(request,response,ci.getSessionExpiredCaption(),ci.getSessionExpiredMessage(),null,ci.getSessionExpiredURL());
+      writeStringResponse(response,JsonConstants.JSON_CONTENT_TYPE,createCriticalNotificationJSON(ci.getSessionExpiredCaption(),ci.getSessionExpiredMessage(),null,ci.getSessionExpiredURL()));
     }
  else     if (ServletPortletHelper.isHeartbeatRequest(request)) {
       response.sendError(HttpServletResponse.SC_GONE,"Session expired");
