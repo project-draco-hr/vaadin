@@ -1,0 +1,38 @@
+{
+  AtmosphereRequest req=resource.getRequest();
+  VaadinServletRequest vaadinRequest=new VaadinServletRequest(req,service);
+  VaadinSession session=null;
+  service.requestStart(vaadinRequest,null);
+  try {
+    try {
+      session=service.findVaadinSession(vaadinRequest);
+    }
+ catch (    ServiceException e) {
+      e.printStackTrace();
+      return;
+    }
+catch (    SessionExpiredException e) {
+      e.printStackTrace();
+      return;
+    }
+    session.lock();
+    try {
+      VaadinSession.setCurrent(session);
+      final UI ui=service.findUI(vaadinRequest);
+      if (ui == null) {
+        getLogger().warning("Could not find the requested UI in session");
+        return;
+      }
+      callback.run(resource,ui);
+    }
+ catch (    IOException e) {
+      getLogger().log(Level.INFO,"An error occured while writing a push response",e);
+    }
+ finally {
+      session.unlock();
+    }
+  }
+  finally {
+    service.requestEnd(vaadinRequest,null,session);
+  }
+}
