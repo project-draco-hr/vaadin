@@ -1,0 +1,13 @@
+{
+  if (pushMode == null) {
+    UICreateEvent event=new UICreateEvent(getRequest(),getUIClass());
+    pushMode=getBootstrapResponse().getUIProvider().getPushMode(event);
+    if (pushMode == null) {
+      pushMode=getRequest().getService().getDeploymentConfiguration().getPushMode();
+    }
+    if (pushMode.isEnabled() && !getRequest().getService().ensurePushAvailable()) {
+      pushMode=PushMode.DISABLED;
+    }
+  }
+  return pushMode;
+}
