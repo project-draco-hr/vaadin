@@ -1,11 +1,17 @@
 {
   if (enabled && push == null) {
-    push=GWT.create(PushConnection.class);
+    final PushConnection push=GWT.create(PushConnection.class);
     push.init(this);
-    final String pushUri=addGetParameters(translateVaadinUri(ApplicationConstants.APP_PROTOCOL_PREFIX + ApplicationConstants.PUSH_PATH + '/'),UIConstants.UI_ID_PARAMETER + "=" + getConfiguration().getUIId());
-    Scheduler.get().scheduleDeferred(new Command(){
+    push.runWhenAtmosphereLoaded(new Command(){
       @Override public void execute(){
-        push.connect(pushUri);
+        ApplicationConnection.this.push=push;
+        final String pushUri=addGetParameters(translateVaadinUri(ApplicationConstants.APP_PROTOCOL_PREFIX + ApplicationConstants.PUSH_PATH + '/'),UIConstants.UI_ID_PARAMETER + "=" + getConfiguration().getUIId());
+        Scheduler.get().scheduleDeferred(new Command(){
+          @Override public void execute(){
+            push.connect(pushUri);
+          }
+        }
+);
       }
     }
 );
