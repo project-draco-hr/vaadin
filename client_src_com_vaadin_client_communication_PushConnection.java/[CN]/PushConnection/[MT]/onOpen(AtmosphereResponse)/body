@@ -1,8 +1,20 @@
 {
   VConsole.log("Push connection established using " + response.getTransport());
-  connected=true;
   for (  String message : messageQueue) {
-    push(message);
+    doPush(socket,message);
   }
   messageQueue.clear();
+switch (state) {
+case CONNECT_PENDING:
+    state=State.CONNECTED;
+  break;
+case DISCONNECT_PENDING:
+state=State.CONNECTED;
+disconnect();
+break;
+case CONNECTED:
+break;
+default :
+throw new IllegalStateException("Got onOpen event when conncetion state is " + state + ". This should never happen.");
+}
 }

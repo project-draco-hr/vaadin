@@ -1,0 +1,41 @@
+{
+  updateCounter();
+  addComponent(counterLabel);
+  CheckBox pushSetting=new CheckBox("Push enabled");
+  pushSetting.setValue(Boolean.valueOf(getPushMode().isEnabled()));
+  pushSetting.setImmediate(true);
+  pushSetting.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      if (event.getProperty().getValue() == Boolean.TRUE) {
+        setPushMode(PushMode.AUTOMATIC);
+      }
+ else {
+        setPushMode(PushMode.DISABLED);
+      }
+    }
+  }
+);
+  addComponent(pushSetting);
+  addComponent(new Button("Update counter now",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      updateCounter();
+    }
+  }
+));
+  addComponent(new Button("Update counter in 1 sec",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      new Timer().schedule(new TimerTask(){
+        @Override public void run(){
+          runSafely(new Runnable(){
+            @Override public void run(){
+              updateCounter();
+            }
+          }
+);
+        }
+      }
+,1000);
+    }
+  }
+));
+}

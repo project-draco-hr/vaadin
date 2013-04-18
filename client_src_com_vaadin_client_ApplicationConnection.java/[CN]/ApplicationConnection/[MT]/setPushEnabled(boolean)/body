@@ -1,5 +1,5 @@
 {
-  if (getConfiguration().getPushMode().isEnabled()) {
+  if (enabled && push == null) {
     push=GWT.create(PushConnection.class);
     push.init(this);
     final String pushUri=addGetParameters(translateVaadinUri(ApplicationConstants.APP_PROTOCOL_PREFIX + ApplicationConstants.PUSH_PATH + '/'),UIConstants.UI_ID_PARAMETER + "=" + getConfiguration().getUIId());
@@ -9,5 +9,9 @@
       }
     }
 );
+  }
+ else   if (!enabled && push != null) {
+    push.disconnect();
+    push=null;
   }
 }
