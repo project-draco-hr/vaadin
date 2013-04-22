@@ -10,12 +10,12 @@
   final NativeButton maximize=new NativeButton("Maximize");
   Button.ClickListener listener=new Button.ClickListener(){
     @Override public void buttonClick(    ClickEvent event){
-      if (w.getDisplayState() == DisplayState.MAXIMIZED) {
-        w.setDisplayState(DisplayState.NORMAL);
+      if (w.getWindowMode() == WindowMode.MAXIMIZED) {
+        w.setWindowMode(WindowMode.NORMAL);
         maximize.setCaption("Maximize");
       }
  else {
-        w.setDisplayState(DisplayState.MAXIMIZED);
+        w.setWindowMode(WindowMode.MAXIMIZED);
         maximize.setCaption("Restore");
       }
     }
@@ -23,14 +23,14 @@
 ;
   maximize.addClickListener(listener);
   ((ComponentContainer)w.getContent()).addComponent(maximize);
-  w.addDisplayStateChangeListener(new DisplayStateChangeListener(){
-    @Override public void displayStateChanged(    DisplayStateChangeEvent event){
-      DisplayState state=(event.getWindow().getDisplayState());
-      if (state == DisplayState.NORMAL) {
+  w.addWindowModeChangeListener(new WindowModeChangeListener(){
+    @Override public void windowModeChanged(    WindowModeChangeEvent event){
+      WindowMode state=(event.getWindow().getWindowMode());
+      if (state == WindowMode.NORMAL) {
         w.setCaption("Window " + w.getData() + " Normal");
         maximize.setCaption("Maximize");
       }
- else       if (state == DisplayState.MAXIMIZED) {
+ else       if (state == WindowMode.MAXIMIZED) {
         w.setCaption("Window " + w.getData() + " Maximized");
         maximize.setCaption("Restore");
       }
