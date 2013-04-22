@@ -1,0 +1,18 @@
+{
+  if (isAtmosphereLoaded()) {
+    command.execute();
+  }
+ else {
+    VConsole.log("Loading " + ApplicationConstants.VAADIN_PUSH_JS);
+    ResourceLoader.get().loadScript(connection.getConfiguration().getVaadinDirUrl() + ApplicationConstants.VAADIN_PUSH_JS,new ResourceLoadListener(){
+      @Override public void onLoad(      ResourceLoadEvent event){
+        VConsole.log(ApplicationConstants.VAADIN_PUSH_JS + " loaded");
+        command.execute();
+      }
+      @Override public void onError(      ResourceLoadEvent event){
+        VConsole.error(event.getResourceUrl() + " could not be loaded. Push will not work.");
+      }
+    }
+);
+  }
+}
