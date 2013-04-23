@@ -1,29 +1,15 @@
 {
-  if (identifier.endsWith(".css")) {
-    ScssStylesheetResolver resolver=new FilesystemResolver();
-    return resolver.resolve(identifier);
+  try {
+    identifier=new URI(identifier).normalize().getPath();
+  }
+ catch (  URISyntaxException e) {
   }
   InputSource source=null;
-  Pattern pattern=Pattern.compile("\\.\\.\\/([^\\/]+)\\/([^\\/]+\\.scss)");
-  Matcher matcher=pattern.matcher(identifier);
-  if (matcher.find()) {
-    ScssStylesheetResolver resolver=new FilesystemResolver();
+  ScssStylesheetResolver resolver=new FilesystemResolver();
+  source=resolver.resolve(identifier);
+  if (source == null) {
+    resolver=new ClassloaderResolver();
     source=resolver.resolve(identifier);
-    if (source == null) {
-      String themeName=matcher.group(1);
-      String fileName=matcher.group(2);
-      resolver=new ClassloaderResolver();
-      String id="VAADIN/themes/" + themeName + "/"+ fileName;
-      source=resolver.resolve(id);
-    }
-  }
- else {
-    ScssStylesheetResolver resolver=new FilesystemResolver();
-    source=resolver.resolve(identifier);
-    if (source == null) {
-      resolver=new ClassloaderResolver();
-      source=resolver.resolve(identifier);
-    }
   }
   return source;
 }
