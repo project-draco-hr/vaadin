@@ -1,0 +1,16 @@
+{
+  if (!isLoggable(record) || record.getThrown() == null) {
+    return;
+  }
+  try {
+    String exceptionText=getFormatter().format(record);
+    Widget owner=null;
+    if (!ApplicationConfiguration.getRunningApplications().isEmpty()) {
+      ApplicationConnection connection=ApplicationConfiguration.getRunningApplications().get(0);
+      owner=connection.getUIConnector().getWidget();
+    }
+    VNotification.createNotification(VNotification.DELAY_FOREVER,owner).show("<h1>Uncaught client side exception</h1><br />" + exceptionText,VNotification.CENTERED,"error");
+  }
+ catch (  Exception e2) {
+  }
+}
