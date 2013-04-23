@@ -133,6 +133,9 @@ throw new ParseException();
 }
 break;
 case DOT:
+case TO:
+case THROUGH:
+case FROM:
 case STRING:
 case IDENT:
 case URL:
@@ -144,6 +147,9 @@ n=jj_consume_token(STRING);
 result=LexicalUnitImpl.createString(n.beginLine,n.beginColumn,prev,convertStringIndex(n.image,1,n.image.length() - 1));
 break;
 case DOT:
+case TO:
+case THROUGH:
+case FROM:
 case IDENT:
 switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 case DOT:
@@ -154,7 +160,24 @@ default :
 jj_la1[245]=jj_gen;
 ;
 }
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case IDENT:
 n=jj_consume_token(IDENT);
+break;
+case TO:
+n=jj_consume_token(TO);
+break;
+case THROUGH:
+n=jj_consume_token(THROUGH);
+break;
+case FROM:
+n=jj_consume_token(FROM);
+break;
+default :
+jj_la1[246]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
 s+=convertIdent(n.image);
 if ("inherit".equals(s)) {
 result=LexicalUnitImpl.createInherit(n.beginLine,n.beginColumn,prev);
@@ -173,13 +196,13 @@ case UNICODERANGE:
 result=unicode(prev);
 break;
 default :
-jj_la1[246]=jj_gen;
+jj_la1[247]=jj_gen;
 jj_consume_token(-1);
 throw new ParseException();
 }
 break;
 default :
-jj_la1[247]=jj_gen;
+jj_la1[248]=jj_gen;
 jj_consume_token(-1);
 throw new ParseException();
 }
@@ -189,7 +212,7 @@ case S:
 ;
 break;
 default :
-jj_la1[248]=jj_gen;
+jj_la1[249]=jj_gen;
 break label_169;
 }
 jj_consume_token(S);
