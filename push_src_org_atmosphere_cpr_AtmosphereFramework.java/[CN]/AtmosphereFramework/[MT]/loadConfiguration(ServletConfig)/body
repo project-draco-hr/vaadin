@@ -1,0 +1,18 @@
+{
+  if (!autoDetectHandlers)   return;
+  try {
+    URL url=sc.getServletContext().getResource(handlersPath);
+    URLClassLoader urlC=new URLClassLoader(new URL[]{url},Thread.currentThread().getContextClassLoader());
+    loadAtmosphereDotXml(sc.getServletContext().getResourceAsStream(atmosphereDotXmlPath),urlC);
+    if (atmosphereHandlers.size() == 0) {
+      autoDetectAtmosphereHandlers(sc.getServletContext(),urlC);
+      if (atmosphereHandlers.size() == 0) {
+        detectSupportedFramework(sc);
+      }
+    }
+    autoDetectWebSocketHandler(sc.getServletContext(),urlC);
+  }
+ catch (  Throwable t) {
+    throw new ServletException(t);
+  }
+}
