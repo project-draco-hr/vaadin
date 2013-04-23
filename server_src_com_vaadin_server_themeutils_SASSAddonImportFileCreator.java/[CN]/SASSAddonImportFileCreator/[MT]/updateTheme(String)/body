@@ -8,6 +8,7 @@
   try {
     PrintStream printStream=new PrintStream(new FileOutputStream(addonImports));
     printStream.println("/* " + ADDON_IMPORTS_FILE_TEXT + " */");
+    printStream.println("/* Do not manually edit this file. */");
     printStream.println();
     Map<String,URL> addonThemes=info.getAddonStyles();
     List<String> paths=new ArrayList<String>(addonThemes.keySet());
@@ -23,10 +24,12 @@
       }
     }
 );
+    List<String> mixins=new ArrayList<String>();
     for (    String path : paths) {
-      addImport(printStream,path,addonThemes.get(path));
+      mixins.addAll(addImport(printStream,path,addonThemes.get(path)));
       printStream.println();
     }
+    createAddonsMixin(printStream,mixins);
   }
  catch (  FileNotFoundException e) {
     e.printStackTrace();

@@ -1,12 +1,14 @@
 {
   printImportComment(stream,location);
+  List<String> foundMixins=new ArrayList<String>();
   if (file.endsWith(".css")) {
-    stream.print("@import url(\"../" + file + "\");\n");
+    stream.print("@import url(\"../../../" + file + "\");\n");
   }
  else {
-    stream.print("@import \"../" + file + "\";\n");
+    stream.print("@import \"../../../" + file + "\";\n");
     String mixin=file.substring(file.lastIndexOf("/") + 1,file.length() - ".scss".length());
-    stream.print("@include " + mixin + ";");
+    foundMixins.add(mixin);
   }
   stream.println();
+  return foundMixins;
 }
