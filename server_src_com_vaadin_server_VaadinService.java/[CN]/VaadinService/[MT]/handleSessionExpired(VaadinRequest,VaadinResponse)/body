@@ -1,0 +1,27 @@
+{
+  SystemMessages systemMessages=getSystemMessages(ServletPortletHelper.findLocale(null,null,request),request);
+  for (  RequestHandler handler : getRequestHandlers()) {
+    if (handler instanceof SessionExpiredHandler) {
+      try {
+        if (((SessionExpiredHandler)handler).handleSessionExpired(request,response)) {
+          return;
+        }
+      }
+ catch (      IOException e) {
+        throw new ServiceException("Handling of session expired failed",e);
+      }
+    }
+  }
+  try {
+    String sessionExpiredURL=systemMessages.getSessionExpiredURL();
+    if (sessionExpiredURL != null && (response instanceof VaadinServletResponse)) {
+      ((VaadinServletResponse)response).sendRedirect(sessionExpiredURL);
+    }
+ else {
+      response.sendError(HttpServletResponse.SC_GONE,"Session expired");
+    }
+  }
+ catch (  IOException e) {
+    throw new ServiceException(e);
+  }
+}

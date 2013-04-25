@@ -8,11 +8,16 @@
       session=service.findVaadinSession(vaadinRequest);
     }
  catch (    ServiceException e) {
-      e.printStackTrace();
-      return;
+      getLogger().log(Level.SEVERE,"Could not get session. This should never happen",e);
     }
 catch (    SessionExpiredException e) {
-      e.printStackTrace();
+      SystemMessages msg=service.getSystemMessages(ServletPortletHelper.findLocale(null,null,vaadinRequest),vaadinRequest);
+      try {
+        resource.getResponse().getWriter().write(VaadinService.createCriticalNotificationJSON(msg.getSessionExpiredCaption(),msg.getSessionExpiredMessage(),null,msg.getSessionExpiredURL()));
+      }
+ catch (      IOException e1) {
+        getLogger().log(Level.WARNING,"Failed to notify client about unavailable session",e);
+      }
       return;
     }
     session.lock();
