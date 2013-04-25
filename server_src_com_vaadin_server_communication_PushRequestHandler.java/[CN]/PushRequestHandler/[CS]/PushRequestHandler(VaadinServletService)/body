@@ -5,5 +5,10 @@
   atmosphere.addInitParameter("org.atmosphere.cpr.sessionSupport","true");
   atmosphere.addInitParameter("org.atmosphere.cpr.showSupportMessage","false");
   atmosphere.interceptor(new TrackMessageSizeInterceptor());
-  atmosphere.init();
+  try {
+    atmosphere.init(service.getServlet().getServletConfig());
+  }
+ catch (  ServletException e) {
+    throw new ServiceException("Could not read atmosphere settings",e);
+  }
 }

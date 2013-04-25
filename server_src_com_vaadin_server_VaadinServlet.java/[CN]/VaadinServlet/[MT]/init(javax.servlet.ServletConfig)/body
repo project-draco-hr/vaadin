@@ -13,7 +13,12 @@
     initParameters.setProperty(name,servletConfig.getInitParameter(name));
   }
   DeploymentConfiguration deploymentConfiguration=createDeploymentConfiguration(initParameters);
-  servletService=createServletService(deploymentConfiguration);
+  try {
+    servletService=createServletService(deploymentConfiguration);
+  }
+ catch (  ServiceException e) {
+    throw new ServletException("Could not initialize VaadinServlet",e);
+  }
   servletService.setCurrentInstances(null,null);
   servletInitialized();
   CurrentInstance.clearAll();
