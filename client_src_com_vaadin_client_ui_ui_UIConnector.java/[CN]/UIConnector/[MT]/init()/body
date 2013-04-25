@@ -18,6 +18,23 @@
     }
   }
 );
+  registerRpc(UIClientRpc.class,new UIClientRpc(){
+    @Override public void uiClosed(    final boolean sessionExpired){
+      Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+        @Override public void execute(){
+          if (sessionExpired) {
+            getConnection().showSessionExpiredError(null);
+          }
+ else {
+            getState().enabled=false;
+            updateEnabledState(getState().enabled);
+          }
+        }
+      }
+);
+    }
+  }
+);
   getWidget().addResizeHandler(new ResizeHandler(){
     @Override public void onResize(    ResizeEvent event){
       getRpcProxy(UIServerRpc.class).resize(event.getHeight(),event.getWidth(),Window.getClientWidth(),Window.getClientHeight());
