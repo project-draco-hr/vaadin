@@ -2,8 +2,9 @@
   StringWriter writer=new StringWriter();
   try {
     writer.write("{");
-    if (uI.getSession().getConfiguration().isXsrfProtectionEnabled()) {
-      writer.write(uI.getSession().getCommunicationManager().getSecurityKeyUIDL(request));
+    VaadinSession session=uI.getSession();
+    if (session.getConfiguration().isXsrfProtectionEnabled()) {
+      writer.write(getSecurityKeyUIDL(session));
     }
     new UidlWriter().write(uI,writer,true,false,false);
     writer.write("}");
