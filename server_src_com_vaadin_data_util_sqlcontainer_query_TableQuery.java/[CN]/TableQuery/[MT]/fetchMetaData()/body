@@ -6,19 +6,22 @@
     connection=getConnection();
     DatabaseMetaData dbmd=connection.getMetaData();
     if (dbmd != null) {
-      tableName=SQLUtil.escapeSQL(tableName);
-      tables=dbmd.getTables(null,null,tableName,null);
+      tables=dbmd.getTables(catalogName,schemaName,tableName,null);
       if (!tables.next()) {
-        tables=dbmd.getTables(null,null,tableName.toUpperCase(),null);
+        String catalog=(catalogName != null) ? catalogName.toUpperCase() : null;
+        String schema=(schemaName != null) ? schemaName.toUpperCase() : null;
+        tables=dbmd.getTables(catalog,schema,tableName.toUpperCase(),null);
         if (!tables.next()) {
-          throw new IllegalArgumentException("Table with the name \"" + tableName + "\" was not found. Check your database contents.");
+          throw new IllegalArgumentException("Table with the name \"" + getFullTableName() + "\" was not found. Check your database contents.");
         }
  else {
+          catalogName=catalog;
+          schemaName=schema;
           tableName=tableName.toUpperCase();
         }
       }
       tables.close();
-      rs=dbmd.getPrimaryKeys(null,null,tableName);
+      rs=dbmd.getPrimaryKeys(catalogName,schemaName,tableName);
       List<String> names=new ArrayList<String>();
       while (rs.next()) {
         names.add(rs.getString("COLUMN_NAME"));
@@ -28,7 +31,7 @@
         primaryKeyColumns=names;
       }
       if (primaryKeyColumns == null || primaryKeyColumns.isEmpty()) {
-        throw new IllegalArgumentException("Primary key constraints have not been defined for the table \"" + tableName + "\". Use FreeFormQuery to access this table.");
+        throw new IllegalArgumentException("Primary key constraints have not been defined for the table \"" + getFullTableName() + "\". Use FreeFormQuery to access this table.");
       }
       for (      String colName : primaryKeyColumns) {
         if (colName.equalsIgnoreCase("rownum")) {
