@@ -25,7 +25,8 @@ catch (    SessionExpiredException e) {
       VaadinSession.setCurrent(session);
       final UI ui=service.findUI(vaadinRequest);
       if (ui == null) {
-        getLogger().warning("Could not find the requested UI in session");
+        resource.getResponse().getWriter().write(UidlRequestHandler.getUINotFoundErrorJSON(service,vaadinRequest));
+        resource.resume();
         return;
       }
       callback.run(resource,ui);
