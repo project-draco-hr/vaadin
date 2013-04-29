@@ -1,19 +1,6 @@
 {
   actionMapper=null;
-  HashSet<Action> actions=new HashSet<Action>();
-  if (actionHandlers != null) {
-    for (    Action.Handler handler : actionHandlers) {
-      Action[] as=handler.getActions(actionTarget,viewer);
-      if (as != null) {
-        for (        Action action : as) {
-          actions.add(action);
-        }
-      }
-    }
-  }
-  if (ownActions != null) {
-    actions.addAll(ownActions);
-  }
+  LinkedHashSet<Action> actions=getActionSet(actionTarget,viewer);
   if (!actions.isEmpty() || clientHasActions) {
     actionMapper=new KeyMapper<Action>();
     paintTarget.addVariable((VariableOwner)viewer,"action","");
