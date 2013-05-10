@@ -1,0 +1,18 @@
+{
+  Thread currentThread=Thread.currentThread();
+  ClassLoader contextClassLoader=currentThread.getContextClassLoader();
+  try {
+    ClassLoader portalClassLoader=PortalClassLoaderUtil.getClassLoader();
+    currentThread.setContextClassLoader(portalClassLoader);
+    Class<?> targetClass=portalClassLoader.loadClass(className);
+    Class<?> parameterClass=portalClassLoader.loadClass(parameterClassName);
+    Method method=targetClass.getMethod(methodName,parameterClass);
+    return method.invoke(null,new Object[]{argument});
+  }
+ catch (  InvocationTargetException ite) {
+    throw (Exception)ite.getCause();
+  }
+ finally {
+    currentThread.setContextClassLoader(contextClassLoader);
+  }
+}
