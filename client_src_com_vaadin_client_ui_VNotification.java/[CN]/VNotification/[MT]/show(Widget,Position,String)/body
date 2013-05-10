@@ -1,4 +1,16 @@
 {
-  setWidget(widget);
+  NotificationConfigurationBean styleSetup=getUiState(style);
+  setWaiAriaRole(styleSetup);
+  FlowPanel panel=new FlowPanel();
+  if (styleSetup.hasAssistivePrefix()) {
+    panel.add(new Label(styleSetup.getAssistivePrefix()));
+    AriaHelper.setVisibleForAssistiveDevicesOnly(panel.getElement(),true);
+  }
+  panel.add(widget);
+  if (styleSetup.hasAssistivePostfix()) {
+    panel.add(new Label(styleSetup.getAssistivePostfix()));
+    AriaHelper.setVisibleForAssistiveDevicesOnly(panel.getElement(),true);
+  }
+  setWidget(panel);
   show(position,style);
 }
