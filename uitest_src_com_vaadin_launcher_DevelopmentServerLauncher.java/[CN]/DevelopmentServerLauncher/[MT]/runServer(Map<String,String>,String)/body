@@ -30,6 +30,20 @@
   webappcontext.setContextPath(serverArgs.get("context"));
   webappcontext.setWar(serverArgs.get("webroot"));
   server.setHandler(webappcontext);
+  if (serverArgs.containsKey("slowdown")) {
+    String[] paths=serverArgs.get("slowdown").split(",");
+    for (    String p : paths) {
+      System.out.println("Slowing down: " + p);
+      webappcontext.addFilter(SlowFilter.class,p,1);
+    }
+  }
+  if (serverArgs.containsKey("cache")) {
+    String[] paths=serverArgs.get("cache").split(",");
+    for (    String p : paths) {
+      System.out.println("Enabling cache for: " + p);
+      webappcontext.addFilter(CacheFilter.class,p,1);
+    }
+  }
   try {
     server.start();
     if (serverArgs.containsKey("shutdownPort")) {
