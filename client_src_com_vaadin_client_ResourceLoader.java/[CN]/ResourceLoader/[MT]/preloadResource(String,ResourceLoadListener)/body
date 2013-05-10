@@ -8,13 +8,15 @@
     return;
   }
   if (addListener(url,resourceLoadListener,preloadListeners) && !loadListeners.containsKey(url)) {
-    Element element=getPreloadElement(url);
+    final Element element=getPreloadElement(url);
     addOnloadHandler(element,new ResourceLoadListener(){
       @Override public void onLoad(      ResourceLoadEvent event){
         fireLoad(event);
+        Document.get().getBody().removeChild(element);
       }
       @Override public void onError(      ResourceLoadEvent event){
         fireError(event);
+        Document.get().getBody().removeChild(element);
       }
     }
 ,event);

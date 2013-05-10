@@ -1,0 +1,10 @@
+{
+  String path=((HttpServletRequest)request).getPathInfo();
+  System.out.println("Caching " + path + " for "+ CACHE_MINUTES+ " minutes");
+  Calendar calendar=Calendar.getInstance();
+  calendar.add(Calendar.MINUTE,CACHE_MINUTES);
+  String expires=new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z").format(calendar.getTime());
+  ((HttpServletResponse)response).setHeader("Expires",expires);
+  ((HttpServletResponse)response).setHeader("Cache-Control","max-age=" + (CACHE_MINUTES * 60));
+  chain.doFilter(request,response);
+}

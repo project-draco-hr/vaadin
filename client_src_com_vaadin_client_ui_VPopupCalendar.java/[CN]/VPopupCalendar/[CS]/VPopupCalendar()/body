@@ -9,9 +9,8 @@
   descriptionForAssisitveDevicesElement=DOM.createDiv();
   descriptionForAssisitveDevicesElement.setInnerText(PopupDateFieldState.DESCRIPTION_FOR_ASSISTIVE_DEVICES);
   AriaHelper.ensureHasId(descriptionForAssisitveDevicesElement);
-  Id.of(descriptionForAssisitveDevicesElement);
+  Roles.getTextboxRole().setAriaDescribedbyProperty(text.getElement(),Id.of(descriptionForAssisitveDevicesElement));
   AriaHelper.setVisibleForAssistiveDevicesOnly(descriptionForAssisitveDevicesElement,true);
-  DOM.appendChild(getElement(),descriptionForAssisitveDevicesElement);
   calendar=GWT.create(VCalendarPanel.class);
   calendar.setParentField(this);
   calendar.setFocusOutListener(new FocusOutListener(){
@@ -22,6 +21,7 @@
     }
   }
 );
+  Roles.getTextboxRole().setAriaControlsProperty(text.getElement(),Id.of(calendar.getElement()));
   Roles.getButtonRole().setAriaControlsProperty(calendarToggle.getElement(),Id.of(calendar.getElement()));
   calendar.setSubmitListener(new SubmitListener(){
     @Override public void onSubmit(){
