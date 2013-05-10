@@ -1,19 +1,27 @@
 {
   if (enabled && !readonly) {
     int keyCode=event.getNativeKeyCode();
-    debug("key down: " + keyCode);
+    if (enableDebug) {
+      debug("VFS: key down: " + keyCode);
+    }
     if (waitingForFilteringResponse && navigationKeyCodes.contains(keyCode)) {
-      debug("Ignoring " + keyCode + " because we are waiting for a filtering response");
+      if (enableDebug) {
+        debug("Ignoring " + keyCode + " because we are waiting for a filtering response");
+      }
       DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
       event.stopPropagation();
       return;
     }
     if (suggestionPopup.isAttached()) {
-      debug("Keycode " + keyCode + " target is popup");
+      if (enableDebug) {
+        debug("Keycode " + keyCode + " target is popup");
+      }
       popupKeyDown(event);
     }
  else {
-      debug("Keycode " + keyCode + " target is text field");
+      if (enableDebug) {
+        debug("Keycode " + keyCode + " target is text field");
+      }
       inputFieldKeyDown(event);
     }
   }
