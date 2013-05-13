@@ -1,29 +1,22 @@
 {
-  String m;
-  m=medium();
-  label_27:   while (true) {
-switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
-case COMMA:
-      ;
-    break;
-default :
-  jj_la1[36]=jj_gen;
-break label_27;
-}
-jj_consume_token(COMMA);
-label_28: while (true) {
-switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
-case S:
-;
-break;
-default :
-jj_la1[37]=jj_gen;
-break label_28;
-}
-jj_consume_token(S);
-}
-ml.addItem(m);
-m=medium();
-}
-ml.addItem(m);
+  Token t;
+  t=getToken(1);
+  while ((t.kind != LBRACE) && (t.kind != EOF) && (t.kind != SEMICOLON)) {
+    StringBuffer s=new StringBuffer();
+    s.append(getToken(0).image);
+    while ((t.kind != COMMA) && (t.kind != LBRACE) && (t.kind != EOF)&& (t.kind != SEMICOLON)) {
+      s.append(t.image);
+      getNextToken();
+      t=getToken(1);
+    }
+    if (t.kind == COMMA) {
+      getNextToken();
+      getNextToken();
+      t=getToken(1);
+    }
+    String str=s.toString().trim();
+    if (str.length() > 0) {
+      ml.addItem(str);
+    }
+  }
 }
