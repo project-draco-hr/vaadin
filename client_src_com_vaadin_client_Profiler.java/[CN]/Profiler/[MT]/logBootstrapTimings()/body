@@ -4,20 +4,18 @@
     StringBuilder stringBuilder=new StringBuilder("Time since window.performance.timing events");
     SimpleTree tree=new SimpleTree(stringBuilder.toString());
     String[] keys=new String[]{"navigationStart","unloadEventStart","unloadEventEnd","redirectStart","redirectEnd","fetchStart","domainLookupStart","domainLookupEnd","connectStart","connectEnd","requestStart","responseStart","responseEnd","domLoading","domInteractive","domContentLoadedEventStart","domContentLoadedEventEnd","domComplete","loadEventStart","loadEventEnd"};
+    LinkedHashMap<String,Double> timings=new LinkedHashMap<String,Double>();
     for (    String key : keys) {
       double value=getPerformanceTiming(key);
       if (value == 0) {
         continue;
       }
-      String text=key + ": " + (now - value);
-      tree.add(new Label(text));
-      stringBuilder.append("\n * ");
-      stringBuilder.append(text);
+      timings.put(key,Double.valueOf(now - value));
     }
-    if (tree.getWidgetCount() == 0) {
-      VConsole.log("Bootstrap timings not supported, please ensure your browser supports performance.timing");
+    if (timings.isEmpty()) {
+      getLogger().info("Bootstrap timings not supported, please ensure your browser supports performance.timing");
       return;
     }
-    VConsole.log(stringBuilder.toString());
+    getConsumer().addBootstrapData(timings);
   }
 }
