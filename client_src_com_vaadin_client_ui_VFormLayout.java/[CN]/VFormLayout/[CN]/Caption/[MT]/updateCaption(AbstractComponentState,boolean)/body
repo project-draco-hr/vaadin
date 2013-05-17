@@ -18,6 +18,7 @@
   if (state.caption != null) {
     if (captionText == null) {
       captionText=DOM.createSpan();
+      AriaHelper.bindCaption(owner.getWidget(),captionText);
       DOM.insertChild(getElement(),captionText,icon == null ? 0 : 1);
     }
     String c=state.caption;
@@ -38,12 +39,14 @@
     removeStyleDependentName("hasdescription");
   }
   boolean required=owner instanceof AbstractFieldConnector && ((AbstractFieldConnector)owner).isRequired();
+  AriaHelper.handleInputRequired(owner.getWidget(),required);
   if (required) {
     if (requiredFieldIndicator == null) {
       requiredFieldIndicator=DOM.createSpan();
       DOM.setInnerText(requiredFieldIndicator,"*");
       DOM.setElementProperty(requiredFieldIndicator,"className","v-required-field-indicator");
       DOM.appendChild(getElement(),requiredFieldIndicator);
+      Roles.getTextboxRole().setAriaHiddenState(requiredFieldIndicator,true);
     }
   }
  else {

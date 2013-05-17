@@ -1,0 +1,30 @@
+{
+  Event event=Event.as(domEvent.getNativeEvent());
+  com.google.gwt.dom.client.Element element=Element.as(event.getEventTarget());
+  if (currentElement == element && currentIsFocused == isFocused) {
+    return;
+  }
+  boolean connectorAndTooltipFound=resolveConnector((com.google.gwt.user.client.Element)element);
+  if (!connectorAndTooltipFound) {
+    if (isShowing()) {
+      handleHideEvent();
+      Roles.getButtonRole().removeAriaDescribedbyProperty(element);
+    }
+ else {
+      currentTooltipInfo=null;
+    }
+  }
+ else {
+    updatePosition(event,isFocused);
+    if (isShowing()) {
+      replaceCurrentTooltip();
+      Roles.getTooltipRole().removeAriaDescribedbyProperty(currentElement);
+    }
+ else {
+      showTooltip();
+    }
+    Roles.getTooltipRole().setAriaDescribedbyProperty(element,Id.of(uniqueId));
+  }
+  currentIsFocused=isFocused;
+  currentElement=element;
+}

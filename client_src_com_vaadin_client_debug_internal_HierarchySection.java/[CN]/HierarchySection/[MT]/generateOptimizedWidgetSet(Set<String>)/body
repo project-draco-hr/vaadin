@@ -1,0 +1,29 @@
+{
+  String s="import java.util.HashSet;\n";
+  s+="import java.util.Set;\n";
+  s+="import com.google.gwt.core.ext.typeinfo.JClassType;\n";
+  s+="import com.vaadin.client.ui.ui.UIConnector;\n";
+  s+="import com.vaadin.server.widgetsetutils.ConnectorBundleLoaderFactory;\n";
+  s+="import com.vaadin.shared.ui.Connect.LoadStyle;\n\n";
+  s+="public class OptimizedConnectorBundleLoaderFactory extends\n";
+  s+="            ConnectorBundleLoaderFactory {\n";
+  s+="    private Set<String> eagerConnectors = new HashSet<String>();\n";
+  s+="    {\n";
+  for (  String c : usedConnectors) {
+    s+="            eagerConnectors.add(" + c + ".class.getName());\n";
+  }
+  s+="    }\n";
+  s+="\n";
+  s+="    @Override\n";
+  s+="    protected LoadStyle getLoadStyle(JClassType connectorType) {\n";
+  s+="            if (eagerConnectors.contains(connectorType.getQualifiedBinaryName())) {\n";
+  s+="                    return LoadStyle.EAGER;\n";
+  s+="            } else {\n";
+  s+="                    // Loads all other connectors immediately after the initial view has\n";
+  s+="                    // been rendered\n";
+  s+="                    return LoadStyle.DEFERRED;\n";
+  s+="            }\n";
+  s+="    }\n";
+  s+="}\n";
+  return s;
+}

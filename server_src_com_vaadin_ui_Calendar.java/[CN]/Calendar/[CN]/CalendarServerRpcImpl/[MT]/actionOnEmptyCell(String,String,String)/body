@@ -1,0 +1,14 @@
+{
+  Action action=actionMapper.get(actionKey);
+  SimpleDateFormat formatter=new SimpleDateFormat(DateConstants.ACTION_DATE_FORMAT_PATTERN);
+  formatter.setTimeZone(getTimeZone());
+  try {
+    Date start=formatter.parse(startDate);
+    for (    Action.Handler ah : actionHandlers) {
+      ah.handleAction(action,this,start);
+    }
+  }
+ catch (  ParseException e) {
+    getLogger().log(Level.WARNING,"Could not parse action date string");
+  }
+}

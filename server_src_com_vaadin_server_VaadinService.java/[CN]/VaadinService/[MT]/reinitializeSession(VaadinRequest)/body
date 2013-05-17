@@ -16,7 +16,9 @@
     newSession.setAttribute(name,value);
     if (value instanceof VaadinSession) {
       VaadinSession serviceSession=(VaadinSession)value;
-      serviceSession.storeInSession(serviceSession.getService(),newSession);
+      VaadinService service=serviceSession.getService();
+      service.setSessionLock(newSession,serviceSession.getLockInstance());
+      serviceSession.storeInSession(service,newSession);
       serviceSession.setAttribute(REINITIALIZING_SESSION_MARKER,null);
     }
   }

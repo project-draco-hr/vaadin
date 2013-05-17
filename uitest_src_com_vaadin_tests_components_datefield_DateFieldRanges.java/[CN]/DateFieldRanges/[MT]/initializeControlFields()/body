@@ -1,0 +1,83 @@
+{
+  resoSelect.addItem(Resolution.MINUTE);
+  resoSelect.addItem(Resolution.SECOND);
+  resoSelect.addItem(Resolution.HOUR);
+  resoSelect.addItem(Resolution.DAY);
+  resoSelect.addItem(Resolution.MONTH);
+  resoSelect.addItem(Resolution.YEAR);
+  resoSelect.setImmediate(true);
+  resoSelect.setValue(Resolution.DAY);
+  resoSelect.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      Resolution r=(Resolution)resoSelect.getValue();
+      inlineDynamicDateField.setResolution(r);
+      dynamicDateField.setResolution(r);
+    }
+  }
+);
+  fromRange.setValue(null);
+  fromRange.setImmediate(true);
+  fromRange.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      inlineDynamicDateField.setRangeStart(fromRange.getValue());
+      dynamicDateField.setRangeStart(fromRange.getValue());
+    }
+  }
+);
+  toRange.setValue(null);
+  toRange.setImmediate(true);
+  toRange.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      inlineDynamicDateField.setRangeEnd(toRange.getValue());
+      dynamicDateField.setRangeEnd(toRange.getValue());
+    }
+  }
+);
+  valueDF.setValue(null);
+  valueDF.setImmediate(true);
+  valueDF.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      inlineDynamicDateField.setValue(valueDF.getValue());
+      dynamicDateField.setValue(valueDF.getValue());
+    }
+  }
+);
+  immediateCB.setValue(true);
+  immediateCB.setImmediate(true);
+  immediateCB.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      inlineDynamicDateField.setImmediate(immediateCB.getValue());
+      dynamicDateField.setImmediate(immediateCB.getValue());
+    }
+  }
+);
+  recreate.addClickListener(new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      GridLayout newContainer=createStaticFields();
+      replaceComponent(currentStaticContainer,newContainer);
+      currentStaticContainer=newContainer;
+    }
+  }
+);
+  clearRangeButton.addClickListener(new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      fromRange.setValue(null);
+      toRange.setValue(null);
+    }
+  }
+);
+  Calendar startCal=createCalendar();
+  Calendar endCal=createCalendar();
+  endCal.add(Calendar.DATE,30);
+  dynamicDateField=createDateField(startCal.getTime(),endCal.getTime(),null,Resolution.DAY,false);
+  inlineDynamicDateField=createDateField(startCal.getTime(),endCal.getTime(),null,Resolution.DAY,true);
+  resoSelect.setId("resoSelect");
+  fromRange.setId("fromRange");
+  toRange.setId("toRange");
+  valueDF.setId("valueDF");
+  immediateCB.setId("immediateCB");
+  recreate.setId("recreate");
+  clearRangeButton.setId("clearRangeButton");
+  dynamicDateField.setId("dynamicDateField");
+  inlineDynamicDateField.setId("inlineDynamicDateField");
+}

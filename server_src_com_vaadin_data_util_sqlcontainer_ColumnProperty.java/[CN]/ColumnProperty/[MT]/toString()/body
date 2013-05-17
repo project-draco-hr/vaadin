@@ -1,8 +1,8 @@
 {
-  getLogger().log(Level.WARNING,"You are using ColumnProperty.toString() instead of getValue() to get the value for a {0}. " + "This will not be supported starting from Vaadin 7.1 (your debugger might call toString() " + "and cause this message to appear).",getClass().getSimpleName());
-  Object v=getValue();
-  if (v == null) {
-    return null;
+  if (!LegacyPropertyHelper.isLegacyToStringEnabled()) {
+    return super.toString();
   }
-  return v.toString();
+ else {
+    return LegacyPropertyHelper.legacyPropertyToString(this);
+  }
 }

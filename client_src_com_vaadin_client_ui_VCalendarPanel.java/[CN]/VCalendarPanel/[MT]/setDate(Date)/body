@@ -2,14 +2,29 @@
   if (currentDate == value && currentDate != null) {
     return;
   }
+  boolean currentDateWasAdjusted=false;
+  if (currentDate != null && !isDateInsideRange(currentDate,resolution)) {
+    currentDate=adjustDateToFitInsideRange(currentDate);
+    currentDateWasAdjusted=true;
+  }
   Date oldDisplayedMonth=displayedMonth;
   value=currentDate;
-  if (value == null) {
-    focusedDate=displayedMonth=null;
+  if (value == null || currentDateWasAdjusted) {
+    if (rangeStart != null || rangeEnd != null) {
+      Date dateThatFitsInsideRange=adjustDateToFitInsideRange(new Date());
+      focusedDate=new FocusedDate(dateThatFitsInsideRange.getYear(),dateThatFitsInsideRange.getMonth(),dateThatFitsInsideRange.getDate());
+      displayedMonth=new FocusedDate(dateThatFitsInsideRange.getYear(),dateThatFitsInsideRange.getMonth(),1);
+      if (getResolution().getCalendarField() >= Resolution.DAY.getCalendarField()) {
+        value=null;
+      }
+    }
+ else {
+      focusedDate=displayedMonth=null;
+    }
   }
  else {
-    focusedDate=new Date(value.getYear(),value.getMonth(),value.getDate());
-    displayedMonth=new Date(value.getYear(),value.getMonth(),1);
+    focusedDate=new FocusedDate(value.getYear(),value.getMonth(),value.getDate());
+    displayedMonth=new FocusedDate(value.getYear(),value.getMonth(),1);
   }
   if ((isTimeSelectorNeeded() && time == null) || oldDisplayedMonth == null || value == null || oldDisplayedMonth.getYear() != value.getYear() || oldDisplayedMonth.getMonth() != value.getMonth()) {
     renderCalendar();

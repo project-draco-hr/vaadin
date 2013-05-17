@@ -1,0 +1,28 @@
+{
+  mouseMoveCanceled=true;
+  Event.releaseCapture(getElement());
+  setFocus(false);
+  if (moveRegistration != null) {
+    moveRegistration.removeHandler();
+    moveRegistration=null;
+  }
+  mouseMoveStarted=false;
+  removeGlobalResizeStyle();
+  Style s=getElement().getStyle();
+  s.setZIndex(1);
+  int dateCellWidth=getDateCellWidth();
+  int dayOffset=startXrelative / dateCellWidth;
+  s.clearLeft();
+  calendarEvent.setStartTime(startDatetimeFrom);
+  calendarEvent.setEndTime(startDatetimeTo);
+  long startFromMinutes=(startDatetimeFrom.getHours() * 60) + startDatetimeFrom.getMinutes();
+  long range=calendarEvent.getRangeInMinutes();
+  startFromMinutes=calculateStartFromMinute(startFromMinutes,startDatetimeFrom,startDatetimeTo,dayOffset);
+  if (startFromMinutes < 0) {
+    range+=startFromMinutes;
+  }
+  updatePosition(startFromMinutes,range);
+  startY=-1;
+  startX=-1;
+  ((DateCell)getParent()).recalculateEventWidths();
+}

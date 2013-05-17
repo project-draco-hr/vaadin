@@ -1,0 +1,23 @@
+{
+  File file=new File(realPath);
+  if (file.isDirectory()) {
+    getFiles(file);
+    scanDone=true;
+    for (    String className : possibleComponentsCandidate) {
+      try {
+        className=className.replace('\\','/');
+        className=className.replaceFirst("^.*/(WEB-INF|target)(?:/scala-[^/]+)?/(test-)?classes/(.*)\\.class","$3").replace("/",".");
+        Class<?> clazz=classloader.loadClass(className);
+        if (AtmosphereHandler.class.isAssignableFrom(clazz)) {
+          AtmosphereHandler handler=(AtmosphereHandler)clazz.newInstance();
+          InjectorProvider.getInjector().inject(handler);
+          addMapping("/" + handler.getClass().getSimpleName(),new AtmosphereHandlerWrapper(broadcasterFactory,handler,"/" + handler.getClass().getSimpleName()));
+          logger.info("Installed AtmosphereHandler {} mapped to context-path: {}",handler,handler.getClass().getName());
+        }
+      }
+ catch (      Throwable t) {
+        logger.trace("failed to load class as an AtmosphereHandler: " + className,t);
+      }
+    }
+  }
+}

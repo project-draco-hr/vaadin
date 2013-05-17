@@ -1,0 +1,27 @@
+{
+  if (ServletPortletHelper.isUIDLRequest(request)) {
+    String output=VaadinService.createCriticalNotificationJSON(caption,message,details,url);
+    getService().writeStringResponse(response,JsonConstants.JSON_CONTENT_TYPE,output);
+  }
+ else {
+    String output="";
+    if (url != null) {
+      output+="<a href=\"" + url + "\">";
+    }
+    if (caption != null) {
+      output+="<b>" + caption + "</b><br/>";
+    }
+    if (message != null) {
+      output+=message;
+      output+="<br/><br/>";
+    }
+    if (details != null) {
+      output+=details;
+      output+="<br/><br/>";
+    }
+    if (url != null) {
+      output+="</a>";
+    }
+    getService().writeStringResponse(response,"text/html; charset=UTF-8",output);
+  }
+}

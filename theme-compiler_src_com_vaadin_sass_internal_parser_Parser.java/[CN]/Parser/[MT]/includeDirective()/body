@@ -32,6 +32,8 @@ jj_la1[154]=jj_gen;
 jj_consume_token(-1);
 throw new ParseException();
 }
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case SEMICOLON:
 label_106: while (true) {
 jj_consume_token(SEMICOLON);
 label_107: while (true) {
@@ -55,4 +57,61 @@ break label_106;
 }
 }
 documentHandler.includeDirective(name,args);
+break;
+case LBRACE:
+jj_consume_token(LBRACE);
+label_108: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[157]=jj_gen;
+break label_108;
+}
+jj_consume_token(S);
+}
+documentHandler.startIncludeContentBlock(name);
+label_109: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case PLUS:
+case PRECEDES:
+case SIBLING:
+case LBRACKET:
+case ANY:
+case PARENT:
+case DOT:
+case COLON:
+case INTERPOLATION:
+case DEBUG_SYM:
+case WARN_SYM:
+case IDENT:
+case HASH:
+;
+break;
+default :
+jj_la1[158]=jj_gen;
+break label_109;
+}
+styleRuleOrDeclarationOrNestedProperties();
+}
+jj_consume_token(RBRACE);
+label_110: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[159]=jj_gen;
+break label_110;
+}
+jj_consume_token(S);
+}
+documentHandler.endIncludeContentBlock();
+break;
+default :
+jj_la1[160]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
 }

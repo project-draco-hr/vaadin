@@ -1,0 +1,33 @@
+{
+  if (px < 0) {
+    intHeight=getOffsetHeight() - BORDERPADDINGSIZE;
+  }
+ else {
+    intHeight=px - BORDERPADDINGSIZE;
+  }
+  if (intHeight == -1) {
+    return;
+  }
+  if (clear) {
+    while (getWidgetCount() > 1) {
+      remove(1);
+    }
+  }
+  int slots=0;
+  if (scrollable) {
+    for (int i=0; i < events.length; i++) {
+      if (events[i] != null) {
+        slots=i + 1;
+      }
+    }
+    setHeight(intHeight + "px");
+  }
+ else {
+    DOM.removeElementAttribute(getElement(),"height");
+    slots=(intHeight - caption.getOffsetHeight() - BOTTOMSPACERHEIGHT) / EVENTHEIGHT;
+    if (slots > 10) {
+      slots=10;
+    }
+  }
+  updateEvents(slots,clear);
+}

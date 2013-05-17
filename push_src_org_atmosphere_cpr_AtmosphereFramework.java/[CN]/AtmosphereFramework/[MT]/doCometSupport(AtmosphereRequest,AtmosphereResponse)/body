@@ -1,0 +1,79 @@
+{
+  req.setAttribute(BROADCASTER_FACTORY,broadcasterFactory);
+  req.setAttribute(PROPERTY_USE_STREAM,useStreamForFlushingComments);
+  req.setAttribute(BROADCASTER_CLASS,broadcasterClassName);
+  req.setAttribute(ATMOSPHERE_CONFIG,config);
+  Action a=null;
+  try {
+    boolean skip=true;
+    String s=config.getInitParameter(ALLOW_QUERYSTRING_AS_REQUEST);
+    if (s != null) {
+      skip=Boolean.valueOf(s);
+    }
+    if (!skip || req.getAttribute(WEBSOCKET_SUSPEND) == null) {
+      Map<String,String> headers=configureQueryStringAsRequest(req);
+      String body=headers.remove(ATMOSPHERE_POST_BODY);
+      if (body != null && body.isEmpty()) {
+        body=null;
+      }
+      req.headers(headers).method(body != null && req.getMethod().equalsIgnoreCase("GET") ? "POST" : req.getMethod());
+      if (body != null) {
+        req.body(body);
+      }
+    }
+    s=req.getHeader(X_ATMOSPHERE_TRACKING_ID);
+    if (s == null || s.equals("0")) {
+      String unique=config.getInitParameter(ApplicationConfig.UNIQUE_UUID_WEBSOCKET);
+      if (unique != null && Boolean.valueOf(unique)) {
+        s=(String)req.getAttribute(SUSPENDED_ATMOSPHERE_RESOURCE_UUID);
+      }
+    }
+    if (s == null || s.equals("0")) {
+      s=UUID.randomUUID().toString();
+      res.setHeader(X_ATMOSPHERE_TRACKING_ID,s);
+    }
+ else {
+      if (req.resource() == null) {
+        res.setHeader(X_ATMOSPHERE_TRACKING_ID,s);
+      }
+ else       if (req.getAttribute(WebSocket.WEBSOCKET_INITIATED) == null) {
+        res.setHeader(X_ATMOSPHERE_TRACKING_ID,s);
+      }
+    }
+    if (req.getAttribute(SUSPENDED_ATMOSPHERE_RESOURCE_UUID) == null) {
+      req.setAttribute(SUSPENDED_ATMOSPHERE_RESOURCE_UUID,s);
+    }
+    a=asyncSupport.service(req,res);
+  }
+ catch (  IllegalStateException ex) {
+    if (ex.getMessage() != null && (ex.getMessage().startsWith("Tomcat failed") || ex.getMessage().startsWith("JBoss failed"))) {
+      if (!isFilter) {
+        logger.warn("Failed using comet support: {}, error: {} Is the Nio or Apr Connector enabled?",asyncSupport.getClass().getName(),ex.getMessage());
+      }
+      logger.trace(ex.getMessage(),ex);
+      AsyncSupport current=asyncSupport;
+      asyncSupport=asyncSupport.supportWebSocket() ? new Tomcat7BIOSupportWithWebSocket(config) : new BlockingIOCometSupport(config);
+      if (current instanceof AsynchronousProcessor) {
+        ((AsynchronousProcessor)current).shutdown();
+      }
+      asyncSupport.init(config.getServletConfig());
+      logger.warn("Using " + asyncSupport.getClass().getName());
+      a=asyncSupport.service(req,res);
+    }
+ else {
+      logger.error("AtmosphereFramework exception",ex);
+      throw ex;
+    }
+  }
+ finally {
+    if (a != null) {
+      notify(a.type(),req,res);
+    }
+    if (req != null && a != null && a.type() != Action.TYPE.SUSPEND) {
+      req.destroy();
+      res.destroy();
+      notify(Action.TYPE.DESTROYED,req,res);
+    }
+  }
+  return a;
+}

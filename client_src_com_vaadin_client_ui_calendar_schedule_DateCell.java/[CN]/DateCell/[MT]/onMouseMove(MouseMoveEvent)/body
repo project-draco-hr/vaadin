@@ -1,0 +1,41 @@
+{
+  if (event.getNativeButton() != NativeEvent.BUTTON_LEFT) {
+    return;
+  }
+  if (eventRangeStart >= 0) {
+    int newY=event.getY();
+    int fromY=0;
+    int toY=0;
+    if (newY < eventRangeStart) {
+      fromY=newY;
+      toY=eventRangeStart;
+    }
+ else {
+      fromY=eventRangeStart;
+      toY=newY;
+    }
+    Element main=getElement();
+    eventRangeStop=newY;
+    NodeList<Node> nodes=main.getChildNodes();
+    for (int i=0; i < nodes.getLength(); i++) {
+      Element c=(Element)nodes.getItem(i);
+      if (todaybar != c) {
+        int elemStart=c.getOffsetTop();
+        int elemStop=elemStart + getSlotHeight();
+        if (elemStart >= fromY && elemStart <= toY) {
+          c.addClassName("v-daterange");
+        }
+ else         if (elemStop >= fromY && elemStop <= toY) {
+          c.addClassName("v-daterange");
+        }
+ else         if (elemStop >= fromY && elemStart <= toY) {
+          c.addClassName("v-daterange");
+        }
+ else {
+          c.removeClassName("v-daterange");
+        }
+      }
+    }
+  }
+  event.preventDefault();
+}

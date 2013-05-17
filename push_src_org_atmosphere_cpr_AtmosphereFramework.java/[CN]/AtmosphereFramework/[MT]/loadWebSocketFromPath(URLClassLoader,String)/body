@@ -1,0 +1,22 @@
+{
+  File file=new File(realPath);
+  if (file.isDirectory()) {
+    getFiles(file);
+    scanDone=true;
+    for (    String className : possibleComponentsCandidate) {
+      try {
+        className=className.replace('\\','/');
+        className=className.replaceFirst("^.*/(WEB-INF|target)(?:/scala-[^/]+)?/(test-)?classes/(.*)\\.class","$3").replace("/",".");
+        Class<?> clazz=classloader.loadClass(className);
+        if (WebSocketProtocol.class.isAssignableFrom(clazz)) {
+          webSocketProtocol=(WebSocketProtocol)clazz.newInstance();
+          InjectorProvider.getInjector().inject(webSocketProtocol);
+          logger.info("Installed WebSocketProtocol {}",webSocketProtocol);
+        }
+      }
+ catch (      Throwable t) {
+        logger.trace("failed to load class as an WebSocketProtocol: " + className,t);
+      }
+    }
+  }
+}

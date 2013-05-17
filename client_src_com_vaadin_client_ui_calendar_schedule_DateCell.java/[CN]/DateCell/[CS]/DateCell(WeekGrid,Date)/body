@@ -1,0 +1,34 @@
+{
+  weekgrid=parent;
+  Element mainElement=DOM.createDiv();
+  setElement(mainElement);
+  makeFocusable();
+  setDate(date);
+  addStyleName("v-calendar-day-times");
+  handlers=new LinkedList<HandlerRegistration>();
+  firstHour=weekgrid.getFirstHour();
+  lastHour=weekgrid.getLastHour();
+  numberOfSlots=(lastHour - firstHour + 1) * 2;
+  long slotTime=Math.round(((lastHour - firstHour + 1) * 3600000.0) / numberOfSlots);
+  slotElements=new Element[numberOfSlots];
+  slotElementHeights=new int[numberOfSlots];
+  slots.clear();
+  long start=getDate().getTime() + firstHour * 3600000;
+  long end=start + slotTime;
+  for (int i=0; i < numberOfSlots; i++) {
+    DateCellSlot slot=new DateCellSlot(this,new Date(start),new Date(end));
+    if (i % 2 == 0) {
+      slot.setStyleName("v-datecellslot-even");
+    }
+ else {
+      slot.setStyleName("v-datecellslot");
+    }
+    Event.sinkEvents(slot.getElement(),Event.MOUSEEVENTS);
+    mainElement.appendChild(slot.getElement());
+    slotElements[i]=slot.getElement();
+    slots.add(slot);
+    start=end;
+    end=start + slotTime;
+  }
+  Event.sinkEvents(mainElement,Event.MOUSEEVENTS);
+}

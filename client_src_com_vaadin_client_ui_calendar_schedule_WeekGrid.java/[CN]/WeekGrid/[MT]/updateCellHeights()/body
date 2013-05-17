@@ -1,0 +1,28 @@
+{
+  if (!isVerticalScrollable()) {
+    int count=content.getWidgetCount();
+    if (count > 1) {
+      DateCell first=(DateCell)content.getWidget(1);
+      dateCellBorder=first.getSlotBorder();
+      cellHeights=VCalendar.distributeSize(height,first.getNumberOfSlots(),-dateCellBorder);
+      for (int i=1; i < count; i++) {
+        DateCell dc=(DateCell)content.getWidget(i);
+        dc.setHeightPX(height,cellHeights);
+      }
+    }
+  }
+ else {
+    int count=content.getWidgetCount();
+    if (count > 1) {
+      DateCell first=(DateCell)content.getWidget(1);
+      dateCellBorder=first.getSlotBorder();
+      int dateHeight=(first.getOffsetHeight() / first.getNumberOfSlots()) - dateCellBorder;
+      cellHeights=new int[48];
+      Arrays.fill(cellHeights,dateHeight);
+      for (int i=1; i < count; i++) {
+        DateCell dc=(DateCell)content.getWidget(i);
+        dc.setVerticalSized(isVerticalScrollable());
+      }
+    }
+  }
+}

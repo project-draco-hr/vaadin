@@ -1,4 +1,11 @@
 {
-  setFloatValue(getFloatValue() / denominator.getIntegerValue());
+  if (denominator.getLexicalUnitType() != SAC_INTEGER && denominator.getLexicalUnitType() != SAC_REAL && getLexicalUnitType() != denominator.getLexicalUnitType()) {
+    throw new IncompatibleUnitsException(toString());
+  }
+  setFloatValue(getFloatValue() / denominator.getFloatValue());
+  if (getLexicalUnitType() == denominator.getLexicalUnitType()) {
+    setLexicalUnitType(SAC_REAL);
+  }
+  setNextLexicalUnit(denominator.getNextLexicalUnit());
   return this;
 }

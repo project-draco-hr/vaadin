@@ -1,0 +1,16 @@
+{
+  Widget widget=connector.getWidget();
+  ComputedStyle computedStyle=new ComputedStyle(widget.getElement());
+  if (computedStyle.getIntProperty("height") == 0) {
+    zeroHeightComponents.add(connector);
+  }
+  if (computedStyle.getIntProperty("width") == 0) {
+    zeroWidthComponents.add(connector);
+  }
+  List<ServerConnector> children=connector.getChildren();
+  for (  ServerConnector serverConnector : children) {
+    if (serverConnector instanceof ComponentConnector) {
+      findZeroSizeComponents(zeroHeightComponents,zeroWidthComponents,(ComponentConnector)serverConnector);
+    }
+  }
+}

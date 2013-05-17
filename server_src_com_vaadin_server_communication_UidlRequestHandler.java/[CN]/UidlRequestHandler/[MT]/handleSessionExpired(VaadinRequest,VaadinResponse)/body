@@ -1,0 +1,9 @@
+{
+  if (!ServletPortletHelper.isUIDLRequest(request)) {
+    return false;
+  }
+  VaadinService service=request.getService();
+  SystemMessages systemMessages=service.getSystemMessages(ServletPortletHelper.findLocale(null,null,request),request);
+  service.writeStringResponse(response,JsonConstants.JSON_CONTENT_TYPE,VaadinService.createCriticalNotificationJSON(systemMessages.getSessionExpiredCaption(),systemMessages.getSessionExpiredMessage(),null,systemMessages.getSessionExpiredURL()));
+  return true;
+}

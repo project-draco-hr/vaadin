@@ -1,0 +1,21 @@
+{
+  if (canDisplay(calendarEvent)) {
+    dayEvent.getElement().getStyle().clearDisplay();
+    Date fromDt=calendarEvent.getStartTime();
+    int h=fromDt.getHours();
+    int m=fromDt.getMinutes();
+    long range=calendarEvent.getRangeInMinutesForDay(targetDay);
+    boolean onDifferentDays=calendarEvent.isTimeOnDifferentDays();
+    if (onDifferentDays) {
+      if (calendarEvent.getStart().compareTo(targetDay) != 0) {
+        h=0;
+        m=0;
+      }
+    }
+    int startFromMinutes=(h * 60) + m;
+    dayEvent.updatePosition(startFromMinutes,range);
+  }
+ else {
+    dayEvent.getElement().getStyle().setDisplay(Display.NONE);
+  }
+}

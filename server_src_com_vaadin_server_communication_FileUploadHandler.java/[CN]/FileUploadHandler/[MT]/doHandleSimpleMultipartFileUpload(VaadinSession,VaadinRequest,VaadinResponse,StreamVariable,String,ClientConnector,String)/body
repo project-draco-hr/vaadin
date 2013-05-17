@@ -1,0 +1,36 @@
+{
+  final InputStream inputStream=request.getInputStream();
+  int contentLength=request.getContentLength();
+  boolean atStart=false;
+  boolean firstFileFieldFound=false;
+  String rawfilename="unknown";
+  String rawMimeType="application/octet-stream";
+  while (!atStart) {
+    String readLine=readLine(inputStream);
+    contentLength-=(readLine.getBytes(UTF8).length + CRLF.length());
+    if (readLine.startsWith("Content-Disposition:") && readLine.indexOf("filename=") > 0) {
+      rawfilename=readLine.replaceAll(".*filename=","");
+      char quote=rawfilename.charAt(0);
+      rawfilename=rawfilename.substring(1);
+      rawfilename=rawfilename.substring(0,rawfilename.indexOf(quote));
+      firstFileFieldFound=true;
+    }
+ else     if (firstFileFieldFound && readLine.equals("")) {
+      atStart=true;
+    }
+ else     if (readLine.startsWith("Content-Type")) {
+      rawMimeType=readLine.split(": ")[1];
+    }
+  }
+  contentLength-=(boundary.length() + CRLF.length() + 2 * DASHDASH.length() + CRLF.length());
+  InputStream simpleMultiPartReader=new SimpleMultiPartInputStream(inputStream,boundary);
+  final String filename=removePath(rawfilename);
+  final String mimeType=rawMimeType;
+  try {
+    handleFileUploadValidationAndData(session,simpleMultiPartReader,streamVariable,filename,mimeType,contentLength,owner,variableName);
+  }
+ catch (  UploadException e) {
+    session.getCommunicationManager().handleConnectorRelatedException(owner,e);
+  }
+  sendUploadResponse(request,response);
+}

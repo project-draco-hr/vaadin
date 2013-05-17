@@ -1,0 +1,31 @@
+{
+  long start=System.currentTimeMillis();
+  Map<String,URL> widgetsets=new HashMap<String,URL>();
+  Map<String,URL> themes=new HashMap<String,URL>();
+  Set<String> keySet=classpathLocations.keySet();
+  for (  String location : keySet) {
+    searchForWidgetSetsAndAddonStyles(location,widgetsets,themes);
+  }
+  long end=System.currentTimeMillis();
+  StringBuilder sb=new StringBuilder();
+  sb.append("Widgetsets found from classpath:\n");
+  for (  String ws : widgetsets.keySet()) {
+    sb.append("\t");
+    sb.append(ws);
+    sb.append(" in ");
+    sb.append(widgetsets.get(ws));
+    sb.append("\n");
+  }
+  sb.append("Addon styles found from classpath:\n");
+  for (  String theme : themes.keySet()) {
+    sb.append("\t");
+    sb.append(theme);
+    sb.append(" in ");
+    sb.append(themes.get(theme));
+    sb.append("\n");
+  }
+  final Logger logger=getLogger();
+  logger.info(sb.toString());
+  logger.info("Search took " + (end - start) + "ms");
+  return new LocationInfo(widgetsets,themes);
+}

@@ -1,0 +1,25 @@
+{
+  Collection<ClientMethodInvocation> pendingInvocations=collectPendingRpcCalls(ui.getConnectorTracker().getDirtyVisibleConnectors());
+  JSONArray rpcCalls=new JSONArray();
+  for (  ClientMethodInvocation invocation : pendingInvocations) {
+    try {
+      JSONArray invocationJson=new JSONArray();
+      invocationJson.put(invocation.getConnector().getConnectorId());
+      invocationJson.put(invocation.getInterfaceName());
+      invocationJson.put(invocation.getMethodName());
+      JSONArray paramJson=new JSONArray();
+      for (int i=0; i < invocation.getParameterTypes().length; ++i) {
+        Type parameterType=invocation.getParameterTypes()[i];
+        Object referenceParameter=null;
+        EncodeResult encodeResult=JsonCodec.encode(invocation.getParameters()[i],referenceParameter,parameterType,ui.getConnectorTracker());
+        paramJson.put(encodeResult.getEncodedValue());
+      }
+      invocationJson.put(paramJson);
+      rpcCalls.put(invocationJson);
+    }
+ catch (    JSONException e) {
+      throw new PaintException("Failed to serialize RPC method call parameters for connector " + invocation.getConnector().getConnectorId() + " method "+ invocation.getInterfaceName()+ "."+ invocation.getMethodName()+ ": "+ e.getMessage(),e);
+    }
+  }
+  writer.write(rpcCalls.toString());
+}

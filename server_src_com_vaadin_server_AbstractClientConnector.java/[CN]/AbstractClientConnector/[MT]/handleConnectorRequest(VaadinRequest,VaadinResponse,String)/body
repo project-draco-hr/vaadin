@@ -1,13 +1,18 @@
 {
+  DownloadStream stream=null;
   String[] parts=path.split("/",2);
   String key=parts[0];
-  ConnectorResource resource=(ConnectorResource)getResource(key);
-  if (resource != null) {
-    DownloadStream stream=resource.getStream();
-    stream.writeResponse(request,response);
-    return true;
+  getSession().lock();
+  try {
+    ConnectorResource resource=(ConnectorResource)getResource(key);
+    if (resource == null) {
+      return false;
+    }
+    stream=resource.getStream();
   }
- else {
-    return false;
+  finally {
+    getSession().unlock();
   }
+  stream.writeResponse(request,response);
+  return true;
 }

@@ -1,0 +1,23 @@
+{
+  int pixelsToTop=0;
+  int slotIndex=0;
+  int firstHourInMinutes=firstHour * 60;
+  if (firstHourInMinutes > startFromMinutes) {
+    startFromMinutes=0;
+  }
+ else {
+    startFromMinutes-=firstHourInMinutes;
+  }
+  int slotsTillEvent=startFromMinutes / slotInMinutes;
+  int overFlowTime=startFromMinutes % slotInMinutes;
+  if (slotsTillEvent > 0) {
+    for (slotIndex=0; slotIndex < slotsTillEvent; slotIndex++) {
+      pixelsToTop+=cellHeights[slotIndex] + dateCellBorder;
+    }
+  }
+  if (overFlowTime > 0) {
+    int lastSlotHeight=cellHeights[slotIndex] + dateCellBorder;
+    pixelsToTop+=((double)lastSlotHeight / (double)slotInMinutes) * overFlowTime;
+  }
+  return pixelsToTop;
+}

@@ -1,0 +1,25 @@
+{
+  int childCount=getElement().getChildCount();
+  if (height != -1) {
+    int hoursPerDay=lastHour - firstHour + 1;
+    int slotsPerHour=slotCellHeights.length / hoursPerDay;
+    int[] cellHeights=new int[slotCellHeights.length / slotsPerHour];
+    int slotHeightPosition=0;
+    for (int i=0; i < cellHeights.length; i++) {
+      for (int j=slotHeightPosition; j < slotHeightPosition + slotsPerHour; j++) {
+        cellHeights[i]+=slotCellHeights[j] + 1;
+      }
+      slotHeightPosition+=slotsPerHour;
+    }
+    for (int i=0; i < childCount; i++) {
+      Element e=(Element)getElement().getChild(i);
+      e.getStyle().setHeight(cellHeights[i],Unit.PX);
+    }
+  }
+ else {
+    for (int i=0; i < childCount; i++) {
+      Element e=(Element)getElement().getChild(i);
+      e.getStyle().setProperty("height","");
+    }
+  }
+}

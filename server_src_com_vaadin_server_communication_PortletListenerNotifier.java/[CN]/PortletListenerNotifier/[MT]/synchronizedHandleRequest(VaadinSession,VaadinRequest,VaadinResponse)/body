@@ -1,0 +1,22 @@
+{
+  VaadinPortletSession sess=(VaadinPortletSession)session;
+  PortletRequest req=((VaadinPortletRequest)request).getPortletRequest();
+  PortletResponse resp=((VaadinPortletResponse)response).getPortletResponse();
+  UI uI=null;
+  if (ServletPortletHelper.isUIDLRequest(request)) {
+    uI=session.getService().findUI(request);
+  }
+  if (request instanceof RenderRequest) {
+    sess.firePortletRenderRequest(uI,(RenderRequest)req,(RenderResponse)resp);
+  }
+ else   if (request instanceof ActionRequest) {
+    sess.firePortletActionRequest(uI,(ActionRequest)req,(ActionResponse)resp);
+  }
+ else   if (request instanceof EventRequest) {
+    sess.firePortletEventRequest(uI,(EventRequest)req,(EventResponse)resp);
+  }
+ else   if (request instanceof ResourceRequest) {
+    sess.firePortletResourceRequest(uI,(ResourceRequest)req,(ResourceResponse)resp);
+  }
+  return false;
+}

@@ -1,0 +1,36 @@
+{
+  super.onStateChanged(stateChangeEvent);
+  VWindow window=getWidget();
+  WindowState state=getState();
+  if (state.modal != window.vaadinModality) {
+    window.setVaadinModality(!window.vaadinModality);
+  }
+  if (!window.isAttached()) {
+    window.setVisible(false);
+    window.show();
+  }
+  boolean resizeable=state.resizable && state.windowMode == WindowMode.NORMAL;
+  window.setResizable(resizeable);
+  window.resizeLazy=state.resizeLazy;
+  window.setDraggable(state.draggable && state.windowMode == WindowMode.NORMAL);
+  window.updateMaximizeRestoreClassName(state.resizable,state.windowMode);
+  String iconURL=null;
+  if (getIcon() != null) {
+    iconURL=getIcon();
+  }
+  window.setCaption(state.caption,iconURL);
+  clickEventHandler.handleEventHandlerRegistration();
+  window.immediate=state.immediate;
+  window.setClosable(!isReadOnly());
+  updateWindowPosition();
+  window.contentPanel.setScrollPosition(state.scrollTop);
+  window.contentPanel.setHorizontalScrollPosition(state.scrollLeft);
+  window.centered=state.centered;
+  window.setVisible(true);
+  if (window.getOffsetWidth() > Window.getClientWidth()) {
+    window.setWidth(Window.getClientWidth() + "px");
+  }
+  if (window.getOffsetHeight() > Window.getClientHeight()) {
+    window.setHeight(Window.getClientHeight() + "px");
+  }
+}

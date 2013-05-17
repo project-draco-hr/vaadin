@@ -1,0 +1,20 @@
+{
+  Button addButton=new Button("Add new Window");
+  addButton.addListener(addListener);
+  addComponent(addButton);
+  addWindowAgain=new ComboBox("Add Window Again");
+  addWindowAgain.setBuffered(false);
+  addWindowAgain.setImmediate(true);
+  addWindowAgain.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      Object value=event.getProperty().getValue();
+      if (value != null && value instanceof Window) {
+        UI.getCurrent().addWindow((Window)value);
+        addWindowAgain.removeItem(value);
+      }
+    }
+  }
+);
+  addComponent(addWindowAgain);
+  addWindow(createNewWindow());
+}

@@ -14,7 +14,7 @@
   initializeClientHooks();
   uIConnector.init(cnf.getRootPanelId(),this);
   tooltip.setOwner(uIConnector.getWidget());
-  showLoadingIndicator();
+  getLoadingIndicator().show();
   scheduleHeartbeat();
   Window.addWindowClosingHandler(new ClosingHandler(){
     @Override public void onWindowClosing(    ClosingEvent event){
@@ -25,4 +25,8 @@
     }
   }
 );
+  Element overlayContainer=VOverlay.getOverlayContainer(this);
+  Roles.getAlertRole().setAriaLiveProperty(overlayContainer,LiveValue.ASSERTIVE);
+  setOverlayContainerLabel(getUIConnector().getState().overlayContainerLabel);
+  Roles.getAlertRole().setAriaRelevantProperty(overlayContainer,RelevantValue.ADDITIONS);
 }

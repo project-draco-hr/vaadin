@@ -1,0 +1,14 @@
+{
+  assert(getPushMode().isEnabled() || pushConnection == null);
+  if (pushConnection == this.pushConnection) {
+    return;
+  }
+  if (this.pushConnection != null) {
+    this.pushConnection.disconnect();
+  }
+  this.pushConnection=pushConnection;
+  if (pushConnection != null && hasPendingPush) {
+    hasPendingPush=false;
+    pushConnection.push();
+  }
+}

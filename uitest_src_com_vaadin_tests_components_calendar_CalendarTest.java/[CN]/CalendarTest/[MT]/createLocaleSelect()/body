@@ -1,0 +1,22 @@
+{
+  ComboBox s=new ComboBox("Locale");
+  s.addContainerProperty("caption",String.class,"");
+  s.setItemCaptionPropertyId("caption");
+  s.setFilteringMode(FilteringMode.CONTAINS);
+  for (  Locale l : Locale.getAvailableLocales()) {
+    if (!s.containsId(l)) {
+      Item i=s.addItem(l);
+      i.getItemProperty("caption").setValue(getLocaleItemCaption(l));
+    }
+  }
+  s.select(getLocale());
+  s.setImmediate(true);
+  s.addValueChangeListener(new ValueChangeListener(){
+    private static final long serialVersionUID=1L;
+    @Override public void valueChange(    ValueChangeEvent event){
+      updateCalendarLocale((Locale)event.getProperty().getValue());
+    }
+  }
+);
+  return s;
+}

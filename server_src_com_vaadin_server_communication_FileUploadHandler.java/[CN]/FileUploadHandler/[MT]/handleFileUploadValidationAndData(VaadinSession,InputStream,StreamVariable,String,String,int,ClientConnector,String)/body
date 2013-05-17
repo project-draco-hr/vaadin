@@ -1,0 +1,32 @@
+{
+  session.lock();
+  try {
+    if (connector == null) {
+      throw new UploadException("File upload ignored because the connector for the stream variable was not found");
+    }
+    if (!connector.isConnectorEnabled()) {
+      throw new UploadException("Warning: file upload ignored for " + connector.getConnectorId() + " because the component was disabled");
+    }
+    if ((connector instanceof Component) && ((Component)connector).isReadOnly()) {
+      throw new UploadException("File upload ignored because the component is read-only");
+    }
+  }
+  finally {
+    session.unlock();
+  }
+  try {
+    boolean forgetVariable=streamToReceiver(session,inputStream,streamVariable,filename,mimeType,contentLength);
+    if (forgetVariable) {
+      cleanStreamVariable(session,connector,variableName);
+    }
+  }
+ catch (  Exception e) {
+    session.lock();
+    try {
+      session.getCommunicationManager().handleConnectorRelatedException(connector,e);
+    }
+  finally {
+      session.unlock();
+    }
+  }
+}

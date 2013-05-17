@@ -1,0 +1,41 @@
+{
+  startDateField=createDateField("Start date");
+  endDateField=createDateField("End date");
+  final CheckBox allDayField=createCheckBox("All-day");
+  allDayField.addValueChangeListener(new Property.ValueChangeListener(){
+    private static final long serialVersionUID=-7104996493482558021L;
+    @Override public void valueChange(    ValueChangeEvent event){
+      Object value=event.getProperty().getValue();
+      if (value instanceof Boolean && Boolean.TRUE.equals(value)) {
+        setFormDateResolution(Resolution.DAY);
+      }
+ else {
+        setFormDateResolution(Resolution.MINUTE);
+      }
+    }
+  }
+);
+  captionField=createTextField("Caption");
+  final TextField whereField=createTextField("Where");
+  final TextArea descriptionField=createTextArea("Description");
+  descriptionField.setRows(3);
+  final ComboBox styleNameField=createStyleNameComboBox();
+  formLayout.addComponent(startDateField);
+  formLayout.addComponent(endDateField);
+  formLayout.addComponent(allDayField);
+  formLayout.addComponent(captionField);
+  if (eventClass == CalendarTestEvent.class) {
+    formLayout.addComponent(whereField);
+  }
+  formLayout.addComponent(descriptionField);
+  formLayout.addComponent(styleNameField);
+  scheduleEventFieldGroup.bind(startDateField,"start");
+  scheduleEventFieldGroup.bind(endDateField,"end");
+  scheduleEventFieldGroup.bind(captionField,"caption");
+  scheduleEventFieldGroup.bind(descriptionField,"description");
+  if (eventClass == CalendarTestEvent.class) {
+    scheduleEventFieldGroup.bind(whereField,"where");
+  }
+  scheduleEventFieldGroup.bind(styleNameField,"styleName");
+  scheduleEventFieldGroup.bind(allDayField,"allDay");
+}

@@ -1,0 +1,63 @@
+{
+  VaadinService vaadinService=request.getService();
+  List<UIProvider> uiProviders=session.getUIProviders();
+  UIClassSelectionEvent classSelectionEvent=new UIClassSelectionEvent(request);
+  UIProvider provider=null;
+  Class<? extends UI> uiClass=null;
+  for (  UIProvider p : uiProviders) {
+    if (p instanceof LegacyApplicationUIProvider) {
+      LegacyApplicationUIProvider legacyProvider=(LegacyApplicationUIProvider)p;
+      UI existingUi=legacyProvider.getExistingUI(classSelectionEvent);
+      if (existingUi != null) {
+        reinitUI(existingUi,request);
+        return existingUi;
+      }
+    }
+    uiClass=p.getUIClass(classSelectionEvent);
+    if (uiClass != null) {
+      provider=p;
+      break;
+    }
+  }
+  if (provider == null || uiClass == null) {
+    return null;
+  }
+  String windowName=request.getParameter("v-wn");
+  Map<String,Integer> retainOnRefreshUIs=session.getPreserveOnRefreshUIs();
+  if (windowName != null && !retainOnRefreshUIs.isEmpty()) {
+    Integer retainedUIId=retainOnRefreshUIs.get(windowName);
+    if (retainedUIId != null) {
+      UI retainedUI=session.getUIById(retainedUIId.intValue());
+      if (uiClass.isInstance(retainedUI)) {
+        reinitUI(retainedUI,request);
+        return retainedUI;
+      }
+ else {
+        getLogger().info("Not using retained UI in " + windowName + " because retained UI was of type "+ retainedUI.getClass()+ " but "+ uiClass+ " is expected for the request.");
+      }
+    }
+  }
+  Integer uiId=Integer.valueOf(session.getNextUIid());
+  UICreateEvent event=new UICreateEvent(request,uiClass,uiId);
+  UI ui=uiClass.cast(provider.createInstance(event));
+  if (ui.getSession() != session) {
+    ui.setSession(session);
+  }
+  PushMode pushMode=provider.getPushMode(event);
+  if (pushMode == null) {
+    pushMode=session.getService().getDeploymentConfiguration().getPushMode();
+  }
+  ui.setPushMode(pushMode);
+  UI.setCurrent(ui);
+  ui.doInit(request,uiId.intValue());
+  session.addUI(ui);
+  if (vaadinService.preserveUIOnRefresh(provider,event)) {
+    if (windowName == null) {
+      getLogger().warning("There is no window.name available for UI " + uiClass + " that should be preserved.");
+    }
+ else {
+      session.getPreserveOnRefreshUIs().put(windowName,uiId);
+    }
+  }
+  return ui;
+}

@@ -1,0 +1,61 @@
+{
+  int columns=getLastDayNumber() - getFirstDayNumber() + 1;
+  rows=(int)Math.ceil(daysCount / (double)7);
+  monthGrid=new MonthGrid(this,rows,columns);
+  monthGrid.setEnabled(!isDisabledOrReadOnly());
+  weekToolbar.removeAllRows();
+  int pos=0;
+  boolean monthNameDrawn=true;
+  boolean firstDayFound=false;
+  boolean lastDayFound=false;
+  for (  CalendarDay day : days) {
+    String date=day.getDate();
+    Date d=dateformat_date.parse(date);
+    int dayOfWeek=day.getDayOfWeek();
+    int week=day.getWeek();
+    int dayOfMonth=d.getDate();
+    if (dayOfMonth == 1) {
+      monthNameDrawn=false;
+      if (firstDayFound) {
+        lastDayFound=true;
+      }
+      firstDayFound=true;
+    }
+    if (dayOfWeek < getFirstDayNumber() || dayOfWeek > getLastDayNumber()) {
+      continue;
+    }
+    int y=(pos / columns);
+    int x=pos - (y * columns);
+    if (x == 0 && daysCount > 7) {
+      weekToolbar.addWeek(week,d.getYear());
+    }
+    final SimpleDayCell cell=new SimpleDayCell(this,y,x);
+    cell.setMonthGrid(monthGrid);
+    cell.setDate(d);
+    cell.addDomHandler(new ContextMenuHandler(){
+      @Override public void onContextMenu(      ContextMenuEvent event){
+        if (mouseEventListener != null) {
+          event.preventDefault();
+          event.stopPropagation();
+          mouseEventListener.contextMenu(event,cell);
+        }
+      }
+    }
+,ContextMenuEvent.getType());
+    if (!firstDayFound) {
+      cell.addStyleDependentName("prev-month");
+    }
+ else     if (lastDayFound) {
+      cell.addStyleDependentName("next-month");
+    }
+    if (dayOfMonth >= 1 && !monthNameDrawn) {
+      cell.setMonthNameVisible(true);
+      monthNameDrawn=true;
+    }
+    if (today.getDate() == dayOfMonth && today.getYear() == d.getYear() && today.getMonth() == d.getMonth()) {
+      cell.setToday(true);
+    }
+    monthGrid.setWidget(y,x,cell);
+    pos++;
+  }
+}
