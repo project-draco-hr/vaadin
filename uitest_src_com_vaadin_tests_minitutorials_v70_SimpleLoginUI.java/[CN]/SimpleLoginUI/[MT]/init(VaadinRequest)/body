@@ -1,0 +1,22 @@
+{
+  new Navigator(this,this);
+  getNavigator().addView(SimpleLoginView.NAME,SimpleLoginView.class);
+  getNavigator().addView(SimpleLoginMainView.NAME,SimpleLoginMainView.class);
+  getNavigator().addViewChangeListener(new ViewChangeListener(){
+    @Override public boolean beforeViewChange(    ViewChangeEvent event){
+      boolean isLoggedIn=getSession().getAttribute("user") != null;
+      boolean isLoginView=event.getNewView() instanceof SimpleLoginView;
+      if (!isLoggedIn && !isLoginView) {
+        getNavigator().navigateTo(SimpleLoginView.NAME);
+        return false;
+      }
+ else       if (isLoggedIn && isLoginView) {
+        return false;
+      }
+      return true;
+    }
+    @Override public void afterViewChange(    ViewChangeEvent event){
+    }
+  }
+);
+}

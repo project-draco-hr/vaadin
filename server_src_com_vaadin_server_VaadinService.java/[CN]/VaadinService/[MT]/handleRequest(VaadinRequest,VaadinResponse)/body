@@ -1,0 +1,25 @@
+{
+  requestStart(request,response);
+  VaadinSession vaadinSession=null;
+  try {
+    vaadinSession=findVaadinSession(request);
+    if (vaadinSession == null) {
+      return;
+    }
+    for (    RequestHandler handler : getRequestHandlers()) {
+      if (handler.handleRequest(vaadinSession,request,response)) {
+        return;
+      }
+    }
+    response.sendError(HttpServletResponse.SC_NOT_FOUND,"Request was not handled by any registered handler.");
+  }
+ catch (  final SessionExpiredException e) {
+    handleSessionExpired(request,response);
+  }
+catch (  final Throwable e) {
+    handleExceptionDuringRequest(request,response,vaadinSession,e);
+  }
+ finally {
+    requestEnd(request,response,vaadinSession);
+  }
+}

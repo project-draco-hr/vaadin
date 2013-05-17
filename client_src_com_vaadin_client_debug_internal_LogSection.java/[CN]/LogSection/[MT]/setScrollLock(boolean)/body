@@ -1,0 +1,21 @@
+{
+  if (locked && scrollTimer != null) {
+    scrollTimer.cancel();
+    scrollTimer=null;
+  }
+ else   if (!locked && scrollTimer == null) {
+    scrollTimer=new Timer(){
+      @Override public void run(){
+        Element el=(Element)contentElement.getLastChild();
+        if (el != null) {
+          el=el.getFirstChildElement();
+          if (el != null) {
+            el.scrollIntoView();
+          }
+        }
+      }
+    }
+;
+  }
+  scroll.setStyleDependentName(VDebugWindow.STYLENAME_ACTIVE,locked);
+}

@@ -1,0 +1,13 @@
+{
+  Lock lock=getSessionLock(wrappedSession);
+  if (lock == null) {
+synchronized (VaadinService.class) {
+      lock=getSessionLock(wrappedSession);
+      if (lock == null) {
+        lock=new ReentrantLock();
+        setSessionLock(wrappedSession,lock);
+      }
+    }
+  }
+  lock.lock();
+}

@@ -1,0 +1,14 @@
+{
+  if (!isDummyRequest(request)) {
+    return false;
+  }
+  PortletResponse portletResponse=((VaadinPortletResponse)response).getPortletResponse();
+  if (portletResponse instanceof ResourceResponse) {
+    ((ResourceResponse)portletResponse).setContentType("text/html");
+  }
+  final OutputStream out=((ResourceResponse)response).getPortletOutputStream();
+  final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
+  outWriter.print("<html><body>dummy page</body></html>");
+  outWriter.close();
+  return true;
+}

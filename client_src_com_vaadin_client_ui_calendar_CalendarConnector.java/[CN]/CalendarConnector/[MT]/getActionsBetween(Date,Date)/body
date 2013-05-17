@@ -1,0 +1,27 @@
+{
+  List<Action> actions=new ArrayList<Action>();
+  for (int i=0; i < actionKeys.size(); i++) {
+    final String actionKey=actionKeys.get(i);
+    Date actionStartDate;
+    Date actionEndDate;
+    try {
+      actionStartDate=getActionStartDate(actionKey);
+      actionEndDate=getActionEndDate(actionKey);
+    }
+ catch (    ParseException pe) {
+      VConsole.error("Failed to parse action date");
+      continue;
+    }
+    boolean startIsValid=start.compareTo(actionStartDate) >= 0;
+    boolean endIsValid=end.compareTo(actionEndDate) <= 0;
+    if (startIsValid && endIsValid) {
+      VCalendarAction a=new VCalendarAction(this,rpc,actionKey);
+      a.setCaption(getActionCaption(actionKey));
+      a.setIconUrl(getActionIcon(actionKey));
+      a.setActionStartDate(start);
+      a.setActionEndDate(end);
+      actions.add(a);
+    }
+  }
+  return actions.toArray(new Action[actions.size()]);
+}

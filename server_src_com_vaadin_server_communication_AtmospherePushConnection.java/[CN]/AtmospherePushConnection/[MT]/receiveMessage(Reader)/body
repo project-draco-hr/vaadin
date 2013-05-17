@@ -1,0 +1,16 @@
+{
+  if (resource.transport() != TRANSPORT.WEBSOCKET) {
+    return reader;
+  }
+  if (incomingMessage == null) {
+    incomingMessage=new FragmentedMessage(reader);
+  }
+  if (incomingMessage.append(reader)) {
+    Reader completeReader=incomingMessage.getReader();
+    incomingMessage=null;
+    return completeReader;
+  }
+ else {
+    return null;
+  }
+}

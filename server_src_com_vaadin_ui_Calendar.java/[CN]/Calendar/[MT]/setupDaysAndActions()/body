@@ -1,0 +1,67 @@
+{
+  initCalendarWithLocale();
+  CalendarState state=getState();
+  state.firstDayOfWeek=currentCalendar.getFirstDayOfWeek();
+  if (startDate == null ^ endDate == null) {
+    String message="Schedule cannot be painted without a proper date range.\n";
+    if (startDate == null) {
+      throw new IllegalStateException(message + "You must set a start date using setStartDate(Date).");
+    }
+ else {
+      throw new IllegalStateException(message + "You must set an end date using setEndDate(Date).");
+    }
+  }
+ else   if (startDate == null && endDate == null) {
+    startDate=getStartDate();
+    endDate=getEndDate();
+  }
+  int durationInDays=(int)(((endDate.getTime()) - startDate.getTime()) / DateConstants.DAYINMILLIS);
+  durationInDays++;
+  if (durationInDays > 60) {
+    throw new RuntimeException("Daterange is too big (max 60) = " + durationInDays);
+  }
+  state.dayNames=getDayNamesShort();
+  state.monthNames=getMonthNamesShort();
+  Date now=new Date();
+  currentCalendar.setTime(now);
+  now=currentCalendar.getTime();
+  df_date.setTimeZone(currentCalendar.getTimeZone());
+  df_time.setTimeZone(currentCalendar.getTimeZone());
+  state.now=(df_date.format(now) + " " + df_time.format(now));
+  Date firstDateToShow=expandStartDate(startDate,durationInDays > 7);
+  Date lastDateToShow=expandEndDate(endDate,durationInDays > 7);
+  currentCalendar.setTime(firstDateToShow);
+  DateFormat weeklyCaptionFormatter=getWeeklyCaptionFormatter();
+  weeklyCaptionFormatter.setTimeZone(currentCalendar.getTimeZone());
+  Map<CalendarDateRange,Set<Action>> actionMap=new HashMap<CalendarDateRange,Set<Action>>();
+  List<CalendarState.Day> days=new ArrayList<CalendarState.Day>();
+  while (currentCalendar.getTime().compareTo(lastDateToShow) < 1) {
+    final Date date=currentCalendar.getTime();
+    final CalendarState.Day day=new CalendarState.Day();
+    day.date=df_date.format(date);
+    day.localizedDateFormat=weeklyCaptionFormatter.format(date);
+    day.dayOfWeek=getDowByLocale(currentCalendar);
+    day.week=currentCalendar.get(java.util.Calendar.WEEK_OF_YEAR);
+    days.add(day);
+    if (actionHandlers != null) {
+      for (      Action.Handler actionHandler : actionHandlers) {
+        GregorianCalendar cal=new GregorianCalendar(getTimeZone(),getLocale());
+        cal.clear();
+        cal.set(currentCalendar.get(java.util.Calendar.YEAR),currentCalendar.get(java.util.Calendar.MONTH),currentCalendar.get(java.util.Calendar.DATE));
+        Date start=cal.getTime();
+        cal.add(java.util.Calendar.DATE,1);
+        Date end=cal.getTime();
+        boolean monthView=(durationInDays > 7);
+        if (monthView) {
+          setActionsForDay(actionMap,start,end,actionHandler);
+        }
+ else {
+          setActionsForEachHalfHour(actionMap,start,end,actionHandler);
+        }
+      }
+    }
+    currentCalendar.add(java.util.Calendar.DATE,1);
+  }
+  state.days=days;
+  state.actions=createActionsList(actionMap);
+}

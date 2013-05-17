@@ -1,0 +1,35 @@
+{
+  if (!isClientChangeAllowed()) {
+    return;
+  }
+  if (range != null && range.length() > 14 && range.contains("TO")) {
+    String[] dates=range.split("TO");
+    try {
+      Date d1=df_date.parse(dates[0]);
+      Date d2=df_date.parse(dates[1]);
+      fireRangeSelect(d1,d2,true);
+    }
+ catch (    ParseException e) {
+    }
+  }
+ else   if (range != null && range.length() > 12 && range.contains(":")) {
+    String[] dates=range.split(":");
+    if (dates.length == 3) {
+      try {
+        Date d=df_date.parse(dates[0]);
+        currentCalendar.setTime(d);
+        int startMinutes=Integer.parseInt(dates[1]);
+        int endMinutes=Integer.parseInt(dates[2]);
+        currentCalendar.add(java.util.Calendar.MINUTE,startMinutes);
+        Date start=currentCalendar.getTime();
+        currentCalendar.add(java.util.Calendar.MINUTE,endMinutes - startMinutes);
+        Date end=currentCalendar.getTime();
+        fireRangeSelect(start,end,false);
+      }
+ catch (      ParseException e) {
+      }
+catch (      NumberFormatException e) {
+      }
+    }
+  }
+}

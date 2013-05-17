@@ -12,6 +12,28 @@
     }
     bubble=false;
   }
+ else   if (target == maximizeRestoreBox) {
+    if (type != Event.ONCLICK) {
+      bubble=false;
+    }
+  }
+ else   if (header.isOrHasChild(target) && !dragging) {
+    if (type != Event.ONDBLCLICK && draggable) {
+      if (type == Event.ONMOUSEDOWN) {
+        headerDragPending=event;
+      }
+ else       if (type == Event.ONMOUSEMOVE && headerDragPending != null) {
+        dragging=true;
+        onDragEvent(headerDragPending);
+        onDragEvent(event);
+        headerDragPending=null;
+      }
+ else {
+        headerDragPending=null;
+      }
+      bubble=false;
+    }
+  }
  else   if (dragging || !contents.isOrHasChild(target)) {
     onDragEvent(event);
     bubble=false;
@@ -21,7 +43,7 @@
       bringToFront();
     }
   }
-  if (type == Event.ONMOUSEDOWN && !contentPanel.getElement().isOrHasChild(target) && target != closeBox) {
+  if (type == Event.ONMOUSEDOWN && !contentPanel.getElement().isOrHasChild(target) && target != closeBox && target != maximizeRestoreBox) {
     contentPanel.focus();
   }
   if (!bubble) {

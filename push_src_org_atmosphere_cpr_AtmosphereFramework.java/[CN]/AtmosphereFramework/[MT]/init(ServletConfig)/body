@@ -1,0 +1,81 @@
+{
+  if (isInit)   return this;
+  try {
+    ServletContextHolder.register(this);
+    ServletConfig scFacade=new ServletConfig(){
+      public String getServletName(){
+        return sc.getServletName();
+      }
+      public ServletContext getServletContext(){
+        return sc.getServletContext();
+      }
+      public String getInitParameter(      String name){
+        String param=initParams.get(name);
+        if (param == null) {
+          return sc.getInitParameter(name);
+        }
+        return param;
+      }
+      public Enumeration<String> getInitParameterNames(){
+        Enumeration en=sc.getInitParameterNames();
+        while (en.hasMoreElements()) {
+          String name=(String)en.nextElement();
+          if (!initParams.containsKey(name)) {
+            initParams.put(name,sc.getInitParameter(name));
+          }
+        }
+        return Collections.enumeration(initParams.keySet());
+      }
+    }
+;
+    this.servletConfig=scFacade;
+    asyncSupportListener(new AsyncSupportListenerAdapter());
+    autoConfigureService(scFacade.getServletContext());
+    patchContainer();
+    doInitParams(scFacade);
+    doInitParamsForWebSocket(scFacade);
+    configureBroadcaster();
+    loadConfiguration(scFacade);
+    initWebSocket();
+    autoDetectContainer();
+    configureWebDotXmlAtmosphereHandler(sc);
+    asyncSupport.init(scFacade);
+    initAtmosphereHandler(scFacade);
+    configureAtmosphereInterceptor(sc);
+    if (broadcasterCacheClassName == null) {
+      logger.warn("No BroadcasterCache configured. Broadcasted message between client reconnection will be LOST. " + "It is recommended to configure the {}",UUIDBroadcasterCache.class.getName());
+    }
+ else {
+      logger.info("Using BroadcasterCache: {}",broadcasterCacheClassName);
+    }
+    if (sc.getServletContext() != null) {
+      sc.getServletContext().setAttribute(BroadcasterFactory.class.getName(),broadcasterFactory);
+    }
+    for (    String i : broadcasterFilters) {
+      logger.info("Using BroadcastFilter: {}",i);
+    }
+    String s=config.getInitParameter(ApplicationConfig.BROADCASTER_SHARABLE_THREAD_POOLS);
+    if (s != null) {
+      sharedThreadPools=Boolean.parseBoolean(s);
+    }
+    logger.info("Shared ExecutorService supported: {}",sharedThreadPools);
+    logger.info("HttpSession supported: {}",config.isSupportSession());
+    logger.info("Using BroadcasterFactory: {}",broadcasterFactory.getClass().getName());
+    logger.info("Using WebSocketProcessor: {}",webSocketProcessorClassName);
+    logger.info("Using Broadcaster: {}",broadcasterClassName);
+    logger.info("Atmosphere Framework {} started.",Version.getRawVersion());
+    String showSupportMessage=config.getInitParameter("org.atmosphere.cpr.showSupportMessage");
+    if (showSupportMessage == null || Boolean.parseBoolean(showSupportMessage)) {
+      logger.info("\n\n\tFor Commercial Support, visit \n\t{} " + "or send an email to {}\n","http://www.async-io.org/","support@async-io.org");
+    }
+  }
+ catch (  Throwable t) {
+    logger.error("Failed to initialize Atmosphere Framework",t);
+    if (t instanceof ServletException) {
+      throw (ServletException)t;
+    }
+    throw new ServletException(t);
+  }
+  isInit=true;
+  return this;
+}

@@ -1,0 +1,60 @@
+{
+  int eventsAdded=0;
+  for (int i=0; i < slots; i++) {
+    CalendarEvent e=events[i];
+    if (e == null) {
+      HTML slot=new HTML();
+      slot.setStyleName("v-calendar-spacer");
+      if (!clear) {
+        remove(i + 1);
+        insert(slot,i + 1);
+      }
+ else {
+        add(slot);
+      }
+    }
+ else {
+      eventsAdded++;
+      if (!clear) {
+        Widget w=getWidget(i + 1);
+        if (!(w instanceof MonthEventLabel)) {
+          remove(i + 1);
+          insert(createMonthEventLabel(e),i + 1);
+        }
+      }
+ else {
+        add(createMonthEventLabel(e));
+      }
+    }
+  }
+  int remainingSpace=intHeight - ((slots * EVENTHEIGHT) + BOTTOMSPACERHEIGHT + caption.getOffsetHeight());
+  int newHeight=remainingSpace + BOTTOMSPACERHEIGHT;
+  if (newHeight < 0) {
+    newHeight=EVENTHEIGHT;
+  }
+  bottomspacer.setHeight(newHeight + "px");
+  if (clear) {
+    add(bottomspacer);
+  }
+  int more=eventCount - eventsAdded;
+  if (more > 0) {
+    if (bottomSpacerMouseDownHandler == null) {
+      bottomSpacerMouseDownHandler=bottomspacer.addMouseDownHandler(this);
+    }
+    bottomspacer.setStyleName("v-calendar-bottom-spacer");
+    bottomspacer.setText("+ " + more);
+  }
+ else {
+    if (!scrollable && bottomSpacerMouseDownHandler != null) {
+      bottomSpacerMouseDownHandler.removeHandler();
+      bottomSpacerMouseDownHandler=null;
+    }
+    if (scrollable) {
+      bottomspacer.setText("[ - ]");
+    }
+ else {
+      bottomspacer.setStyleName("v-calendar-bottom-spacer-empty");
+      bottomspacer.setText("");
+    }
+  }
+}

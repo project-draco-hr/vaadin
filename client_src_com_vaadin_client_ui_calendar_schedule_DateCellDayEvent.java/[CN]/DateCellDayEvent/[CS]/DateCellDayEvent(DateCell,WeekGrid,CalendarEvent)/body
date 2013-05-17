@@ -1,0 +1,29 @@
+{
+  super();
+  this.dateCell=dateCell;
+  handlers=new LinkedList<HandlerRegistration>();
+  setStylePrimaryName("v-calendar-event");
+  setCalendarEvent(event);
+  weekGrid=parent;
+  Style s=getElement().getStyle();
+  if (event.getStyleName().length() > 0) {
+    addStyleDependentName(event.getStyleName());
+  }
+  s.setPosition(Position.ABSOLUTE);
+  caption=DOM.createDiv();
+  caption.addClassName("v-calendar-event-caption");
+  getElement().appendChild(caption);
+  eventContent=DOM.createDiv();
+  eventContent.addClassName("v-calendar-event-content");
+  getElement().appendChild(eventContent);
+  VCalendar calendar=weekGrid.getCalendar();
+  if (weekGrid.getCalendar().isEventResizeAllowed()) {
+    topResizeBar=DOM.createDiv();
+    bottomResizeBar=DOM.createDiv();
+    topResizeBar.addClassName("v-calendar-event-resizetop");
+    bottomResizeBar.addClassName("v-calendar-event-resizebottom");
+    getElement().appendChild(topResizeBar);
+    getElement().appendChild(bottomResizeBar);
+  }
+  eventIndex=event.getIndex();
+}

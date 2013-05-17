@@ -1,0 +1,40 @@
+{
+  dataSource=new BasicEventProvider();
+  calendarComponent=new Calendar(dataSource);
+  calendarComponent.setLocale(getLocale());
+  calendarComponent.setImmediate(true);
+  if (calendarWidth != null || calendarHeight != null) {
+    if (calendarHeight != null) {
+      calendarComponent.setHeight(calendarHeight);
+    }
+    if (calendarWidth != null) {
+      calendarComponent.setWidth(calendarWidth);
+    }
+  }
+ else {
+    calendarComponent.setSizeFull();
+  }
+  if (firstHour != null && lastHour != null) {
+    calendarComponent.setFirstVisibleHourOfDay(firstHour);
+    calendarComponent.setLastVisibleHourOfDay(lastHour);
+  }
+  if (firstDay != null && lastDay != null) {
+    calendarComponent.setFirstVisibleDayOfWeek(firstDay);
+    calendarComponent.setLastVisibleDayOfWeek(lastDay);
+  }
+  Date today=getToday();
+  calendar=new GregorianCalendar(getLocale());
+  calendar.setTime(today);
+  updateCaptionLabel();
+  if (!showWeeklyView) {
+    int rollAmount=calendar.get(GregorianCalendar.DAY_OF_MONTH) - 1;
+    calendar.add(GregorianCalendar.DAY_OF_MONTH,-rollAmount);
+    resetTime(false);
+    currentMonthsFirstDate=calendar.getTime();
+    calendarComponent.setStartDate(currentMonthsFirstDate);
+    calendar.add(GregorianCalendar.MONTH,1);
+    calendar.add(GregorianCalendar.DATE,-1);
+    calendarComponent.setEndDate(calendar.getTime());
+  }
+  addCalendarEventListeners();
+}

@@ -4,6 +4,15 @@
     if (!rootNode.getState()) {
       rootNode.setState(true,false);
     }
-    renderChildNodes(rootNode,(Iterator)uidl.getChildIterator());
+    String levelPropertyString=Roles.getTreeitemRole().getAriaLevelProperty(rootNode.getElement());
+    int levelProperty;
+    try {
+      levelProperty=Integer.valueOf(levelPropertyString);
+    }
+ catch (    NumberFormatException e) {
+      levelProperty=1;
+      VConsole.error(e);
+    }
+    renderChildNodes(rootNode,(Iterator)uidl.getChildIterator(),levelProperty + 1);
   }
 }

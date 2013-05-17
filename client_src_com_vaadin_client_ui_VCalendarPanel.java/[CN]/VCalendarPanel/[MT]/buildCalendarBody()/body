@@ -33,6 +33,7 @@
  else {
       days.setHTML(headerRow,firstWeekdayColumn + i,"");
     }
+    Roles.getColumnheaderRole().set(days.getCellFormatter().getElement(headerRow,firstWeekdayColumn + i));
   }
   final Date tmp=new Date();
   final Date today=new Date(tmp.getYear(),tmp.getMonth(),tmp.getDate());
@@ -42,10 +43,15 @@
   curr.setDate(1 - startWeekDay);
   for (int weekOfMonth=1; weekOfMonth < 7; weekOfMonth++) {
     for (int dayOfWeek=0; dayOfWeek < 7; dayOfWeek++) {
-      Day day=new Day((Date)curr.clone());
+      Date dayDate=(Date)curr.clone();
+      Day day=new Day(dayDate);
       day.setStyleName(parent.getStylePrimaryName() + "-calendarpanel-day");
+      if (!isDateInsideRange(dayDate,Resolution.DAY)) {
+        day.addStyleDependentName(CN_OUTSIDE_RANGE);
+      }
       if (curr.equals(selectedDate)) {
         day.addStyleDependentName(CN_SELECTED);
+        Roles.getGridcellRole().setAriaSelectedState(day.getElement(),SelectedValue.TRUE);
         selectedDay=day;
       }
       if (curr.equals(today)) {
@@ -62,6 +68,7 @@
         day.addStyleDependentName(CN_OFFMONTH);
       }
       days.setWidget(weekOfMonth,firstWeekdayColumn + dayOfWeek,day);
+      Roles.getGridcellRole().set(days.getCellFormatter().getElement(weekOfMonth,firstWeekdayColumn + dayOfWeek));
       days.getCellFormatter().setVisible(weekOfMonth,weekColumn,isShowISOWeekNumbers());
       if (isShowISOWeekNumbers()) {
         final String baseCssClass=parent.getStylePrimaryName() + "-calendarpanel-weeknumber";

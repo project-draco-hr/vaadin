@@ -1,0 +1,30 @@
+{
+  final ClassLoader cl=Thread.currentThread().getContextClassLoader();
+  String path=libPath != DEFAULT_LIB_PATH ? libPath : sc.getRealPath(handlersPath);
+  try {
+    AnnotationProcessor p=(AnnotationProcessor)cl.loadClass(annotationProcessorClassName).newInstance();
+    logger.info("Atmosphere is using {} for processing annotation",annotationProcessorClassName);
+    p.configure(this);
+    if (path != null) {
+      p.scan(new File(path));
+    }
+    String pathLibs=sc.getRealPath(DEFAULT_LIB_PATH);
+    if (pathLibs != null) {
+      File libFolder=new File(pathLibs);
+      File jars[]=libFolder.listFiles(new FilenameFilter(){
+        @Override public boolean accept(        File arg0,        String arg1){
+          return arg1.endsWith(".jar");
+        }
+      }
+);
+      for (      File file : jars) {
+        p.scan(file);
+      }
+    }
+  }
+ catch (  Throwable e) {
+    logger.debug("Atmosphere's Service Annotation Not Supported. Please add https://github.com/rmuller/infomas-asl as dependencies or your own AnnotationProcessor to support @Service");
+    logger.trace("",e);
+    return;
+  }
+}

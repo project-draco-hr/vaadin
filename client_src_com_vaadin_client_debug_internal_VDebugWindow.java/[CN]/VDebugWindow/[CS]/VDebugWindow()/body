@@ -1,0 +1,44 @@
+{
+  super(false,false);
+  instance=this;
+  getElement().getStyle().setOverflow(Overflow.HIDDEN);
+  setStylePrimaryName(STYLENAME);
+  setWidget(window);
+  window.add(head);
+  head.add(tabs);
+  head.add(controls);
+  head.add(sectionHead);
+  window.add(content);
+  head.setStylePrimaryName(STYLENAME_HEAD);
+  tabs.setStylePrimaryName(STYLENAME_TABS);
+  controls.setStylePrimaryName(STYLENAME_CONTROLS);
+  sectionHead.setStylePrimaryName(STYLENAME_SECTION_HEAD);
+  content.setStylePrimaryName(STYLENAME_CONTENT);
+  controls.add(menu);
+  menu.addClickHandler(new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      menuPopup.showRelativeTo(menu);
+    }
+  }
+);
+  controls.add(minimize);
+  minimize.addClickHandler(new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      toggleMinimized();
+      writeStoredState();
+    }
+  }
+);
+  controls.add(close);
+  close.addClickHandler(new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      close();
+    }
+  }
+);
+  Style s=content.getElement().getStyle();
+  s.setOverflow(Overflow.AUTO);
+  moveReg=head.addDomHandler(moveHandler,MouseDownEvent.getType());
+  resizeReg=content.addDomHandler(resizeHandler,MouseDownEvent.getType());
+  resizeReg2=content.addDomHandler(resizeHandler,MouseMoveEvent.getType());
+}

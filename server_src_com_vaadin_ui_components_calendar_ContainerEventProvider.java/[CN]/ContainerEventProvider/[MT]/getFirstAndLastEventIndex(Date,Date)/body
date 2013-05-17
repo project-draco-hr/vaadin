@@ -1,0 +1,33 @@
+{
+  int startIndex=0;
+  int size=container.size();
+  int endIndex=size - 1;
+  if (start != null) {
+    while (startIndex < size) {
+      Object id=container.getIdByIndex(startIndex);
+      Item item=container.getItem(id);
+      Date d=(Date)item.getItemProperty(startDateProperty).getValue();
+      if (d.compareTo(start) >= 0) {
+        break;
+      }
+      startIndex++;
+    }
+  }
+  if (end != null) {
+    endIndex=startIndex;
+    while (endIndex < size - 1) {
+      Object id=container.getIdByIndex(endIndex);
+      Item item=container.getItem(id);
+      Date d=(Date)item.getItemProperty(endDateProperty).getValue();
+      if (d == null) {
+        d=(Date)item.getItemProperty(startDateProperty).getValue();
+      }
+      if (d.compareTo(end) >= 0) {
+        endIndex--;
+        break;
+      }
+      endIndex++;
+    }
+  }
+  return new int[]{startIndex,endIndex};
+}

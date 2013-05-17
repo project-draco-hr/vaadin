@@ -1,0 +1,32 @@
+{
+  if (ServletPortletHelper.isAppRequest(request)) {
+    return false;
+  }
+  try {
+    session.getBrowser().updateRequestDetails(request);
+    List<UIProvider> uiProviders=session.getUIProviders();
+    UIClassSelectionEvent classSelectionEvent=new UIClassSelectionEvent(request);
+    Class<? extends UI> uiClass=null;
+    UIProvider provider=null;
+    for (    UIProvider p : uiProviders) {
+      uiClass=p.getUIClass(classSelectionEvent);
+      if (uiClass != null) {
+        provider=p;
+        break;
+      }
+    }
+    if (provider == null) {
+      return false;
+    }
+    BootstrapContext context=new BootstrapContext(response,new BootstrapFragmentResponse(this,request,session,uiClass,new ArrayList<Node>(),provider));
+    setupMainDiv(context);
+    BootstrapFragmentResponse fragmentResponse=context.getBootstrapResponse();
+    session.modifyBootstrapResponse(fragmentResponse);
+    String html=getBootstrapHtml(context);
+    writeBootstrapPage(response,html);
+  }
+ catch (  JSONException e) {
+    writeError(response,e);
+  }
+  return true;
+}

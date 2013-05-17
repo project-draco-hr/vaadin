@@ -1,0 +1,31 @@
+{
+  List<DateCellGroup> groups=new ArrayList<DateCellGroup>();
+  int count=getWidgetCount();
+  List<Integer> handled=new ArrayList<Integer>();
+  for (int i=0; i < count; i++) {
+    if (handled.contains(i)) {
+      continue;
+    }
+    DateCellGroup curGroup=getOverlappingEvents(i);
+    handled.addAll(curGroup.getItems());
+    boolean newGroup=true;
+    if (curGroup.getItems().size() != count) {
+      for (      DateCellGroup g : groups) {
+        if (WeekGridMinuteTimeRange.doesOverlap(curGroup.getDateRange(),g.getDateRange())) {
+          newGroup=false;
+          updateGroup(g,curGroup);
+        }
+      }
+    }
+ else {
+      if (newGroup) {
+        groups.add(curGroup);
+      }
+      break;
+    }
+    if (newGroup) {
+      groups.add(curGroup);
+    }
+  }
+  drawDayEvents(groups);
+}

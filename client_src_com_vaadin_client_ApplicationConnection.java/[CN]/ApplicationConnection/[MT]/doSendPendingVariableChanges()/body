@@ -1,6 +1,6 @@
 {
   if (applicationRunning) {
-    if (hasActiveRequest()) {
+    if (hasActiveRequest() || (push != null && !push.isActive())) {
       if (pendingInvocations.size() > 0 || pendingBursts.size() == 0) {
         pendingBursts.add(pendingInvocations);
         pendingInvocations=new LinkedHashMap<String,MethodInvocation>();
@@ -8,7 +8,7 @@
       }
     }
  else {
-      buildAndSendVariableBurst(pendingInvocations,false);
+      buildAndSendVariableBurst(pendingInvocations);
     }
   }
 }

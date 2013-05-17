@@ -1,0 +1,47 @@
+{
+  Date when=e.getStart();
+  Date to=e.getEnd();
+  boolean eventAdded=false;
+  boolean inProgress=false;
+  boolean eventMoving=false;
+  List<SimpleDayCell> dayCells=new ArrayList<SimpleDayCell>();
+  List<SimpleDayCell> timeCells=new ArrayList<SimpleDayCell>();
+  for (int row=0; row < monthGrid.getRowCount(); row++) {
+    if (eventAdded) {
+      break;
+    }
+    for (int cell=0; cell < monthGrid.getCellCount(row); cell++) {
+      SimpleDayCell sdc=(SimpleDayCell)monthGrid.getWidget(row,cell);
+      if (isEventInDay(when,to,sdc.getDate()) && isEventInDayWithTime(when,to,sdc.getDate(),e.getEndTime(),e.isAllDay())) {
+        if (!eventMoving) {
+          eventMoving=sdc.getMoveEvent() != null;
+        }
+        long d=e.getRangeInMilliseconds();
+        if ((d > 0 && d <= DateConstants.DAYINMILLIS) && !e.isAllDay()) {
+          timeCells.add(sdc);
+        }
+ else {
+          dayCells.add(sdc);
+        }
+        inProgress=true;
+        continue;
+      }
+ else       if (inProgress) {
+        eventAdded=true;
+        inProgress=false;
+        break;
+      }
+    }
+  }
+  updateEventSlotIndex(e,dayCells);
+  updateEventSlotIndex(e,timeCells);
+  for (  SimpleDayCell sdc : dayCells) {
+    sdc.addCalendarEvent(e);
+  }
+  for (  SimpleDayCell sdc : timeCells) {
+    sdc.addCalendarEvent(e);
+  }
+  if (renderImmediately) {
+    reDrawAllMonthEvents(!eventMoving);
+  }
+}

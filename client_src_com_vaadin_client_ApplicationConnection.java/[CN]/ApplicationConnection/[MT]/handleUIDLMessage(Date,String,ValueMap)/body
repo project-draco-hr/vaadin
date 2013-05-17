@@ -5,6 +5,8 @@
     forceHandleMessage.schedule(MAX_SUSPENDED_TIMEOUT);
     return;
   }
+  final Object lock=new Object();
+  suspendReponseHandling(lock);
   VConsole.log("Handling message from server");
   eventBus.fireEvent(new ResponseHandlingStartedEvent(this));
   if (json.containsKey("redirect")) {
@@ -16,7 +18,7 @@
   lastResponseId++;
   final MultiStepDuration handleUIDLDuration=new MultiStepDuration();
   if (json.containsKey(ApplicationConstants.UIDL_SECURITY_TOKEN_ID)) {
-    uidlSecurityKey=json.getString(ApplicationConstants.UIDL_SECURITY_TOKEN_ID);
+    csrfToken=json.getString(ApplicationConstants.UIDL_SECURITY_TOKEN_ID);
   }
   VConsole.log(" * Handling resources from server");
   if (json.containsKey("resources")) {
@@ -142,7 +144,10 @@
       }
       VConsole.log(" Processing time was " + String.valueOf(lastProcessingTime) + "ms for "+ jsonText.length()+ " characters of JSON");
       VConsole.log("Referenced paintables: " + connectorMap.size());
-      endRequest();
+      if (meta == null || !meta.containsKey("async")) {
+        endRequest();
+      }
+      resumeResponseHandling(lock);
       if (Profiler.isEnabled()) {
         Scheduler.get().scheduleDeferred(new ScheduledCommand(){
           @Override public void execute(){

@@ -1,0 +1,27 @@
+{
+  String returnString="";
+  try {
+    if (message == null) {
+      message=details;
+    }
+ else     if (details != null) {
+      message+="<br/><br/>" + details;
+    }
+    JSONObject appError=new JSONObject();
+    appError.put("caption",caption);
+    appError.put("message",message);
+    appError.put("url",url);
+    JSONObject meta=new JSONObject();
+    meta.put("appError",appError);
+    JSONObject json=new JSONObject();
+    json.put("changes",Collections.EMPTY_LIST);
+    json.put("resources",Collections.EMPTY_MAP);
+    json.put("locales",Collections.EMPTY_LIST);
+    json.put("meta",meta);
+    returnString=json.toString();
+  }
+ catch (  JSONException e) {
+    getLogger().log(Level.WARNING,"Error creating critical notification JSON message",e);
+  }
+  return "for(;;);[" + returnString + "]";
+}

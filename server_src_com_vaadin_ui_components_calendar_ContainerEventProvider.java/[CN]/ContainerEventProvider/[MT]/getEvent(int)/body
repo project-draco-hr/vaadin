@@ -1,0 +1,36 @@
+{
+  for (  CalendarEvent e : eventCache) {
+    if (e instanceof ContainerCalendarEvent && ((ContainerCalendarEvent)e).getContainerIndex() == index) {
+      return e;
+    }
+ else     if (container.getIdByIndex(index) == e) {
+      return e;
+    }
+  }
+  final Object id=container.getIdByIndex(index);
+  Item item=container.getItem(id);
+  CalendarEvent event;
+  if (id instanceof CalendarEvent) {
+    event=(CalendarEvent)id;
+  }
+ else {
+    BasicEvent basicEvent=new ContainerCalendarEvent(index);
+    if (captionProperty != null && item.getItemPropertyIds().contains(captionProperty)) {
+      basicEvent.setCaption(String.valueOf(item.getItemProperty(captionProperty).getValue()));
+    }
+    if (descriptionProperty != null && item.getItemPropertyIds().contains(descriptionProperty)) {
+      basicEvent.setDescription(String.valueOf(item.getItemProperty(descriptionProperty).getValue()));
+    }
+    if (startDateProperty != null && item.getItemPropertyIds().contains(startDateProperty)) {
+      basicEvent.setStart((Date)item.getItemProperty(startDateProperty).getValue());
+    }
+    if (endDateProperty != null && item.getItemPropertyIds().contains(endDateProperty)) {
+      basicEvent.setEnd((Date)item.getItemProperty(endDateProperty).getValue());
+    }
+    if (styleNameProperty != null && item.getItemPropertyIds().contains(styleNameProperty)) {
+      basicEvent.setDescription(String.valueOf(item.getItemProperty(descriptionProperty).getValue()));
+    }
+    event=basicEvent;
+  }
+  return event;
+}

@@ -1,0 +1,31 @@
+{
+  String s=sc.getInitParameter(ApplicationConfig.ATMOSPHERE_INTERCEPTORS);
+  if (s != null) {
+    String[] list=s.split(",");
+    for (    String a : list) {
+      try {
+        AtmosphereInterceptor ai=(AtmosphereInterceptor)Thread.currentThread().getContextClassLoader().loadClass(a.trim()).newInstance();
+        ai.configure(config);
+        interceptor(ai);
+      }
+ catch (      InstantiationException e) {
+        logger.warn("",e);
+      }
+catch (      IllegalAccessException e) {
+        logger.warn("",e);
+      }
+catch (      ClassNotFoundException e) {
+        logger.warn("",e);
+      }
+    }
+  }
+  s=sc.getInitParameter(ApplicationConfig.DISABLE_ATMOSPHEREINTERCEPTOR);
+  if (s == null) {
+    interceptors.addFirst(newAInterceptor(OnDisconnectInterceptor.class));
+    interceptors.addFirst(newAInterceptor(JavaScriptProtocol.class));
+    interceptors.addFirst(newAInterceptor(JSONPAtmosphereInterceptor.class));
+    interceptors.addFirst(newAInterceptor(SSEAtmosphereInterceptor.class));
+    interceptors.addFirst(newAInterceptor(AndroidAtmosphereInterceptor.class));
+    logger.info("Installed Default AtmosphereInterceptor {}. " + "Set org.atmosphere.cpr.AtmosphereInterceptor.disableDefaults in your xml to disable them.",interceptors);
+  }
+}

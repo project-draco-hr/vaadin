@@ -1,0 +1,36 @@
+{
+  if (calendar.isDisabled() || event.getNativeButton() != NativeEvent.BUTTON_LEFT) {
+    return;
+  }
+  Widget w=(Widget)event.getSource();
+  clickedWidget=w;
+  if (w instanceof MonthEventLabel) {
+    monthEventMouseDown=true;
+    if (w instanceof MonthEventLabel) {
+      startCalendarEventDrag(event,(MonthEventLabel)w);
+    }
+  }
+ else   if (!calendar.isReadOnly()) {
+    if (w == bottomspacer) {
+      if (scrollable) {
+        setLimitedCellHeight();
+      }
+ else {
+        setUnlimitedCellHeight();
+      }
+      reDraw(true);
+    }
+ else     if (w == this && !scrollable) {
+      MonthGrid grid=getMonthGrid();
+      if (grid.isEnabled() && calendar.isRangeSelectAllowed()) {
+        grid.setSelectionStart(this);
+        grid.setSelectionEnd(this);
+      }
+    }
+ else     if (w instanceof Label) {
+      labelMouseDown=true;
+    }
+  }
+  event.stopPropagation();
+  event.preventDefault();
+}

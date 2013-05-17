@@ -35,7 +35,7 @@
     }
     childTree=getWidget().new TreeNode();
     getConnection().getVTooltip().connectHandlersToWidget(childTree);
-    updateNodeFromUIDL(childTree,childUidl);
+    updateNodeFromUIDL(childTree,childUidl,1);
     getWidget().body.add(childTree);
     childTree.addStyleDependentName("root");
     childTree.childNodeContainer.addStyleDependentName("root");
@@ -49,12 +49,16 @@
   getWidget().selectable=!"none".equals(selectMode);
   getWidget().isMultiselect="multi".equals(selectMode);
   if (getWidget().isMultiselect) {
+    Roles.getTreeRole().setAriaMultiselectableProperty(getWidget().getElement(),true);
     if (BrowserInfo.get().isTouchDevice()) {
       getWidget().multiSelectMode=MultiSelectMode.SIMPLE;
     }
  else {
       getWidget().multiSelectMode=MultiSelectMode.valueOf(uidl.getStringAttribute("multiselectmode"));
     }
+  }
+ else {
+    Roles.getTreeRole().setAriaMultiselectableProperty(getWidget().getElement(),false);
   }
   getWidget().selectedIds=uidl.getStringArrayVariableAsSet("selected");
   if (getWidget().lastSelection != null) {

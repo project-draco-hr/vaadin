@@ -1,0 +1,15 @@
+{
+  GregorianCalendar cal=new GregorianCalendar(getTimeZone(),getLocale());
+  cal.setTime(start);
+  while (cal.getTime().before(end)) {
+    Date s=cal.getTime();
+    cal.add(java.util.Calendar.MINUTE,30);
+    Date e=cal.getTime();
+    CalendarDateRange range=new CalendarDateRange(s,e,getTimeZone());
+    Action[] actions=actionHandler.getActions(range,this);
+    if (actions != null) {
+      Set<Action> actionSet=new HashSet<Action>(Arrays.asList(actions));
+      actionMap.put(range,actionSet);
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  Window modal=new Window("Add event");
+  modal.setModal(true);
+  modal.setResizable(false);
+  modal.setDraggable(false);
+  modal.setWidth("300px");
+  final FieldGroup fieldGroup=new FieldGroup();
+  FormLayout formLayout=new FormLayout();
+  TextField captionField=new TextField("Caption");
+  captionField.setImmediate(true);
+  TextField descriptionField=new TextField("Description");
+  descriptionField.setImmediate(true);
+  DateField startField=new DateField("Start");
+  startField.setResolution(Resolution.MINUTE);
+  startField.setImmediate(true);
+  DateField endField=new DateField("End");
+  endField.setImmediate(true);
+  endField.setResolution(Resolution.MINUTE);
+  formLayout.addComponent(captionField);
+  formLayout.addComponent(descriptionField);
+  formLayout.addComponent(startField);
+  formLayout.addComponent(endField);
+  fieldGroup.bind(captionField,ContainerEventProvider.CAPTION_PROPERTY);
+  fieldGroup.bind(descriptionField,ContainerEventProvider.DESCRIPTION_PROPERTY);
+  fieldGroup.bind(startField,ContainerEventProvider.STARTDATE_PROPERTY);
+  fieldGroup.bind(endField,ContainerEventProvider.ENDDATE_PROPERTY);
+  fieldGroup.setItemDataSource(new BeanItem<BasicEvent>(event,Arrays.asList(ContainerEventProvider.CAPTION_PROPERTY,ContainerEventProvider.DESCRIPTION_PROPERTY,ContainerEventProvider.STARTDATE_PROPERTY,ContainerEventProvider.ENDDATE_PROPERTY)));
+  modal.setContent(formLayout);
+  modal.addCloseListener(new Window.CloseListener(){
+    @Override public void windowClose(    CloseEvent e){
+      try {
+        fieldGroup.commit();
+      }
+ catch (      CommitException e1) {
+        e1.printStackTrace();
+      }
+      if (events.containsId(event)) {
+        BasicEvent dummy=new BasicEvent();
+        events.addBean(dummy);
+        events.removeItem(dummy);
+      }
+ else {
+        events.addBean(event);
+      }
+    }
+  }
+);
+  getUI().addWindow(modal);
+}

@@ -1,0 +1,26 @@
+{
+  DateCellGroup g=new DateCellGroup(targetIndex);
+  int count=getWidgetCount();
+  DateCellDayEvent target=(DateCellDayEvent)getWidget(targetIndex);
+  WeekGridMinuteTimeRange targetRange=new WeekGridMinuteTimeRange(target.getCalendarEvent().getStartTime(),target.getCalendarEvent().getEndTime());
+  Date groupStart=targetRange.getStart();
+  Date groupEnd=targetRange.getEnd();
+  for (int i=0; i < count; i++) {
+    if (targetIndex == i) {
+      continue;
+    }
+    DateCellDayEvent d=(DateCellDayEvent)getWidget(i);
+    WeekGridMinuteTimeRange nextRange=new WeekGridMinuteTimeRange(d.getCalendarEvent().getStartTime(),d.getCalendarEvent().getEndTime());
+    if (WeekGridMinuteTimeRange.doesOverlap(targetRange,nextRange)) {
+      g.add(i);
+      if (nextRange.getStart().before(targetRange.getStart())) {
+        groupStart=targetRange.getStart();
+      }
+      if (nextRange.getEnd().after(targetRange.getEnd())) {
+        groupEnd=targetRange.getEnd();
+      }
+    }
+  }
+  g.setDateRange(new WeekGridMinuteTimeRange(groupStart,groupEnd));
+  return g;
+}

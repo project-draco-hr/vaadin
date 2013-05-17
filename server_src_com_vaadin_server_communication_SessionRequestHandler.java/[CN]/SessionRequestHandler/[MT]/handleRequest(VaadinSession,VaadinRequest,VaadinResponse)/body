@@ -1,0 +1,16 @@
+{
+  session.lock();
+  ArrayList<RequestHandler> requestHandlers;
+  try {
+    requestHandlers=new ArrayList<RequestHandler>(session.getRequestHandlers());
+  }
+  finally {
+    session.unlock();
+  }
+  for (  RequestHandler handler : requestHandlers) {
+    if (handler.handleRequest(session,request,response)) {
+      return true;
+    }
+  }
+  return false;
+}

@@ -1,0 +1,38 @@
+{
+  String connectorString=Util.getConnectorString(connector);
+  List<ServerConnector> children=connector.getChildren();
+  Widget widget;
+  if (children == null || children.isEmpty()) {
+    Label label=new Label(connectorString);
+    label.addClickHandler(new ClickHandler(){
+      @Override public void onClick(      ClickEvent event){
+        Highlight.showOnly(connector);
+      }
+    }
+);
+    widget=label;
+  }
+ else {
+    SimpleTree tree=new SimpleTree(connectorString){
+      @Override protected void select(      ClickEvent event){
+        super.select(event);
+        Highlight.showOnly(connector);
+      }
+    }
+;
+    for (    ServerConnector child : children) {
+      tree.add(buildConnectorTree(child));
+    }
+    widget=tree;
+  }
+  if (widget instanceof HasDoubleClickHandlers) {
+    HasDoubleClickHandlers has=(HasDoubleClickHandlers)widget;
+    has.addDoubleClickHandler(new DoubleClickHandler(){
+      @Override public void onDoubleClick(      DoubleClickEvent event){
+        printState(connector);
+      }
+    }
+);
+  }
+  return widget;
+}

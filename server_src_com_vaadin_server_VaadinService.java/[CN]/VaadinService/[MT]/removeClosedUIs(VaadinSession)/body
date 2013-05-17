@@ -1,8 +1,14 @@
 {
-  for (  UI ui : new ArrayList<UI>(session.getUIs())) {
-    if (ui.isClosing()) {
-      getLogger().log(Level.FINER,"Removing closed UI {0}",ui.getUIId());
-      session.removeUI(ui);
+  ArrayList<UI> uis=new ArrayList<UI>(session.getUIs());
+  for (  final UI ui : uis) {
+    ui.access(new Runnable(){
+      @Override public void run(){
+        if (ui.isClosing()) {
+          getLogger().log(Level.FINER,"Removing closed UI {0}",ui.getUIId());
+          session.removeUI(ui);
+        }
+      }
     }
+);
   }
 }

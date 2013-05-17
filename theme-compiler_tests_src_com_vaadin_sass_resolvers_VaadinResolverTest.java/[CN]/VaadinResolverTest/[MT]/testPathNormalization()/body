@@ -1,0 +1,24 @@
+{
+  VaadinResolver resolver=new VaadinResolver();
+  Method normalizeMethod=VaadinResolver.class.getDeclaredMethod("normalize",String.class);
+  normalizeMethod.setAccessible(true);
+  String identifier, result;
+  identifier="a/b/../../../a b/b.scss";
+  result=(String)normalizeMethod.invoke(resolver,identifier);
+  Assert.assertEquals("../a b/b.scss",result);
+  identifier="./a/b/../c/d/.././e.scss";
+  result=(String)normalizeMethod.invoke(resolver,identifier);
+  Assert.assertEquals("a/c/e.scss",result);
+  identifier="/????????????????/:;:;:;/???????/- -/e.scss";
+  result=(String)normalizeMethod.invoke(resolver,identifier);
+  Assert.assertEquals("/????????????????/:;:;:;/???????/- -/e.scss",result);
+  identifier=".";
+  result=(String)normalizeMethod.invoke(resolver,identifier);
+  Assert.assertEquals("",result);
+  identifier="../..";
+  result=(String)normalizeMethod.invoke(resolver,identifier);
+  Assert.assertEquals("../..",result);
+  identifier="./../a.scss";
+  result=(String)normalizeMethod.invoke(resolver,identifier);
+  Assert.assertEquals("../a.scss",result);
+}

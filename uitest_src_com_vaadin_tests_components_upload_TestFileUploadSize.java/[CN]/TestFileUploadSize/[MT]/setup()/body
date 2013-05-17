@@ -2,20 +2,20 @@
   getLayout().setMargin(new MarginInfo(true,false,false,false));
   getLayout().setSpacing(true);
   Upload u=new Upload("Upload",new Upload.Receiver(){
-    public OutputStream receiveUpload(    String filename,    String mimeType){
+    @Override public OutputStream receiveUpload(    String filename,    String mimeType){
       return baos;
     }
   }
 );
   u.setId("UPL");
   u.addStartedListener(new Upload.StartedListener(){
-    public void uploadStarted(    StartedEvent event){
+    @Override public void uploadStarted(    StartedEvent event){
       expectedSize.setValue(String.valueOf(event.getContentLength()));
     }
   }
 );
   u.addFinishedListener(new Upload.FinishedListener(){
-    public void uploadFinished(    FinishedEvent event){
+    @Override public void uploadFinished(    FinishedEvent event){
       label.setValue("Upload finished. Name: " + event.getFilename());
       receivedSize.setValue(String.valueOf(baos.size()));
       baos.reset();
