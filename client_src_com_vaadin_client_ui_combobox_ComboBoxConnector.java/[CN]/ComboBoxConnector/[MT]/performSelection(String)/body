@@ -1,0 +1,16 @@
+{
+  for (  FilterSelectSuggestion suggestion : getWidget().currentSuggestions) {
+    String suggestionKey=suggestion.getOptionKey();
+    if (suggestionKey.equals(selectedKey)) {
+      if (!getWidget().waitingForFilteringResponse || getWidget().popupOpenerClicked) {
+        if (!suggestionKey.equals(getWidget().selectedOptionKey) || suggestion.getReplacementString().equals(getWidget().tb.getText())) {
+          getWidget().setPromptingOff(suggestion.getReplacementString());
+          getWidget().selectedOptionKey=suggestionKey;
+        }
+      }
+      getWidget().currentSuggestion=suggestion;
+      getWidget().setSelectedItemIcon(suggestion.getIconUri());
+      break;
+    }
+  }
+}

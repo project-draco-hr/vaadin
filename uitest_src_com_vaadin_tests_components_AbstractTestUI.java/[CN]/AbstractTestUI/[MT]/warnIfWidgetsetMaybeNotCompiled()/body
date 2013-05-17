@@ -1,0 +1,41 @@
+{
+  String query=getPage().getLocation().getQuery();
+  if (query != null && query.matches(".*[&?]gwt\\.codesvr.*")) {
+    return;
+  }
+  Class<?> currentType=getClass();
+  String usedWidgetset=VaadinServlet.DEFAULT_WIDGETSET;
+  while (currentType != Object.class) {
+    Widgetset annotation=currentType.getAnnotation(Widgetset.class);
+    if (annotation != null) {
+      usedWidgetset=annotation.value();
+      break;
+    }
+ else {
+      currentType=currentType.getSuperclass();
+    }
+  }
+  File widgetsetsFolder=new File("WebContent/VAADIN/widgetsets");
+  if (!widgetsetsFolder.isDirectory()) {
+    return;
+  }
+  long newestWidgetsetTimestamp=-1;
+  String newestWidgetsetName=null;
+  File[] children=widgetsetsFolder.listFiles();
+  for (  File child : children) {
+    if (!child.isDirectory() || child.getName().equals("WEB-INF")) {
+      continue;
+    }
+    long lastModified=child.lastModified();
+    if (lastModified > newestWidgetsetTimestamp) {
+      newestWidgetsetTimestamp=lastModified;
+      newestWidgetsetName=child.getName();
+    }
+  }
+  File currentWidgetsetFolder=new File(widgetsetsFolder,usedWidgetset);
+  long currentWidgetsetTimestamp=currentWidgetsetFolder.lastModified();
+  int halfHour=30 * 60 * 1000;
+  if (currentWidgetsetTimestamp + halfHour < newestWidgetsetTimestamp) {
+    Notification.show("The currently used widgetset (" + usedWidgetset + ") was compiled long before the most recently compiled one ("+ newestWidgetsetName+ "). Are you sure you have compiled the right widgetset?",Type.WARNING_MESSAGE);
+  }
+}

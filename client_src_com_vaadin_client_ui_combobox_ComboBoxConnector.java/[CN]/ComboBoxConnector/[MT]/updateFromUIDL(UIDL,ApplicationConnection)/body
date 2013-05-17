@@ -30,11 +30,6 @@
   getWidget().suggestionPopup.updateStyleNames(uidl,getState());
   getWidget().allowNewItem=uidl.hasAttribute("allownewitem");
   getWidget().lastNewItemString=null;
-  getWidget().currentSuggestions.clear();
-  if (!getWidget().waitingForFilteringResponse) {
-    getWidget().currentSuggestion=null;
-    getWidget().suggestionPopup.menu.clearItems();
-  }
   final UIDL options=uidl.getChildUIDL(0);
   if (uidl.hasAttribute("totalMatches")) {
     getWidget().totalMatches=uidl.getIntAttribute("totalMatches");
@@ -42,34 +37,31 @@
  else {
     getWidget().totalMatches=0;
   }
+  List<FilterSelectSuggestion> newSuggestions=new ArrayList<FilterSelectSuggestion>();
   for (final Iterator<?> i=options.getChildIterator(); i.hasNext(); ) {
     final UIDL optionUidl=(UIDL)i.next();
     final FilterSelectSuggestion suggestion=getWidget().new FilterSelectSuggestion(optionUidl);
-    getWidget().currentSuggestions.add(suggestion);
-    if (optionUidl.hasAttribute("selected")) {
-      if (!getWidget().waitingForFilteringResponse || getWidget().popupOpenerClicked) {
-        String newSelectedOptionKey=Integer.toString(suggestion.getOptionKey());
-        if (!newSelectedOptionKey.equals(getWidget().selectedOptionKey) || suggestion.getReplacementString().equals(getWidget().tb.getText())) {
-          getWidget().setPromptingOff(suggestion.getReplacementString());
-          getWidget().selectedOptionKey=newSelectedOptionKey;
-        }
-      }
-      getWidget().currentSuggestion=suggestion;
-      getWidget().setSelectedItemIcon(suggestion.getIconUri());
+    newSuggestions.add(suggestion);
+  }
+  boolean suggestionsChanged=!getWidget().initDone || !newSuggestions.equals(getWidget().currentSuggestions);
+  if (suggestionsChanged) {
+    getWidget().currentSuggestions.clear();
+    if (!getWidget().waitingForFilteringResponse) {
+      getWidget().currentSuggestion=null;
+      getWidget().suggestionPopup.menu.clearItems();
+    }
+    for (    FilterSelectSuggestion suggestion : newSuggestions) {
+      getWidget().currentSuggestions.add(suggestion);
     }
   }
-  if ((!getWidget().waitingForFilteringResponse || getWidget().popupOpenerClicked) && uidl.hasVariable("selected") && uidl.getStringArrayVariable("selected").length == 0) {
-    if (!getWidget().waitingForFilteringResponse || !getWidget().popupOpenerClicked) {
-      if (!getWidget().focused) {
-        getWidget().prompting=false;
-        getWidget().setPromptingOn();
-      }
- else {
-        getWidget().tb.setValue("");
-      }
+  if (uidl.hasVariable("selected")) {
+    String[] selectedKeys=uidl.getStringArrayVariable("selected");
+    if (selectedKeys.length > 0) {
+      performSelection(selectedKeys[0]);
     }
-    getWidget().setSelectedItemIcon(null);
-    getWidget().selectedOptionKey=null;
+ else {
+      resetSelection();
+    }
   }
   if (getWidget().waitingForFilteringResponse && getWidget().lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) {
     getWidget().suggestionPopup.showSuggestions(getWidget().currentSuggestions,getWidget().currentPage,getWidget().totalMatches);
