@@ -3,4 +3,14 @@
   setWidget(menu);
   setStyleName("v-contextmenu");
   getElement().setId(DOM.createUniqueId());
+  addCloseHandler(new CloseHandler<PopupPanel>(){
+    @Override public void onClose(    CloseEvent<PopupPanel> event){
+      Element currentFocus=Util.getFocusedElement();
+      if (focusedElement != null && (currentFocus == null || menu.getElement().isOrHasChild(currentFocus) || RootPanel.getBodyElement().equals(currentFocus))) {
+        focusedElement.focus();
+        focusedElement=null;
+      }
+    }
+  }
+);
 }
