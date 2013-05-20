@@ -3,14 +3,17 @@
   pushHandler=new PushHandler(service);
   atmosphere.addAtmosphereHandler("/*",pushHandler);
   atmosphere.addInitParameter(ApplicationConfig.PROPERTY_SESSION_SUPPORT,"true");
-  final String bufferSize=String.valueOf(ApplicationConstants.WEBSOCKET_BUFFER_SIZE);
+  atmosphere.addInitParameter(ApplicationConfig.MESSAGE_DELIMITER,String.valueOf(PushConstants.MESSAGE_DELIMITER));
+  final String bufferSize=String.valueOf(PushConstants.WEBSOCKET_BUFFER_SIZE);
   atmosphere.addInitParameter(ApplicationConfig.WEBSOCKET_BUFFER_SIZE,bufferSize);
   atmosphere.addInitParameter(ApplicationConfig.WEBSOCKET_MAXTEXTSIZE,bufferSize);
   atmosphere.addInitParameter(ApplicationConfig.WEBSOCKET_MAXBINARYSIZE,bufferSize);
   atmosphere.addInitParameter("org.atmosphere.cpr.showSupportMessage","false");
-  atmosphere.interceptor(new TrackMessageSizeInterceptor());
   try {
     atmosphere.init(service.getServlet().getServletConfig());
+    AtmosphereInterceptor trackMessageSize=new TrackMessageSizeInterceptor();
+    trackMessageSize.configure(atmosphere.getAtmosphereConfig());
+    atmosphere.interceptor(trackMessageSize);
   }
  catch (  ServletException e) {
     throw new ServiceException("Could not read atmosphere settings",e);
