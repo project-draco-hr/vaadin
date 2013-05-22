@@ -1,15 +1,18 @@
 {
-  VaadinService.verifyNoOtherSessionLocked(this);
-  Map<Class<?>,CurrentInstance> old=null;
-  lock();
-  try {
-    old=CurrentInstance.setThreadLocals(this);
-    runnable.run();
-  }
-  finally {
-    unlock();
-    if (old != null) {
-      CurrentInstance.restoreThreadLocals(old);
+  FutureTask<Void> future=new FutureTask<Void>(runnable,null){
+    @Override public Void get() throws InterruptedException, ExecutionException {
+      VaadinService.verifyNoOtherSessionLocked(VaadinSession.this);
+      return super.get();
     }
   }
+;
+  pendingAccessQueue.add(future);
+  try {
+    if (getLockInstance().tryLock(0,TimeUnit.SECONDS)) {
+      unlock();
+    }
+  }
+ catch (  InterruptedException e) {
+  }
+  return future;
 }
