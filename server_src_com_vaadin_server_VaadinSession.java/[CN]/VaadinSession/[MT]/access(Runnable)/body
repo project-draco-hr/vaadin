@@ -1,11 +1,5 @@
 {
-  FutureTask<Void> future=new FutureTask<Void>(runnable,null){
-    @Override public Void get() throws InterruptedException, ExecutionException {
-      VaadinService.verifyNoOtherSessionLocked(VaadinSession.this);
-      return super.get();
-    }
-  }
-;
+  FutureAccess future=new FutureAccess(runnable);
   pendingAccessQueue.add(future);
   try {
     if (getLockInstance().tryLock(0,TimeUnit.SECONDS)) {
