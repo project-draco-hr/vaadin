@@ -54,13 +54,6 @@
   Command c=new Command(){
     @Override public void execute(){
       handleUIDLDuration.logDuration(" * Loading widgets completed",10);
-      Profiler.enter("Handling locales");
-      if (json.containsKey("locales")) {
-        VConsole.log(" * Handling locales");
-        JsArray<ValueMap> valueMapArray=json.getJSValueMapArray("locales");
-        LocaleService.addLocales(valueMapArray);
-      }
-      Profiler.leave("Handling locales");
       Profiler.enter("Handling meta information");
       ValueMap meta=null;
       if (json.containsKey("meta")) {
@@ -90,6 +83,10 @@
       double processUidlStart=Duration.currentTimeMillis();
       JsArrayString createdConnectorIds=createConnectorsIfNeeded(json);
       JsArrayObject<StateChangeEvent> pendingStateChangeEvents=updateConnectorState(json,createdConnectorIds);
+      Profiler.enter("Handling locales");
+      VConsole.log(" * Handling locales");
+      LocaleService.addLocales(getUIConnector().getState().localeServiceState.localeData);
+      Profiler.leave("Handling locales");
       ConnectorHierarchyUpdateResult connectorHierarchyUpdateResult=updateConnectorHierarchy(json);
       sendHierarchyChangeEvents(connectorHierarchyUpdateResult.events);
       updateCaptions(pendingStateChangeEvents,connectorHierarchyUpdateResult.parentChangedIds);

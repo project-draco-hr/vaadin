@@ -1,0 +1,55 @@
+{
+  LocaleData localeData=new LocaleData();
+  localeData.name=locale.toString();
+  final DateFormatSymbols dfs=new DateFormatSymbols(locale);
+  localeData.shortMonthNames=dfs.getShortMonths();
+  localeData.monthNames=dfs.getMonths();
+  localeData.shortDayNames=new String[7];
+  localeData.dayNames=new String[7];
+  String[] sDayNames=dfs.getShortWeekdays();
+  String[] lDayNames=dfs.getWeekdays();
+  for (int i=0; i < 7; i++) {
+    localeData.shortDayNames[i]=sDayNames[i + 1];
+    localeData.dayNames[i]=lDayNames[i + 1];
+  }
+  final java.util.Calendar cal=new GregorianCalendar(locale);
+  localeData.firstDayOfWeek=cal.getFirstDayOfWeek() - 1;
+  DateFormat dateFormat=DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,locale);
+  if (!(dateFormat instanceof SimpleDateFormat)) {
+    getLogger().warning("Unable to get default date pattern for locale " + locale.toString());
+    dateFormat=new SimpleDateFormat();
+  }
+  final String df=((SimpleDateFormat)dateFormat).toPattern();
+  int timeStart=df.indexOf("H");
+  if (timeStart < 0) {
+    timeStart=df.indexOf("h");
+  }
+  final int ampm_first=df.indexOf("a");
+  if (ampm_first > 0 && ampm_first < timeStart) {
+    timeStart=ampm_first;
+  }
+  final boolean timeFirst=timeStart == 0;
+  String dateformat;
+  if (timeFirst) {
+    int dateStart=df.indexOf(' ');
+    if (ampm_first > dateStart) {
+      dateStart=df.indexOf(' ',ampm_first);
+    }
+    dateformat=df.substring(dateStart + 1);
+  }
+ else {
+    dateformat=df.substring(0,timeStart - 1);
+  }
+  localeData.dateFormat=dateformat.trim();
+  final String timeformat=df.substring(timeStart,df.length());
+  final boolean twelve_hour_clock=timeformat.indexOf("a") > -1;
+  final String hour_min_delimiter=timeformat.indexOf(".") > -1 ? "." : ":";
+  localeData.twelveHourClock=twelve_hour_clock;
+  localeData.hourMinuteDelimiter=hour_min_delimiter;
+  if (twelve_hour_clock) {
+    final String[] ampm=dfs.getAmPmStrings();
+    localeData.am=ampm[0];
+    localeData.pm=ampm[1];
+  }
+  return localeData;
+}
