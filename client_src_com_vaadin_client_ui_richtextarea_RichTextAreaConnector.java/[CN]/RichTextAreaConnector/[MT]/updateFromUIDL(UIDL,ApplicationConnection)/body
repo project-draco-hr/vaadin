@@ -2,20 +2,16 @@
   getWidget().client=client;
   getWidget().id=uidl.getId();
   if (uidl.hasVariable("text")) {
-    getWidget().currentValue=uidl.getStringVariable("text");
-    if (getWidget().rta.isAttached()) {
-      getWidget().rta.setHTML(getWidget().currentValue);
+    String newValue=uidl.getStringVariable("text");
+    if (!SharedUtil.equals(newValue,cachedValue)) {
+      getWidget().setValue(newValue);
+      cachedValue=newValue;
     }
- else {
-      getWidget().html.setHTML(getWidget().currentValue);
-    }
-  }
-  if (isRealUpdate(uidl)) {
-    getWidget().setEnabled(isEnabled());
   }
   if (!isRealUpdate(uidl)) {
     return;
   }
+  getWidget().setEnabled(isEnabled());
   getWidget().setReadOnly(isReadOnly());
   getWidget().immediate=getState().immediate;
   int newMaxLength=uidl.hasAttribute("maxLength") ? uidl.getIntAttribute("maxLength") : -1;
