@@ -1,0 +1,14 @@
+{
+  TextField tf=new TextField();
+  tf.setConverter(new StringToIntegerConverter());
+  tf.setPropertyDataSource(new MethodProperty<String>(paulaBean,"age"));
+  tf.setConversionError("(Type: {0}) Converter exception message: {1}");
+  tf.setValue("abc");
+  try {
+    tf.getConvertedValue();
+    fail();
+  }
+ catch (  ConversionException e) {
+    Assert.assertEquals("(Type: Integer) Converter exception message: Could not convert 'abc' to java.lang.Integer",e.getMessage());
+  }
+}
