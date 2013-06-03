@@ -1,6 +1,6 @@
 {
   if (!isEnabled()) {
-    VConsole.log("Profiler is not enabled, no data has been collected.");
+    getLogger().warning("Profiler is not enabled, no data has been collected.");
     return;
   }
   LinkedList<Node> stack=new LinkedList<Node>();
@@ -8,7 +8,7 @@
   stack.add(rootNode);
   JsArray<GwtStatsEvent> gwtStatsEvents=getGwtStatsEvents();
   if (gwtStatsEvents.length() == 0) {
-    VConsole.log("No profiling events recorded, this might happen if another __gwtStatsEvent handler is installed.");
+    getLogger().warning("No profiling events recorded, this might happen if another __gwtStatsEvent handler is installed.");
     return;
   }
   for (int i=0; i < gwtStatsEvents.length(); i++) {
@@ -18,45 +18,33 @@
     boolean isBeginEvent="begin".equals(type);
     Node stackTop=stack.getLast();
     boolean inEvent=eventName.equals(stackTop.getName()) && !isBeginEvent;
-    if (!inEvent && stack.size() >= 2 && eventName.equals(stack.get(stack.size() - 2).name) && !isBeginEvent) {
-      stackTop.time+=gwtStatsEvent.getMillis();
+    if (!inEvent && stack.size() >= 2 && eventName.equals(stack.get(stack.size() - 2).getName()) && !isBeginEvent) {
+      stackTop.addTime(gwtStatsEvent.getMillis());
       stack.removeLast();
       stackTop=stack.getLast();
       inEvent=true;
     }
     if (type.equals("end")) {
       if (!inEvent) {
-        VConsole.error("Got end event for " + eventName + " but is currently in "+ stackTop.getName());
+        getLogger().severe("Got end event for " + eventName + " but is currently in "+ stackTop.getName());
         return;
       }
       Node previousStackTop=stack.removeLast();
-      previousStackTop.time+=gwtStatsEvent.getMillis();
+      previousStackTop.addTime(gwtStatsEvent.getMillis());
     }
  else {
       if (!inEvent) {
-        stackTop=stackTop.accessChild(eventName,gwtStatsEvent.getMillis());
+        stackTop=stackTop.enterChild(eventName,gwtStatsEvent.getMillis());
         stack.add(stackTop);
       }
       if (!isBeginEvent) {
-        stack.add(stackTop.accessChild(eventName + "." + type,gwtStatsEvent.getMillis()));
+        stack.add(stackTop.enterChild(eventName + "." + type,gwtStatsEvent.getMillis()));
       }
     }
   }
   if (stack.size() != 1) {
-    VConsole.log("Not all nodes are left, the last node is " + stack.getLast().getName());
+    getLogger().warning("Not all nodes are left, the last node is " + stack.getLast().getName());
     return;
-  }
-  StringBuilder stringBuilder=new StringBuilder();
-  rootNode.buildRecursiveString(stringBuilder,"");
-  Console implementation=VConsole.getImplementation();
-  if (implementation instanceof VDebugConsole) {
-    VDebugConsole console=(VDebugConsole)implementation;
-    SimpleTree tree=(SimpleTree)stack.getFirst().buildTree();
-    tree.setText("Profiler data");
-    console.showTree(tree,stringBuilder.toString());
-  }
- else {
-    VConsole.log(stringBuilder.toString());
   }
   Map<String,Node> totals=new HashMap<String,Node>();
   rootNode.sumUpTotals(totals);
@@ -67,21 +55,5 @@
     }
   }
 );
-  double total=0;
-  double top20total=0;
-  for (int i=0; i < totalList.size(); i++) {
-    Node node=totalList.get(i);
-    double timeSpent=node.getTimeSpent();
-    total+=timeSpent;
-    if (i < 20) {
-      top20total+=timeSpent;
-    }
-  }
-  VConsole.log("Largest individual contributors using " + top20total + " ms out of "+ total+ " ms");
-  for (int i=0; i < 20 && i < totalList.size(); i++) {
-    Node node=totalList.get(i);
-    double timeSpent=node.getTimeSpent();
-    total+=timeSpent;
-    VConsole.log(" * " + node.getName() + ": "+ timeSpent+ " ms in "+ node.getCount()+ " invokations.");
-  }
+  getConsumer().addProfilerData(stack.getFirst(),totalList);
 }

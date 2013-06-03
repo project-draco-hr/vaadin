@@ -1,0 +1,27 @@
+{
+  if (selectionStart == null) {
+    return;
+  }
+  if (selectionStart != null && selectionEnd != null) {
+    Date startDate=selectionStart.getDate();
+    Date endDate=selectionEnd.getDate();
+    for (int row=0; row < getRowCount(); row++) {
+      for (int cell=0; cell < getCellCount(row); cell++) {
+        SimpleDayCell sdc=(SimpleDayCell)getWidget(row,cell);
+        if (sdc == null) {
+          return;
+        }
+        Date d=sdc.getDate();
+        if (startDate.compareTo(d) <= 0 && endDate.compareTo(d) >= 0) {
+          sdc.addStyleDependentName("selected");
+        }
+ else         if (startDate.compareTo(d) >= 0 && endDate.compareTo(d) <= 0) {
+          sdc.addStyleDependentName("selected");
+        }
+ else {
+          sdc.removeStyleDependentName("selected");
+        }
+      }
+    }
+  }
+}

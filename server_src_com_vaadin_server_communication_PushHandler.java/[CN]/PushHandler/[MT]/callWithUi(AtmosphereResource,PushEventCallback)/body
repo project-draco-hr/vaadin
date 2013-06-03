@@ -1,0 +1,44 @@
+{
+  AtmosphereRequest req=resource.getRequest();
+  VaadinServletRequest vaadinRequest=new VaadinServletRequest(req,service);
+  VaadinSession session=null;
+  service.requestStart(vaadinRequest,null);
+  try {
+    try {
+      session=service.findVaadinSession(vaadinRequest);
+    }
+ catch (    ServiceException e) {
+      getLogger().log(Level.SEVERE,"Could not get session. This should never happen",e);
+    }
+catch (    SessionExpiredException e) {
+      SystemMessages msg=service.getSystemMessages(ServletPortletHelper.findLocale(null,null,vaadinRequest),vaadinRequest);
+      try {
+        resource.getResponse().getWriter().write(VaadinService.createCriticalNotificationJSON(msg.getSessionExpiredCaption(),msg.getSessionExpiredMessage(),null,msg.getSessionExpiredURL()));
+      }
+ catch (      IOException e1) {
+        getLogger().log(Level.WARNING,"Failed to notify client about unavailable session",e);
+      }
+      return;
+    }
+    session.lock();
+    try {
+      VaadinSession.setCurrent(session);
+      final UI ui=service.findUI(vaadinRequest);
+      if (ui == null) {
+        resource.getResponse().getWriter().write(UidlRequestHandler.getUINotFoundErrorJSON(service,vaadinRequest));
+        resource.resume();
+        return;
+      }
+      callback.run(resource,ui);
+    }
+ catch (    IOException e) {
+      getLogger().log(Level.INFO,"An error occured while writing a push response",e);
+    }
+ finally {
+      session.unlock();
+    }
+  }
+  finally {
+    service.requestEnd(vaadinRequest,null,session);
+  }
+}

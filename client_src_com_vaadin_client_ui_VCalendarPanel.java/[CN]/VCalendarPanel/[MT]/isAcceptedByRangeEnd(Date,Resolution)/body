@@ -1,0 +1,20 @@
+{
+  assert(date != null);
+  if (rangeEnd == null) {
+    return true;
+  }
+  Date valueDuplicate=(Date)date.clone();
+  Date rangeEndDuplicate=(Date)rangeEnd.clone();
+  if (minResolution == Resolution.YEAR) {
+    return valueDuplicate.getYear() <= rangeEndDuplicate.getYear();
+  }
+  if (minResolution == Resolution.MONTH) {
+    valueDuplicate=clearDateBelowMonth(valueDuplicate);
+    rangeEndDuplicate=clearDateBelowMonth(rangeEndDuplicate);
+  }
+ else {
+    valueDuplicate=clearDateBelowDay(valueDuplicate);
+    rangeEndDuplicate=clearDateBelowDay(rangeEndDuplicate);
+  }
+  return !rangeEndDuplicate.before(valueDuplicate);
+}

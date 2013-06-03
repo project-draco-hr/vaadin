@@ -1,0 +1,138 @@
+{
+  getWidget().setListener(new DateClickListener(){
+    @Override public void dateClick(    String date){
+      if (!getWidget().isDisabledOrReadOnly() && hasEventListener(CalendarEventId.DATECLICK)) {
+        rpc.dateClick(date);
+      }
+    }
+  }
+);
+  getWidget().setListener(new ForwardListener(){
+    @Override public void forward(){
+      if (hasEventListener(CalendarEventId.FORWARD)) {
+        rpc.forward();
+      }
+    }
+  }
+);
+  getWidget().setListener(new BackwardListener(){
+    @Override public void backward(){
+      if (hasEventListener(CalendarEventId.BACKWARD)) {
+        rpc.backward();
+      }
+    }
+  }
+);
+  getWidget().setListener(new RangeSelectListener(){
+    @Override public void rangeSelected(    String value){
+      if (hasEventListener(CalendarEventId.RANGESELECT)) {
+        rpc.rangeSelect(value);
+      }
+    }
+  }
+);
+  getWidget().setListener(new WeekClickListener(){
+    @Override public void weekClick(    String event){
+      if (!getWidget().isDisabledOrReadOnly() && hasEventListener(CalendarEventId.WEEKCLICK)) {
+        rpc.weekClick(event);
+      }
+    }
+  }
+);
+  getWidget().setListener(new EventMovedListener(){
+    @Override public void eventMoved(    CalendarEvent event){
+      if (hasEventListener(CalendarEventId.EVENTMOVE)) {
+        StringBuilder sb=new StringBuilder();
+        sb.append(DateUtil.formatClientSideDate(event.getStart()));
+        sb.append("-");
+        sb.append(DateUtil.formatClientSideTime(event.getStartTime()));
+        rpc.eventMove(event.getIndex(),sb.toString());
+      }
+    }
+  }
+);
+  getWidget().setListener(new EventResizeListener(){
+    @Override public void eventResized(    CalendarEvent event){
+      if (hasEventListener(CalendarEventId.EVENTRESIZE)) {
+        StringBuilder buffer=new StringBuilder();
+        buffer.append(DateUtil.formatClientSideDate(event.getStart()));
+        buffer.append("-");
+        buffer.append(DateUtil.formatClientSideTime(event.getStartTime()));
+        String newStartDate=buffer.toString();
+        buffer=new StringBuilder();
+        buffer.append(DateUtil.formatClientSideDate(event.getEnd()));
+        buffer.append("-");
+        buffer.append(DateUtil.formatClientSideTime(event.getEndTime()));
+        String newEndDate=buffer.toString();
+        rpc.eventResize(event.getIndex(),newStartDate,newEndDate);
+      }
+    }
+  }
+);
+  getWidget().setListener(new VCalendar.ScrollListener(){
+    @Override public void scroll(    int scrollPosition){
+      rpc.scroll(scrollPosition);
+    }
+  }
+);
+  getWidget().setListener(new EventClickListener(){
+    @Override public void eventClick(    CalendarEvent event){
+      if (hasEventListener(CalendarEventId.EVENTCLICK)) {
+        rpc.eventClick(event.getIndex());
+      }
+    }
+  }
+);
+  getWidget().setListener(new MouseEventListener(){
+    @Override public void contextMenu(    ContextMenuEvent event,    final Widget widget){
+      final NativeEvent ne=event.getNativeEvent();
+      int left=ne.getClientX();
+      int top=ne.getClientY();
+      top+=Window.getScrollTop();
+      left+=Window.getScrollLeft();
+      getClient().getContextMenu().showAt(new ActionOwner(){
+        @Override public String getPaintableId(){
+          return CalendarConnector.this.getPaintableId();
+        }
+        @Override public ApplicationConnection getClient(){
+          return CalendarConnector.this.getClient();
+        }
+        @Override @SuppressWarnings("deprecation") public Action[] getActions(){
+          if (widget instanceof SimpleDayCell) {
+            SimpleDayCell cell=(SimpleDayCell)widget;
+            Date start=new Date(cell.getDate().getYear(),cell.getDate().getMonth(),cell.getDate().getDate(),0,0,0);
+            Date end=new Date(cell.getDate().getYear(),cell.getDate().getMonth(),cell.getDate().getDate(),23,59,59);
+            return CalendarConnector.this.getActionsBetween(start,end);
+          }
+ else           if (widget instanceof DateCell) {
+            DateCell cell=(DateCell)widget;
+            int slotIndex=DOM.getChildIndex(cell.getElement(),(Element)ne.getEventTarget().cast());
+            DateCellSlot slot=cell.getSlot(slotIndex);
+            return CalendarConnector.this.getActionsBetween(slot.getFrom(),slot.getTo());
+          }
+ else           if (widget instanceof DateCellDayEvent) {
+            DateCellDayEvent dayEvent=(DateCellDayEvent)widget;
+            CalendarEvent event=dayEvent.getCalendarEvent();
+            Action[] actions=CalendarConnector.this.getActionsBetween(event.getStartTime(),event.getEndTime());
+            for (            Action action : actions) {
+              ((VCalendarAction)action).setEvent(event);
+            }
+            return actions;
+          }
+ else           if (widget instanceof MonthEventLabel) {
+            MonthEventLabel mel=(MonthEventLabel)widget;
+            CalendarEvent event=mel.getCalendarEvent();
+            Action[] actions=CalendarConnector.this.getActionsBetween(event.getStartTime(),event.getEndTime());
+            for (            Action action : actions) {
+              ((VCalendarAction)action).setEvent(event);
+            }
+            return actions;
+          }
+          return null;
+        }
+      }
+,left,top);
+    }
+  }
+);
+}

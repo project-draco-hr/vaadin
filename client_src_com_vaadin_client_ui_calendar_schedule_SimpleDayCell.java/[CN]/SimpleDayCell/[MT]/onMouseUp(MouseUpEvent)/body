@@ -1,0 +1,47 @@
+{
+  if (event.getNativeButton() != NativeEvent.BUTTON_LEFT) {
+    return;
+  }
+  Widget w=(Widget)event.getSource();
+  if (moveRegistration != null) {
+    Event.releaseCapture(getElement());
+    moveRegistration.removeHandler();
+    moveRegistration=null;
+    keyDownHandler.removeHandler();
+    keyDownHandler=null;
+  }
+  if (w == bottomspacer && monthEventMouseDown) {
+    GWT.log("Mouse up over bottomspacer");
+  }
+ else   if (clickedWidget instanceof MonthEventLabel && monthEventMouseDown) {
+    MonthEventLabel mel=(MonthEventLabel)clickedWidget;
+    int endX=event.getClientX();
+    int endY=event.getClientY();
+    int xDiff=startX - endX;
+    int yDiff=startY - endY;
+    startX=-1;
+    startY=-1;
+    prevDayDiff=0;
+    prevWeekDiff=0;
+    if (!mel.isTimeSpecificEvent() && (xDiff < -3 || xDiff > 3 || yDiff < -3 || yDiff > 3)) {
+      eventMoved(moveEvent);
+    }
+ else     if (calendar.getEventClickListener() != null) {
+      CalendarEvent e=getEventByWidget(mel);
+      calendar.getEventClickListener().eventClick(e);
+    }
+    moveEvent=null;
+  }
+ else   if (w == this) {
+    getMonthGrid().setSelectionReady();
+  }
+ else   if (w instanceof Label && labelMouseDown) {
+    String clickedDate=calendar.getDateFormat().format(date);
+    if (calendar.getDateClickListener() != null) {
+      calendar.getDateClickListener().dateClick(clickedDate);
+    }
+  }
+  monthEventMouseDown=false;
+  labelMouseDown=false;
+  clickedWidget=null;
+}

@@ -1,0 +1,22 @@
+{
+  Map<Class<?>,CurrentInstance> old=null;
+  VaadinSession session=getSession();
+  if (session == null) {
+    throw new UIDetachedException();
+  }
+  VaadinService.verifyNoOtherSessionLocked(session);
+  session.lock();
+  try {
+    if (getSession() == null) {
+      throw new UIDetachedException();
+    }
+    old=CurrentInstance.setCurrent(this);
+    runnable.run();
+  }
+  finally {
+    session.unlock();
+    if (old != null) {
+      CurrentInstance.restoreInstances(old);
+    }
+  }
+}

@@ -1,9 +1,17 @@
 {
   if (focusedNode != null) {
     focusedNode.setFocused(false);
+    Roles.getTreeRole().removeAriaActivedescendantProperty(focusedNode.getElement());
   }
   if (node != null) {
     node.setFocused(true);
+    Roles.getTreeitemRole().setAriaSelectedState(node.getElement(),SelectedValue.TRUE);
+    if (node.key.equals(lastNodeKey)) {
+      Roles.getTreeRole().setAriaActivedescendantProperty(getFocusElement(),Id.of(node.getElement()));
+    }
+ else {
+      lastNodeKey=node.key;
+    }
   }
   focusedNode=node;
   if (node != null && scrollIntoView) {

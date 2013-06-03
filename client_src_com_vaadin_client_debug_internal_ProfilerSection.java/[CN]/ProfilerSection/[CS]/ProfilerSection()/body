@@ -1,0 +1,36 @@
+{
+  Profiler.setProfilerResultConsuer(new ProfilerResultConsumer(){
+    @Override public void addProfilerData(    Node rootNode,    List<Node> totals){
+      double totalTime=0;
+      int eventCount=0;
+      for (      Node node : totals) {
+        totalTime+=node.getTimeSpent();
+        eventCount+=node.getCount();
+      }
+      SimpleTree drillDownTree=(SimpleTree)buildTree(rootNode);
+      drillDownTree.setText("Drill down");
+      SimpleTree offendersTree=new SimpleTree("Longest events");
+      for (int i=0; i < totals.size() && i < 20; i++) {
+        Node node=totals.get(i);
+        offendersTree.add(new Label(node.getStringRepresentation("")));
+      }
+      SimpleTree root=new SimpleTree(eventCount + " profiler events using " + totalTime+ " ms");
+      root.add(drillDownTree);
+      root.add(offendersTree);
+      root.open(false);
+      content.add(root);
+      applyLimit();
+    }
+    @Override public void addBootstrapData(    LinkedHashMap<String,Double> timings){
+      SimpleTree tree=new SimpleTree("Time since window.performance.timing events");
+      Set<Entry<String,Double>> entrySet=timings.entrySet();
+      for (      Entry<String,Double> entry : entrySet) {
+        tree.add(new Label(entry.getValue() + " " + entry.getKey()));
+      }
+      tree.open(false);
+      content.add(tree);
+      applyLimit();
+    }
+  }
+);
+}

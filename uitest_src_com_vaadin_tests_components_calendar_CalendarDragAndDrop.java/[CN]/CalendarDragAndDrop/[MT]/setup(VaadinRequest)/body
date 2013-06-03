@@ -1,0 +1,33 @@
+{
+  setSizeFull();
+  getContent().setSizeFull();
+  getLayout().setSizeFull();
+  HorizontalLayout root=new HorizontalLayout();
+  root.setSizeFull();
+  addComponent(root);
+  Locale locale=new Locale("en","US");
+  GregorianCalendar cal=new GregorianCalendar(locale);
+  cal.set(2013,0,1);
+  calendar=new Calendar();
+  calendar.setId("Calendar");
+  calendar.setLocale(locale);
+  calendar.setDropHandler(new TestDropHandler());
+  calendar.setSizeFull();
+  root.addComponent(calendar);
+  calendar.setStartDate(cal.getTime());
+  cal.add(java.util.Calendar.MONTH,1);
+  calendar.setEndDate(cal.getTime());
+  table=new Table();
+  table.setSizeFull();
+  table.setDragMode(TableDragMode.ROW);
+  table.addGeneratedColumn("COLUMN",new Table.ColumnGenerator(){
+    @Override public Object generateCell(    Table source,    Object itemId,    Object columnId){
+      return itemId;
+    }
+  }
+);
+  for (int eventNum=1; eventNum < 50; eventNum++) {
+    table.addItem("Event " + eventNum);
+  }
+  root.addComponent(table);
+}

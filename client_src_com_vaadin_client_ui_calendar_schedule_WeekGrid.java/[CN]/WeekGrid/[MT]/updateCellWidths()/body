@@ -1,0 +1,26 @@
+{
+  if (!isHorizontalScrollable() && width != -1) {
+    int count=content.getWidgetCount();
+    int datesWidth=width;
+    if (datesWidth > 0 && count > 1) {
+      cellWidths=VCalendar.distributeSize(datesWidth,count - 1,-1);
+      for (int i=1; i < count; i++) {
+        DateCell dc=(DateCell)content.getWidget(i);
+        dc.setHorizontalSized(isHorizontalScrollable() || width < 0);
+        dc.setWidthPX(cellWidths[i - 1]);
+        if (dc.isToday()) {
+          dc.setTimeBarWidth(getOffsetWidth());
+        }
+      }
+    }
+  }
+ else {
+    int count=content.getWidgetCount();
+    if (count > 1) {
+      for (int i=1; i < count; i++) {
+        DateCell dc=(DateCell)content.getWidget(i);
+        dc.setHorizontalSized(isHorizontalScrollable() || width < 0);
+      }
+    }
+  }
+}

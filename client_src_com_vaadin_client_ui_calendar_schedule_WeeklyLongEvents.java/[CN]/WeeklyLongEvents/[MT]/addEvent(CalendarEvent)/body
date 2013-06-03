@@ -1,0 +1,40 @@
+{
+  updateEventSlot(calendarEvent);
+  int dateCount=getWidgetCount();
+  Date from=calendarEvent.getStart();
+  Date to=calendarEvent.getEnd();
+  boolean started=false;
+  for (int i=0; i < dateCount; i++) {
+    DateCellContainer dc=(DateCellContainer)getWidget(i);
+    Date dcDate=dc.getDate();
+    int comp=dcDate.compareTo(from);
+    int comp2=dcDate.compareTo(to);
+    WeeklyLongEventsDateCell eventLabel=dc.getDateCell(calendarEvent.getSlotIndex());
+    eventLabel.setStylePrimaryName("v-calendar-event");
+    if (comp >= 0 && comp2 <= 0) {
+      eventLabel.setEvent(calendarEvent);
+      eventLabel.setCalendar(calendar);
+      eventLabel.addStyleDependentName("all-day");
+      if (comp == 0) {
+        eventLabel.addStyleDependentName("start");
+      }
+      if (comp2 == 0) {
+        eventLabel.addStyleDependentName("end");
+      }
+      if (!started && comp > 0 && comp2 <= 0) {
+        eventLabel.addStyleDependentName("continued-from");
+      }
+ else       if (i == (dateCount - 1)) {
+        eventLabel.addStyleDependentName("continued-to");
+      }
+      final String extraStyle=calendarEvent.getStyleName();
+      if (extraStyle != null && extraStyle.length() > 0) {
+        eventLabel.addStyleDependentName(extraStyle + "-all-day");
+      }
+      if (!started) {
+        eventLabel.setText(calendarEvent.getCaption());
+        started=true;
+      }
+    }
+  }
+}

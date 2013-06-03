@@ -1,0 +1,38 @@
+{
+  setLocale(Locale.ENGLISH);
+  VerticalLayout layout=new VerticalLayout();
+  addComponent(layout);
+  final Table table=new Table("Table with SQLContainer");
+  layout.addComponent(table);
+  final Label selectedLabel=new Label("Selected: null");
+  layout.addComponent(selectedLabel);
+  try {
+    JDBCConnectionPool connectionPool=new SimpleJDBCConnectionPool("org.hsqldb.jdbc.JDBCDriver","jdbc:hsqldb:mem:sqlcontainer","SA","",2,20);
+    createTestTable(connectionPool);
+    insertTestData(connectionPool);
+    TableQuery q=new TableQuery("mytable",connectionPool);
+    q.setVersionColumn("version");
+    SQLContainer myContainer=new SQLContainer(q);
+    table.setContainerDataSource(myContainer);
+  }
+ catch (  SQLException e) {
+    e.printStackTrace();
+  }
+  table.setImmediate(true);
+  table.setSizeFull();
+  table.setSelectable(true);
+  table.addValueChangeListener(new Property.ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      selectedLabel.setValue("Selected: " + event.getProperty().getValue());
+    }
+  }
+);
+  final CheckBox editMode=new CheckBox("Edit mode");
+  editMode.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      table.setEditable(editMode.getValue());
+    }
+  }
+);
+  addComponent(editMode);
+}

@@ -1,0 +1,56 @@
+{
+  super(true,true);
+  setWidget(content);
+  setStylePrimaryName(STYLENAME + "-menu");
+  content.setStylePrimaryName(STYLENAME + "-menu-content");
+  FlowPanel size=new FlowPanel();
+  content.add(size);
+  final ClickHandler sizeHandler=new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      for (int i=0; i < sizes.length; i++) {
+        Button b=sizes[i];
+        if (b == event.getSource()) {
+          setSize(i);
+        }
+      }
+      hide();
+    }
+  }
+;
+  for (int i=0; i < sizes.length; i++) {
+    Button b=sizes[i];
+    b.setStyleDependentName("size" + i,true);
+    b.addClickHandler(sizeHandler);
+    size.add(b);
+  }
+  FlowPanel mode=new FlowPanel();
+  content.add(mode);
+  final ClickHandler modeHandler=new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      for (int i=0; i < modes.length; i++) {
+        Button b=modes[i];
+        if (b == event.getSource()) {
+          setDevMode(i);
+        }
+      }
+      hide();
+    }
+  }
+;
+  modes[getDevMode()].setActive(true);
+  for (int i=0; i < modes.length; i++) {
+    Button b=modes[i];
+    b.addClickHandler(modeHandler);
+    mode.add(b);
+  }
+  Button reset=new DebugButton(Icon.RESET,"Restore defaults."," Reset");
+  reset.addClickHandler(new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      resetStoredState();
+      readStoredState();
+      hide();
+    }
+  }
+);
+  content.add(reset);
+}

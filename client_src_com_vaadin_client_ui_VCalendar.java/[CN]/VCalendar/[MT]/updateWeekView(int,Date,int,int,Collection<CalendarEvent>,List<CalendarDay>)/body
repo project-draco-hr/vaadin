@@ -1,0 +1,29 @@
+{
+  while (outer.getWidgetCount() > 0) {
+    outer.remove(0);
+  }
+  monthGrid=null;
+  String[] realDayNames=new String[getDayNames().length];
+  int j=0;
+  if (firstDayOfWeek == 2) {
+    for (int i=1; i < getDayNames().length; i++) {
+      realDayNames[j++]=getDayNames()[i];
+    }
+    realDayNames[j]=getDayNames()[0];
+  }
+ else {
+    for (int i=0; i < getDayNames().length; i++) {
+      realDayNames[j++]=getDayNames()[i];
+    }
+  }
+  weeklyLongEvents=new WeeklyLongEvents(this);
+  if (weekGrid == null) {
+    weekGrid=new WeekGrid(this,is24HFormat());
+  }
+  updateWeekGrid(daysInMonth,days,today,realDayNames);
+  updateEventsToWeekGrid(sortEventsByDuration(events));
+  outer.add(dayToolbar,DockPanel.NORTH);
+  outer.add(weeklyLongEvents,DockPanel.NORTH);
+  outer.add(weekGrid,DockPanel.SOUTH);
+  weekGrid.setVerticalScrollPosition(scroll);
+}

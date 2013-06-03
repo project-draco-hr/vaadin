@@ -1,0 +1,48 @@
+{
+  mockServletConfig=new MockServletConfig();
+  mockServlet=new VaadinServlet();
+  mockServlet.init(mockServletConfig);
+  mockService=mockServlet.getService();
+  mockHttpSession=EasyMock.createMock(HttpSession.class);
+  mockWrappedSession=new WrappedHttpSession(mockHttpSession){
+    final ReentrantLock lock=new ReentrantLock();
+{
+      lock.lock();
+    }
+    @Override public Object getAttribute(    String name){
+      String lockAttribute=mockService.getServiceName() + ".lock";
+      if (lockAttribute.equals(name)) {
+        return lock;
+      }
+      return super.getAttribute(name);
+    }
+  }
+;
+  session=new VaadinSession(mockService);
+  session.storeInSession(mockService,mockWrappedSession);
+  ui=new UI(){
+    Page page=new Page(this,getState(false).pageState){
+      @Override public void init(      VaadinRequest request){
+      }
+    }
+;
+    @Override protected void init(    VaadinRequest request){
+    }
+    @Override public Page getPage(){
+      return page;
+    }
+  }
+;
+  vaadinRequest=new VaadinServletRequest(EasyMock.createMock(HttpServletRequest.class),mockService){
+    @Override public String getParameter(    String name){
+      if ("theme".equals(name)) {
+        return null;
+      }
+      return super.getParameter(name);
+    }
+  }
+;
+  ui.doInit(vaadinRequest,session.getNextUIid());
+  ui.setSession(session);
+  session.addUI(ui);
+}

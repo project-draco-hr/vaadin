@@ -1,0 +1,31 @@
+{
+  if (vaadinSession != null) {
+    vaadinSession.lock();
+  }
+  try {
+    ErrorHandler errorHandler=ErrorEvent.findErrorHandler(vaadinSession);
+    if (ServletPortletHelper.isUIDLRequest(request)) {
+      SystemMessages ci=getSystemMessages(ServletPortletHelper.findLocale(null,vaadinSession,request),request);
+      try {
+        writeStringResponse(response,JsonConstants.JSON_CONTENT_TYPE,createCriticalNotificationJSON(ci.getInternalErrorCaption(),ci.getInternalErrorMessage(),null,ci.getInternalErrorURL()));
+      }
+ catch (      IOException e) {
+        getLogger().log(Level.WARNING,"Failed to write critical notification response to the client",e);
+      }
+      if (errorHandler != null) {
+        errorHandler.error(new ErrorEvent(t));
+      }
+    }
+ else {
+      if (errorHandler != null) {
+        errorHandler.error(new ErrorEvent(t));
+      }
+      throw new ServiceException(t);
+    }
+  }
+  finally {
+    if (vaadinSession != null) {
+      vaadinSession.unlock();
+    }
+  }
+}

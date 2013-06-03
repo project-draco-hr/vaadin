@@ -1,0 +1,15 @@
+{
+  Iterator<Object> childIterator=uidl.getChildIterator();
+  while (childIterator.hasNext()) {
+    UIDL child=(UIDL)childIterator.next();
+    if (DROPHANDLER_ACCEPT_CRITERIA_PAINT_TAG.equals(child.getTag())) {
+      if (getWidget().getDropHandler() == null) {
+        getWidget().setDropHandler(showingMonthView() ? new CalendarMonthDropHandler(this) : new CalendarWeekDropHandler(this));
+      }
+      getWidget().getDropHandler().updateAcceptRules(child);
+    }
+ else {
+      getWidget().setDropHandler(null);
+    }
+  }
+}

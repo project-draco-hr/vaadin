@@ -1,0 +1,47 @@
+{
+  int pixelLength=0;
+  int currentSlot=0;
+  int firstHourInMinutes=firstHour * 60;
+  if (firstHourInMinutes > startFromMinutes) {
+    startFromMinutes=0;
+  }
+ else {
+    startFromMinutes-=firstHourInMinutes;
+  }
+  int slotsTillEvent=startFromMinutes / slotInMinutes;
+  int startOverFlowTime=slotInMinutes - (startFromMinutes % slotInMinutes);
+  if (startOverFlowTime == slotInMinutes) {
+    startOverFlowTime=0;
+    currentSlot=slotsTillEvent;
+  }
+ else {
+    currentSlot=slotsTillEvent + 1;
+  }
+  int durationInSlots=0;
+  int endOverFlowTime=0;
+  if (startOverFlowTime > 0) {
+    durationInSlots=(durationInMinutes - startOverFlowTime) / slotInMinutes;
+    endOverFlowTime=(durationInMinutes - startOverFlowTime) % slotInMinutes;
+  }
+ else {
+    durationInSlots=durationInMinutes / slotInMinutes;
+    endOverFlowTime=durationInMinutes % slotInMinutes;
+  }
+  if (startOverFlowTime > 0 && currentSlot < cellHeights.length) {
+    int lastSlotHeight=cellHeights[currentSlot] + dateCellBorder;
+    pixelLength+=(int)(((double)lastSlotHeight / (double)slotInMinutes) * startOverFlowTime);
+  }
+  int lastFullSlot=currentSlot + durationInSlots;
+  for (; currentSlot < lastFullSlot && currentSlot < cellHeights.length; currentSlot++) {
+    pixelLength+=cellHeights[currentSlot] + dateCellBorder;
+  }
+  if (endOverFlowTime > 0 && currentSlot < cellHeights.length) {
+    int lastSlotHeight=cellHeights[currentSlot] + dateCellBorder;
+    pixelLength+=(int)(((double)lastSlotHeight / (double)slotInMinutes) * endOverFlowTime);
+  }
+  if (endOverFlowTime < 0) {
+    int lastSlotHeight=cellHeights[currentSlot] + dateCellBorder;
+    pixelLength+=(int)(((double)lastSlotHeight / (double)slotInMinutes) * endOverFlowTime);
+  }
+  return pixelLength;
+}

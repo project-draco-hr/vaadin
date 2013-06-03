@@ -1,0 +1,19 @@
+{
+  if (session != null) {
+    final VaadinSession finalSession=session;
+    session.accessSynchronously(new Runnable(){
+      @Override public void run(){
+        cleanupSession(finalSession);
+      }
+    }
+);
+    final long duration=(System.nanoTime() - (Long)request.getAttribute(REQUEST_START_TIME_ATTRIBUTE)) / 1000000;
+    session.accessSynchronously(new Runnable(){
+      @Override public void run(){
+        finalSession.setLastRequestDuration(duration);
+      }
+    }
+);
+  }
+  CurrentInstance.clearAll();
+}

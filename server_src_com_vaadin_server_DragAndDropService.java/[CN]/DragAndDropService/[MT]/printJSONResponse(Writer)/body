@@ -1,0 +1,18 @@
+{
+  if (isDirty()) {
+    outWriter.write(", \"dd\":");
+    JsonPaintTarget jsonPaintTarget=new JsonPaintTarget(manager,outWriter,false);
+    jsonPaintTarget.startTag("dd");
+    jsonPaintTarget.addAttribute("visitId",lastVisitId);
+    if (acceptCriterion != null) {
+      jsonPaintTarget.addAttribute("accepted",lastVisitAccepted);
+      acceptCriterion.paintResponse(jsonPaintTarget);
+    }
+    jsonPaintTarget.endTag("dd");
+    jsonPaintTarget.close();
+    lastVisitId=-1;
+    lastVisitAccepted=false;
+    acceptCriterion=null;
+    dragEvent=null;
+  }
+}

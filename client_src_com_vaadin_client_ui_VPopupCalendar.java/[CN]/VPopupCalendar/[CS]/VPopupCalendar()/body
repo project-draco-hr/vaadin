@@ -3,7 +3,14 @@
   calendarToggle.setText("");
   calendarToggle.addClickHandler(this);
   calendarToggle.getElement().setTabIndex(-2);
+  Roles.getButtonRole().set(calendarToggle.getElement());
+  Roles.getButtonRole().setAriaHiddenState(calendarToggle.getElement(),true);
   add(calendarToggle);
+  descriptionForAssisitveDevicesElement=DOM.createDiv();
+  descriptionForAssisitveDevicesElement.setInnerText(PopupDateFieldState.DESCRIPTION_FOR_ASSISTIVE_DEVICES);
+  AriaHelper.ensureHasId(descriptionForAssisitveDevicesElement);
+  Roles.getTextboxRole().setAriaDescribedbyProperty(text.getElement(),Id.of(descriptionForAssisitveDevicesElement));
+  AriaHelper.setVisibleForAssistiveDevicesOnly(descriptionForAssisitveDevicesElement,true);
   calendar=GWT.create(VCalendarPanel.class);
   calendar.setParentField(this);
   calendar.setFocusOutListener(new FocusOutListener(){
@@ -14,6 +21,8 @@
     }
   }
 );
+  Roles.getTextboxRole().setAriaControlsProperty(text.getElement(),Id.of(calendar.getElement()));
+  Roles.getButtonRole().setAriaControlsProperty(calendarToggle.getElement(),Id.of(calendar.getElement()));
   calendar.setSubmitListener(new SubmitListener(){
     @Override public void onSubmit(){
       updateValue(calendar.getDate());
@@ -27,7 +36,15 @@
 );
   popup=new VOverlay(true,true,true);
   popup.setOwner(this);
-  popup.setWidget(calendar);
+  FlowPanel wrapper=new FlowPanel();
+  selectedDate=new Label();
+  selectedDate.setStyleName(getStylePrimaryName() + "-selecteddate");
+  AriaHelper.setVisibleForAssistiveDevicesOnly(selectedDate.getElement(),true);
+  Roles.getTextboxRole().setAriaLiveProperty(selectedDate.getElement(),LiveValue.ASSERTIVE);
+  Roles.getTextboxRole().setAriaAtomicProperty(selectedDate.getElement(),true);
+  wrapper.add(selectedDate);
+  wrapper.add(calendar);
+  popup.setWidget(wrapper);
   popup.addCloseHandler(this);
   DOM.setElementProperty(calendar.getElement(),"id","PID_VAADIN_POPUPCAL");
   sinkEvents(Event.ONKEYDOWN);

@@ -1,0 +1,38 @@
+{
+  super.onStateChanged(stateChangeEvent);
+  CalendarState state=getState();
+  VCalendar widget=getWidget();
+  widget.setForwardNavigationEnabled(hasEventListener(CalendarEventId.FORWARD));
+  widget.setBackwardNavigationEnabled(hasEventListener(CalendarEventId.BACKWARD));
+  widget.set24HFormat(state.format24H);
+  widget.setDayNames(state.dayNames);
+  widget.setMonthNames(state.monthNames);
+  widget.setFirstDayNumber(state.firstVisibleDayOfWeek);
+  widget.setLastDayNumber(state.lastVisibleDayOfWeek);
+  widget.setFirstHourOfTheDay(state.firstHourOfDay);
+  widget.setLastHourOfTheDay(state.lastHourOfDay);
+  widget.setReadOnly(state.readOnly);
+  widget.setDisabled(!state.enabled);
+  widget.setRangeSelectAllowed(hasEventListener(CalendarEventId.RANGESELECT));
+  widget.setRangeMoveAllowed(hasEventListener(CalendarEventId.EVENTMOVE));
+  widget.setEventMoveAllowed(hasEventListener(CalendarEventId.EVENTMOVE));
+  widget.setEventResizeAllowed(hasEventListener(CalendarEventId.EVENTRESIZE));
+  List<CalendarState.Day> days=state.days;
+  List<CalendarState.Event> events=state.events;
+  CalendarDropHandler dropHandler=getWidget().getDropHandler();
+  if (showingMonthView()) {
+    updateMonthView(days,events);
+    if (dropHandler != null && !(dropHandler instanceof CalendarMonthDropHandler)) {
+      getWidget().setDropHandler(new CalendarMonthDropHandler(this));
+    }
+  }
+ else {
+    updateWeekView(days,events);
+    if (dropHandler != null && !(dropHandler instanceof CalendarWeekDropHandler)) {
+      getWidget().setDropHandler(new CalendarWeekDropHandler(this));
+    }
+  }
+  updateSizes();
+  registerEventToolTips(state.events);
+  updateActionMap(state.actions);
+}

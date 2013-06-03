@@ -1,0 +1,30 @@
+{
+  if (isVerticalScrollEnabled && !(isVerticalScrollable())) {
+    verticalScrollEnabled=true;
+    horizontalScrollEnabled=false;
+    wrapper.remove(content);
+    final ScrollPanel scrollPanel=new ScrollPanel();
+    scrollPanel.setStylePrimaryName("v-calendar-week-wrapper");
+    scrollPanel.setWidget(content);
+    scrollPanel.addScrollHandler(new ScrollHandler(){
+      @Override public void onScroll(      ScrollEvent event){
+        if (calendar.getScrollListener() != null) {
+          calendar.getScrollListener().scroll(scrollPanel.getVerticalScrollPosition());
+        }
+      }
+    }
+);
+    setWidget(scrollPanel);
+    wrapper=scrollPanel;
+  }
+ else   if (!isVerticalScrollEnabled && (isVerticalScrollable())) {
+    verticalScrollEnabled=false;
+    horizontalScrollEnabled=false;
+    wrapper.remove(content);
+    SimplePanel simplePanel=new SimplePanel();
+    simplePanel.setStylePrimaryName("v-calendar-week-wrapper");
+    simplePanel.setWidget(content);
+    setWidget(simplePanel);
+    wrapper=simplePanel;
+  }
+}

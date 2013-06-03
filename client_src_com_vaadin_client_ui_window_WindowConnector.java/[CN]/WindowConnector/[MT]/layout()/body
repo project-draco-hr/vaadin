@@ -4,20 +4,6 @@
   ComponentConnector content=getContent();
   boolean hasContent=(content != null);
   Element contentElement=window.contentPanel.getElement();
-  if (!minWidthChecked) {
-    boolean needsMinWidth=!isUndefinedWidth() || !hasContent || content.isRelativeWidth();
-    int minWidth=window.getMinWidth();
-    if (needsMinWidth && lm.getInnerWidth(contentElement) < minWidth) {
-      minWidthChecked=true;
-      window.setWidth(minWidth + "px");
-    }
-    minWidthChecked=true;
-  }
-  boolean needsMinHeight=!isUndefinedHeight() || !hasContent || content.isRelativeHeight();
-  int minHeight=window.getMinHeight();
-  if (needsMinHeight && lm.getInnerHeight(contentElement) < minHeight) {
-    window.setHeight(minHeight + "px");
-  }
   Style contentStyle=window.contents.getStyle();
   int headerHeight=lm.getOuterHeight(window.header);
   contentStyle.setPaddingTop(headerHeight,Unit.PX);
@@ -25,6 +11,10 @@
   int footerHeight=lm.getOuterHeight(window.footer);
   contentStyle.setPaddingBottom(footerHeight,Unit.PX);
   contentStyle.setMarginBottom(-footerHeight,Unit.PX);
+  int minWidth=lm.getOuterWidth(window.header) - lm.getInnerWidth(window.header);
+  int minHeight=footerHeight + headerHeight;
+  getWidget().getElement().getStyle().setPropertyPx("minWidth",minWidth);
+  getWidget().getElement().getStyle().setPropertyPx("minHeight",minHeight);
   if (hasContent) {
     Element layoutElement=content.getWidget().getElement();
     Style childStyle=layoutElement.getStyle();

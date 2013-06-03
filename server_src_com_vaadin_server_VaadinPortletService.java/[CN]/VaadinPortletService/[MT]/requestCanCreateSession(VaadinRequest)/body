@@ -1,9 +1,12 @@
 {
-  RequestType requestType=getRequestType(request);
-  if (requestType == RequestType.RENDER) {
+  if (!(request instanceof VaadinPortletRequest)) {
+    throw new IllegalArgumentException("Request is not a VaadinPortletRequest");
+  }
+  PortletRequest portletRequest=((VaadinPortletRequest)request).getPortletRequest();
+  if (portletRequest instanceof RenderRequest) {
     return true;
   }
- else   if (requestType == RequestType.EVENT) {
+ else   if (portletRequest instanceof EventRequest) {
     return true;
   }
   return false;

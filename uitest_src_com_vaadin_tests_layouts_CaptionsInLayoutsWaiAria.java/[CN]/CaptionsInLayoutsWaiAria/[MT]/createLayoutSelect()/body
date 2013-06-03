@@ -1,0 +1,26 @@
+{
+  layoutSelect=new NativeSelect("Layout");
+  layoutSelect.addContainerProperty(CAPTION,String.class,"");
+  layoutSelect.addContainerProperty(CLASS,Class.class,"");
+  layoutSelect.addContainerProperty(WIDTH,String.class,"");
+  layoutSelect.setItemCaptionPropertyId(CAPTION);
+  layoutSelect.setNullSelectionAllowed(false);
+  for (  Class<?> cls : new Class[]{HorizontalLayout.class,VerticalLayout.class,GridLayout.class,CssLayout.class,FormLayout.class}) {
+    for (    String width : new String[]{"auto"}) {
+      Object id=layoutSelect.addItem();
+      Item i=layoutSelect.getItem(id);
+      i.getItemProperty(CAPTION).setValue(cls.getSimpleName() + ", " + width);
+      i.getItemProperty(CLASS).setValue(cls);
+      i.getItemProperty(WIDTH).setValue(width);
+    }
+  }
+  layoutSelect.setImmediate(true);
+  layoutSelect.addListener(new ValueChangeListener(){
+    @Override @SuppressWarnings("unchecked") public void valueChange(    ValueChangeEvent event){
+      Item i=layoutSelect.getItem(event.getProperty().getValue());
+      setLayout(getLayout((String)i.getItemProperty(CAPTION).getValue(),(Class<? extends Layout>)i.getItemProperty(CLASS).getValue(),(String)i.getItemProperty(WIDTH).getValue()));
+    }
+  }
+);
+  return layoutSelect;
+}

@@ -1,0 +1,23 @@
+{
+  if (SQLTestsConstants.db != SQLTestsConstants.DB.POSTGRESQL || SQLTestsConstants.createSchema == null || SQLTestsConstants.createProductTable == null || SQLTestsConstants.dropSchema == null) {
+    return;
+  }
+  Connection conn=connectionPool.reserveConnection();
+  Statement statement=conn.createStatement();
+  try {
+    statement.execute(SQLTestsConstants.dropSchema);
+  }
+ catch (  SQLException e) {
+    conn.rollback();
+  }
+  statement.execute(SQLTestsConstants.createSchema);
+  statement.execute(SQLTestsConstants.createProductTable);
+  conn.commit();
+  try {
+    TableQuery tq1=new TableQuery("sqlcontainer","oaas","product",connectionPool,SQLTestsConstants.sqlGen);
+    Assert.assertNotNull(tq1);
+  }
+  finally {
+    statement.execute(SQLTestsConstants.dropSchema);
+  }
+}

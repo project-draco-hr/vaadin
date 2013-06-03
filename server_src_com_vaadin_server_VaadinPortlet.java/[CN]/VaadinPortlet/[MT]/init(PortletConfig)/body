@@ -1,6 +1,5 @@
 {
   CurrentInstance.clearAll();
-  setCurrent(this);
   super.init(config);
   Properties initParameters=new Properties();
   final PortletContext context=config.getPortletContext();
@@ -13,7 +12,12 @@
     initParameters.setProperty(name,config.getInitParameter(name));
   }
   DeploymentConfiguration deploymentConfiguration=createDeploymentConfiguration(initParameters);
-  vaadinService=createPortletService(deploymentConfiguration);
+  try {
+    vaadinService=createPortletService(deploymentConfiguration);
+  }
+ catch (  ServiceException e) {
+    throw new PortletException("Could not initialized VaadinPortlet",e);
+  }
   vaadinService.setCurrentInstances(null,null);
   portletInitialized();
   CurrentInstance.clearAll();

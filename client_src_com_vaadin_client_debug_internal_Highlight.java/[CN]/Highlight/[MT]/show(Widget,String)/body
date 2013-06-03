@@ -1,0 +1,32 @@
+{
+  if (widget != null) {
+    if (highlights == null) {
+      highlights=new HashSet<Element>();
+    }
+    Element highlight=DOM.createDiv();
+    Style style=highlight.getStyle();
+    style.setTop(widget.getAbsoluteTop(),Unit.PX);
+    style.setLeft(widget.getAbsoluteLeft(),Unit.PX);
+    int width=widget.getOffsetWidth();
+    if (width < MIN_WIDTH) {
+      width=MIN_WIDTH;
+    }
+    style.setWidth(width,Unit.PX);
+    int height=widget.getOffsetHeight();
+    if (height < MIN_HEIGHT) {
+      height=MIN_HEIGHT;
+    }
+    style.setHeight(height,Unit.PX);
+    RootPanel.getBodyElement().appendChild(highlight);
+    style.setPosition(Position.ABSOLUTE);
+    style.setZIndex(VWindow.Z_INDEX + 1000);
+    style.setBackgroundColor(color);
+    style.setOpacity(DEFAULT_OPACITY);
+    if (BrowserInfo.get().isIE()) {
+      style.setProperty("filter","alpha(opacity=" + (DEFAULT_OPACITY * 100) + ")");
+    }
+    highlights.add(highlight);
+    return highlight;
+  }
+  return null;
+}

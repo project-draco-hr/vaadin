@@ -6,20 +6,33 @@
     enableIOS6castFix();
   }
   if (isDebugMode()) {
-    Console console=GWT.create(Console.class);
-    console.setQuietMode(isQuietDebugMode());
-    console.init();
-    VConsole.setImplementation(console);
-  }
- else {
-    VConsole.setImplementation((Console)GWT.create(NullConsole.class));
-  }
-  GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler(){
-    @Override public void onUncaughtException(    Throwable e){
-      VConsole.getImplementation().error(e);
+    VDebugWindow window=GWT.create(VDebugWindow.class);
+    if (LogConfiguration.loggingIsEnabled()) {
+      window.addSection((Section)GWT.create(LogSection.class));
     }
+    window.addSection((Section)GWT.create(HierarchySection.class));
+    window.addSection((Section)GWT.create(NetworkSection.class));
+    if (Profiler.isEnabled()) {
+      window.addSection((Section)GWT.create(ProfilerSection.class));
+    }
+    if (isQuietDebugMode()) {
+      window.close();
+    }
+ else {
+      window.init();
+    }
+    VConsole.setImplementation(window);
+    Handler errorNotificationHandler=GWT.create(ErrorNotificationHandler.class);
+    Logger.getLogger("").addHandler(errorNotificationHandler);
   }
+  if (LogConfiguration.loggingIsEnabled()) {
+    GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler(){
+      @Override public void onUncaughtException(      Throwable e){
+        getLogger().log(Level.SEVERE,e.getMessage(),e);
+      }
+    }
 );
+  }
   Profiler.leave("ApplicationConfiguration.onModuleLoad");
   if (SuperDevMode.enableBasedOnParameter()) {
     return;

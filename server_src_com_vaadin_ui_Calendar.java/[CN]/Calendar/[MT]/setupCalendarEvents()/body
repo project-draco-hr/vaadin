@@ -1,0 +1,29 @@
+{
+  int durationInDays=(int)(((endDate.getTime()) - startDate.getTime()) / DateConstants.DAYINMILLIS);
+  durationInDays++;
+  if (durationInDays > 60) {
+    throw new RuntimeException("Daterange is too big (max 60) = " + durationInDays);
+  }
+  Date firstDateToShow=expandStartDate(startDate,durationInDays > 7);
+  Date lastDateToShow=expandEndDate(endDate,durationInDays > 7);
+  currentCalendar.setTime(firstDateToShow);
+  events=getEventProvider().getEvents(firstDateToShow,lastDateToShow);
+  List<CalendarState.Event> calendarStateEvents=new ArrayList<CalendarState.Event>();
+  if (events != null) {
+    for (int i=0; i < events.size(); i++) {
+      CalendarEvent e=events.get(i);
+      CalendarState.Event event=new CalendarState.Event();
+      event.index=i;
+      event.caption=e.getCaption() == null ? "" : e.getCaption();
+      event.dateFrom=df_date.format(e.getStart());
+      event.dateTo=df_date.format(e.getEnd());
+      event.timeFrom=df_time.format(e.getStart());
+      event.timeTo=df_time.format(e.getEnd());
+      event.description=e.getDescription() == null ? "" : e.getDescription();
+      event.styleName=e.getStyleName() == null ? "" : e.getStyleName();
+      event.allDay=e.isAllDay();
+      calendarStateEvents.add(event);
+    }
+  }
+  getState().events=calendarStateEvents;
+}

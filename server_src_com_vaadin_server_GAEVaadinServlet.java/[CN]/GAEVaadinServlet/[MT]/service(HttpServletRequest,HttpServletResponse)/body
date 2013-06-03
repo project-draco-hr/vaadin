@@ -5,13 +5,12 @@
     cleanDatastore();
     return;
   }
-  RequestType requestType=getRequestType(request);
-  if (requestType == RequestType.STATIC_FILE) {
+  if (isStaticResourceRequest(request)) {
     super.service(request,response);
     cleanSession(request);
     return;
   }
-  if (requestType == RequestType.APP) {
+  if (ServletPortletHelper.isAppRequest(request)) {
     getApplicationContext(request,MemcacheServiceFactory.getMemcacheService());
     super.service(request,response);
     cleanSession(request);
@@ -19,7 +18,12 @@
   }
   final HttpSession session=request.getSession(getService().requestCanCreateSession(request));
   if (session == null) {
-    handleServiceSessionExpired(request,response);
+    try {
+      getService().handleSessionExpired(request,response);
+    }
+ catch (    ServiceException e) {
+      throw new ServletException(e);
+    }
     cleanSession(request);
     return;
   }
@@ -29,16 +33,18 @@
   memcache=MemcacheServiceFactory.getMemcacheService();
   try {
     long started=new Date().getTime();
-    while (requestType != RequestType.UIDL || new Date().getTime() - started < MAX_UIDL_WAIT_MILLISECONDS) {
-      locked=memcache.put(mutex,1,Expiration.byDeltaSeconds(40),MemcacheService.SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
-      if (locked) {
-        break;
-      }
-      try {
-        Thread.sleep(RETRY_AFTER_MILLISECONDS);
-      }
- catch (      InterruptedException e) {
-        getLogger().finer("Thread.sleep() interrupted while waiting for lock. Trying again. " + e);
+    if (!ServletPortletHelper.isUIDLRequest(request)) {
+      while (new Date().getTime() - started < MAX_UIDL_WAIT_MILLISECONDS) {
+        locked=memcache.put(mutex,1,Expiration.byDeltaSeconds(40),MemcacheService.SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
+        if (locked) {
+          break;
+        }
+        try {
+          Thread.sleep(RETRY_AFTER_MILLISECONDS);
+        }
+ catch (        InterruptedException e) {
+          getLogger().finer("Thread.sleep() interrupted while waiting for lock. Trying again. " + e);
+        }
       }
     }
     if (!locked) {

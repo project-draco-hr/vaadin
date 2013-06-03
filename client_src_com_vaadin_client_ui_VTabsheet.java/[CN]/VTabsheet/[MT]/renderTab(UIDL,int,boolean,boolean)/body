@@ -11,40 +11,8 @@
   }
   tab.setVisible(!hidden);
   tab.recalculateCaptionWidth();
-  UIDL tabContentUIDL=null;
-  ComponentConnector tabContentPaintable=null;
-  Widget tabContentWidget=null;
-  if (tabUidl.getChildCount() > 0) {
-    tabContentUIDL=tabUidl.getChildUIDL(0);
-    tabContentPaintable=client.getPaintable(tabContentUIDL);
-    tabContentWidget=tabContentPaintable.getWidget();
-  }
-  if (tabContentPaintable != null) {
-    int oldIndex=tp.getWidgetIndex(tabContentWidget);
-    if (oldIndex != -1 && oldIndex != index) {
-      tp.insert(tabContentWidget,index);
-    }
-  }
- else {
-    if (index < tp.getWidgetCount()) {
-      Widget oldWidget=tp.getWidget(index);
-      if (!(oldWidget instanceof PlaceHolder)) {
-        tp.insert(new PlaceHolder(),index);
-      }
-    }
-  }
   if (selected) {
-    renderContent(tabContentUIDL);
+    renderContent(tabUidl.getChildUIDL(0));
     tb.selectTab(index);
-  }
- else {
-    if (tabContentUIDL != null) {
-      if (tp.getWidgetIndex(tabContentWidget) < 0) {
-        tp.insert(tabContentWidget,index);
-      }
-    }
- else     if (tp.getWidgetCount() <= index) {
-      tp.add(new PlaceHolder());
-    }
   }
 }

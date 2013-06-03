@@ -1,0 +1,58 @@
+{
+  ScssStylesheet styleSheet=null;
+  if (node instanceof ScssStylesheet) {
+    styleSheet=(ScssStylesheet)node;
+  }
+ else {
+    Node parent=node.getParentNode();
+    while (parent != null && !(parent instanceof ScssStylesheet)) {
+      parent=parent.getParentNode();
+    }
+    if (parent instanceof ScssStylesheet) {
+      styleSheet=(ScssStylesheet)parent;
+    }
+  }
+  if (styleSheet == null) {
+    throw new ParseException("Nested import in an invalid context");
+  }
+  ArrayList<Node> c=new ArrayList<Node>(node.getChildren());
+  for (  Node n : c) {
+    if (n instanceof ImportNode) {
+      ImportNode importNode=(ImportNode)n;
+      if (!importNode.isPureCssImport()) {
+        try {
+          StringBuilder filePathBuilder=new StringBuilder(styleSheet.getFileName());
+          filePathBuilder.append(File.separatorChar).append(importNode.getUri());
+          if (!filePathBuilder.toString().endsWith(".scss")) {
+            filePathBuilder.append(".scss");
+          }
+          ScssStylesheet imported=ScssStylesheet.get(filePathBuilder.toString(),styleSheet.getCharset());
+          if (imported == null) {
+            imported=ScssStylesheet.get(importNode.getUri());
+          }
+          if (imported == null) {
+            throw new FileNotFoundException(importNode.getUri() + " (parent: " + ScssStylesheet.get().getFileName()+ ")");
+          }
+          traverse(imported);
+          String prefix=getUrlPrefix(importNode.getUri());
+          if (prefix != null) {
+            updateUrlInImportedSheet(imported,prefix);
+          }
+          node.appendChildrenAfter(new ArrayList<Node>(imported.getChildren()),importNode);
+          node.removeChild(importNode);
+        }
+ catch (        CSSException e) {
+          e.printStackTrace();
+        }
+catch (        IOException e) {
+          e.printStackTrace();
+        }
+      }
+ else {
+        if (styleSheet != node) {
+          throw new ParseException("CSS imports can only be used at the top level, not as nested imports. Within style rules, use SCSS imports.");
+        }
+      }
+    }
+  }
+}

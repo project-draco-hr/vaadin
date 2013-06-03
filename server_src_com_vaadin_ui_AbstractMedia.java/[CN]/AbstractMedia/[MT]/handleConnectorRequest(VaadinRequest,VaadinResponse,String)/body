@@ -1,6 +1,11 @@
 {
   Matcher matcher=Pattern.compile("(\\d+)(/.*)?").matcher(path);
-  if (matcher.matches()) {
+  if (!matcher.matches()) {
+    return super.handleConnectorRequest(request,response,path);
+  }
+  DownloadStream stream;
+  getSession().lock();
+  try {
     List<URLReference> sources=getState().sources;
     int sourceIndex=Integer.parseInt(matcher.group(1));
     if (sourceIndex < 0 || sourceIndex >= sources.size()) {
@@ -9,10 +14,11 @@
     }
     URLReference reference=sources.get(sourceIndex);
     ConnectorResource resource=(ConnectorResource)ResourceReference.getResource(reference);
-    resource.getStream().writeResponse(request,response);
-    return true;
+    stream=resource.getStream();
   }
- else {
-    return super.handleConnectorRequest(request,response,path);
+  finally {
+    getSession().unlock();
   }
+  stream.writeResponse(request,response);
+  return true;
 }

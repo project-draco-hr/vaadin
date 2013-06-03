@@ -1,0 +1,15 @@
+{
+  calendar.setEventProvider(new ContainerEventProvider(new BeanItemContainer<BasicEvent>(BasicEvent.class)));
+  java.util.Calendar cal=java.util.Calendar.getInstance();
+  Date start=cal.getTime();
+  cal.add(java.util.Calendar.MONTH,1);
+  Date end=cal.getTime();
+  assertEquals(0,calendar.getEvents(start,end).size());
+  BasicEvent event=new BasicEvent("Test","Test",start);
+  calendar.addEvent(event);
+  List<CalendarEvent> events=calendar.getEvents(start,end);
+  assertEquals(1,events.size());
+  assertEquals(events.get(0).getCaption(),event.getCaption());
+  assertEquals(events.get(0).getDescription(),event.getDescription());
+  assertEquals(events.get(0).getStart(),event.getStart());
+}

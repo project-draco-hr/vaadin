@@ -1,0 +1,35 @@
+{
+  while (outer.getWidgetCount() > 0) {
+    outer.remove(0);
+  }
+  int firstDay=getFirstDayNumber();
+  int lastDay=getLastDayNumber();
+  int daysPerWeek=lastDay - firstDay + 1;
+  int j=0;
+  String[] dayNames=getDayNames();
+  String[] realDayNames=new String[daysPerWeek];
+  if (firstDayOfWeek == 2) {
+    for (int i=firstDay; i < lastDay + 1; i++) {
+      if (i == 7) {
+        realDayNames[j++]=dayNames[0];
+      }
+ else {
+        realDayNames[j++]=dayNames[i];
+      }
+    }
+  }
+ else {
+    for (int i=firstDay - 1; i < lastDay; i++) {
+      realDayNames[j++]=dayNames[i];
+    }
+  }
+  nameToolbar.setDayNames(realDayNames);
+  weeklyLongEvents=null;
+  weekGrid=null;
+  updateMonthGrid(daysInMonth,days,today);
+  outer.add(nameToolbar,DockPanel.NORTH);
+  outer.add(weekToolbar,DockPanel.WEST);
+  weekToolbar.updateCellHeights();
+  outer.add(monthGrid,DockPanel.CENTER);
+  updateEventsToMonthGrid(events,false);
+}

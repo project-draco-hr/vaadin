@@ -1,25 +1,11 @@
 {
   boolean requestCanCreateSession=requestCanCreateSession(request);
-  VaadinSession session=getExistingSession(request,requestCanCreateSession);
-  if (session != null) {
-    final boolean restartApplication=(request.getParameter(URL_PARAMETER_RESTART_APPLICATION) != null);
-    final boolean closeApplication=(request.getParameter(URL_PARAMETER_CLOSE_APPLICATION) != null);
-    if (restartApplication) {
-      closeSession(session,request.getWrappedSession(false));
-      return createAndRegisterSession(request);
-    }
- else     if (closeApplication) {
-      closeSession(session,request.getWrappedSession(false));
-      return null;
-    }
- else {
-      return session;
-    }
+  WrappedSession wrappedSession=getWrappedSession(request,requestCanCreateSession);
+  lockSession(wrappedSession);
+  try {
+    return doFindOrCreateVaadinSession(request,requestCanCreateSession);
   }
-  if (requestCanCreateSession) {
-    return createAndRegisterSession(request);
-  }
- else {
-    throw new SessionExpiredException();
+  finally {
+    unlockSession(wrappedSession);
   }
 }

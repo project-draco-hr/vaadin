@@ -1,0 +1,29 @@
+{
+  AtmosphereResource resource=event.getResource();
+  String id=resource.uuid();
+  if (event.isCancelled()) {
+    callWithUi(resource,disconnectCallback);
+  }
+ else   if (event.isResuming()) {
+    getLogger().log(Level.FINER,"Resuming request for resource {0}",id);
+  }
+ else {
+    getLogger().log(Level.FINER,"Writing message to resource {0}",id);
+    Writer writer=resource.getResponse().getWriter();
+    writer.write(event.getMessage().toString());
+switch (resource.transport()) {
+case WEBSOCKET:
+      break;
+case SSE:
+case STREAMING:
+    writer.flush();
+  break;
+case JSONP:
+case LONG_POLLING:
+resource.resume();
+break;
+default :
+getLogger().log(Level.SEVERE,"Unknown transport {0}",resource.transport());
+}
+}
+}

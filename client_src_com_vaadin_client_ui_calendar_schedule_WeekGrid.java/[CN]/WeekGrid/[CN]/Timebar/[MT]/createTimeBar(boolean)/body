@@ -1,0 +1,38 @@
+{
+  setStylePrimaryName("v-calendar-times");
+  Element e=DOM.createDiv();
+  setStyleName(e,"v-calendar-time");
+  e.setInnerText("");
+  getElement().appendChild(e);
+  DateTimeService dts=new DateTimeService();
+  if (format24h) {
+    for (int i=firstHour + 1; i <= lastHour; i++) {
+      e=DOM.createDiv();
+      setStyleName(e,"v-calendar-time");
+      String delimiter=dts.getClockDelimeter();
+      e.setInnerHTML("<span>" + i + "</span>"+ delimiter+ "00");
+      getElement().appendChild(e);
+    }
+  }
+ else {
+    String[] ampm=new String[]{"AM","PM"};
+    int amStop=(lastHour < 11) ? lastHour : 11;
+    int pmStart=(firstHour > 11) ? firstHour % 11 : 0;
+    if (firstHour < 12) {
+      for (int i=firstHour + 1; i <= amStop; i++) {
+        e=DOM.createDiv();
+        setStyleName(e,"v-calendar-time");
+        e.setInnerHTML("<span>" + timesFor12h[i] + "</span>"+ " "+ ampm[0]);
+        getElement().appendChild(e);
+      }
+    }
+    if (lastHour > 11) {
+      for (int i=pmStart; i < lastHour - 11; i++) {
+        e=DOM.createDiv();
+        setStyleName(e,"v-calendar-time");
+        e.setInnerHTML("<span>" + timesFor12h[i] + "</span>"+ " "+ ampm[1]);
+        getElement().appendChild(e);
+      }
+    }
+  }
+}

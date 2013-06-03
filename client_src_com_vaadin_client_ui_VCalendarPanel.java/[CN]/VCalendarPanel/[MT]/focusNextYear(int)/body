@@ -1,9 +1,27 @@
 {
-  int currentMonth=focusedDate.getMonth();
-  focusedDate.setYear(focusedDate.getYear() + years);
-  displayedMonth.setYear(displayedMonth.getYear() + years);
-  if (focusedDate.getMonth() != currentMonth) {
-    focusedDate.setDate(0);
+  if (focusedDate == null) {
+    return;
+  }
+  Date nextYearDate=(Date)focusedDate.clone();
+  nextYearDate.setYear(nextYearDate.getYear() + years);
+  if (!isDateInsideRange(nextYearDate,Resolution.YEAR)) {
+    return;
+  }
+  if (!isDateInsideRange(nextYearDate,Resolution.DAY)) {
+    nextYearDate=adjustDateToFitInsideRange(nextYearDate);
+    focusedDate.setYear(nextYearDate.getYear());
+    focusedDate.setMonth(nextYearDate.getMonth());
+    focusedDate.setDate(nextYearDate.getDate());
+    displayedMonth.setYear(nextYearDate.getYear());
+    displayedMonth.setMonth(nextYearDate.getMonth());
+  }
+ else {
+    int currentMonth=focusedDate.getMonth();
+    focusedDate.setYear(focusedDate.getYear() + years);
+    displayedMonth.setYear(displayedMonth.getYear() + years);
+    if (focusedDate.getMonth() != currentMonth) {
+      focusedDate.setDate(0);
+    }
   }
   renderCalendar();
 }

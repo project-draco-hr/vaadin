@@ -1,0 +1,17 @@
+{
+  if (target.isFullRepaint()) {
+    injectedStyles.addAll(pendingInjections);
+    pendingInjections=injectedStyles;
+    injectedStyles=new LinkedHashSet<InjectedStyle>();
+  }
+  if (!pendingInjections.isEmpty()) {
+    target.startTag("css-injections");
+    for (    InjectedStyle pending : pendingInjections) {
+      int id=injectedStyles.size();
+      pending.paint(id,target);
+      injectedStyles.add(pending);
+    }
+    pendingInjections.clear();
+    target.endTag("css-injections");
+  }
+}

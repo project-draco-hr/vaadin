@@ -1,0 +1,19 @@
+{
+  if (pollTimer != null) {
+    pollTimer.cancel();
+    pollTimer=null;
+  }
+  if (getState().pollInterval >= 0) {
+    pollTimer=new Timer(){
+      @Override public void run(){
+        getRpcProxy(UIServerRpc.class).poll();
+        getConnection().sendPendingVariableChanges();
+      }
+    }
+;
+    pollTimer.scheduleRepeating(getState().pollInterval);
+  }
+ else {
+    getConnection().removePendingInvocations(new MethodInvocation(getConnectorId(),UIServerRpc.class.getName(),"poll"));
+  }
+}

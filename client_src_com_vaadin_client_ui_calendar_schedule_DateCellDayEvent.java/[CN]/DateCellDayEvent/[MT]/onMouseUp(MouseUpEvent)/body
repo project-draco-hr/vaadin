@@ -1,0 +1,41 @@
+{
+  if (mouseMoveCanceled) {
+    return;
+  }
+  Event.releaseCapture(getElement());
+  setFocus(false);
+  if (moveRegistration != null) {
+    moveRegistration.removeHandler();
+    moveRegistration=null;
+  }
+  int endX=event.getClientX();
+  int endY=event.getClientY();
+  int xDiff=startX - endX;
+  int yDiff=startY - endY;
+  startX=-1;
+  startY=-1;
+  mouseMoveStarted=false;
+  Style s=getElement().getStyle();
+  s.setZIndex(1);
+  if (!clickTargetsResize()) {
+    boolean mouseMoved=(xDiff < -3 || xDiff > 3 || yDiff < -3 || yDiff > 3);
+    if (!weekGrid.getCalendar().isDisabledOrReadOnly() && mouseMoved) {
+      weekGrid.eventMoved(this);
+    }
+ else     if (!weekGrid.getCalendar().isDisabled()) {
+      EventTarget et=event.getNativeEvent().getEventTarget();
+      Element e=Element.as(et);
+      if (e == caption || e == eventContent || e.getParentElement() == caption) {
+        if (weekGrid.getCalendar().getEventClickListener() != null) {
+          weekGrid.getCalendar().getEventClickListener().eventClick(calendarEvent);
+        }
+      }
+    }
+  }
+ else {
+    removeGlobalResizeStyle();
+    if (weekGrid.getCalendar().getEventResizeListener() != null) {
+      weekGrid.getCalendar().getEventResizeListener().eventResized(calendarEvent);
+    }
+  }
+}

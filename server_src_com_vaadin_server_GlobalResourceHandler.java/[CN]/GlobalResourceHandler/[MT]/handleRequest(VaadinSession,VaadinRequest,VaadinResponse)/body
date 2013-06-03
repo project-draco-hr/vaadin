@@ -13,24 +13,35 @@
   if (key == null) {
     return error(request,response,pathInfo + " is not a valid global resource path");
   }
-  UI ui=session.getUIById(Integer.parseInt(uiid));
-  if (ui == null) {
-    return error(request,response,"No UI found for id  " + uiid);
-  }
-  UI.setCurrent(ui);
-  ConnectorResource resource;
-  if (LEGACY_TYPE.equals(type)) {
-    resource=legacyResources.get(key);
-  }
+  session.lock();
+  Map<Class<?>,CurrentInstance> oldInstances=null;
+  DownloadStream stream=null;
+  try {
+    UI ui=session.getUIById(Integer.parseInt(uiid));
+    if (ui == null) {
+      return error(request,response,"No UI found for id  " + uiid);
+    }
+    oldInstances=CurrentInstance.setCurrent(ui);
+    ConnectorResource resource;
+    if (LEGACY_TYPE.equals(type)) {
+      resource=legacyResources.get(key);
+    }
  else {
-    return error(request,response,"Unknown global resource type " + type + " in requested path "+ pathInfo);
+      return error(request,response,"Unknown global resource type " + type + " in requested path "+ pathInfo);
+    }
+    if (resource == null) {
+      return error(request,response,"Global resource " + key + " not found");
+    }
+    stream=resource.getStream();
+    if (stream == null) {
+      return error(request,response,"Resource " + resource + " didn't produce any stream.");
+    }
   }
-  if (resource == null) {
-    return error(request,response,"Global resource " + key + " not found");
-  }
-  DownloadStream stream=resource.getStream();
-  if (stream == null) {
-    return error(request,response,"Resource " + resource + " didn't produce any stream.");
+  finally {
+    session.unlock();
+    if (oldInstances != null) {
+      CurrentInstance.restoreInstances(oldInstances);
+    }
   }
   stream.writeResponse(request,response);
   return true;

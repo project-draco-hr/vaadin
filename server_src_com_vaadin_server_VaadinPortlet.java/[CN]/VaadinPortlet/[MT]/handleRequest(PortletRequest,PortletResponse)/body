@@ -1,92 +1,9 @@
 {
-  RequestTimer requestTimer=new RequestTimer();
-  requestTimer.start();
   CurrentInstance.clearAll();
-  setCurrent(this);
   try {
-    AbstractApplicationPortletWrapper portletWrapper=new AbstractApplicationPortletWrapper(this);
-    VaadinPortletRequest vaadinRequest=createVaadinRequest(request);
-    VaadinPortletResponse vaadinResponse=new VaadinPortletResponse(response,getService());
-    getService().setCurrentInstances(vaadinRequest,vaadinResponse);
-    RequestType requestType=getRequestType(vaadinRequest);
-    if (requestType == RequestType.UNKNOWN) {
-      handleUnknownRequest(request,response);
-    }
- else     if (requestType == RequestType.DUMMY) {
-      ((ResourceResponse)response).setContentType("text/html");
-      final OutputStream out=((ResourceResponse)response).getPortletOutputStream();
-      final PrintWriter outWriter=new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,"UTF-8")));
-      outWriter.print("<html><body>dummy page</body></html>");
-      outWriter.close();
-    }
- else {
-      VaadinPortletSession vaadinSession=null;
-      try {
-        vaadinSession=(VaadinPortletSession)getService().findVaadinSession(vaadinRequest);
-        if (vaadinSession == null) {
-          return;
-        }
-        PortletCommunicationManager communicationManager=(PortletCommunicationManager)vaadinSession.getCommunicationManager();
-        if (requestType == RequestType.PUBLISHED_FILE) {
-          communicationManager.servePublishedFile(vaadinRequest,vaadinResponse);
-          return;
-        }
- else         if (requestType == RequestType.HEARTBEAT) {
-          communicationManager.handleHeartbeatRequest(vaadinRequest,vaadinResponse,vaadinSession);
-          return;
-        }
-        vaadinSession.getBrowser().updateRequestDetails(vaadinRequest);
-        UI uI=null;
-        if (requestType == RequestType.UIDL) {
-          uI=getService().findUI(vaadinRequest);
-        }
-        if (request instanceof RenderRequest) {
-          vaadinSession.firePortletRenderRequest(uI,(RenderRequest)request,(RenderResponse)response);
-        }
- else         if (request instanceof ActionRequest) {
-          vaadinSession.firePortletActionRequest(uI,(ActionRequest)request,(ActionResponse)response);
-        }
- else         if (request instanceof EventRequest) {
-          vaadinSession.firePortletEventRequest(uI,(EventRequest)request,(EventResponse)response);
-        }
- else         if (request instanceof ResourceRequest) {
-          vaadinSession.firePortletResourceRequest(uI,(ResourceRequest)request,(ResourceResponse)response);
-        }
-        if (requestType == RequestType.FILE_UPLOAD) {
-          communicationManager.handleFileUpload(vaadinSession,vaadinRequest,vaadinResponse);
-          return;
-        }
- else         if (requestType == RequestType.BROWSER_DETAILS) {
-          communicationManager.handleBrowserDetailsRequest(vaadinRequest,vaadinResponse,vaadinSession);
-          return;
-        }
- else         if (requestType == RequestType.UIDL) {
-          communicationManager.handleUidlRequest(vaadinRequest,vaadinResponse,portletWrapper,uI);
-          response.setProperty("Cache-Control","no-cache");
-          return;
-        }
- else {
-          handleOtherRequest(vaadinRequest,vaadinResponse,requestType,vaadinSession,communicationManager);
-        }
-      }
- catch (      final SessionExpiredException e) {
-        getLogger().finest("A user session has expired");
-      }
-catch (      final GeneralSecurityException e) {
-        getLogger().fine("General security exception, the security key was probably incorrect.");
-      }
-catch (      final Throwable e) {
-        handleServiceException(vaadinRequest,vaadinResponse,vaadinSession,e);
-      }
- finally {
-        if (vaadinSession != null) {
-          getService().cleanupSession(vaadinSession);
-          requestTimer.stop(vaadinSession);
-        }
-      }
-    }
+    getService().handleRequest(createVaadinRequest(request),createVaadinResponse(response));
   }
-  finally {
-    CurrentInstance.clearAll();
+ catch (  ServiceException e) {
+    throw new PortletException(e);
   }
 }

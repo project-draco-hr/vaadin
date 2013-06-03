@@ -1,0 +1,21 @@
+{
+  log=new Log(20);
+  log.setNumberLogRows(true);
+  TextField pollingInterval=new TextField("Poll interval",new MethodProperty<Integer>(this,"pollInterval"));
+  pollingInterval.setImmediate(true);
+  pollingInterval.setValue("-1");
+  pollingInterval.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      if (logger != null) {
+        logger.stop();
+        logger=null;
+      }
+      if (getPollInterval() >= 0) {
+        logger=new BackgroundLogger();
+        logger.start();
+      }
+    }
+  }
+);
+  addComponent(pollingInterval);
+}
