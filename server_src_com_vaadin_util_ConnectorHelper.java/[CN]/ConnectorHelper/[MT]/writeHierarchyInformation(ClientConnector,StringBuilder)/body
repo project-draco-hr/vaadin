@@ -6,18 +6,14 @@
     h.addFirst(parent);
     parent=parent.getParent();
   }
-  sb.append("\nConnector hierarchy:\n");
-  VaadinSession session2=connector.getUI().getSession();
-  sb.append(session2.getClass().getName());
-  sb.append("(");
-  sb.append(session2.getClass().getSimpleName());
-  sb.append(".java");
-  sb.append(":1)");
-  int l=1;
+  builder.append("\nConnector hierarchy:\n");
+  int l=0;
   for (  ClientConnector connector2 : h) {
-    sb.append("\n");
-    for (int i=0; i < l; i++) {
-      sb.append("  ");
+    if (l != 0) {
+      builder.append("\n");
+      for (int i=0; i < l; i++) {
+        builder.append("  ");
+      }
     }
     l++;
     Class<? extends ClientConnector> connectorClass=connector2.getClass();
@@ -25,9 +21,9 @@
     while (topClass.getEnclosingClass() != null) {
       topClass=topClass.getEnclosingClass();
     }
-    sb.append(connectorClass.getName());
-    sb.append("(");
-    sb.append(topClass.getSimpleName());
-    sb.append(".java:1)");
+    builder.append(connectorClass.getName());
+    builder.append("(");
+    builder.append(topClass.getSimpleName());
+    builder.append(".java:1)");
   }
 }
