@@ -12,7 +12,12 @@
     if ("id".equals(fields[0])) {
       continue;
     }
-    System.out.println(ticketTemplate.replace("@ticket@",fields[0]).replace("@description@",fields[1]));
+    String summary=fields[1];
+    if (summary.startsWith("\"") && summary.endsWith("\"")) {
+      summary=summary.substring(1,summary.length() - 1);
+      summary=summary.replace("\"\"","\"");
+    }
+    System.out.println(ticketTemplate.replace("@ticket@",fields[0]).replace("@description@",summary));
   }
   urlStream.close();
 }
