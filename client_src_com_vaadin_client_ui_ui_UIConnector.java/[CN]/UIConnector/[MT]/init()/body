@@ -35,6 +35,13 @@
     }
   }
 );
+  registerRpc(DebugWindowClientRpc.class,new DebugWindowClientRpc(){
+    @Override public void reportLayoutProblems(    String json){
+      VConsole.printLayoutProblems(getValueMap(json),getConnection());
+    }
+    private native ValueMap getValueMap(    String json);
+  }
+);
   getWidget().addResizeHandler(new ResizeHandler(){
     @Override public void onResize(    ResizeEvent event){
       getRpcProxy(UIServerRpc.class).resize(event.getHeight(),event.getWidth(),Window.getClientWidth(),Window.getClientHeight());

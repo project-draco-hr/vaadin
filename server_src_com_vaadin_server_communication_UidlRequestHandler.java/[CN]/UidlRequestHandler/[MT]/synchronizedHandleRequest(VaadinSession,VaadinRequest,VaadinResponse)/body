@@ -11,17 +11,13 @@
   String requestThemeName=request.getParameter("theme");
   boolean repaintAll;
   repaintAll=(request.getParameter(ApplicationConstants.URL_PARAMETER_REPAINT_ALL) != null);
-  boolean analyzeLayouts=false;
-  if (repaintAll) {
-    analyzeLayouts=(request.getParameter(ApplicationConstants.PARAM_ANALYZE_LAYOUTS) != null);
-  }
   StringWriter stringWriter=new StringWriter();
   try {
     rpcHandler.handleRpc(uI,request.getReader(),request);
     if (repaintAll) {
       session.getCommunicationManager().repaintAll(uI);
     }
-    writeUidl(request,response,uI,stringWriter,repaintAll,analyzeLayouts);
+    writeUidl(request,response,uI,stringWriter,repaintAll);
   }
  catch (  JSONException e) {
     getLogger().log(Level.SEVERE,"Error writing JSON to response",e);

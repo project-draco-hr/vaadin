@@ -61,9 +61,6 @@
         meta=json.getValueMap("meta");
         if (meta.containsKey("repaintAll")) {
           prepareRepaintAll();
-          if (meta.containsKey("invalidLayouts")) {
-            validatingLayouts=true;
-          }
         }
         if (meta.containsKey("timedRedirect")) {
           final ValueMap timedRedirect=meta.getValueMap("timedRedirect");
@@ -121,13 +118,6 @@
           ValueMap error=meta.getValueMap("appError");
           showError(null,error.getString("caption"),error.getString("message"),error.getString("url"));
           applicationRunning=false;
-        }
-        if (validatingLayouts) {
-          Set<ComponentConnector> zeroHeightComponents=new HashSet<ComponentConnector>();
-          Set<ComponentConnector> zeroWidthComponents=new HashSet<ComponentConnector>();
-          findZeroSizeComponents(zeroHeightComponents,zeroWidthComponents,getUIConnector());
-          VConsole.printLayoutProblems(meta,ApplicationConnection.this,zeroHeightComponents,zeroWidthComponents);
-          validatingLayouts=false;
         }
         Profiler.leave("Error handling");
       }

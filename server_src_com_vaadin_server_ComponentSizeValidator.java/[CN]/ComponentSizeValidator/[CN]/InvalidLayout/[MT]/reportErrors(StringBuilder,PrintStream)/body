@@ -1,8 +1,8 @@
 {
-  clientJSON.write("{");
+  clientJSON.append("{");
   Component parent=component.getParent();
   String paintableId=component.getConnectorId();
-  clientJSON.print("id:\"" + paintableId + "\"");
+  clientJSON.append("\"id\":\"" + paintableId + "\"");
   if (invalidHeight) {
     Stack<ComponentInfo> attributes=null;
     String msg="";
@@ -30,7 +30,7 @@
       attributes=getHeightAttributes(component);
     }
     printServerError(msg,attributes,false,serverErrorStream);
-    clientJSON.print(",\"heightMsg\":\"" + msg + "\"");
+    clientJSON.append(",\"heightMsg\":\"" + msg + "\"");
   }
   if (invalidWidth) {
     Stack<ComponentInfo> attributes=null;
@@ -58,24 +58,24 @@
       msg="A component with relative width needs a parent with defined width.";
       attributes=getWidthAttributes(component);
     }
-    clientJSON.print(",\"widthMsg\":\"" + msg + "\"");
+    clientJSON.append(",\"widthMsg\":\"" + msg + "\"");
     printServerError(msg,attributes,true,serverErrorStream);
   }
   if (subErrors.size() > 0) {
     serverErrorStream.println("Sub errors >>");
-    clientJSON.write(", \"subErrors\" : [");
+    clientJSON.append(", \"subErrors\" : [");
     boolean first=true;
     for (    InvalidLayout subError : subErrors) {
       if (!first) {
-        clientJSON.print(",");
+        clientJSON.append(",");
       }
  else {
         first=false;
       }
       subError.reportErrors(clientJSON,serverErrorStream);
     }
-    clientJSON.write("]");
+    clientJSON.append("]");
     serverErrorStream.println("<< Sub erros");
   }
-  clientJSON.write("}");
+  clientJSON.append("}");
 }
