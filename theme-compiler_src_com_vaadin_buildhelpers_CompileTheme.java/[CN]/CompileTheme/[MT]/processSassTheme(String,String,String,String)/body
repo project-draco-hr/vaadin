@@ -1,8 +1,5 @@
 {
   StringBuffer cssHeader=new StringBuffer();
-  version=version.replaceAll("\\.","_");
-  cssHeader.append(".v-theme-version:after {content:\"" + version + "\";}\n");
-  cssHeader.append(".v-theme-version-" + version + " {display: none;}\n");
   String stylesCssDir=themeFolder + File.separator + themeName+ File.separator;
   String stylesCssName=stylesCssDir + variant + ".css";
   String sassFile=stylesCssDir + variant + ".scss";
@@ -13,7 +10,7 @@
   scss.compile();
   BufferedWriter out=new BufferedWriter(new FileWriter(stylesCssName));
   out.write(cssHeader.toString());
-  out.write(scss.toString());
+  out.write(scss.toString().replace("@version@",version));
   out.close();
   System.out.println("Compiled CSS to " + stylesCssName + " ("+ scss.toString().length()+ " bytes)");
   createSprites(themeFolder,themeName);
