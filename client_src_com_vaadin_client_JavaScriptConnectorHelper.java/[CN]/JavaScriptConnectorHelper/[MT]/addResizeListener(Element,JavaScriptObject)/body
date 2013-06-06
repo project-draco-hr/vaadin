@@ -1,0 +1,19 @@
+{
+  Map<JavaScriptObject,ElementResizeListener> elementListeners=resizeListeners.get(element);
+  if (elementListeners == null) {
+    elementListeners=new HashMap<JavaScriptObject,ElementResizeListener>();
+    resizeListeners.put(element,elementListeners);
+  }
+  ElementResizeListener listener=elementListeners.get(callbackFunction);
+  if (listener == null) {
+    LayoutManager layoutManager=LayoutManager.get(connector.getConnection());
+    listener=new ElementResizeListener(){
+      @Override public void onElementResize(      ElementResizeEvent e){
+        invokeElementResizeCallback(e.getElement(),callbackFunction);
+      }
+    }
+;
+    layoutManager.addElementResizeListener(element,listener);
+    elementListeners.put(callbackFunction,listener);
+  }
+}

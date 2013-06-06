@@ -1,3 +1,13 @@
 {
   invokeIfPresent(connectorWrapper,"onUnregister");
+  if (!resizeListeners.isEmpty()) {
+    LayoutManager layoutManager=LayoutManager.get(connector.getConnection());
+    for (    Entry<Element,Map<JavaScriptObject,ElementResizeListener>> entry : resizeListeners.entrySet()) {
+      Element element=entry.getKey();
+      for (      ElementResizeListener listener : entry.getValue().values()) {
+        layoutManager.removeElementResizeListener(element,listener);
+      }
+    }
+    resizeListeners.clear();
+  }
 }
