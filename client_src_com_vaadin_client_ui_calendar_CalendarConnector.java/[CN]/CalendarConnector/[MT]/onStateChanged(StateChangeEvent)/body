@@ -2,7 +2,6 @@
   super.onStateChanged(stateChangeEvent);
   CalendarState state=getState();
   VCalendar widget=getWidget();
-  boolean monthView=state.days.size() > 7;
   widget.setForwardNavigationEnabled(hasEventListener(CalendarEventId.FORWARD));
   widget.setBackwardNavigationEnabled(hasEventListener(CalendarEventId.BACKWARD));
   widget.set24HFormat(state.format24H);
@@ -20,11 +19,18 @@
   widget.setEventResizeAllowed(hasEventListener(CalendarEventId.EVENTRESIZE));
   List<CalendarState.Day> days=state.days;
   List<CalendarState.Event> events=state.events;
-  if (monthView) {
+  CalendarDropHandler dropHandler=getWidget().getDropHandler();
+  if (showingMonthView()) {
     updateMonthView(days,events);
+    if (dropHandler != null && !(dropHandler instanceof CalendarMonthDropHandler)) {
+      getWidget().setDropHandler(new CalendarMonthDropHandler(this));
+    }
   }
  else {
     updateWeekView(days,events);
+    if (dropHandler != null && !(dropHandler instanceof CalendarWeekDropHandler)) {
+      getWidget().setDropHandler(new CalendarWeekDropHandler(this));
+    }
   }
   updateSizes();
   registerEventToolTips(state.events);

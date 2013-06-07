@@ -54,13 +54,6 @@
   Command c=new Command(){
     @Override public void execute(){
       handleUIDLDuration.logDuration(" * Loading widgets completed",10);
-      Profiler.enter("Handling locales");
-      if (json.containsKey("locales")) {
-        VConsole.log(" * Handling locales");
-        JsArray<ValueMap> valueMapArray=json.getJSValueMapArray("locales");
-        LocaleService.addLocales(valueMapArray);
-      }
-      Profiler.leave("Handling locales");
       Profiler.enter("Handling meta information");
       ValueMap meta=null;
       if (json.containsKey("meta")) {
@@ -68,9 +61,6 @@
         meta=json.getValueMap("meta");
         if (meta.containsKey("repaintAll")) {
           prepareRepaintAll();
-          if (meta.containsKey("invalidLayouts")) {
-            validatingLayouts=true;
-          }
         }
         if (meta.containsKey("timedRedirect")) {
           final ValueMap timedRedirect=meta.getValueMap("timedRedirect");
@@ -90,6 +80,10 @@
       double processUidlStart=Duration.currentTimeMillis();
       JsArrayString createdConnectorIds=createConnectorsIfNeeded(json);
       JsArrayObject<StateChangeEvent> pendingStateChangeEvents=updateConnectorState(json,createdConnectorIds);
+      Profiler.enter("Handling locales");
+      VConsole.log(" * Handling locales");
+      LocaleService.addLocales(getUIConnector().getState().localeServiceState.localeData);
+      Profiler.leave("Handling locales");
       ConnectorHierarchyUpdateResult connectorHierarchyUpdateResult=updateConnectorHierarchy(json);
       sendHierarchyChangeEvents(connectorHierarchyUpdateResult.events);
       updateCaptions(pendingStateChangeEvents,connectorHierarchyUpdateResult.parentChangedIds);
@@ -124,13 +118,6 @@
           ValueMap error=meta.getValueMap("appError");
           showError(null,error.getString("caption"),error.getString("message"),error.getString("url"));
           applicationRunning=false;
-        }
-        if (validatingLayouts) {
-          Set<ComponentConnector> zeroHeightComponents=new HashSet<ComponentConnector>();
-          Set<ComponentConnector> zeroWidthComponents=new HashSet<ComponentConnector>();
-          findZeroSizeComponents(zeroHeightComponents,zeroWidthComponents,getUIConnector());
-          VConsole.printLayoutProblems(meta,ApplicationConnection.this,zeroHeightComponents,zeroWidthComponents);
-          validatingLayouts=false;
         }
         Profiler.leave("Error handling");
       }

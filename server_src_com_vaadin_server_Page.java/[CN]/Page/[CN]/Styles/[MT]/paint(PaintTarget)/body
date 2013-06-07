@@ -1,26 +1,17 @@
 {
   if (target.isFullRepaint()) {
-    nextInjectionPosition=0;
+    injectedStyles.addAll(pendingInjections);
+    pendingInjections=injectedStyles;
+    injectedStyles=new LinkedHashSet<InjectedStyle>();
   }
-  if (injectionCounter > nextInjectionPosition) {
+  if (!pendingInjections.isEmpty()) {
     target.startTag("css-injections");
-    while (injectionCounter > nextInjectionPosition) {
-      String stringInjection=stringInjections.get(nextInjectionPosition);
-      if (stringInjection != null) {
-        target.startTag("css-string");
-        target.addAttribute("id",nextInjectionPosition);
-        target.addText(stringInjection);
-        target.endTag("css-string");
-      }
-      Resource resourceInjection=resourceInjections.get(nextInjectionPosition);
-      if (resourceInjection != null) {
-        target.startTag("css-resource");
-        target.addAttribute("id",nextInjectionPosition);
-        target.addAttribute("url",resourceInjection);
-        target.endTag("css-resource");
-      }
-      nextInjectionPosition++;
+    for (    InjectedStyle pending : pendingInjections) {
+      int id=injectedStyles.size();
+      pending.paint(id,target);
+      injectedStyles.add(pending);
     }
+    pendingInjections.clear();
     target.endTag("css-injections");
   }
 }

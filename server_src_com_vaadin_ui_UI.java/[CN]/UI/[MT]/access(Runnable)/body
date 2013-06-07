@@ -1,22 +1,12 @@
 {
-  Map<Class<?>,CurrentInstance> old=null;
   VaadinSession session=getSession();
   if (session == null) {
     throw new UIDetachedException();
   }
-  VaadinService.verifyNoOtherSessionLocked(session);
-  session.lock();
-  try {
-    if (getSession() == null) {
-      throw new UIDetachedException();
-    }
-    old=CurrentInstance.setThreadLocals(this);
-    runnable.run();
-  }
-  finally {
-    session.unlock();
-    if (old != null) {
-      CurrentInstance.restoreThreadLocals(old);
+  return session.access(new Runnable(){
+    @Override public void run(){
+      accessSynchronously(runnable);
     }
   }
+);
 }

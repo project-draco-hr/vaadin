@@ -47,7 +47,11 @@
   if (pushMode == null) {
     pushMode=session.getService().getDeploymentConfiguration().getPushMode();
   }
-  ui.setPushMode(pushMode);
+  ui.getPushConfiguration().setPushMode(pushMode);
+  Transport transport=provider.getPushTransport(event);
+  if (transport != null) {
+    ui.getPushConfiguration().setTransport(transport);
+  }
   UI.setCurrent(ui);
   ui.doInit(request,uiId.intValue());
   session.addUI(ui);

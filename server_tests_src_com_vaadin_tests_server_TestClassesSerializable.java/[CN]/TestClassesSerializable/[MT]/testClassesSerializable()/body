@@ -21,6 +21,15 @@
       continue;
     }
     if (!Serializable.class.isAssignableFrom(cls)) {
+      if (cls.getSuperclass() == Object.class && cls.getInterfaces().length == 1) {
+        Class<?> iface=cls.getInterfaces()[0];
+        if (iface == Runnable.class) {
+          continue;
+        }
+ else         if (iface == Comparator.class) {
+          continue;
+        }
+      }
       nonSerializableClasses.add(cls);
     }
   }

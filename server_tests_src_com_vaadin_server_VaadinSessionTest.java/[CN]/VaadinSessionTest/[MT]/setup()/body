@@ -1,17 +1,17 @@
 {
-  mockServlet=new VaadinServlet(){
-    @Override public String getServletName(){
-      return "mockServlet";
-    }
-  }
-;
-  mockService=new VaadinServletService(mockServlet,new MockDeploymentConfiguration());
-  mockService.init();
+  mockServletConfig=new MockServletConfig();
+  mockServlet=new VaadinServlet();
+  mockServlet.init(mockServletConfig);
+  mockService=mockServlet.getService();
   mockHttpSession=EasyMock.createMock(HttpSession.class);
   mockWrappedSession=new WrappedHttpSession(mockHttpSession){
     final ReentrantLock lock=new ReentrantLock();
+{
+      lock.lock();
+    }
     @Override public Object getAttribute(    String name){
-      if ("mockServlet.lock".equals(name)) {
+      String lockAttribute=mockService.getServiceName() + ".lock";
+      if (lockAttribute.equals(name)) {
         return lock;
       }
       return super.getAttribute(name);

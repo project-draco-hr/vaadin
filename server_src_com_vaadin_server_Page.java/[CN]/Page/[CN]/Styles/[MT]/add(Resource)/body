@@ -2,6 +2,8 @@
   if (resource == null) {
     throw new IllegalArgumentException("Cannot inject null resource");
   }
-  resourceInjections.put(injectionCounter++,resource);
-  ui.markAsDirty();
+  InjectedStyleResource injection=new InjectedStyleResource(resource);
+  if (!injectedStyles.contains(injection) && pendingInjections.add(injection)) {
+    ui.markAsDirty();
+  }
 }
