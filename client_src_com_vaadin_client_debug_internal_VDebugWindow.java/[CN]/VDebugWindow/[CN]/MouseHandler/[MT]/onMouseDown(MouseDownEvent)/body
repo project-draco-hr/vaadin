@@ -1,6 +1,10 @@
 {
-  sizing=updateResizeFlags(event);
-  if (sizing) {
+  if (event.getNativeButton() != NativeEvent.BUTTON_LEFT || dragHandler != null) {
+    return;
+  }
+  updateResizeFlags(event);
+  if (sizing || move) {
+    content.getElement().getStyle().setOverflow(Overflow.HIDDEN);
     startX=event.getClientX();
     startY=event.getClientY();
     startW=content.getOffsetWidth();
@@ -9,5 +13,6 @@
     startLeft=getPopupLeft();
     dragHandler=Event.addNativePreviewHandler(this);
     event.preventDefault();
+    stop=false;
   }
 }

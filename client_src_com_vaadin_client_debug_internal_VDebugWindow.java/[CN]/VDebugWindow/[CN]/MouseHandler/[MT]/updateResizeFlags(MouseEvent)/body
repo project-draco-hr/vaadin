@@ -1,0 +1,31 @@
+{
+  if (event.isShiftKeyDown()) {
+    resizeUp=false;
+    resizeLeft=false;
+    resizeRight=true;
+    resizeDown=true;
+    move=false;
+    sizing=true;
+    return;
+  }
+ else   if (event.isAltKeyDown()) {
+    move=true;
+    resizeUp=false;
+    resizeLeft=false;
+    resizeRight=false;
+    resizeDown=false;
+    sizing=false;
+    return;
+  }
+  Element c=getElement();
+  int w=c.getOffsetWidth();
+  int h=c.getOffsetHeight();
+  int x=event.getRelativeX(c);
+  int y=event.getRelativeY(c);
+  resizeLeft=x < HANDLE_SIZE && y > tabs.getOffsetHeight();
+  resizeRight=(x > (w - HANDLE_SIZE) && y > tabs.getOffsetHeight()) || (x > (w - 2 * HANDLE_SIZE) && y > (h - 2 * HANDLE_SIZE));
+  resizeUp=y > tabs.getOffsetHeight() && y < tabs.getOffsetHeight() + HANDLE_SIZE;
+  resizeDown=y > (h - HANDLE_SIZE) || (x > (w - 2 * HANDLE_SIZE) && y > (h - 2 * HANDLE_SIZE));
+  move=!resizeDown && !resizeLeft && !resizeRight&& !resizeUp&& y < head.getOffsetHeight();
+  sizing=resizeLeft || resizeRight || resizeUp|| resizeDown;
+}

@@ -1,0 +1,70 @@
+{
+  if (event.getTypeInt() == Event.ONMOUSEMOVE && !stop && hasMoved(event.getNativeEvent())) {
+    int dx=event.getNativeEvent().getClientX() - startX;
+    int dy=event.getNativeEvent().getClientY() - startY;
+    if (sizing) {
+      int minWidth=tabs.getOffsetWidth() + controls.getOffsetWidth();
+      if (resizeLeft) {
+        int w=startW - dx;
+        if (w < minWidth) {
+          w=minWidth;
+          dx=startW - minWidth;
+        }
+        content.setWidth(w + "px");
+        setPopupPosition(startLeft + dx,getPopupTop());
+      }
+ else       if (resizeRight) {
+        int w=startW + dx;
+        if (w < minWidth) {
+          w=minWidth;
+        }
+        content.setWidth(w + "px");
+      }
+      if (resizeUp) {
+        int h=startH - dy;
+        if (h < MIN_HEIGHT) {
+          h=MIN_HEIGHT;
+          dy=startH - MIN_HEIGHT;
+        }
+        content.setHeight(h + "px");
+        setPopupPosition(getPopupLeft(),startTop + dy);
+      }
+ else       if (resizeDown) {
+        int h=startH + dy;
+        if (h < MIN_HEIGHT) {
+          h=MIN_HEIGHT;
+        }
+        content.setHeight(h + "px");
+      }
+    }
+ else     if (move) {
+      setPopupPosition(startLeft + dx,startTop + dy);
+    }
+    event.cancel();
+  }
+ else   if (event.getTypeInt() == Event.ONMOUSEUP) {
+    stop=true;
+    if (hasMoved(event.getNativeEvent())) {
+      event.cancel();
+    }
+  }
+ else   if (event.getTypeInt() == Event.ONCLICK) {
+    stop=true;
+    if (hasMoved(event.getNativeEvent())) {
+      event.cancel();
+    }
+  }
+ else   if (stop) {
+    stop=false;
+    dragHandler.removeHandler();
+    dragHandler=null;
+    sizing=false;
+    move=false;
+    content.getElement().getStyle().setOverflow(Overflow.AUTO);
+    updateCursor();
+    applyBounds();
+    readPositionAndSize();
+    writeStoredState();
+    event.cancel();
+  }
+}
