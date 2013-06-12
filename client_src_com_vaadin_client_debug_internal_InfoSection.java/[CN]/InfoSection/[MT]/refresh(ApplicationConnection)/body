@@ -1,0 +1,21 @@
+{
+  clear();
+  ApplicationConfiguration configuration=connection.getConfiguration();
+  addVersionInfo(configuration);
+  addRow("Widget set",GWT.getModuleName());
+  addRow("Theme",connection.getConfiguration().getThemeName());
+  String communicationMethodInfo=connection.getCommunicationMethod();
+  int pollInterval=connection.getUIConnector().getState().pollInterval;
+  if (pollInterval > 0) {
+    communicationMethodInfo+=" (poll interval " + pollInterval + "s)";
+  }
+  addRow("Communication method",communicationMethodInfo);
+  String heartBeatInfo;
+  if (configuration.getHeartbeatInterval() < 0) {
+    heartBeatInfo="Disabled";
+  }
+ else {
+    heartBeatInfo=configuration.getHeartbeatInterval() + "s";
+  }
+  addRow("Heartbeat",heartBeatInfo);
+}

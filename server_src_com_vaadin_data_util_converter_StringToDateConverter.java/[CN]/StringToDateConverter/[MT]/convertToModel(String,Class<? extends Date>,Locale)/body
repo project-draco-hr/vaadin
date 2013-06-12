@@ -1,0 +1,15 @@
+{
+  if (targetType != getModelType()) {
+    throw new ConversionException("Converter only supports " + getModelType().getName() + " (targetType was "+ targetType.getName()+ ")");
+  }
+  if (value == null) {
+    return null;
+  }
+  value=value.trim();
+  ParsePosition parsePosition=new ParsePosition(0);
+  Date parsedValue=getFormat(locale).parse(value,parsePosition);
+  if (parsePosition.getIndex() != value.length()) {
+    throw new ConversionException("Could not convert '" + value + "' to "+ getModelType().getName());
+  }
+  return parsedValue;
+}

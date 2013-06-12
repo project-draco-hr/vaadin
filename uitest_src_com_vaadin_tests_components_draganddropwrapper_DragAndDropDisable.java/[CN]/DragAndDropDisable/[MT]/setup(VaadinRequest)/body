@@ -1,0 +1,83 @@
+{
+{
+    final Panel p=new Panel("Drag here");
+    addComponent(p);
+    final CssLayout layout=new CssLayout();
+    layout.setHeight("100px");
+    final DragAndDropWrapper dnd=new DragAndDropWrapper(layout);
+    p.setContent(dnd);
+    final CheckBox enabled=new CheckBox("Enabled",true);
+    addComponent(enabled);
+    enabled.setImmediate(true);
+    enabled.addListener(new ValueChangeListener(){
+      @Override public void valueChange(      ValueChangeEvent event){
+        dnd.setEnabled(enabled.booleanValue());
+      }
+    }
+);
+    dnd.setDropHandler(new DropHandler(){
+      @Override public AcceptCriterion getAcceptCriterion(){
+        return AcceptAll.get();
+      }
+      @Override public void drop(      DragAndDropEvent event){
+        layout.addComponent(new Label("You dropped something!"));
+      }
+    }
+);
+    dnd.setDragStartMode(DragStartMode.COMPONENT);
+  }
+{
+    final Panel p=new Panel("Drag here");
+    addComponent(p);
+    final CssLayout layout=new CssLayout();
+    layout.setHeight("100px");
+    final DragAndDropWrapper dnd=new DragAndDropWrapper(layout);
+    p.setContent(dnd);
+    final CheckBox enabled=new CheckBox("Enabled",true);
+    addComponent(enabled);
+    enabled.setImmediate(true);
+    enabled.addListener(new ValueChangeListener(){
+      @Override public void valueChange(      ValueChangeEvent event){
+        dnd.setEnabled(enabled.booleanValue());
+      }
+    }
+);
+    dnd.setDropHandler(new DropHandler(){
+      @Override public AcceptCriterion getAcceptCriterion(){
+        return AcceptAll.get();
+      }
+      @Override public void drop(      DragAndDropEvent event){
+        layout.addComponent(new Label("You dropped something!"));
+      }
+    }
+);
+    dnd.setDragStartMode(DragStartMode.COMPONENT);
+  }
+{
+    final Table tbl=new Table();
+    tbl.addContainerProperty("column",String.class,"drag/drop to/from here");
+    for (int i=0; i < 5; i++) {
+      tbl.addItem();
+    }
+    addComponent(tbl);
+    tbl.setDragMode(TableDragMode.ROW);
+    tbl.setDropHandler(new DropHandler(){
+      @Override public AcceptCriterion getAcceptCriterion(){
+        return AcceptAll.get();
+      }
+      @Override public void drop(      DragAndDropEvent event){
+        tbl.getItem(tbl.addItem()).getItemProperty("column").setValue("You dropped something");
+      }
+    }
+);
+    final CheckBox enabled=new CheckBox("Enabled",true);
+    addComponent(enabled);
+    enabled.setImmediate(true);
+    enabled.addListener(new ValueChangeListener(){
+      @Override public void valueChange(      ValueChangeEvent event){
+        tbl.setEnabled(enabled.booleanValue());
+      }
+    }
+);
+  }
+}

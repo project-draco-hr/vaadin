@@ -1,7 +1,6 @@
 {
   Options options=new Options();
   options.addOption("t","theme",true,"the theme to compile");
-  options.addOption("v","theme-version",true,"the version to add to the compiled theme");
   options.addOption("f","theme-folder",true,"the folder containing the theme");
   CommandLineParser parser=new PosixParser();
   CommandLine params=parser.parse(options,args);
@@ -12,9 +11,8 @@
   }
   String themeName=params.getOptionValue("theme");
   String themeFolder=params.getOptionValue("theme-folder");
-  String themeVersion=params.getOptionValue("theme-version");
   try {
-    processSassTheme(themeFolder,themeName,"styles",themeVersion);
+    processSassTheme(themeFolder,themeName,"styles",Version.getFullVersion());
     System.out.println("Compiling theme " + themeName + " styles successful");
   }
  catch (  Exception e) {
@@ -22,7 +20,7 @@
     e.printStackTrace();
   }
   try {
-    processSassTheme(themeFolder,themeName,"legacy-styles",themeVersion);
+    processSassTheme(themeFolder,themeName,"legacy-styles",Version.getFullVersion());
     System.out.println("Compiling theme " + themeName + " legacy-styles successful");
   }
  catch (  Exception e) {

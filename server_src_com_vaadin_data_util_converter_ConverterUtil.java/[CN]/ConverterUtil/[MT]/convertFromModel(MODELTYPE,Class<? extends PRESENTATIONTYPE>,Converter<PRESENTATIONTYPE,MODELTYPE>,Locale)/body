@@ -1,6 +1,10 @@
 {
   if (converter != null) {
-    return converter.convertToPresentation(modelValue,locale);
+    PRESENTATIONTYPE presentation=converter.convertToPresentation(modelValue,presentationType,locale);
+    if (!presentationType.isInstance(presentation)) {
+      throw new Converter.ConversionException("Converter returned an object of type " + presentation.getClass().getName() + " when expecting "+ presentationType.getName());
+    }
+    return presentation;
   }
   if (modelValue == null) {
     return null;

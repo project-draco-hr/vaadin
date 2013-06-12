@@ -1,7 +1,4 @@
 {
-  if (getService().getDeploymentConfiguration().isProductionMode()) {
-    return false;
-  }
   if (!filename.endsWith(".css")) {
     return false;
   }
@@ -13,6 +10,11 @@
   if (!isAllowedVAADINResourceUrl(request,scssUrl)) {
     getLogger().log(Level.INFO,"Requested resource [{0}] not accessible in the VAADIN directory or access to it is forbidden.",filename);
     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+    return true;
+  }
+  if (getService().getDeploymentConfiguration().isProductionMode()) {
+    getLogger().log(Level.INFO,"Request for {0} not handled by sass compiler while in production mode",filename);
+    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
     return true;
   }
 synchronized (SCSS_MUTEX) {
