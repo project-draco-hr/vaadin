@@ -8,8 +8,9 @@
   }
  catch (  Throwable e) {
   }
-  InputStream is=connection.getInputStream();
+  InputStream is=null;
   try {
+    is=connection.getInputStream();
     final OutputStream os=response.getOutputStream();
     final byte buffer[]=new byte[DEFAULT_BUFFER_SIZE];
     int bytes;
@@ -17,7 +18,10 @@
       os.write(buffer,0,bytes);
     }
   }
-  finally {
+ catch (  FileNotFoundException e) {
+    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+  }
+ finally {
     if (is != null) {
       is.close();
     }
