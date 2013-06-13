@@ -1,6 +1,12 @@
 {
   clear();
-  for (  ApplicationConnection application : ApplicationConfiguration.getRunningApplications()) {
-    refresh(application);
+  List<ApplicationConnection> apps=ApplicationConfiguration.getRunningApplications();
+  if (apps.size() == 0) {
+    refresher.schedule(1000);
+  }
+ else {
+    for (    ApplicationConnection application : apps) {
+      refresh(application);
+    }
   }
 }
