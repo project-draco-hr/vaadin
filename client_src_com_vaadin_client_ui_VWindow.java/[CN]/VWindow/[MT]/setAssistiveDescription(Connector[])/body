@@ -1,0 +1,17 @@
+{
+  if (connectors != null) {
+    Id[] ids=new Id[connectors.length];
+    for (int index=0; index < connectors.length; index++) {
+      if (connectors[index] == null) {
+        throw new IllegalArgumentException("All values in parameter description need to be non-null");
+      }
+      Element element=((ComponentConnector)connectors[index]).getWidget().getElement();
+      AriaHelper.ensureHasId(element);
+      ids[index]=Id.of(element);
+    }
+    Roles.getDialogRole().setAriaDescribedbyProperty(getElement(),ids);
+  }
+ else {
+    throw new IllegalArgumentException("Parameter description must be non-null");
+  }
+}

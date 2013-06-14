@@ -13,7 +13,9 @@
   closeBox=DOM.createDiv();
   maximizeRestoreBox=DOM.createDiv();
   DOM.setElementProperty(maximizeRestoreBox,"className",CLASSNAME + "-maximizebox");
+  DOM.setElementAttribute(maximizeRestoreBox,"tabindex","0");
   DOM.setElementProperty(closeBox,"className",CLASSNAME + "-closebox");
+  DOM.setElementAttribute(closeBox,"tabindex","0");
   DOM.appendChild(footer,resizeBox);
   wrapper=DOM.createDiv();
   DOM.setElementProperty(wrapper,"className",CLASSNAME + "-wrap");
@@ -26,4 +28,10 @@
   DOM.appendChild(super.getContainerElement(),wrapper);
   sinkEvents(Event.ONDBLCLICK | Event.MOUSEEVENTS | Event.TOUCHEVENTS| Event.ONCLICK| Event.ONLOSECAPTURE);
   setWidget(contentPanel);
+  Roles.getButtonRole().set(closeBox);
+  Roles.getButtonRole().setAriaLabelProperty(closeBox,"close button");
+  Roles.getButtonRole().set(maximizeRestoreBox);
+  Roles.getButtonRole().setAriaLabelProperty(maximizeRestoreBox,"maximize button");
+  AriaHelper.ensureHasId(headerText);
+  Roles.getDialogRole().setAriaLabelledbyProperty(getElement(),Id.of(headerText));
 }
