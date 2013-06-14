@@ -1,8 +1,13 @@
 {
   final CheckBox modal=new CheckBox("Modal dialog");
+  modal.setTabIndex(7);
   final CheckBox additionalDescription=new CheckBox("Additional Description");
+  final CheckBox tabStop=new CheckBox("Prevent leaving window with Tab key");
+  final CheckBox tabOrder=new CheckBox("Change Taborder");
   final TextField prefix=new TextField("Prefix: ");
   final TextField postfix=new TextField("Postfix: ");
+  final TextField topTabStopMessage=new TextField("Top Tab Stop Message");
+  final TextField bottomTabStopMessage=new TextField("Bottom Tab Stop Message");
   Button simple=new Button("Open Alert Dialog",new Button.ClickListener(){
     @Override public void buttonClick(    ClickEvent event){
       CssLayout layout=new CssLayout();
@@ -22,17 +27,24 @@
         layout.addComponent(description2);
         w.setAssistiveDescription(description1,description2);
       }
-      layout.addComponent(new Button("Close",new Button.ClickListener(){
+      w.setTabStopEnabled(tabStop.getValue());
+      w.setTabStopTopAssistiveText(topTabStopMessage.getValue());
+      w.setTabStopBottomAssistiveText(bottomTabStopMessage.getValue());
+      Button close=new Button("Close",new Button.ClickListener(){
         @Override public void buttonClick(        ClickEvent event){
           w.close();
         }
       }
-));
+);
+      layout.addComponent(close);
       Button iconButton=new Button("A button with icon");
       iconButton.setIcon(new ThemeResource("../runo/icons/16/ok.png"));
       layout.addComponent(iconButton);
       event.getButton().getUI().addWindow(w);
       iconButton.focus();
+      if (tabOrder.getValue()) {
+        close.setTabIndex(5);
+      }
     }
   }
 );
@@ -55,6 +67,9 @@
         form.addComponent(description2);
         w.setAssistiveDescription(description1,description2);
       }
+      w.setTabStopEnabled(tabStop.getValue());
+      w.setTabStopTopAssistiveText(topTabStopMessage.getValue());
+      w.setTabStopBottomAssistiveText(bottomTabStopMessage.getValue());
       TextField name=new TextField("Name:");
       form.addComponent(name);
       form.addComponent(new TextField("Address"));
@@ -67,12 +82,19 @@
       form.addComponent(saveButton);
       event.getButton().getUI().addWindow(w);
       name.focus();
+      if (tabOrder.getValue()) {
+        name.setTabIndex(5);
+      }
     }
   }
 );
   getLayout().addComponent(complex);
   getLayout().addComponent(modal);
   getLayout().addComponent(additionalDescription);
+  getLayout().addComponent(tabStop);
+  getLayout().addComponent(tabOrder);
   getLayout().addComponent(prefix);
   getLayout().addComponent(postfix);
+  getLayout().addComponent(topTabStopMessage);
+  getLayout().addComponent(bottomTabStopMessage);
 }

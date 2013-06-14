@@ -1,5 +1,7 @@
 {
   setStyleName(CLASSNAME);
+  topTabStop=DOM.createDiv();
+  DOM.setElementAttribute(topTabStop,"tabindex","0");
   header=DOM.createDiv();
   DOM.setElementProperty(header,"className",CLASSNAME + "-outerheader");
   headerText=DOM.createDiv();
@@ -17,14 +19,18 @@
   DOM.setElementProperty(closeBox,"className",CLASSNAME + "-closebox");
   DOM.setElementAttribute(closeBox,"tabindex","0");
   DOM.appendChild(footer,resizeBox);
+  bottomTabStop=DOM.createDiv();
+  DOM.setElementAttribute(bottomTabStop,"tabindex","0");
   wrapper=DOM.createDiv();
   DOM.setElementProperty(wrapper,"className",CLASSNAME + "-wrap");
+  DOM.appendChild(wrapper,topTabStop);
   DOM.appendChild(wrapper,header);
   DOM.appendChild(wrapper,maximizeRestoreBox);
   DOM.appendChild(wrapper,closeBox);
   DOM.appendChild(header,headerText);
   DOM.appendChild(wrapper,contents);
   DOM.appendChild(wrapper,footer);
+  DOM.appendChild(wrapper,bottomTabStop);
   DOM.appendChild(super.getContainerElement(),wrapper);
   sinkEvents(Event.ONDBLCLICK | Event.MOUSEEVENTS | Event.TOUCHEVENTS| Event.ONCLICK| Event.ONLOSECAPTURE);
   setWidget(contentPanel);
@@ -34,4 +40,22 @@
   Roles.getButtonRole().setAriaLabelProperty(maximizeRestoreBox,"maximize button");
   AriaHelper.ensureHasId(headerText);
   Roles.getDialogRole().setAriaLabelledbyProperty(getElement(),Id.of(headerText));
+  topEventBlocker=new NativePreviewHandler(){
+    @Override public void onPreviewNativeEvent(    NativePreviewEvent event){
+      NativeEvent nativeEvent=event.getNativeEvent();
+      if (nativeEvent.getEventTarget().cast() == topTabStop && nativeEvent.getKeyCode() == KeyCodes.KEY_TAB && nativeEvent.getShiftKey()) {
+        nativeEvent.preventDefault();
+      }
+    }
+  }
+;
+  bottomEventBlocker=new NativePreviewHandler(){
+    @Override public void onPreviewNativeEvent(    NativePreviewEvent event){
+      NativeEvent nativeEvent=event.getNativeEvent();
+      if (nativeEvent.getEventTarget().cast() == bottomTabStop && nativeEvent.getKeyCode() == KeyCodes.KEY_TAB && !nativeEvent.getShiftKey()) {
+        nativeEvent.preventDefault();
+      }
+    }
+  }
+;
 }
