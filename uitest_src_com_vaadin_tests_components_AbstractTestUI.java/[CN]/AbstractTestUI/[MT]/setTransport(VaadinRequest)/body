@@ -1,0 +1,20 @@
+{
+  String transport=request.getParameter("transport");
+  PushConfiguration config=getPushConfiguration();
+  PushMode mode=config.getPushMode();
+  if ("xhr".equals(transport)) {
+    config.setPushMode(PushMode.DISABLED);
+  }
+ else   if ("websocket".equals(transport)) {
+    if (!mode.isEnabled()) {
+      config.setPushMode(PushMode.AUTOMATIC);
+    }
+    config.setTransport(Transport.WEBSOCKET);
+  }
+ else   if ("streaming".equals(transport)) {
+    if (!mode.isEnabled()) {
+      config.setPushMode(PushMode.AUTOMATIC);
+    }
+    config.setTransport(Transport.STREAMING);
+  }
+}
