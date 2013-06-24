@@ -1,11 +1,13 @@
 {
   final Tab newSelected=getTab(index);
   final Tab oldSelected=selected;
-  newSelected.setStyleNames(true,isFirstVisibleTab(index));
+  newSelected.setStyleNames(true,isFirstVisibleTab(index),true);
   newSelected.setTabulatorIndex(getTabsheet().tabulatorIndex);
+  Roles.getTabRole().setAriaSelectedState(newSelected.getElement(),SelectedValue.TRUE);
   if (oldSelected != null && oldSelected != newSelected) {
     oldSelected.setStyleNames(false,isFirstVisibleTab(getWidgetIndex(oldSelected)));
     oldSelected.setTabulatorIndex(-1);
+    Roles.getTabRole().setAriaSelectedState(oldSelected.getElement(),SelectedValue.FALSE);
   }
   selected=newSelected;
   newSelected.recalculateCaptionWidth();
