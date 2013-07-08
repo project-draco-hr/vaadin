@@ -179,4 +179,34 @@ catch (          ExecutionException e) {
     }
   }
 ));
+  addComponent(new Button("CurrentInstance when pushing",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      log.clear();
+      if (getPushConfiguration().getPushMode() != PushMode.AUTOMATIC) {
+        log("Can only test with automatic push enabled");
+        return;
+      }
+      final VaadinSession session=getSession();
+      new Thread(){
+        @Override public void run(){
+          CurrentInstance.clearAll();
+          session.lock();
+          try {
+            access(new Runnable(){
+              @Override public void run(){
+                checkCurrentInstancesBeforeResponse=true;
+                markAsDirty();
+              }
+            }
+);
+          }
+  finally {
+            session.unlock();
+          }
+        }
+      }
+.start();
+    }
+  }
+));
 }
