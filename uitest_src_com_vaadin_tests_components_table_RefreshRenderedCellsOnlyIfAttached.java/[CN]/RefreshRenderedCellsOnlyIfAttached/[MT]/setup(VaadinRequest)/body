@@ -1,0 +1,36 @@
+{
+  getLayout().setMargin(true);
+  check=false;
+  layout=new VerticalLayout();
+  final Label l1=new Label("default");
+  l1.setId("label");
+  final Label l2=new Label("should be: default");
+  final Table t=new Table(){
+    @Override protected void refreshRenderedCells(){
+      boolean original=isRowCacheInvalidated();
+      super.refreshRenderedCells();
+      if (check) {
+        l1.setValue("original: " + original + ", now: "+ isRowCacheInvalidated());
+        l2.setValue("should be: false & false");
+      }
+    }
+  }
+;
+  t.addContainerProperty("text",String.class,"");
+  t.addItem(new Object[]{"Foo"},"foo");
+  t.setId("table");
+  layout.addComponent(t);
+  addComponent(l1);
+  addComponent(l2);
+  addComponent(layout);
+  Button b=new Button("Detach table",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      check=true;
+      removeTableParent();
+      t.setColumnCollapsingAllowed(true);
+    }
+  }
+);
+  b.setId("button");
+  addComponent(b);
+}
