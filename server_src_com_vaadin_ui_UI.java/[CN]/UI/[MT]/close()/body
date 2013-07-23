@@ -3,6 +3,9 @@
   boolean sessionExpired=(session == null || session.isClosing());
   getRpcProxy(UIClientRpc.class).uiClosed(sessionExpired);
   if (getPushConnection() != null) {
+    if (session != null) {
+      session.getService().runPendingAccessTasks(session);
+    }
     getPushConnection().push();
   }
 }
