@@ -104,6 +104,15 @@
             Date end=new Date(cell.getDate().getYear(),cell.getDate().getMonth(),cell.getDate().getDate(),23,59,59);
             return CalendarConnector.this.getActionsBetween(start,end);
           }
+ else           if (widget instanceof MonthEventLabel) {
+            MonthEventLabel mel=(MonthEventLabel)widget;
+            CalendarEvent event=mel.getCalendarEvent();
+            Action[] actions=CalendarConnector.this.getActionsBetween(event.getStartTime(),event.getEndTime());
+            for (            Action action : actions) {
+              ((VCalendarAction)action).setEvent(event);
+            }
+            return actions;
+          }
  else           if (widget instanceof DateCell) {
             DateCell cell=(DateCell)widget;
             int slotIndex=DOM.getChildIndex(cell.getElement(),(Element)ne.getEventTarget().cast());
@@ -113,15 +122,6 @@
  else           if (widget instanceof DateCellDayEvent) {
             DateCellDayEvent dayEvent=(DateCellDayEvent)widget;
             CalendarEvent event=dayEvent.getCalendarEvent();
-            Action[] actions=CalendarConnector.this.getActionsBetween(event.getStartTime(),event.getEndTime());
-            for (            Action action : actions) {
-              ((VCalendarAction)action).setEvent(event);
-            }
-            return actions;
-          }
- else           if (widget instanceof MonthEventLabel) {
-            MonthEventLabel mel=(MonthEventLabel)widget;
-            CalendarEvent event=mel.getCalendarEvent();
             Action[] actions=CalendarConnector.this.getActionsBetween(event.getStartTime(),event.getEndTime());
             for (            Action action : actions) {
               ((VCalendarAction)action).setEvent(event);
