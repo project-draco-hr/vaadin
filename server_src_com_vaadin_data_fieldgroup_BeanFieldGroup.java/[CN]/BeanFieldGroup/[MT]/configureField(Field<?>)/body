@@ -1,10 +1,11 @@
 {
   super.configureField(field);
-  if (isBeanValidationImplementationAvailable()) {
+  if (isBeanValidationImplementationAvailable() && !defaultValidators.containsKey(field)) {
     BeanValidator validator=new BeanValidator(beanType,getPropertyId(field).toString());
     field.addValidator(validator);
     if (field.getLocale() != null) {
       validator.setLocale(field.getLocale());
     }
+    defaultValidators.put(field,validator);
   }
 }
