@@ -1,4 +1,11 @@
 {
   Number n=convertToNumber(value,targetType,locale);
-  return n == null ? null : n.intValue();
+  if (n == null) {
+    return null;
+  }
+  int intValue=n.intValue();
+  if (intValue == n.longValue()) {
+    return intValue;
+  }
+  throw new ConversionException("Could not convert '" + value + "' to "+ Integer.class.getName()+ ": value out of range");
 }
