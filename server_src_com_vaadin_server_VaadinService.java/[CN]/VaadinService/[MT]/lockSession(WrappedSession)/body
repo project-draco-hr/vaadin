@@ -10,4 +10,11 @@ synchronized (VaadinService.class) {
     }
   }
   lock.lock();
+  try {
+    wrappedSession.getAttribute(getLockAttributeName());
+  }
+ catch (  IllegalStateException e) {
+    lock.unlock();
+    throw e;
+  }
 }
