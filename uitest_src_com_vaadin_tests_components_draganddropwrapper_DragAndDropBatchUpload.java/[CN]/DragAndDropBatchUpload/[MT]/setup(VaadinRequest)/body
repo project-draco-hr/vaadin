@@ -1,0 +1,52 @@
+{
+  final DragAndDropWrapper dndWrapper=new DragAndDropWrapper(new Button("Upload here by drag and dropping"));
+  dndWrapper.setDropHandler(new DropHandler(){
+    @Override public AcceptCriterion getAcceptCriterion(){
+      return AcceptAll.get();
+    }
+    @Override public void drop(    DragAndDropEvent event){
+      Transferable transferable=event.getTransferable();
+      String consoleString="<b>Drop batch number " + (++batchId) + "</b>";
+      if (transferable instanceof WrapperTransferable) {
+        WrapperTransferable wTransferable=(WrapperTransferable)transferable;
+        Html5File[] files=wTransferable.getFiles();
+        if (files != null) {
+          consoleString+="<br>" + files.length + " file(s):";
+          for (          Html5File file : files) {
+            consoleString+="<br>" + file.getFileName();
+            file.setStreamVariable(new StreamVariable(){
+              @Override public void streamingStarted(              StreamingStartEvent event){
+              }
+              @Override public void streamingFinished(              StreamingEndEvent event){
+              }
+              @Override public void streamingFailed(              StreamingErrorEvent event){
+              }
+              @Override public void onProgress(              StreamingProgressEvent event){
+              }
+              @Override public boolean listenProgress(){
+                return false;
+              }
+              @Override public boolean isInterrupted(){
+                return false;
+              }
+              @Override public OutputStream getOutputStream(){
+                return new NullOutputStream();
+              }
+            }
+);
+          }
+        }
+ else {
+          consoleString+="<br>No files detected...";
+        }
+        console.setValue(consoleString);
+      }
+ else {
+        console.setValue(consoleString + "<br>Something else than files were dragged");
+      }
+    }
+  }
+);
+  addComponent(dndWrapper);
+  addComponent(console);
+}
