@@ -1,7 +1,12 @@
 {
   boolean requestCanCreateSession=requestCanCreateSession(request);
   WrappedSession wrappedSession=getWrappedSession(request,requestCanCreateSession);
-  lockSession(wrappedSession);
+  try {
+    lockSession(wrappedSession);
+  }
+ catch (  IllegalStateException e) {
+    throw new SessionExpiredException();
+  }
   try {
     return doFindOrCreateVaadinSession(request,requestCanCreateSession);
   }
