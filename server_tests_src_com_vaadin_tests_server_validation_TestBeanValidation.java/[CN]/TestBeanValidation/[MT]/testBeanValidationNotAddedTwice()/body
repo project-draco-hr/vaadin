@@ -1,0 +1,24 @@
+{
+  BeanFieldGroup<BeanToValidate> fieldGroup=new BeanFieldGroup<BeanToValidate>(BeanToValidate.class);
+  BeanToValidate beanToValidate=new BeanToValidate();
+  beanToValidate.setFirstname("a");
+  fieldGroup.setItemDataSource(beanToValidate);
+  Field<?> nameField=fieldGroup.buildAndBind("firstname");
+  Assert.assertEquals(1,nameField.getValidators().size());
+  try {
+    nameField.validate();
+  }
+ catch (  InvalidValueException e) {
+    Assert.assertEquals(0,e.getCauses().length);
+  }
+  beanToValidate=new BeanToValidate();
+  beanToValidate.setFirstname("a");
+  fieldGroup.setItemDataSource(beanToValidate);
+  Assert.assertEquals(1,nameField.getValidators().size());
+  try {
+    nameField.validate();
+  }
+ catch (  InvalidValueException e) {
+    Assert.assertEquals(0,e.getCauses().length);
+  }
+}
