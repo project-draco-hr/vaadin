@@ -1,0 +1,23 @@
+{
+  boolean noErrors=true;
+  Set<ClientConnector> danglingConnectors=new HashSet<ClientConnector>(connectorIdToConnector.values());
+  LinkedList<ClientConnector> stack=new LinkedList<ClientConnector>();
+  stack.add(uI);
+  while (!stack.isEmpty()) {
+    ClientConnector connector=stack.pop();
+    danglingConnectors.remove(connector);
+    Iterable<ClientConnector> children=AbstractClientConnector.getAllChildrenIterable(connector);
+    for (    ClientConnector child : children) {
+      stack.add(child);
+      if (child.getParent() != connector) {
+        noErrors=false;
+        getLogger().log(Level.WARNING,"{0} claims that {1} is its child, but the child claims {2} is its parent.",new Object[]{getConnectorString(connector),getConnectorString(child),getConnectorString(child.getParent())});
+      }
+    }
+  }
+  for (  ClientConnector dangling : danglingConnectors) {
+    noErrors=false;
+    getLogger().log(Level.WARNING,"{0} claims that {1} is its parent, but the parent does not acknowledge the parenthood.",new Object[]{getConnectorString(dangling),getConnectorString(dangling.getParent())});
+  }
+  return noErrors;
+}
