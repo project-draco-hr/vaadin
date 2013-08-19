@@ -1,0 +1,59 @@
+{
+  calendar=new Calendar(new CalendarEventProvider(){
+    @Override public List<com.vaadin.ui.components.calendar.event.CalendarEvent> getEvents(    Date startDate,    Date endDate){
+      List<CalendarEvent> events=new ArrayList<CalendarEvent>();
+      CalendarEvent event=null;
+      try {
+        event=new BasicEvent("NAME","TOOLTIP",new SimpleDateFormat("yyyy-MM-dd hh:mm").parse("2013-01-01 07:00"),new SimpleDateFormat("yyyy-MM-dd hh:mm").parse("2013-01-01 11:00"));
+      }
+ catch (      ParseException e) {
+      }
+      events.add(event);
+      try {
+        event=new BasicEvent("NAME 2","TOOLTIP2",new SimpleDateFormat("yyyy-MM-dd hh:mm").parse("2013-01-03 07:00"),new SimpleDateFormat("yyyy-MM-dd hh:mm").parse("2013-01-04 11:00"));
+      }
+ catch (      ParseException e) {
+      }
+      events.add(event);
+      return events;
+    }
+  }
+);
+  try {
+    calendar.setStartDate(new SimpleDateFormat("yyyy-MM-dd").parse("2013-01-01"));
+    calendar.setEndDate(new SimpleDateFormat("yyyy-MM-dd").parse("2013-01-31"));
+  }
+ catch (  ParseException e) {
+  }
+  calendar.setImmediate(true);
+  calendar.setFirstVisibleHourOfDay(6);
+  calendar.setLastVisibleHourOfDay(22);
+  calendar.setTimeFormat(TimeFormat.Format24H);
+  calendar.setHandler((EventResizeHandler)null);
+  setEnabled(true);
+  calendar.addActionHandler(new Handler(){
+    @Override public void handleAction(    Action action,    Object sender,    Object target){
+      Notification.show("ACTION CLICKED");
+    }
+    @Override public Action[] getActions(    Object target,    Object sender){
+      return new Action[]{new Action("ACTION")};
+    }
+  }
+);
+  calendar.setHandler(new EventClickHandler(){
+    private static final long serialVersionUID=-177173530105538438L;
+    @Override public void eventClick(    EventClick event){
+      Notification.show("EVENT CLICKED");
+    }
+  }
+);
+  calendar.setHandler(new EventMoveHandler(){
+    @Override public void eventMove(    MoveEvent event){
+      Notification.show("EVENT MOVED");
+    }
+  }
+);
+  addComponent(calendar);
+  calendar.setSizeFull();
+  setSizeFull();
+}

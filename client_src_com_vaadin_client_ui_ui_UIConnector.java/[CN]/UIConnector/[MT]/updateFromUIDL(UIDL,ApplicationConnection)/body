@@ -130,12 +130,20 @@
   }
   if (uidl.hasAttribute(UIConstants.LOCATION_VARIABLE)) {
     String location=uidl.getStringAttribute(UIConstants.LOCATION_VARIABLE);
+    String newFragment;
     int fragmentIndex=location.indexOf('#');
     if (fragmentIndex >= 0) {
-      getWidget().currentFragment=URL.decodePathSegment(location.substring(fragmentIndex + 1));
+      newFragment=URL.decodePathSegment(location.substring(fragmentIndex + 1));
+      if (newFragment.isEmpty() && Location.getHref().indexOf('#') == -1) {
+        Location.assign(Location.getHref() + "#");
+      }
     }
-    if (!getWidget().currentFragment.equals(History.getToken())) {
-      History.newItem(getWidget().currentFragment,true);
+ else {
+      newFragment="";
+    }
+    getWidget().currentFragment=newFragment;
+    if (!newFragment.equals(History.getToken())) {
+      History.newItem(newFragment,true);
     }
   }
   if (firstPaint) {
