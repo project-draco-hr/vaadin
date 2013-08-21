@@ -1,13 +1,19 @@
 {
+  Profiler.enter("LayoutDependency.propagatePostLayoutMeasure getResizedByLayout");
   JsArrayString resizedByLayout=getResizedByLayout();
+  Profiler.leave("LayoutDependency.propagatePostLayoutMeasure getResizedByLayout");
   int length=resizedByLayout.length();
   for (int i=0; i < length; i++) {
+    Profiler.enter("LayoutDependency.propagatePostLayoutMeasure setNeedsMeasure");
     String resizedId=resizedByLayout.get(i);
     LayoutDependency layoutDependency=getDependency(resizedId,direction);
     layoutDependency.setNeedsMeasure(true);
+    Profiler.leave("LayoutDependency.propagatePostLayoutMeasure setNeedsMeasure");
   }
+  Profiler.enter("LayoutDependency.propagatePostLayoutMeasure horizontal case");
   if (direction == HORIZONTAL && !connector.isUndefinedWidth() && connector.isUndefinedHeight()) {
     LayoutDependency dependency=getDependency(connector.getConnectorId(),VERTICAL);
     dependency.setNeedsMeasure(true);
   }
+  Profiler.leave("LayoutDependency.propagatePostLayoutMeasure horizontal case");
 }
