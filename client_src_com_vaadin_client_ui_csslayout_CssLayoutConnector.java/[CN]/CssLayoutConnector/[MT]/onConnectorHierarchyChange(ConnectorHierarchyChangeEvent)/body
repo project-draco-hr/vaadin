@@ -1,12 +1,16 @@
 {
-  int index=0;
+  Profiler.enter("CssLayoutConnector.onConnectorHierarchyChange");
+  Profiler.enter("CssLayoutConnector.onConnectorHierarchyChange add children");
+  getWidget().clear();
   for (  ComponentConnector child : getChildComponents()) {
     VCaption childCaption=childIdToCaption.get(child.getConnectorId());
     if (childCaption != null) {
-      getWidget().addOrMove(childCaption,index++);
+      getWidget().add(childCaption);
     }
-    getWidget().addOrMove(child.getWidget(),index++);
+    getWidget().add(child.getWidget());
   }
+  Profiler.leave("CssLayoutConnector.onConnectorHierarchyChange add children");
+  Profiler.enter("CssLayoutConnector.onConnectorHierarchyChange remove old children");
   for (  ComponentConnector child : event.getOldChildren()) {
     if (child.getParent() == this) {
       continue;
@@ -18,4 +22,6 @@
       getWidget().remove(vCaption);
     }
   }
+  Profiler.leave("CssLayoutConnector.onConnectorHierarchyChange remove old children");
+  Profiler.leave("CssLayoutConnector.onConnectorHierarchyChange");
 }
