@@ -8,5 +8,6 @@
   if (!VaadinService.isCsrfTokenValid(ui.getSession(),rpcRequest.getCsrfToken())) {
     throw new InvalidUIDLSecurityKeyException("");
   }
-  handleInvocations(ui,rpcRequest.getRpcInvocationsData());
+  handleInvocations(ui,rpcRequest.getSyncId(),rpcRequest.getRpcInvocationsData());
+  ui.getConnectorTracker().cleanConcurrentlyRemovedConnectorIds(rpcRequest.getSyncId());
 }

@@ -1,0 +1,39 @@
+{
+  final Table table=new Table();
+  table.setPageLength(5);
+  table.addContainerProperty(new Object(),String.class,null);
+  for (int i=0; i < 50; i++) {
+    table.addItem(new Object[]{"Row"},new Object());
+  }
+  table.addItemClickListener(new ItemClickListener(){
+    private int i;
+    @Override public void itemClick(    ItemClickEvent event){
+      System.out.println("clicky " + (++i));
+    }
+  }
+);
+  System.out.println("adding component");
+  addComponent(table);
+  new Thread(){
+    @Override public void run(){
+      getSession().lock();
+      try {
+        Thread.sleep(500);
+        access(new Runnable(){
+          @Override public void run(){
+            System.out.println("removing component");
+            removeComponent(table);
+          }
+        }
+);
+      }
+ catch (      InterruptedException e) {
+        e.printStackTrace();
+      }
+ finally {
+        getSession().unlock();
+      }
+    }
+  }
+.start();
+}
