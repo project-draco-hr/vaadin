@@ -273,8 +273,12 @@
       for (int i=0; i < size; i++) {
         ServerConnector c=currentConnectors.get(i);
         if (c.getParent() != null) {
-          if (!c.getParent().getChildren().contains(c)) {
-            VConsole.error("ERROR: Connector is connected to a parent but the parent does not contain the connector");
+          if (ApplicationConfiguration.isDebugMode()) {
+            Profiler.enter("unregisterRemovedConnectors check parent - this is only performed in debug mode");
+            if (!c.getParent().getChildren().contains(c)) {
+              VConsole.error("ERROR: Connector is connected to a parent but the parent does not contain the connector");
+            }
+            Profiler.leave("unregisterRemovedConnectors check parent - this is only performed in debug mode");
           }
         }
  else         if (c == getUIConnector()) {
