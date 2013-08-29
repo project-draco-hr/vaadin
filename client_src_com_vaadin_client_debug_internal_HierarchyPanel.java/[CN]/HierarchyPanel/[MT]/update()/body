@@ -1,9 +1,14 @@
 {
+  FastStringSet openNodes=FastStringSet.create();
+  Iterator<Widget> it=iterator();
+  while (it.hasNext()) {
+    collectOpenNodes(it.next(),openNodes);
+  }
   clear();
   SimplePanel trees=new SimplePanel();
   for (  ApplicationConnection application : ApplicationConfiguration.getRunningApplications()) {
     ServerConnector uiConnector=application.getUIConnector();
-    Widget connectorTree=buildConnectorTree(uiConnector);
+    Widget connectorTree=buildConnectorTree(uiConnector,openNodes);
     trees.add(connectorTree);
   }
   add(trees);
