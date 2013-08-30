@@ -1,37 +1,8 @@
 {
   Highlight.showOnly(connector);
   if (serverDebug) {
-    Highlight.showServerDebugInfo(connector);
+    HierarchyPanel.showServerDebugInfo(connector);
   }
-  SharedState state=connector.getState();
-  Set<String> ignoreProperties=new HashSet<String>();
-  ignoreProperties.add("id");
-  String html=getRowHTML("Id",connector.getConnectorId());
-  html+=getRowHTML("Connector",Util.getSimpleName(connector));
-  if (connector instanceof ComponentConnector) {
-    ComponentConnector component=(ComponentConnector)connector;
-    ignoreProperties.addAll(Arrays.asList("caption","description","width","height"));
-    AbstractComponentState componentState=component.getState();
-    html+=getRowHTML("Widget",Util.getSimpleName(component.getWidget()));
-    html+=getRowHTML("Caption",componentState.caption);
-    html+=getRowHTML("Description",componentState.description);
-    html+=getRowHTML("Width",componentState.width + " (actual: " + component.getWidget().getOffsetWidth()+ "px)");
-    html+=getRowHTML("Height",componentState.height + " (actual: " + component.getWidget().getOffsetHeight()+ "px)");
-  }
-  try {
-    JsArrayObject<Property> properties=AbstractConnector.getStateType(connector).getPropertiesAsArray();
-    for (int i=0; i < properties.size(); i++) {
-      Property property=properties.get(i);
-      String name=property.getName();
-      if (!ignoreProperties.contains(name)) {
-        html+=getRowHTML(property.getDisplayName(),property.getValue(state));
-      }
-    }
-  }
- catch (  NoDataException e) {
-    html+="<div>Could not read state, error has been logged to the console</div>";
-    VConsole.error(e);
-  }
-  content.clear();
-  content.add(new HTML(html));
+  infoPanel.update(connector);
+  content.setWidget(infoPanel);
 }

@@ -1,0 +1,30 @@
+{
+  clear();
+  JsArray<ValueMap> valueMapArray=meta.getJSValueMapArray("invalidLayouts");
+  int size=valueMapArray.length();
+  if (size > 0) {
+    SimpleTree root=new SimpleTree("Layouts analyzed, " + size + " top level problems");
+    for (int i=0; i < size; i++) {
+      printLayoutError(ac,valueMapArray.get(i),root);
+    }
+    root.open(false);
+    add(root);
+  }
+ else {
+    add(new Label("Layouts analyzed, no top level problems"));
+  }
+  Set<ComponentConnector> zeroHeightComponents=new HashSet<ComponentConnector>();
+  Set<ComponentConnector> zeroWidthComponents=new HashSet<ComponentConnector>();
+  findZeroSizeComponents(zeroHeightComponents,zeroWidthComponents,ac.getUIConnector());
+  if (zeroHeightComponents.size() > 0 || zeroWidthComponents.size() > 0) {
+    add(new HTML("<h4> Client side notifications</h4>" + " <em>The following relative sized components were " + "rendered to a zero size container on the client side."+ " Note that these are not necessarily invalid "+ "states, but reported here as they might be.</em>"));
+    if (zeroHeightComponents.size() > 0) {
+      add(new HTML("<p><strong>Vertically zero size:</strong></p>"));
+      printClientSideDetectedIssues(zeroHeightComponents,ac);
+    }
+    if (zeroWidthComponents.size() > 0) {
+      add(new HTML("<p><strong>Horizontally zero size:</strong></p>"));
+      printClientSideDetectedIssues(zeroWidthComponents,ac);
+    }
+  }
+}
