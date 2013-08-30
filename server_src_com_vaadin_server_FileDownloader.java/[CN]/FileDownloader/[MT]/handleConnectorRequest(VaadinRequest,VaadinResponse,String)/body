@@ -2,7 +2,8 @@
   if (!path.matches("dl(/.*)?")) {
     return false;
   }
-  getSession().lock();
+  VaadinSession session=getSession();
+  session.lock();
   DownloadStream stream;
   try {
     Resource resource=getFileDownloadResource();
@@ -18,7 +19,7 @@
     }
   }
   finally {
-    getSession().unlock();
+    session.unlock();
   }
   stream.writeResponse(request,response);
   return true;
