@@ -1,0 +1,28 @@
+{
+  HorizontalLayout hl=new HorizontalLayout();
+  addComponent(hl);
+  Calendar calendar=Calendar.getInstance();
+  calendar.set(2010,1,1,18,19,20);
+  final DateField df=new DateField(null,calendar.getTime());
+  df.setResolution(Resolution.SECOND);
+  df.setImmediate(true);
+  hl.addComponent(df);
+  NativeSelect resolution=new NativeSelect(null,Arrays.asList(Resolution.values()));
+  resolution.setImmediate(true);
+  resolution.setValue(df.getResolution());
+  hl.addComponent(resolution);
+  resolution.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      df.setResolution((Resolution)event.getProperty().getValue());
+    }
+  }
+);
+  final Label log=new Label("",ContentMode.PREFORMATTED);
+  addComponent(log);
+  df.addValueChangeListener(new Property.ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      log.setValue("Value changes: " + (++count));
+    }
+  }
+);
+}

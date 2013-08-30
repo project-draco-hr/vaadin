@@ -55,7 +55,26 @@
             System.out.println("Waiting for shutdown signal on port " + serverSocket.getLocalPort());
             Socket accept=serverSocket.accept();
             serverSocket.close();
+            final Thread stopThread=Thread.currentThread();
+            Thread interruptThread=new Thread(){
+              @Override public void run(){
+                try {
+                  Thread.sleep(5000);
+                  if (!server.isStopped()) {
+                    System.out.println("Jetty still running. Closing JVM.");
+                    dumpThreadStacks();
+                    System.exit(-1);
+                  }
+                }
+ catch (                InterruptedException e) {
+                }
+              }
+            }
+;
+            interruptThread.setDaemon(true);
+            interruptThread.start();
             server.stop();
+            interruptThread.interrupt();
             OutputStream outputStream=accept.getOutputStream();
             outputStream.write(0);
             outputStream.flush();

@@ -1,18 +1,26 @@
 {
+  Profiler.enter("LayoutDependency.markSizeAsChanged phase 1");
   JsArrayString needsSizeForLayout=getNeedsSizeForLayout();
   int length=needsSizeForLayout.length();
   for (int i=0; i < length; i++) {
     String connectorId=needsSizeForLayout.get(i);
     LayoutDependency layoutDependency=getDependency(connectorId,direction);
     if (layoutDependency.connector instanceof ManagedLayout) {
+      Profiler.enter("LayoutDependency.markSizeAsChanged setNeedsLayout");
       layoutDependency.setNeedsLayout(true);
+      Profiler.leave("LayoutDependency.markSizeAsChanged setNeedsLayout");
     }
  else {
+      Profiler.enter("LayoutDependency.markSizeAsChanged propagatePostLayoutMeasure");
       layoutDependency.propagatePostLayoutMeasure();
+      Profiler.leave("LayoutDependency.markSizeAsChanged propagatePostLayoutMeasure");
     }
   }
+  Profiler.leave("LayoutDependency.markSizeAsChanged phase 1");
+  Profiler.enter("LayoutDependency.markSizeAsChanged scrollbars");
   ComponentConnector scrollingBoundary=getScrollingBoundary(connector);
   if (scrollingBoundary != null) {
     getDependency(scrollingBoundary.getConnectorId(),getOppositeDirection()).setNeedsMeasure(true);
   }
+  Profiler.leave("LayoutDependency.markSizeAsChanged scrollbars");
 }

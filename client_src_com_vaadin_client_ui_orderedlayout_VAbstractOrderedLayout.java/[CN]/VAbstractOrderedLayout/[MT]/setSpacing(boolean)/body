@@ -1,11 +1,12 @@
 {
+  Profiler.enter("VAOL.onConnectorHierarchyChange setSpacing");
   this.spacing=spacing;
-  for (  Slot slot : widgetToSlot.values()) {
-    if (getWidgetIndex(slot) > 0) {
-      slot.setSpacing(spacing);
-    }
- else {
-      slot.setSpacing(false);
-    }
+  Widget firstSlot=null;
+  if (getWidgetCount() > 0) {
+    firstSlot=getWidget(0);
   }
+  for (  Slot slot : widgetToSlot.values()) {
+    slot.setSpacing(spacing && firstSlot != slot);
+  }
+  Profiler.leave("VAOL.onConnectorHierarchyChange setSpacing");
 }

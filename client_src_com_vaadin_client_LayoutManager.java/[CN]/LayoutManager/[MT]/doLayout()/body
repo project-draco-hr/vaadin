@@ -48,13 +48,18 @@
       for (      Element element : listenersToFire) {
         Collection<ElementResizeListener> listeners=elementResizeListeners.get(element);
         if (listeners != null) {
+          Profiler.enter("Layout fire resize events - listeners not null");
+          Profiler.enter("ElementResizeListener.onElementResize copy list");
           ElementResizeListener[] array=listeners.toArray(new ElementResizeListener[listeners.size()]);
+          Profiler.leave("ElementResizeListener.onElementResize copy list");
           ElementResizeEvent event=new ElementResizeEvent(this,element);
           for (          ElementResizeListener listener : array) {
             try {
               String key=null;
               if (Profiler.isEnabled()) {
-                key="ElementReizeListener.onElementReize for " + Util.getSimpleName(listener);
+                Profiler.enter("ElementResizeListener.onElementResize construct profiler key");
+                key="ElementResizeListener.onElementResize for " + Util.getSimpleName(listener);
+                Profiler.leave("ElementResizeListener.onElementResize construct profiler key");
                 Profiler.enter(key);
               }
               listener.onElementResize(event);
@@ -66,6 +71,7 @@
               VConsole.error(e);
             }
           }
+          Profiler.leave("Layout fire resize events - listeners not null");
         }
       }
       listenersToFire.clear();

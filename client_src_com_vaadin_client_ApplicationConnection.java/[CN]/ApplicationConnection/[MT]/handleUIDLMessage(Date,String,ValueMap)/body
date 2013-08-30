@@ -273,8 +273,12 @@
       for (int i=0; i < size; i++) {
         ServerConnector c=currentConnectors.get(i);
         if (c.getParent() != null) {
-          if (!c.getParent().getChildren().contains(c)) {
-            VConsole.error("ERROR: Connector is connected to a parent but the parent does not contain the connector");
+          if (ApplicationConfiguration.isDebugMode()) {
+            Profiler.enter("unregisterRemovedConnectors check parent - this is only performed in debug mode");
+            if (!c.getParent().getChildren().contains(c)) {
+              VConsole.error("ERROR: Connector is connected to a parent but the parent does not contain the connector");
+            }
+            Profiler.leave("unregisterRemovedConnectors check parent - this is only performed in debug mode");
           }
         }
  else         if (c == getUIConnector()) {
@@ -282,7 +286,9 @@
  else         if (c instanceof WindowConnector && getUIConnector().hasSubWindow((WindowConnector)c)) {
         }
  else {
+          Profiler.enter("unregisterRemovedConnectors unregisterConnector");
           connectorMap.unregisterConnector(c);
+          Profiler.leave("unregisterRemovedConnectors unregisterConnector");
           unregistered++;
         }
       }
@@ -477,10 +483,12 @@
       JsArrayString hierarchyKeys=hierarchies.getKeyArray();
       for (int i=0; i < hierarchyKeys.length(); i++) {
         try {
+          Profiler.enter("updateConnectorHierarchy hierarchy entry");
           String connectorId=hierarchyKeys.get(i);
           ServerConnector parentConnector=connectorMap.getConnector(connectorId);
           JsArrayString childConnectorIds=hierarchies.getJSStringArray(connectorId);
           int childConnectorSize=childConnectorIds.length();
+          Profiler.enter("updateConnectorHierarchy find new connectors");
           List<ServerConnector> newChildren=new ArrayList<ServerConnector>();
           List<ComponentConnector> newComponents=new ArrayList<ComponentConnector>();
           for (int connectorIndex=0; connectorIndex < childConnectorSize; connectorIndex++) {
@@ -503,11 +511,13 @@
               maybeDetached.remove(childConnectorId);
             }
           }
+          Profiler.leave("updateConnectorHierarchy find new connectors");
           List<ServerConnector> oldChildren=parentConnector.getChildren();
           boolean actuallyChanged=!Util.collectionsEquals(oldChildren,newChildren);
           if (!actuallyChanged) {
             continue;
           }
+          Profiler.enter("updateConnectorHierarchy handle HasComponentsConnector");
           if (parentConnector instanceof HasComponentsConnector) {
             HasComponentsConnector ccc=(HasComponentsConnector)parentConnector;
             List<ComponentConnector> oldComponents=ccc.getChildComponents();
@@ -522,7 +532,11 @@
  else           if (!newComponents.isEmpty()) {
             VConsole.error("Hierachy claims " + Util.getConnectorString(parentConnector) + " has component children even though it isn't a HasComponentsConnector");
           }
+          Profiler.leave("updateConnectorHierarchy handle HasComponentsConnector");
+          Profiler.enter("updateConnectorHierarchy setChildren");
           parentConnector.setChildren(newChildren);
+          Profiler.leave("updateConnectorHierarchy setChildren");
+          Profiler.enter("updateConnectorHierarchy find removed children");
           for (          ServerConnector oldChild : oldChildren) {
             if (oldChild.getParent() != parentConnector) {
               continue;
@@ -531,42 +545,68 @@
               maybeDetached.add(oldChild.getConnectorId());
             }
           }
+          Profiler.leave("updateConnectorHierarchy find removed children");
         }
  catch (        final Throwable e) {
           VConsole.error(e);
         }
+ finally {
+          Profiler.leave("updateConnectorHierarchy hierarchy entry");
+        }
       }
+      Profiler.enter("updateConnectorHierarchy detach removed connectors");
       JsArrayString maybeDetachedArray=maybeDetached.dump();
       for (int i=0; i < maybeDetachedArray.length(); i++) {
         ServerConnector removed=connectorMap.getConnector(maybeDetachedArray.get(i));
         recursivelyDetach(removed,result.events);
       }
+      Profiler.leave("updateConnectorHierarchy detach removed connectors");
       Profiler.leave("updateConnectorHierarchy");
       return result;
     }
     private void recursivelyDetach(    ServerConnector connector,    JsArrayObject<ConnectorHierarchyChangeEvent> events){
+      Profiler.enter("ApplicationConnection recursivelyDetach reset state");
       try {
+        Profiler.enter("ApplicationConnection recursivelyDetach reset state - getStateType");
         Type stateType=AbstractConnector.getStateType(connector);
+        Profiler.leave("ApplicationConnection recursivelyDetach reset state - getStateType");
+        Profiler.enter("ApplicationConnection recursivelyDetach reset state - createInstance");
         Object defaultState=stateType.createInstance();
-        SharedState state=connector.getState();
-        JsArrayObject<Property> properties=stateType.getPropertiesAsArray();
-        int size=properties.size();
-        for (int i=0; i < size; i++) {
-          Property property=properties.get(i);
-          property.setValue(state,property.getValue(defaultState));
+        Profiler.leave("ApplicationConnection recursivelyDetach reset state - createInstance");
+        if (connector instanceof AbstractConnector) {
+          replaceState((AbstractConnector)connector,defaultState);
+        }
+ else {
+          SharedState state=connector.getState();
+          Profiler.enter("ApplicationConnection recursivelyDetach reset state - properties");
+          JsArrayObject<Property> properties=stateType.getPropertiesAsArray();
+          int size=properties.size();
+          for (int i=0; i < size; i++) {
+            Property property=properties.get(i);
+            property.setValue(state,property.getValue(defaultState));
+          }
+          Profiler.leave("ApplicationConnection recursivelyDetach reset state - properties");
         }
       }
  catch (      NoDataException e) {
         throw new RuntimeException("Can't reset state for " + Util.getConnectorString(connector),e);
       }
+ finally {
+        Profiler.leave("ApplicationConnection recursivelyDetach reset state");
+      }
+      Profiler.enter("ApplicationConnection recursivelyDetach perform detach");
       for (      ServerConnector child : connector.getChildren()) {
         if (child.getParent() != connector) {
           continue;
         }
         recursivelyDetach(child,events);
       }
+      Profiler.leave("ApplicationConnection recursivelyDetach perform detach");
+      Profiler.enter("ApplicationConnection recursivelyDetach clear children and parent");
       connector.setChildren(Collections.<ServerConnector>emptyList());
       connector.setParent(null);
+      Profiler.leave("ApplicationConnection recursivelyDetach clear children and parent");
+      Profiler.enter("ApplicationConnection recursivelyDetach create hierarchy event");
       if (connector instanceof HasComponentsConnector) {
         HasComponentsConnector ccc=(HasComponentsConnector)connector;
         List<ComponentConnector> oldChildren=ccc.getChildComponents();
@@ -578,7 +618,9 @@
           events.add(event);
         }
       }
+      Profiler.leave("ApplicationConnection recursivelyDetach create hierarchy event");
     }
+    private native void replaceState(    AbstractConnector connector,    Object defaultState);
     private void handleRpcInvocations(    ValueMap json){
       if (json.containsKey("rpc")) {
         Profiler.enter("handleRpcInvocations");

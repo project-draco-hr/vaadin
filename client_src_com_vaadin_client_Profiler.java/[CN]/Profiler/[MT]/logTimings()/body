@@ -19,7 +19,7 @@
     Node stackTop=stack.getLast();
     boolean inEvent=eventName.equals(stackTop.getName()) && !isBeginEvent;
     if (!inEvent && stack.size() >= 2 && eventName.equals(stack.get(stack.size() - 2).getName()) && !isBeginEvent) {
-      stackTop.addTime(gwtStatsEvent.getMillis());
+      stackTop.leave(gwtStatsEvent.getMillis());
       stack.removeLast();
       stackTop=stack.getLast();
       inEvent=true;
@@ -30,7 +30,7 @@
         return;
       }
       Node previousStackTop=stack.removeLast();
-      previousStackTop.addTime(gwtStatsEvent.getMillis());
+      previousStackTop.leave(gwtStatsEvent.getMillis());
     }
  else {
       if (!inEvent) {
@@ -55,5 +55,7 @@
     }
   }
 );
-  getConsumer().addProfilerData(stack.getFirst(),totalList);
+  if (getConsumer() != null) {
+    getConsumer().addProfilerData(stack.getFirst(),totalList);
+  }
 }
