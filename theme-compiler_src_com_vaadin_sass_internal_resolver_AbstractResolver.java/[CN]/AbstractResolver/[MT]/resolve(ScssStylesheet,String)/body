@@ -1,15 +1,14 @@
 {
-  InputSource source=null;
-  if (parentStylesheet != null) {
-    StringBuilder filePathBuilder=new StringBuilder(parentStylesheet.getFileName());
-    filePathBuilder.append(File.separatorChar).append(identifier);
-    if (!filePathBuilder.toString().endsWith(".scss")) {
-      filePathBuilder.append(".scss");
+  identifier=identifier.replaceFirst(".scss$","");
+  List<String> potentialParentPaths=getPotentialParentPaths(parentStylesheet,identifier);
+  if (identifier.contains("/")) {
+    identifier=identifier.substring(identifier.lastIndexOf("/") + 1);
+  }
+  for (  String path : potentialParentPaths) {
+    InputSource source=normalizeAndResolve(path + "/" + identifier);
+    if (source != null) {
+      return source;
     }
-    source=normalizeAndResolve(filePathBuilder.toString());
   }
-  if (source == null) {
-    source=normalizeAndResolve(identifier);
-  }
-  return source;
+  return normalizeAndResolve(identifier);
 }
