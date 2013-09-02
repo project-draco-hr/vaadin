@@ -6,11 +6,20 @@
   file=file.getCanonicalFile();
   SCSSDocumentHandler handler=new SCSSDocumentHandlerImpl();
   ScssStylesheet stylesheet=handler.getStyleSheet();
-  InputSource source=stylesheet.resolveStylesheet(identifier);
+  if (parentStylesheet == null) {
+    stylesheet.addResolver(new FilesystemResolver());
+    stylesheet.addResolver(new ClassloaderResolver());
+  }
+ else {
+    stylesheet.setResolvers(parentStylesheet.getResolvers());
+  }
+  InputSource source=stylesheet.resolveStylesheet(identifier,parentStylesheet);
   if (source == null) {
     return null;
   }
-  source.setEncoding(encoding);
+  if (parentStylesheet != null) {
+    source.setEncoding(parentStylesheet.getCharset());
+  }
   Parser parser=new Parser();
   parser.setErrorHandler(new SCSSErrorHandler());
   parser.setDocumentHandler(handler);
