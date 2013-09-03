@@ -1,20 +1,8 @@
 {
-  String pid=null;
-  targetElement=getElement(targetElement);
-  Element e=targetElement;
-  while (true) {
-    pid=ConnectorMap.get(client).getConnectorId(e);
-    if (pid != null) {
-      break;
-    }
-    e=DOM.getParent(e);
-    if (e == null) {
-      break;
-    }
-  }
+  ComponentConnector connector=Util.findPaintable(componentLocator.getClient(),targetElement);
   Widget w=null;
-  if (pid != null) {
-    w=((ComponentConnector)ConnectorMap.get(client).getConnector(pid)).getWidget();
+  if (connector != null) {
+    w=connector.getWidget();
     Widget targetParent=findParentWidget(targetElement,w);
     while (targetParent != w && targetParent != null) {
       if (targetParent instanceof SubPartAware) {
@@ -54,7 +42,7 @@
  else   if (w instanceof SubPartAware) {
     String elementLocator=((SubPartAware)w).getSubPartName(targetElement);
     if (elementLocator != null) {
-      return path + SUBPART_SEPARATOR + elementLocator;
+      return path + LegacyLocatorStrategy.SUBPART_SEPARATOR + elementLocator;
     }
   }
   String domPath=getDOMPathForElement(targetElement,w.getElement());

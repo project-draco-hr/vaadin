@@ -7,13 +7,13 @@
       w=RootPanel.get();
     }
  else     if (part.equals("")) {
-      w=client.getUIConnector().getWidget();
+      w=componentLocator.getClient().getUIConnector().getWidget();
     }
  else     if (w == null) {
       String id=part;
-      ServerConnector connector=ConnectorMap.get(client).getConnector(id);
+      ServerConnector connector=ConnectorMap.get(componentLocator.getClient()).getConnector(id);
       if (connector == null) {
-        connector=findConnectorById(client.getUIConnector(),id.substring(5));
+        connector=findConnectorById(componentLocator.getClient().getUIConnector(),id.substring(5));
       }
       if (connector instanceof ComponentConnector) {
         w=((ComponentConnector)connector).getWidget();
@@ -72,7 +72,7 @@
       }
       Iterator<? extends Widget> iterator;
       if (widgetClassName.equals("VWindow")) {
-        List<WindowConnector> windows=client.getUIConnector().getSubWindows();
+        List<WindowConnector> windows=componentLocator.getClient().getUIConnector().getSubWindows();
         List<VWindow> windowWidgets=new ArrayList<VWindow>(windows.size());
         for (        WindowConnector wc : windows) {
           windowWidgets.add(wc.getWidget());
@@ -80,7 +80,7 @@
         iterator=windowWidgets.iterator();
       }
  else       if (widgetClassName.equals("VContextMenu")) {
-        return client.getContextMenu();
+        return componentLocator.getClient().getContextMenu();
       }
  else {
         iterator=(Iterator<? extends Widget>)parent.iterator();
