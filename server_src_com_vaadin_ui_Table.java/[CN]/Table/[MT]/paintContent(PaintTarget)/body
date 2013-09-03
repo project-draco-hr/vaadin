@@ -1,36 +1,9 @@
 {
-  final Set<Action> actionSet=findAndPaintBodyActions(target);
-  final Object[][] cells=getVisibleCells();
-  int rows=findNumRowsToPaint(target,cells);
-  int total=size();
-  if (shouldHideNullSelectionItem()) {
-    total--;
-    rows--;
+  isBeingPainted=true;
+  try {
+    doPaintContent(target);
   }
-  paintTableAttributes(target,rows,total);
-  paintVisibleColumnOrder(target);
-  if (isPartialRowUpdate() && painted && !target.isFullRepaint()) {
-    paintPartialRowUpdate(target,actionSet);
+  finally {
+    isBeingPainted=false;
   }
- else   if (target.isFullRepaint() || isRowCacheInvalidated()) {
-    paintRows(target,cells,actionSet);
-    setRowCacheInvalidated(false);
-  }
-  int pageBufferLastIndex=pageBufferFirstIndex + pageBuffer[CELL_ITEMID].length - 1;
-  target.addAttribute(TableConstants.ATTRIBUTE_PAGEBUFFER_FIRST,pageBufferFirstIndex);
-  target.addAttribute(TableConstants.ATTRIBUTE_PAGEBUFFER_LAST,pageBufferLastIndex);
-  paintSorting(target);
-  resetVariablesAndPageBuffer(target);
-  paintActions(target,actionSet);
-  paintColumnOrder(target);
-  paintAvailableColumns(target);
-  paintVisibleColumns(target);
-  if (keyMapperReset) {
-    keyMapperReset=false;
-    target.addAttribute(TableConstants.ATTRIBUTE_KEY_MAPPER_RESET,true);
-  }
-  if (dropHandler != null) {
-    dropHandler.getAcceptCriterion().paint(target);
-  }
-  painted=true;
 }

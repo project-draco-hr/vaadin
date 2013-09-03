@@ -4,7 +4,8 @@
     return super.handleConnectorRequest(request,response,path);
   }
   DownloadStream stream;
-  getSession().lock();
+  VaadinSession session=getSession();
+  session.lock();
   try {
     List<URLReference> sources=getState().sources;
     int sourceIndex=Integer.parseInt(matcher.group(1));
@@ -17,7 +18,7 @@
     stream=resource.getStream();
   }
   finally {
-    getSession().unlock();
+    session.unlock();
   }
   stream.writeResponse(request,response);
   return true;

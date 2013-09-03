@@ -1,0 +1,17 @@
+{
+  ServletContext sc=service.getServlet().getServletContext();
+  URL resourceUrl;
+  try {
+    resourceUrl=sc.getResource(filename);
+  }
+ catch (  MalformedURLException e) {
+    throw new RuntimeException(e);
+  }
+  if (resourceUrl == null) {
+    if (filename.startsWith("/")) {
+      filename=filename.substring(1);
+    }
+    resourceUrl=service.getClassLoader().getResource(filename);
+  }
+  return resourceUrl;
+}
