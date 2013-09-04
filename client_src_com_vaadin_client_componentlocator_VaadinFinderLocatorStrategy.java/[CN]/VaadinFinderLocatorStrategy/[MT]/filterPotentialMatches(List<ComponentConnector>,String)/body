@@ -1,0 +1,23 @@
+{
+  if (potentialMatches.isEmpty()) {
+    return null;
+  }
+  if (predicateString != null) {
+    String[] parts=predicateString.split("=");
+    if (parts.length == 1) {
+      int index=Integer.valueOf(predicateString);
+      return index < potentialMatches.size() ? potentialMatches.get(index) : null;
+    }
+ else {
+      String propertyName=parts[0].trim();
+      String value=unquote(parts[1].trim());
+      for (      ComponentConnector connector : potentialMatches) {
+        Property property=AbstractConnector.getStateType(connector).getProperty(propertyName);
+        if (valueEqualsPropertyValue(value,property,connector.getState())) {
+          return connector;
+        }
+      }
+    }
+  }
+  return potentialMatches.get(0);
+}
