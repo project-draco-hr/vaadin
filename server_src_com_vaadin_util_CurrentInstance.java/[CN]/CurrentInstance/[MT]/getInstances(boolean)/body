@@ -5,10 +5,20 @@
   }
  else {
     Map<Class<?>,CurrentInstance> copy=new HashMap<Class<?>,CurrentInstance>();
+    boolean removeStale=false;
     for (    Class<?> c : map.keySet()) {
       CurrentInstance ci=map.get(c);
-      if (ci.inheritable || !onlyInheritable) {
+      if (ci.instance.isEnqueued()) {
+        removeStale=true;
+      }
+ else       if (ci.inheritable || !onlyInheritable) {
         copy.put(c,ci);
+      }
+    }
+    if (removeStale) {
+      removeStaleInstances(map);
+      if (map.isEmpty()) {
+        instances.remove();
       }
     }
     return copy;

@@ -5,7 +5,15 @@
   }
   CurrentInstance currentInstance=map.get(type);
   if (currentInstance != null) {
-    return type.cast(currentInstance.instance);
+    Object value=currentInstance.instance.get();
+    if (value == null) {
+      removeStaleInstances(map);
+      if (map.isEmpty()) {
+        instances.remove();
+      }
+      return null;
+    }
+    return type.cast(value);
   }
  else {
     return null;
