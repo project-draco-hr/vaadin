@@ -1,0 +1,26 @@
+{
+  try {
+    Enumeration<NetworkInterface> interfaces=NetworkInterface.getNetworkInterfaces();
+    while (interfaces.hasMoreElements()) {
+      NetworkInterface current=interfaces.nextElement();
+      if (!current.isUp() || current.isLoopback() || current.isVirtual()) {
+        continue;
+      }
+      Enumeration<InetAddress> addresses=current.getInetAddresses();
+      while (addresses.hasMoreElements()) {
+        InetAddress current_addr=addresses.nextElement();
+        if (current_addr.isLoopbackAddress()) {
+          continue;
+        }
+        String hostAddress=current_addr.getHostAddress();
+        if (hostAddress.startsWith("192.168.")) {
+          return hostAddress;
+        }
+      }
+    }
+  }
+ catch (  SocketException e) {
+    throw new RuntimeException("Could not enumerate ");
+  }
+  throw new RuntimeException("No compatible (192.168.*) ip address found.");
+}

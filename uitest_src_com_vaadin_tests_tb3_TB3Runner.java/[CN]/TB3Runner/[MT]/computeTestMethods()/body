@@ -1,0 +1,31 @@
+{
+  List<FrameworkMethod> tests=new LinkedList<FrameworkMethod>();
+  for (  FrameworkMethod method : getTestClass().getAnnotatedMethods(Parameters.class)) {
+    if (!Modifier.isStatic(method.getMethod().getModifiers())) {
+      throw new IllegalArgumentException("@Parameters " + method + " must be static.");
+    }
+    Object params;
+    try {
+      params=method.getMethod().invoke(getTestClass().getJavaClass());
+    }
+ catch (    Throwable t) {
+      throw new RuntimeException("Could not run test factory method " + method.getName(),t);
+    }
+    if (params.getClass().isArray()) {
+      params=Arrays.asList((Object[])params);
+    }
+    if (!(params instanceof Iterable<?>)) {
+      params=Collections.singletonList(params);
+    }
+    for (    Object param : (Iterable<?>)params) {
+      if (!(param instanceof DesiredCapabilities)) {
+        throw new RuntimeException("Unexpected parameter type " + param.getClass().getName() + " when expecting DesiredCapabilities");
+      }
+      DesiredCapabilities capabilities=(DesiredCapabilities)param;
+      for (      FrameworkMethod m : getTestClass().getAnnotatedMethods(Test.class)) {
+        tests.add(new TB3Method(m.getMethod(),capabilities));
+      }
+    }
+  }
+  return tests;
+}

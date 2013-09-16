@@ -1,0 +1,20 @@
+{
+  if (!(method instanceof TB3Method)) {
+    throw new RuntimeException("Unexpected method type " + method.getClass().getName() + ", expected TB3Method");
+  }
+  final TB3Method tb3method=(TB3Method)method;
+  final Statement realBefores=super.withBefores(method,target,statement);
+  return new Statement(){
+    @Override public void evaluate() throws Throwable {
+      ((AbstractTB3Test)target).setDesiredCapabilities(tb3method.capabilities);
+      try {
+        realBefores.evaluate();
+      }
+ catch (      Throwable t) {
+        ((AbstractTB3Test)target).onUncaughtException(t);
+        throw t;
+      }
+    }
+  }
+;
+}

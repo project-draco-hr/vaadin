@@ -1,0 +1,15 @@
+{
+  String runPath="/run";
+  if (isPushEnabled()) {
+    runPath="/run-push";
+  }
+  if (UI.class.isAssignableFrom(uiClass)) {
+    return runPath + "/" + uiClass.getCanonicalName()+ (isDebug() ? "?debug" : "");
+  }
+ else   if (LegacyApplication.class.isAssignableFrom(uiClass)) {
+    return runPath + "/" + uiClass.getCanonicalName()+ "?restartApplication"+ (isDebug() ? "&debug" : "");
+  }
+ else {
+    throw new IllegalArgumentException("Unable to determine path for enclosing class " + uiClass.getCanonicalName());
+  }
+}

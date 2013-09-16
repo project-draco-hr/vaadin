@@ -1,0 +1,21 @@
+{
+  super.onUncaughtException(cause);
+  try {
+    TestBenchCommands testBench=testBench();
+    if (testBench != null) {
+      testBench.disableWaitForVaadin();
+    }
+  }
+ catch (  Throwable t) {
+    t.printStackTrace();
+  }
+  try {
+    if (driver != null) {
+      BufferedImage screenshotImage=ImageIO.read(new ByteArrayInputStream(((TakesScreenshot)driver).getScreenshotAs(OutputType.BYTES)));
+      ImageIO.write(screenshotImage,"png",new File(getScreenshotFailureName()));
+    }
+  }
+ catch (  Throwable t) {
+    t.printStackTrace();
+  }
+}
