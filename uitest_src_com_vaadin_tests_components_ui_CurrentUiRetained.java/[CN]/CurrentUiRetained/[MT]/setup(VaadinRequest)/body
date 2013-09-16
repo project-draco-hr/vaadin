@@ -1,0 +1,40 @@
+{
+  final ArrayList<UI> uiLog=new ArrayList<UI>();
+  final ArrayList<Boolean> probeLog=new ArrayList<Boolean>();
+  final Thread thread=new Thread(new Runnable(){
+    @Override public void run(){
+      try {
+        uiLog.add(UI.getCurrent());
+        GcProbe gcProbe=new GcProbe();
+        CurrentInstance.set(GcProbe.class,gcProbe);
+        probeLog.add(CurrentInstance.get(GcProbe.class) != null);
+        gcProbe=null;
+        Thread.sleep(500l);
+        System.gc();
+        Thread.sleep(500l);
+        probeLog.add(CurrentInstance.get(GcProbe.class) != null);
+        uiLog.add(UI.getCurrent());
+      }
+ catch (      InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+);
+  thread.start();
+  addComponent(new Button("Show result",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      try {
+        thread.join();
+        log("Correct UI.getCurrent before GC: " + (uiLog.get(0) == CurrentUiRetained.this));
+        log("Correct UI.getCurrent after GC: " + (uiLog.get(1) == CurrentUiRetained.this));
+        log("GC probe available before GC: " + probeLog.get(0));
+        log("GC probe available after GC: " + probeLog.get(1));
+      }
+ catch (      InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+));
+}
