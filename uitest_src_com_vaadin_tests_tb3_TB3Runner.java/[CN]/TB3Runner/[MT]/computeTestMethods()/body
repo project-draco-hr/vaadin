@@ -1,31 +1,18 @@
 {
   List<FrameworkMethod> tests=new LinkedList<FrameworkMethod>();
-  for (  FrameworkMethod method : getTestClass().getAnnotatedMethods(Parameters.class)) {
-    if (!Modifier.isStatic(method.getMethod().getModifiers())) {
-      throw new IllegalArgumentException("@Parameters " + method + " must be static.");
-    }
-    Object params;
-    try {
-      params=method.getMethod().invoke(getTestClass().getJavaClass());
-    }
- catch (    Throwable t) {
-      throw new RuntimeException("Could not run test factory method " + method.getName(),t);
-    }
-    if (params.getClass().isArray()) {
-      params=Arrays.asList((Object[])params);
-    }
-    if (!(params instanceof Iterable<?>)) {
-      params=Collections.singletonList(params);
-    }
-    for (    Object param : (Iterable<?>)params) {
-      if (!(param instanceof DesiredCapabilities)) {
-        throw new RuntimeException("Unexpected parameter type " + param.getClass().getName() + " when expecting DesiredCapabilities");
-      }
-      DesiredCapabilities capabilities=(DesiredCapabilities)param;
+  if (!AbstractTB3Test.class.isAssignableFrom(getTestClass().getJavaClass())) {
+    throw new RuntimeException(getClass().getName() + " only supports " + AbstractTB3Test.class.getName());
+  }
+  try {
+    AbstractTB3Test testClassInstance=(AbstractTB3Test)getTestClass().getOnlyConstructor().newInstance();
+    for (    DesiredCapabilities capabilities : testClassInstance.getBrowsersToTest()) {
       for (      FrameworkMethod m : getTestClass().getAnnotatedMethods(Test.class)) {
         tests.add(new TB3Method(m.getMethod(),capabilities));
       }
     }
+  }
+ catch (  Exception e) {
+    throw new RuntimeException("Error retrieving browsers to run on",e);
   }
   return tests;
 }
