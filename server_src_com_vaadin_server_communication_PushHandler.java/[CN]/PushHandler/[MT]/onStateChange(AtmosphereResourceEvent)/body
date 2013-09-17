@@ -1,7 +1,9 @@
 {
   AtmosphereResource resource=event.getResource();
   String id=resource.uuid();
-  if (event.isCancelled()) {
+  if (event.isCancelled() || event.isResumedOnTimeout()) {
+    getLogger().log(Level.FINER,"Cancelled connection for resource {0}",id);
+    disconnect(event);
   }
  else   if (event.isResuming()) {
     getLogger().log(Level.FINER,"Resuming request for resource {0}",id);

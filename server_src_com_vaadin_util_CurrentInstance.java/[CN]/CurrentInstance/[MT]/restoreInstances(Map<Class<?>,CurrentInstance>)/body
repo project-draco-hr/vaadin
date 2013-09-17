@@ -1,6 +1,19 @@
 {
+  boolean removeStale=false;
   for (  Class c : old.keySet()) {
     CurrentInstance ci=old.get(c);
-    set(c,ci.instance,ci.inheritable);
+    Object v=ci.instance.get();
+    if (v == null) {
+      removeStale=true;
+    }
+ else     if (v == NULL_OBJECT) {
+      set(c,null,ci.inheritable);
+    }
+ else {
+      set(c,v,ci.inheritable);
+    }
+  }
+  if (removeStale) {
+    removeStaleInstances(old);
   }
 }

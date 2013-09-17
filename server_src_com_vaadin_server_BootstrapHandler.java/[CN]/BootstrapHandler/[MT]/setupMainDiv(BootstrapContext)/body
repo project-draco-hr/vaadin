@@ -16,7 +16,14 @@
   String vaadinLocation=vaadinService.getStaticFileLocation(request) + "/VAADIN/";
   fragmentNodes.add(new Element(Tag.valueOf("iframe"),"").attr("tabIndex","-1").attr("id","__gwt_historyFrame").attr("style","position:absolute;width:0;height:0;border:0;overflow:hidden").attr("src","javascript:false"));
   if (context.getPushMode().isEnabled()) {
-    fragmentNodes.add(new Element(Tag.valueOf("script"),"").attr("type","text/javascript").attr("src",vaadinLocation + ApplicationConstants.VAADIN_PUSH_JS));
+    String pushJS=vaadinLocation;
+    if (context.getRequest().getService().getDeploymentConfiguration().isProductionMode()) {
+      pushJS+=ApplicationConstants.VAADIN_PUSH_JS;
+    }
+ else {
+      pushJS+=ApplicationConstants.VAADIN_PUSH_DEBUG_JS;
+    }
+    fragmentNodes.add(new Element(Tag.valueOf("script"),"").attr("type","text/javascript").attr("src",pushJS));
   }
   String bootstrapLocation=vaadinLocation + "vaadinBootstrap.js";
   fragmentNodes.add(new Element(Tag.valueOf("script"),"").attr("type","text/javascript").attr("src",bootstrapLocation));
