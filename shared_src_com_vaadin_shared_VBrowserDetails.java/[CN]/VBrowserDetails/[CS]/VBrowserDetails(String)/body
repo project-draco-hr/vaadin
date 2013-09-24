@@ -1,12 +1,14 @@
 {
   userAgent=userAgent.toLowerCase();
-  isGecko=userAgent.indexOf("gecko") != -1 && userAgent.indexOf("webkit") == -1;
+  isGecko=userAgent.indexOf("gecko") != -1 && userAgent.indexOf("webkit") == -1 && userAgent.indexOf("trident/") == -1;
   isWebKit=userAgent.indexOf("applewebkit") != -1;
   isPresto=userAgent.indexOf(" presto/") != -1;
+  isTrident=userAgent.indexOf("trident/") != -1;
   isChrome=userAgent.indexOf(" chrome/") != -1;
   isSafari=!isChrome && userAgent.indexOf("safari") != -1;
   isOpera=userAgent.indexOf("opera") != -1;
   isIE=userAgent.indexOf("msie") != -1 && !isOpera && (userAgent.indexOf("webtv") == -1);
+  isIE=isIE || isTrident;
   isFirefox=userAgent.indexOf(" firefox/") != -1;
   isChromeFrameCapable=userAgent.indexOf("chromeframe") != -1;
   isChromeFrame=isChromeFrameCapable && !isChrome;
@@ -38,9 +40,19 @@
   }
   try {
     if (isIE) {
-      String ieVersionString=userAgent.substring(userAgent.indexOf("msie ") + 5);
-      ieVersionString=safeSubstring(ieVersionString,0,ieVersionString.indexOf(";"));
-      parseVersionString(ieVersionString);
+      if (userAgent.indexOf("msie") == -1) {
+        int rvPos=userAgent.indexOf("rv:");
+        if (rvPos >= 0) {
+          String tmp=userAgent.substring(rvPos + 3);
+          tmp=tmp.replaceFirst("(\\.[0-9]+).+","$1");
+          parseVersionString(tmp);
+        }
+      }
+ else {
+        String ieVersionString=userAgent.substring(userAgent.indexOf("msie ") + 5);
+        ieVersionString=safeSubstring(ieVersionString,0,ieVersionString.indexOf(";"));
+        parseVersionString(ieVersionString);
+      }
     }
  else     if (isFirefox) {
       int i=userAgent.indexOf(" firefox/") + 9;
