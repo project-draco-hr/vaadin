@@ -1,0 +1,37 @@
+{
+  if (offset < 0 || offset > getColumnCount()) {
+    throw new IndexOutOfBoundsException("The given offset(" + offset + ") was outside of the current number of columns (0.."+ getColumnCount()+ ")");
+  }
+  if (numberOfColumns < 1) {
+    throw new IllegalArgumentException("Number of columns must be 1 or greater (was " + numberOfColumns);
+  }
+  columns+=numberOfColumns;
+  if (!hasColumnAndRowData()) {
+    return;
+  }
+  for (  final RowContainerImpl rowContainer : rowContainers) {
+    final Element element=rowContainer.root;
+    for (int row=0; row < element.getChildCount(); row++) {
+      final Element tr=(Element)element.getChild(row);
+      Node referenceElement;
+      if (offset != 0) {
+        referenceElement=tr.getChild(offset - 1);
+      }
+ else {
+        referenceElement=null;
+      }
+      for (int col=offset; col < offset + numberOfColumns; col++) {
+        final Element cellElem=rowContainer.createCellElement();
+        rowContainer.paintCell(cellElem,row,col);
+        if (referenceElement != null) {
+          tr.insertAfter(cellElem,referenceElement);
+        }
+ else {
+          tr.insertFirst(cellElem);
+        }
+        referenceElement=cellElem;
+      }
+      recalculateRowWidth(tr);
+    }
+  }
+}
