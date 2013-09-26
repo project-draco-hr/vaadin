@@ -1,0 +1,11 @@
+{
+  String javaPackageDir=javaPackage.replace('.','/');
+  Enumeration<JarEntry> ent=juc.getJarFile().entries();
+  while (ent.hasMoreElements()) {
+    JarEntry e=ent.nextElement();
+    if (e.getName().endsWith(".class") && e.getName().startsWith(javaPackageDir)) {
+      String fullyQualifiedClassName=e.getName().replace('/','.').replace(".class","");
+      addClassIfMatches(result,fullyQualifiedClassName,baseClass);
+    }
+  }
+}
