@@ -1,26 +1,25 @@
 {
-  if (!isRealUpdate(uidl)) {
-    return;
-  }
-  getWidget().client=client;
+  super.onStateChanged(stateChangeEvent);
   getWidget().enabled=isEnabled();
-  if (uidl.hasAttribute("name")) {
-    getWidget().target=uidl.getStringAttribute("name");
+  if (stateChangeEvent.hasPropertyChanged("resources")) {
+    getWidget().src=getResourceUrl(LinkConstants.HREF_RESOURCE);
+    if (getWidget().src == null) {
+      getWidget().anchor.removeAttribute("href");
+    }
+ else {
+      getWidget().anchor.setAttribute("href",getWidget().src);
+    }
+  }
+  getWidget().target=getState().target;
+  if (getWidget().target == null) {
+    getWidget().anchor.removeAttribute("target");
+  }
+ else {
     getWidget().anchor.setAttribute("target",getWidget().target);
   }
-  if (uidl.hasAttribute("border")) {
-    if ("none".equals(uidl.getStringAttribute("border"))) {
-      getWidget().borderStyle=BorderStyle.NONE;
-    }
- else {
-      getWidget().borderStyle=BorderStyle.MINIMAL;
-    }
-  }
- else {
-    getWidget().borderStyle=BorderStyle.DEFAULT;
-  }
-  getWidget().targetHeight=uidl.hasAttribute("targetHeight") ? uidl.getIntAttribute("targetHeight") : -1;
-  getWidget().targetWidth=uidl.hasAttribute("targetWidth") ? uidl.getIntAttribute("targetWidth") : -1;
+  getWidget().borderStyle=getState().targetBorder;
+  getWidget().targetWidth=getState().targetWidth;
+  getWidget().targetHeight=getState().targetHeight;
   getWidget().captionElement.setInnerText(getState().caption);
   if (null != getState().errorMessage) {
     if (getWidget().errorIndicatorElement == null) {
@@ -34,7 +33,7 @@
   }
   if (getIcon() != null) {
     if (getWidget().icon == null) {
-      getWidget().icon=new Icon(client);
+      getWidget().icon=new Icon(getConnection());
       getWidget().anchor.insertBefore(getWidget().icon.getElement(),getWidget().captionElement);
     }
     getWidget().icon.setUri(getIcon());
