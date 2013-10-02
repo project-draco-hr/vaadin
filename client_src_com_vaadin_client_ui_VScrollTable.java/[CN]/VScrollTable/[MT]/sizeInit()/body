@@ -174,7 +174,9 @@
     Util.runWebkitOverflowAutoFix(scrollBodyPanel.getElement());
   }
   isNewBody=false;
-  Scheduler.get().scheduleFinally(lazyScroller);
+  if (firstvisible > 0) {
+    Scheduler.get().scheduleDeferred(lazyScroller);
+  }
   if (enabled) {
     if (scrollBody.getLastRendered() + 1 < firstRowInViewPort + pageLength + (int)cache_react_rate * pageLength) {
       if (totalRows - 1 > scrollBody.getLastRendered()) {
