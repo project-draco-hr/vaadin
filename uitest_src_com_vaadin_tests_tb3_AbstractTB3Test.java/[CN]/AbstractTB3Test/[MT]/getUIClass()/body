@@ -1,7 +1,19 @@
 {
+  try {
+    String uiClassName=getClass().getName().replaceFirst("Test$","");
+    Class<?> cls=Class.forName(uiClassName);
+    if (isSupportedRunnerClass(cls)) {
+      return cls;
+    }
+  }
+ catch (  Exception e) {
+  }
   Class<?> enclosingClass=getClass().getEnclosingClass();
   if (enclosingClass != null) {
-    return enclosingClass;
+    if (UI.class.isAssignableFrom(enclosingClass)) {
+      Logger.getLogger(getClass().getName()).severe("Test is an static inner class to the UI. This will no longer be supported in the future. The test should be named UIClassTest and reside in the same package as the UI");
+      return enclosingClass;
+    }
   }
-  return null;
+  throw new RuntimeException("Could not determine UI class. Ensure the test is named UIClassTest and is in the same package as the UIClass");
 }
