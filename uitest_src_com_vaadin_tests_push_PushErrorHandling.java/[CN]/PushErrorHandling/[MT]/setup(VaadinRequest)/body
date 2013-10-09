@@ -1,0 +1,43 @@
+{
+  getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
+  VaadinSession.getCurrent().setErrorHandler(new ErrorHandler(){
+    @Override public void error(    com.vaadin.server.ErrorEvent event){
+      addComponent(new Label("An error! " + event.getThrowable().getMessage()));
+      System.err.println("An error! " + event.getThrowable().getMessage());
+    }
+  }
+);
+  final Button button=new Button("Click for NPE!",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      ((String)null).length();
+    }
+  }
+);
+  addComponent(button);
+  final Table view=new Table("testtable");
+  view.setSelectable(true);
+  view.setMultiSelect(false);
+  view.setImmediate(true);
+  view.setSizeFull();
+  view.addItemClickListener(new ItemClickListener(){
+    @Override public void itemClick(    ItemClickEvent event){
+      BeanContainer<String,AbstractInMemoryContainer> metaContainer=new BeanContainer<String,AbstractInMemoryContainer>(AbstractInMemoryContainer.class){
+        @Override public Collection<String> getContainerPropertyIds(){
+          List<String> cpropIds=new ArrayList<String>(super.getContainerPropertyIds());
+          cpropIds.add("testid");
+          return cpropIds;
+        }
+        @Override public Class<?> getType(        Object propertyId){
+          ((Object)null).hashCode();
+          return super.getType(propertyId);
+        }
+      }
+;
+      view.setContainerDataSource(metaContainer);
+    }
+  }
+);
+  view.addContainerProperty("Column",String.class,"Click for NPE");
+  view.addItem(new Object());
+  addComponent(view);
+}
