@@ -1,0 +1,33 @@
+{
+  if (numberOfRows == 0) {
+    return Collections.emptyList();
+  }
+  final List<Element> addedRows=fillAndPopulateEscalatorRowsIfNeeded(index,numberOfRows);
+  scroller.recalculateScrollbarsForVirtualViewport();
+  final boolean addedRowsAboveCurrentViewport=index * ROW_HEIGHT_PX < scrollerElem.getScrollTop();
+  final boolean addedRowsBelowCurrentViewport=index * ROW_HEIGHT_PX > scrollerElem.getScrollTop() + calculateHeight();
+  if (addedRowsAboveCurrentViewport) {
+    final int yDelta=numberOfRows * ROW_HEIGHT_PX;
+    adjustScrollPosIgnoreEvents(yDelta);
+  }
+ else   if (addedRowsBelowCurrentViewport) {
+  }
+ else {
+    final int unupdatedLogicalStart=index + addedRows.size();
+    final int visualOffset=getLogicalRowIndex(visualRowOrder.getFirst());
+    final int rowsStillNeeded=numberOfRows - addedRows.size();
+    final Range unupdatedVisual=convertToVisual(Range.withLength(unupdatedLogicalStart,rowsStillNeeded));
+    final int end=root.getChildCount();
+    final int start=end - unupdatedVisual.length();
+    final int visualTargetIndex=unupdatedLogicalStart - visualOffset;
+    moveAndUpdateEscalatorRows(Range.between(start,end),visualTargetIndex,unupdatedLogicalStart);
+    int rowTop=(unupdatedLogicalStart + (end - start)) * ROW_HEIGHT_PX;
+    final ListIterator<Element> i=visualRowOrder.listIterator(visualTargetIndex + (end - start));
+    while (i.hasNext()) {
+      final Element tr=i.next();
+      setRowPosition(tr,0,rowTop);
+      rowTop+=ROW_HEIGHT_PX;
+    }
+  }
+  return addedRows;
+}

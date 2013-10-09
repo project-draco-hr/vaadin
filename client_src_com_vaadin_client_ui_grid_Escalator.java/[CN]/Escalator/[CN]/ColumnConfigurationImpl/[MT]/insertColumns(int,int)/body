@@ -1,6 +1,6 @@
 {
-  if (offset < 0 || offset > getColumnCount()) {
-    throw new IndexOutOfBoundsException("The given offset(" + offset + ") was outside of the current number of columns (0.."+ getColumnCount()+ ")");
+  if (index < 0 || index > getColumnCount()) {
+    throw new IndexOutOfBoundsException("The given index(" + index + ") was outside of the current number of columns (0.."+ getColumnCount()+ ")");
   }
   if (numberOfColumns < 1) {
     throw new IllegalArgumentException("Number of columns must be 1 or greater (was " + numberOfColumns);
@@ -9,18 +9,18 @@
   if (!hasColumnAndRowData()) {
     return;
   }
-  for (  final RowContainerImpl rowContainer : rowContainers) {
+  for (  final AbstractRowContainer rowContainer : rowContainers) {
     final Element element=rowContainer.root;
     for (int row=0; row < element.getChildCount(); row++) {
       final Element tr=(Element)element.getChild(row);
       Node referenceElement;
-      if (offset != 0) {
-        referenceElement=tr.getChild(offset - 1);
+      if (index != 0) {
+        referenceElement=tr.getChild(index - 1);
       }
  else {
         referenceElement=null;
       }
-      for (int col=offset; col < offset + numberOfColumns; col++) {
+      for (int col=index; col < index + numberOfColumns; col++) {
         final Element cellElem=rowContainer.createCellElement();
         rowContainer.paintCell(cellElem,row,col);
         if (referenceElement != null) {

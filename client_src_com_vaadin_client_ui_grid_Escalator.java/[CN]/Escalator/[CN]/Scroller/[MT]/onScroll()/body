@@ -1,0 +1,21 @@
+{
+  if (internalScrollEventCalls > 0) {
+    internalScrollEventCalls--;
+    return;
+  }
+  final int scrollLeft=scrollerElem.getScrollLeft();
+  final int scrollTop=scrollerElem.getScrollTop();
+  if (lastScrollLeft != scrollLeft) {
+    position.set(headElem,-scrollLeft,0);
+    if (position instanceof AbsolutePosition) {
+      footElem.getStyle().setLeft(-scrollLeft,Unit.PX);
+    }
+ else {
+      position.set(footElem,-scrollLeft,0);
+    }
+    lastScrollLeft=scrollLeft;
+  }
+  body.setBodyScrollPosition(scrollLeft,scrollTop);
+  lastScrollTop=scrollTop;
+  body.updateEscalatorRowsOnScroll();
+}
