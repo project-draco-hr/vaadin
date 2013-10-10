@@ -1,0 +1,10 @@
+{
+  BeanItemContainer<Person> container=new BeanItemContainer<Person>(Person.class);
+  Person bean=new Person("John");
+  container.addItem(bean);
+  ItemSetChangeListener addListener=createListenerMockFor(container);
+  Capture<ItemAddEvent> capturedEvent=captureAddEvent(addListener);
+  EasyMock.replay(addListener);
+  container.addItemAfter(bean,new Person(""));
+  assertEquals(1,capturedEvent.getValue().getFirstIndex());
+}
