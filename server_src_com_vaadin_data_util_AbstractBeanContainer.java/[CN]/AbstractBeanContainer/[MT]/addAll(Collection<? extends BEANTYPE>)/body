@@ -1,5 +1,6 @@
 {
   boolean modified=false;
+  int origSize=size();
   for (  BEANTYPE bean : collection) {
     if (bean == null || !getBeanType().isAssignableFrom(bean.getClass())) {
       continue;
@@ -14,10 +15,13 @@
   }
   if (modified) {
     if (isFiltered()) {
-      filterAll();
+      doFilterContainer(!getFilters().isEmpty());
     }
- else {
-      fireItemSetChange();
+    if (visibleNewItemsWasAdded(origSize)) {
+      int firstPosition=origSize;
+      IDTYPE firstItemId=getVisibleItemIds().get(firstPosition);
+      int affectedItems=size() - origSize;
+      fireItemsAdded(firstPosition,firstItemId,affectedItems);
     }
   }
 }
