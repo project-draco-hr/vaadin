@@ -1,6 +1,9 @@
 {
-  if ((request.getPathInfo() == null || "/".equals(request.getPathInfo())) && "".equals(request.getServletPath()) && !request.getRequestURI().endsWith("/")) {
-    String location=request.getRequestURI() + "/";
+  String location=request.getRequestURI();
+  String lastPathParameter=getLastPathParameter(location);
+  location=location.substring(0,location.length() - lastPathParameter.length());
+  if ((request.getPathInfo() == null || "/".equals(request.getPathInfo())) && "".equals(request.getServletPath()) && !location.endsWith("/")) {
+    location=location + "/" + lastPathParameter;
     String queryString=request.getQueryString();
     if (queryString != null) {
       location+='?' + queryString;
