@@ -1,0 +1,41 @@
+{
+  setDebug(true);
+  openTestURL();
+  int counter=getServerCounter();
+  assertGreaterOrEqual("Counter should be >= 1. Was: " + counter,counter,1);
+  new Select(getTransportSelect()).selectByVisibleText("WEBSOCKET");
+  new Select(getPushModeSelect()).selectByVisibleText("AUTOMATIC");
+  Assert.assertTrue(vaadinElement("/VVerticalLayout[0]/Slot[1]/VVerticalLayout[0]/Slot[0]/VVerticalLayout[0]/Slot[0]/VVerticalLayout[0]/Slot[5]/VLabel[0]/domChild[0]").getText().matches("^[\\s\\S]*fallbackTransport: streaming[\\s\\S]*transport: websocket[\\s\\S]*$"));
+  counter=getServerCounter();
+  final int waitCounter=counter + 2;
+  waitUntil(new ExpectedCondition<Boolean>(){
+    @Override public Boolean apply(    WebDriver input){
+      return (getServerCounter() >= waitCounter);
+    }
+  }
+);
+  Assert.assertTrue(driver.getPageSource().contains("Push connection established using websocket"));
+  Assert.assertFalse(driver.getPageSource().contains("Push connection established using streaming"));
+  new Select(getPushModeSelect()).selectByVisibleText("DISABLED");
+  driver.get(getTestUrl());
+  Assert.assertEquals(1,getServerCounter());
+  new Select(getTransportSelect()).selectByVisibleText("STREAMING");
+  new Select(getPushModeSelect()).selectByVisibleText("AUTOMATIC");
+  Assert.assertTrue(vaadinElement("/VVerticalLayout[0]/Slot[1]/VVerticalLayout[0]/Slot[0]/VVerticalLayout[0]/Slot[0]/VVerticalLayout[0]/Slot[5]/VLabel[0]/domChild[0]").getText().matches("^[\\s\\S]*fallbackTransport: streaming[\\s\\S]*transport: streaming[\\s\\S]*$"));
+  counter=getServerCounter();
+  for (int second=0; ; second++) {
+    if (second >= 5) {
+      Assert.fail("timeout");
+    }
+    if (getServerCounter() >= (counter + 2)) {
+      break;
+    }
+    try {
+      Thread.sleep(1000);
+    }
+ catch (    InterruptedException e) {
+    }
+  }
+  Assert.assertFalse(driver.getPageSource().contains("Push connection established using websocket"));
+  Assert.assertTrue(driver.getPageSource().contains("Push connection established using streaming"));
+}
