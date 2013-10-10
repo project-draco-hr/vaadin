@@ -3,35 +3,32 @@
   int highestRelative=-1;
   LayoutManager layoutManager=getLayoutManager();
   for (  ComponentConnector child : getChildComponents()) {
-    Slot slot=getWidget().getSlot(child.getWidget());
+    Widget childWidget=child.getWidget();
+    Slot slot=getWidget().getSlot(childWidget);
     Element captionElement=slot.getCaptionElement();
-    CaptionPosition pos=slot.getCaptionPosition();
-    Element childElement=child.getWidget().getElement();
-    int h=layoutManager.getOuterHeight(childElement);
-    if (h == -1) {
+    CaptionPosition captionPosition=slot.getCaptionPosition();
+    int pixelHeight=layoutManager.getOuterHeight(childWidget.getElement());
+    if (pixelHeight == -1) {
       return -1;
     }
     boolean hasRelativeHeight=slot.hasRelativeHeight();
-    boolean includeCaptionHeight=captionElement != null && (pos == CaptionPosition.TOP || pos == CaptionPosition.BOTTOM);
-    if (!hasRelativeHeight && !includeCaptionHeight && captionElement != null) {
-      String sHeight=childElement.getStyle().getHeight();
-      includeCaptionHeight=(sHeight == null || !sHeight.endsWith("%"));
-    }
+    boolean captionSizeShouldBeAddedtoComponentHeight=captionPosition == CaptionPosition.TOP || captionPosition == CaptionPosition.BOTTOM;
+    boolean includeCaptionHeight=captionElement != null && captionSizeShouldBeAddedtoComponentHeight;
     if (includeCaptionHeight) {
       int captionHeight=layoutManager.getOuterHeight(captionElement) - getLayoutManager().getMarginHeight(captionElement);
       if (captionHeight == -1) {
         return -1;
       }
-      h+=captionHeight;
+      pixelHeight+=captionHeight;
     }
     if (!hasRelativeHeight) {
-      if (h > highestNonRelative) {
-        highestNonRelative=h;
+      if (pixelHeight > highestNonRelative) {
+        highestNonRelative=pixelHeight;
       }
     }
  else {
-      if (h > highestRelative) {
-        highestRelative=h;
+      if (pixelHeight > highestRelative) {
+        highestRelative=pixelHeight;
       }
     }
   }
