@@ -1,0 +1,26 @@
+{
+  SystemMessages messages=EasyMock.createNiceMock(SystemMessages.class);
+  EasyMock.expect(messages.isSessionExpiredNotificationEnabled()).andReturn(true).anyTimes();
+  EasyMock.replay(messages);
+  VaadinService service=EasyMock.createNiceMock(VaadinService.class);
+  EasyMock.expect(service.getSystemMessages(EasyMock.anyObject(Locale.class),EasyMock.anyObject(VaadinRequest.class))).andReturn(messages).anyTimes();
+  EasyMock.replay(service);
+  LegacyCommunicationManager manager=EasyMock.createNiceMock(LegacyCommunicationManager.class);
+  EasyMock.replay(manager);
+  WrappedSession wrappedSession=EasyMock.createNiceMock(WrappedSession.class);
+  EasyMock.expect(wrappedSession.getMaxInactiveInterval()).andReturn(100).times(3).andReturn(200);
+  EasyMock.replay(wrappedSession);
+  VaadinSession session=EasyMock.createNiceMock(VaadinSession.class);
+  EasyMock.expect(session.getService()).andReturn(service).anyTimes();
+  EasyMock.expect(session.getCommunicationManager()).andReturn(manager).anyTimes();
+  EasyMock.expect(session.getSession()).andReturn(wrappedSession).anyTimes();
+  EasyMock.replay(session);
+  ConnectorTracker tracker=EasyMock.createNiceMock(ConnectorTracker.class);
+  EasyMock.expect(tracker.getDirtyVisibleConnectors()).andReturn(new ArrayList<ClientConnector>()).anyTimes();
+  EasyMock.replay(tracker);
+  ui=EasyMock.createNiceMock(UI.class);
+  EasyMock.expect(ui.getSession()).andReturn(session).anyTimes();
+  EasyMock.expect(ui.getConnectorTracker()).andReturn(tracker).anyTimes();
+  EasyMock.replay(ui);
+  uidlWriter=new UidlWriter();
+}

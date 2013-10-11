@@ -1,0 +1,18 @@
+{
+  List<FrameworkMethod> tests=new LinkedList<FrameworkMethod>();
+  if (!AbstractTB3Test.class.isAssignableFrom(getTestClass().getJavaClass())) {
+    throw new RuntimeException(getClass().getName() + " only supports " + AbstractTB3Test.class.getName());
+  }
+  try {
+    AbstractTB3Test testClassInstance=(AbstractTB3Test)getTestClass().getOnlyConstructor().newInstance();
+    for (    DesiredCapabilities capabilities : testClassInstance.getBrowsersToTest()) {
+      for (      FrameworkMethod m : getTestClass().getAnnotatedMethods(Test.class)) {
+        tests.add(new TB3Method(m.getMethod(),capabilities));
+      }
+    }
+  }
+ catch (  Exception e) {
+    throw new RuntimeException("Error retrieving browsers to run on",e);
+  }
+  return tests;
+}

@@ -1,19 +1,17 @@
 {
   String oldLocale=getWidget().getCurrentLocale();
-  boolean lastReadOnlyState=getWidget().isReadonly();
-  boolean lastEnabledState=getWidget().isEnabled();
   getWidget().parsable=uidl.getBooleanAttribute("parsable");
   super.updateFromUIDL(uidl,client);
   getWidget().calendar.setDateTimeService(getWidget().getDateTimeService());
   getWidget().calendar.setShowISOWeekNumbers(getWidget().isShowISOWeekNumbers());
   if (getWidget().calendar.getResolution() != getWidget().getCurrentResolution()) {
     getWidget().calendar.setResolution(getWidget().getCurrentResolution());
-    if (getWidget().calendar.getDate() != null) {
+    if (getWidget().calendar.getDate() != null && getWidget().getCurrentDate() != null) {
       getWidget().calendar.setDate((Date)getWidget().getCurrentDate().clone());
       getWidget().calendar.renderCalendar();
     }
   }
-  if (getWidget().getCurrentLocale() != oldLocale) {
+  if (!getWidget().getCurrentLocale().equals(oldLocale)) {
     getWidget().calendar.renderCalendar();
   }
   getWidget().calendarToggle.setEnabled(getWidget().isEnabled());
