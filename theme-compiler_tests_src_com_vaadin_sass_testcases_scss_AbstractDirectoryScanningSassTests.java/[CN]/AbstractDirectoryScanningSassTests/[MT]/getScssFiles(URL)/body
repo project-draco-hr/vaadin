@@ -3,10 +3,12 @@
   File sasslangDir=new File(sasslangUrl.toURI());
   File scssDir=new File(sasslangDir,"scss");
   Assert.assertTrue(scssDir.exists());
-  return scssDir.listFiles(new FilenameFilter(){
-    @Override public boolean accept(    File dir,    String name){
-      return name.endsWith(".scss");
-    }
+  List<File> scssFiles=new ArrayList<File>();
+  addScssFilesRecursively(scssDir,scssFiles);
+  List<String> scssRelativeNames=new ArrayList<String>();
+  for (  File f : scssFiles) {
+    String relativeName=f.getCanonicalPath().substring(scssDir.getCanonicalPath().length() + 1);
+    scssRelativeNames.add(relativeName);
   }
-);
+  return scssRelativeNames;
 }
