@@ -1,10 +1,9 @@
 {
-  final StringBuffer req=new StringBuffer();
-  while (!pendingInvocations.isEmpty()) {
+  JSONArray reqJson=new JSONArray();
+  if (!pendingInvocations.isEmpty()) {
     if (ApplicationConfiguration.isDebugMode()) {
       Util.logVariableBurst(this,pendingInvocations.values());
     }
-    JSONArray reqJson=new JSONArray();
     for (    MethodInvocation invocation : pendingInvocations.values()) {
       JSONArray invocationJson=new JSONArray();
       invocationJson.set(0,new JSONString(invocation.getConnectorId()));
@@ -33,7 +32,6 @@
       invocationJson.set(3,paramJson);
       reqJson.set(reqJson.size(),invocationJson);
     }
-    req.append(escapeBurstContents(reqJson.toString()));
     pendingInvocations.clear();
     lastInvocationTag=0;
   }
@@ -53,5 +51,5 @@
     extraParams+="v-wsver=" + widgetsetVersion;
     getConfiguration().setWidgetsetVersionSent();
   }
-  makeUidlRequest(req.toString(),extraParams);
+  makeUidlRequest(reqJson,extraParams);
 }

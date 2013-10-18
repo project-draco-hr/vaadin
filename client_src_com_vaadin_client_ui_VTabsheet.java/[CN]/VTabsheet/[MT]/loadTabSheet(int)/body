@@ -1,0 +1,16 @@
+{
+  if (activeTabIndex != tabIndex && canSelectTab(tabIndex)) {
+    tb.selectTab(tabIndex);
+    if (focusedTab != null) {
+      focusedTab=tb.getTab(tabIndex);
+      focusedTab.focus();
+    }
+    activeTabIndex=tabIndex;
+    focusedTabIndex=tabIndex;
+    addStyleDependentName("loading");
+    Widget currentlyDisplayedWidget=tp.getWidget(tp.getVisibleWidget());
+    currentlyDisplayedWidget.getElement().getParentElement().getStyle().setVisibility(Visibility.HIDDEN);
+    client.updateVariable(id,"selected",tabKeys.get(tabIndex).toString(),true);
+    waitingForResponse=true;
+  }
+}

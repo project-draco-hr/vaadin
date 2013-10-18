@@ -49,10 +49,10 @@ catch (    IOException e) {
   }
   if (lastModifiedTime > 0) {
     response.setDateHeader("Last-Modified",lastModifiedTime);
-    int resourceCacheTime=getService().getDeploymentConfiguration().getResourceCacheTime();
-    String cacheControl="max-age=" + String.valueOf(resourceCacheTime);
-    if (filename.contains("nocache")) {
-      cacheControl="public, max-age=0, must-revalidate";
+    String cacheControl="public, max-age=0, must-revalidate";
+    int resourceCacheTime=getCacheTime(filename);
+    if (resourceCacheTime > 0) {
+      cacheControl="max-age=" + String.valueOf(resourceCacheTime);
     }
     response.setHeader("Cache-Control",cacheControl);
   }

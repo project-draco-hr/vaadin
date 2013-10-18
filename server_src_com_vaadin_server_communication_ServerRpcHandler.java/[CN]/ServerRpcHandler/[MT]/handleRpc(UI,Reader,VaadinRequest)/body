@@ -1,15 +1,13 @@
 {
   ui.getSession().setLastRequestTimestamp(System.currentTimeMillis());
-  String changes=getMessage(reader);
-  final String[] bursts=changes.split(String.valueOf(VAR_BURST_SEPARATOR));
-  if (bursts.length > 2) {
-    throw new RuntimeException("Multiple variable bursts not supported in Vaadin 7");
-  }
- else   if (bursts.length <= 1) {
+  String changeMessage=getMessage(reader);
+  if (changeMessage == null || changeMessage.equals("")) {
     return;
   }
-  if (!VaadinService.isCsrfTokenValid(ui.getSession(),bursts[0])) {
+  RpcRequest rpcRequest=new RpcRequest(changeMessage);
+  if (!VaadinService.isCsrfTokenValid(ui.getSession(),rpcRequest.getCsrfToken())) {
     throw new InvalidUIDLSecurityKeyException("");
   }
-  handleBurst(ui,unescapeBurst(bursts[1]));
+  handleInvocations(ui,rpcRequest.getSyncId(),rpcRequest.getRpcInvocationsData());
+  ui.getConnectorTracker().cleanConcurrentlyRemovedConnectorIds(rpcRequest.getSyncId());
 }

@@ -1,0 +1,34 @@
+{
+  if (identifier == null) {
+    return null;
+  }
+  File file=new File(identifier);
+  file=file.getCanonicalFile();
+  SCSSDocumentHandler handler=new SCSSDocumentHandlerImpl();
+  ScssStylesheet stylesheet=handler.getStyleSheet();
+  if (parentStylesheet == null) {
+    stylesheet.addResolver(new FilesystemResolver());
+    stylesheet.addResolver(new ClassloaderResolver());
+  }
+ else {
+    stylesheet.setResolvers(parentStylesheet.getResolvers());
+  }
+  InputSource source=stylesheet.resolveStylesheet(identifier,parentStylesheet);
+  if (source == null) {
+    return null;
+  }
+  if (parentStylesheet != null) {
+    source.setEncoding(parentStylesheet.getCharset());
+  }
+  Parser parser=new Parser();
+  parser.setErrorHandler(new SCSSErrorHandler());
+  parser.setDocumentHandler(handler);
+  try {
+    parser.parseStyleSheet(source);
+  }
+ catch (  ParseException e) {
+    throw new SCSSParseException(e,identifier);
+  }
+  stylesheet.setCharset(parser.getInputSource().getEncoding());
+  return stylesheet;
+}

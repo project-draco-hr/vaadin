@@ -1,0 +1,41 @@
+{
+  super.onStateChanged(stateChangeEvent);
+  getWidget().enabled=isEnabled();
+  if (stateChangeEvent.hasPropertyChanged("resources")) {
+    getWidget().src=getResourceUrl(LinkConstants.HREF_RESOURCE);
+    if (getWidget().src == null) {
+      getWidget().anchor.removeAttribute("href");
+    }
+ else {
+      getWidget().anchor.setAttribute("href",getWidget().src);
+    }
+  }
+  getWidget().target=getState().target;
+  if (getWidget().target == null) {
+    getWidget().anchor.removeAttribute("target");
+  }
+ else {
+    getWidget().anchor.setAttribute("target",getWidget().target);
+  }
+  getWidget().borderStyle=getState().targetBorder;
+  getWidget().targetWidth=getState().targetWidth;
+  getWidget().targetHeight=getState().targetHeight;
+  getWidget().captionElement.setInnerText(getState().caption);
+  if (null != getState().errorMessage) {
+    if (getWidget().errorIndicatorElement == null) {
+      getWidget().errorIndicatorElement=DOM.createDiv();
+      DOM.setElementProperty(getWidget().errorIndicatorElement,"className","v-errorindicator");
+    }
+    DOM.insertChild(getWidget().getElement(),getWidget().errorIndicatorElement,0);
+  }
+ else   if (getWidget().errorIndicatorElement != null) {
+    DOM.setStyleAttribute(getWidget().errorIndicatorElement,"display","none");
+  }
+  if (getIcon() != null) {
+    if (getWidget().icon == null) {
+      getWidget().icon=new Icon(getConnection());
+      getWidget().anchor.insertBefore(getWidget().icon.getElement(),getWidget().captionElement);
+    }
+    getWidget().icon.setUri(getIcon());
+  }
+}

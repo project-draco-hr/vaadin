@@ -1,0 +1,78 @@
+{
+  if (streamVariable == null) {
+    throw new IllegalStateException("StreamVariable for the post not found");
+  }
+  OutputStream out=null;
+  long totalBytes=0;
+  StreamingStartEventImpl startedEvent=new StreamingStartEventImpl(filename,type,contentLength);
+  try {
+    boolean listenProgress;
+    session.lock();
+    try {
+      streamVariable.streamingStarted(startedEvent);
+      out=streamVariable.getOutputStream();
+      listenProgress=streamVariable.listenProgress();
+    }
+  finally {
+      session.unlock();
+    }
+    if (out == null) {
+      throw new NoOutputStreamException();
+    }
+    if (null == in) {
+      throw new NoInputStreamException();
+    }
+    final byte buffer[]=new byte[MAX_UPLOAD_BUFFER_SIZE];
+    int bytesReadToBuffer=0;
+    while ((bytesReadToBuffer=in.read(buffer)) > 0) {
+      out.write(buffer,0,bytesReadToBuffer);
+      totalBytes+=bytesReadToBuffer;
+      if (listenProgress) {
+        session.lock();
+        try {
+          StreamingProgressEventImpl progressEvent=new StreamingProgressEventImpl(filename,type,contentLength,totalBytes);
+          streamVariable.onProgress(progressEvent);
+        }
+  finally {
+          session.unlock();
+        }
+      }
+      if (streamVariable.isInterrupted()) {
+        throw new UploadInterruptedException();
+      }
+    }
+    out.close();
+    StreamingEndEvent event=new StreamingEndEventImpl(filename,type,totalBytes);
+    session.lock();
+    try {
+      streamVariable.streamingFinished(event);
+    }
+  finally {
+      session.unlock();
+    }
+  }
+ catch (  UploadInterruptedException e) {
+    tryToCloseStream(out);
+    StreamingErrorEvent event=new StreamingErrorEventImpl(filename,type,contentLength,totalBytes,e);
+    session.lock();
+    try {
+      streamVariable.streamingFailed(event);
+    }
+  finally {
+      session.unlock();
+    }
+  }
+catch (  final Exception e) {
+    tryToCloseStream(out);
+    session.lock();
+    try {
+      StreamingErrorEvent event=new StreamingErrorEventImpl(filename,type,contentLength,totalBytes,e);
+      streamVariable.streamingFailed(event);
+      throw new UploadException(e);
+    }
+  finally {
+      session.unlock();
+    }
+  }
+  return startedEvent.isDisposed();
+}

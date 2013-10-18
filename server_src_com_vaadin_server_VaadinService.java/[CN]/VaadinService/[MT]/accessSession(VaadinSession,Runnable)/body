@@ -1,6 +1,12 @@
 {
   FutureAccess future=new FutureAccess(session,runnable);
   session.getPendingAccessQueue().add(future);
-  ensureAccessQueuePurged(session);
+  try {
+    if (session.getLockInstance().tryLock(0,TimeUnit.SECONDS)) {
+      session.unlock();
+    }
+  }
+ catch (  InterruptedException e) {
+  }
   return future;
 }

@@ -1,0 +1,18 @@
+{
+  identifier=identifier.replaceFirst(".scss$","");
+  List<String> potentialParentPaths=getPotentialParentPaths(parentStylesheet,identifier);
+  if (identifier.contains("/")) {
+    identifier=identifier.substring(identifier.lastIndexOf("/") + 1);
+  }
+  for (  String path : potentialParentPaths) {
+    InputSource source=normalizeAndResolve(path + "/" + identifier);
+    if (source != null) {
+      return source;
+    }
+    source=normalizeAndResolve(path + "/_" + identifier);
+    if (source != null) {
+      return source;
+    }
+  }
+  return normalizeAndResolve(identifier);
+}
