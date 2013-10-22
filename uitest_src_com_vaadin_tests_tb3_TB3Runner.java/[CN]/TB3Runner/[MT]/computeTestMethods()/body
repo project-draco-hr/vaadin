@@ -5,7 +5,12 @@
   }
   try {
     AbstractTB3Test testClassInstance=(AbstractTB3Test)getTestClass().getOnlyConstructor().newInstance();
-    for (    DesiredCapabilities capabilities : testClassInstance.getBrowsersToTest()) {
+    Collection<DesiredCapabilities> desiredCapabilites=testClassInstance.getBrowsersToTest();
+    if (testClassInstance.runLocally()) {
+      desiredCapabilites=new ArrayList<DesiredCapabilities>();
+      desiredCapabilites.add(BrowserUtil.firefox(MultiBrowserTest.TESTED_FIREFOX_VERSION));
+    }
+    for (    DesiredCapabilities capabilities : desiredCapabilites) {
       for (      FrameworkMethod m : getTestClass().getAnnotatedMethods(Test.class)) {
         tests.add(new TB3Method(m.getMethod(),capabilities));
       }
