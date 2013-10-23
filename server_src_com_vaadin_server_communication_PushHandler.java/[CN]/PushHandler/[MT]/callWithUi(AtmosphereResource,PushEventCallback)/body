@@ -27,14 +27,29 @@ catch (    SessionExpiredException e) {
         callback.run(resource,ui);
       }
     }
- catch (    IOException e) {
-      getLogger().log(Level.WARNING,"Error writing a push response",e);
+ catch (    final IOException e) {
+      callErrorHandler(session,e);
+    }
+catch (    final Exception e) {
+      SystemMessages msg=service.getSystemMessages(ServletPortletHelper.findLocale(null,null,vaadinRequest),vaadinRequest);
+      sendNotificationAndDisconnect(resource,VaadinService.createCriticalNotificationJSON(msg.getInternalErrorCaption(),msg.getInternalErrorMessage(),null,msg.getInternalErrorURL()));
+      callErrorHandler(session,e);
     }
  finally {
-      session.unlock();
+      try {
+        session.unlock();
+      }
+ catch (      Exception e) {
+        getLogger().log(Level.WARNING,"Error while unlocking session",e);
+      }
     }
   }
   finally {
-    service.requestEnd(vaadinRequest,null,session);
+    try {
+      service.requestEnd(vaadinRequest,null,session);
+    }
+ catch (    Exception e) {
+      getLogger().log(Level.WARNING,"Error while ending request",e);
+    }
   }
 }

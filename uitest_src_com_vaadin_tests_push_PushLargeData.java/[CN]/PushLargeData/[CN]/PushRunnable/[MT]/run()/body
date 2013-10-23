@@ -1,0 +1,29 @@
+{
+  final long endTime=System.currentTimeMillis() + duration;
+  final String data=LoremIpsum.get(size);
+  int packageIndex=1;
+  while (System.currentTimeMillis() < endTime) {
+    final int idx=packageIndex++;
+    UI.getCurrent().access(new Runnable(){
+      @Override public void run(){
+        PushLargeData ui=(PushLargeData)UI.getCurrent();
+        ui.getDataLabel().setValue(System.currentTimeMillis() + ": " + data);
+        ui.log("Package " + idx + " pushed");
+      }
+    }
+);
+    try {
+      Thread.sleep(interval);
+    }
+ catch (    InterruptedException e) {
+      return;
+    }
+  }
+  UI.getCurrent().access(new Runnable(){
+    @Override public void run(){
+      PushLargeData ui=(PushLargeData)UI.getCurrent();
+      ui.log("Push complete");
+    }
+  }
+);
+}
