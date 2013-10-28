@@ -65,7 +65,15 @@
     getWidget().lastSelection=getWidget().getNodeByKey(getWidget().lastSelection.key);
   }
   if (getWidget().focusedNode != null) {
-    getWidget().setFocusedNode(getWidget().getNodeByKey(getWidget().focusedNode.key));
+    Set<String> selectedIds=getWidget().selectedIds;
+    if (!selectedIds.isEmpty() && !selectedIds.contains(getWidget().focusedNode.key)) {
+      String keySelectedId=selectedIds.iterator().next();
+      TreeNode nodeToSelect=getWidget().getNodeByKey(keySelectedId);
+      getWidget().setFocusedNode(nodeToSelect);
+    }
+ else {
+      getWidget().setFocusedNode(getWidget().getNodeByKey(getWidget().focusedNode.key));
+    }
   }
   if (getWidget().lastSelection == null && getWidget().focusedNode == null && !getWidget().selectedIds.isEmpty()) {
     getWidget().setFocusedNode(getWidget().getNodeByKey(getWidget().selectedIds.iterator().next()));
