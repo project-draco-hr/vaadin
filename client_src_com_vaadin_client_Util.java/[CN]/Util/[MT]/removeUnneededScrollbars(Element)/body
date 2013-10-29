@@ -1,0 +1,22 @@
+{
+  if (BrowserInfo.get().isWebkit()) {
+    Scheduler.get().scheduleFinally(new ScheduledCommand(){
+      @Override public void execute(){
+        final com.google.gwt.dom.client.Element scrollable=contentNode.getFirstChildElement();
+        int horizontalScrollPosition=scrollable.getScrollLeft();
+        int verticalScrollPosition=scrollable.getScrollTop();
+        final String oldWidth=scrollable.getStyle().getWidth();
+        final String oldHeight=scrollable.getStyle().getHeight();
+        scrollable.getStyle().setWidth(110,Unit.PCT);
+        scrollable.getStyle().setHeight(110,Unit.PCT);
+        scrollable.getOffsetWidth();
+        scrollable.getOffsetHeight();
+        scrollable.getStyle().setProperty("width",oldWidth);
+        scrollable.getStyle().setProperty("height",oldHeight);
+        scrollable.setScrollLeft(horizontalScrollPosition);
+        scrollable.setScrollTop(verticalScrollPosition);
+      }
+    }
+);
+  }
+}
