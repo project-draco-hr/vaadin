@@ -1,0 +1,48 @@
+{
+  createCategory("Columns",null);
+  for (int c=0; c < COLUMNS; c++) {
+    createCategory("Column" + c,"Columns");
+    createBooleanAction("Visible","Column" + c,true,new Command<Grid,Boolean>(){
+      @Override public void execute(      Grid grid,      Boolean value,      Object columnIndex){
+        Object propertyId=(new ArrayList(grid.getContainerDatasource().getContainerPropertyIds()).get((Integer)columnIndex));
+        GridColumn column=grid.getColumn(propertyId);
+        column.setVisible(!column.isVisible());
+      }
+    }
+,c);
+    createBooleanAction("Footer","Column" + c,true,new Command<Grid,Boolean>(){
+      @Override public void execute(      Grid grid,      Boolean value,      Object columnIndex){
+        Object propertyId=(new ArrayList(grid.getContainerDatasource().getContainerPropertyIds()).get((Integer)columnIndex));
+        GridColumn column=grid.getColumn(propertyId);
+        String footer=column.getFooterCaption();
+        if (footer == null) {
+          column.setFooterCaption("Footer " + columnIndex);
+        }
+ else {
+          column.setFooterCaption(null);
+        }
+      }
+    }
+,c);
+    createBooleanAction("Header","Column" + c,true,new Command<Grid,Boolean>(){
+      @Override public void execute(      Grid grid,      Boolean value,      Object columnIndex){
+        Object propertyId=(new ArrayList(grid.getContainerDatasource().getContainerPropertyIds()).get((Integer)columnIndex));
+        GridColumn column=grid.getColumn(propertyId);
+        String header=column.getHeaderCaption();
+        if (header == null) {
+          column.setHeaderCaption("Column " + columnIndex);
+        }
+ else {
+          column.setHeaderCaption(null);
+        }
+      }
+    }
+,c);
+    createClickAction("Remove","Column" + c,new Command<Grid,String>(){
+      @Override public void execute(      Grid grid,      String value,      Object data){
+        grid.getContainerDatasource().removeContainerProperty("Column" + data);
+      }
+    }
+,null,c);
+  }
+}

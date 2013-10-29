@@ -1,0 +1,20 @@
+{
+  super.onStateChanged(stateChangeEvent);
+  if (stateChangeEvent.hasPropertyChanged("headerVisible")) {
+    getWidget().setHeaderVisible(getState().headerVisible);
+  }
+  if (stateChangeEvent.hasPropertyChanged("footerVisible")) {
+    getWidget().setFooterVisible(getState().footerVisible);
+  }
+  if (stateChangeEvent.hasPropertyChanged("columns")) {
+    int totalColumns=getState().columns.size();
+    int currentColumns=getWidget().getColumnCount();
+    purgeRemovedColumns();
+    for (int columnIndex=currentColumns; columnIndex < totalColumns; columnIndex++) {
+      addColumnFromStateChangeEvent(columnIndex,stateChangeEvent);
+    }
+    for (int columnIndex=0; columnIndex < currentColumns; columnIndex++) {
+      updateColumnFromStateChangeEvent(columnIndex,stateChangeEvent);
+    }
+  }
+}
