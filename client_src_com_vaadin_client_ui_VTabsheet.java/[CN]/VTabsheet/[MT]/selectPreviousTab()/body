@@ -1,16 +1,19 @@
 {
   int newTabIndex=activeTabIndex;
+  Tab newTab;
   do {
     newTabIndex--;
+    newTab=tb.getTab(newTabIndex);
   }
- while (newTabIndex >= 0 && !onTabSelected(newTabIndex));
+ while (newTabIndex >= 0 && !newTab.isSelectable());
   if (newTabIndex >= 0) {
-    activeTabIndex=newTabIndex;
     if (isScrolledTabs()) {
-      while (!tb.getTab(activeTabIndex).isVisible()) {
+      while (!newTab.isVisible()) {
         scrollerIndex=tb.scrollLeft(scrollerIndex);
       }
       updateTabScroller();
     }
+    onTabSelected(newTabIndex);
+    activeTabIndex=newTabIndex;
   }
 }

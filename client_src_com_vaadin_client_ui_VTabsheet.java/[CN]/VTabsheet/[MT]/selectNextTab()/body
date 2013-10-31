@@ -1,18 +1,21 @@
 {
   int newTabIndex=activeTabIndex;
+  Tab newTab;
   do {
     newTabIndex++;
+    newTab=tb.getTab(newTabIndex);
   }
- while (newTabIndex < getTabCount() && !onTabSelected(newTabIndex));
+ while (newTabIndex < getTabCount() && !newTab.isSelectable());
   if (newTabIndex < getTabCount()) {
-    activeTabIndex=newTabIndex;
     if (isClippedTabs()) {
       int newScrollerIndex=scrollerIndex;
-      while (isClipped(tb.getTab(activeTabIndex)) && newScrollerIndex != -1) {
+      while (isClipped(newTab) && newScrollerIndex != -1) {
         newScrollerIndex=tb.scrollRight(newScrollerIndex);
       }
       scrollerIndex=newScrollerIndex;
       updateTabScroller();
     }
+    onTabSelected(newTabIndex);
+    activeTabIndex=newTabIndex;
   }
 }
