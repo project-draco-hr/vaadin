@@ -6,6 +6,7 @@
     }
     final int scrolltop=elem.getScrollTop();
     final int scrollleft=elem.getScrollLeft();
+    final boolean scrollLeftAtMax=isScrollLeftAtMax(elem);
     elem.getStyle().setProperty("overflow","hidden");
     Scheduler.get().scheduleDeferred(new Command(){
       @Override public void execute(){
@@ -17,6 +18,9 @@
           }
           elem.setScrollTop(scrollvalue - 1);
           elem.setScrollTop(scrollvalue);
+        }
+        if (scrollLeftAtMax) {
+          elem.setScrollLeft(getMaxScrollLeft(elem));
         }
         if ((BrowserInfo.get().isChrome() || (BrowserInfo.get().isSafari() && BrowserInfo.get().getWebkitVersion() >= 534)) && (scrollleft > 0 || elem.getScrollLeft() > 0)) {
           int scrollvalue=scrollleft;
