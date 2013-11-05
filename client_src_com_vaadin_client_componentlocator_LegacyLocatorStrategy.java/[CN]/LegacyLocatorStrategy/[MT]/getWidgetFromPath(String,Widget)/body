@@ -7,13 +7,15 @@
       w=RootPanel.get();
     }
  else     if (part.equals("")) {
-      w=componentLocator.getClient().getUIConnector().getWidget();
+      if (w == null) {
+        w=client.getUIConnector().getWidget();
+      }
     }
  else     if (w == null) {
       String id=part;
-      ServerConnector connector=ConnectorMap.get(componentLocator.getClient()).getConnector(id);
+      ServerConnector connector=ConnectorMap.get(client).getConnector(id);
       if (connector == null) {
-        connector=findConnectorById(componentLocator.getClient().getUIConnector(),id.substring(5));
+        connector=findConnectorById(client.getUIConnector(),id.substring(5));
       }
       if (connector instanceof ComponentConnector) {
         w=((ComponentConnector)connector).getWidget();
@@ -44,7 +46,7 @@
         widgetPosition=0;
       }
       if (w instanceof VOverlay && "VCalendarPanel".equals(widgetClassName)) {
-        parent=(Iterable<?>)((Iterable)parent).iterator().next();
+        parent=(Iterable<?>)((Iterable<?>)parent).iterator().next();
       }
       if ((w instanceof VGridLayout) && "ChildComponentContainer".equals(widgetClassName) && i + 1 < parts.length) {
         HasWidgets layout=(HasWidgets)w;
@@ -72,7 +74,7 @@
       }
       Iterator<? extends Widget> iterator;
       if (widgetClassName.equals("VWindow")) {
-        List<WindowConnector> windows=componentLocator.getClient().getUIConnector().getSubWindows();
+        List<WindowConnector> windows=client.getUIConnector().getSubWindows();
         List<VWindow> windowWidgets=new ArrayList<VWindow>(windows.size());
         for (        WindowConnector wc : windows) {
           windowWidgets.add(wc.getWidget());
@@ -80,7 +82,7 @@
         iterator=windowWidgets.iterator();
       }
  else       if (widgetClassName.equals("VContextMenu")) {
-        return componentLocator.getClient().getContextMenu();
+        return client.getContextMenu();
       }
  else {
         iterator=(Iterator<? extends Widget>)parent.iterator();

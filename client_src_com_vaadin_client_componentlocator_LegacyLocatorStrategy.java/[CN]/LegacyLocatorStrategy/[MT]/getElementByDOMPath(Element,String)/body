@@ -1,7 +1,8 @@
 {
   String parts[]=path.split(PARENTCHILD_SEPARATOR);
   Element element=baseElement;
-  for (  String part : parts) {
+  for (int i=0, l=parts.length; i < l; ++i) {
+    String part=parts[i];
     if (part.startsWith("domChild[")) {
       String childIndexString=part.substring("domChild[".length(),part.length() - 1);
       if (Util.findWidget(baseElement,null) instanceof VAbstractOrderedLayout) {
@@ -23,6 +24,13 @@
       if (element == null) {
         return null;
       }
+    }
+ else {
+      path=parts[i];
+      for (int j=i + 1; j < l; ++j) {
+        path+=PARENTCHILD_SEPARATOR + parts[j];
+      }
+      return getElementByPathStartingAt(path,element);
     }
   }
   return element;
