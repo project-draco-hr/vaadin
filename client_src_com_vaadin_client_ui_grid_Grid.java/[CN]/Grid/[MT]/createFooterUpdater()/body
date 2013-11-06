@@ -1,12 +1,16 @@
 {
-  return new EscalatorUpdater(){
-    @Override public void updateCells(    Row row,    List<Cell> cellsToUpdate){
-      if (isFooterVisible()) {
-        for (        Cell cell : cellsToUpdate) {
-          AbstractGridColumn<T> column=columns.get(cell.getColumn());
-          cell.getElement().setInnerText(column.getFooterCaption());
-        }
-      }
+  return new HeaderFooterEscalatorUpdater(escalator.getFooter(),false){
+    @Override public boolean isRowVisible(    ColumnGroupRow row){
+      return row.isFooterVisible();
+    }
+    @Override public String getGroupValue(    ColumnGroup group){
+      return group.getFooterCaption();
+    }
+    @Override public String getColumnValue(    GridColumn column){
+      return column.getFooterCaption();
+    }
+    @Override public boolean firstRowIsVisible(){
+      return isColumnFootersVisible();
     }
   }
 ;

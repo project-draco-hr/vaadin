@@ -1,0 +1,20 @@
+{
+  for (  ColumnGroupRow row : getWidget().getColumnGroupRows()) {
+    getWidget().removeColumnGroupRow(row);
+  }
+  for (  ColumnGroupRowState rowState : getState().columnGroupRows) {
+    ColumnGroupRow row=getWidget().addColumnGroupRow();
+    row.setFooterVisible(rowState.footerVisible);
+    row.setHeaderVisible(rowState.headerVisible);
+    for (    ColumnGroupState groupState : rowState.groups) {
+      List<GridColumn> columns=new ArrayList<GridColumn>();
+      for (      String columnId : groupState.columns) {
+        CustomGridColumn column=columnIdToColumn.get(columnId);
+        columns.add(column);
+      }
+      ColumnGroup group=row.addGroup(columns.toArray(new GridColumn[columns.size()]));
+      group.setFooterCaption(groupState.footer);
+      group.setHeaderCaption(groupState.header);
+    }
+  }
+}

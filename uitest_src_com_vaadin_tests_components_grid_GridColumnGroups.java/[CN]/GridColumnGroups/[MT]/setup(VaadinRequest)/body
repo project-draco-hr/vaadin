@@ -1,0 +1,26 @@
+{
+  IndexedContainer ds=new IndexedContainer();
+  for (int col=0; col < COLUMNS; col++) {
+    ds.addContainerProperty("Column" + col,String.class,"");
+  }
+  Grid grid=new Grid(ds);
+  addComponent(grid);
+  grid.setColumnFootersVisible(true);
+  for (  Object propertyId : ds.getContainerPropertyIds()) {
+    GridColumn column=grid.getColumn(propertyId);
+    column.setFooterCaption(String.valueOf(propertyId));
+  }
+  ColumnGroupRow auxRow1=grid.addColumnGroupRow();
+  ColumnGroup columns12=auxRow1.addGroup("Column0","Column1");
+  columns12.setHeaderCaption("Header 2");
+  columns12.setFooterCaption("Footer 2");
+  GridColumn column3=grid.getColumn("Column2");
+  GridColumn column4=grid.getColumn("Column3");
+  ColumnGroup columns34=auxRow1.addGroup(column3,column4);
+  columns34.setHeaderCaption("Header 3");
+  columns34.setFooterCaption("Footer 3");
+  ColumnGroupRow auxRow2=grid.addColumnGroupRow();
+  ColumnGroup columns1234=auxRow2.addGroup(columns12,columns34);
+  columns1234.setHeaderCaption("Header 1");
+  columns1234.setFooterCaption("Footer 1");
+}

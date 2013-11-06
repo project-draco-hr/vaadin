@@ -1,12 +1,16 @@
 {
-  return new EscalatorUpdater(){
-    @Override public void updateCells(    Row row,    List<Cell> cellsToUpdate){
-      if (isHeaderVisible()) {
-        for (        Cell cell : cellsToUpdate) {
-          AbstractGridColumn<T> column=columns.get(cell.getColumn());
-          cell.getElement().setInnerText(column.getHeaderCaption());
-        }
-      }
+  return new HeaderFooterEscalatorUpdater(escalator.getHeader(),true){
+    @Override public boolean isRowVisible(    ColumnGroupRow row){
+      return row.isHeaderVisible();
+    }
+    @Override public String getGroupValue(    ColumnGroup group){
+      return group.getHeaderCaption();
+    }
+    @Override public String getColumnValue(    GridColumn column){
+      return column.getHeaderCaption();
+    }
+    @Override public boolean firstRowIsVisible(){
+      return isColumnHeadersVisible();
     }
   }
 ;
