@@ -1,0 +1,19 @@
+{
+  if (jsch == null) {
+    jsch=new JSch();
+    String keyFile=null;
+    for (    String publicKey : publicKeys) {
+      if (publicKey != null) {
+        if (new File(publicKey).exists()) {
+          keyFile=publicKey;
+          break;
+        }
+      }
+    }
+    jsch.addIdentity(keyFile);
+  }
+  proxySession=jsch.getSession("localhost");
+  proxySession.setConfig("StrictHostKeyChecking","no");
+  proxySession.setPortForwardingL("0.0.0.0",proxyPort,super.getDeploymentHostname(),super.getDeploymentPort());
+  proxySession.connect();
+}

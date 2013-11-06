@@ -2,18 +2,22 @@
   spacer();
   Label lbl=new Label(counter);
   lbl.setCaption("Client counter (click 'increment' to update):");
+  lbl.setId(CLIENT_COUNTER_ID);
   addComponent(lbl);
-  addComponent(new Button("Increment",new Button.ClickListener(){
+  Button incrementButton=new Button("Increment",new Button.ClickListener(){
     @Override public void buttonClick(    ClickEvent event){
       counter.setValue(counter.getValue() + 1);
     }
   }
-));
+);
+  incrementButton.setId(INCREMENT_BUTTON_ID);
+  addComponent(incrementButton);
   spacer();
   lbl=new Label(counter2);
   lbl.setCaption("Server counter (updates each 3s by server thread) :");
+  lbl.setId(SERVER_COUNTER_ID);
   addComponent(lbl);
-  addComponent(new Button("Start timer",new Button.ClickListener(){
+  Button startTimer=new Button("Start timer",new Button.ClickListener(){
     @Override public void buttonClick(    ClickEvent event){
       counter2.setValue(0);
       if (task != null) {
@@ -33,8 +37,10 @@
       timer.scheduleAtFixedRate(task,3000,3000);
     }
   }
-));
-  addComponent(new Button("Stop timer",new Button.ClickListener(){
+);
+  startTimer.setId(START_TIMER_ID);
+  addComponent(startTimer);
+  Button stopTimer=new Button("Stop timer",new Button.ClickListener(){
     @Override public void buttonClick(    ClickEvent event){
       if (task != null) {
         task.cancel();
@@ -42,5 +48,7 @@
       }
     }
   }
-));
+);
+  stopTimer.setId(STOP_TIMER_ID);
+  addComponent(stopTimer);
 }
