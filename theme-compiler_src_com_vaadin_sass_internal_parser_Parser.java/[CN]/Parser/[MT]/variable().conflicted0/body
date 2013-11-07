@@ -1,0 +1,77 @@
+{
+  String name;
+  LexicalUnitImpl exp=null;
+  boolean guarded=false;
+  String raw;
+  try {
+    name=variableName();
+    jj_consume_token(COLON);
+    label_66:     while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+        ;
+      break;
+default :
+    jj_la1[101]=jj_gen;
+  break label_66;
+}
+jj_consume_token(S);
+}
+exp=expr();
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case GUARDED_SYM:
+guarded=guarded();
+break;
+default :
+jj_la1[102]=jj_gen;
+;
+}
+label_67: while (true) {
+jj_consume_token(SEMICOLON);
+label_68: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[103]=jj_gen;
+break label_68;
+}
+jj_consume_token(S);
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case SEMICOLON:
+;
+break;
+default :
+jj_la1[104]=jj_gen;
+break label_67;
+}
+}
+documentHandler.variable(name,exp,guarded);
+}
+ catch (JumpException e) {
+skipAfterExpression();
+}
+catch (NumberFormatException e) {
+if (errorHandler != null) {
+errorHandler.error(new CSSParseException("Invalid number " + e.getMessage(),getLocator(),e));
+}
+reportWarningSkipText(getLocator(),skipAfterExpression());
+}
+catch (ParseException e) {
+if (errorHandler != null) {
+if (e.currentToken != null) {
+LocatorImpl li=new LocatorImpl(this,e.currentToken.next.beginLine,e.currentToken.next.beginColumn - 1);
+reportError(li,e);
+}
+ else {
+reportError(getLocator(),e);
+}
+skipAfterExpression();
+}
+ else {
+skipAfterExpression();
+}
+}
+}
