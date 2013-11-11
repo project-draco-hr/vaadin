@@ -6,6 +6,11 @@
   if (getState().pollInterval >= 0) {
     pollTimer=new Timer(){
       @Override public void run(){
+        if (getState().pollInterval < 0) {
+          pollTimer.cancel();
+          pollTimer=null;
+          return;
+        }
         getRpcProxy(UIServerRpc.class).poll();
         getConnection().sendPendingVariableChanges();
       }
