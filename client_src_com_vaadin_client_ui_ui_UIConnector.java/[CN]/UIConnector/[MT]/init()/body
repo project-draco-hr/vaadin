@@ -19,12 +19,15 @@
     @Override public void uiClosed(    final boolean sessionExpired){
       Scheduler.get().scheduleDeferred(new ScheduledCommand(){
         @Override public void execute(){
-          if (sessionExpired) {
-            getConnection().showSessionExpiredError(null);
-          }
+          if (getConnection().isApplicationRunning()) {
+            if (sessionExpired) {
+              getConnection().showSessionExpiredError(null);
+            }
  else {
-            getState().enabled=false;
-            updateEnabledState(getState().enabled);
+              getState().enabled=false;
+              updateEnabledState(getState().enabled);
+            }
+            getConnection().setApplicationRunning(false);
           }
         }
       }
