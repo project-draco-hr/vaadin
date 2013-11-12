@@ -6,32 +6,9 @@
     throw new IllegalArgumentException("Number of columns must be 1 or greater (was " + numberOfColumns);
   }
   columns+=numberOfColumns;
-  if (!hasColumnAndRowData()) {
-    return;
-  }
-  for (  final AbstractRowContainer rowContainer : rowContainers) {
-    final Element element=rowContainer.root;
-    for (int row=0; row < element.getChildCount(); row++) {
-      final Element tr=(Element)element.getChild(row);
-      Node referenceElement;
-      if (index != 0) {
-        referenceElement=tr.getChild(index - 1);
-      }
- else {
-        referenceElement=null;
-      }
-      for (int col=index; col < index + numberOfColumns; col++) {
-        final Element cellElem=rowContainer.createCellElement();
-        rowContainer.paintCell(cellElem,row,col);
-        if (referenceElement != null) {
-          tr.insertAfter(cellElem,referenceElement);
-        }
- else {
-          tr.insertFirst(cellElem);
-        }
-        referenceElement=cellElem;
-      }
-      recalculateRowWidth(tr);
+  if (hasColumnAndRowData()) {
+    for (    final AbstractRowContainer rowContainer : rowContainers) {
+      rowContainer.paintInsertColumns(index,numberOfColumns);
     }
   }
 }

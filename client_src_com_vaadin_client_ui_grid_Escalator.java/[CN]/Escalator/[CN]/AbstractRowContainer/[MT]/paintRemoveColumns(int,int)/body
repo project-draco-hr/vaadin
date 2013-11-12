@@ -1,0 +1,19 @@
+{
+  final NodeList<Node> childNodes=root.getChildNodes();
+  for (int visualRowIndex=0; visualRowIndex < childNodes.getLength(); visualRowIndex++) {
+    final Node tr=childNodes.getItem(visualRowIndex);
+    for (int column=0; column < numberOfColumns; column++) {
+      tr.getChild(offset).removeFromParent();
+    }
+    recalculateRowWidth((Element)tr);
+  }
+  final int firstRemovedColumnLeft=offset * COLUMN_WIDTH_PX;
+  final boolean columnsWereRemovedFromLeftOfTheViewport=scroller.lastScrollLeft > firstRemovedColumnLeft;
+  if (columnsWereRemovedFromLeftOfTheViewport) {
+    final int removedColumnsPxAmount=numberOfColumns * COLUMN_WIDTH_PX;
+    final int leftByDiff=(int)(scroller.lastScrollLeft - removedColumnsPxAmount);
+    final int newScrollLeft=Math.max(firstRemovedColumnLeft,leftByDiff);
+    scrollerElem.setScrollLeft(newScrollLeft);
+  }
+  scroller.recalculateScrollbarsForVirtualViewport();
+}
