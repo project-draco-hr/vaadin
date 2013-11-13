@@ -1,0 +1,30 @@
+{
+  if (count < 0 || count > columns) {
+    throw new IllegalArgumentException("count must be between 0 and the current number of columns (" + columns + ")");
+  }
+  int oldCount=frozenColumns;
+  if (count == oldCount) {
+    return;
+  }
+  frozenColumns=count;
+  if (hasSomethingInDom()) {
+    boolean frozen=count > oldCount;
+    int firstAffectedCol;
+    int firstUnaffectedCol;
+    if (frozen) {
+      firstAffectedCol=oldCount;
+      firstUnaffectedCol=count;
+    }
+ else {
+      firstAffectedCol=count;
+      firstUnaffectedCol=oldCount;
+    }
+    for (int col=firstAffectedCol; col < firstUnaffectedCol; col++) {
+      header.setColumnFrozen(col,frozen);
+      body.setColumnFrozen(col,frozen);
+      footer.setColumnFrozen(col,frozen);
+    }
+  }
+  scrollerElem.getStyle().setLeft(frozenColumns * COLUMN_WIDTH_PX,Unit.PX);
+  scroller.recalculateScrollbarsForVirtualViewport();
+}
