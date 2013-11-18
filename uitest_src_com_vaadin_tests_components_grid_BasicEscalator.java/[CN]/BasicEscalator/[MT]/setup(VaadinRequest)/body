@@ -10,7 +10,7 @@
   insertRowsAmount.setId(INSERT_ROWS_AMOUNT);
   insertRowsLayout.addComponent(insertRowsAmount);
   insertRowsLayout.addComponent(new Button("insert rows",new Button.ClickListener(){
-    @Override @SuppressWarnings("boxing") public void buttonClick(    final ClickEvent event){
+    @Override public void buttonClick(    final ClickEvent event){
       final int offset=Integer.parseInt(insertRowsOffset.getValue());
       final int amount=Integer.parseInt(insertRowsAmount.getValue());
       grid.insertRows(offset,amount);
@@ -29,7 +29,7 @@
   final TextField removeRowsAmount=new TextField();
   removeRowsLayout.addComponent(removeRowsAmount);
   removeRowsLayout.addComponent(new Button("remove rows",new Button.ClickListener(){
-    @Override @SuppressWarnings("boxing") public void buttonClick(    final ClickEvent event){
+    @Override public void buttonClick(    final ClickEvent event){
       final int offset=Integer.parseInt(removeRowsOffset.getValue());
       final int amount=Integer.parseInt(removeRowsAmount.getValue());
       grid.removeRows(offset,amount);
@@ -43,7 +43,7 @@
   final TextField insertColumnsAmount=new TextField();
   insertColumnsLayout.addComponent(insertColumnsAmount);
   insertColumnsLayout.addComponent(new Button("insert columns",new Button.ClickListener(){
-    @Override @SuppressWarnings("boxing") public void buttonClick(    final ClickEvent event){
+    @Override public void buttonClick(    final ClickEvent event){
       final int offset=Integer.parseInt(insertColumnsOffset.getValue());
       final int amount=Integer.parseInt(insertColumnsAmount.getValue());
       grid.insertColumns(offset,amount);
@@ -57,7 +57,7 @@
   final TextField removeColumnsAmount=new TextField();
   removeColumnsLayout.addComponent(removeColumnsAmount);
   removeColumnsLayout.addComponent(new Button("remove columns",new Button.ClickListener(){
-    @Override @SuppressWarnings("boxing") public void buttonClick(    final ClickEvent event){
+    @Override public void buttonClick(    final ClickEvent event){
       final int offset=Integer.parseInt(removeColumnsOffset.getValue());
       final int amount=Integer.parseInt(removeColumnsAmount.getValue());
       grid.removeColumns(offset,amount);
@@ -143,4 +143,49 @@
     }
   }
 )));
+  addComponent(new Button("Resize randomly",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      int width=random.nextInt(300) + 500;
+      int height=random.nextInt(300) + 200;
+      grid.setWidth(width + "px");
+      grid.setHeight(height + "px");
+    }
+  }
+));
+  addComponent(new Button("Random headers count",new Button.ClickListener(){
+    private int headers=1;
+    @Override public void buttonClick(    ClickEvent event){
+      int diff=0;
+      while (diff == 0) {
+        final int nextHeaders=random.nextInt(4);
+        diff=nextHeaders - headers;
+        headers=nextHeaders;
+      }
+      if (diff > 0) {
+        grid.insertHeaders(0,diff);
+      }
+ else       if (diff < 0) {
+        grid.removeHeaders(0,-diff);
+      }
+    }
+  }
+));
+  addComponent(new Button("Random footers count",new Button.ClickListener(){
+    private int footers=1;
+    @Override public void buttonClick(    ClickEvent event){
+      int diff=0;
+      while (diff == 0) {
+        final int nextFooters=random.nextInt(4);
+        diff=nextFooters - footers;
+        footers=nextFooters;
+      }
+      if (diff > 0) {
+        grid.insertFooters(0,diff);
+      }
+ else       if (diff < 0) {
+        grid.removeFooters(0,-diff);
+      }
+    }
+  }
+));
 }
