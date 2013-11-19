@@ -1,0 +1,17 @@
+{
+  if (millisLeft <= 0 || cancelled) {
+    scroller.currentFlickScroller=null;
+    return;
+  }
+  final int lastLeft=tBodyScrollLeft;
+  final int lastTop=tBodyScrollTop;
+  final double timeDiff=timestamp - prevTime;
+  setScrollLeft((int)(tBodyScrollLeft - velX * timeDiff));
+  velX-=xFric * timeDiff;
+  setScrollTop(tBodyScrollTop - velY * timeDiff);
+  velY-=yFric * timeDiff;
+  cancelBecauseOfEdgeOrCornerMaybe(lastLeft,lastTop);
+  prevTime=timestamp;
+  millisLeft-=timeDiff;
+  AnimationScheduler.get().requestAnimationFrame(this);
+}

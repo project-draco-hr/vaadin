@@ -1,0 +1,23 @@
+{
+  if (touches != 1) {
+    return;
+  }
+  final int x=event.getPageX();
+  final int y=event.getPageY();
+  deltaX=x - lastX;
+  deltaY=y - lastY;
+  lastX=x;
+  lastY=y;
+  lastTime=Duration.currentTimeMillis();
+  if (snappedScrollEnabled) {
+    final double oldDeltaX=deltaX;
+    final double oldDeltaY=deltaY;
+    final double[] snapped=Escalator.snapDeltas(deltaX,deltaY,RATIO_OF_40_DEGREES);
+    deltaX=snapped[0];
+    deltaY=snapped[1];
+    if (oldDeltaX != 0 && deltaX == oldDeltaX && oldDeltaY != 0 && deltaY == oldDeltaY) {
+      snappedScrollEnabled=false;
+    }
+  }
+  moveScrollFromEvent(escalator.scrollerElem,-deltaX,-deltaY,event.getNativeEvent());
+}
