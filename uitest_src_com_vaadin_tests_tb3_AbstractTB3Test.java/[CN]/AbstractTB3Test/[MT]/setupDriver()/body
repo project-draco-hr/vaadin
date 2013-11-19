@@ -1,12 +1,15 @@
 {
+  DesiredCapabilities capabilities;
   RunLocally runLocally=getClass().getAnnotation(RunLocally.class);
   if (runLocally != null) {
-    setupLocalDriver(runLocally.value().getDesiredCapabilities());
-    return;
+    capabilities=runLocally.value().getDesiredCapabilities();
+    setupLocalDriver(capabilities);
   }
-  DesiredCapabilities capabilities=getDesiredCapabilities();
-  WebDriver dr=TestBench.createDriver(new RemoteWebDriver(new URL(getHubURL()),capabilities));
-  setDriver(dr);
+ else {
+    capabilities=getDesiredCapabilities();
+    WebDriver dr=TestBench.createDriver(new RemoteWebDriver(new URL(getHubURL()),capabilities));
+    setDriver(dr);
+  }
   int w=SCREENSHOT_WIDTH;
   int h=SCREENSHOT_HEIGHT;
   if (BrowserUtil.isIE8(capabilities)) {
