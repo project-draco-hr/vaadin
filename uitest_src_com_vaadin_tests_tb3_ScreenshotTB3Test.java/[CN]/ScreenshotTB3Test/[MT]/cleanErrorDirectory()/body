@@ -1,0 +1,20 @@
+{
+  File errorDirectory=new File(getScreenshotErrorDirectory());
+  if (!errorDirectory.exists()) {
+    errorDirectory.mkdirs();
+  }
+  final String errorBase=getScreenshotErrorBaseName().replace("\\","/");
+  File[] files=errorDirectory.listFiles(new FileFilter(){
+    @Override public boolean accept(    File pathname){
+      String thisFile=pathname.getAbsolutePath().replace("\\","/");
+      if (thisFile.startsWith(errorBase)) {
+        return true;
+      }
+      return false;
+    }
+  }
+);
+  for (  File f : files) {
+    f.delete();
+  }
+}

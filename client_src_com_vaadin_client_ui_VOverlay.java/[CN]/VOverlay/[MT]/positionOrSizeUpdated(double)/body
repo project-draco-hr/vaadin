@@ -16,32 +16,22 @@
     getOffsetHeight();
     getOffsetWidth();
   }
-  PositionAndSize positionAndSize=new PositionAndSize(getActualLeft(),getActualTop(),getOffsetWidth(),getOffsetHeight());
-  positionAndSize.setAnimationFromCenterProgress(progress);
-  if (BrowserInfo.get().isOpera() && isShadowEnabled()) {
-    DOM.getChild(shadow,3).getStyle().setProperty("height","auto");
-    DOM.getChild(shadow,4).getStyle().setProperty("height","auto");
-    DOM.getChild(shadow,5).getStyle().setProperty("height","auto");
-  }
-  if (isShadowEnabled()) {
-    updatePositionAndSize(shadow,positionAndSize);
-    DOM.setStyleAttribute(shadow,"zIndex",zIndex);
-    DOM.setStyleAttribute(shadow,"display",progress < 0.9 ? "none" : "");
-  }
-  if (needsShimElement()) {
-    updatePositionAndSize((Element)Element.as(getShimElement()),positionAndSize);
-  }
-  if (BrowserInfo.get().isOpera() && isShadowEnabled()) {
-    DOM.getChild(shadow,3).getStyle().setPropertyPx("height",DOM.getChild(shadow,3).getOffsetHeight());
-    DOM.getChild(shadow,4).getStyle().setPropertyPx("height",DOM.getChild(shadow,4).getOffsetHeight());
-    DOM.getChild(shadow,5).getStyle().setPropertyPx("height",DOM.getChild(shadow,5).getOffsetHeight());
-  }
-  Element container=getElement().getParentElement().cast();
-  if (isShadowEnabled() && !isShadowAttached()) {
-    container.insertBefore(shadow,getElement());
-    sinkShadowEvents();
-  }
-  if (needsShimElement() && !isShimElementAttached()) {
-    container.insertBefore(getShimElement(),getElement());
+  if (isShadowEnabled() || needsShimElement()) {
+    PositionAndSize positionAndSize=new PositionAndSize(getActualLeft(),getActualTop(),getOffsetWidth(),getOffsetHeight());
+    positionAndSize.setAnimationFromCenterProgress(progress);
+    Element container=getElement().getParentElement().cast();
+    if (isShadowEnabled()) {
+      updateShadowPosition(progress,zIndex,positionAndSize);
+      if (shadow.getParentElement() == null) {
+        container.insertBefore(shadow,getElement());
+        sinkShadowEvents();
+      }
+    }
+    if (needsShimElement()) {
+      updateShimPosition(positionAndSize);
+      if (shimElement.getParentElement() == null) {
+        container.insertBefore(shimElement,getElement());
+      }
+    }
   }
 }

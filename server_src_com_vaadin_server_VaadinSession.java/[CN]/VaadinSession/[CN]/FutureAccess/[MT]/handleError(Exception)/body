@@ -1,0 +1,19 @@
+{
+  try {
+    if (runnable instanceof ErrorHandlingRunnable) {
+      ErrorHandlingRunnable errorHandlingRunnable=(ErrorHandlingRunnable)runnable;
+      errorHandlingRunnable.handleError(exception);
+    }
+ else {
+      ErrorEvent errorEvent=new ErrorEvent(exception);
+      ErrorHandler errorHandler=ErrorEvent.findErrorHandler(session);
+      if (errorHandler == null) {
+        errorHandler=new DefaultErrorHandler();
+      }
+      errorHandler.error(errorEvent);
+    }
+  }
+ catch (  Exception e) {
+    getLogger().log(Level.SEVERE,e.getMessage(),e);
+  }
+}

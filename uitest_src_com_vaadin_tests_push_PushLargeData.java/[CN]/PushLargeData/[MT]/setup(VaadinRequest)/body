@@ -1,0 +1,30 @@
+{
+  dataLabel.setSizeUndefined();
+  final TextField dataSize=new TextField("Data size");
+  dataSize.setConverter(Integer.class);
+  final TextField interval=new TextField("Interval (ms)");
+  interval.setConverter(Integer.class);
+  final TextField duration=new TextField("Duration (ms)");
+  duration.setConverter(Integer.class);
+  dataSize.setValue(DEFAULT_SIZE_BYTES + "");
+  interval.setValue(DEFAULT_DELAY_MS + "");
+  duration.setValue(DEFAULT_DURATION_MS + "");
+  addComponent(dataSize);
+  addComponent(interval);
+  addComponent(duration);
+  Button b=new Button("Start pushing");
+  b.setId("startButton");
+  b.addClickListener(new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      Integer pushSize=(Integer)dataSize.getConvertedValue();
+      Integer pushInterval=(Integer)interval.getConvertedValue();
+      Integer pushDuration=(Integer)duration.getConvertedValue();
+      PushRunnable r=new PushRunnable(pushSize,pushInterval,pushDuration);
+      executor.execute(r);
+      log.log("Starting push, size: " + pushSize + ", interval: "+ pushInterval+ "ms, duration: "+ pushDuration+ "ms");
+    }
+  }
+);
+  addComponent(b);
+  addComponent(dataLabel);
+}

@@ -1,12 +1,24 @@
 {
-  String referenceCss;
   File scssFile=getSassLangResourceFile(scssResourceName);
-  File cssFile=getCssFile(scssFile);
-  referenceCss=IOUtils.toString(new FileInputStream(cssFile));
-  ScssStylesheet scssStylesheet=ScssStylesheet.get(scssFile.getAbsolutePath());
+  SCSSDocumentHandler documentHandler=new SCSSDocumentHandlerImpl();
+  SCSSErrorHandler errorHandler=new SCSSErrorHandler(){
+    @Override public void error(    CSSParseException arg0) throws CSSException {
+      super.error(arg0);
+      Assert.fail(arg0.getMessage());
+    }
+    @Override public void fatalError(    CSSParseException arg0) throws CSSException {
+      super.error(arg0);
+      Assert.fail(arg0.getMessage());
+    }
+  }
+;
+  ScssStylesheet scssStylesheet=ScssStylesheet.get(scssFile.getCanonicalPath(),null,documentHandler,errorHandler);
   scssStylesheet.compile();
   String parsedCss=scssStylesheet.toString();
-  String normalizedReference=normalize(referenceCss);
-  String normalizedParsed=normalize(parsedCss);
-  Assert.assertEquals("Original CSS and parsed CSS do not match for " + scssResourceName,normalizedReference,normalizedParsed);
+  if (getCssFile(scssFile) != null) {
+    String referenceCss=IOUtils.toString(new FileInputStream(getCssFile(scssFile)));
+    String normalizedReference=normalize(referenceCss);
+    String normalizedParsed=normalize(parsedCss);
+    Assert.assertEquals("Original CSS and parsed CSS do not match for " + scssResourceName,normalizedReference,normalizedParsed);
+  }
 }

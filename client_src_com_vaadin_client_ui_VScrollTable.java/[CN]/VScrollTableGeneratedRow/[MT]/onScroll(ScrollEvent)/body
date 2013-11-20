@@ -1,4 +1,9 @@
 {
+  if (isScrollLeftRestoreRequired()) {
+    restoreScrollLeft();
+  }
+  lastScrollBodyHeight=scrollBody.getElement().getClientHeight();
+  lastScrollLeftWasAtMax=Util.isScrollLeftAtMax(scrollBodyPanel.getElement());
   scrollLeft=scrollBodyPanel.getElement().getScrollLeft();
   scrollTop=scrollBodyPanel.getScrollPosition();
   if (!initializedAndAttached || !isAttached()) {
@@ -20,6 +25,9 @@
   }
   tHead.setHorizontalScrollPosition(scrollLeft);
   tFoot.setHorizontalScrollPosition(scrollLeft);
+  if (totalRows == 0) {
+    return;
+  }
   firstRowInViewPort=calcFirstRowInViewPort();
   if (firstRowInViewPort > totalRows - pageLength) {
     firstRowInViewPort=totalRows - pageLength;

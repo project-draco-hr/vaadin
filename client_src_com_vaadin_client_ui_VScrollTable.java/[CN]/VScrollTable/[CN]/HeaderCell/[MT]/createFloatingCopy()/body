@@ -2,8 +2,21 @@
   floatingCopyOfHeaderCell=DOM.createDiv();
   DOM.setInnerHTML(floatingCopyOfHeaderCell,DOM.getInnerHTML(td));
   floatingCopyOfHeaderCell=DOM.getChild(floatingCopyOfHeaderCell,2);
-  DOM.setElementProperty(floatingCopyOfHeaderCell,"className",VScrollTable.this.getStylePrimaryName() + "-header-drag");
+  String stylePrimaryName=VScrollTable.this.getStylePrimaryName();
+  StringBuilder sb=new StringBuilder();
+  for (  String s : VScrollTable.this.getStyleName().split(" ")) {
+    if (!s.equals(StyleConstants.UI_WIDGET)) {
+      sb.append(s);
+      if (s.equals(stylePrimaryName)) {
+        sb.append("-header-drag ");
+      }
+ else {
+        sb.append(" ");
+      }
+    }
+  }
+  floatingCopyOfHeaderCell.setClassName(sb.toString().trim());
   DOM.setStyleAttribute(floatingCopyOfHeaderCell,"width","auto");
   updateFloatingCopysPosition(DOM.getAbsoluteLeft(td),DOM.getAbsoluteTop(td));
-  DOM.appendChild(RootPanel.get().getElement(),floatingCopyOfHeaderCell);
+  DOM.appendChild(VOverlay.getOverlayContainer(client),floatingCopyOfHeaderCell);
 }

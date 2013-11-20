@@ -1,0 +1,45 @@
+{
+  if (identifier == null || identifier.isEmpty()) {
+    throw new IllegalArgumentException("Empty identifier not supported");
+  }
+  File mainReference=getScreenshotReferenceFile(identifier);
+  List<File> alternativeFiles=findReferenceAlternatives(mainReference);
+  List<File> failedReferenceAlternatives=new ArrayList<File>();
+  for (  File file : alternativeFiles) {
+    if (testBench(driver).compareScreen(file)) {
+      break;
+    }
+ else {
+      failedReferenceAlternatives.add(file);
+    }
+  }
+  File referenceToKeep=null;
+  if (failedReferenceAlternatives.size() != alternativeFiles.size()) {
+  }
+ else {
+    String originalName=getScreenshotReferenceName(identifier);
+    File exactVersionFile=new File(originalName);
+    if (!exactVersionFile.equals(mainReference)) {
+      File correctPng=getErrorFileFromReference(exactVersionFile);
+      File producedPng=getErrorFileFromReference(mainReference);
+      File correctHtml=htmlFromPng(correctPng);
+      File producedHtml=htmlFromPng(producedPng);
+      producedPng.renameTo(correctPng);
+      producedHtml.renameTo(correctHtml);
+      referenceToKeep=exactVersionFile;
+      screenshotFailures.add(exactVersionFile.getName());
+    }
+ else {
+      screenshotFailures.add(mainReference.getName());
+      referenceToKeep=mainReference;
+    }
+  }
+  for (  File failedAlternative : failedReferenceAlternatives) {
+    File failurePng=getErrorFileFromReference(failedAlternative);
+    if (failedAlternative != referenceToKeep) {
+      File failureHtml=htmlFromPng(failurePng);
+      failurePng.delete();
+      failureHtml.delete();
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  setPush(true);
+  String url=getTestUrl();
+  driver.get(addParameter(url,"push=disabled"));
+  Assert.assertFalse(getPushToggle().isSelected());
+  getDelayedCounterUpdateButton().click();
+  sleep(2000);
+  Assert.assertEquals("Counter has been updated 0 times",getCounterText());
+  driver.get(addParameter(url,"push=enabled"));
+  Assert.assertTrue(getPushToggle().isSelected());
+  getDelayedCounterUpdateButton().click();
+  sleep(2000);
+  Assert.assertEquals("Counter has been updated 1 times",getCounterText());
+}

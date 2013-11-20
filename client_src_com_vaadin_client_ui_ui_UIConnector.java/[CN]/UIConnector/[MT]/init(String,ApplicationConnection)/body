@@ -9,4 +9,13 @@
   if (applicationConnection.getConfiguration().isStandalone()) {
     getWidget().getElement().focus();
   }
+  applicationConnection.addHandler(ApplicationConnection.ApplicationStoppedEvent.TYPE,new ApplicationConnection.ApplicationStoppedHandler(){
+    @Override public void onApplicationStopped(    ApplicationStoppedEvent event){
+      if (pollTimer != null) {
+        pollTimer.cancel();
+        pollTimer=null;
+      }
+    }
+  }
+);
 }

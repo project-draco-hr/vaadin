@@ -16,10 +16,11 @@ catch (    SessionExpiredException e) {
       sendNotificationAndDisconnect(resource,VaadinService.createCriticalNotificationJSON(msg.getSessionExpiredCaption(),msg.getSessionExpiredMessage(),null,msg.getSessionExpiredURL()));
       return;
     }
+    UI ui=null;
     session.lock();
     try {
       VaadinSession.setCurrent(session);
-      final UI ui=service.findUI(vaadinRequest);
+      ui=service.findUI(vaadinRequest);
       if (ui == null) {
         sendNotificationAndDisconnect(resource,UidlRequestHandler.getUINotFoundErrorJSON(service,vaadinRequest));
       }
@@ -27,14 +28,33 @@ catch (    SessionExpiredException e) {
         callback.run(resource,ui);
       }
     }
- catch (    IOException e) {
-      getLogger().log(Level.WARNING,"Error writing a push response",e);
+ catch (    final IOException e) {
+      callErrorHandler(session,e);
+    }
+catch (    final Exception e) {
+      SystemMessages msg=service.getSystemMessages(ServletPortletHelper.findLocale(null,null,vaadinRequest),vaadinRequest);
+      AtmosphereResource errorResource=resource;
+      if (ui != null && ui.getPushConnection() != null) {
+        errorResource=((AtmospherePushConnection)ui.getPushConnection()).getResource();
+      }
+      sendNotificationAndDisconnect(errorResource,VaadinService.createCriticalNotificationJSON(msg.getInternalErrorCaption(),msg.getInternalErrorMessage(),null,msg.getInternalErrorURL()));
+      callErrorHandler(session,e);
     }
  finally {
-      session.unlock();
+      try {
+        session.unlock();
+      }
+ catch (      Exception e) {
+        getLogger().log(Level.WARNING,"Error while unlocking session",e);
+      }
     }
   }
   finally {
-    service.requestEnd(vaadinRequest,null,session);
+    try {
+      service.requestEnd(vaadinRequest,null,session);
+    }
+ catch (    Exception e) {
+      getLogger().log(Level.WARNING,"Error while ending request",e);
+    }
   }
 }

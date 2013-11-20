@@ -1,0 +1,28 @@
+{
+  List<Class<? extends T>> classes=new ArrayList<Class<? extends T>>();
+  String basePackageDirName="/" + basePackage.replace('.','/');
+  URL location=baseClass.getResource(basePackageDirName);
+  if (location.getProtocol().equals("file")) {
+    try {
+      File f=new File(location.toURI());
+      if (!f.exists()) {
+        throw new IOException("Directory " + f.toString() + " does not exist");
+      }
+      findPackages(f,basePackage,baseClass,classes,ignoredPackages);
+    }
+ catch (    URISyntaxException e) {
+      throw new IOException(e.getMessage());
+    }
+  }
+ else   if (location.getProtocol().equals("jar")) {
+    JarURLConnection juc=(JarURLConnection)location.openConnection();
+    findClassesInJar(juc,basePackage,baseClass,classes);
+  }
+  Collections.sort(classes,new Comparator<Class<? extends T>>(){
+    @Override public int compare(    Class<? extends T> o1,    Class<? extends T> o2){
+      return o1.getName().compareTo(o2.getName());
+    }
+  }
+);
+  return classes;
+}

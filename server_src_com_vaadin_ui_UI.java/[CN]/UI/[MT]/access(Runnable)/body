@@ -3,9 +3,28 @@
   if (session == null) {
     throw new UIDetachedException();
   }
-  return session.access(new Runnable(){
+  return session.access(new ErrorHandlingRunnable(){
     @Override public void run(){
       accessSynchronously(runnable);
+    }
+    @Override public void handleError(    Exception exception){
+      try {
+        if (runnable instanceof ErrorHandlingRunnable) {
+          ErrorHandlingRunnable errorHandlingRunnable=(ErrorHandlingRunnable)runnable;
+          errorHandlingRunnable.handleError(exception);
+        }
+ else {
+          ConnectorErrorEvent errorEvent=new ConnectorErrorEvent(UI.this,exception);
+          ErrorHandler errorHandler=com.vaadin.server.ErrorEvent.findErrorHandler(UI.this);
+          if (errorHandler == null) {
+            errorHandler=new DefaultErrorHandler();
+          }
+          errorHandler.error(errorEvent);
+        }
+      }
+ catch (      Exception e) {
+        getLogger().log(Level.SEVERE,e.getMessage(),e);
+      }
     }
   }
 );

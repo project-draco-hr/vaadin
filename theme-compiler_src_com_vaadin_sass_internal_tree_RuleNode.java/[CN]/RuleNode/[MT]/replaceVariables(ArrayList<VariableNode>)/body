@@ -2,7 +2,7 @@
   for (  final VariableNode node : variables) {
     String interpolation="#{$" + node.getName() + "}";
     if (variable != null && variable.contains(interpolation)) {
-      variable=variable.replaceAll(Pattern.quote(interpolation),node.getExpr().toString());
+      variable=variable.replaceAll(Pattern.quote(interpolation),node.getExpr().unquotedString());
     }
     if (value.getLexicalUnitType() == LexicalUnitImpl.SAC_FUNCTION) {
       if (value.getParameters() != null) {
@@ -21,7 +21,7 @@
       LexicalUnitImpl current=value;
       while (current != null) {
         if (current.getValue().toString().contains(interpolation)) {
-          current.setStringValue(current.getValue().toString().replaceAll(Pattern.quote(interpolation),node.getExpr().toString()));
+          current.setStringValue(current.getValue().toString().replaceAll(Pattern.quote(interpolation),node.getExpr().unquotedString()));
         }
         current=current.getNextLexicalUnit();
       }
