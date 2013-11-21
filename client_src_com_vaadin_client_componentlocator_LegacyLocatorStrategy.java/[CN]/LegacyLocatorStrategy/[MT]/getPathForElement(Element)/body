@@ -1,0 +1,55 @@
+{
+  ComponentConnector connector=Util.findPaintable(client,targetElement);
+  Widget w=null;
+  if (connector != null) {
+    w=connector.getWidget();
+    Widget targetParent=findParentWidget(targetElement,w);
+    while (targetParent != w && targetParent != null) {
+      if (targetParent instanceof SubPartAware) {
+        w=targetParent;
+        break;
+      }
+      targetParent=targetParent.getParent();
+    }
+  }
+  if (w == null) {
+    RootPanel rootPanel=RootPanel.get();
+    int rootWidgetCount=rootPanel.getWidgetCount();
+    for (int i=0; i < rootWidgetCount; i++) {
+      Widget rootWidget=rootPanel.getWidget(i);
+      if (rootWidget.getElement().isOrHasChild(targetElement)) {
+        w=findParentWidget(targetElement,rootWidget);
+        break;
+      }
+    }
+    if (w != null) {
+      Widget subPartAwareWidget=findSubPartAwareParentWidget(w);
+      if (subPartAwareWidget != null) {
+        w=subPartAwareWidget;
+      }
+    }
+  }
+  if (w == null) {
+    return null;
+  }
+  String path=getPathForWidget(w);
+  if (path == null) {
+    return null;
+  }
+  if (w.getElement() == targetElement) {
+    return path;
+  }
+ else   if (w instanceof SubPartAware) {
+    String elementLocator=((SubPartAware)w).getSubPartName(targetElement);
+    if (elementLocator != null) {
+      return path + LegacyLocatorStrategy.SUBPART_SEPARATOR + elementLocator;
+    }
+  }
+  String domPath=getDOMPathForElement(targetElement,w.getElement());
+  if (domPath == null) {
+    return path;
+  }
+ else {
+    return path + domPath;
+  }
+}

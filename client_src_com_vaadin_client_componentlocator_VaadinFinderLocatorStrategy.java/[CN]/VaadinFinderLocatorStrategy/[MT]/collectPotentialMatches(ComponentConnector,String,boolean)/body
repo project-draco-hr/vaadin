@@ -1,0 +1,16 @@
+{
+  ArrayList<ComponentConnector> potentialMatches=new ArrayList<ComponentConnector>();
+  if (parent instanceof AbstractHasComponentsConnector) {
+    List<ComponentConnector> children=((AbstractHasComponentsConnector)parent).getChildComponents();
+    for (    ComponentConnector child : children) {
+      String widgetName=getWidgetName(pathFragment);
+      if (connectorMatchesPathFragment(child,widgetName)) {
+        potentialMatches.add(child);
+      }
+      if (collectRecursively) {
+        potentialMatches.addAll(collectPotentialMatches(child,pathFragment,collectRecursively));
+      }
+    }
+  }
+  return potentialMatches;
+}

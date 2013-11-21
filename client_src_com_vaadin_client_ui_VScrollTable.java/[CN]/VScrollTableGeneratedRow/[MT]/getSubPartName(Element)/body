@@ -1,0 +1,27 @@
+{
+  Widget widget=Util.findWidget(subElement,null);
+  if (widget instanceof HeaderCell) {
+    return SUBPART_HEADER + "[" + tHead.visibleCells.indexOf(widget)+ "]";
+  }
+ else   if (widget instanceof FooterCell) {
+    return SUBPART_FOOTER + "[" + tFoot.visibleCells.indexOf(widget)+ "]";
+  }
+ else   if (widget instanceof VScrollTableRow) {
+    VScrollTableRow row=(VScrollTableRow)widget;
+    int rowIx=scrollBody.indexOf(row);
+    if (rowIx >= 0) {
+      int colIx=-1;
+      for (int ix=0; ix < row.getElement().getChildCount(); ix++) {
+        if (row.getElement().getChild(ix).isOrHasChild(subElement)) {
+          colIx=ix;
+          break;
+        }
+      }
+      if (colIx >= 0) {
+        return SUBPART_ROW + "[" + rowIx+ "]/"+ SUBPART_COL+ "["+ colIx+ "]";
+      }
+      return SUBPART_ROW + "[" + rowIx+ "]";
+    }
+  }
+  return null;
+}
