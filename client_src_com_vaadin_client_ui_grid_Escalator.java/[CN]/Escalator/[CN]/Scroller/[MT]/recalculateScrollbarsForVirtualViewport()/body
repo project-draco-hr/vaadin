@@ -1,17 +1,21 @@
 {
-  double scrollerHeight=height - header.height;
-  if (!needsHorizontalScrollbars()) {
-    scrollerHeight-=footer.height;
-  }
-  scrollerElem.getStyle().setHeight(scrollerHeight,Unit.PX);
-  final double scrollerTop=header.height;
-  scrollerElem.getStyle().setTop(scrollerTop,Unit.PX);
-  double innerScrollerHeight=ROW_HEIGHT_PX * body.getRowCount();
+  int innerScrollerHeight=ROW_HEIGHT_PX * body.getRowCount();
+  double vScrollBottom=footer.height;
   if (needsHorizontalScrollbars()) {
-    innerScrollerHeight+=footer.height;
+    vScrollBottom+=horizontalScrollbar.getScrollbarThickness();
   }
-  innerScrollerElem.getStyle().setHeight(innerScrollerHeight,Unit.PX);
+  verticalScrollbar.getElement().getStyle().setTop(header.height,Unit.PX);
+  verticalScrollbar.getElement().getStyle().setBottom(vScrollBottom,Unit.PX);
+  verticalScrollbar.setScrollSize(innerScrollerHeight);
   int columnsToScroll=columnConfiguration.getColumnCount() - columnConfiguration.getFrozenColumnCount();
-  innerScrollerElem.getStyle().setWidth(COLUMN_WIDTH_PX * columnsToScroll,Unit.PX);
+  horizontalScrollbar.setScrollSize(COLUMN_WIDTH_PX * columnsToScroll);
+  final Style hScrollbarStyle=horizontalScrollbar.getElement().getStyle();
+  if (needsVerticalScrollbars()) {
+    final int hScrollbarRight=verticalScrollbar.getScrollbarThickness();
+    hScrollbarStyle.setRight(hScrollbarRight,Unit.PX);
+  }
+ else {
+    hScrollbarStyle.clearRight();
+  }
   recalculateTableWrapperSize();
 }

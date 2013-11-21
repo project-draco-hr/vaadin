@@ -4,9 +4,10 @@
   final Element root=DOM.createDiv();
   setElement(root);
   setStyleName(CLASS_NAME);
-  scrollerElem.setClassName(CLASS_NAME + "-scroller");
-  root.appendChild(scrollerElem);
-  scrollerElem.appendChild(innerScrollerElem);
+  root.appendChild(verticalScrollbar.getElement());
+  root.appendChild(horizontalScrollbar.getElement());
+  verticalScrollbar.setScrollbarThickness(Util.getNativeScrollbarSize());
+  horizontalScrollbar.setScrollbarThickness(Util.getNativeScrollbarSize());
   tableWrapper=DOM.createDiv();
   tableWrapper.setClassName(CLASS_NAME + "-tablewrapper");
   root.appendChild(tableWrapper);
@@ -25,12 +26,14 @@
         footer.paintInsertRows(0,footer.getRowCount());
         recalculateElementSizes();
         body.paintInsertRows(0,body.getRowCount());
-        scroller.attachScrollListener(scrollerElem);
+        scroller.attachScrollListener(verticalScrollbar.getElement());
+        scroller.attachScrollListener(horizontalScrollbar.getElement());
         scroller.attachMousewheelListener(getElement());
         scroller.attachTouchListeners(getElement());
       }
  else {
-        scroller.detachScrollListener(scrollerElem);
+        scroller.detachScrollListener(verticalScrollbar.getElement());
+        scroller.detachScrollListener(horizontalScrollbar.getElement());
         scroller.detachMousewheelListener(getElement());
         scroller.detachTouchListeners(getElement());
       }
