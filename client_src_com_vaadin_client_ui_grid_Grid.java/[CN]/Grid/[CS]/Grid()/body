@@ -5,4 +5,12 @@
   escalator.getFooter().setEscalatorUpdater(createFooterUpdater());
   refreshHeader();
   refreshFooter();
+  escalator.addRowVisibilityChangeHandler(new RowVisibilityChangeHandler(){
+    @Override public void onRowVisibilityChange(    RowVisibilityChangeEvent event){
+      if (dataSource != null) {
+        dataSource.ensureAvailability(event.getFirstVisibleRow(),event.getVisibleRowCount());
+      }
+    }
+  }
+);
 }

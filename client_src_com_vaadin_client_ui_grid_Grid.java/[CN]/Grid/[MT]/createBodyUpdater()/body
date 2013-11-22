@@ -1,8 +1,24 @@
 {
   return new EscalatorUpdater(){
     @Override public void updateCells(    Row row,    List<Cell> cellsToUpdate){
+      int rowIndex=row.getRow();
+      if (dataSource == null) {
+        setCellsLoading(cellsToUpdate);
+        return;
+      }
+      T rowData=dataSource.getRow(rowIndex);
+      if (rowData == null) {
+        setCellsLoading(cellsToUpdate);
+        return;
+      }
       for (      Cell cell : cellsToUpdate) {
-        cell.getElement().setInnerHTML("-");
+        String value=getColumn(cell.getColumn()).getValue(rowData);
+        cell.getElement().setInnerText(value);
+      }
+    }
+    private void setCellsLoading(    List<Cell> cellsToUpdate){
+      for (      Cell cell : cellsToUpdate) {
+        cell.getElement().setInnerText("...");
       }
     }
   }
