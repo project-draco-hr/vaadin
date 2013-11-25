@@ -1,6 +1,5 @@
 {
   final NodeList<Node> childNodes=root.getChildNodes();
-  final int topVisualRowLogicalIndex=getTopVisualRowLogicalIndex();
   for (int row=0; row < childNodes.getLength(); row++) {
     final Element tr=getTrByVisualIndex(row);
     Node referenceCell;
@@ -14,7 +13,6 @@
       final Element cellElem=createCellElement();
       referenceCell=insertAfterReferenceAndUpdateIt(tr,cellElem,referenceCell);
     }
-    refreshRow(tr,topVisualRowLogicalIndex + row);
     recalculateRowWidth(tr);
   }
   if (frozen) {
@@ -26,5 +24,8 @@
   final boolean columnsWereAddedToTheLeftOfViewport=scroller.lastScrollLeft > offset * COLUMN_WIDTH_PX;
   if (columnsWereAddedToTheLeftOfViewport) {
     horizontalScrollbar.setScrollPos((int)(scroller.lastScrollLeft + numberOfColumns * COLUMN_WIDTH_PX));
+  }
+  if (getRowCount() > 0 && getColumnConfiguration().getColumnCount() > 1) {
+    refreshRows(0,getRowCount());
   }
 }
