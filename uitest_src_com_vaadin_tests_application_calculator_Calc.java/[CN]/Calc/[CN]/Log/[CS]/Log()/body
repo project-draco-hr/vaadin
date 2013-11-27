@@ -1,0 +1,56 @@
+{
+  super();
+  table=new Table();
+  table.setSizeFull();
+  setWidth("200px");
+  setHeight("100%");
+  table.setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
+  table.addContainerProperty("Operation",String.class,"");
+  addComponent(table);
+  addCommentButton=new Button("Add Comment");
+  addCommentButton.setWidth("100%");
+  addCommentButton.addClickListener(new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      final Window w=new Window("Add comment");
+      VerticalLayout vl=new VerticalLayout();
+      vl.setMargin(true);
+      final TextField tf=new TextField();
+      tf.setSizeFull();
+      vl.addComponent(tf);
+      HorizontalLayout hl=new HorizontalLayout();
+      Button okButton=new Button("OK");
+      okButton.setWidth("100%");
+      okButton.addClickListener(new ClickListener(){
+        @Override public void buttonClick(        ClickEvent event){
+          addRow("[ " + tf.getValue() + " ]");
+          tf.setValue("");
+          w.close();
+          removeWindow(w);
+        }
+      }
+);
+      Button cancelButton=new Button("Cancel");
+      cancelButton.setWidth("100%");
+      cancelButton.addClickListener(new ClickListener(){
+        @Override public void buttonClick(        ClickEvent event){
+          tf.setValue("");
+          w.close();
+          removeWindow(w);
+        }
+      }
+);
+      hl.addComponent(cancelButton);
+      hl.addComponent(okButton);
+      hl.setSpacing(true);
+      hl.setWidth("100%");
+      vl.addComponent(hl);
+      vl.setSpacing(true);
+      w.setContent(vl);
+      addWindow(w);
+    }
+  }
+);
+  addComponent(addCommentButton);
+  setExpandRatio(table,1);
+  setSpacing(true);
+}
