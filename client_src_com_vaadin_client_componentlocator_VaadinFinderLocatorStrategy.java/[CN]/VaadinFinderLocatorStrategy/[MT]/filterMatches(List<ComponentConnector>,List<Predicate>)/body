@@ -1,0 +1,32 @@
+{
+  for (  Predicate p : predicates) {
+    if (p.index > -1) {
+      try {
+        ComponentConnector v=potentialMatches.get(p.index);
+        potentialMatches.clear();
+        potentialMatches.add(v);
+      }
+ catch (      IndexOutOfBoundsException e) {
+        potentialMatches.clear();
+      }
+      continue;
+    }
+    for (int i=0, l=potentialMatches.size(); i < l; ++i) {
+      ComponentConnector c=potentialMatches.get(i);
+      Property property=AbstractConnector.getStateType(c).getProperty(p.name);
+      Object propData;
+      try {
+        propData=property.getValue(c.getState());
+      }
+ catch (      NoDataException e) {
+        propData=null;
+      }
+      if ((p.wildcard && propData == null) || (!p.wildcard && !valueEqualsPropertyValue(p.value,property,c.getState()))) {
+        potentialMatches.remove(i);
+        --l;
+        --i;
+      }
+    }
+  }
+  return eliminateDuplicates(potentialMatches);
+}

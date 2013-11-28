@@ -1,0 +1,57 @@
+{
+  List<Predicate> predicates=new ArrayList<Predicate>();
+  String str=extractPredicateString(path);
+  if (null == str || str.length() == 0) {
+    return predicates;
+  }
+  List<String> input=new ArrayList<String>();
+{
+    int idx=indexOfIgnoringQuotes(str,',',0), p=0;
+    if (idx == -1) {
+      input.add(str);
+    }
+ else {
+      do {
+        input.add(str.substring(p,idx));
+        p=idx + 1;
+        idx=indexOfIgnoringQuotes(str,',',p);
+      }
+ while (idx > -1);
+      input.add(str.substring(p));
+    }
+  }
+  for (  String s : input) {
+    Predicate p=new Predicate();
+    s=s.trim();
+    try {
+      p.index=Integer.parseInt(s);
+      predicates.add(p);
+      continue;
+    }
+ catch (    Exception e) {
+      p.index=-1;
+    }
+    int idx=indexOfIgnoringQuotes(s,'=');
+    if (idx < 0) {
+      continue;
+    }
+    p.name=s.substring(0,idx);
+    p.value=s.substring(idx + 1);
+    if (p.value.equals("?")) {
+      p.wildcard=true;
+      p.value=null;
+    }
+ else {
+      p.value=unquote(p.value);
+    }
+    predicates.add(p);
+  }
+  for (int i=0, l=predicates.size(); i < l - 1; ++i) {
+    if (predicates.get(i).index > -1) {
+      predicates.add(predicates.remove(i));
+      --i;
+      --l;
+    }
+  }
+  return predicates;
+}

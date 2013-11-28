@@ -1,3 +1,31 @@
 {
-  return widgetName.equals(Util.getSimpleName(connector.getWidget()));
+  Class<?> connectorClass=connector.getClass();
+  List<String> ids=new ArrayList<String>();
+  FastStringSet identifiers=TypeDataStore.get().findIdentifiersFor(connectorClass);
+  JsArrayString str=identifiers.dump();
+  for (int j=0; j < str.length(); ++j) {
+    ids.add(str.get(j));
+  }
+  Integer[] widgetTags=client.getConfiguration().getTagsForServerSideClassName(getFullClassName(widgetName));
+  if (widgetTags.length == 0) {
+    widgetTags=client.getConfiguration().getTagsForServerSideClassName(getFullClassName("com.vaadin.ui." + widgetName));
+  }
+  for (int i=0, l=ids.size(); i < l; ++i) {
+    String name=ids.get(i);
+    final String simpleName=getSimpleClassName(name);
+    final String fullName=getFullClassName(name);
+    if (widgetTags.length > 0) {
+      Integer[] foundTags=client.getConfiguration().getTagsForServerSideClassName(fullName);
+      for (      int tag : foundTags) {
+        if (tagsMatch(widgetTags,tag)) {
+          return true;
+        }
+      }
+    }
+    if (widgetName.equals(fullName + ".class") || widgetName.equals(fullName) || widgetName.equals(simpleName + ".class")|| widgetName.equals(simpleName)|| widgetName.equals(name)) {
+      return true;
+    }
+  }
+  String widget=Util.getSimpleName(connector.getWidget());
+  return widgetName.equals(widget) || widgetName.equals(widget + ".class");
 }
