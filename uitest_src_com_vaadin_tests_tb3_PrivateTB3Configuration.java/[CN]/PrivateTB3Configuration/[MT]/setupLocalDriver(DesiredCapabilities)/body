@@ -1,0 +1,24 @@
+{
+  WebDriver driver;
+  if (BrowserUtil.isFirefox(desiredCapabilities)) {
+    String firefoxPath=getProperty("firefox.path");
+    if (firefoxPath != null) {
+      driver=new FirefoxDriver(new FirefoxBinary(new File(firefoxPath)),null);
+    }
+ else {
+      driver=new FirefoxDriver();
+    }
+  }
+ else   if (BrowserUtil.isChrome(desiredCapabilities)) {
+    System.setProperty("webdriver.chrome.driver",getProperty("chrome.driver.path"));
+    driver=new ChromeDriver();
+  }
+ else   if (BrowserUtil.isSafari(desiredCapabilities)) {
+    driver=new SafariDriver();
+  }
+ else {
+    throw new RuntimeException("Not implemented support for running locally on " + BrowserUtil.getBrowserIdentifier(desiredCapabilities));
+  }
+  setDriver(TestBench.createDriver(driver));
+  setDesiredCapabilities(desiredCapabilities);
+}
