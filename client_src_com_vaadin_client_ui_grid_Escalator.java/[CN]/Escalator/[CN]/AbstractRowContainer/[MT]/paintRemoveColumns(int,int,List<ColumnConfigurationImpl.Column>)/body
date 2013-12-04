@@ -7,12 +7,15 @@
       detachPossibleWidgetFromCell(cellElement);
       cellElement.removeFromParent();
     }
-    recalculateRowWidth((Element)tr);
   }
-  final int firstRemovedColumnLeft=offset * COLUMN_WIDTH_PX;
+  reapplyRowWidths();
+  final int firstRemovedColumnLeft=columnConfiguration.getCalculatedColumnsWidth(Range.withLength(0,offset));
   final boolean columnsWereRemovedFromLeftOfTheViewport=scroller.lastScrollLeft > firstRemovedColumnLeft;
   if (columnsWereRemovedFromLeftOfTheViewport) {
-    final int removedColumnsPxAmount=numberOfColumns * COLUMN_WIDTH_PX;
+    int removedColumnsPxAmount=0;
+    for (    ColumnConfigurationImpl.Column removedColumn : removedColumns) {
+      removedColumnsPxAmount+=removedColumn.getCalculatedWidth();
+    }
     final int leftByDiff=(int)(scroller.lastScrollLeft - removedColumnsPxAmount);
     final int newScrollLeft=Math.max(firstRemovedColumnLeft,leftByDiff);
     horizontalScrollbar.setScrollPos(newScrollLeft);

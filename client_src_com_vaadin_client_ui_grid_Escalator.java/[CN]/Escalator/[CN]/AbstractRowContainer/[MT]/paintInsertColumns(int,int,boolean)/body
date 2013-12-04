@@ -1,6 +1,7 @@
 {
   final NodeList<Node> childNodes=root.getChildNodes();
   for (int row=0; row < childNodes.getLength(); row++) {
+    final int rowHeight=ROW_HEIGHT_PX;
     final Element tr=getTrByVisualIndex(row);
     Node referenceCell;
     if (offset != 0) {
@@ -10,20 +11,23 @@
       referenceCell=null;
     }
     for (int col=offset; col < offset + numberOfColumns; col++) {
-      final Element cellElem=createCellElement();
+      final int colWidth=columnConfiguration.getColumnWidthActual(col);
+      final Element cellElem=createCellElement(rowHeight,colWidth);
       referenceCell=insertAfterReferenceAndUpdateIt(tr,cellElem,referenceCell);
     }
-    recalculateRowWidth(tr);
   }
+  reapplyRowWidths();
   if (frozen) {
     for (int col=offset; col < offset + numberOfColumns; col++) {
       setColumnFrozen(col,true);
     }
   }
   scroller.recalculateScrollbarsForVirtualViewport();
-  final boolean columnsWereAddedToTheLeftOfViewport=scroller.lastScrollLeft > offset * COLUMN_WIDTH_PX;
+  int pixelsToInsertedColumn=columnConfiguration.getCalculatedColumnsWidth(Range.withLength(0,offset));
+  final boolean columnsWereAddedToTheLeftOfViewport=scroller.lastScrollLeft > pixelsToInsertedColumn;
   if (columnsWereAddedToTheLeftOfViewport) {
-    horizontalScrollbar.setScrollPos((int)(scroller.lastScrollLeft + numberOfColumns * COLUMN_WIDTH_PX));
+    int insertedColumnsWidth=columnConfiguration.getCalculatedColumnsWidth(Range.withLength(offset,numberOfColumns));
+    horizontalScrollbar.setScrollPos((int)(scroller.lastScrollLeft + insertedColumnsWidth));
   }
   if (getRowCount() > 0 && getColumnConfiguration().getColumnCount() > 1) {
     refreshRows(0,getRowCount());

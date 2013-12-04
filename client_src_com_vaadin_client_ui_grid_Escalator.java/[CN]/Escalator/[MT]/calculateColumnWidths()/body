@@ -1,0 +1,24 @@
+{
+  boolean widthsHaveChanged=false;
+  for (int colIndex=0; colIndex < columnConfiguration.getColumnCount(); colIndex++) {
+    if (columnConfiguration.getColumnWidth(colIndex) >= 0) {
+      continue;
+    }
+    final int oldColumnWidth=columnConfiguration.getColumnWidthActual(colIndex);
+    int maxColumnWidth=0;
+    maxColumnWidth=Math.max(maxColumnWidth,header.calculateMaxColWidth(colIndex));
+    maxColumnWidth=Math.max(maxColumnWidth,body.calculateMaxColWidth(colIndex));
+    maxColumnWidth=Math.max(maxColumnWidth,footer.calculateMaxColWidth(colIndex));
+    Logger.getLogger("Escalator.calculateColumnWidths").info("#" + colIndex + ": "+ maxColumnWidth+ "px");
+    if (oldColumnWidth != maxColumnWidth) {
+      columnConfiguration.setCalculatedColumnWidth(colIndex,maxColumnWidth);
+      widthsHaveChanged=true;
+    }
+  }
+  if (widthsHaveChanged) {
+    header.reapplyColumnWidths();
+    body.reapplyColumnWidths();
+    footer.reapplyColumnWidths();
+    recalculateElementSizes();
+  }
+}
