@@ -24,7 +24,7 @@
           continue inputTermLoop;
         }
       }
-      throw new ArithmeticException();
+      throw new ArithmeticException("Illegal arithmetic expression",term);
     }
     if (current.getLexicalUnitType() == SCSSLexicalUnit.SCSS_OPERATOR_LEFT_PAREN) {
       operators.push(Parentheses.LEFT);
@@ -38,14 +38,14 @@
   while (!operators.isEmpty()) {
     Object operator=operators.pop();
     if (operator == Parentheses.LEFT) {
-      throw new ArithmeticException("Unexpected \"(\" found");
+      throw new ArithmeticException("Unexpected \"(\" found",term);
     }
     createNewOperand((BinaryOperator)operator,operands);
   }
   Object expression=operands.pop();
   if (!operands.isEmpty()) {
     LexicalUnitImpl operand=(LexicalUnitImpl)operands.peek();
-    throw new ArithmeticException("Unexpected operand " + operand.toString() + " found");
+    throw new ArithmeticException("Unexpected operand " + operand.toString() + " found",term);
   }
   return expression;
 }
