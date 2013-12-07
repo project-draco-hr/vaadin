@@ -1,0 +1,46 @@
+{
+  final TextField textField=new TextField(){
+    @Override protected void fireValueChange(    boolean repaintIsNotNeeded){
+      log("fireValueChange");
+      super.fireValueChange(repaintIsNotNeeded);
+    }
+  }
+;
+  textField.setId(FIELD);
+  final ValueChangeListener listener=new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      log("Value changed: " + event.getProperty().getValue());
+    }
+  }
+;
+  final CheckBox checkBox=new CheckBox("Toggle listener");
+  checkBox.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      if (checkBox.getValue()) {
+        textField.addValueChangeListener(listener);
+      }
+ else {
+        textField.removeValueChangeListener(listener);
+      }
+    }
+  }
+);
+  checkBox.setId(LISTENER_TOGGLE);
+  Button b=new Button("setImmediate(false), sets explicitly false and causes server roundtrip",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      textField.setImmediate(false);
+    }
+  }
+);
+  b.setId(EXPLICIT_FALSE);
+  Button b2=new Button("Hit server, causes server roundtrip",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+    }
+  }
+);
+  b2.setId(BUTTON);
+  addComponent(textField);
+  addComponent(checkBox);
+  addComponent(b);
+  addComponent(b2);
+}
