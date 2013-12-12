@@ -1,7 +1,10 @@
 {
   columns.add(index,column);
-  ColumnConfiguration conf=escalator.getColumnConfiguration();
-  conf.insertColumns(index,1);
+  if (column.isVisible()) {
+    int visibleIndex=findVisibleColumnIndex(column);
+    ColumnConfiguration conf=escalator.getColumnConfiguration();
+    conf.insertColumns(visibleIndex,1);
+  }
   ((AbstractGridColumn<?,T>)column).setGrid(this);
   if (lastFrozenColumn != null && ((AbstractGridColumn<?,T>)lastFrozenColumn).findIndexOfColumn() < index) {
     refreshFrozenColumns();
