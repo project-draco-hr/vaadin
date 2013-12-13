@@ -1,0 +1,22 @@
+{
+  String[] pathComponents=path.split(SUBPART_SEPARATOR);
+  ComponentConnector connector;
+  if (pathComponents[0].length() > 0) {
+    connector=findConnectorByPath(pathComponents[0],root);
+  }
+ else {
+    connector=root;
+  }
+  if (connector != null) {
+    if (pathComponents.length > 1) {
+      if (connector.getWidget() instanceof SubPartAware) {
+        return ((SubPartAware)connector.getWidget()).getSubPartElement(pathComponents[1]);
+      }
+ else {
+        return null;
+      }
+    }
+    return connector.getWidget().getElement();
+  }
+  return null;
+}

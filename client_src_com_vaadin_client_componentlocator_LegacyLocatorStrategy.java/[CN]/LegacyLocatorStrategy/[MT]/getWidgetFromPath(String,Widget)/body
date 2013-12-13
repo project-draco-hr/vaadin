@@ -1,0 +1,122 @@
+{
+  Widget w=baseWidget;
+  String parts[]=path.split(PARENTCHILD_SEPARATOR);
+  for (int i=0; i < parts.length; i++) {
+    String part=parts[i];
+    if (part.equals(ROOT_ID)) {
+      w=RootPanel.get();
+    }
+ else     if (part.equals("")) {
+      if (w == null) {
+        w=client.getUIConnector().getWidget();
+      }
+    }
+ else     if (w == null) {
+      String id=part;
+      ServerConnector connector=ConnectorMap.get(client).getConnector(id);
+      if (connector == null) {
+        connector=findConnectorById(client.getUIConnector(),id.substring(5));
+      }
+      if (connector instanceof ComponentConnector) {
+        w=((ComponentConnector)connector).getWidget();
+      }
+ else {
+        return null;
+      }
+    }
+ else     if (part.startsWith("domChild[")) {
+      break;
+    }
+ else     if (w instanceof Iterable) {
+      Iterable<?> parent=(Iterable<?>)w;
+      String[] split=part.split("\\[",2);
+      String widgetClassName=split[0];
+      String indexString=split[1].substring(0,split[1].length() - 1);
+      int widgetPosition;
+      try {
+        widgetPosition=Integer.parseInt(indexString);
+      }
+ catch (      NumberFormatException e) {
+        return null;
+      }
+      if (w instanceof VGridLayout && "AbsolutePanel".equals(widgetClassName)) {
+        continue;
+      }
+      if (w instanceof VCssLayout && "VCssLayout$FlowPane".equals(widgetClassName)) {
+        continue;
+      }
+      if (w instanceof VAbstractOrderedLayout && ("ChildComponentContainer".equals(widgetClassName) || "VOrderedLayout$Slot".equals(widgetClassName))) {
+        widgetClassName="Slot";
+      }
+      if (w instanceof VTabsheetPanel && widgetPosition != 0) {
+        widgetPosition=0;
+      }
+      if (w instanceof VOverlay && "VCalendarPanel".equals(widgetClassName)) {
+        parent=(Iterable<?>)((Iterable<?>)parent).iterator().next();
+      }
+      if ((w instanceof VGridLayout) && "ChildComponentContainer".equals(widgetClassName) && i + 1 < parts.length) {
+        HasWidgets layout=(HasWidgets)w;
+        String nextPart=parts[i + 1];
+        String[] nextSplit=nextPart.split("\\[",2);
+        String nextWidgetClassName=nextSplit[0];
+        int nextIndex=0;
+        for (        Widget child : layout) {
+          boolean matchingType=nextWidgetClassName.equals(Util.getSimpleName(child));
+          if (matchingType && widgetPosition == 0) {
+            break;
+          }
+ else           if (widgetPosition < 0) {
+            return null;
+          }
+ else           if (matchingType) {
+            nextIndex++;
+          }
+          if (!(child instanceof VCaption)) {
+            widgetPosition--;
+          }
+        }
+        parts[i + 1]=nextWidgetClassName + '[' + nextIndex+ ']';
+        continue;
+      }
+      Iterator<? extends Widget> iterator;
+      if (widgetClassName.equals("VWindow")) {
+        List<WindowConnector> windows=client.getUIConnector().getSubWindows();
+        List<VWindow> windowWidgets=new ArrayList<VWindow>(windows.size());
+        for (        WindowConnector wc : windows) {
+          windowWidgets.add(wc.getWidget());
+        }
+        iterator=windowWidgets.iterator();
+      }
+ else       if (widgetClassName.equals("VContextMenu")) {
+        return client.getContextMenu();
+      }
+ else {
+        iterator=(Iterator<? extends Widget>)parent.iterator();
+      }
+      boolean ok=false;
+      while (iterator.hasNext()) {
+        Widget child=iterator.next();
+        String simpleName2=Util.getSimpleName(child);
+        if (!widgetClassName.equals(simpleName2) && child instanceof Slot) {
+          child=((Slot)child).getWidget();
+          simpleName2=Util.getSimpleName(child);
+        }
+        if (widgetClassName.equals(simpleName2)) {
+          if (widgetPosition == 0) {
+            w=child;
+            ok=true;
+            break;
+          }
+          widgetPosition--;
+        }
+      }
+      if (!ok) {
+        return null;
+      }
+    }
+ else {
+      return null;
+    }
+  }
+  return w;
+}
