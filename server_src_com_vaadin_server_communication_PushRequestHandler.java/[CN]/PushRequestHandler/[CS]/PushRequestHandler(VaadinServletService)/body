@@ -1,6 +1,13 @@
 {
+  final ServletConfig config=service.getServlet().getServletConfig();
   atmosphere=new AtmosphereFramework(){
     @Override protected void analytics(){
+    }
+    @Override public AtmosphereFramework addInitParameter(    String name,    String value){
+      if (config.getInitParameter(name) == null) {
+        super.addInitParameter(name,value);
+      }
+      return this;
     }
   }
 ;
@@ -14,7 +21,7 @@
   atmosphere.addInitParameter(ApplicationConfig.WEBSOCKET_MAXBINARYSIZE,bufferSize);
   atmosphere.addInitParameter("org.atmosphere.cpr.showSupportMessage","false");
   try {
-    atmosphere.init(service.getServlet().getServletConfig());
+    atmosphere.init(config);
     AtmosphereInterceptor trackMessageSize=new TrackMessageSizeInterceptor();
     trackMessageSize.configure(atmosphere.getAtmosphereConfig());
     atmosphere.interceptor(trackMessageSize);
