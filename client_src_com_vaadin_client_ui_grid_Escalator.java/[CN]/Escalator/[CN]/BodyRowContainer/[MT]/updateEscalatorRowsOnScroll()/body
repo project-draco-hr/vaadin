@@ -2,6 +2,7 @@
   if (visualRowOrder.isEmpty()) {
     return;
   }
+  boolean rowsWereMoved=false;
   final int topRowPos=getRowTop(visualRowOrder.getFirst());
   final int scrollTop=tBodyScrollTop;
   final int viewportOffset=topRowPos - scrollTop;
@@ -12,6 +13,7 @@
     final int start=end - rowsToMove;
     final int logicalRowIndex=scrollTop / ROW_HEIGHT_PX;
     moveAndUpdateEscalatorRows(Range.between(start,end),0,logicalRowIndex);
+    rowsWereMoved=(rowsToMove != 0);
   }
  else   if (viewportOffset + ROW_HEIGHT_PX <= 0) {
     int rowsToMove=Math.abs(viewportOffset / ROW_HEIGHT_PX);
@@ -35,6 +37,9 @@
       final int topLogicalIndex=getLogicalRowIndex(visualRowOrder.get(1)) - 1;
       moveAndUpdateEscalatorRows(strayRow,0,topLogicalIndex);
     }
+    rowsWereMoved=(rowsToMove != 0);
   }
-  fireRowVisibilityChangeEvent();
+  if (rowsWereMoved) {
+    fireRowVisibilityChangeEvent();
+  }
 }

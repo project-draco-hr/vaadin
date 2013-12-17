@@ -1,8 +1,8 @@
 {
   createCategory("Columns",null);
   for (int c=0; c < COLUMNS; c++) {
-    createCategory("Column" + c,"Columns");
-    createBooleanAction("Visible","Column" + c,true,new Command<Grid,Boolean>(){
+    createCategory(getColumnProperty(c),"Columns");
+    createBooleanAction("Visible",getColumnProperty(c),true,new Command<Grid,Boolean>(){
       @Override public void execute(      Grid grid,      Boolean value,      Object columnIndex){
         Object propertyId=(new ArrayList(grid.getContainerDatasource().getContainerPropertyIds()).get((Integer)columnIndex));
         GridColumn column=grid.getColumn(propertyId);
@@ -10,19 +10,19 @@
       }
     }
 ,c);
-    createClickAction("Remove","Column" + c,new Command<Grid,String>(){
+    createClickAction("Remove",getColumnProperty(c),new Command<Grid,String>(){
       @Override public void execute(      Grid grid,      String value,      Object data){
         grid.getContainerDatasource().removeContainerProperty("Column" + data);
       }
     }
 ,null,c);
-    createClickAction("Freeze","Column" + c,new Command<Grid,String>(){
+    createClickAction("Freeze",getColumnProperty(c),new Command<Grid,String>(){
       @Override public void execute(      Grid grid,      String value,      Object data){
         grid.setLastFrozenPropertyId("Column" + data);
       }
     }
 ,null,c);
-    createCategory("Column" + c + " Width","Column" + c);
+    createCategory("Column" + c + " Width",getColumnProperty(c));
     createClickAction("Auto","Column" + c + " Width",new Command<Grid,Integer>(){
       @Override public void execute(      Grid grid,      Integer value,      Object columnIndex){
         Object propertyId=(new ArrayList(grid.getContainerDatasource().getContainerPropertyIds()).get((Integer)columnIndex));

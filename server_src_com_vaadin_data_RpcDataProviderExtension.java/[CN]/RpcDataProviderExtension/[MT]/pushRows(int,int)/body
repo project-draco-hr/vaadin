@@ -3,15 +3,7 @@
   Collection<?> propertyIds=container.getContainerPropertyIds();
   List<String[]> rows=new ArrayList<String[]>(itemIds.size());
   for (  Object itemId : itemIds) {
-    Item item=container.getItem(itemId);
-    String[] row=new String[propertyIds.size()];
-    int i=0;
-    for (    Object propertyId : propertyIds) {
-      Object value=item.getItemProperty(propertyId).getValue();
-      String stringValue=String.valueOf(value);
-      row[i++]=stringValue;
-    }
-    rows.add(row);
+    rows.add(getRowData(propertyIds,itemId));
   }
   getRpcProxy(DataProviderRpc.class).setRowData(firstRow,rows);
 }
