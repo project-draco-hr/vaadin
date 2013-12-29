@@ -1,9 +1,10 @@
 {
-  final Throwable t=event.getThrowable();
+  Throwable t=event.getThrowable();
   if (t instanceof SocketException) {
     getLogger().info("SocketException in CommunicationManager." + " Most likely client (browser) closed socket.");
     return;
   }
+  t=findRelevantThrowable(t);
   AbstractComponent component=findAbstractComponent(event);
   if (component != null) {
     ErrorMessage errorMessage=AbstractErrorMessage.getErrorMessageForException(t);
