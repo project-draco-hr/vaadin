@@ -1,0 +1,21 @@
+{
+  assertUICount(0);
+  getDriver().get(integrationUrl);
+  assertUICount(1);
+  getDriver().get(integrationUrl);
+  List<UIData> twoUIs=getUIs();
+  assertEquals(2,twoUIs.size());
+  assertNotEquals(twoUIs.get(0).uiId,twoUIs.get(1).uiId);
+  assertEquals(twoUIs.get(0).serviceName,twoUIs.get(1).serviceName);
+  getDriver().get(appRunnerTestUrl);
+  List<UIData> threeUIs=getUIs();
+  assertEquals(3,threeUIs.size());
+  Set<String> serviceNames=new HashSet<String>();
+  Set<Integer> uiIds=new HashSet<Integer>();
+  for (  UIData uiData : threeUIs) {
+    serviceNames.add(uiData.serviceName);
+    uiIds.add(uiData.uiId);
+  }
+  assertGreaterOrEqual("There should be at least two unique service names",serviceNames.size(),2);
+  assertGreaterOrEqual("There should be at least two unique ui ids",uiIds.size(),2);
+}

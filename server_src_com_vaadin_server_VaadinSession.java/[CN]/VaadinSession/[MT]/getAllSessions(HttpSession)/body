@@ -1,0 +1,14 @@
+{
+  Set<VaadinSession> sessions=new HashSet<VaadinSession>();
+  Enumeration<String> attributeNames=httpSession.getAttributeNames();
+  while (attributeNames.hasMoreElements()) {
+    String attributeName=attributeNames.nextElement();
+    if (attributeName.startsWith(VaadinSession.class.getName() + ".")) {
+      Object value=httpSession.getAttribute(attributeName);
+      if (value instanceof VaadinSession) {
+        sessions.add((VaadinSession)value);
+      }
+    }
+  }
+  return sessions;
+}
