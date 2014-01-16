@@ -1,28 +1,34 @@
 {
-  int innerScrollerHeight=ROW_HEIGHT_PX * body.getRowCount();
-  double vScrollBottom=footer.height;
-  if (needsHorizontalScrollbars()) {
-    vScrollBottom+=horizontalScrollbar.getScrollbarThickness();
-  }
-  verticalScrollbar.getElement().getStyle().setTop(header.height,Unit.PX);
-  verticalScrollbar.getElement().getStyle().setBottom(vScrollBottom,Unit.PX);
-  verticalScrollbar.setScrollSize(innerScrollerHeight);
-  final Range unfrozenRange=Range.between(columnConfiguration.getFrozenColumnCount(),columnConfiguration.getColumnCount());
-  final int scrollwidth=columnConfiguration.getCalculatedColumnsWidth(unfrozenRange);
-  horizontalScrollbar.setScrollSize(scrollwidth);
-  final Style hScrollbarStyle=horizontalScrollbar.getElement().getStyle();
-  if (needsVerticalScrollbars()) {
-    final int hScrollbarRight=verticalScrollbar.getScrollbarThickness();
-    hScrollbarStyle.setRight(hScrollbarRight,Unit.PX);
-  }
+  int scrollContentHeight=ROW_HEIGHT_PX * body.getRowCount();
+  int scrollContentWidth=columnConfiguration.calculateRowWidth();
+  double tableWrapperHeight=height;
+  double tableWrapperWidth=width;
+  boolean verticalScrollNeeded=scrollContentHeight > tableWrapperHeight - header.height - footer.height;
+  boolean horizontalScrollNeeded=scrollContentWidth > tableWrapperWidth;
+  if (verticalScrollNeeded != horizontalScrollNeeded) {
+    if (!verticalScrollNeeded && horizontalScrollNeeded) {
+      verticalScrollNeeded=scrollContentHeight > tableWrapperHeight - header.height - footer.height- horizontalScrollbar.getScrollbarThickness();
+    }
  else {
-    hScrollbarStyle.clearRight();
+      horizontalScrollNeeded=scrollContentWidth > tableWrapperWidth - verticalScrollbar.getScrollbarThickness();
+    }
   }
-  final int scrollPos=horizontalScrollbar.getScrollPos();
-  final int leftPos=columnConfiguration.getCalculatedColumnsWidth(Range.withLength(0,columnConfiguration.frozenColumns));
-  horizontalScrollbar.getElement().getStyle().setLeft(leftPos,Unit.PX);
-  horizontalScrollbar.setScrollPos(scrollPos);
-  recalculateTableWrapperSize();
-  verticalScrollbar.recalculateMaxScrollPos();
-  horizontalScrollbar.recalculateMaxScrollPos();
+  if (verticalScrollNeeded) {
+    tableWrapperWidth-=verticalScrollbar.getScrollbarThickness();
+  }
+  if (horizontalScrollNeeded) {
+    tableWrapperHeight-=horizontalScrollbar.getScrollbarThickness();
+  }
+  tableWrapper.getStyle().setHeight(tableWrapperHeight,Unit.PX);
+  tableWrapper.getStyle().setWidth(tableWrapperWidth,Unit.PX);
+  verticalScrollbar.setOffsetSize((int)(tableWrapperHeight - footer.height - header.height));
+  verticalScrollbar.setScrollSize(scrollContentHeight);
+  int prevScrollPos=horizontalScrollbar.getScrollPos();
+  int unfrozenPixels=columnConfiguration.getCalculatedColumnsWidth(Range.between(columnConfiguration.getFrozenColumnCount(),columnConfiguration.getColumnCount()));
+  int frozenPixels=scrollContentWidth - unfrozenPixels;
+  double hScrollOffsetWidth=tableWrapperWidth - frozenPixels;
+  horizontalScrollbar.setOffsetSize((int)hScrollOffsetWidth);
+  horizontalScrollbar.setScrollSize(unfrozenPixels);
+  horizontalScrollbar.getElement().getStyle().setLeft(frozenPixels,Unit.PX);
+  horizontalScrollbar.setScrollPos(prevScrollPos);
 }
