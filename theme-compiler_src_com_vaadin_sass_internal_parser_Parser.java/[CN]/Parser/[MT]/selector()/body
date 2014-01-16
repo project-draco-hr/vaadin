@@ -1,0 +1,67 @@
+{
+  String selector=null;
+  char comb;
+  try {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case LBRACKET:
+case ANY:
+case PARENT:
+case DOT:
+case COLON:
+case INTERPOLATION:
+case IDENT:
+case HASH:
+      selector=simple_selector(null,' ');
+    break;
+case PLUS:
+case PRECEDES:
+case SIBLING:
+  comb=combinatorChar();
+selector=simple_selector(selector,comb);
+break;
+default :
+jj_la1[78]=jj_gen;
+jj_consume_token(-1);
+throw new ParseException();
+}
+label_55: while (true) {
+if (jj_2_2(2)) {
+;
+}
+ else {
+break label_55;
+}
+comb=combinator();
+selector=simple_selector(selector,comb);
+}
+label_56: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[79]=jj_gen;
+break label_56;
+}
+jj_consume_token(S);
+}
+{
+if (true) {
+return selector;
+}
+}
+}
+ catch (ParseException e) {
+Token t=getToken(1);
+while ((t.kind != COMMA) && (t.kind != SEMICOLON) && (t.kind != LBRACE)&& (t.kind != EOF)) {
+getNextToken();
+t=getToken(1);
+}
+{
+if (true) {
+throw new ThrowedParseException(e);
+}
+}
+}
+throw new Error("Missing return statement in function");
+}

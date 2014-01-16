@@ -1,0 +1,131 @@
+{
+  boolean start=false;
+  Token n=null;
+  String page=null;
+  String pseudo=null;
+  try {
+    jj_consume_token(PAGE_SYM);
+    label_30:     while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+        ;
+      break;
+default :
+    jj_la1[40]=jj_gen;
+  break label_30;
+}
+jj_consume_token(S);
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case IDENT:
+n=jj_consume_token(IDENT);
+label_31: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[41]=jj_gen;
+break label_31;
+}
+jj_consume_token(S);
+}
+break;
+default :
+jj_la1[42]=jj_gen;
+;
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case COLON:
+pseudo=pseudo_page();
+break;
+default :
+jj_la1[43]=jj_gen;
+;
+}
+if (n != null) {
+page=convertIdent(n.image);
+}
+jj_consume_token(LBRACE);
+label_32: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[44]=jj_gen;
+break label_32;
+}
+jj_consume_token(S);
+}
+start=true;
+documentHandler.startPage(page,pseudo);
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case INTERPOLATION:
+case IDENT:
+declaration();
+break;
+default :
+jj_la1[45]=jj_gen;
+;
+}
+label_33: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case SEMICOLON:
+;
+break;
+default :
+jj_la1[46]=jj_gen;
+break label_33;
+}
+jj_consume_token(SEMICOLON);
+label_34: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[47]=jj_gen;
+break label_34;
+}
+jj_consume_token(S);
+}
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case INTERPOLATION:
+case IDENT:
+declaration();
+break;
+default :
+jj_la1[48]=jj_gen;
+;
+}
+}
+jj_consume_token(RBRACE);
+label_35: while (true) {
+switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+case S:
+;
+break;
+default :
+jj_la1[49]=jj_gen;
+break label_35;
+}
+jj_consume_token(S);
+}
+}
+ catch (ParseException e) {
+if (errorHandler != null) {
+LocatorImpl li=new LocatorImpl(this,e.currentToken.next.beginLine,e.currentToken.next.beginColumn - 1);
+reportError(li,e);
+skipStatement();
+}
+ else {
+skipStatement();
+}
+}
+ finally {
+if (start) {
+documentHandler.endPage(page,pseudo);
+}
+}
+}

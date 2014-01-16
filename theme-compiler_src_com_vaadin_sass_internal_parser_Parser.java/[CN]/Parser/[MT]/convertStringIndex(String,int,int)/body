@@ -1,0 +1,61 @@
+{
+  StringBuffer buf=new StringBuffer(len);
+  int index=start;
+  while (index < len) {
+    char c=s.charAt(index);
+    if (c == '\u005c\u005c') {
+      if (++index < len) {
+        c=s.charAt(index);
+switch (c) {
+case '0':
+case '1':
+case '2':
+case '3':
+case '4':
+case '5':
+case '6':
+case '7':
+case '8':
+case '9':
+case 'a':
+case 'b':
+case 'c':
+case 'd':
+case 'e':
+case 'f':
+case 'A':
+case 'B':
+case 'C':
+case 'D':
+case 'E':
+case 'F':
+          buf.append('\u005c\u005c');
+        while (index < len) {
+          buf.append(s.charAt(index++));
+        }
+      break;
+case '\u005cn':
+case '\u005cf':
+    break;
+case '\u005cr':
+  if (index + 1 < len) {
+    if (s.charAt(index + 1) == '\u005cn') {
+      index++;
+    }
+  }
+break;
+default :
+buf.append(c);
+}
+}
+ else {
+throw new CSSParseException("invalid string " + s,getLocator());
+}
+}
+ else {
+buf.append(c);
+}
+index++;
+}
+return buf.toString();
+}
