@@ -1,5 +1,6 @@
 {
-  if (ScssStylesheet.getVariable(node.getName()) == null || !node.isGuarded()) {
+  VariableNode variable=ScssStylesheet.getVariable(node.getName());
+  if (!node.isGuarded() || variable == null || variable.getExpr() == null || (variable.getExpr().getLexicalUnitType() == SCSSLexicalUnit.SCSS_NULL && variable.getExpr().getNextLexicalUnit() == null)) {
     ScssStylesheet.addVariable(node);
   }
   node.getParentNode().removeChild(node);
