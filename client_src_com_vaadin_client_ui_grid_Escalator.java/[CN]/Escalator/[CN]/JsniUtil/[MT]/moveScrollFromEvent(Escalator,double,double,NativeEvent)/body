@@ -5,5 +5,9 @@
   if (!Double.isNaN(deltaY)) {
     escalator.verticalScrollbar.setScrollPosByDelta((int)deltaY);
   }
-  event.preventDefault();
+  final boolean warrantedYScroll=deltaY != 0 && escalator.verticalScrollbar.needsScrollbars();
+  final boolean warrantedXScroll=deltaX != 0 && escalator.horizontalScrollbar.needsScrollbars();
+  if (warrantedYScroll || warrantedXScroll) {
+    event.preventDefault();
+  }
 }
