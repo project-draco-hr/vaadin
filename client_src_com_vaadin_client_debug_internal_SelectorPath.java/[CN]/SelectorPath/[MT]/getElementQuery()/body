@@ -1,0 +1,49 @@
+{
+  if (locator.isValidForLegacyLocator(path)) {
+    return getLegacyLocatorQuery();
+  }
+  String[] fragments;
+  String tmpPath=path;
+  List<SelectorPredicate> postFilters=SelectorPredicate.extractPostFilterPredicates(path);
+  if (postFilters.size() > 0) {
+    tmpPath=tmpPath.substring(1,tmpPath.lastIndexOf(')'));
+  }
+  fragments=tmpPath.split("/");
+  String elementQueryString;
+  int index=0;
+  for (  SelectorPredicate p : postFilters) {
+    if (p.getIndex() > 0) {
+      index=p.getIndex();
+    }
+  }
+  if (index > 0) {
+    elementQueryString=".get(" + index + ");";
+  }
+ else {
+    elementQueryString=".fist();";
+  }
+  for (int i=1; i < fragments.length; ++i) {
+    if (fragments[i].isEmpty()) {
+      continue;
+    }
+    String queryFragment="";
+    String elementClass=getComponentName(fragments[i]) + "Element.class";
+    for (    SelectorPredicate p : SelectorPredicate.extractPredicates(fragments[i])) {
+      queryFragment+="." + p.getName() + "(\""+ p.getValue()+ "\")";
+    }
+    if (i == fragments.length - 1) {
+      queryFragment="$(" + elementClass + ")"+ queryFragment;
+    }
+ else {
+      boolean recursive=fragments[i + 1].isEmpty();
+      if (recursive) {
+        queryFragment=".in(" + elementClass + ")"+ queryFragment;
+      }
+ else {
+        queryFragment=".childOf(" + elementClass + ")"+ queryFragment;
+      }
+    }
+    elementQueryString=queryFragment + elementQueryString;
+  }
+  return generateJavaVariable(fragments[fragments.length - 1]) + elementQueryString;
+}

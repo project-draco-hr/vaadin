@@ -1,0 +1,21 @@
+{
+  Element e=elem;
+  ComponentConnector c=Util.findPaintable(client,e);
+  List<ConnectorPath> connectorHierarchy=new ArrayList<ConnectorPath>();
+  while (c != null) {
+    for (    String id : getIDsForConnector(c)) {
+      ConnectorPath cp=new ConnectorPath();
+      cp.name=getFullClassName(id);
+      cp.connector=c;
+      if (!cp.name.equals("com.vaadin.ui.UI")) {
+        connectorHierarchy.add(cp);
+      }
+    }
+    e=(Element)e.getParentElement();
+    if (e != null) {
+      c=Util.findPaintable(client,e);
+      e=c != null ? c.getWidget().getElement() : null;
+    }
+  }
+  return connectorHierarchy;
+}
