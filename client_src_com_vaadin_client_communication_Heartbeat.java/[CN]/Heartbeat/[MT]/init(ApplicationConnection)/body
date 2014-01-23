@@ -1,0 +1,12 @@
+{
+  interval=applicationConnection.getConfiguration().getHeartbeatInterval();
+  setInterval(interval);
+  schedule();
+  applicationConnection.addHandler(ApplicationConnection.ApplicationStoppedEvent.TYPE,new ApplicationConnection.ApplicationStoppedHandler(){
+    @Override public void onApplicationStopped(    ApplicationStoppedEvent event){
+      setInterval(-1);
+      schedule();
+    }
+  }
+);
+}
