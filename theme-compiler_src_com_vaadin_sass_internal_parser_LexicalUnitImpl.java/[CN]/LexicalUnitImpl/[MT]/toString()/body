@@ -83,33 +83,7 @@ case LexicalUnit.SAC_COUNTERS_FUNCTION:
 case LexicalUnit.SAC_RECT_FUNCTION:
 case LexicalUnit.SAC_FUNCTION:
 String funcName=getFunctionName();
-LexicalUnitImpl firstParam=getParameters();
-if ("round".equals(funcName)) {
-firstParam.setFloatValue(Math.round(firstParam.getFloatValue()));
-text=firstParam.toString();
-}
- else if ("ceil".equals(funcName)) {
-firstParam.setFloatValue((float)Math.ceil(firstParam.getFloatValue()));
-text=firstParam.toString();
-}
- else if ("floor".equals(funcName)) {
-firstParam.setFloatValue((float)Math.floor(firstParam.getFloatValue()));
-text=firstParam.toString();
-}
- else if ("abs".equals(funcName)) {
-firstParam.setFloatValue(Math.abs(firstParam.getFloatValue()));
-text=firstParam.toString();
-}
- else if ("darken".equals(funcName)) {
-LexicalUnitImpl dark=ColorUtil.darken(this);
-text=dark.toString();
-}
- else if ("lighten".equals(funcName)) {
-text=ColorUtil.lighten(this).toString();
-}
- else {
-text=getFunctionName() + "(" + getParameters()+ ")";
-}
+text=serializeFunction(funcName);
 break;
 case LexicalUnit.SAC_IDENT:
 text=getStringValue();
