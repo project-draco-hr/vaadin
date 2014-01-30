@@ -6,10 +6,10 @@
     }
     if (value.getLexicalUnitType() == LexicalUnitImpl.SAC_FUNCTION) {
       if (value.getParameters() != null) {
-        if (StringUtil.containsVariable(value.getParameters().toString(),node.getName())) {
+        if (StringUtil.containsVariable(value.getParameters().printState(),node.getName())) {
           LexicalUnitImpl param=value.getParameters();
           while (param != null) {
-            if (param.getLexicalUnitType() == LexicalUnitImpl.SCSS_VARIABLE && param.getValue().toString().equals(node.getName())) {
+            if (param.getLexicalUnitType() == LexicalUnitImpl.SCSS_VARIABLE && param.getValueAsString().equals(node.getName())) {
               param.replaceValue(node.getExpr());
             }
             param=param.getNextLexicalUnit();
@@ -20,8 +20,8 @@
  else     if (value.getStringValue() != null && value.getStringValue().contains(interpolation)) {
       LexicalUnitImpl current=value;
       while (current != null) {
-        if (current.getValue().toString().contains(interpolation)) {
-          current.setStringValue(current.getValue().toString().replaceAll(Pattern.quote(interpolation),node.getExpr().unquotedString()));
+        if (current.getValueAsString().contains(interpolation)) {
+          current.setStringValue(current.getValueAsString().replaceAll(Pattern.quote(interpolation),node.getExpr().unquotedString()));
         }
         current=current.getNextLexicalUnit();
       }
@@ -29,7 +29,7 @@
  else {
       LexicalUnitImpl current=value;
       while (current != null) {
-        if (current.getLexicalUnitType() == LexicalUnitImpl.SCSS_VARIABLE && current.getValue().toString().equals(node.getName())) {
+        if (current.getLexicalUnitType() == LexicalUnitImpl.SCSS_VARIABLE && current.getValueAsString().equals(node.getName())) {
           current.replaceValue(node.getExpr());
         }
         current=current.getNextLexicalUnit();
