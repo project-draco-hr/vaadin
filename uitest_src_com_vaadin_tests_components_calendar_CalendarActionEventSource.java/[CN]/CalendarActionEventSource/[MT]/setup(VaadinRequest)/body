@@ -1,0 +1,45 @@
+{
+  calendar=new Calendar(new CalendarEventProvider(){
+    @Override public List<com.vaadin.ui.components.calendar.event.CalendarEvent> getEvents(    Date startDate,    Date endDate){
+      List<CalendarEvent> events=new ArrayList<CalendarEvent>();
+      CalendarEvent event=null;
+      try {
+        event=new BasicEvent("NAME","TOOLTIP",new SimpleDateFormat("yyyy-MM-dd hh:mm").parse("2013-01-01 07:00"),new SimpleDateFormat("yyyy-MM-dd hh:mm").parse("2013-01-01 11:00"));
+      }
+ catch (      ParseException e) {
+      }
+      events.add(event);
+      return events;
+    }
+  }
+);
+  try {
+    calendar.setStartDate(new SimpleDateFormat("yyyy-MM-dd").parse("2013-01-01"));
+    calendar.setEndDate(new SimpleDateFormat("yyyy-MM-dd").parse("2013-01-31"));
+  }
+ catch (  ParseException e) {
+  }
+  calendar.setImmediate(true);
+  calendar.setFirstVisibleHourOfDay(6);
+  calendar.setLastVisibleHourOfDay(22);
+  calendar.setTimeFormat(TimeFormat.Format24H);
+  calendar.setHandler((EventResizeHandler)null);
+  setEnabled(true);
+  calendar.addActionHandler(new Handler(){
+    @Override public void handleAction(    Action action,    Object sender,    Object target){
+      Label label1=new Label(calendar.toString());
+      label1.setId("calendarlabel");
+      addComponent(label1);
+      Label label2=new Label(sender.toString());
+      label2.setId("senderlabel");
+      addComponent(label2);
+    }
+    @Override public Action[] getActions(    Object target,    Object sender){
+      return new Action[]{new Action("ACTION")};
+    }
+  }
+);
+  addComponent(calendar);
+  calendar.setSizeFull();
+  setSizeFull();
+}
