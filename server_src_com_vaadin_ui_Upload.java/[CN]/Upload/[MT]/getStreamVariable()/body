@@ -12,7 +12,10 @@
         return interrupted;
       }
       @Override public OutputStream getOutputStream(){
-        OutputStream receiveUpload=receiver.receiveUpload(lastStartedEvent.getFileName(),lastStartedEvent.getMimeType());
+        if (getReceiver() == null) {
+          throw new IllegalStateException("Upload cannot be performed without a receiver set");
+        }
+        OutputStream receiveUpload=getReceiver().receiveUpload(lastStartedEvent.getFileName(),lastStartedEvent.getMimeType());
         lastStartedEvent=null;
         return receiveUpload;
       }
