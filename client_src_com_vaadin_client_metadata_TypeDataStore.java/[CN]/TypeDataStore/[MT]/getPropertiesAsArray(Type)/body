@@ -1,7 +1,8 @@
 {
-  JsArrayObject<Property> properties=get().properties.get(type.getSignature());
-  if (properties == null) {
-    throw new NoDataException("No property list for " + type.getSignature());
+  JsArrayString names=getJsPropertyNames(get().jsTypeData,type.getBaseTypeName());
+  JsArrayObject<Property> properties=JavaScriptObject.createArray().cast();
+  for (int i=0; i < names.length(); i++) {
+    properties.add(new Property(type,names.get(i)));
   }
   return properties;
 }

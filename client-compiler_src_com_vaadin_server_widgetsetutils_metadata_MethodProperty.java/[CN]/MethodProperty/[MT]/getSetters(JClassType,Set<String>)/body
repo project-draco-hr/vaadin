@@ -1,0 +1,19 @@
+{
+  List<JMethod> setterMethods=new ArrayList<JMethod>();
+  while (beanType != null && !beanType.getQualifiedSourceName().equals(Object.class.getName())) {
+    for (    JMethod method : beanType.getMethods()) {
+      if (!method.isPublic() || method.isStatic()) {
+        continue;
+      }
+      String methodName=method.getName();
+      if (methodName.startsWith("set") && method.getParameterTypes().length == 1) {
+        setterMethods.add(method);
+      }
+ else       if (method.getParameterTypes().length == 0 && methodName.startsWith("is") || methodName.startsWith("get")) {
+        getters.add(methodName);
+      }
+    }
+    beanType=beanType.getSuperclass();
+  }
+  return setterMethods;
+}

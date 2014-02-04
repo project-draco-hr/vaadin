@@ -1,0 +1,20 @@
+{
+  Map<JClassType,Set<String>> definedProperties=new HashMap<JClassType,Set<String>>();
+  for (  Property property : bundle.getNeedsProperty()) {
+    JClassType beanType=property.getBeanType();
+    Set<String> usedPropertyNames=definedProperties.get(beanType);
+    if (usedPropertyNames == null) {
+      usedPropertyNames=new HashSet<String>();
+      definedProperties.put(beanType,usedPropertyNames);
+    }
+    String name=property.getName();
+    if (!usedPropertyNames.add(name)) {
+      logger.log(Type.ERROR,beanType.getQualifiedSourceName() + " has multiple properties with the name " + name+ ". This can happen if there are multiple "+ "setters with identical names ignoring case.");
+      throw new UnableToCompleteException();
+    }
+    if (!property.hasAccessorMethods()) {
+      logger.log(Type.ERROR,beanType.getQualifiedSourceName() + " has the property '" + name+ "' without getter defined.");
+      throw new UnableToCompleteException();
+    }
+  }
+}

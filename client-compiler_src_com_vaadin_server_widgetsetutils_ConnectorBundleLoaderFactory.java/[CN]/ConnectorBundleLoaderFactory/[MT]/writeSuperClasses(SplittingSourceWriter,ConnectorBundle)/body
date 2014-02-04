@@ -1,0 +1,37 @@
+{
+  List<JClassType> needsSuperclass=new ArrayList<JClassType>(bundle.getNeedsSuperclass());
+  Collections.sort(needsSuperclass,new Comparator<JClassType>(){
+    @Override public int compare(    JClassType type1,    JClassType type2){
+      int depthDiff=getDepth(type1) - getDepth(type2);
+      if (depthDiff != 0) {
+        return depthDiff;
+      }
+ else {
+        return type1.getName().compareTo(type2.getName());
+      }
+    }
+    private int getDepth(    JClassType type){
+      int depth=0;
+      while (type != null) {
+        depth++;
+        type=type.getSuperclass();
+      }
+      return depth;
+    }
+  }
+);
+  for (  JClassType jClassType : needsSuperclass) {
+    JClassType superclass=jClassType.getSuperclass();
+    while (superclass != null && !superclass.isPublic()) {
+      superclass=superclass.getSuperclass();
+    }
+    String classLiteralString;
+    if (superclass == null) {
+      classLiteralString="null";
+    }
+ else {
+      classLiteralString=getClassLiteralString(superclass);
+    }
+    w.println("store.setSuperClass(%s, %s);",getClassLiteralString(jClassType),classLiteralString);
+  }
+}

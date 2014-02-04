@@ -1,0 +1,25 @@
+{
+  SplittingSourceWriter writer=new SplittingSourceWriter(w,methodName,30000);
+  Set<Property> needsProperty=bundle.getNeedsProperty();
+  for (  Property property : needsProperty) {
+    writer.println("var data = {");
+    writer.indent();
+    writer.println("setter: function(bean, value) {");
+    writer.indent();
+    property.writeSetterBody(logger,writer,"bean","value");
+    writer.outdent();
+    writer.println("},");
+    writer.println("getter: function(bean) {");
+    writer.indent();
+    property.writeGetterBody(logger,writer,"bean");
+    writer.outdent();
+    writer.println("}");
+    writer.outdent();
+    writer.println("};");
+    writer.print("store.@%s::setPropertyData(Ljava/lang/Class;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)",TypeDataStore.class.getName());
+    writer.println("(@%s::class, '%s', data);",property.getBeanType().getQualifiedSourceName(),property.getName());
+    writer.println();
+    writer.splitIfNeeded(true,String.format("%s store",TypeDataStore.class.getName()));
+  }
+  return writer.getMethodNames();
+}
