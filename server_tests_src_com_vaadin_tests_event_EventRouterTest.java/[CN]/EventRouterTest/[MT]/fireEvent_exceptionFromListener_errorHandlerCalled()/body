@@ -1,0 +1,8 @@
+{
+  listener.componentEvent(EasyMock.<Component.Event>anyObject());
+  EasyMock.expectLastCall().andThrow(new RuntimeException("listener failed"));
+  errorHandler.error(EasyMock.<ErrorEvent>anyObject());
+  EasyMock.replay(component,listener,errorHandler);
+  router.fireEvent(new Component.Event(component),errorHandler);
+  EasyMock.verify(listener,errorHandler);
+}

@@ -1,15 +1,13 @@
 {
-  new Thread(){
-    @Override public void run(){
-      access(new Runnable(){
-        @Override public void run(){
-          log("Logged from background thread started in init");
-        }
-      }
-);
-    }
-  }
-.start();
   log("Logged in init");
+  Thread t=new Thread(new RunBeforeInitEnds());
+  t.start();
+  try {
+    t.join();
+  }
+ catch (  InterruptedException e) {
+    throw new RuntimeException(e);
+  }
+  new Thread(new RunAfterInit()).start();
   addComponent(new Button("Sync"));
 }
