@@ -1,0 +1,26 @@
+{
+  if (targetElement == null) {
+    return "";
+  }
+  List<ConnectorPath> hierarchy=getConnectorHierarchyForElement(targetElement);
+  List<String> path=new ArrayList<String>();
+  for (int i=0; i < hierarchy.size(); ++i) {
+    ConnectorPath cp=hierarchy.get(i);
+    String pathFragment=cp.name;
+    String identifier=getPropertyValue(cp.connector,"id");
+    if (identifier != null) {
+      pathFragment+="[id=\"" + identifier + "\"]";
+    }
+ else {
+      identifier=getPropertyValue(cp.connector,"caption");
+      if (identifier != null) {
+        pathFragment+="[caption=\"" + identifier + "\"]";
+      }
+    }
+    path.add(pathFragment);
+  }
+  if (path.size() == 0) {
+    return null;
+  }
+  return getBestSelector(generateQueries(path),targetElement);
+}

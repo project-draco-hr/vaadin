@@ -1,0 +1,26 @@
+{
+  String[] pathComponents=path.split(SUBPART_SEPARATOR);
+  List<ComponentConnector> connectors;
+  if (pathComponents[0].length() > 0) {
+    connectors=findConnectorsByPath(pathComponents[0],Arrays.asList(root));
+  }
+ else {
+    connectors=Arrays.asList(root);
+  }
+  List<Element> output=new ArrayList<Element>();
+  if (null != connectors && !connectors.isEmpty()) {
+    if (pathComponents.length > 1) {
+      for (      ComponentConnector connector : connectors) {
+        if (connector.getWidget() instanceof SubPartAware) {
+          output.add(((SubPartAware)connector.getWidget()).getSubPartElement(pathComponents[1]));
+        }
+      }
+    }
+ else {
+      for (      ComponentConnector connector : connectors) {
+        output.add(connector.getWidget().getElement());
+      }
+    }
+  }
+  return eliminateDuplicates(output);
+}

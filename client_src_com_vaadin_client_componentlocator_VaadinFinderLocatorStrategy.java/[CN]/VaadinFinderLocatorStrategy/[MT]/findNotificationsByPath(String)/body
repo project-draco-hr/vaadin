@@ -1,0 +1,19 @@
+{
+  List<VNotification> notifications=new ArrayList<VNotification>();
+  for (  Widget w : RootPanel.get()) {
+    if (w instanceof VNotification) {
+      notifications.add((VNotification)w);
+    }
+  }
+  List<SelectorPredicate> predicates=SelectorPredicate.extractPredicates(path);
+  for (  SelectorPredicate p : predicates) {
+    if (p.getIndex() > -1) {
+      VNotification n=notifications.get(p.getIndex());
+      notifications.clear();
+      if (n != null) {
+        notifications.add(n);
+      }
+    }
+  }
+  return eliminateDuplicates(notifications);
+}

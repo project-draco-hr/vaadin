@@ -1,0 +1,39 @@
+{
+  if (SUBPART_ROW_COL_REGEXP.test(subPart)) {
+    MatchResult result=SUBPART_ROW_COL_REGEXP.exec(subPart);
+    int rowIx=Integer.valueOf(result.getGroup(1));
+    int colIx=Integer.valueOf(result.getGroup(2));
+    VScrollTableRow row=scrollBody.getRowByRowIndex(rowIx);
+    if (row != null) {
+      Element rowElement=row.getElement();
+      if (colIx < rowElement.getChildCount()) {
+        return rowElement.getChild(colIx).getFirstChild().cast();
+      }
+    }
+  }
+ else   if (SUBPART_ROW_REGEXP.test(subPart)) {
+    MatchResult result=SUBPART_ROW_REGEXP.exec(subPart);
+    int rowIx=Integer.valueOf(result.getGroup(1));
+    VScrollTableRow row=scrollBody.getRowByRowIndex(rowIx);
+    if (row != null) {
+      return row.getElement();
+    }
+  }
+ else   if (SUBPART_HEADER_REGEXP.test(subPart)) {
+    MatchResult result=SUBPART_HEADER_REGEXP.exec(subPart);
+    int headerIx=Integer.valueOf(result.getGroup(1));
+    HeaderCell headerCell=tHead.getHeaderCell(headerIx);
+    if (headerCell != null) {
+      return headerCell.getElement();
+    }
+  }
+ else   if (SUBPART_FOOTER_REGEXP.test(subPart)) {
+    MatchResult result=SUBPART_FOOTER_REGEXP.exec(subPart);
+    int footerIx=Integer.valueOf(result.getGroup(1));
+    FooterCell footerCell=tFoot.getFooterCell(footerIx);
+    if (footerCell != null) {
+      return footerCell.getElement();
+    }
+  }
+  return null;
+}
