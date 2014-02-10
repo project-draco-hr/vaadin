@@ -1,24 +1,24 @@
 {
   StringBuffer s=new StringBuffer();
-  boolean stop=false;
+  boolean found=false;
   Token tok;
-  while (!stop) {
+  while (!found) {
     tok=getToken(1);
-    if (tok.kind == EOF) {
-      return null;
-    }
     for (    int sym : symbols) {
       if (tok.kind == sym) {
-        stop=true;
+        found=true;
         break;
       }
     }
-    if (!stop) {
+    if (tok.kind == EOF) {
+      break;
+    }
+    if (!found) {
       if (tok.image != null) {
         s.append(tok.image);
       }
       getNextToken();
     }
   }
-  return s.toString().trim();
+  return found ? s.toString().trim() : null;
 }
