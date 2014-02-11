@@ -15,19 +15,19 @@
     }
   }
   boolean hasIcon=iconURL != null;
+  if (icon != null) {
+    getElement().removeChild(icon.getElement());
+    icon=null;
+  }
   if (hasIcon) {
-    if (icon == null) {
-      icon=new Icon(client);
+    icon=client.getIcon(iconURL);
+    if (icon instanceof ImageIcon) {
       icon.setWidth("0");
       icon.setHeight("0");
-      DOM.insertChild(getElement(),icon.getElement(),getInsertPosition(InsertPosition.ICON));
     }
+    icon.setAlternateText(iconAltText);
+    DOM.insertChild(getElement(),icon.getElement(),getInsertPosition(InsertPosition.ICON));
     placedAfterComponent=false;
-    icon.setUri(iconURL,iconAltText);
-  }
- else   if (icon != null) {
-    DOM.removeChild(getElement(),icon.getElement());
-    icon=null;
   }
   if (caption != null) {
     if (captionText == null) {
