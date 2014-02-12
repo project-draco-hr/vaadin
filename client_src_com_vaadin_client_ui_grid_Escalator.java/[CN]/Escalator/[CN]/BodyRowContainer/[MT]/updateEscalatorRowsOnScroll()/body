@@ -3,28 +3,28 @@
     return;
   }
   boolean rowsWereMoved=false;
-  final int topRowPos=getRowTop(visualRowOrder.getFirst());
-  final int scrollTop=tBodyScrollTop;
-  final int viewportOffset=topRowPos - scrollTop;
+  final double topRowPos=getRowTop(visualRowOrder.getFirst());
+  final double scrollTop=tBodyScrollTop;
+  final double viewportOffset=topRowPos - scrollTop;
   if (viewportOffset > 0) {
-    int originalRowsToMove=(int)Math.ceil(viewportOffset / (double)getDefaultRowHeight());
+    int originalRowsToMove=(int)Math.ceil(viewportOffset / getDefaultRowHeight());
     int rowsToMove=Math.min(originalRowsToMove,root.getChildCount());
     final int end=root.getChildCount();
     final int start=end - rowsToMove;
-    final int logicalRowIndex=scrollTop / getDefaultRowHeight();
+    final int logicalRowIndex=(int)(scrollTop / getDefaultRowHeight());
     moveAndUpdateEscalatorRows(Range.between(start,end),0,logicalRowIndex);
     updateTopRowLogicalIndex(-originalRowsToMove);
     rowsWereMoved=true;
   }
  else   if (viewportOffset + getDefaultRowHeight() <= 0) {
-    int originalRowsToMove=Math.abs(viewportOffset / getDefaultRowHeight());
+    int originalRowsToMove=(int)Math.abs(viewportOffset / getDefaultRowHeight());
     int rowsToMove=Math.min(originalRowsToMove,root.getChildCount());
     int logicalRowIndex;
     if (rowsToMove < root.getChildCount()) {
       logicalRowIndex=getLogicalRowIndex(visualRowOrder.getLast()) + 1;
     }
  else {
-      logicalRowIndex=scrollTop / getDefaultRowHeight();
+      logicalRowIndex=(int)(scrollTop / getDefaultRowHeight());
     }
     final int targetVisualIndex=root.getChildCount();
     boolean aRowWasLeftBehind=false;
