@@ -59,6 +59,10 @@
  else   if (value instanceof JSONArray || value instanceof JSONObject) {
     return new EncodeResult(value);
   }
+ else   if (customSerializers.containsKey(value.getClass())) {
+    JSONSerializer serializer=customSerializers.get(value.getClass());
+    return new EncodeResult(serializer.serialize(value,connectorTracker));
+  }
  else   if (valueType instanceof Class<?>) {
     return encodeObject(value,(Class<?>)valueType,(JSONObject)diffState,connectorTracker);
   }

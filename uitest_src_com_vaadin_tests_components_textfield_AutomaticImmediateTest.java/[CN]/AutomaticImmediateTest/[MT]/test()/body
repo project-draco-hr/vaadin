@@ -1,0 +1,31 @@
+{
+  openTestURL();
+  WebElement field=getDriver().findElement(By.id(AutomaticImmediate.FIELD));
+  WebElement toggle=getDriver().findElement(By.xpath("//input[@type = 'checkbox']"));
+  WebElement explicitFalseButton=getDriver().findElement(By.id(AutomaticImmediate.EXPLICIT_FALSE));
+  WebElement hitServerButton=getDriver().findElement(By.id(AutomaticImmediate.BUTTON));
+  String string=getRandomString();
+  field.sendKeys(string + Keys.ENTER);
+  assertLastLog("1. fireValueChange");
+  hitServerButton.click();
+  assertLastLog("2. fireValueChange");
+  toggle.click();
+  string=getRandomString();
+  String delSequence="" + Keys.BACK_SPACE + Keys.BACK_SPACE;
+  field.sendKeys(delSequence + string + Keys.ENTER);
+  assertLastLog("4. Value changed: " + string);
+  String lastvalue=string;
+  toggle.click();
+  string=getRandomString();
+  field.sendKeys(delSequence + string + Keys.ENTER);
+  assertLastLog("4. Value changed: " + lastvalue);
+  hitServerButton.click();
+  assertLastLog("5. fireValueChange");
+  explicitFalseButton.click();
+  toggle.click();
+  string=getRandomString();
+  field.sendKeys(delSequence + string + Keys.ENTER);
+  assertLastLog("5. fireValueChange");
+  hitServerButton.click();
+  assertLastLog("7. Value changed: " + string);
+}

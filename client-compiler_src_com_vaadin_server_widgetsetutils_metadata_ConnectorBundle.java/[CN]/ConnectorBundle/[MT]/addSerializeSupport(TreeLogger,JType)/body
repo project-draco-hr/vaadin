@@ -29,12 +29,16 @@
  else   if (typeAsClass != null) {
     checkSerializable(logger,typeAsClass);
     logger.log(Type.INFO,"Will serialize " + type + " as a bean");
-    setNeedsPropertyList(typeAsClass);
+    JClassType needsSuperClass=typeAsClass;
+    while (needsSuperClass != null) {
+      if (needsSuperClass.isPublic()) {
+        setNeedsSuperclass(needsSuperClass);
+      }
+      needsSuperClass=needsSuperClass.getSuperclass();
+    }
     for (    Property property : getProperties(typeAsClass)) {
       setNeedsGwtConstructor(property.getBeanType());
-      setNeedsSetter(property);
-      setNeedsGetter(property);
-      setNeedsType(property);
+      setNeedsProperty(property);
       JType propertyType=property.getPropertyType();
       setNeedsSerialize(propertyType);
     }

@@ -12,7 +12,7 @@
         url=new URL("file:" + new File(classpathEntry).getCanonicalPath());
         url=new URL("jar:" + url.toExternalForm() + "!/");
         JarURLConnection conn=(JarURLConnection)url.openConnection();
-        getLogger().fine(url.toString());
+        debug(url.toString());
         JarFile jarFile=conn.getJarFile();
         Manifest manifest=jarFile.getManifest();
         if (manifest != null) {
@@ -26,10 +26,14 @@
         }
       }
  catch (      MalformedURLException e) {
-        getLogger().log(Level.FINEST,"Failed to inspect JAR file",e);
+        if (debug) {
+          error("Failed to inspect JAR file",e);
+        }
       }
 catch (      IOException e) {
-        getLogger().log(Level.FINEST,"Failed to inspect JAR file",e);
+        if (debug) {
+          error("Failed to inspect JAR file",e);
+        }
       }
       return false;
     }

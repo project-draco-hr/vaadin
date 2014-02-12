@@ -1,0 +1,17 @@
+{
+  List<String> paths=new ArrayList<String>();
+  int compIdx=0;
+  String basePath=components.get(compIdx).replace("com.vaadin.ui.","");
+  paths.add((components.size() == 1 ? "/" : "//") + basePath);
+  while (++compIdx < components.size()) {
+    for (int i=components.size() - 1; i >= compIdx; --i) {
+      boolean recursive=false;
+      if (i > compIdx) {
+        recursive=true;
+      }
+      paths.add((i == components.size() - 1 ? "/" : "//") + components.get(i).replace("com.vaadin.ui.","") + (recursive ? "//" : "/")+ basePath);
+    }
+    basePath=components.get(compIdx).replace("com.vaadin.ui.","") + "/" + basePath;
+  }
+  return paths;
+}

@@ -1,0 +1,24 @@
+{
+  for (  SelectorPredicate p : predicates) {
+    if (p.getIndex() > -1) {
+      try {
+        ComponentConnector v=potentialMatches.get(p.getIndex());
+        potentialMatches.clear();
+        potentialMatches.add(v);
+      }
+ catch (      IndexOutOfBoundsException e) {
+        potentialMatches.clear();
+      }
+      continue;
+    }
+    for (int i=0, l=potentialMatches.size(); i < l; ++i) {
+      String propData=getPropertyValue(potentialMatches.get(i),p.getName());
+      if ((p.isWildcard() && propData == null) || (!p.isWildcard() && !p.getValue().equals(propData))) {
+        potentialMatches.remove(i);
+        --l;
+        --i;
+      }
+    }
+  }
+  return eliminateDuplicates(potentialMatches);
+}

@@ -10,6 +10,7 @@
   w.println("public void init() {");
   w.indent();
   for (  ConnectorBundle bundle : bundles) {
+    detectBadProperties(bundle,logger);
     String name=bundle.getName();
     boolean isEager=name.equals(ConnectorBundleLoader.EAGER_BUNDLE_NAME);
     w.print("addAsyncBlockLoader(new AsyncBundleLoader(\"");
@@ -44,7 +45,19 @@
     w.println("}");
     w.println("private void load() {");
     w.indent();
-    printBundleData(logger,w,bundle);
+    String loadNativeJsBundle="loadJsBundle";
+    printBundleData(logger,w,bundle,loadNativeJsBundle);
+    w.outdent();
+    w.println("}");
+    String loadNativeJsMethodName="loadNativeJs";
+    w.println("private native void %s(%s store) /*-{",loadNativeJsMethodName,TypeDataStore.class.getName());
+    w.indent();
+    List<String> jsMethodNames=printJsBundleData(logger,w,bundle,loadNativeJsMethodName);
+    w.outdent();
+    w.println("}-*/;");
+    w.println("private void %s(%s store) {",loadNativeJsBundle,TypeDataStore.class.getName());
+    w.indent();
+    printLoadJsBundleData(w,loadNativeJsBundle,jsMethodNames);
     w.outdent();
     w.println("}");
     w.println("public void onFailure(Throwable reason) {");

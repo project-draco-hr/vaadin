@@ -1,10 +1,9 @@
 {
-  final Logger logger=getLogger();
-  if (logger.isLoggable(Level.FINE)) {
-    logger.fine("classpathLocations values:");
+  if (debug) {
+    debug("classpathLocations values:");
     ArrayList<String> locations=new ArrayList<String>(classpathLocations.keySet());
     for (    String location : locations) {
-      logger.fine(String.valueOf(classpathLocations.get(location)));
+      debug(String.valueOf(classpathLocations.get(location)));
     }
   }
   Iterator<String> it=rawClasspathEntries.iterator();
@@ -16,10 +15,14 @@
         return new URL("file://" + directory.getCanonicalPath());
       }
  catch (      MalformedURLException e) {
-        logger.log(Level.FINEST,"Ignoring exception",e);
+        if (debug) {
+          e.printStackTrace();
+        }
       }
 catch (      IOException e) {
-        logger.log(Level.FINEST,"Ignoring exception",e);
+        if (debug) {
+          e.printStackTrace();
+        }
       }
     }
   }

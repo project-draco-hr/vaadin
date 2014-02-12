@@ -1,10 +1,20 @@
 {
-  Writer writer=new StringWriter();
-  try {
-    new UidlWriter().write(getUI(),writer,false,async);
+  if (!isConnected()) {
+    if (async && state != State.RESPONSE_PENDING) {
+      state=State.PUSH_PENDING;
+    }
+ else {
+      state=State.RESPONSE_PENDING;
+    }
   }
- catch (  JSONException e) {
-    throw new IOException("Error writing UIDL",e);
+ else {
+    try {
+      Writer writer=new StringWriter();
+      new UidlWriter().write(getUI(),writer,false,async);
+      sendMessage("for(;;);[{" + writer.toString() + "}]");
+    }
+ catch (    Exception e) {
+      throw new RuntimeException("Push failed",e);
+    }
   }
-  sendMessage("for(;;);[{" + writer.toString() + "}]");
 }

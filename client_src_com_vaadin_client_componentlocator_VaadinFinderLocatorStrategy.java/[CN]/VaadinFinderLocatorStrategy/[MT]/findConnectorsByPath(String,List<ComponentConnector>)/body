@@ -1,0 +1,13 @@
+{
+  boolean findRecursively=path.startsWith("//");
+  path=path.substring(findRecursively ? 2 : 1);
+  String[] fragments=splitFirstFragmentFromTheRest(path);
+  List<ComponentConnector> connectors=new ArrayList<ComponentConnector>();
+  for (  ComponentConnector parent : parents) {
+    connectors.addAll(filterMatches(collectPotentialMatches(parent,fragments[0],findRecursively),SelectorPredicate.extractPredicates(fragments[0])));
+  }
+  if (!connectors.isEmpty() && fragments.length > 1) {
+    return (findConnectorsByPath(fragments[1],connectors));
+  }
+  return eliminateDuplicates(connectors);
+}

@@ -1,5 +1,7 @@
 {
   Widget widget=getWidget();
+  final Element focusedElement=Util.getFocusedElement();
+  boolean focusLost=false;
   if (captionText != null || iconUrl != null || error != null || required) {
     if (caption == null) {
       caption=DOM.createDiv();
@@ -10,6 +12,7 @@
       orphan(widget);
       captionWrap.appendChild(widget.getElement());
       adopt(widget);
+      focusLost=widget.getElement().isOrHasChild(focusedElement);
     }
   }
  else   if (caption != null) {
@@ -19,6 +22,7 @@
     captionWrap.removeFromParent();
     caption=null;
     captionWrap=null;
+    focusLost=widget.getElement().isOrHasChild(focusedElement);
   }
   if (captionText != null) {
     if (this.captionText == null) {
@@ -90,6 +94,31 @@
     }
  else {
       setCaptionPosition(CaptionPosition.RIGHT);
+    }
+  }
+  if (focusLost) {
+    Element currentFocus=Util.getFocusedElement();
+    if (currentFocus != null && currentFocus.equals(Document.get().getBody())) {
+      focusedElement.focus();
+    }
+ else     if (currentFocus != focusedElement) {
+      Timer focusTimer=new Timer(){
+        @Override public void run(){
+          if (Util.getFocusedElement() == null) {
+            schedule(25);
+          }
+ else           if (Util.getFocusedElement().equals(Document.get().getBody())) {
+            focusedElement.focus();
+          }
+        }
+      }
+;
+      if (BrowserInfo.get().isIE8()) {
+        focusTimer.schedule(25);
+      }
+ else {
+        focusTimer.run();
+      }
     }
   }
 }

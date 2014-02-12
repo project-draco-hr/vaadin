@@ -1,0 +1,55 @@
+{
+  if ('0' <= requestedOperation && requestedOperation <= '9') {
+    if (current == null) {
+      current=0.0;
+    }
+    current=current * 10 + Double.parseDouble("" + requestedOperation);
+    return current;
+  }
+  if (current == null) {
+    current=stored;
+  }
+switch (lastOperationRequested) {
+case '+':
+    stored+=current;
+  break;
+case '-':
+stored-=current;
+break;
+case '/':
+stored/=current;
+break;
+case '*':
+stored*=current;
+break;
+default :
+stored=current;
+break;
+}
+switch (requestedOperation) {
+case '+':
+log.addRow(current + " +");
+break;
+case '-':
+log.addRow(current + " -");
+break;
+case '/':
+log.addRow(current + " /");
+break;
+case '*':
+log.addRow(current + " x");
+break;
+case '=':
+log.addRow(current + " =");
+log.addRow("------------");
+log.addRow("" + stored);
+break;
+}
+lastOperationRequested=requestedOperation;
+current=null;
+if (requestedOperation == 'C') {
+log.addRow("0.0");
+stored=0.0;
+}
+return stored;
+}

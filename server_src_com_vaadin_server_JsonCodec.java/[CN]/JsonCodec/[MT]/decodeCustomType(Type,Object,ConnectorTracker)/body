@@ -26,6 +26,9 @@
     Class<?> classForType=getClassForType(targetType);
     return decodeEnum(classForType.asSubclass(Enum.class),(String)value);
   }
+ else   if (customSerializers.containsKey(getClassForType(targetType))) {
+    return customSerializers.get(getClassForType(targetType)).deserialize(targetType,value,connectorTracker);
+  }
  else {
     return decodeObject(targetType,(JSONObject)value,connectorTracker);
   }

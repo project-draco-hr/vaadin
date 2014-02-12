@@ -15,15 +15,13 @@
     DOM.setStyleAttribute(scroller,"display","");
     DOM.setElementProperty(scrollerPrev,"className",SCROLLER_CLASSNAME + (scrolled ? "Prev" : "Prev-disabled"));
     DOM.setElementProperty(scrollerNext,"className",SCROLLER_CLASSNAME + (clipped ? "Next" : "Next-disabled"));
+    boolean isActiveTabVisible=scrollerIndex <= activeTabIndex && !isClipped(tb.selected);
+    tb.selected.setTabulatorIndex(isActiveTabVisible ? tabulatorIndex : -1);
   }
  else {
     DOM.setStyleAttribute(scroller,"display","none");
   }
   if (BrowserInfo.get().isSafari()) {
-    String property=tabs.getStyle().getProperty("height");
-    if (property == null || property.equals("")) {
-      tabs.getStyle().setPropertyPx("height",tb.getOffsetHeight());
-    }
     final Style style=scroller.getStyle();
     style.setProperty("whiteSpace","normal");
     Scheduler.get().scheduleDeferred(new Command(){

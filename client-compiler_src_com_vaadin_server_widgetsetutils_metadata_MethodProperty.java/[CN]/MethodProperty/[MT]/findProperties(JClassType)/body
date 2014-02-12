@@ -1,8 +1,10 @@
 {
   Collection<MethodProperty> properties=new ArrayList<MethodProperty>();
-  List<JMethod> setters=getSetters(type);
+  Set<String> getters=new HashSet<String>();
+  List<JMethod> setters=getSetters(type,getters);
   for (  JMethod setter : setters) {
-    properties.add(new MethodProperty(type,setter));
+    String getter=findGetter(type,setter);
+    properties.add(new MethodProperty(setter.getEnclosingType(),setter,getters.contains(getter) ? getter : null));
   }
   return properties;
 }

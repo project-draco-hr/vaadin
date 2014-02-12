@@ -1,0 +1,13 @@
+{
+  listener.componentEvent(EasyMock.<Component.Event>anyObject());
+  EasyMock.expectLastCall().andThrow(new RuntimeException("listener failed"));
+  EasyMock.replay(component,listener);
+  try {
+    router.fireEvent(new Component.Event(component));
+    Assert.fail("Did not receive expected exception from listener");
+  }
+ catch (  RuntimeException e) {
+    Assert.assertEquals("listener failed",e.getCause().getMessage());
+  }
+  EasyMock.verify(listener);
+}
