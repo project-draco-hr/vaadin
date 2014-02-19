@@ -3,9 +3,9 @@
   ArrayList<RowId> ids=new ArrayList<RowId>();
   ResultSet rs=null;
   try {
-    delegate.beginTransaction();
-    rs=delegate.getResults(0,0);
-    List<String> pKeys=delegate.getPrimaryKeyColumns();
+    queryDelegate.beginTransaction();
+    rs=queryDelegate.getResults(0,0);
+    List<String> pKeys=queryDelegate.getPrimaryKeyColumns();
     while (rs.next()) {
       RowId id=null;
       if (pKeys.isEmpty()) {
@@ -24,12 +24,12 @@
     }
     rs.getStatement().close();
     rs.close();
-    delegate.commit();
+    queryDelegate.commit();
   }
  catch (  SQLException e) {
     getLogger().log(Level.WARNING,"getItemIds() failed, rolling back.",e);
     try {
-      delegate.rollback();
+      queryDelegate.rollback();
     }
  catch (    SQLException e1) {
       getLogger().log(Level.SEVERE,"Failed to roll back state",e1);

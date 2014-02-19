@@ -15,9 +15,9 @@
       return false;
     }
     try {
-      delegate.beginTransaction();
-      boolean success=delegate.removeRow((RowItem)i);
-      delegate.commit();
+      queryDelegate.beginTransaction();
+      boolean success=queryDelegate.removeRow((RowItem)i);
+      queryDelegate.commit();
       refresh();
       if (notificationsEnabled) {
         CacheFlushNotifier.notifyOfCacheFlush(this);
@@ -30,7 +30,7 @@
  catch (    SQLException e) {
       getLogger().log(Level.WARNING,"Failed to remove row, rolling back",e);
       try {
-        delegate.rollback();
+        queryDelegate.rollback();
       }
  catch (      SQLException ee) {
         getLogger().log(Level.SEVERE,"Failed to rollback row removal",ee);
@@ -40,7 +40,7 @@
 catch (    OptimisticLockException e) {
       getLogger().log(Level.WARNING,"Failed to remove row, rolling back",e);
       try {
-        delegate.rollback();
+        queryDelegate.rollback();
       }
  catch (      SQLException ee) {
         getLogger().log(Level.SEVERE,"Failed to rollback row removal",ee);

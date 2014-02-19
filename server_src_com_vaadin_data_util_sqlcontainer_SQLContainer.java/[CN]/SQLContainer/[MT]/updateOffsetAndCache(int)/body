@@ -1,10 +1,11 @@
 {
-  if (itemIndexes.containsKey(index)) {
-    return;
-  }
-  currentOffset=(index / (pageLength * CACHE_RATIO)) * (pageLength * CACHE_RATIO);
+  int oldOffset=currentOffset;
+  currentOffset=(index / pageLength) * pageLength - cacheOverlap;
   if (currentOffset < 0) {
     currentOffset=0;
+  }
+  if (oldOffset == currentOffset && !cachedItems.isEmpty()) {
+    return;
   }
   getPage();
 }
