@@ -3,9 +3,9 @@
   List<ComponentConnector> previousChildren=event.getOldChildren();
   int currentIndex=0;
   VAbstractOrderedLayout layout=getWidget();
-  Profiler.enter("AOLC.onConnectorHierarchyChange addOrMoveSlot temporarily remove spacing");
+  Profiler.enter("AOLC.onConnectorHierarchyChange temporarily remove spacing");
   layout.setSpacing(false);
-  Profiler.leave("AOLC.onConnectorHierarchyChange addOrMoveSlot temporarily remove spacing");
+  Profiler.leave("AOLC.onConnectorHierarchyChange temporarily remove spacing");
   for (  ComponentConnector child : getChildComponents()) {
     Profiler.enter("AOLC.onConnectorHierarchyChange add children");
     Slot slot=layout.getSlot(child.getWidget());
@@ -19,11 +19,11 @@
     Profiler.leave("AOLC.onConnectorHierarchyChange addOrMoveSlot");
     Profiler.leave("AOLC.onConnectorHierarchyChange add children");
   }
-  Profiler.enter("AOLC.onConnectorHierarchyChange addOrMoveSlot setSpacing");
+  Profiler.enter("AOLC.onConnectorHierarchyChange setSpacing");
   if (getState().spacing) {
     layout.setSpacing(true);
   }
-  Profiler.leave("AOLC.onConnectorHierarchyChange addOrMoveSlot setSpacing");
+  Profiler.leave("AOLC.onConnectorHierarchyChange setSpacing");
   for (  ComponentConnector child : previousChildren) {
     Profiler.enter("AOLC.onConnectorHierarchyChange remove children");
     if (child.getParent() != this) {
@@ -32,9 +32,7 @@
       if (slot.hasCaption()) {
         slot.setCaptionResizeListener(null);
       }
-      if (slot.getSpacingElement() != null) {
-        slot.setSpacingResizeListener(null);
-      }
+      slot.setSpacingResizeListener(null);
       child.removeStateChangeHandler(childStateChangeHandler);
       layout.removeWidget(child.getWidget());
     }
