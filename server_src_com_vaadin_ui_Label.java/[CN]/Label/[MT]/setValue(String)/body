@@ -1,6 +1,11 @@
 {
   if (getPropertyDataSource() == null) {
-    getState().text=newStringValue;
+    LabelState state=(LabelState)getState(false);
+    String oldTextValue=state.text;
+    if (!SharedUtil.equals(oldTextValue,newStringValue)) {
+      getState().text=newStringValue;
+      fireValueChange();
+    }
   }
  else {
     throw new IllegalStateException("Label is only a Property.Viewer and cannot update its data source");

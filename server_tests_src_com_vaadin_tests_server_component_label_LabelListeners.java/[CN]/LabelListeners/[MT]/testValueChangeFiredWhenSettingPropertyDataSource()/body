@@ -1,0 +1,12 @@
+{
+  Label underTest=new Label();
+  Property mockProperty=EasyMock.createMock(Property.class);
+  ValueChangeListener mockListener=createStrictMock(ValueChangeListener.class);
+  mockListener.valueChange(anyObject(com.vaadin.data.Property.ValueChangeEvent.class));
+  expect(mockProperty.getType()).andReturn(String.class).atLeastOnce();
+  expect(mockProperty.getValue()).andReturn("Any").atLeastOnce();
+  replay(mockListener,mockProperty);
+  underTest.addValueChangeListener(mockListener);
+  underTest.setPropertyDataSource(mockProperty);
+  verify(mockListener);
+}
