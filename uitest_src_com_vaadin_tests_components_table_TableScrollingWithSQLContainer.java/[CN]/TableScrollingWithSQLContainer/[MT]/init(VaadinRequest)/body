@@ -1,9 +1,8 @@
 {
   try {
-    SimpleJDBCConnectionPool connectionPool=new SimpleJDBCConnectionPool(SQLTestsConstants.dbDriver,SQLTestsConstants.dbURL,SQLTestsConstants.dbUser,SQLTestsConstants.dbPwd,2,2);
-    DataGenerator.addPeopleToDatabase(connectionPool);
-    DataGenerator.addFiveThousandPeople(connectionPool);
-    TableQuery query=new TableQuery("people",connectionPool,SQLTestsConstants.sqlGen);
+    SimpleJDBCConnectionPool connectionPool=new SimpleJDBCConnectionPool("org.hsqldb.jdbc.JDBCDriver","jdbc:hsqldb:mem:sqlcontainer","SA","",2,20);
+    generateTestData(connectionPool);
+    TableQuery query=new TableQuery("people",connectionPool,new DefaultSQLGenerator());
     SQLContainer container=new LimitedSQLContainer(query);
     final VerticalLayout rootLayout=new VerticalLayout();
     final Table table=new Table();
