@@ -1,0 +1,21 @@
+{
+  if ("tabpanel".equals(subPart)) {
+    return DOM.asOld(tabPanel.getElement().getFirstChildElement());
+  }
+ else   if (SUBPART_TAB_REGEXP.test(subPart)) {
+    MatchResult result=SUBPART_TAB_REGEXP.exec(subPart);
+    int tabIx=Integer.valueOf(result.getGroup(1));
+    Tab tab=tb.getTab(tabIx);
+    if (tab != null) {
+      if ("/close".equals(result.getGroup(2))) {
+        if (tab.isClosable()) {
+          return tab.tabCaption.getCloseButton();
+        }
+      }
+ else {
+        return tab.tabCaption.getElement();
+      }
+    }
+  }
+  return null;
+}

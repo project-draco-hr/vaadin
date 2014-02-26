@@ -1,0 +1,25 @@
+{
+  super.onStateChanged(stateChangeEvent);
+  getWidget().handleStyleNames(getState());
+  if (getState().tabsVisible) {
+    getWidget().showTabs();
+  }
+ else {
+    getWidget().hideTabs();
+  }
+  if (!isUndefinedWidth()) {
+    DOM.setStyleAttribute(getWidget().tabs,"overflow","hidden");
+  }
+ else {
+    getWidget().showAllTabs();
+    DOM.setStyleAttribute(getWidget().tabs,"width","");
+    DOM.setStyleAttribute(getWidget().tabs,"overflow","visible");
+    getWidget().updateDynamicWidth();
+  }
+  if (!isUndefinedHeight()) {
+    getWidget().updateContentNodeHeight();
+    getWidget().updateOpenTabSize();
+  }
+  getWidget().iLayout();
+  getWidget().waitingForResponse=false;
+}

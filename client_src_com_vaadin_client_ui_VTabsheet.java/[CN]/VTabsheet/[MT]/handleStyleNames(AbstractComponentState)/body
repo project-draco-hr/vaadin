@@ -1,0 +1,30 @@
+{
+  if (ComponentStateUtil.hasStyles(state)) {
+    final List<String> styles=state.styles;
+    if (currentStyle == null || !currentStyle.equals(styles.toString())) {
+      currentStyle=styles.toString();
+      final String tabsBaseClass=TABS_CLASSNAME;
+      String tabsClass=tabsBaseClass;
+      final String contentBaseClass=CLASSNAME + "-content";
+      String contentClass=contentBaseClass;
+      final String decoBaseClass=CLASSNAME + "-deco";
+      String decoClass=decoBaseClass;
+      for (      String style : styles) {
+        tb.addStyleDependentName(style);
+        tabsClass+=" " + tabsBaseClass + "-"+ style;
+        contentClass+=" " + contentBaseClass + "-"+ style;
+        decoClass+=" " + decoBaseClass + "-"+ style;
+      }
+      DOM.setElementProperty(tabs,"className",tabsClass);
+      DOM.setElementProperty(contentNode,"className",contentClass);
+      DOM.setElementProperty(deco,"className",decoClass);
+      borderW=-1;
+    }
+  }
+ else {
+    tb.setStyleName(CLASSNAME + "-tabs");
+    DOM.setElementProperty(tabs,"className",TABS_CLASSNAME);
+    DOM.setElementProperty(contentNode,"className",CLASSNAME + "-content");
+    DOM.setElementProperty(deco,"className",CLASSNAME + "-deco");
+  }
+}

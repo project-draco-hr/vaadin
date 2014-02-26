@@ -1,12 +1,12 @@
 {
   if (focusedTab == null && event.getSource() instanceof Tab) {
     focusedTab=(Tab)event.getSource();
-    if (client.hasEventListeners(this,EventId.FOCUS)) {
-      client.updateVariable(id,EventId.FOCUS,"",true);
+    if (connector.hasEventListener(EventId.FOCUS)) {
+      connector.getRpcProxy(FocusAndBlurServerRpc.class).focus();
     }
     if (focusedTab.hasTooltip()) {
-      focusedTab.setAssistiveDescription(getApplicationConnection().getVTooltip().getUniqueId());
-      getApplicationConnection().getVTooltip().showAssistive(focusedTab.getTooltipInfo());
+      focusedTab.setAssistiveDescription(getVTooltip().getUniqueId());
+      getVTooltip().showAssistive(focusedTab.getTooltipInfo());
     }
   }
 }
