@@ -1,5 +1,5 @@
 {
-  Object emptyKey[]=new Object[delegate.getPrimaryKeyColumns().size()];
+  Object emptyKey[]=new Object[queryDelegate.getPrimaryKeyColumns().size()];
   RowId itemId=new TemporaryRowId(emptyKey);
   List<ColumnProperty> itemProperties=new ArrayList<ColumnProperty>();
   for (  String propertyId : propertyIds) {
@@ -9,13 +9,13 @@
   RowItem newRowItem=new RowItem(this,itemId,itemProperties);
   if (autoCommit) {
     try {
-      if (delegate instanceof TableQuery) {
-        itemId=((TableQuery)delegate).storeRowImmediately(newRowItem);
+      if (queryDelegate instanceof TableQuery) {
+        itemId=((TableQuery)queryDelegate).storeRowImmediately(newRowItem);
       }
  else {
-        delegate.beginTransaction();
-        delegate.storeRow(newRowItem);
-        delegate.commit();
+        queryDelegate.beginTransaction();
+        queryDelegate.storeRow(newRowItem);
+        queryDelegate.commit();
       }
       refresh();
       if (notificationsEnabled) {
@@ -27,7 +27,7 @@
  catch (    SQLException e) {
       getLogger().log(Level.WARNING,"Failed to add row to DB. Rolling back.",e);
       try {
-        delegate.rollback();
+        queryDelegate.rollback();
       }
  catch (      SQLException ee) {
         getLogger().log(Level.SEVERE,"Failed to roll back row addition",e);
