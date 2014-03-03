@@ -1,15 +1,15 @@
 {
   if (autoCommit) {
     try {
-      delegate.beginTransaction();
+      queryDelegate.beginTransaction();
       boolean success=true;
       for (      Object id : getItemIds()) {
-        if (!delegate.removeRow((RowItem)getItem(id))) {
+        if (!queryDelegate.removeRow((RowItem)getItem(id))) {
           success=false;
         }
       }
       if (success) {
-        delegate.commit();
+        queryDelegate.commit();
         getLogger().log(Level.FINER,"All rows removed from DB...");
         refresh();
         if (notificationsEnabled) {
@@ -17,14 +17,14 @@
         }
       }
  else {
-        delegate.rollback();
+        queryDelegate.rollback();
       }
       return success;
     }
  catch (    SQLException e) {
       getLogger().log(Level.WARNING,"removeAllItems() failed, rolling back",e);
       try {
-        delegate.rollback();
+        queryDelegate.rollback();
       }
  catch (      SQLException ee) {
         getLogger().log(Level.SEVERE,"Failed to roll back",ee);
@@ -34,7 +34,7 @@
 catch (    OptimisticLockException e) {
       getLogger().log(Level.WARNING,"removeAllItems() failed, rolling back",e);
       try {
-        delegate.rollback();
+        queryDelegate.rollback();
       }
  catch (      SQLException ee) {
         getLogger().log(Level.SEVERE,"Failed to roll back",ee);

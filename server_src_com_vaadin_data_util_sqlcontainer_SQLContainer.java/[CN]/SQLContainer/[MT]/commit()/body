@@ -1,26 +1,26 @@
 {
   try {
     getLogger().log(Level.FINER,"Commiting changes through delegate...");
-    delegate.beginTransaction();
+    queryDelegate.beginTransaction();
     for (    RowItem item : removedItems.values()) {
-      if (!delegate.removeRow(item)) {
+      if (!queryDelegate.removeRow(item)) {
         throw new SQLException("Removal failed for row with ID: " + item.getId());
       }
     }
     for (    RowItem item : modifiedItems) {
-      if (delegate.storeRow(item) > 0) {
+      if (queryDelegate.storeRow(item) > 0) {
         item.commit();
       }
  else {
-        delegate.rollback();
+        queryDelegate.rollback();
         refresh();
         throw new ConcurrentModificationException("Item with the ID '" + item.getId() + "' has been externally modified.");
       }
     }
     for (    RowItem item : addedItems) {
-      delegate.storeRow(item);
+      queryDelegate.storeRow(item);
     }
-    delegate.commit();
+    queryDelegate.commit();
     removedItems.clear();
     addedItems.clear();
     modifiedItems.clear();
@@ -30,11 +30,11 @@
     }
   }
  catch (  SQLException e) {
-    delegate.rollback();
+    queryDelegate.rollback();
     throw e;
   }
 catch (  OptimisticLockException e) {
-    delegate.rollback();
+    queryDelegate.rollback();
     throw e;
   }
 }

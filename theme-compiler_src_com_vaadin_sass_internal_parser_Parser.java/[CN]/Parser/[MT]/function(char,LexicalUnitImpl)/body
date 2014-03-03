@@ -77,12 +77,16 @@ LexicalUnitImpl l=(LexicalUnitImpl)params;
 boolean loop=true;
 if ("rgb(".equals(f)) {
 int i=0;
+boolean hasVariables=false;
 while (loop && l != null && i < 5) {
 switch (i) {
 case 0:
 case 2:
 case 4:
-if ((l.getLexicalUnitType() != LexicalUnit.SAC_INTEGER) && (l.getLexicalUnitType() != LexicalUnit.SAC_PERCENTAGE)) {
+if (l.getLexicalUnitType() == SCSSLexicalUnit.SCSS_VARIABLE) {
+hasVariables=true;
+}
+ else if ((l.getLexicalUnitType() != LexicalUnit.SAC_INTEGER) && (l.getLexicalUnitType() != LexicalUnit.SAC_PERCENTAGE)) {
 loop=false;
 }
 break;
@@ -103,8 +107,15 @@ i++;
 }
 }
 if ((i == 5) && loop && (l == null)) {
+if (hasVariables) {
+{
+if (true) return LexicalUnitImpl.createFunction(n.beginLine,n.beginColumn,prev,f.substring(0,f.length() - 1),params);
+}
+}
+ else {
 {
 if (true) return LexicalUnitImpl.createRGBColor(n.beginLine,n.beginColumn,prev,params);
+}
 }
 }
  else {

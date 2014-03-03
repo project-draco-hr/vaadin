@@ -1,13 +1,13 @@
 {
   if (autoCommit) {
     try {
-      delegate.beginTransaction();
-      if (delegate.storeRow(changedItem) == 0) {
-        delegate.rollback();
+      queryDelegate.beginTransaction();
+      if (queryDelegate.storeRow(changedItem) == 0) {
+        queryDelegate.rollback();
         refresh();
         throw new ConcurrentModificationException("Item with the ID '" + changedItem.getId() + "' has been externally modified.");
       }
-      delegate.commit();
+      queryDelegate.commit();
       if (notificationsEnabled) {
         CacheFlushNotifier.notifyOfCacheFlush(this);
       }
@@ -16,7 +16,7 @@
  catch (    SQLException e) {
       getLogger().log(Level.WARNING,"itemChangeNotification failed, rolling back...",e);
       try {
-        delegate.rollback();
+        queryDelegate.rollback();
       }
  catch (      SQLException ee) {
         getLogger().log(Level.SEVERE,"Rollback failed",e);
