@@ -1,10 +1,10 @@
 {
   Profiler.enter("LayoutManager.cleanMeasuredSizes");
-  Document document=RootPanel.get().getElement().getOwnerDocument();
+  Node rootNode=getConnection().getUIConnector().getWidget().getElement().getParentNode();
   Iterator<Element> i=measuredSizes.keySet().iterator();
   while (i.hasNext()) {
     Element e=i.next();
-    if (e.getOwnerDocument() != document) {
+    if (!rootNode.isOrHasChild(e)) {
       i.remove();
     }
   }
