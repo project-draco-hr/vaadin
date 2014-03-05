@@ -1,0 +1,18 @@
+{
+  openTestURL();
+  final int rowsToInsert=5;
+  final int offset=5;
+  insertRows(offset,rowsToInsert);
+  final List<WebElement> rows=getBodyRows();
+  int i=0;
+  for (; i < offset + rowsToInsert; i++) {
+    final String expectedStart="Row " + i;
+    final String text=rows.get(i).getText();
+    assertTrue("Expected \"" + expectedStart + "...\" but was "+ text,text.startsWith(expectedStart));
+  }
+  for (; i < rows.size(); i++) {
+    final String expectedStart="Row " + (i - rowsToInsert);
+    final String text=rows.get(i).getText();
+    assertTrue("(post insert) Expected \"" + expectedStart + "...\" but was "+ text,text.startsWith(expectedStart));
+  }
+}
