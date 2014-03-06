@@ -1,13 +1,13 @@
 {
-  int scrollContentHeight=ROW_HEIGHT_PX * body.getRowCount();
+  int scrollContentHeight=body.calculateEstimatedTotalRowHeight();
   int scrollContentWidth=columnConfiguration.calculateRowWidth();
-  double tableWrapperHeight=height;
-  double tableWrapperWidth=width;
-  boolean verticalScrollNeeded=scrollContentHeight > tableWrapperHeight - header.height - footer.height;
+  double tableWrapperHeight=heightOfEscalator;
+  double tableWrapperWidth=widthOfEscalator;
+  boolean verticalScrollNeeded=scrollContentHeight > tableWrapperHeight - header.heightOfSection - footer.heightOfSection;
   boolean horizontalScrollNeeded=scrollContentWidth > tableWrapperWidth;
   if (verticalScrollNeeded != horizontalScrollNeeded) {
     if (!verticalScrollNeeded && horizontalScrollNeeded) {
-      verticalScrollNeeded=scrollContentHeight > tableWrapperHeight - header.height - footer.height- horizontalScrollbar.getScrollbarThickness();
+      verticalScrollNeeded=scrollContentHeight > tableWrapperHeight - header.heightOfSection - footer.heightOfSection- horizontalScrollbar.getScrollbarThickness();
     }
  else {
       horizontalScrollNeeded=scrollContentWidth > tableWrapperWidth - verticalScrollbar.getScrollbarThickness();
@@ -21,7 +21,7 @@
   }
   tableWrapper.getStyle().setHeight(tableWrapperHeight,Unit.PX);
   tableWrapper.getStyle().setWidth(tableWrapperWidth,Unit.PX);
-  verticalScrollbar.setOffsetSize((int)(tableWrapperHeight - footer.height - header.height));
+  verticalScrollbar.setOffsetSize((int)(tableWrapperHeight - footer.heightOfSection - header.heightOfSection));
   verticalScrollbar.setScrollSize(scrollContentHeight);
   int prevScrollPos=horizontalScrollbar.getScrollPos();
   int unfrozenPixels=columnConfiguration.getCalculatedColumnsWidth(Range.between(columnConfiguration.getFrozenColumnCount(),columnConfiguration.getColumnCount()));

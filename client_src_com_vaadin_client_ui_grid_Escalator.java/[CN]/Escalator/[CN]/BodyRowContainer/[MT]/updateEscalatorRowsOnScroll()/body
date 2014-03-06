@@ -7,23 +7,23 @@
   final int scrollTop=tBodyScrollTop;
   final int viewportOffset=topRowPos - scrollTop;
   if (viewportOffset > 0) {
-    int rowsToMove=(int)Math.ceil((double)viewportOffset / (double)ROW_HEIGHT_PX);
-    rowsToMove=Math.min(rowsToMove,root.getChildCount());
+    int originalRowsToMove=(int)Math.ceil(viewportOffset / (double)getDefaultRowHeight());
+    int rowsToMove=Math.min(originalRowsToMove,root.getChildCount());
     final int end=root.getChildCount();
     final int start=end - rowsToMove;
-    final int logicalRowIndex=scrollTop / ROW_HEIGHT_PX;
+    final int logicalRowIndex=scrollTop / getDefaultRowHeight();
     moveAndUpdateEscalatorRows(Range.between(start,end),0,logicalRowIndex);
-    rowsWereMoved=(rowsToMove != 0);
+    updateTopRowLogicalIndex(-originalRowsToMove);
   }
- else   if (viewportOffset + ROW_HEIGHT_PX <= 0) {
-    int rowsToMove=Math.abs(viewportOffset / ROW_HEIGHT_PX);
-    rowsToMove=Math.min(rowsToMove,root.getChildCount());
+ else   if (viewportOffset + getDefaultRowHeight() <= 0) {
+    int originalRowsToMove=Math.abs(viewportOffset / getDefaultRowHeight());
+    int rowsToMove=Math.min(originalRowsToMove,root.getChildCount());
     int logicalRowIndex;
     if (rowsToMove < root.getChildCount()) {
       logicalRowIndex=getLogicalRowIndex(visualRowOrder.getLast()) + 1;
     }
  else {
-      logicalRowIndex=scrollTop / ROW_HEIGHT_PX;
+      logicalRowIndex=scrollTop / getDefaultRowHeight();
     }
     final int targetVisualIndex=root.getChildCount();
     boolean aRowWasLeftBehind=false;
@@ -34,10 +34,12 @@
     moveAndUpdateEscalatorRows(Range.between(0,rowsToMove),targetVisualIndex,logicalRowIndex);
     if (aRowWasLeftBehind) {
       final Range strayRow=Range.withOnly(0);
-      final int topLogicalIndex=getLogicalRowIndex(visualRowOrder.get(1)) - 1;
+      final int topLogicalIndex=getRowCount() - visualRowOrder.size();
       moveAndUpdateEscalatorRows(strayRow,0,topLogicalIndex);
     }
-    rowsWereMoved=(rowsToMove != 0);
+    final int naiveNewLogicalIndex=getTopRowLogicalIndex() + originalRowsToMove;
+    final int maxLogicalIndex=getRowCount() - visualRowOrder.size();
+    setTopRowLogicalIndex(Math.min(naiveNewLogicalIndex,maxLogicalIndex));
   }
   if (rowsWereMoved) {
     fireRowVisibilityChangeEvent();
