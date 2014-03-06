@@ -5,6 +5,12 @@
   Coordinates coords=((Locatable)caption).getCoordinates();
   ((HasInputDevices)getDriver()).getMouse().mouseMove(coords);
   sleep(1000);
-  WebElement error=vaadinElement("Root/VNotification[0]");
-  assertNull("No error should be found",error);
+  String selector="Root/VNotification[0]";
+  try {
+    vaadinElement(selector);
+    fail("No error notification should be found");
+  }
+ catch (  NoSuchElementException e) {
+    assertTrue(e.getMessage().contains(selector));
+  }
 }
