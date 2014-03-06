@@ -1,5 +1,5 @@
 {
-  if (locator.isValidForLegacyLocator(path)) {
+  if (path.isEmpty() || locator.isValidForLegacyLocator(path)) {
     return getLegacyLocatorQuery();
   }
   String[] fragments;
@@ -9,44 +9,27 @@
     tmpPath=tmpPath.substring(1,tmpPath.lastIndexOf(')'));
   }
   fragments=tmpPath.split("/");
-  String elementQueryString;
+  String elementQueryString="";
   int index=0;
   for (  SelectorPredicate p : postFilters) {
     if (p.getIndex() > 0) {
       index=p.getIndex();
     }
   }
-  if (index > 0) {
-    elementQueryString=".get(" + index + ");";
-  }
- else {
-    elementQueryString=".first();";
-  }
   for (int i=1; i < fragments.length; ++i) {
     if (fragments[i].isEmpty()) {
       continue;
     }
-    String queryFragment="";
-    String elementClass=getComponentName(fragments[i]) + "Element.class";
-    for (    SelectorPredicate p : SelectorPredicate.extractPredicates(fragments[i])) {
-      queryFragment+="." + p.getName() + "(\""+ p.getValue()+ "\")";
-    }
-    if (i == fragments.length - 1) {
-      queryFragment="$(" + elementClass + ")"+ queryFragment;
-    }
- else {
-      boolean recursive=fragments[i + 1].isEmpty();
-      if (recursive) {
-        queryFragment=".in(" + elementClass + ")"+ queryFragment;
-      }
- else {
-        queryFragment=".childOf(" + elementClass + ")"+ queryFragment;
-      }
-    }
-    elementQueryString=queryFragment + elementQueryString;
+    boolean recursive=(i > 1 ? fragments[i - 1].isEmpty() : false);
+    String queryFragment=(!elementQueryString.isEmpty() ? "." : "");
+    queryFragment+=(!recursive ? "$" : "") + generateFragment(fragments[i]);
+    elementQueryString+=queryFragment;
   }
-  if (!tmpPath.startsWith("//")) {
-    elementQueryString="$" + elementQueryString;
+  if (index == 0) {
+    elementQueryString+=".first()";
+  }
+ else {
+    elementQueryString+=".get(" + index + ");";
   }
   return generateJavaVariable(fragments[fragments.length - 1]) + elementQueryString;
 }
