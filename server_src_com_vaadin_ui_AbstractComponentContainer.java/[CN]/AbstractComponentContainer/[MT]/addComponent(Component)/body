@@ -1,10 +1,6 @@
 {
-  if (c instanceof ComponentContainer) {
-    for (Component parent=this; parent != null; parent=parent.getParent()) {
-      if (parent == c) {
-        throw new IllegalArgumentException("Component cannot be added inside it's own content");
-      }
-    }
+  if (isOrHasAncestor(c)) {
+    throw new IllegalArgumentException("Component cannot be added inside it's own content");
   }
   if (c.getParent() != null) {
     AbstractSingleComponentContainer.removeFromParent(c);
