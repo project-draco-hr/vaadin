@@ -1,0 +1,11 @@
+{
+  ServletConfig servletConfig=new MockServletConfig();
+  VaadinServlet servlet=new VaadinServlet();
+  servlet.init(servletConfig);
+  VaadinService service=servlet.getService();
+  MockVaadinSession vaadinSession=new MockVaadinSession(service);
+  service.fireSessionDestroy(vaadinSession);
+  Assert.assertEquals("'fireSessionDestroy' method doesn't call 'close' for the session",1,vaadinSession.getCloseCount());
+  vaadinSession.valueUnbound(EasyMock.createMock(HttpSessionBindingEvent.class));
+  org.junit.Assert.assertEquals("'fireSessionDestroy' method may not call 'close' " + "method for closing session",1,vaadinSession.getCloseCount());
+}

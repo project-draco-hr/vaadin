@@ -2,6 +2,9 @@
   final VaadinSession session=vaadinSession;
   session.accessSynchronously(new Runnable(){
     @Override public void run(){
+      if (!session.isClosing()) {
+        closeSession(session);
+      }
       ArrayList<UI> uis=new ArrayList<UI>(session.getUIs());
       for (      final UI ui : uis) {
         ui.accessSynchronously(new Runnable(){
