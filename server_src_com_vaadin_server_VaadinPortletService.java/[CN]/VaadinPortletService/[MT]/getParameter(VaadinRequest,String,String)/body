@@ -1,0 +1,19 @@
+{
+  VaadinPortletRequest portletRequest=(VaadinPortletRequest)request;
+  String preference=portletRequest.getPortletPreference(name);
+  if (preference != null) {
+    return preference;
+  }
+  String appOrSystemProperty=getAppOrSystemProperty(name,null);
+  if (appOrSystemProperty != null) {
+    return appOrSystemProperty;
+  }
+  String portalProperty=portletRequest.getPortalProperty(name);
+  if (portalProperty != null) {
+    if (name.equals(Constants.PORTAL_PARAMETER_VAADIN_WIDGETSET)) {
+      return mapDefaultWidgetset(portalProperty);
+    }
+    return portalProperty;
+  }
+  return defaultValue;
+}
