@@ -3,15 +3,24 @@
     scroller.currentFlickScroller=null;
     return;
   }
-  final int lastLeft=tBodyScrollLeft;
-  final int lastTop=tBodyScrollTop;
+  if (prevTime == 0) {
+    prevTime=timestamp;
+    AnimationScheduler.get().requestAnimationFrame(this);
+    return;
+  }
+  int currentLeft=horizontalScrollbar.getScrollPos();
+  int currentTop=verticalScrollbar.getScrollPos();
   final double timeDiff=timestamp - prevTime;
-  setScrollLeft((int)(tBodyScrollLeft - velX * timeDiff));
+  double left=currentLeft - velX * timeDiff;
+  setScrollLeft((int)left);
   velX-=xFric * timeDiff;
-  setScrollTop(tBodyScrollTop - velY * timeDiff);
+  double top=currentTop - velY * timeDiff;
+  setScrollTop(top);
   velY-=yFric * timeDiff;
-  cancelBecauseOfEdgeOrCornerMaybe(lastLeft,lastTop);
+  cancelBecauseOfEdgeOrCornerMaybe();
   prevTime=timestamp;
   millisLeft-=timeDiff;
+  lastLeft=currentLeft;
+  lastTop=currentTop;
   AnimationScheduler.get().requestAnimationFrame(this);
 }
