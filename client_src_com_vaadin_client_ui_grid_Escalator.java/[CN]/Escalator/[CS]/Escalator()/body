@@ -4,9 +4,15 @@
   final Element root=DOM.createDiv();
   setElement(root);
   root.appendChild(verticalScrollbar.getElement());
-  root.appendChild(horizontalScrollbar.getElement());
   verticalScrollbar.setScrollbarThickness(Util.getNativeScrollbarSize());
+  root.appendChild(horizontalScrollbar.getElement());
   horizontalScrollbar.setScrollbarThickness(Util.getNativeScrollbarSize());
+  horizontalScrollbar.addVisibilityHandler(new ScrollbarBundle.VisibilityHandler(){
+    @Override public void visibilityChanged(    ScrollbarBundle.VisibilityChangeEvent event){
+      applyHeightByRows();
+    }
+  }
+);
   tableWrapper=DOM.createDiv();
   root.appendChild(tableWrapper);
   final Element table=DOM.createTable();
