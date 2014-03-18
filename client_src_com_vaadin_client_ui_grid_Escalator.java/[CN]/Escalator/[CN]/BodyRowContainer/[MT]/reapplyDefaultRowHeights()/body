@@ -1,0 +1,21 @@
+{
+  if (visualRowOrder.isEmpty()) {
+    return;
+  }
+  Profiler.enter("Escalator.BodyRowContainer.reapplyDefaultRowHeights");
+  for (int i=0; i < visualRowOrder.size(); i++) {
+    Element tr=visualRowOrder.get(i);
+    reapplyRowHeight(tr,getDefaultRowHeight());
+    final int logicalIndex=getTopRowLogicalIndex() + i;
+    setRowPosition(tr,0,logicalIndex * getDefaultRowHeight());
+  }
+  double scrollRatio=(double)verticalScrollbar.getScrollPos() / (double)verticalScrollbar.getScrollSize();
+  scroller.recalculateScrollbarsForVirtualViewport();
+  internalScrollEventCalls++;
+  verticalScrollbar.setScrollPos((int)(getDefaultRowHeight() * getRowCount() * scrollRatio));
+  setBodyScrollPosition(horizontalScrollbar.getScrollPos(),verticalScrollbar.getScrollPos());
+  scroller.onScroll();
+  verifyEscalatorCount();
+  setTopRowLogicalIndex(getRowTop(visualRowOrder.getFirst()) / getDefaultRowHeight());
+  Profiler.leave("Escalator.BodyRowContainer.reapplyDefaultRowHeights");
+}

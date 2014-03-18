@@ -1,0 +1,19 @@
+{
+  int rowIndex=grid.getColumnGroupRows().indexOf(this);
+  int parentRowIndex=rowIndex - 1;
+  ColumnGroupRow parentRow=null;
+  if (parentRowIndex > -1) {
+    parentRow=grid.getColumnGroupRows().get(parentRowIndex);
+  }
+  if (parentRow == null) {
+    return;
+  }
+  for (  Object id : propertyIds) {
+    if (parentRow.hasColumnBeenGrouped(id)) {
+      ColumnGroup parentGroup=parentRow.getGroupForProperty(id);
+      if (!propertyIds.containsAll(parentGroup.getColumns())) {
+        throw new IllegalArgumentException("Grouped properties overlaps previous grouping bounderies");
+      }
+    }
+  }
+}
