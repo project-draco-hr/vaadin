@@ -1,0 +1,17 @@
+{
+  for (int i=range.getStart(); i < range.getEnd(); i++) {
+    final Object itemId=datasource.getIdByIndex(i);
+    final Item item=datasource.getItem(itemId);
+    if (valueChangeListeners.containsKey(itemId)) {
+      continue;
+    }
+    GridValueChangeListener listener=new GridValueChangeListener(itemId);
+    valueChangeListeners.put(itemId,listener);
+    for (    final Object propertyId : item.getItemPropertyIds()) {
+      final Property<?> property=item.getItemProperty(propertyId);
+      if (property instanceof ValueChangeNotifier) {
+        ((ValueChangeNotifier)property).addValueChangeListener(listener);
+      }
+    }
+  }
+}

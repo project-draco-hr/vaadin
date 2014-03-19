@@ -1,0 +1,35 @@
+{
+  if (container == null) {
+    throw new IllegalArgumentException("Cannot set the datasource to null");
+  }
+  if (datasource == container) {
+    return;
+  }
+  if (datasource instanceof PropertySetChangeNotifier) {
+    ((PropertySetChangeNotifier)datasource).removePropertySetChangeListener(propertyListener);
+  }
+  if (datasource instanceof ItemSetChangeNotifier) {
+    ((ItemSetChangeNotifier)datasource).removeItemSetChangeListener(itemListener);
+  }
+  activeRowHandler.clear();
+  if (datasourceExtension != null) {
+    removeExtension(datasourceExtension);
+  }
+  datasource=container;
+  datasourceExtension=new RpcDataProviderExtension(container);
+  datasourceExtension.extend(this);
+  if (datasource instanceof PropertySetChangeNotifier) {
+    ((PropertySetChangeNotifier)datasource).addPropertySetChangeListener(propertyListener);
+  }
+  if (datasource instanceof ItemSetChangeNotifier) {
+    ((ItemSetChangeNotifier)datasource).addItemSetChangeListener(itemListener);
+  }
+  getState().columns.clear();
+  setLastFrozenPropertyId(null);
+  for (  Object propertyId : datasource.getContainerPropertyIds()) {
+    if (!columns.containsKey(propertyId)) {
+      GridColumn column=appendColumn(propertyId);
+      column.setHeaderCaption(String.valueOf(propertyId));
+    }
+  }
+}

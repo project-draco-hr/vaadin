@@ -1,0 +1,13 @@
+{
+  IndexedContainer ds=new IndexedContainer();
+  for (int c=0; c < 10; c++) {
+    ds.addContainerProperty("column" + c,String.class,"");
+  }
+  grid=new Grid(ds);
+  getStateMethod=Grid.class.getDeclaredMethod("getState");
+  getStateMethod.setAccessible(true);
+  state=(GridState)getStateMethod.invoke(grid);
+  columnIdGeneratorField=Grid.class.getDeclaredField("columnKeys");
+  columnIdGeneratorField.setAccessible(true);
+  columnIdMapper=(KeyMapper<Object>)columnIdGeneratorField.get(grid);
+}

@@ -1,0 +1,18 @@
+{
+  if (requestPending) {
+    return;
+  }
+  Profiler.enter("AbstractRemoteDataSource.checkCacheCoverage");
+  if (!requestedAvailability.intersects(cached) || cached.isEmpty()) {
+    rowCache.clear();
+    cached=Range.between(0,0);
+    handleMissingRows(requestedAvailability);
+  }
+ else {
+    discardStaleCacheEntries();
+    Range[] availabilityPartition=requestedAvailability.partitionWith(cached);
+    handleMissingRows(availabilityPartition[0]);
+    handleMissingRows(availabilityPartition[2]);
+  }
+  Profiler.leave("AbstractRemoteDataSource.checkCacheCoverage");
+}

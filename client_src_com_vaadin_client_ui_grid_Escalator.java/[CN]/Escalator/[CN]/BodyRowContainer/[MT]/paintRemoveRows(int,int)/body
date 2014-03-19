@@ -1,0 +1,85 @@
+{
+  final Range viewportRange=Range.withLength(getLogicalRowIndex(visualRowOrder.getFirst()),visualRowOrder.size());
+  final Range removedRowsRange=Range.withLength(index,numberOfRows);
+  final Range[] partitions=removedRowsRange.partitionWith(viewportRange);
+  final Range removedAbove=partitions[0];
+  final Range removedLogicalInside=partitions[1];
+  final Range removedVisualInside=convertToVisual(removedLogicalInside);
+  final boolean firstVisualRowIsRemoved=!removedVisualInside.isEmpty() && removedVisualInside.getStart() == 0;
+  if (!removedAbove.isEmpty() || firstVisualRowIsRemoved) {
+    final int yDelta=removedAbove.length() * getDefaultRowHeight();
+    final int firstLogicalRowHeight=getDefaultRowHeight();
+    final boolean removalScrollsToShowFirstLogicalRow=verticalScrollbar.getScrollPos() - yDelta < firstLogicalRowHeight;
+    if (removedVisualInside.isEmpty() && (!removalScrollsToShowFirstLogicalRow || !firstVisualRowIsRemoved)) {
+      adjustScrollPosIgnoreEvents(-yDelta);
+    }
+ else     if (removalScrollsToShowFirstLogicalRow) {
+      adjustScrollPosIgnoreEvents(-verticalScrollbar.getScrollPos());
+    }
+  }
+  if (!removedVisualInside.isEmpty()) {
+    int escalatorRowCount=bodyElem.getChildCount();
+    final int escalatorRowsToRemove=escalatorRowCount - getRowCount();
+    if (escalatorRowsToRemove > 0) {
+      for (int i=0; i < escalatorRowsToRemove; i++) {
+        final Element tr=visualRowOrder.remove(removedVisualInside.getStart());
+        for (int c=0; c < tr.getChildCount(); c++) {
+          detachPossibleWidgetFromCell((Element)tr.getChild(c).cast());
+        }
+        tr.removeFromParent();
+        removeRowPosition(tr);
+      }
+      escalatorRowCount-=escalatorRowsToRemove;
+      body.setBodyScrollPosition(tBodyScrollLeft,0);
+      final int dirtyRowsStart=removedLogicalInside.getStart();
+      for (int i=dirtyRowsStart; i < escalatorRowCount; i++) {
+        final Element tr=visualRowOrder.get(i);
+        setRowPosition(tr,0,i * getDefaultRowHeight());
+      }
+      final int rowsToUpdateDataOn=numberOfRows - escalatorRowsToRemove;
+      final int start=Math.max(0,escalatorRowCount - rowsToUpdateDataOn);
+      final int end=escalatorRowCount;
+      for (int i=start; i < end; i++) {
+        final Element tr=visualRowOrder.get(i);
+        refreshRow(tr,i);
+      }
+    }
+ else {
+      final int contentBottom=getRowCount() * getDefaultRowHeight();
+      final int viewportBottom=(int)(tBodyScrollTop + calculateHeight());
+      if (viewportBottom <= contentBottom) {
+        paintRemoveRowsAtMiddle(removedLogicalInside,removedVisualInside,0);
+      }
+ else       if (contentBottom + (numberOfRows * getDefaultRowHeight()) - viewportBottom < getDefaultRowHeight()) {
+        paintRemoveRowsAtBottom(removedLogicalInside,removedVisualInside);
+        updateTopRowLogicalIndex(-removedLogicalInside.length());
+      }
+ else {
+        int newTop=getRowTop(visualRowOrder.get(removedVisualInside.getStart()));
+        for (int i=0; i < removedVisualInside.length(); i++) {
+          final Element tr=visualRowOrder.remove(removedVisualInside.getStart());
+          visualRowOrder.addLast(tr);
+        }
+        for (int i=removedVisualInside.getStart(); i < escalatorRowCount; i++) {
+          final Element tr=visualRowOrder.get(i);
+          setRowPosition(tr,0,newTop);
+          newTop+=getDefaultRowHeight();
+        }
+        final double newScrollTop=contentBottom - calculateHeight();
+        setScrollTop(newScrollTop);
+        scroller.onScroll();
+        internalScrollEventCalls++;
+        moveAndUpdateEscalatorRows(Range.withOnly(escalatorRowCount - 1),0,getLogicalRowIndex(visualRowOrder.getFirst()) - 1);
+        updateTopRowLogicalIndex(-1);
+        final int rowsScrolled=(int)(Math.ceil((viewportBottom - (double)contentBottom) / getDefaultRowHeight()));
+        final int start=escalatorRowCount - (removedVisualInside.length() - rowsScrolled);
+        final Range visualRefreshRange=Range.between(start,escalatorRowCount);
+        final int logicalTargetIndex=getLogicalRowIndex(visualRowOrder.getFirst()) + start;
+        moveAndUpdateEscalatorRows(visualRefreshRange,start,logicalTargetIndex);
+      }
+    }
+  }
+  updateTopRowLogicalIndex(-removedAbove.length());
+  scroller.recalculateScrollbarsForVirtualViewport();
+  fireRowVisibilityChangeEvent();
+}

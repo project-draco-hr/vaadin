@@ -1,0 +1,21 @@
+{
+  if (index < 0 || index > getColumnCount()) {
+    throw new IndexOutOfBoundsException("The given index(" + index + ") was outside of the current number of columns (0.."+ getColumnCount()+ ")");
+  }
+  if (numberOfColumns < 1) {
+    throw new IllegalArgumentException("Number of columns must be 1 or greater (was " + numberOfColumns);
+  }
+  flyweightRow.addCells(index,numberOfColumns);
+  for (int i=0; i < numberOfColumns; i++) {
+    columns.add(index,new Column());
+  }
+  boolean frozen=index < frozenColumns;
+  if (frozen) {
+    frozenColumns+=numberOfColumns;
+  }
+  if (hasColumnAndRowData()) {
+    for (    final AbstractRowContainer rowContainer : rowContainers) {
+      rowContainer.paintInsertColumns(index,numberOfColumns,frozen);
+    }
+  }
+}
