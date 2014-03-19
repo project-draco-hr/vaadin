@@ -1,0 +1,26 @@
+{
+  if (internalScrollEventCalls > 0) {
+    internalScrollEventCalls--;
+    return;
+  }
+  final int scrollLeft=horizontalScrollbar.getScrollPos();
+  final int scrollTop=verticalScrollbar.getScrollPos();
+  if (lastScrollLeft != scrollLeft) {
+    for (int i=0; i < columnConfiguration.frozenColumns; i++) {
+      header.updateFreezePosition(i,scrollLeft);
+      body.updateFreezePosition(i,scrollLeft);
+      footer.updateFreezePosition(i,scrollLeft);
+    }
+    position.set(headElem,-scrollLeft,0);
+    if (position instanceof AbsolutePosition) {
+      footElem.getStyle().setLeft(-scrollLeft,Unit.PX);
+    }
+ else {
+      position.set(footElem,-scrollLeft,0);
+    }
+    lastScrollLeft=scrollLeft;
+  }
+  body.setBodyScrollPosition(scrollLeft,scrollTop);
+  lastScrollTop=scrollTop;
+  body.updateEscalatorRowsOnScroll();
+}

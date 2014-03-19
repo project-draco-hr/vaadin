@@ -1,0 +1,29 @@
+{
+  return new EscalatorUpdater(){
+    @Override public void updateCells(    Row row,    Iterable<Cell> cellsToUpdate){
+      int rowIndex=row.getRow();
+      if (dataSource == null) {
+        setCellsLoading(cellsToUpdate);
+        return;
+      }
+      T rowData=dataSource.getRow(rowIndex);
+      if (rowData == null) {
+        setCellsLoading(cellsToUpdate);
+        return;
+      }
+      for (      Cell cell : cellsToUpdate) {
+        GridColumn column=getColumnFromVisibleIndex(cell.getColumn());
+        if (column != null) {
+          Object value=column.getValue(rowData);
+          column.getRenderer().renderCell(cell,value);
+        }
+      }
+    }
+    private void setCellsLoading(    Iterable<Cell> cellsToUpdate){
+      for (      Cell cell : cellsToUpdate) {
+        cell.getElement().setInnerText("...");
+      }
+    }
+  }
+;
+}
