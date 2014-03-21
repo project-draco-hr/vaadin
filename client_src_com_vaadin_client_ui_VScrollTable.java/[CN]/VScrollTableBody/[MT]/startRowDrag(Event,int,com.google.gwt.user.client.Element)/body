@@ -1,0 +1,33 @@
+{
+  VTransferable transferable=new VTransferable();
+  transferable.setDragSource(ConnectorMap.get(client).getConnector(VScrollTable.this));
+  transferable.setData("itemId","" + rowKey);
+  NodeList<TableCellElement> cells=rowElement.getCells();
+  for (int i=0; i < cells.getLength(); i++) {
+    if (cells.getItem(i).isOrHasChild(targetTdOrTr)) {
+      HeaderCell headerCell=tHead.getHeaderCell(i);
+      transferable.setData("propertyId",headerCell.cid);
+      break;
+    }
+  }
+  VDragEvent ev=VDragAndDropManager.get().startDrag(transferable,event,true);
+  if (dragmode == DRAGMODE_MULTIROW && isMultiSelectModeAny() && rowKeyIsSelected(rowKey)) {
+    ev.createDragImage((com.google.gwt.user.client.Element)scrollBody.tBodyElement.cast(),true);
+    com.google.gwt.user.client.Element dragImage=ev.getDragImage();
+    int i=0;
+    for (Iterator<Widget> iterator=scrollBody.iterator(); iterator.hasNext(); ) {
+      VScrollTableRow next=(VScrollTableRow)iterator.next();
+      com.google.gwt.user.client.Element child=(com.google.gwt.user.client.Element)dragImage.getChild(i++);
+      if (!rowKeyIsSelected(next.rowKey)) {
+        child.getStyle().setVisibility(Visibility.HIDDEN);
+      }
+    }
+  }
+ else {
+    ev.createDragImage(getElement(),true);
+  }
+  if (type == Event.ONMOUSEDOWN) {
+    event.preventDefault();
+  }
+  event.stopPropagation();
+}

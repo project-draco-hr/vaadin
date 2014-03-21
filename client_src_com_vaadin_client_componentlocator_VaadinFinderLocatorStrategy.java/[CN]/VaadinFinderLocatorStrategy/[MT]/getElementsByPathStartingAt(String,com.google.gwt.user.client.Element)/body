@@ -1,0 +1,20 @@
+{
+  List<SelectorPredicate> postFilters=SelectorPredicate.extractPostFilterPredicates(path);
+  if (postFilters.size() > 0) {
+    path=path.substring(1,path.lastIndexOf(')'));
+  }
+  List<com.google.gwt.user.client.Element> elements=getElementsByPathStartingAtConnector(path,Util.findPaintable(client,root));
+  for (  SelectorPredicate p : postFilters) {
+    if (p.getIndex() >= 0) {
+      if (p.getIndex() >= elements.size()) {
+        elements.clear();
+      }
+ else {
+        com.google.gwt.user.client.Element e=elements.get(p.getIndex());
+        elements.clear();
+        elements.add(e);
+      }
+    }
+  }
+  return elements;
+}
