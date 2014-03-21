@@ -10,9 +10,14 @@
       desiredCapabilites=new ArrayList<DesiredCapabilities>();
       desiredCapabilites.add(testClassInstance.getClass().getAnnotation(RunLocally.class).value().getDesiredCapabilities());
     }
+    TestNameSuffix testNameSuffixProperty=findAnnotation(testClassInstance.getClass(),TestNameSuffix.class);
     for (    DesiredCapabilities capabilities : desiredCapabilites) {
       for (      FrameworkMethod m : getTestClass().getAnnotatedMethods(Test.class)) {
-        tests.add(new TB3Method(m.getMethod(),capabilities));
+        TB3Method method=new TB3Method(m.getMethod(),capabilities);
+        if (testNameSuffixProperty != null) {
+          method.setTestNameSuffix("-" + System.getProperty(testNameSuffixProperty.property()));
+        }
+        tests.add(method);
       }
     }
   }
