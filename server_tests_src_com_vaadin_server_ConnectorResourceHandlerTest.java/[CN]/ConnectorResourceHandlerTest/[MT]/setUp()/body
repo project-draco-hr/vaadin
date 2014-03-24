@@ -1,0 +1,24 @@
+{
+  IMocksControl control=EasyMock.createNiceControl();
+  request=control.createMock(VaadinRequest.class);
+  response=control.createMock(VaadinResponse.class);
+  VaadinService service=control.createMock(VaadinService.class);
+  EasyMock.expect(request.getPathInfo()).andReturn("/APP/connector/0/1/2");
+  control.replay();
+  session=new MockVaadinSession(service);
+  ui=new UI(){
+    @Override protected void init(    VaadinRequest request){
+    }
+  }
+;
+  ui.doInit(request,0,"");
+  session.lock();
+  try {
+    session.setCommunicationManager(new LegacyCommunicationManager(session));
+    ui.setSession(session);
+    session.addUI(ui);
+  }
+  finally {
+    session.unlock();
+  }
+}
