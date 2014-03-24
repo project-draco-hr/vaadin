@@ -1,0 +1,32 @@
+{
+  Element browseElement=element;
+  Element rootElement=parent.getElement();
+  while (browseElement != null && browseElement != rootElement) {
+    ComponentConnector connector=ConnectorMap.get(client).getConnector(browseElement);
+    if (connector == null) {
+      String ownerPid=VCaption.getCaptionOwnerPid(browseElement);
+      if (ownerPid != null) {
+        connector=(ComponentConnector)ConnectorMap.get(client).getConnector(ownerPid);
+      }
+    }
+    if (connector != null) {
+      while (browseElement != null && browseElement != rootElement) {
+        browseElement=browseElement.getParentElement();
+      }
+      if (browseElement != rootElement) {
+        return null;
+      }
+ else {
+        return connector;
+      }
+    }
+    browseElement=browseElement.getParentElement();
+  }
+  VOverlay overlay=findWidget(element,VOverlay.class);
+  if (overlay != null && overlay.getOwner() != null) {
+    return getConnectorForElement(client,client.getUIConnector().getWidget(),overlay.getOwner().getElement());
+  }
+ else {
+    return null;
+  }
+}

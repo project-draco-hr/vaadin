@@ -1,0 +1,22 @@
+{
+  Element e=element;
+  String path="";
+  while (true) {
+    int childIndex=-1;
+    Element siblingIterator=e;
+    while (siblingIterator != null) {
+      childIndex++;
+      siblingIterator=siblingIterator.getPreviousSiblingElement().cast();
+    }
+    path=PARENTCHILD_SEPARATOR + "domChild[" + childIndex+ "]"+ path;
+    JavaScriptObject parent=e.getParentElement();
+    if (parent == null) {
+      return null;
+    }
+    if (parent == baseElement) {
+      break;
+    }
+    e=parent.cast();
+  }
+  return path;
+}
