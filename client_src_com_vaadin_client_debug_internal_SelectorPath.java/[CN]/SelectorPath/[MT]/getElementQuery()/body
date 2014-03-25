@@ -25,11 +25,13 @@
     queryFragment+=(!recursive ? "$" : "") + generateFragment(fragments[i]);
     elementQueryString+=queryFragment;
   }
-  if (index == 0) {
-    elementQueryString+=".first()";
-  }
+  if (!hasId(fragments[fragments.length - 1])) {
+    if (index == 0) {
+      elementQueryString+=".first()";
+    }
  else {
-    elementQueryString+=".get(" + index + ");";
+      elementQueryString+=".get(" + index + ")";
+    }
   }
-  return generateJavaVariable(fragments[fragments.length - 1]) + elementQueryString;
+  return generateJavaVariable(fragments[fragments.length - 1]) + elementQueryString + ";";
 }
