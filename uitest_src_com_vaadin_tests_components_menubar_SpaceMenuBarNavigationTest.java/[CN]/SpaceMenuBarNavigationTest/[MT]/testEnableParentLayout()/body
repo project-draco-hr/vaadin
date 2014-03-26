@@ -1,0 +1,16 @@
+{
+  openTestURL();
+  WebElement menu=driver.findElement(By.className("menu-bar"));
+  menu.sendKeys(Keys.ARROW_RIGHT);
+  menu.sendKeys(Keys.SPACE);
+  List<WebElement> captions=driver.findElements(By.className("v-menubar-menuitem-caption"));
+  boolean found=false;
+  for (  WebElement caption : captions) {
+    if ("subitem".equals(caption.getText())) {
+      found=true;
+    }
+  }
+  Assert.assertTrue("Sub menu is not opened on SPACE key",found);
+  menu.sendKeys(Keys.SPACE);
+  Assert.assertTrue("No result of action triggered by SPACE key",isElementPresent(By.className("action-result")));
+}
