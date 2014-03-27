@@ -1,13 +1,13 @@
 {
   if (ConnectorBundle.isConnectedComponentConnector(type)) {
-    JClassType createWidgetClass=findInheritedMethod(type,"createWidget").getEnclosingType();
-    JMethod getWidget=findInheritedMethod(type,"getWidget");
+    JClassType createWidgetClass=ConnectorBundle.findInheritedMethod(type,"createWidget").getEnclosingType();
+    JMethod getWidget=ConnectorBundle.findInheritedMethod(type,"getWidget");
     JClassType widgetType=getWidget.getReturnType().isClass();
     if (createWidgetClass.getQualifiedSourceName().equals(AbstractComponentConnector.class.getCanonicalName())) {
       bundle.setNeedsGwtConstructor(widgetType);
       bundle.setNeedsReturnType(type,getWidget);
     }
-    JMethod getState=findInheritedMethod(type,"getState");
+    JMethod getState=ConnectorBundle.findInheritedMethod(type,"getState");
     JClassType stateType=getState.getReturnType().isClass();
     Collection<Property> properties=bundle.getProperties(stateType);
     for (    Property property : properties) {
@@ -15,7 +15,7 @@
       if (delegateToWidget != null) {
         bundle.setNeedsDelegateToWidget(property);
         String methodName=DelegateToWidget.Helper.getDelegateTarget(property.getName(),delegateToWidget.value());
-        JMethod delegatedSetter=findInheritedMethod(widgetType,methodName,property.getPropertyType());
+        JMethod delegatedSetter=ConnectorBundle.findInheritedMethod(widgetType,methodName,property.getPropertyType());
         if (delegatedSetter == null) {
           logger.log(Type.ERROR,widgetType.getName() + "." + methodName+ "("+ property.getPropertyType().getSimpleSourceName()+ ") required by @DelegateToWidget for "+ stateType.getName()+ "."+ property.getName()+ " can not be found.");
           throw new UnableToCompleteException();

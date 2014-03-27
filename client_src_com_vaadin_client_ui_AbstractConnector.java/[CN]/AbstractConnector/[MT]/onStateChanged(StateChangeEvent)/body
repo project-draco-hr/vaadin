@@ -4,5 +4,24 @@
     VConsole.log("State change event for " + Util.getConnectorString(stateChangeEvent.getConnector()) + " received by "+ Util.getConnectorString(this));
   }
   updateEnabledState(isEnabled());
+  FastStringMap<JsArrayObject<OnStateChangeMethod>> handlers=TypeDataStore.getOnStateChangeMethods(getClass());
+  if (handlers != null) {
+    Profiler.enter("AbstractConnector.onStateChanged @OnStateChange");
+    HashSet<OnStateChangeMethod> invokedMethods=new HashSet<OnStateChangeMethod>();
+    JsArrayString propertyNames=handlers.getKeys();
+    for (int i=0; i < propertyNames.length(); i++) {
+      String propertyName=propertyNames.get(i);
+      if (stateChangeEvent.hasPropertyChanged(propertyName)) {
+        JsArrayObject<OnStateChangeMethod> propertyMethods=handlers.get(propertyName);
+        for (int j=0; j < propertyMethods.size(); j++) {
+          OnStateChangeMethod method=propertyMethods.get(j);
+          if (invokedMethods.add(method)) {
+            method.invoke(stateChangeEvent);
+          }
+        }
+      }
+    }
+    Profiler.leave("AbstractConnector.onStateChanged @OnStateChange");
+  }
   Profiler.leave("AbstractConnector.onStateChanged");
 }

@@ -1,0 +1,14 @@
+{
+  ServerConnector connector=(ServerConnector)stateChangeEvent.getSource();
+  Class<?> declaringClass=this.declaringClass;
+  if (declaringClass == null) {
+    declaringClass=connector.getClass();
+  }
+  Type declaringType=TypeDataStore.getType(declaringClass);
+  try {
+    declaringType.getMethod(methodName).invoke(connector);
+  }
+ catch (  NoDataException e) {
+    throw new RuntimeException("Couldn't invoke @OnStateChange method " + declaringType.getSignature() + "."+ methodName,e);
+  }
+}

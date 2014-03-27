@@ -1,0 +1,15 @@
+{
+  FastStringMap<JsArrayObject<OnStateChangeMethod>> handlers=getOnStateChangeMethods(clazz);
+  if (handlers == null) {
+    handlers=FastStringMap.create();
+    onStateChangeMethods.put(getType(clazz).getSignature(),handlers);
+  }
+  for (  String property : method.getProperties()) {
+    JsArrayObject<OnStateChangeMethod> propertyHandlers=handlers.get(property);
+    if (propertyHandlers == null) {
+      propertyHandlers=JsArrayObject.createArray().cast();
+      handlers.put(property,propertyHandlers);
+    }
+    propertyHandlers.add(method);
+  }
+}
