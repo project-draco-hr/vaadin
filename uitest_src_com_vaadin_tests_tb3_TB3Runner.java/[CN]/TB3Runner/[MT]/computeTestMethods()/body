@@ -5,20 +5,20 @@
   }
   try {
     AbstractTB3Test testClassInstance=getTestClassInstance();
-    Collection<DesiredCapabilities> desiredCapabilites=getDesiredCapabilities(testClassInstance);
+    Collection<DesiredCapabilities> desiredCapabilities=getDesiredCapabilities(testClassInstance);
     TestNameSuffix testNameSuffixProperty=findAnnotation(testClassInstance.getClass(),TestNameSuffix.class);
     for (    FrameworkMethod m : getTestMethods()) {
-      if (desiredCapabilites.size() > 0) {
-        for (        DesiredCapabilities capabilities : desiredCapabilites) {
+      if (desiredCapabilities.size() <= 0 || categoryIsExcludedOrNotExcplicitlyIncluded()) {
+        tests.add(new IgnoredTestMethod(m.getMethod()));
+      }
+ else {
+        for (        DesiredCapabilities capabilities : desiredCapabilities) {
           TB3Method method=new TB3Method(m.getMethod(),capabilities);
           if (testNameSuffixProperty != null) {
             method.setTestNameSuffix("-" + System.getProperty(testNameSuffixProperty.property()));
           }
           tests.add(method);
         }
-      }
- else {
-        tests.add(new IgnoredTestMethod(m.getMethod()));
       }
     }
   }
