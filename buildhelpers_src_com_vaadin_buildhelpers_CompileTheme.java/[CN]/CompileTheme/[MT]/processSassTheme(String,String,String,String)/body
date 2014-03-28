@@ -1,0 +1,27 @@
+{
+  StringBuffer cssHeader=new StringBuffer();
+  String stylesCssDir=themeFolder + File.separator + themeName+ File.separator;
+  String stylesCssName=stylesCssDir + variant + ".css";
+  String sassFile=stylesCssDir + variant + ".scss";
+  ScssStylesheet scss=ScssStylesheet.get(sassFile);
+  if (scss == null) {
+    throw new IllegalArgumentException("SASS file: " + sassFile + " not found");
+  }
+  scss.compile();
+  String filteredScss=scss.printState().replace("@version@",version);
+  BufferedWriter out=new BufferedWriter(new FileWriter(stylesCssName));
+  out.write(cssHeader.toString());
+  out.write(filteredScss);
+  out.close();
+  System.out.println("Compiled CSS to " + stylesCssName + " ("+ filteredScss.length()+ " bytes)");
+  createSprites(themeFolder,themeName);
+  File oldCss=new File(stylesCssName);
+  File newCss=new File(stylesCssDir + variant + "-sprite.css");
+  if (newCss.exists()) {
+    oldCss.delete();
+    boolean ok=newCss.renameTo(oldCss);
+    if (!ok) {
+      throw new RuntimeException("Rename " + newCss + " -> "+ oldCss+ " failed");
+    }
+  }
+}
