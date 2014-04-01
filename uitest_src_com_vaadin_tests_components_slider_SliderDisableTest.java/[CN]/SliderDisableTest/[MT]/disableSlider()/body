@@ -1,9 +1,10 @@
 {
   openTestURL();
-  assertSliderHandlePositionIs(38);
+  String originalPosition=getSliderHandlePosition();
   moveSlider(112);
-  assertSliderHandlePositionIs(150);
-  driver.findElement(By.id("disableButton")).click();
+  String expectedPosition=getSliderHandlePosition();
+  assertThat(expectedPosition,is(not(originalPosition)));
+  hitButton("disableButton");
   assertSliderIsDisabled();
-  assertSliderHandlePositionIs(150);
+  assertThat(getSliderHandlePosition(),is(expectedPosition));
 }
