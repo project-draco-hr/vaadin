@@ -3,20 +3,19 @@
     throw new IllegalArgumentException("Empty identifier not supported");
   }
   File mainReference=getScreenshotReferenceFile(identifier);
-  List<File> alternativeFiles=findReferenceAlternatives(mainReference);
-  List<File> failedReferenceAlternatives=new ArrayList<File>();
-  for (  File file : alternativeFiles) {
-    if (testBench(driver).compareScreen(file)) {
+  List<File> referenceFiles=findReferenceAndAlternatives(mainReference);
+  List<File> failedReferenceFiles=new ArrayList<File>();
+  for (  File referenceFile : referenceFiles) {
+    if (testBench(driver).compareScreen(referenceFile)) {
+      deleteFailureFiles(referenceFile);
       break;
     }
  else {
-      failedReferenceAlternatives.add(file);
+      failedReferenceFiles.add(referenceFile);
     }
   }
   File referenceToKeep=null;
-  if (failedReferenceAlternatives.size() != alternativeFiles.size()) {
-  }
- else {
+  if (failedReferenceFiles.size() == referenceFiles.size()) {
     String originalName=getScreenshotReferenceName(identifier);
     File exactVersionFile=new File(originalName);
     if (!exactVersionFile.equals(mainReference)) {
@@ -34,12 +33,10 @@
       referenceToKeep=mainReference;
     }
   }
-  for (  File failedAlternative : failedReferenceAlternatives) {
+  for (  File failedAlternative : failedReferenceFiles) {
     File failurePng=getErrorFileFromReference(failedAlternative);
     if (failedAlternative != referenceToKeep) {
-      File failureHtml=htmlFromPng(failurePng);
-      failurePng.delete();
-      failureHtml.delete();
+      deleteFailureFiles(failurePng);
     }
   }
 }
