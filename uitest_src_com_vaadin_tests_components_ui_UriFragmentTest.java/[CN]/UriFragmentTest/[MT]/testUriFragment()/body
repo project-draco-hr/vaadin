@@ -1,0 +1,21 @@
+{
+  driver.get(getTestUrl() + "#urifragment");
+  assertFragment("urifragment");
+  navigateToTest();
+  assertFragment("test");
+  ((JavascriptExecutor)driver).executeScript("history.back()");
+  assertFragment("urifragment");
+  ((JavascriptExecutor)driver).executeScript("history.forward()");
+  assertFragment("test");
+  driver.get(getBaseURL() + "/statictestfiles/");
+  driver.get(getTestUrl());
+  assertEquals("No URI fragment set",getFragmentLabelValue());
+  navigateToNull();
+  assertEquals("No URI fragment set",getFragmentLabelValue());
+  navigateToEmptyFragment();
+  assertEquals("Current URI fragment:",getFragmentLabelValue());
+  navigateToTest();
+  assertFragment("test");
+  navigateToNull();
+  assertEquals("Current URI fragment:",getFragmentLabelValue());
+}
