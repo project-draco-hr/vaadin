@@ -1,0 +1,12 @@
+{
+  TestBean bean=new TestBean();
+  TestMethodProperty<String> property=new TestMethodProperty<String>(bean,"name");
+  Object[] getArgs=property.getGetArgs();
+  Object[] setArgs=property.getSetArgs();
+  Field getArgsField=TestMethodProperty.class.getDeclaredField("getArgs");
+  getArgsField.setAccessible(true);
+  Field setArgsField=TestMethodProperty.class.getDeclaredField("setArgs");
+  setArgsField.setAccessible(true);
+  Assert.assertSame("setArguments method sets non-default instance" + " of empty Object array for getArgs",getArgsField.get(property),getArgs);
+  Assert.assertSame("setArguments method sets non-default instance" + " of empty Object array for setArgs",setArgsField.get(property),setArgs);
+}

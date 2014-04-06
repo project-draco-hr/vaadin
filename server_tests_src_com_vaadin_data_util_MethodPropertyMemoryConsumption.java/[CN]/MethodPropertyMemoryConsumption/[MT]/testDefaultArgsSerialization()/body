@@ -1,0 +1,12 @@
+{
+  TestBean bean=new TestBean();
+  TestMethodProperty<String> property=new TestMethodProperty<String>(bean,"name");
+  ByteArrayOutputStream sourceOutStream=new ByteArrayOutputStream();
+  ObjectOutputStream outStream=new ObjectOutputStream(sourceOutStream);
+  outStream.writeObject(property);
+  ObjectInputStream inputStream=new ObjectInputStream(new ByteArrayInputStream(sourceOutStream.toByteArray()));
+  Object red=inputStream.readObject();
+  TestMethodProperty<?> deserialized=(TestMethodProperty<?>)red;
+  Assert.assertNotNull("Deseriliation doesn't call setArguments method",deserialized.getGetArgs());
+  Assert.assertNotNull("Deseriliation doesn't call setArguments method",deserialized.getSetArgs());
+}
