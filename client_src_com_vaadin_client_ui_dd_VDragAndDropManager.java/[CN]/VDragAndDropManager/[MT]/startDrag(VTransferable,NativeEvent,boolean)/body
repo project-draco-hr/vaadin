@@ -18,8 +18,7 @@
       if (handleDragEvents) {
         handlerRegistration=Event.addNativePreviewHandler(defaultDragAndDropEventHandler);
         if (dragElement != null && dragElement.getParentElement() == null) {
-          lazyAttachDragElement.cancel();
-          lazyAttachDragElement.run();
+          attachDragElement();
         }
       }
       Event.setCapture(RootPanel.getBodyElement());
@@ -33,6 +32,8 @@
   final int eventType=Event.as(startEvent).getTypeInt();
   if (handleDragEvents && (eventType == Event.ONMOUSEDOWN || eventType == Event.ONTOUCHSTART)) {
     deferredStartRegistration=Event.addNativePreviewHandler(new NativePreviewHandler(){
+      private int startX=Util.getTouchOrMouseClientX(currentDrag.getCurrentGwtEvent());
+      private int startY=Util.getTouchOrMouseClientY(currentDrag.getCurrentGwtEvent());
       @Override public void onPreviewNativeEvent(      NativePreviewEvent event){
         int typeInt=event.getTypeInt();
         if (typeInt == -1 && event.getNativeEvent().getType().contains("MSPointer")) {
@@ -63,12 +64,16 @@ break;
 }
 case Event.ONMOUSEMOVE:
 case Event.ONTOUCHMOVE:
+int currentX=Util.getTouchOrMouseClientX(event.getNativeEvent());
+int currentY=Util.getTouchOrMouseClientY(event.getNativeEvent());
+if (Math.abs(startX - currentX) > 3 || Math.abs(startY - currentY) > 3) {
 if (deferredStartRegistration != null) {
 deferredStartRegistration.removeHandler();
 deferredStartRegistration=null;
 }
 currentDrag.setCurrentGwtEvent(event.getNativeEvent());
 startDrag.execute();
+}
 break;
 default :
 if (deferredStartRegistration != null) {
