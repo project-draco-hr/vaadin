@@ -1,0 +1,18 @@
+{
+  ColumnGroupRow row=grid.addColumnGroupRow();
+  assertTrue(state.columnGroupRows.size() == 1);
+  ColumnGroup columns12=row.addGroup("column1","column2");
+  assertTrue(state.columnGroupRows.get(0).groups.size() == 1);
+  columns12.setHeaderCaption("Column12");
+  assertEquals("Column12",state.columnGroupRows.get(0).groups.get(0).header);
+  columns12.setFooterCaption("Footer12");
+  assertEquals("Footer12",state.columnGroupRows.get(0).groups.get(0).footer);
+  ColumnGroup columns34=row.addGroup(grid.getColumn("column3"),grid.getColumn("column4"));
+  assertTrue(state.columnGroupRows.get(0).groups.size() == 2);
+  ColumnGroupRow row2=grid.addColumnGroupRow();
+  assertTrue(state.columnGroupRows.size() == 2);
+  ColumnGroup columns1234=row2.addGroup(columns12,columns34);
+  assertTrue(columns1234.getColumns().size() == 4);
+  ColumnGroupRow newRow2=grid.addColumnGroupRow(1);
+  assertTrue(state.columnGroupRows.size() == 3);
+}

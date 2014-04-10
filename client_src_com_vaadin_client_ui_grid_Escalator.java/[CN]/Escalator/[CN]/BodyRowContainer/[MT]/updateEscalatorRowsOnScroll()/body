@@ -1,0 +1,49 @@
+{
+  if (visualRowOrder.isEmpty()) {
+    return;
+  }
+  boolean rowsWereMoved=false;
+  final double topRowPos=getRowTop(visualRowOrder.getFirst());
+  final double scrollTop=tBodyScrollTop;
+  final double viewportOffset=topRowPos - scrollTop;
+  if (viewportOffset > 0) {
+    int originalRowsToMove=(int)Math.ceil(viewportOffset / getDefaultRowHeight());
+    int rowsToMove=Math.min(originalRowsToMove,root.getChildCount());
+    final int end=root.getChildCount();
+    final int start=end - rowsToMove;
+    final int logicalRowIndex=(int)(scrollTop / getDefaultRowHeight());
+    moveAndUpdateEscalatorRows(Range.between(start,end),0,logicalRowIndex);
+    updateTopRowLogicalIndex(-originalRowsToMove);
+    rowsWereMoved=true;
+  }
+ else   if (viewportOffset + getDefaultRowHeight() <= 0) {
+    int originalRowsToMove=(int)Math.abs(viewportOffset / getDefaultRowHeight());
+    int rowsToMove=Math.min(originalRowsToMove,root.getChildCount());
+    int logicalRowIndex;
+    if (rowsToMove < root.getChildCount()) {
+      logicalRowIndex=getLogicalRowIndex(visualRowOrder.getLast()) + 1;
+    }
+ else {
+      logicalRowIndex=(int)(scrollTop / getDefaultRowHeight());
+    }
+    final int targetVisualIndex=root.getChildCount();
+    boolean aRowWasLeftBehind=false;
+    if (logicalRowIndex + rowsToMove > getRowCount()) {
+      rowsToMove--;
+      aRowWasLeftBehind=true;
+    }
+    moveAndUpdateEscalatorRows(Range.between(0,rowsToMove),targetVisualIndex,logicalRowIndex);
+    if (aRowWasLeftBehind) {
+      final Range strayRow=Range.withOnly(0);
+      final int topLogicalIndex=getRowCount() - visualRowOrder.size();
+      moveAndUpdateEscalatorRows(strayRow,0,topLogicalIndex);
+    }
+    final int naiveNewLogicalIndex=getTopRowLogicalIndex() + originalRowsToMove;
+    final int maxLogicalIndex=getRowCount() - visualRowOrder.size();
+    setTopRowLogicalIndex(Math.min(naiveNewLogicalIndex,maxLogicalIndex));
+    rowsWereMoved=true;
+  }
+  if (rowsWereMoved) {
+    fireRowVisibilityChangeEvent();
+  }
+}
