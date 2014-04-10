@@ -1,0 +1,23 @@
+{
+  Collection<DesiredCapabilities> desiredCapabilites=testClassInstance.getBrowsersToTest();
+  ArrayList<DesiredCapabilities> filteredCapabilities=new ArrayList<DesiredCapabilities>();
+  String include=System.getProperty("browsers.include");
+  String exclude=System.getProperty("browsers.exclude");
+  for (  DesiredCapabilities d : desiredCapabilites) {
+    String browserName=(d.getBrowserName() + d.getVersion()).toLowerCase();
+    if (include != null && include.trim().length() > 0) {
+      if (include.trim().toLowerCase().contains(browserName)) {
+        filteredCapabilities.add(d);
+      }
+    }
+ else {
+      filteredCapabilities.add(d);
+    }
+    if (exclude != null && exclude.trim().length() > 0) {
+      if (exclude.trim().toLowerCase().contains(browserName)) {
+        filteredCapabilities.remove(d);
+      }
+    }
+  }
+  return filteredCapabilities;
+}

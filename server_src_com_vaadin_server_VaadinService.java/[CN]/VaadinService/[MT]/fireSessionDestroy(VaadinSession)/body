@@ -2,6 +2,12 @@
   final VaadinSession session=vaadinSession;
   session.accessSynchronously(new Runnable(){
     @Override public void run(){
+      if (session.getState() == State.CLOSED) {
+        return;
+      }
+      if (session.getState() == State.OPEN) {
+        closeSession(session);
+      }
       ArrayList<UI> uis=new ArrayList<UI>(session.getUIs());
       for (      final UI ui : uis) {
         ui.accessSynchronously(new Runnable(){
@@ -15,6 +21,7 @@
 );
       }
       eventRouter.fireEvent(new SessionDestroyEvent(VaadinService.this,session),session.getErrorHandler());
+      session.setState(State.CLOSED);
     }
   }
 );

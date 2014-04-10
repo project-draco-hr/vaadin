@@ -51,16 +51,19 @@ if (isCapturing) {
 DOM.eventPreventDefault(event);
 }
 break;
+case Event.ONMOUSEOVER:
+if (isCapturing && isTargetInsideButton(event)) {
+setHovering(true);
+addStyleName(CLASSNAME_PRESSED);
+}
+break;
 case Event.ONMOUSEOUT:
-Element to=event.getRelatedTarget();
-if (getElement().isOrHasChild(DOM.eventGetTarget(event)) && (to == null || !getElement().isOrHasChild(to))) {
+if (isTargetInsideButton(event)) {
 if (clickPending && Math.abs(mousedownX - event.getClientX()) < MOVE_THRESHOLD && Math.abs(mousedownY - event.getClientY()) < MOVE_THRESHOLD) {
 onClick();
 break;
 }
 clickPending=false;
-if (isCapturing) {
-}
 setHovering(false);
 removeStyleName(CLASSNAME_PRESSED);
 }

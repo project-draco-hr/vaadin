@@ -1,0 +1,41 @@
+{
+  w.println("new JsniInvoker() {");
+  w.indent();
+  w.println("protected native Object jsniInvoke(Object target, %s<Object> params) /*-{ ",JsArrayObject.class.getName());
+  w.indent();
+  JType returnType=method.getReturnType();
+  boolean hasReturnType=!"void".equals(returnType.getQualifiedSourceName());
+  boolean hasPrimitiveReturnType=hasReturnType && returnType.isPrimitive() != null;
+  if (hasReturnType) {
+    w.print("return ");
+    if (hasPrimitiveReturnType) {
+      w.print("@%s::valueOf(%s)(",returnType.isPrimitive().getQualifiedBoxedSourceName(),returnType.getJNISignature());
+      logger.log(Type.ERROR,"JSNI invocation is not yet supported for methods with " + "primitive return types. Change your method " + "to public to be able to use conventional"+ " Java invoking instead.");
+      throw new UnableToCompleteException();
+    }
+  }
+  JType[] parameterTypes=method.getParameterTypes();
+  w.print("target.@%s::" + method.getName() + "(*)(",method.getEnclosingType().getQualifiedSourceName());
+  for (int i=0; i < parameterTypes.length; i++) {
+    if (i != 0) {
+      w.print(", ");
+    }
+    w.print("params[" + i + "]");
+    JPrimitiveType primitive=parameterTypes[i].isPrimitive();
+    if (primitive != null) {
+      w.print(".@%s::%sValue()()",primitive.getQualifiedBoxedSourceName(),primitive.getQualifiedSourceName());
+    }
+  }
+  if (hasPrimitiveReturnType) {
+    assert hasReturnType;
+    w.print(")");
+  }
+  w.println(");");
+  if (!hasReturnType) {
+    w.println("return null;");
+  }
+  w.outdent();
+  w.println("}-*/;");
+  w.outdent();
+  w.print("}");
+}

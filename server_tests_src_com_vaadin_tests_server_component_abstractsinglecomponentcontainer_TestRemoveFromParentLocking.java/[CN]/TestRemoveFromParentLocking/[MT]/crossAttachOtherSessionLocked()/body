@@ -1,0 +1,13 @@
+{
+  VerticalLayout notLockedComponent=createTestComponent();
+  VerticalLayout lockedComponent=createTestComponent();
+  lockedComponent.getUI().getSession().getLockInstance().lock();
+  VaadinSession.setCurrent(lockedComponent.getUI().getSession());
+  try {
+    lockedComponent.addComponent(notLockedComponent);
+    throw new AssertionError("Moving component when not holding its sessions's lock should throw");
+  }
+ catch (  IllegalStateException e) {
+    Assert.assertEquals("Cannot remove from parent when the session is not locked." + " Furthermore, there is another locked session, indicating that the component might be about to be moved from one session to another.",e.getMessage());
+  }
+}

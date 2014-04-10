@@ -1,0 +1,20 @@
+{
+  openTestURL();
+  List<WebElement> rows=driver.findElements(By.className("v-table-cell-wrapper"));
+  WebElement rangeStart=rows.get(0);
+  WebElement rangeEnd=rows.get(1);
+  rangeStart.click();
+  new Actions(driver).keyDown(Keys.SHIFT).perform();
+  rangeEnd.click();
+  new Actions(driver).keyUp(Keys.SHIFT).perform();
+  driver.findElement(By.className("v-button")).click();
+  WebElement extraRow=driver.findElements(By.className("v-table-cell-wrapper")).get(1);
+  new Actions(driver).keyDown(Keys.CONTROL).click(extraRow).click(extraRow).keyUp(Keys.CONTROL).perform();
+  driver.findElement(By.className("v-button")).click();
+  try {
+    driver.findElement(By.vaadin("Root/VNotification[0]"));
+    Assert.fail("Notification is shown");
+  }
+ catch (  NoSuchElementException e) {
+  }
+}

@@ -23,24 +23,33 @@
       throw new NoInputStreamException();
     }
     final byte buffer[]=new byte[MAX_UPLOAD_BUFFER_SIZE];
+    long lastStreamingEvent=0;
     int bytesReadToBuffer=0;
-    while ((bytesReadToBuffer=in.read(buffer)) > 0) {
-      out.write(buffer,0,bytesReadToBuffer);
-      totalBytes+=bytesReadToBuffer;
+    do {
+      bytesReadToBuffer=in.read(buffer);
+      if (bytesReadToBuffer > 0) {
+        out.write(buffer,0,bytesReadToBuffer);
+        totalBytes+=bytesReadToBuffer;
+      }
       if (listenProgress) {
-        session.lock();
-        try {
-          StreamingProgressEventImpl progressEvent=new StreamingProgressEventImpl(filename,type,contentLength,totalBytes);
-          streamVariable.onProgress(progressEvent);
-        }
+        long now=System.currentTimeMillis();
+        if (lastStreamingEvent + getProgressEventInterval() <= now || bytesReadToBuffer <= 0) {
+          lastStreamingEvent=now;
+          session.lock();
+          try {
+            StreamingProgressEventImpl progressEvent=new StreamingProgressEventImpl(filename,type,contentLength,totalBytes);
+            streamVariable.onProgress(progressEvent);
+          }
   finally {
-          session.unlock();
+            session.unlock();
+          }
         }
       }
       if (streamVariable.isInterrupted()) {
         throw new UploadInterruptedException();
       }
     }
+ while (bytesReadToBuffer > 0);
     out.close();
     StreamingEndEvent event=new StreamingEndEventImpl(filename,type,totalBytes);
     session.lock();

@@ -1,0 +1,25 @@
+{
+  int width=event.getLayoutManager().getOuterWidth(event.getElement());
+  int height=event.getLayoutManager().getOuterHeight(event.getElement());
+  com.google.gwt.user.client.Element element=this.target.getWidget().getElement();
+  boolean forceRedraw=false;
+  currentWidthRanges=resolveBreakpoint("width",width,event.getElement());
+  if (!"".equals(currentWidthRanges)) {
+    this.target.getWidget().getElement().setAttribute("width-range",currentWidthRanges);
+    forceRedraw=true;
+  }
+ else {
+    element.removeAttribute("width-range");
+  }
+  currentHeightRanges=resolveBreakpoint("height",height,event.getElement());
+  if (!"".equals(currentHeightRanges)) {
+    this.target.getWidget().getElement().setAttribute("height-range",currentHeightRanges);
+    forceRedraw=true;
+  }
+ else {
+    element.removeAttribute("height-range");
+  }
+  if (forceRedraw) {
+    forceRedrawIfIE8(element);
+  }
+}

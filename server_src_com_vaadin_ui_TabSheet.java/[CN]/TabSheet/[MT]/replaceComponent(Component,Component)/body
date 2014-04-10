@@ -1,6 +1,7 @@
 {
+  boolean selectAfterInserting=false;
   if (selected == oldComponent) {
-    setSelected(newComponent);
+    selectAfterInserting=true;
   }
   Tab newTab=tabs.get(newComponent);
   Tab oldTab=tabs.get(oldComponent);
@@ -23,12 +24,18 @@
  else   if (newLocation == -1) {
     removeComponent(oldComponent);
     newTab=addTab(newComponent,oldLocation);
+    if (selectAfterInserting) {
+      setSelected(newComponent);
+    }
     copyTabMetadata(oldTab,newTab);
   }
  else {
     components.set(oldLocation,newComponent);
     components.set(newLocation,oldComponent);
-    Tab tmp=new TabSheetTabImpl(null,null);
+    if (selectAfterInserting) {
+      setSelected(newComponent);
+    }
+    Tab tmp=new TabSheetTabImpl(null,null,null);
     copyTabMetadata(newTab,tmp);
     copyTabMetadata(oldTab,newTab);
     copyTabMetadata(tmp,oldTab);

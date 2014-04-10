@@ -1,17 +1,23 @@
 {
   if (iconUri == null || iconUri.length() == 0) {
-    if (selectedItemIcon.isAttached()) {
+    if (selectedItemIcon != null) {
       panel.remove(selectedItemIcon);
-      if (BrowserInfo.get().isIE8()) {
-        forceReflow();
-      }
-      updateRootWidth();
+      selectedItemIcon=null;
+      afterSelectedItemIconChange();
     }
   }
  else {
+    if (selectedItemIcon != null) {
+      panel.remove(selectedItemIcon);
+    }
+    selectedItemIcon=new IconWidget(client.getIcon(iconUri));
+    selectedItemIcon.addDomHandler(new LoadHandler(){
+      @Override public void onLoad(      LoadEvent event){
+        afterSelectedItemIconChange();
+      }
+    }
+,LoadEvent.getType());
     panel.insert(selectedItemIcon,0);
-    selectedItemIcon.setUrl(iconUri);
-    updateRootWidth();
-    updateSelectedIconPosition();
+    afterSelectedItemIconChange();
   }
 }

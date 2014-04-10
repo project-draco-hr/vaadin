@@ -1,0 +1,25 @@
+{
+  Map<JClassType,Set<JMethod>> needsInvoker=bundle.getNeedsInvoker();
+  for (  Entry<JClassType,Set<JMethod>> entry : needsInvoker.entrySet()) {
+    JClassType type=entry.getKey();
+    TreeLogger typeLogger=logger.branch(Type.DEBUG,"Creating invokers for " + type);
+    Set<JMethod> methods=entry.getValue();
+    for (    JMethod method : methods) {
+      w.print("store.setInvoker(");
+      writeClassLiteral(w,type);
+      w.print(", \"");
+      w.print(escape(method.getName()));
+      w.print("\",");
+      if (method.isPublic()) {
+        typeLogger.log(Type.DEBUG,"Invoking " + method.getName() + " using java");
+        writeJavaInvoker(w,type,method);
+      }
+ else {
+        TreeLogger methodLogger=typeLogger.branch(Type.DEBUG,"Invoking " + method.getName() + " using jsni");
+        writeJsniInvoker(methodLogger,w,type,method);
+      }
+      w.println(");");
+      w.splitIfNeeded();
+    }
+  }
+}

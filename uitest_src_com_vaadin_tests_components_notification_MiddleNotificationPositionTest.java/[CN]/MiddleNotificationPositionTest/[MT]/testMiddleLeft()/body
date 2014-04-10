@@ -1,0 +1,15 @@
+{
+  openTestURL();
+  WebElement webElement=driver.findElement(By.className("show-middle-left"));
+  webElement.click();
+  WebElement notification=driver.findElement(By.className("v-Notification"));
+  Assert.assertNotNull(notification);
+  String left=notification.getCssValue("left");
+  Assert.assertEquals("Left position of notification element should be 0px","0px",left);
+  Point location=notification.getLocation();
+  Assert.assertEquals("X coordinate of notifiation element should be 0",0,location.getX());
+  WebElement body=driver.findElement(By.tagName("body"));
+  int height=body.getSize().height;
+  Assert.assertTrue("Y coordinate of notification element is too small",height / 2 - notification.getSize().height / 2 - 1 <= location.getY());
+  Assert.assertTrue("Y coordinate of notification element is too big",height / 2 + 1 >= location.getY());
+}

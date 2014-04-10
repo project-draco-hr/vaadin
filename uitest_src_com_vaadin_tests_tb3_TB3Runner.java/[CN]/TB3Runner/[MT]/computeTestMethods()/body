@@ -4,15 +4,21 @@
     throw new RuntimeException(getClass().getName() + " only supports " + AbstractTB3Test.class.getName());
   }
   try {
-    AbstractTB3Test testClassInstance=(AbstractTB3Test)getTestClass().getOnlyConstructor().newInstance();
-    Collection<DesiredCapabilities> desiredCapabilites=testClassInstance.getBrowsersToTest();
-    if (testClassInstance.getClass().getAnnotation(RunLocally.class) != null) {
-      desiredCapabilites=new ArrayList<DesiredCapabilities>();
-      desiredCapabilites.add(testClassInstance.getClass().getAnnotation(RunLocally.class).value().getDesiredCapabilities());
-    }
-    for (    DesiredCapabilities capabilities : desiredCapabilites) {
-      for (      FrameworkMethod m : getTestClass().getAnnotatedMethods(Test.class)) {
-        tests.add(new TB3Method(m.getMethod(),capabilities));
+    AbstractTB3Test testClassInstance=getTestClassInstance();
+    Collection<DesiredCapabilities> desiredCapabilities=getDesiredCapabilities(testClassInstance);
+    TestNameSuffix testNameSuffixProperty=findAnnotation(testClassInstance.getClass(),TestNameSuffix.class);
+    for (    FrameworkMethod m : getTestMethods()) {
+      if (desiredCapabilities.size() <= 0 || categoryIsExcludedOrNotExcplicitlyIncluded()) {
+        tests.add(new IgnoredTestMethod(m.getMethod()));
+      }
+ else {
+        for (        DesiredCapabilities capabilities : desiredCapabilities) {
+          TB3Method method=new TB3Method(m.getMethod(),capabilities);
+          if (testNameSuffixProperty != null) {
+            method.setTestNameSuffix("-" + System.getProperty(testNameSuffixProperty.property()));
+          }
+          tests.add(method);
+        }
       }
     }
   }

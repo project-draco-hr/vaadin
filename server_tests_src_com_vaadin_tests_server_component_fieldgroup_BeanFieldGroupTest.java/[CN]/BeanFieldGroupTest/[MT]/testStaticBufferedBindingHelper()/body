@@ -1,0 +1,14 @@
+{
+  MyBean myBean=new MyBean();
+  ViewStub viewStub=new ViewStub();
+  BeanFieldGroup<MyBean> bindFields=BeanFieldGroup.bindFieldsBuffered(myBean,viewStub);
+  Field<String> basicField=(Field<String>)bindFields.getField("basicField");
+  basicField.setValue("Foo");
+  Assert.assertEquals(DEFAULT_FOR_BASIC_FIELD,myBean.basicField);
+  Field<String> anotherField=(Field<String>)bindFields.getField("anotherField");
+  anotherField.setValue("Foo");
+  Assert.assertNull(myBean.anotherField);
+  bindFields.commit();
+  Assert.assertEquals("Foo",myBean.basicField);
+  Assert.assertEquals("Foo",myBean.anotherField);
+}

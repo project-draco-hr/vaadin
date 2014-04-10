@@ -1,24 +1,3 @@
 {
-  Element cloneNode=(Element)element.cloneNode(true);
-  if (BrowserInfo.get().isIE()) {
-    if (cloneNode.getTagName().toLowerCase().equals("tr")) {
-      TableElement table=Document.get().createTableElement();
-      TableSectionElement tbody=Document.get().createTBodyElement();
-      table.appendChild(tbody);
-      tbody.appendChild(cloneNode);
-      cloneNode=table.cast();
-    }
-  }
-  if (alignImageToEvent) {
-    int absoluteTop=element.getAbsoluteTop();
-    int absoluteLeft=element.getAbsoluteLeft();
-    int clientX=Util.getTouchOrMouseClientX(startEvent);
-    int clientY=Util.getTouchOrMouseClientY(startEvent);
-    int offsetX=absoluteLeft - clientX;
-    int offsetY=absoluteTop - clientY;
-    setDragImage(cloneNode,offsetX,offsetY);
-  }
- else {
-    setDragImage(cloneNode);
-  }
+  createDragImage(DOM.asOld(element),alignImageToEvent);
 }

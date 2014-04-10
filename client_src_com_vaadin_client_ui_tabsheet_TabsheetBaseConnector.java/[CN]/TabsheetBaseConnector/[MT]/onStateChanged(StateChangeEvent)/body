@@ -1,0 +1,39 @@
+{
+  super.onStateChanged(stateChangeEvent);
+  getWidget().setEnabled(isEnabled());
+  ArrayList<Widget> oldWidgets=new ArrayList<Widget>();
+  for (Iterator<Widget> iterator=getWidget().getWidgetIterator(); iterator.hasNext(); ) {
+    oldWidgets.add(iterator.next());
+  }
+  getWidget().clearTabKeys();
+  int index=0;
+  for (  TabState tab : getState().tabs) {
+    final String key=tab.key;
+    final boolean selected=key.equals(getState().selected);
+    getWidget().addTabKey(key,!tab.enabled && tab.visible);
+    if (selected) {
+      getWidget().setActiveTabIndex(index);
+    }
+    getWidget().renderTab(tab,index);
+    if (selected) {
+      getWidget().selectTab(index);
+    }
+    index++;
+  }
+  int tabCount=getWidget().getTabCount();
+  while (tabCount-- > index) {
+    getWidget().removeTab(index);
+  }
+  for (int i=0; i < getWidget().getTabCount(); i++) {
+    ComponentConnector p=getWidget().getTab(i);
+    if (p != null) {
+      oldWidgets.remove(p.getWidget());
+    }
+  }
+  for (Iterator<Widget> iterator=oldWidgets.iterator(); iterator.hasNext(); ) {
+    Widget oldWidget=iterator.next();
+    if (oldWidget.isAttached()) {
+      oldWidget.removeFromParent();
+    }
+  }
+}

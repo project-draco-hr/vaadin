@@ -1,0 +1,15 @@
+{
+  Connect connectAnnotation=type.getAnnotation(Connect.class);
+  if (connectAnnotation != null) {
+    JClassType connector=type;
+    while (connector != null) {
+      for (      JMethod method : connector.getMethods()) {
+        if (method.getAnnotation(OnStateChange.class) != null) {
+          bundle.setNeedsInvoker(connector,method);
+          bundle.setNeedsOnStateChangeHandler(type,method);
+        }
+      }
+      connector=connector.getSuperclass();
+    }
+  }
+}
