@@ -1,0 +1,21 @@
+{
+  IMocksControl control=EasyMock.createNiceControl();
+  VaadinRequest initRequest=control.createMock(VaadinRequest.class);
+  EasyMock.expect(initRequest.getParameter("v-loc")).andReturn("http://example.com/#foo");
+  EasyMock.expect(initRequest.getParameter("v-cw")).andReturn("100");
+  EasyMock.expect(initRequest.getParameter("v-ch")).andReturn("100");
+  VaadinRequest reinitRequest=control.createMock(VaadinRequest.class);
+  EasyMock.expect(reinitRequest.getParameter("v-loc")).andReturn("http://example.com/#bar");
+  EasyMock.expect(reinitRequest.getParameter("v-cw")).andReturn("200");
+  EasyMock.expect(reinitRequest.getParameter("v-ch")).andReturn("200");
+  control.replay();
+  UI ui=new TestUI();
+  ui.doInit(initRequest,0,"");
+  Assert.assertTrue(initCalled);
+  Assert.assertFalse(fragmentChangeCalled);
+  Assert.assertFalse(browserWindowResizeCalled);
+  ui.doRefresh(reinitRequest);
+  Assert.assertTrue(refreshCalled);
+  Assert.assertTrue(fragmentChangeCalled);
+  Assert.assertTrue(browserWindowResizeCalled);
+}
