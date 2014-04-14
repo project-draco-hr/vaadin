@@ -1,14 +1,15 @@
 {
-  if (isLiferay(request)) {
-    return new VaadinLiferayRequest(request,getService());
+  PortalContext portalContext=request.getPortalContext();
+  String portalInfo=portalContext.getPortalInfo().toLowerCase().trim();
+  VaadinPortletService service=getService();
+  if (portalInfo.contains("gatein")) {
+    return new VaadinGateInRequest(request,service);
   }
- else   if (isGateIn(request)) {
-    return new VaadinGateinRequest(request,getService());
+  if (portalInfo.contains("liferay")) {
+    return new VaadinLiferayRequest(request,service);
   }
- else   if (isWebSphere(request)) {
-    return new WebSpherePortalRequest(request,getService());
+  if (portalInfo.contains("websphere portal")) {
+    return new VaadinWebSpherePortalRequest(request,service);
   }
- else {
-    return new VaadinPortletRequest(request,getService());
-  }
+  return new VaadinPortletRequest(request,service);
 }
