@@ -1,0 +1,16 @@
+{
+  try {
+    ReentrantLock mockLock=Mockito.mock(ReentrantLock.class);
+    when(mockLock.isHeldByCurrentThread()).thenReturn(true);
+    WrappedSession emptyWrappedSession=Mockito.mock(WrappedSession.class);
+    when(emptyWrappedSession.getAttribute("null.lock")).thenReturn(mockLock);
+    VaadinRequest requestWithUIIDSet=Mockito.mock(VaadinRequest.class);
+    when(requestWithUIIDSet.getParameter(UIConstants.UI_ID_PARAMETER)).thenReturn("1");
+    when(requestWithUIIDSet.getWrappedSession()).thenReturn(emptyWrappedSession);
+    UI ui=sut.findUI(requestWithUIIDSet);
+    Assert.assertNull("Unset session did not return null",ui);
+  }
+ catch (  NullPointerException e) {
+    Assert.fail("findUI threw a NullPointerException");
+  }
+}
