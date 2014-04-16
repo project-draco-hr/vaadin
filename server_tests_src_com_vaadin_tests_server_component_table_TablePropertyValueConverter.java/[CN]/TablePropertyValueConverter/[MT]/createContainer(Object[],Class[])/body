@@ -1,0 +1,30 @@
+{
+  IndexedContainer container=new IndexedContainer();
+  if (ids.length > types.length) {
+    throw new IllegalArgumentException("Too few defined types");
+  }
+  for (int i=0; i < ids.length; ++i) {
+    container.addContainerProperty(ids[i],types[i],"");
+  }
+  for (int i=0; i < 100; i++) {
+    Item item=container.addItem("item " + i);
+    for (int j=0; j < ids.length; ++j) {
+      Property itemProperty=item.getItemProperty(ids[j]);
+      if (types[j] == String.class) {
+        itemProperty.setValue(ids[j].toString() + i);
+      }
+ else       if (types[j] == BaseClass.class) {
+        itemProperty.setValue(new BaseClass("base" + i));
+      }
+ else       if (types[j] == DerivedClass.class) {
+        itemProperty.setValue(new DerivedClass("derived" + i));
+      }
+ else       if (types[j] == int.class) {
+      }
+ else {
+        throw new IllegalArgumentException("Unhandled type in createContainer: " + types[j]);
+      }
+    }
+  }
+  return container;
+}
