@@ -1,0 +1,16 @@
+{
+  openTestURL();
+  Assert.assertFalse("Descending indicator was prematurely visible",isElementPresent(By.className(TABLE_HEADER_DESC_INDICATOR)));
+  Assert.assertFalse("Ascending indicator was prematurely visible",isElementPresent(By.className(TABLE_HEADER_ASC_INDICATOR)));
+  WebElement button=driver.findElement(By.vaadin("//Button[caption=\"Sort\"]"));
+  button.click();
+  Assert.assertTrue("Indicator did not become visible",isElementPresent(By.className(TABLE_HEADER_DESC_INDICATOR)));
+  Assert.assertFalse("Ascending sort indicator was wrongly visible",isElementPresent(By.className(TABLE_HEADER_ASC_INDICATOR)));
+  WebElement manualSort=driver.findElement(By.className(TABLE_HEADER_DESC_INDICATOR));
+  manualSort.click();
+  Assert.assertFalse("Table sort indicator didn't change",isElementPresent(By.className(TABLE_HEADER_DESC_INDICATOR)));
+  Assert.assertTrue("Ascending sort indicator didn't become visible",isElementPresent(By.className(TABLE_HEADER_ASC_INDICATOR)));
+  button.click();
+  Assert.assertTrue("Descending sort indicator didn't appear on the second serverside sort.",isElementPresent(By.className(TABLE_HEADER_DESC_INDICATOR)));
+  Assert.assertFalse("Ascending sort indicator didn't disappear",isElementPresent(By.className(TABLE_HEADER_ASC_INDICATOR)));
+}
