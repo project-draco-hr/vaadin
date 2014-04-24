@@ -1,0 +1,53 @@
+{
+  TestableTable customTable=new TestableTable("Test table",createContainer(new String[]{"col1","col2","col3"},new Class[]{String.class,BaseClass.class,DerivedClass.class}));
+  customTable.setConverter("col1",new Converter<String,String>(){
+    private static final long serialVersionUID=1L;
+    @Override public String convertToModel(    String value,    Class<? extends String> targetType,    Locale locale) throws com.vaadin.data.util.converter.Converter.ConversionException {
+      return "model";
+    }
+    @Override public String convertToPresentation(    String value,    Class<? extends String> targetType,    Locale locale) throws com.vaadin.data.util.converter.Converter.ConversionException {
+      return "presentation";
+    }
+    @Override public Class<String> getModelType(){
+      return String.class;
+    }
+    @Override public Class<String> getPresentationType(){
+      return String.class;
+    }
+  }
+);
+  customTable.setConverter("col2",new Converter<String,BaseClass>(){
+    private static final long serialVersionUID=1L;
+    @Override public BaseClass convertToModel(    String value,    Class<? extends BaseClass> targetType,    Locale locale) throws com.vaadin.data.util.converter.Converter.ConversionException {
+      return new BaseClass("model");
+    }
+    @Override public Class<BaseClass> getModelType(){
+      return BaseClass.class;
+    }
+    @Override public Class<String> getPresentationType(){
+      return String.class;
+    }
+    @Override public String convertToPresentation(    BaseClass value,    Class<? extends String> targetType,    Locale locale) throws com.vaadin.data.util.converter.Converter.ConversionException {
+      return null;
+    }
+  }
+);
+  customTable.setConverter("col3",new Converter<String,DerivedClass>(){
+    private static final long serialVersionUID=1L;
+    @Override public DerivedClass convertToModel(    String value,    Class<? extends DerivedClass> targetType,    Locale locale) throws com.vaadin.data.util.converter.Converter.ConversionException {
+      return new DerivedClass("derived" + 1001);
+    }
+    @Override public Class<DerivedClass> getModelType(){
+      return DerivedClass.class;
+    }
+    @Override public Class<String> getPresentationType(){
+      return String.class;
+    }
+    @Override public String convertToPresentation(    DerivedClass value,    Class<? extends String> targetType,    Locale locale) throws com.vaadin.data.util.converter.Converter.ConversionException {
+      return null;
+    }
+  }
+);
+  customTable.setContainerDataSource(createContainer(new String[]{"col1","col2","col3"},new Class[]{DerivedClass.class,DerivedClass.class,BaseClass.class}));
+  Set<Object> converters=customTable.getCurrentConverters();
+}
