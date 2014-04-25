@@ -1,0 +1,21 @@
+{
+  ComponentConnector paintable=ConnectorMap.get(client).getConnector(this);
+  if (paintable.isUndefinedWidth()) {
+    int w=Util.getRequiredWidth(this);
+    if ((forceUpdate || !initDone || currentPage + 1 < 0) && suggestionPopupMinWidth > w) {
+      Style style=getElement().getStyle();
+      String originalPadding=style.getPadding();
+      String originalBorder=style.getBorderWidth();
+      style.setPaddingLeft(0,Unit.PX);
+      style.setBorderWidth(0,Unit.PX);
+      int offset=w - Util.getRequiredWidth(this);
+      style.setProperty("padding",originalPadding);
+      style.setProperty("borderWidth",originalBorder);
+      setWidth(suggestionPopupMinWidth + offset + "px");
+    }
+    if (!tb.getElement().getStyle().getWidth().endsWith("px")) {
+      int iconWidth=selectedItemIcon == null ? 0 : selectedItemIcon.getOffsetWidth();
+      tb.setWidth((tb.getOffsetWidth() - iconWidth) + "px");
+    }
+  }
+}
