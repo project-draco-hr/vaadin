@@ -1,0 +1,20 @@
+{
+  String url=licenseUrl + productKey;
+  URLConnection con;
+  try {
+    String ua="Cval " + productName + " "+ productKey+ " "+ getFirstLaunch();
+    for (    String prop : Arrays.asList("java.vendor.url","java.version","os.name","os.version","os.arch")) {
+      ua+=" " + System.getProperty(prop,"-").replace(" ","_");
+    }
+    con=new URL(url).openConnection();
+    con.setRequestProperty("User-Agent",ua);
+    con.setConnectTimeout(timeoutMs);
+    con.setReadTimeout(timeoutMs);
+    String r=IOUtils.toString(con.getInputStream());
+    return r;
+  }
+ catch (  MalformedURLException e) {
+    e.printStackTrace();
+    return null;
+  }
+}

@@ -1,0 +1,16 @@
+{
+  String key=getDeveloperLicenseKey(productName,productVersion,productTitle);
+  CvalInfo info=null;
+  if (key != null && !key.isEmpty()) {
+    info=getCachedLicenseInfo(productName);
+    if (info != null && !info.isValidInfo(productName,key)) {
+      deleteCache(productName);
+      info=null;
+    }
+    info=askLicenseServer(productName,key,productVersion,info);
+    if (info != null && info.isValidInfo(productName,key) && info.isValidVersion(computeMajorVersion(productVersion)) && !info.isLicenseExpired()) {
+      return info;
+    }
+  }
+  throw new InvalidCvalException(productName,productVersion,productTitle,key,info);
+}
