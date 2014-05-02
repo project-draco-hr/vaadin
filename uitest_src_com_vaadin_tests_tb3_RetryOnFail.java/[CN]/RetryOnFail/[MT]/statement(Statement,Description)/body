@@ -1,0 +1,20 @@
+{
+  return new Statement(){
+    @Override public void evaluate() throws Throwable {
+      Throwable caughtThrowable=null;
+      for (int i=0; i <= retryCount; i++) {
+        try {
+          base.evaluate();
+          return;
+        }
+ catch (        Throwable t) {
+          caughtThrowable=t;
+          System.err.println(String.format("%s: run %s/%s failed.",description.getDisplayName(),i + 1,retryCount + 1));
+          System.err.println(t.getMessage());
+        }
+      }
+      throw caughtThrowable;
+    }
+  }
+;
+}
