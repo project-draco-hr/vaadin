@@ -35,7 +35,9 @@ catch (  SessionExpiredException e) {
  else {
         getLogger().log(Level.FINER,"Connection unexpectedly closed for resource {0} with transport {1}",new Object[]{id,resource.transport()});
       }
-      ui.setPushConnection(null);
+      if (pushConnection.isConnected()) {
+        pushConnection.disconnect();
+      }
     }
   }
  catch (  final Exception e) {
