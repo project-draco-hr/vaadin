@@ -1,0 +1,27 @@
+{
+  menu.setPrimaryStyleName("valo-menu");
+  Label title=new Label("Valo Theme");
+  title.setSizeUndefined();
+  title.setPrimaryStyleName("valo-menu-title");
+  menu.addComponent(title);
+  final CheckBox enabled=new CheckBox("Enabled",true);
+  enabled.setPrimaryStyleName("valo-menu-enabled");
+  menu.addComponent(enabled);
+  enabled.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      components.setEnabled(enabled.getValue());
+    }
+  }
+);
+  for (  Entry<Category,ArrayList<Link>> entry : menuItems.entrySet()) {
+    Label caption=new Label(entry.getKey().toString().replaceAll("_"," "));
+    caption.setSizeUndefined();
+    caption.setPrimaryStyleName("valo-menu-category");
+    menu.addComponent(caption);
+    for (    Link link : entry.getValue()) {
+      menu.addComponent(link);
+      link.setPrimaryStyleName("valo-menu-item");
+    }
+  }
+  return menu;
+}

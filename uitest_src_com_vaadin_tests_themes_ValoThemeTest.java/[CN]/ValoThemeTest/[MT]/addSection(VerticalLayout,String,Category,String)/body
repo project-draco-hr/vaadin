@@ -1,0 +1,23 @@
+{
+  String id=title.toLowerCase().replace(" ","-");
+  Label h1=new Label(title);
+  h1.addStyleName("h1");
+  h1.setId("" + id);
+  root.addComponent(h1);
+  if (description != null) {
+    Label desc=new Label(description + "<br><br>",ContentMode.HTML);
+    root.addComponent(desc);
+  }
+  Link link=new Link(title,new ExternalResource("#" + id));
+  ArrayList<Link> items=menuItems.get(category);
+  if (items == null) {
+    items=new ArrayList<Link>();
+    menuItems.put(category,items);
+  }
+  items.add(link);
+  HorizontalLayout row=new HorizontalLayout();
+  row.addStyleName("wrapping");
+  row.setSpacing(true);
+  root.addComponent(row);
+  return row;
+}

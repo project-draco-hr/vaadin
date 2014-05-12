@@ -1,0 +1,25 @@
+{
+  TreeTable table=new TreeTable(caption);
+  table.setSelectable(true);
+  table.setMultiSelect(true);
+  table.setSortEnabled(true);
+  table.setAnimationsEnabled(true);
+  table.setColumnCollapsingAllowed(true);
+  table.setColumnReorderingAllowed(true);
+  table.setPageLength(6);
+  table.addActionHandler(this);
+  table.setDragMode(TableDragMode.MULTIROW);
+  table.setDropHandler(new DropHandler(){
+    @Override public AcceptCriterion getAcceptCriterion(){
+      return AcceptAll.get();
+    }
+    @Override public void drop(    DragAndDropEvent event){
+      Notification.show(event.getTransferable().toString());
+    }
+  }
+);
+  table.setContainerDataSource(container);
+  table.select(tableData.getItemIds().iterator().next());
+  table.setItemIconPropertyId(ICON_PROPERTY);
+  return table;
+}

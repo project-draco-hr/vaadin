@@ -1,0 +1,24 @@
+{
+  HorizontalLayout row;
+  row=addSection(root,"Tree",Category.Selection_Components,null);
+  Tree tree=new Tree();
+  tree.setSelectable(true);
+  tree.setMultiSelect(true);
+  tree.setContainerDataSource(generateContainer(10,true));
+  tree.setDragMode(TreeDragMode.NODE);
+  row.addComponent(tree);
+  tree.setItemCaptionPropertyId(CAPTION_PROPERTY);
+  tree.setItemIconPropertyId(ICON_PROPERTY);
+  tree.expandItem(firstItemId);
+  tree.setItemIcon(firstItemId,icon(false));
+  tree.setDropHandler(new DropHandler(){
+    @Override public AcceptCriterion getAcceptCriterion(){
+      return AcceptAll.get();
+    }
+    @Override public void drop(    DragAndDropEvent event){
+      Notification.show(event.getTransferable().toString());
+    }
+  }
+);
+  tree.addActionHandler(this);
+}
