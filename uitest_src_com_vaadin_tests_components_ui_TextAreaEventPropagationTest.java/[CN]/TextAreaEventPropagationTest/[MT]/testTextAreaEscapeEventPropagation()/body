@@ -1,6 +1,6 @@
 {
   openTestURL();
-  WebElement textArea=vaadinElement("//TextArea[0]");
+  WebElement textArea=$(TextAreaElement.class).first();
   Actions builder=new Actions(driver);
   builder.click(textArea);
   builder.sendKeys(textArea,"first line asdf");
@@ -8,10 +8,8 @@
   builder.sendKeys(textArea,"second line jkl;");
   builder.sendKeys(Keys.ESCAPE);
   builder.perform();
-  WebElement enterLabel=driver.findElement(By.id("gwt-uid-8"));
-  String text=enterLabel.getText();
+  String text=$(LabelElement.class).caption("Enter Label").first().getText();
   assertEquals(TextAreaEventPropagation.NO_BUTTON_PRESSED,text);
-  WebElement escapeLabel=driver.findElement(By.id("gwt-uid-10"));
-  text=escapeLabel.getText();
+  text=$(LabelElement.class).caption("Escape Label").first().getText();
   assertEquals(TextAreaEventPropagation.BUTTON_PRESSED,text);
 }

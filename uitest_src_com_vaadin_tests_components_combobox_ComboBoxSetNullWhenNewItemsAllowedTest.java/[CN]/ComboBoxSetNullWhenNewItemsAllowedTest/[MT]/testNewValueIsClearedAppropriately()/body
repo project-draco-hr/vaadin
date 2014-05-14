@@ -1,12 +1,16 @@
 {
   setDebug(true);
   openTestURL();
-  Thread.sleep(1000);
-  WebElement element=findElement();
+  WebElement element=$(ComboBoxElement.class).first().findElement(By.vaadin("#textbox"));
   ((TestBenchElementCommands)element).click(8,7);
   element.clear();
   element.sendKeys("New value");
   assertEquals("New value",element.getAttribute("value"));
-  element.sendKeys(Keys.RETURN);
+  if (BrowserUtil.isPhantomJS(getDesiredCapabilities())) {
+    new Actions(getDriver()).sendKeys(Keys.ENTER).perform();
+  }
+ else {
+    element.sendKeys(Keys.RETURN);
+  }
   assertEquals("",element.getAttribute("value"));
 }
