@@ -1,0 +1,17 @@
+{
+  final IndexedContainer container=new IndexedContainer();
+  container.addItem(itemId1Present);
+  container.addItem(itemId2Present);
+  for (int i=2; i < 10; i++) {
+    container.addItem(new Object());
+  }
+  assertEquals("init size",10,container.size());
+  assertTrue("itemId1Present",container.containsId(itemId1Present));
+  assertTrue("itemId2Present",container.containsId(itemId2Present));
+  assertFalse("itemId1NotPresent",container.containsId(itemId1NotPresent));
+  assertFalse("itemId2NotPresent",container.containsId(itemId2NotPresent));
+  grid=new Grid(container);
+  mockListener=new MockSelectionChangeListener();
+  grid.addSelectionChangeListener(mockListener);
+  assertFalse("eventHasHappened",mockListener.eventHasHappened());
+}
