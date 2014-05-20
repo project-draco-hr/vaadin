@@ -2,7 +2,11 @@
   setPush(true);
   openTestURL();
   vaadinElementById("npeButton").click();
-  Assert.assertEquals("An error! Unable to invoke method click in com.vaadin.shared.ui.button.ButtonServerRpc",vaadinElement("/VVerticalLayout[0]/Slot[1]/VVerticalLayout[0]/Slot[2]/VLabel[0]").getText());
+  int idx=1;
+  if (BrowserUtil.isPhantomJS(getDesiredCapabilities())) {
+    ++idx;
+  }
+  Assert.assertEquals("An error! Unable to invoke method click in com.vaadin.shared.ui.button.ButtonServerRpc",$(LabelElement.class).get(idx).getText());
   WebElement table=vaadinElementById("testtable");
   WebElement row=table.findElement(By.xpath("//div[text()='Click for NPE']"));
   row.click();

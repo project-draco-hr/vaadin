@@ -53,7 +53,12 @@
   updateLayoutHeight();
   if (needsExpand()) {
     getWidget().updateExpandedSizes();
-    getWidget().updateExpandCompensation();
+    Scheduler.get().scheduleFinally(new ScheduledCommand(){
+      @Override public void execute(){
+        getWidget().updateExpandCompensation();
+      }
+    }
+);
   }
  else {
     getWidget().clearExpand();

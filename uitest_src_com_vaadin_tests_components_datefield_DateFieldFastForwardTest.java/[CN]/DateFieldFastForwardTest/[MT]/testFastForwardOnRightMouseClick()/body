@@ -1,0 +1,14 @@
+{
+  openTestURL();
+  String firstMonth=getSelectedMonth();
+  WebElement nextMonthButton=driver.findElement(By.className("v-button-nextmonth"));
+  new Actions(driver).clickAndHold(nextMonthButton).perform();
+  sleep(1000);
+  new Actions(driver).contextClick(nextMonthButton).release(nextMonthButton).perform();
+  String expectedMonth=getSelectedMonth();
+  $(VerticalLayoutElement.class).first().click();
+  Assert.assertFalse("Month did not change during fast forward",firstMonth.equals(expectedMonth));
+  Thread.sleep(1000);
+  String actualMonth=getSelectedMonth();
+  assertEquals(expectedMonth,actualMonth);
+}

@@ -42,6 +42,7 @@
     newSuggestions.add(suggestion);
   }
   boolean suggestionsChanged=!getWidget().initDone || !newSuggestions.equals(getWidget().currentSuggestions);
+  boolean popupOpenAndCleared=false;
   oldSuggestionTextMatchTheOldSelection=false;
   if (suggestionsChanged) {
     oldSuggestionTextMatchTheOldSelection=isWidgetsCurrentSelectionTextInTextBox();
@@ -49,6 +50,7 @@
     if (!getWidget().waitingForFilteringResponse) {
       getWidget().currentSuggestion=null;
       getWidget().suggestionPopup.menu.clearItems();
+      popupOpenAndCleared=getWidget().suggestionPopup.isAttached();
     }
     for (    FilterSelectSuggestion suggestion : newSuggestions) {
       getWidget().currentSuggestions.add(suggestion);
@@ -63,7 +65,7 @@
       resetSelection();
     }
   }
-  if (getWidget().waitingForFilteringResponse && getWidget().lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) {
+  if ((getWidget().waitingForFilteringResponse && getWidget().lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) || popupOpenAndCleared) {
     getWidget().suggestionPopup.showSuggestions(getWidget().currentSuggestions,getWidget().currentPage,getWidget().totalMatches);
     getWidget().waitingForFilteringResponse=false;
     if (!getWidget().popupOpenerClicked && getWidget().selectPopupItemWhenResponseIsReceived != VFilterSelect.Select.NONE) {
@@ -85,11 +87,13 @@
   }
   getWidget().updateSuggestionPopupMinWidth();
   getWidget().popupOpenerClicked=false;
-  if (!getWidget().initDone) {
-    getWidget().updateRootWidth();
+  if (!getWidget().initDone || stylesChanged) {
+    boolean forceUpdate=true;
+    getWidget().updateRootWidth(forceUpdate);
   }
   if (getWidget().focused) {
     getWidget().addStyleDependentName("focus");
   }
+  stylesChanged=false;
   getWidget().initDone=true;
 }

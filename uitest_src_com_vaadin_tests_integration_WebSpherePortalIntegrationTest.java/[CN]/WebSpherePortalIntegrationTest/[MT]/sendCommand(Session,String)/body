@@ -1,0 +1,17 @@
+{
+  ChannelExec channel=(ChannelExec)session.openChannel("exec");
+  channel.setCommand(command);
+  BufferedReader in;
+  try {
+    in=new BufferedReader(new InputStreamReader(channel.getInputStream()));
+    channel.connect();
+    String msg=null;
+    while ((msg=in.readLine()) != null) {
+      System.out.println(msg);
+    }
+  }
+ catch (  IOException e) {
+    e.printStackTrace();
+  }
+  channel.disconnect();
+}

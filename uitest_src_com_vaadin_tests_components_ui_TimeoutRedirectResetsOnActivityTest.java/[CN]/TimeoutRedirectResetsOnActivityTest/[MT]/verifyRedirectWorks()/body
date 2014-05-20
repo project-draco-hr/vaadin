@@ -1,12 +1,15 @@
 {
   setDebug(true);
   openTestURL();
-  long startTime=System.currentTimeMillis();
-  while (System.currentTimeMillis() - startTime < 30000) {
-    clickTheButton();
-    Thread.sleep(1000);
-  }
-  assertTrue("button disappeared before timeout",buttonIsStillThere());
-  Thread.sleep(30000);
-  assertTrue("no redirection occurred within 30 seconds",!buttonIsStillThere());
+  long startedTime=getTime("startedTime");
+  long originalExpireTime=getTime("originalExpireTime");
+  Thread.sleep(waitBeforeActivity);
+  hitButton("reset");
+  Thread.sleep(200);
+  long actualExpireTime=getTime("actualExpireTime");
+  Thread.sleep(originalExpireTime - startedTime - waitBeforeActivity);
+  assertThat(driver.getCurrentUrl(),is(getTestUrl()));
+  testBench().disableWaitForVaadin();
+  Thread.sleep(actualExpireTime - originalExpireTime + communicationOverhead);
+  assertThat(driver.getCurrentUrl(),is(not(getTestUrl())));
 }
