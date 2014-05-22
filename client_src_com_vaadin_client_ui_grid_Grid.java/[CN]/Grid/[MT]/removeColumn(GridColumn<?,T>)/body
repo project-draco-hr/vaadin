@@ -1,16 +1,6 @@
 {
-  int columnIndex=columns.indexOf(column);
-  int visibleIndex=findVisibleColumnIndex(column);
-  columns.remove(columnIndex);
-  ((AbstractGridColumn<?,T>)column).setGrid(null);
-  if (column.isVisible()) {
-    ColumnConfiguration conf=escalator.getColumnConfiguration();
-    conf.removeColumns(visibleIndex,1);
+  if (column != null && column.equals(selectionColumn)) {
+    throw new IllegalArgumentException("The selection column may not be removed manually.");
   }
-  if (column.equals(lastFrozenColumn)) {
-    setLastFrozenColumn(null);
-  }
- else {
-    refreshFrozenColumns();
-  }
+  removeColumnSkipSelectionColumnCheck(column);
 }
