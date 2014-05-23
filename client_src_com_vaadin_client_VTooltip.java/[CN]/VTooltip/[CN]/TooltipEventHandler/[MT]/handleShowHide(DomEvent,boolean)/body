@@ -4,22 +4,30 @@
   if (currentElement == element && handledByFocus == true) {
     return;
   }
-  boolean connectorAndTooltipFound=resolveConnector(element);
-  if (!connectorAndTooltipFound) {
-    if (isShowing()) {
+  TooltipInfo info=getTooltipFor(element);
+  if (info == null) {
+    if (isActuallyVisible()) {
       handleHideEvent();
-    }
- else {
-      currentTooltipInfo=null;
     }
   }
  else {
+    setTooltipText(info);
     updatePosition(event,isFocused);
-    if (isShowing() && !isFocused) {
-      replaceCurrentTooltip();
+    if (isActuallyVisible() && !isFocused) {
+      showTooltip();
     }
  else {
-      showTooltip();
+      if (isActuallyVisible()) {
+        closeNow();
+      }
+      int timeout=justClosed ? getQuickOpenDelay() : getOpenDelay();
+      if (timeout == 0) {
+        showTooltip();
+      }
+ else {
+        showTimer.schedule(timeout);
+        opening=true;
+      }
     }
   }
   handledByFocus=isFocused;

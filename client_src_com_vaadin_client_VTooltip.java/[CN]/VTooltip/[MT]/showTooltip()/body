@@ -1,8 +1,35 @@
 {
-  if (isShowing()) {
-    closeNow();
+  boolean hasContent=false;
+  if (currentTooltipInfo.getErrorMessage() != null || (currentTooltipInfo.getTitle() != null && !"".equals(currentTooltipInfo.getTitle()))) {
+    hasContent=true;
   }
-  int timeout=justClosed ? getQuickOpenDelay() : getOpenDelay();
-  showTimer.schedule(timeout);
-  opening=true;
+  if (hasContent) {
+    setPopupPosition(0,0);
+    setPopupPositionAndShow(new PositionCallback(){
+      @Override public void setPosition(      int offsetWidth,      int offsetHeight){
+        if (offsetWidth > getMaxWidth()) {
+          setWidth(getMaxWidth() + "px");
+          offsetWidth=getOffsetWidth();
+          offsetHeight=getOffsetHeight();
+        }
+        int x=tooltipEventMouseX + 10 + Window.getScrollLeft();
+        int y=tooltipEventMouseY + 10 + Window.getScrollTop();
+        if (x + offsetWidth + MARGIN - Window.getScrollLeft() > Window.getClientWidth()) {
+          x=Window.getClientWidth() - offsetWidth - MARGIN + Window.getScrollLeft();
+        }
+        if (y + offsetHeight + MARGIN - Window.getScrollTop() > Window.getClientHeight()) {
+          y=tooltipEventMouseY - 5 - offsetHeight + Window.getScrollTop();
+          if (y - Window.getScrollTop() < 0) {
+            y=Window.getScrollTop();
+          }
+        }
+        setPopupPosition(x,y);
+        sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEOUT);
+      }
+    }
+);
+  }
+ else {
+    hide();
+  }
 }
