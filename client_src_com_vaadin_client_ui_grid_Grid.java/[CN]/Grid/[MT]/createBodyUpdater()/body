@@ -1,6 +1,6 @@
 {
   return new EscalatorUpdater(){
-    @Override public void updateCells(    Row row,    Iterable<Cell> cellsToUpdate){
+    @Override public void updateCells(    Row row,    Iterable<FlyweightCell> cellsToUpdate){
       int rowIndex=row.getRow();
       if (dataSource == null) {
         setCellsLoading(cellsToUpdate);
@@ -11,7 +11,7 @@
         setCellsLoading(cellsToUpdate);
         return;
       }
-      for (      Cell cell : cellsToUpdate) {
+      for (      FlyweightCell cell : cellsToUpdate) {
         GridColumn column=getColumnFromVisibleIndex(cell.getColumn());
         if (column != null) {
           Object value=column.getValue(rowData);
@@ -19,8 +19,8 @@
         }
       }
     }
-    private void setCellsLoading(    Iterable<Cell> cellsToUpdate){
-      for (      Cell cell : cellsToUpdate) {
+    private void setCellsLoading(    Iterable<FlyweightCell> cellsToUpdate){
+      for (      FlyweightCell cell : cellsToUpdate) {
         cell.getElement().setInnerText("...");
       }
     }
