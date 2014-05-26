@@ -1,0 +1,18 @@
+{
+  initWidget(escalator);
+  setStylePrimaryName("v-grid");
+  escalator.getHeader().setEscalatorUpdater(createHeaderUpdater());
+  escalator.getBody().setEscalatorUpdater(createBodyUpdater());
+  escalator.getFooter().setEscalatorUpdater(createFooterUpdater());
+  refreshHeader();
+  refreshFooter();
+  selectionModel=SelectionMode.SINGLE.createModel();
+  escalator.addRowVisibilityChangeHandler(new RowVisibilityChangeHandler(){
+    @Override public void onRowVisibilityChange(    RowVisibilityChangeEvent event){
+      if (dataSource != null) {
+        dataSource.ensureAvailability(event.getFirstVisibleRow(),event.getVisibleRowCount());
+      }
+    }
+  }
+);
+}
