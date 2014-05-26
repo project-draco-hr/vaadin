@@ -1,22 +1,32 @@
 {
-  final String uri=ApplicationConnection.addGetParameters(getConnection().translateVaadinUri(ApplicationConstants.APP_PROTOCOL_PREFIX + ApplicationConstants.HEARTBEAT_PATH + '/'),UIConstants.UI_ID_PARAMETER + "=" + getConnection().getConfiguration().getUIId());
+  timer.cancel();
   final RequestBuilder rb=new RequestBuilder(RequestBuilder.POST,uri);
   final RequestCallback callback=new RequestCallback(){
     @Override public void onResponseReceived(    Request request,    Response response){
       int status=response.getStatusCode();
+      connection.fireEvent(new ConnectionStatusEvent(status));
       if (status == Response.SC_OK) {
         getLogger().fine("Heartbeat response OK");
-        schedule();
+      }
+ else       if (status == 0) {
+        getLogger().warning("Failed sending heartbeat, server is unreachable, retrying in " + interval + "secs.");
+      }
+ else       if (status >= 500) {
+        getLogger().warning("Failed sending heartbeat, see server logs, retrying in " + interval + "secs.");
       }
  else       if (status == Response.SC_GONE) {
-        getConnection().showSessionExpiredError(null);
+        connection.showSessionExpiredError(null);
+        return;
       }
  else {
         getLogger().warning("Failed sending heartbeat to server. Error code: " + status);
       }
+      schedule();
     }
     @Override public void onError(    Request request,    Throwable exception){
-      getLogger().severe("Exception sending heartbeat: " + exception);
+      getLogger().severe("Exception sending heartbeat: " + exception.getMessage());
+      connection.fireEvent(new ConnectionStatusEvent(0));
+      schedule();
     }
   }
 ;

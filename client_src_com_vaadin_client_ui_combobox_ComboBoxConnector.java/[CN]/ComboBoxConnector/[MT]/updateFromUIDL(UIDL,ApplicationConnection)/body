@@ -69,17 +69,12 @@
     getWidget().suggestionPopup.showSuggestions(getWidget().currentSuggestions,getWidget().currentPage,getWidget().totalMatches);
     getWidget().waitingForFilteringResponse=false;
     if (!getWidget().popupOpenerClicked && getWidget().selectPopupItemWhenResponseIsReceived != VFilterSelect.Select.NONE) {
-      if (getWidget().selectPopupItemWhenResponseIsReceived == VFilterSelect.Select.LAST) {
-        getWidget().suggestionPopup.menu.selectLastItem();
+      Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+        @Override public void execute(){
+          navigateItemAfterPageChange();
+        }
       }
- else {
-        getWidget().suggestionPopup.menu.selectFirstItem();
-      }
-      MenuItem activeMenuItem=getWidget().suggestionPopup.menu.getSelectedItem();
-      getWidget().suggestionPopup.menu.setKeyboardSelectedItem(activeMenuItem);
-      getWidget().setTextboxText(activeMenuItem.getText());
-      getWidget().tb.setSelectionRange(getWidget().lastFilter.length(),activeMenuItem.getText().length() - getWidget().lastFilter.length());
-      getWidget().selectPopupItemWhenResponseIsReceived=VFilterSelect.Select.NONE;
+);
     }
     if (getWidget().updateSelectionWhenReponseIsReceived) {
       getWidget().suggestionPopup.menu.doPostFilterSelectedItemAction();
@@ -87,9 +82,11 @@
   }
   getWidget().updateSuggestionPopupMinWidth();
   getWidget().popupOpenerClicked=false;
-  if (!getWidget().initDone || stylesChanged) {
-    boolean forceUpdate=true;
-    getWidget().updateRootWidth(forceUpdate);
+  if (!getWidget().initDone) {
+    getWidget().updateRootWidth(false);
+  }
+ else   if (stylesChanged) {
+    getWidget().updateRootWidth(true);
   }
   if (getWidget().focused) {
     getWidget().addStyleDependentName("focus");

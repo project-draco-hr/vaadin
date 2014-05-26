@@ -13,6 +13,7 @@
     @Override public void onResponseReceived(    Request request,    Response response){
       VConsole.log("Server visit took " + String.valueOf((new Date()).getTime() - requestStartTime.getTime()) + "ms");
       int statusCode=response.getStatusCode();
+      fireEvent(new ConnectionStatusEvent(statusCode));
 switch (statusCode) {
 case 0:
         if (retryCanceledActiveRequest) {
@@ -72,6 +73,7 @@ doAjaxRequest(uri,payload,requestCallback);
  catch (RequestException e) {
 VConsole.error(e);
 endRequest();
+fireEvent(new ConnectionStatusEvent(0));
 }
 }
 }
