@@ -3,25 +3,13 @@
   EventTarget target=event.getEventTarget();
   if (Element.is(target)) {
     Element e=Element.as(target);
-    Cell cell=escalator.getHeader().getCell(e);
-    Renderer renderer=null;
-    if (cell == null) {
-      cell=escalator.getBody().getCell(e);
-      if (cell == null) {
-        cell=escalator.getFooter().getCell(e);
-        if (cell != null) {
-          renderer=columns.get(cell.getColumn()).getFooterRenderer();
-        }
+    RowContainer container=escalator.findRowContainer(e);
+    if (container != null) {
+      Cell cell=container.getCell(e);
+      Renderer<?> renderer=columns.get(cell.getColumn()).getRenderer();
+      if (renderer instanceof ComplexRenderer) {
+        ((ComplexRenderer<?>)renderer).onBrowserEvent(cell,event);
       }
- else {
-        renderer=columns.get(cell.getColumn()).getRenderer();
-      }
-    }
- else {
-      renderer=columns.get(cell.getColumn()).getHeaderRenderer();
-    }
-    if (renderer instanceof ComplexRenderer) {
-      ((ComplexRenderer)renderer).onBrowserEvent(cell,event);
     }
   }
 }
