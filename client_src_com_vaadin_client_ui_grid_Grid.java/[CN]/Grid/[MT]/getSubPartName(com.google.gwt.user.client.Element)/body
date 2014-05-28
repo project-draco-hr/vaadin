@@ -1,0 +1,16 @@
+{
+  List<RowContainer> containers=Arrays.asList(escalator.getHeader(),escalator.getBody(),escalator.getFooter());
+  List<String> containerType=Arrays.asList("header","cell","footer");
+  for (int i=0; i < containers.size(); ++i) {
+    RowContainer container=containers.get(i);
+    boolean containerRow=(subElement.getTagName().equalsIgnoreCase("tr") && subElement.getParentElement() == container.getElement());
+    if (containerRow) {
+      subElement=DOM.asOld(subElement.getFirstChildElement());
+    }
+    Cell cell=container.getCell(subElement);
+    if (cell != null) {
+      return containerType.get(i) + "[" + cell.getRow()+ (containerRow ? "]" : "][" + cell.getColumn() + "]");
+    }
+  }
+  return null;
+}
