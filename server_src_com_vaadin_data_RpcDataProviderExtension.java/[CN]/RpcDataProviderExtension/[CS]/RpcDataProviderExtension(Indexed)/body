@@ -1,10 +1,19 @@
 {
   this.container=container;
   registerRpc(new DataRequestRpc(){
-    @Override public void requestRows(    int firstRow,    int numberOfRows){
+    @Override public void requestRows(    int firstRow,    int numberOfRows,    int firstCachedRowIndex,    int cacheSize){
       pushRows(firstRow,numberOfRows);
+      Range active=Range.withLength(firstRow,numberOfRows);
+      if (cacheSize != 0) {
+        Range cached=Range.withLength(firstCachedRowIndex,cacheSize);
+        active=active.combineWith(cached);
+      }
+      activeRowHandler.setActiveRows(active.getStart(),active.length());
     }
   }
 );
   getState().containerSize=container.size();
+  if (container instanceof ItemSetChangeNotifier) {
+    ((ItemSetChangeNotifier)container).addItemSetChangeListener(itemListener);
+  }
 }
