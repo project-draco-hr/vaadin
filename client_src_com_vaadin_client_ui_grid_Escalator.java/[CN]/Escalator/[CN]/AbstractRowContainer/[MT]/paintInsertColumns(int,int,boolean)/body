@@ -1,20 +1,8 @@
 {
   final NodeList<Node> childNodes=root.getChildNodes();
   for (int row=0; row < childNodes.getLength(); row++) {
-    final int rowHeight=getDefaultRowHeight();
     final Element tr=getTrByVisualIndex(row);
-    Node referenceCell;
-    if (offset != 0) {
-      referenceCell=tr.getChild(offset - 1);
-    }
- else {
-      referenceCell=null;
-    }
-    for (int col=offset; col < offset + numberOfColumns; col++) {
-      final int colWidth=columnConfiguration.getColumnWidthActual(col);
-      final Element cellElem=createCellElement(rowHeight,colWidth);
-      referenceCell=insertAfterReferenceAndUpdateIt(tr,cellElem,referenceCell);
-    }
+    paintInsertCells(tr,row,offset,numberOfColumns);
   }
   reapplyRowWidths();
   if (frozen) {
