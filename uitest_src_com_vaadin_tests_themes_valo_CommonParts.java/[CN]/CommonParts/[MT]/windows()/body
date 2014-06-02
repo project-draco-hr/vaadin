@@ -1,0 +1,88 @@
+{
+  Panel p=new Panel("Dialogs");
+  VerticalLayout content=new VerticalLayout(){
+    final Window win=new Window();
+    MenuBar footer=new MenuBar();
+    String prevHeight="300px";
+{
+      setSpacing(true);
+      setMargin(true);
+      win.setWidth("320px");
+      win.setHeight(prevHeight);
+      win.setClosable(false);
+      win.setResizable(false);
+      win.setContent(windowContents(true));
+      win.setCloseShortcut(KeyCode.ESCAPE,null);
+      Command footerCommand=new Command(){
+        @Override public void menuSelected(        MenuItem selectedItem){
+          if (selectedItem.getText().equals("Fixed")) {
+            win.setContent(windowContents(true));
+            win.setHeight(prevHeight);
+          }
+ else {
+            win.setContent(windowContents(false));
+            prevHeight=win.getHeight() + win.getHeightUnits().toString();
+            win.setHeight(null);
+          }
+          for (          MenuItem item : footer.getItems()) {
+            item.setChecked(false);
+          }
+          selectedItem.setChecked(true);
+        }
+      }
+;
+      footer.setCaption("Footer type");
+      MenuItem fixed=footer.addItem("Fixed",footerCommand);
+      fixed.setCheckable(true);
+      fixed.setChecked(true);
+      footer.addItem("Scroll",footerCommand).setCheckable(true);
+      footer.addStyleName("small");
+      addComponent(footer);
+      Command optionsCommand=new Command(){
+        @Override public void menuSelected(        MenuItem selectedItem){
+          if (selectedItem.getText().equals("Caption")) {
+            win.setCaption(selectedItem.isChecked() ? "Window caption" : null);
+          }
+ else           if (selectedItem.getText().equals("Closable")) {
+            win.setClosable(selectedItem.isChecked());
+          }
+ else           if (selectedItem.getText().equals("Resizable")) {
+            win.setResizable(selectedItem.isChecked());
+          }
+ else           if (selectedItem.getText().equals("Modal")) {
+            win.setModal(selectedItem.isChecked());
+          }
+        }
+      }
+;
+      MenuBar options=new MenuBar();
+      options.setCaption("Options");
+      options.addItem("Caption",optionsCommand).setCheckable(true);
+      options.addItem("Closable",optionsCommand).setCheckable(true);
+      options.addItem("Resizable",optionsCommand).setCheckable(true);
+      options.addItem("Modal",optionsCommand).setCheckable(true);
+      options.addStyleName("small");
+      addComponent(options);
+      final Button show=new Button("Open Window",new ClickListener(){
+        @Override public void buttonClick(        ClickEvent event){
+          getUI().addWindow(win);
+          win.center();
+          win.focus();
+          event.getButton().setEnabled(false);
+        }
+      }
+);
+      show.addStyleName("primary");
+      addComponent(show);
+      win.addCloseListener(new CloseListener(){
+        @Override public void windowClose(        CloseEvent e){
+          show.setEnabled(true);
+        }
+      }
+);
+    }
+  }
+;
+  p.setContent(content);
+  return p;
+}

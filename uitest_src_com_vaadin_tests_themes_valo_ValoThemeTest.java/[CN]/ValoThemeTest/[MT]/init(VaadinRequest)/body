@@ -1,0 +1,58 @@
+{
+  getPage().setTitle("Valo Theme Test");
+  setContent(root);
+  root.setWidth("100%");
+  root.addComponent(buildMenu());
+  viewDisplay.setWidth("100%");
+  viewDisplay.addStyleName("view");
+  root.addComponent(viewDisplay);
+  root.setExpandRatio(viewDisplay,1);
+  navigator=new Navigator(this,viewDisplay);
+  navigator.addView("common",CommonParts.class);
+  navigator.addView("labels",Labels.class);
+  navigator.addView("buttons-and-links",ButtonsAndLinks.class);
+  navigator.addView("textfields",TextFields.class);
+  navigator.addView("datefields",DateFields.class);
+  navigator.addView("comboboxes",ComboBoxes.class);
+  navigator.addView("checkboxes",CheckBoxes.class);
+  navigator.addView("sliders",Sliders.class);
+  navigator.addView("menubars",MenuBars.class);
+  navigator.addView("panels",Panels.class);
+  navigator.addView("trees",Trees.class);
+  navigator.addView("tables",Tables.class);
+  navigator.addView("splitpanels",SplitPanels.class);
+  navigator.addView("tabs",Tabsheets.class);
+  navigator.addView("accordions",Accordions.class);
+  navigator.addView("colorpickers",ColorPickers.class);
+  navigator.addView("selects",NativeSelects.class);
+  navigator.addView("calendar",CalendarTest.class);
+  navigator.addView("forms",Forms.class);
+  navigator.addView("popupviews",PopupViews.class);
+  String f=Page.getCurrent().getUriFragment();
+  if (f == null || f.equals("")) {
+    navigator.navigateTo("common");
+  }
+  navigator.addViewChangeListener(new ViewChangeListener(){
+    @Override public boolean beforeViewChange(    ViewChangeEvent event){
+      return true;
+    }
+    @Override public void afterViewChange(    ViewChangeEvent event){
+      for (Iterator<Component> it=menu.iterator(); it.hasNext(); ) {
+        it.next().removeStyleName("selected");
+      }
+      for (      Entry<String,String> item : menuItems.entrySet()) {
+        if (event.getViewName().equals(item.getKey())) {
+          for (Iterator<Component> it=menu.iterator(); it.hasNext(); ) {
+            Component c=it.next();
+            if (item.getValue().equals(c.getCaption())) {
+              c.addStyleName("selected");
+              break;
+            }
+          }
+          break;
+        }
+      }
+    }
+  }
+);
+}
