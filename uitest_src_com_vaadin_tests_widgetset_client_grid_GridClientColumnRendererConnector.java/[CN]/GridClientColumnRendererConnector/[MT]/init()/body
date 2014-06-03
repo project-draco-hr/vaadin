@@ -1,0 +1,29 @@
+{
+  Grid<String> grid=getWidget();
+  grid.setColumnHeadersVisible(false);
+  List<String> columnData=new ArrayList<String>();
+  for (int i=0; i < 100; i++) {
+    columnData.add(String.valueOf(i));
+  }
+  grid.setDataSource(new ListDataSource<String>(columnData));
+  grid.addColumn(createColumnWithRenderer(Renderers.TEXT_RENDERER));
+  registerRpc(GridClientColumnRendererRpc.class,new GridClientColumnRendererRpc(){
+    @Override public void addColumn(    Renderers renderer){
+      if (renderer == Renderers.NUMBER_RENDERER) {
+        getWidget().addColumn(createNumberColumnWithRenderer(renderer));
+      }
+ else       if (renderer == Renderers.DATE_RENDERER) {
+        getWidget().addColumn(createDateColumnWithRenderer(renderer));
+      }
+ else {
+        getWidget().addColumn(createColumnWithRenderer(renderer));
+      }
+    }
+    @Override public void detachAttach(){
+      HasWidgets parent=(HasWidgets)getWidget().getParent();
+      parent.remove(getWidget());
+      parent.add(getWidget());
+    }
+  }
+);
+}

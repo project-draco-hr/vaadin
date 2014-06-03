@@ -1,0 +1,29 @@
+{
+  final GridController controller=new GridController();
+  final CssLayout controls=new CssLayout();
+  final VerticalLayout content=new VerticalLayout();
+  content.addComponent(controller);
+  content.addComponent(controls);
+  setContent(content);
+  final NativeSelect select=new NativeSelect("Add Column with Renderer",Arrays.asList(Renderers.values()));
+  select.setValue(Renderers.TEXT_RENDERER);
+  select.setNullSelectionAllowed(false);
+  controls.addComponent(select);
+  NativeButton addColumnBtn=new NativeButton("Add");
+  addColumnBtn.addClickListener(new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      Renderers renderer=(Renderers)select.getValue();
+      controller.addColumn(renderer);
+    }
+  }
+);
+  controls.addComponent(addColumnBtn);
+  NativeButton detachAttachBtn=new NativeButton("DetachAttach");
+  detachAttachBtn.addClickListener(new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      controller.detachAttach();
+    }
+  }
+);
+  controls.addComponent(detachAttachBtn);
+}

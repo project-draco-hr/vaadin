@@ -1,0 +1,34 @@
+{
+switch (renderer) {
+case TEXT_RENDERER:
+    return new TextRenderer();
+case WIDGET_RENDERER:
+  return new WidgetRenderer<String,Button>(){
+    @Override public Button createWidget(){
+      return new Button("",new ClickHandler(){
+        @Override public void onClick(        ClickEvent event){
+          Window.alert("Click");
+        }
+      }
+);
+    }
+    @Override public void render(    FlyweightCell cell,    String data,    Button button){
+      button.setHTML(data);
+    }
+  }
+;
+case HTML_RENDERER:
+return new HtmlRenderer(){
+  @Override public void render(  FlyweightCell cell,  String htmlString){
+    super.render(cell,"<b>" + htmlString + "</b>");
+  }
+}
+;
+case NUMBER_RENDERER:
+return new NumberRenderer<Long>();
+case DATE_RENDERER:
+return new DateRenderer();
+default :
+return new TextRenderer();
+}
+}
