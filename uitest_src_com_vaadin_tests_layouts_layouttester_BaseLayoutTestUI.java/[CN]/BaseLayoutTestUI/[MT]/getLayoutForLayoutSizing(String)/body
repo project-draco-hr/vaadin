@@ -1,0 +1,50 @@
+{
+  l2.setSpacing(false);
+  l2.setMargin(false);
+  final AbstractComponent c1=getTestTable();
+  c1.setSizeFull();
+  final AbstractComponent c2=getTestTable();
+  c2.setSizeFull();
+class SetSizeButton extends Button {
+    SetSizeButton(    final String size){
+      super();
+      setCaption("Set size " + size);
+      addClickListener(new ClickListener(){
+        @Override public void buttonClick(        ClickEvent event){
+          if (compType == "layout") {
+            l2.setHeight(size);
+            l2.setWidth(size);
+          }
+ else           if (compType == "component") {
+            c2.setHeight(size);
+            c2.setWidth(size);
+          }
+ else {
+          }
+        }
+      }
+);
+    }
+  }
+  Button btn1=new SetSizeButton("350px");
+  Button btn2=new SetSizeButton("-1px");
+  Button btn3=new SetSizeButton("75%");
+  Button btn4=new SetSizeButton("100%");
+  l1.addComponent(btn1);
+  l1.addComponent(btn2);
+  l1.addComponent(btn3);
+  l1.addComponent(btn4);
+  l2.addComponent(c1);
+  l2.addComponent(new Label("<div style='height: 1px'></div><hr /><div style='height: 1px'></div>",ContentMode.HTML));
+  l2.addComponent(c2);
+  l2.setExpandRatio(c1,0.5f);
+  l2.setExpandRatio(c2,0.5f);
+  btn2.addClickListener(new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      Label newLabel=new Label("--- NEW LABEL ---");
+      newLabel.setSizeUndefined();
+      l2.addComponent(newLabel);
+    }
+  }
+);
+}

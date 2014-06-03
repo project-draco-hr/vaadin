@@ -1,0 +1,48 @@
+{
+  AbstractLayout mainLayout=new VerticalLayout();
+  AbstractLayout curLayout=null;
+  try {
+    curLayout=layoutClass.newInstance();
+  }
+ catch (  InstantiationException e1) {
+    e1.printStackTrace();
+  }
+catch (  IllegalAccessException e1) {
+    e1.printStackTrace();
+  }
+  final Component[] components=new Component[CAPTIONS.length];
+  for (int i=0; i < components.length; i++) {
+    AbstractComponent comp=null;
+    try {
+      comp=compType.newInstance();
+    }
+ catch (    InstantiationException e) {
+      e.printStackTrace();
+    }
+catch (    IllegalAccessException e) {
+      e.printStackTrace();
+    }
+    components[i]=comp;
+    comp.setCaption(CAPTIONS[i]);
+    if (useIcon) {
+      comp.setIcon(ICONS[i]);
+    }
+    if (ErrorMessage != null) {
+      if (ErrorMessage.length() == 0) {
+        comp.setComponentError(new UserError(null));
+      }
+ else {
+        comp.setComponentError(new UserError(ErrorMessage));
+      }
+    }
+    if (comp instanceof TabSheet) {
+      comp.setSizeUndefined();
+      TabSheet tab=(TabSheet)comp;
+      tab.addTab(new UndefWideLabel("TAB1"),"TAB1",new ThemeResource(GLOBE_16_PNG));
+      tab.addTab(new UndefWideLabel("TAB2"),"TAB2",null);
+    }
+    curLayout.addComponent(comp);
+    mainLayout.addComponent(curLayout);
+  }
+  return mainLayout;
+}

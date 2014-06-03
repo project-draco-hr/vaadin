@@ -1,0 +1,32 @@
+{
+class ExpandButton extends Button {
+    final private AbstractComponent c1;
+    private AbstractComponent c2;
+    private float expandComp1;
+    private float expandComp2;
+    public ExpandButton(    final AbstractComponent c1,    final AbstractComponent c2,    float e1,    float e2){
+      super();
+      this.c1=c1;
+      this.c2=c2;
+      expandComp1=e1;
+      expandComp2=e2;
+      setCaption("Expand ratio: " + e1 * 100 + " /" + e2 * 100);
+      addClickListener(new ClickListener(){
+        @Override public void buttonClick(        ClickEvent event){
+          l2.setExpandRatio(c1,expandComp1);
+          l2.setExpandRatio(c2,expandComp2);
+        }
+      }
+);
+    }
+  }
+  Table t1=getTestTable();
+  Table t2=getTestTable();
+  t1.setSizeFull();
+  t2.setSizeFull();
+  l2.addComponent(t1);
+  l2.addComponent(t2);
+  l1.addComponent(new ExpandButton(t1,t2,1.0f,0.0f));
+  l1.addComponent(new ExpandButton(t1,t2,0.5f,0.50f));
+  l1.addComponent(new ExpandButton(t1,t2,.25f,0.75f));
+}
