@@ -1,0 +1,16 @@
+{
+  item.addItemProperty("name",new TestingProperty<String>("Just some text"));
+  item.addItemProperty("age",new TestingProperty<String>("42"));
+  final FieldGroup binder=new FieldGroup(item);
+  binder.setBuffered(false);
+  for (int i=0; i < 2; ++i) {
+    binder.bind(nameField,"name");
+    binder.bind(ageField,"age");
+    unboundField.setPropertyDataSource(unboundProp);
+    assertTrue("No listeners in Properties",fieldsHaveListeners(true));
+    binder.unbind(nameField);
+    binder.unbind(ageField);
+    unboundField.setPropertyDataSource(null);
+    assertTrue("Listeners in Properties after unbinding",fieldsHaveListeners(false));
+  }
+}

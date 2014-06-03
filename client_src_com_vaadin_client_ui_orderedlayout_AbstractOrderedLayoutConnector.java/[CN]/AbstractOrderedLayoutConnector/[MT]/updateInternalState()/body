@@ -6,6 +6,7 @@
   Profiler.enter("AOLC.updateInternalState");
   processedResponseId=lastResponseId;
   hasChildrenWithRelativeHeight=false;
+  hasChildrenWithRelativeWidth=false;
   hasChildrenWithMiddleAlignment=false;
   needsExpand=getWidget().vertical ? !isUndefinedHeight() : !isUndefinedWidth();
   boolean onlyZeroExpands=true;
@@ -42,6 +43,9 @@
     if (child.isRelativeHeight()) {
       hasChildrenWithRelativeHeight=true;
     }
+    if (child.isRelativeWidth()) {
+      hasChildrenWithRelativeWidth=true;
+    }
   }
   if (needsFixedHeight()) {
     getLayoutManager().addElementResizeListener(getWidget().getElement(),childComponentResizeListener);
@@ -53,7 +57,12 @@
   updateLayoutHeight();
   if (needsExpand()) {
     getWidget().updateExpandedSizes();
-    getWidget().updateExpandCompensation();
+    Scheduler.get().scheduleFinally(new ScheduledCommand(){
+      @Override public void execute(){
+        getWidget().updateExpandCompensation();
+      }
+    }
+);
   }
  else {
     getWidget().clearExpand();

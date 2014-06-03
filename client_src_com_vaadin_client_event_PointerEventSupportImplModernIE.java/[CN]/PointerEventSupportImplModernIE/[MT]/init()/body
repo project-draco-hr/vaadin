@@ -1,0 +1,13 @@
+{
+  if (!inited) {
+    JavaScriptObject eventDispatcherMapExtensions=JavaScriptObject.createObject();
+    JavaScriptObject captureEventDispatcherMapExtensions=JavaScriptObject.createObject();
+    for (    EventType e : EventType.values()) {
+      addEventDispatcher(e.getNativeEventName(),eventDispatcherMapExtensions);
+      getPointerEventCaptureDispatchers(e.getNativeEventName(),captureEventDispatcherMapExtensions);
+    }
+    DOMImplStandard.addBitlessEventDispatchers(eventDispatcherMapExtensions);
+    DOMImplStandard.addCaptureEventDispatchers(captureEventDispatcherMapExtensions);
+    inited=true;
+  }
+}

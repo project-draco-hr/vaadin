@@ -1,0 +1,33 @@
+{
+  text=new TextField();
+  text.setImmediate(true);
+  final Table table=new Table(null);
+  table.addContainerProperty("value",Integer.class,0);
+  for (int i=0; i < 50; ++i) {
+    table.addItem(new Object[]{i},i);
+  }
+  table.setSizeFull();
+  table.setSelectable(true);
+  table.setImmediate(true);
+  table.setEditable(false);
+  final VerticalLayout layout=new VerticalLayout();
+  table.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      if (table.getValue() != null) {
+        text.setValue(table.getValue().toString());
+      }
+    }
+  }
+);
+  table.setCurrentPageFirstItemIndex(49);
+  layout.setSizeFull();
+  layout.addComponent(text);
+  layout.addComponent(table);
+  layout.setExpandRatio(table,1.0f);
+  Window window=new Window();
+  window.setHeight("600px");
+  window.setWidth("400px");
+  window.setModal(true);
+  window.setContent(layout);
+  getUI().addWindow(window);
+}

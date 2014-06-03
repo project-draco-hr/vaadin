@@ -2,6 +2,9 @@
   if (!getContainerPropertyIds().contains(propertyId)) {
     throw new IllegalArgumentException("PropertyId " + propertyId + " must be in the container");
   }
+  if (!typeIsCompatible(converter.getModelType(),getType(propertyId))) {
+    throw new IllegalArgumentException("Property type (" + getType(propertyId) + ") must match converter source type ("+ converter.getModelType()+ ")");
+  }
   propertyValueConverters.put(propertyId,(Converter<String,Object>)converter);
   refreshRowCache();
 }

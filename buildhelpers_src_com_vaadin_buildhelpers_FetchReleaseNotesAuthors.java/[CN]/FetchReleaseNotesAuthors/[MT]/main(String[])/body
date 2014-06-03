@@ -1,0 +1,33 @@
+{
+  Properties authorMap=new Properties();
+  String authorsFilename=FetchReleaseNotesAuthors.class.getPackage().getName().replace(".","/") + "/authormap.properties";
+  InputStream s=FetchReleaseNotesAuthors.class.getClassLoader().getResourceAsStream(authorsFilename);
+  if (s == null) {
+    System.err.println("Author mapping file " + authorsFilename + " not found!");
+  }
+  authorMap.load(s);
+  String version=System.getProperty("vaadin.version");
+  String previousVersion=getPreviousVersion(version);
+  String cmd="git log --pretty=%an HEAD ^origin/" + previousVersion;
+  Process p=Runtime.getRuntime().exec(cmd);
+  p.waitFor();
+  if (p.exitValue() != 0) {
+    System.err.println("Exit code: " + p.exitValue());
+  }
+  BufferedReader b=new BufferedReader(new InputStreamReader(p.getInputStream()));
+  String line="";
+  List<String> authors=new ArrayList<String>();
+  while ((line=b.readLine()) != null) {
+    String author=line;
+    if (authorMap.containsKey(author)) {
+      author=authorMap.getProperty(author);
+    }
+    if (author != null && !author.equals("") && !authors.contains(author)) {
+      authors.add(author);
+    }
+  }
+  Collections.sort(authors);
+  for (  String author : authors) {
+    System.out.println(template.replace("@author@",author));
+  }
+}

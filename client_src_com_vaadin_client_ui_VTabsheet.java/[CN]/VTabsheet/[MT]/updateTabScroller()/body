@@ -1,6 +1,6 @@
 {
   if (!isDynamicWidth()) {
-    DOM.setStyleAttribute(tabs,"width","100%");
+    tabs.getStyle().setWidth(100,Unit.PCT);
   }
   if (scrollerIndex < 0 || scrollerIndex > tb.getTabCount()) {
     scrollerIndex=tb.getFirstVisibleTab();
@@ -11,14 +11,14 @@
   boolean scrolled=isScrolledTabs();
   boolean clipped=isClippedTabs();
   if (tb.getTabCount() > 0 && tb.isVisible() && (scrolled || clipped)) {
-    DOM.setStyleAttribute(scroller,"display","");
+    scroller.getStyle().clearDisplay();
     DOM.setElementProperty(scrollerPrev,"className",SCROLLER_CLASSNAME + (scrolled ? "Prev" : "Prev-disabled"));
     DOM.setElementProperty(scrollerNext,"className",SCROLLER_CLASSNAME + (clipped ? "Next" : "Next-disabled"));
     boolean isActiveTabVisible=scrollerIndex <= activeTabIndex && !isClipped(tb.selected);
     tb.selected.setTabulatorIndex(isActiveTabVisible ? tabulatorIndex : -1);
   }
  else {
-    DOM.setStyleAttribute(scroller,"display","none");
+    scroller.getStyle().setDisplay(Display.NONE);
   }
   if (BrowserInfo.get().isSafari()) {
     final Style style=scroller.getStyle();

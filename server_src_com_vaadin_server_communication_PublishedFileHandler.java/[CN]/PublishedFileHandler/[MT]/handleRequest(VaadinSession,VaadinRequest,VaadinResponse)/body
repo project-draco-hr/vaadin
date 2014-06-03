@@ -29,6 +29,12 @@
     response.sendError(HttpServletResponse.SC_NOT_FOUND,fileName);
     return true;
   }
+  String cacheControl="public, max-age=0, must-revalidate";
+  int resourceCacheTime=request.getService().getDeploymentConfiguration().getResourceCacheTime();
+  if (resourceCacheTime > 0) {
+    cacheControl="max-age=" + String.valueOf(resourceCacheTime);
+  }
+  response.setHeader("Cache-Control",cacheControl);
   OutputStream out=null;
   try {
     if (mimetype != null) {

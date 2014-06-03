@@ -6,6 +6,19 @@
   if (visibleIds == null) {
     visibleIds=new ArrayList<Object>();
   }
+  if (propertyValueConverters != null) {
+    Collection<?> newPropertyIds=newDataSource.getContainerPropertyIds();
+    LinkedList<Object> retainableValueConverters=new LinkedList<Object>();
+    for (    Object propertyId : newPropertyIds) {
+      Converter<String,?> converter=getConverter(propertyId);
+      if (converter != null) {
+        if (typeIsCompatible(converter.getModelType(),newDataSource.getType(propertyId))) {
+          retainableValueConverters.add(propertyId);
+        }
+      }
+    }
+    propertyValueConverters.keySet().retainAll(retainableValueConverters);
+  }
   if (newDataSource instanceof Container.Ordered) {
     super.setContainerDataSource(newDataSource);
   }
