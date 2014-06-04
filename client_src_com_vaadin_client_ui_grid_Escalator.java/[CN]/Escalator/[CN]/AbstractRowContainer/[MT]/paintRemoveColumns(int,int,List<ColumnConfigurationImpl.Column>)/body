@@ -1,27 +1,2 @@
 {
-  final NodeList<Node> childNodes=root.getChildNodes();
-  for (int visualRowIndex=0; visualRowIndex < childNodes.getLength(); visualRowIndex++) {
-    final Node tr=childNodes.getItem(visualRowIndex);
-    for (int column=0; column < numberOfColumns; column++) {
-      Element cellElement=tr.getChild(offset).cast();
-      detachPossibleWidgetFromCell(cellElement);
-      cellElement.removeFromParent();
-    }
-  }
-  reapplyRowWidths();
-  final int firstRemovedColumnLeft=columnConfiguration.getCalculatedColumnsWidth(Range.withLength(0,offset));
-  final boolean columnsWereRemovedFromLeftOfTheViewport=scroller.lastScrollLeft > firstRemovedColumnLeft;
-  if (columnsWereRemovedFromLeftOfTheViewport) {
-    int removedColumnsPxAmount=0;
-    for (    ColumnConfigurationImpl.Column removedColumn : removedColumns) {
-      removedColumnsPxAmount+=removedColumn.getCalculatedWidth();
-    }
-    final int leftByDiff=(int)(scroller.lastScrollLeft - removedColumnsPxAmount);
-    final int newScrollLeft=Math.max(firstRemovedColumnLeft,leftByDiff);
-    horizontalScrollbar.setScrollPos(newScrollLeft);
-  }
-  scroller.recalculateScrollbarsForVirtualViewport();
-  if (getRowCount() > 0 && getColumnConfiguration().getColumnCount() > 0) {
-    refreshRows(0,getRowCount());
-  }
 }
