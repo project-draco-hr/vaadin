@@ -1,14 +1,22 @@
 {
 switch (event.getTypeInt()) {
 case Event.ONTOUCHSTART:
+{
+      if (event.getNativeEvent().getTouches().length() == 1) {
+        autoScrollHandler.stop();
+      }
+      break;
+    }
 case Event.ONTOUCHMOVE:
+  event.cancel();
+break;
 case Event.ONTOUCHEND:
 case Event.ONTOUCHCANCEL:
-    final Element targetElement=Element.as(event.getNativeEvent().getEventTarget());
-  if (isInFirstColumn(targetElement)) {
-    dispatchTouchEvent(event);
-    event.cancel();
-  }
+final Element targetElement=Element.as(event.getNativeEvent().getEventTarget());
+if (isInFirstColumn(targetElement)) {
+removeNativeHandler();
+event.cancel();
+}
 break;
 }
 }

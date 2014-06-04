@@ -1,0 +1,16 @@
+{
+  final double timeDiff=timestamp - prevTimestamp;
+  prevTimestamp=timestamp;
+  pixelsToScroll+=scrollSpeed * (timeDiff / 1000.0d);
+  final int intPixelsToScroll=(int)pixelsToScroll;
+  pixelsToScroll-=intPixelsToScroll;
+  if (intPixelsToScroll != 0) {
+    grid.setScrollTop(grid.getScrollTop() + intPixelsToScroll);
+  }
+  @SuppressWarnings("hiding") int logicalRow=getLogicalRowIndex(Util.getElementFromPoint(pageX,pageY));
+  if (logicalRow != -1 && logicalRow != this.logicalRow) {
+    this.logicalRow=logicalRow;
+    setSelected(logicalRow,selectionPaint);
+  }
+  reschedule();
+}

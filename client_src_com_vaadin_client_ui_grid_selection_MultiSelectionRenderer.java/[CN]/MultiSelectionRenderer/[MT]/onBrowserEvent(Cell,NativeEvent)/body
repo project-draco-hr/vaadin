@@ -1,21 +1,10 @@
 {
-  event.preventDefault();
-  event.stopPropagation();
-  if (BrowserEvents.TOUCHSTART.equals(event.getType())) {
+  if (BrowserEvents.TOUCHSTART.equals(event.getType()) || BrowserEvents.MOUSEDOWN.equals(event.getType())) {
     injectNativeHandler();
-    selectionHandler.onSelectionStart(cell.getRow());
-    return;
-  }
-  final Element target=Element.as(event.getEventTarget());
-  final int logicalIndex=getLogicalRowIndex(target);
-  if (BrowserEvents.MOUSEDOWN.equals(event.getType())) {
-    selectionHandler.onSelectionStart(logicalIndex);
-  }
- else   if (BrowserEvents.MOUSEMOVE.equals(event.getType())) {
-    selectionHandler.onSelectionMove(logicalIndex);
-  }
- else   if (BrowserEvents.MOUSEUP.equals(event.getType())) {
-    selectionHandler.onSelectionEnd();
+    int logicalRowIndex=getLogicalRowIndex(Element.as(event.getEventTarget()));
+    autoScrollHandler.start(logicalRowIndex);
+    event.preventDefault();
+    event.stopPropagation();
   }
  else {
     throw new IllegalStateException("received unexpected event: " + event.getType());
