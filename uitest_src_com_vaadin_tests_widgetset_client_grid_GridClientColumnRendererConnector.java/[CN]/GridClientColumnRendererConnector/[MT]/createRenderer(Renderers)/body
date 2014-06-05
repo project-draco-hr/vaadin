@@ -28,6 +28,18 @@ case NUMBER_RENDERER:
 return new NumberRenderer<Long>();
 case DATE_RENDERER:
 return new DateRenderer();
+case CPLX_RENDERER:
+return new ComplexRenderer<String>(){
+@Override public void render(FlyweightCell cell,String data){
+cell.getElement().setInnerHTML("<span>" + data + "</span>");
+cell.getElement().getStyle().clearBackgroundColor();
+}
+@Override public void setContentVisible(FlyweightCell cell,boolean hasData){
+cell.getElement().getStyle().setBackgroundColor(hasData ? "green" : "red");
+super.setContentVisible(cell,hasData);
+}
+}
+;
 default :
 return new TextRenderer();
 }

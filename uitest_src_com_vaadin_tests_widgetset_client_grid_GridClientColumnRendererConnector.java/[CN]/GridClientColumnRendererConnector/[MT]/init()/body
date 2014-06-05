@@ -5,7 +5,12 @@
   for (int i=0; i < 100; i++) {
     columnData.add(String.valueOf(i));
   }
-  grid.setDataSource(new ListDataSource<String>(columnData));
+  if (Location.getParameter("latency") != null) {
+    grid.setDataSource(new DelayedDataSource(new ListDataSource<String>(columnData),Integer.parseInt(Location.getParameter("latency"))));
+  }
+ else {
+    grid.setDataSource(new ListDataSource<String>(columnData));
+  }
   grid.addColumn(createColumnWithRenderer(Renderers.TEXT_RENDERER));
   registerRpc(GridClientColumnRendererRpc.class,new GridClientColumnRendererRpc(){
     @Override public void addColumn(    Renderers renderer){
