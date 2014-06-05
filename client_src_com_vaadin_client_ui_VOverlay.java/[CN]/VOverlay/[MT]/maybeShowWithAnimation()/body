@@ -1,0 +1,29 @@
+{
+  boolean isAttached=isAttached() && isShowing();
+  super.show();
+  if (isAttached || BrowserInfo.get().isIE8() || BrowserInfo.get().isIE9()) {
+    return false;
+  }
+ else {
+    addStyleDependentName(ADDITIONAL_CLASSNAME_ANIMATE_IN);
+    if (isShadowEnabled()) {
+      shadow.addClassName(CLASSNAME_SHADOW + "-" + ADDITIONAL_CLASSNAME_ANIMATE_IN);
+    }
+    ComputedStyle cs=new ComputedStyle(getElement());
+    String animationName=AnimationUtil.getAnimationName(cs);
+    if (animationName == null) {
+      animationName="";
+    }
+    if (animationName.contains(ADDITIONAL_CLASSNAME_ANIMATE_IN)) {
+      AnimationUtil.registerAnimationEndEventListener(getElement(),getAnimationEndListener(false));
+      return true;
+    }
+ else {
+      removeStyleDependentName(ADDITIONAL_CLASSNAME_ANIMATE_IN);
+      if (isShadowEnabled()) {
+        shadow.removeClassName(CLASSNAME_SHADOW + "-" + ADDITIONAL_CLASSNAME_ANIMATE_IN);
+      }
+      return false;
+    }
+  }
+}
