@@ -2,12 +2,14 @@
   this.container=container;
   registerRpc(new DataRequestRpc(){
     @Override public void requestRows(    int firstRow,    int numberOfRows,    int firstCachedRowIndex,    int cacheSize){
-      pushRows(firstRow,numberOfRows);
       Range active=Range.withLength(firstRow,numberOfRows);
       if (cacheSize != 0) {
         Range cached=Range.withLength(firstCachedRowIndex,cacheSize);
         active=active.combineWith(cached);
       }
+      List<?> itemIds=RpcDataProviderExtension.this.container.getItemIds(firstRow,numberOfRows);
+      keyMapper.preActiveRowsChange(active,firstRow,itemIds);
+      pushRows(firstRow,itemIds);
       activeRowHandler.setActiveRows(active.getStart(),active.length());
     }
   }

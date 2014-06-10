@@ -2,11 +2,15 @@
   if (row == null) {
     throw new IllegalArgumentException("Row cannot be null");
   }
-  if (row.equals(getSelectedRow())) {
+  if (isSelected(row)) {
     return false;
   }
-  T removed=selectedRow;
-  selectedRow=row;
+  T removed=getSelectedRow();
+  if (selectedRow != null) {
+    selectedRow.unpin();
+  }
+  selectedRow=grid.getDataSource().getHandle(row);
+  selectedRow.pin();
   grid.fireEvent(new SelectionChangeEvent<T>(grid,row,removed));
   return true;
 }

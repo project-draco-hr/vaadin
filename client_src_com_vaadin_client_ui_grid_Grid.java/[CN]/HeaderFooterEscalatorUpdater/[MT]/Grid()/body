@@ -6,12 +6,18 @@
   escalator.getFooter().setEscalatorUpdater(createFooterUpdater());
   refreshHeader();
   refreshFooter();
-  selectionModel=SelectionMode.SINGLE.createModel();
+  setSelectionMode(SelectionMode.SINGLE);
   escalator.addRowVisibilityChangeHandler(new RowVisibilityChangeHandler(){
     @Override public void onRowVisibilityChange(    RowVisibilityChangeEvent event){
       if (dataSource != null) {
         dataSource.ensureAvailability(event.getFirstVisibleRow(),event.getVisibleRowCount());
       }
+    }
+  }
+);
+  addSelectionChangeHandler(new SelectionChangeHandler(){
+    @Override public void onSelectionChange(    SelectionChangeEvent<?> event){
+      refreshBody();
     }
   }
 );
