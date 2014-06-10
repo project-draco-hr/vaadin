@@ -15,7 +15,19 @@
       animationName="";
     }
     if (animationName.contains(ADDITIONAL_CLASSNAME_ANIMATE_IN)) {
-      AnimationUtil.registerAnimationEndEventListener(getElement(),getAnimationEndListener(false));
+      animateInListener=AnimationUtil.addAnimationEndListener(getElement(),new AnimationEndListener(){
+        @Override public void onAnimationEnd(        NativeEvent event){
+          String animationName=AnimationUtil.getAnimationName(event);
+          if (animationName.contains(ADDITIONAL_CLASSNAME_ANIMATE_IN)) {
+            AnimationUtil.removeAnimationEndListener(getElement(),animateInListener);
+            removeStyleDependentName(ADDITIONAL_CLASSNAME_ANIMATE_IN);
+            if (isShadowEnabled()) {
+              shadow.removeClassName(CLASSNAME_SHADOW + "-" + ADDITIONAL_CLASSNAME_ANIMATE_IN);
+            }
+          }
+        }
+      }
+);
       return true;
     }
  else {
