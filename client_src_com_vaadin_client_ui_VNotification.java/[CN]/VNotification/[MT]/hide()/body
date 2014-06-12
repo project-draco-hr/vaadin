@@ -1,11 +1,33 @@
 {
   if (notifications.contains(this)) {
     DOM.removeEventPreview(this);
-    if (cssAnimationDelay >= 0) {
-      AnimationUtil.setAnimationDelay(getElement(),cssAnimationDelay + "ms");
+    if (getStyleName().contains(VOverlay.ADDITIONAL_CLASSNAME_ANIMATE_IN)) {
+      AnimationUtil.addAnimationEndListener(getElement(),new AnimationEndListener(){
+        @Override public void onAnimationEnd(        NativeEvent event){
+          if (AnimationUtil.getAnimationName(event).contains(VOverlay.ADDITIONAL_CLASSNAME_ANIMATE_IN)) {
+            VNotification.this.hide();
+          }
+        }
+      }
+);
     }
-    super.hide();
-    notifications.remove(this);
-    fireEvent(new HideEvent(this));
+ else {
+      if (BrowserInfo.get().isIE8() || BrowserInfo.get().isIE9()) {
+        new Timer(){
+          @Override public void run(){
+            VNotification.super.hide();
+          }
+        }
+.schedule(cssAnimationDelay);
+      }
+ else {
+        if (cssAnimationDelay > 0) {
+          AnimationUtil.setAnimationDelay(getElement(),cssAnimationDelay + "ms");
+        }
+        VNotification.super.hide();
+      }
+      fireEvent(new HideEvent(this));
+      notifications.remove(this);
+    }
   }
 }
