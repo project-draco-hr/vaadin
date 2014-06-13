@@ -3,8 +3,9 @@
   Label h1=new Label("Tabs");
   h1.addStyleName("h1");
   addComponent(h1);
-  final VerticalLayout wrap=new VerticalLayout();
+  final HorizontalLayout wrap=new HorizontalLayout();
   wrap.setSpacing(true);
+  wrap.addStyleName("wrapping");
   addComponent(wrap);
   final CheckBox closable=new CheckBox("Closable");
   closable.setImmediate(true);
@@ -12,23 +13,55 @@
   final CheckBox overflow=new CheckBox("Overflow");
   overflow.setImmediate(true);
   wrap.addComponent(overflow);
+  final CheckBox caption=new CheckBox("Captions",true);
+  caption.setImmediate(true);
+  wrap.addComponent(caption);
   final CheckBox icon=new CheckBox("Icons");
   icon.setImmediate(true);
   wrap.addComponent(icon);
+  final CheckBox framed=new CheckBox("Framed",true);
+  framed.setImmediate(true);
+  wrap.addComponent(framed);
+  final CheckBox centered=new CheckBox("Centered Tabs");
+  centered.setImmediate(true);
+  wrap.addComponent(centered);
+  final CheckBox equal=new CheckBox("Equal-width tabs");
+  equal.setImmediate(true);
+  wrap.addComponent(equal);
+  final CheckBox padded=new CheckBox("Padded tabbar");
+  padded.setImmediate(true);
+  wrap.addComponent(padded);
+  final CheckBox iconsOnTop=new CheckBox("Icons on top");
+  iconsOnTop.setImmediate(true);
+  wrap.addComponent(iconsOnTop);
+  final CheckBox selectedOnly=new CheckBox("Selected tab closable");
+  selectedOnly.setImmediate(true);
+  wrap.addComponent(selectedOnly);
   ValueChangeListener update=new ValueChangeListener(){
     @Override public void valueChange(    ValueChangeEvent event){
-      wrap.removeAllComponents();
-      wrap.addComponents(closable,overflow,icon);
-      wrap.addComponent(getTabSheet("Normal",null,closable.getValue(),overflow.getValue(),icon.getValue()));
-      wrap.addComponent(getTabSheet("Centered tabs","centered-tabs",closable.getValue(),overflow.getValue(),icon.getValue()));
-      wrap.addComponent(getTabSheet("Equal-width tabs","equal-width-tabs",closable.getValue(),overflow.getValue(),icon.getValue()));
-      wrap.addComponent(getTabSheet("Icons on top + padded tabbar","icons-on-top padded-tabbar",closable.getValue(),overflow.getValue(),icon.getValue()));
-      wrap.addComponent(getTabSheet("Only selected tab is closable","only-selected-closable",closable.getValue(),overflow.getValue(),icon.getValue()));
+      String style=framed.getValue() ? "framed " : "";
+      style+=centered.getValue() ? " centered-tabs" : "";
+      style+=equal.getValue() ? " equal-width-tabs" : "";
+      style+=padded.getValue() ? " padded-tabbar" : "";
+      style+=iconsOnTop.getValue() ? " icons-on-top" : "";
+      style+=selectedOnly.getValue() ? " only-selected-closable" : "";
+      if (tabs != null) {
+        removeComponent(tabs);
+      }
+      tabs=getTabSheet(caption.getValue(),style.trim(),closable.getValue(),overflow.getValue(),icon.getValue());
+      addComponent(tabs);
     }
   }
 ;
   closable.addValueChangeListener(update);
   overflow.addValueChangeListener(update);
+  caption.addValueChangeListener(update);
   icon.addValueChangeListener(update);
+  framed.addValueChangeListener(update);
+  centered.addValueChangeListener(update);
+  equal.addValueChangeListener(update);
+  padded.addValueChangeListener(update);
+  iconsOnTop.addValueChangeListener(update);
+  selectedOnly.addValueChangeListener(update);
   icon.setValue(true);
 }
