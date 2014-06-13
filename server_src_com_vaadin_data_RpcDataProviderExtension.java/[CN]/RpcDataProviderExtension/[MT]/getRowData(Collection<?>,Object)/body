@@ -2,10 +2,12 @@
   Item item=container.getItem(itemId);
   String[] row=new String[propertyIds.size()];
   int i=0;
+  final Grid grid=getGrid();
   for (  Object propertyId : propertyIds) {
-    Object value=item.getItemProperty(propertyId).getValue();
-    String stringValue=String.valueOf(value);
-    row[i++]=stringValue;
+    GridColumn column=grid.getColumn(propertyId);
+    Object propertyValue=item.getItemProperty(propertyId).getValue();
+    Object encodedValue=encodeValue(propertyValue,column.getRenderer(),column.getConverter(),grid.getLocale());
+    row[i++]=String.valueOf(encodedValue);
   }
   return row;
 }
