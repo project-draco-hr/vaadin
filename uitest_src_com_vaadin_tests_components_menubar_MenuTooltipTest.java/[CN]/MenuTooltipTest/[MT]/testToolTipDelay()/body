@@ -1,0 +1,12 @@
+{
+  openTestURL();
+  Coordinates elementCoordinates=getCoordinates($(MenuBarElement.class).first());
+  Mouse mouse=((HasInputDevices)getDriver()).getMouse();
+  mouse.click(elementCoordinates);
+  mouse.mouseMove(elementCoordinates,15,40);
+  sleep(1000);
+  assertThat(getTooltipElement().getLocation().getX(),is(lessThan(-1000)));
+  sleep(3000);
+  assertThat(getTooltipElement().getLocation().getX(),is(greaterThan(elementCoordinates.onPage().getX())));
+  assertThat(getTooltipElement().getText(),is("TOOLTIP 1"));
+}

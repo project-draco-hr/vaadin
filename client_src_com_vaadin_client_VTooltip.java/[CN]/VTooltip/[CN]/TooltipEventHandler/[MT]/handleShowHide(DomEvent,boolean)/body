@@ -4,13 +4,22 @@
   if (currentElement == element && handledByFocus == true) {
     return;
   }
-  TooltipInfo info=getTooltipFor(element);
-  if (info == null) {
-    if (isActuallyVisible()) {
-      handleHideEvent();
+  if (currentElement != null && isActuallyVisible()) {
+    TooltipInfo currentTooltip=getTooltipFor(currentElement);
+    TooltipInfo newTooltip=getTooltipFor(element);
+    if (currentTooltip != null && currentTooltip.equals(newTooltip)) {
+      return;
     }
   }
+  TooltipInfo info=getTooltipFor(element);
+  if (info == null) {
+    handleHideEvent();
+  }
  else {
+    if (closing) {
+      closeTimer.cancel();
+      closing=false;
+    }
     setTooltipText(info);
     updatePosition(event,isFocused);
     if (isActuallyVisible() && !isFocused) {
