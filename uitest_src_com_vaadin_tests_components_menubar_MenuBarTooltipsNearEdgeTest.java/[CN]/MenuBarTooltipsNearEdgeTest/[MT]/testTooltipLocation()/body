@@ -1,0 +1,10 @@
+{
+  openTestURL();
+  Mouse mouse=((HasInputDevices)getDriver()).getMouse();
+  WebElement menu=$(MenuBarElement.class).first().getWrappedElement();
+  Coordinates menuLocation=((Locatable)menu).getCoordinates();
+  mouse.click(menuLocation);
+  mouse.mouseMove(menuLocation,5,-40);
+  WebElement tooltip=getTooltipElement();
+  assertThat(tooltip.getLocation().x,is(lessThan(menuLocation.onPage().x - tooltip.getSize().getWidth())));
+}

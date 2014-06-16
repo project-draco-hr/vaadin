@@ -4,12 +4,8 @@
   Actions builder=new Actions(driver);
   builder.click(textArea);
   builder.sendKeys(textArea,"first line asdf");
-  builder.sendKeys(Keys.ENTER);
-  builder.sendKeys(textArea,"second line jkl;");
   builder.sendKeys(Keys.ESCAPE);
+  builder.sendKeys(textArea,"second line jkl;");
   builder.perform();
-  String text=$(LabelElement.class).caption("Enter Label").first().getText();
-  assertEquals(TextAreaEventPropagation.NO_BUTTON_PRESSED,text);
-  text=$(LabelElement.class).caption("Escape Label").first().getText();
-  assertEquals(TextAreaEventPropagation.BUTTON_PRESSED,text);
+  assertEquals("1. Escape button pressed",getLogRow(0));
 }

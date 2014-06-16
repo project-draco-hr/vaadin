@@ -2,9 +2,6 @@
   Profiler.enter("AbstractComponentConnector.updateWidgetStyleNames");
   AbstractComponentState state=getState();
   String primaryStyleName=getWidget().getStylePrimaryName();
-  if (state.primaryStyleName != null && !state.primaryStyleName.equals(primaryStyleName)) {
-    getWidget().setStylePrimaryName(state.primaryStyleName);
-  }
   setWidgetStyleName(StyleConstants.UI_WIDGET,true);
   setWidgetStyleName("v-readonly",isReadOnly());
   setWidgetStyleNameWithPrefix(primaryStyleName,ApplicationConnection.ERROR_CLASSNAME_EXT,null != state.errorMessage);
@@ -20,6 +17,9 @@
       setWidgetStyleNameWithPrefix(primaryStyleName + "-",newStyle,true);
       styleNames.push(newStyle);
     }
+  }
+  if (state.primaryStyleName != null && !state.primaryStyleName.equals(primaryStyleName)) {
+    getWidget().setStylePrimaryName(state.primaryStyleName);
   }
   Profiler.leave("AbstractComponentConnector.updateWidgetStyleNames");
 }

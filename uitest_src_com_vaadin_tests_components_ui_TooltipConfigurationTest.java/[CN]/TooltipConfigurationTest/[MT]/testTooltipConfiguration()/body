@@ -1,0 +1,31 @@
+{
+  openTestURL();
+  WebElement uiRoot=getDriver().findElement(By.vaadin("Root"));
+  WebElement closeTimeout=vaadinElementById("Close timeout");
+  WebElement shortTooltip=vaadinElementById("shortTooltip");
+  WebElement longTooltip=vaadinElementById("longTooltip");
+  WebElement maxWidth=vaadinElementById("Max width");
+  selectAndType(closeTimeout,"0");
+  testBenchElement(shortTooltip).showTooltip();
+  waitForElementToBePresent(tooltipBy);
+  Assert.assertEquals("This is a short tooltip",getTooltip().getText());
+  new Actions(getDriver()).moveToElement(uiRoot,0,0).click().perform();
+  checkTooltipNotPresent();
+  selectAndType(closeTimeout,"3000");
+  moveMouseToTopLeft(uiRoot);
+  testBenchElement(shortTooltip).showTooltip();
+  waitForElementToBePresent(tooltipBy);
+  WebElement tooltip2=getTooltip();
+  Assert.assertEquals("This is a short tooltip",tooltip2.getText());
+  uiRoot.click();
+  getTooltip();
+  selectAndType(closeTimeout,"0");
+  testBenchElement(longTooltip).showTooltip();
+  waitForElementToBePresent(tooltipBy);
+  Assert.assertEquals(500,getTooltip().getSize().getWidth());
+  uiRoot.click();
+  selectAndType(maxWidth,"100");
+  moveMouseToTopLeft(uiRoot);
+  testBenchElement(longTooltip).showTooltip();
+  Assert.assertEquals(100,getTooltip().getSize().getWidth());
+}
