@@ -1,6 +1,5 @@
 {
   Grid<String> grid=getWidget();
-  grid.setColumnHeadersVisible(false);
   List<String> columnData=new ArrayList<String>();
   for (int i=0; i < 100; i++) {
     columnData.add(String.valueOf(i));
@@ -11,7 +10,20 @@
  else {
     grid.setDataSource(new ListDataSource<String>(columnData));
   }
-  grid.addColumn(createColumnWithRenderer(Renderers.TEXT_RENDERER));
+  GridColumn<String,String> c=createColumnWithRenderer(Renderers.TEXT_RENDERER);
+  c.setHeaderCaption("Column 1");
+  grid.addColumn(c);
+  grid.addSortHandler(new SortEventHandler<String>(){
+    @Override public void sort(    SortEvent<String> event){
+      Element console=Document.get().getElementById("testDebugConsole");
+      String text="Client-side sort event received<br>" + "Columns: " + event.getOrder().size() + ", order: ";
+      for (      SortOrder order : event.getOrder()) {
+        text+=order.getColumn().getHeaderCaption() + ": " + order.getDirection().toString();
+      }
+      console.setInnerHTML(text);
+    }
+  }
+);
   registerRpc(GridClientColumnRendererRpc.class,new GridClientColumnRendererRpc(){
     @Override public void addColumn(    Renderers renderer){
       if (renderer == Renderers.NUMBER_RENDERER) {
@@ -28,6 +40,9 @@
       HasWidgets parent=(HasWidgets)getWidget().getParent();
       parent.remove(getWidget());
       parent.add(getWidget());
+    }
+    @Override public void triggerClientSorting(){
+      getWidget().sort(Sort.by(getWidget().getColumn(0)));
     }
   }
 );
