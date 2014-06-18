@@ -1,9 +1,10 @@
 {
   List<?> itemIds=container.getItemIds(firstRow,numberOfRows);
   Collection<?> propertyIds=container.getContainerPropertyIds();
-  List<String[]> rows=new ArrayList<String[]>(itemIds.size());
+  JSONArray rows=new JSONArray();
   for (  Object itemId : itemIds) {
-    rows.add(getRowData(propertyIds,itemId));
+    rows.put(getRowData(propertyIds,itemId));
   }
-  getRpcProxy(DataProviderRpc.class).setRowData(firstRow,rows);
+  String jsonString=rows.toString();
+  getRpcProxy(DataProviderRpc.class).setRowData(firstRow,jsonString);
 }
