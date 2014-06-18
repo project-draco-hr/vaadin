@@ -1,11 +1,11 @@
 {
-  latency=1000;
+  latency=(BrowserUtil.isIE(getDesiredCapabilities()) ? 4000 : 1500);
   openTestURL();
   TestBenchElement row=getGrid().getRow(1);
   String className=row.getAttribute("class");
-  Assert.assertFalse(className.contains("v-grid-row-has-data"));
-  sleep(3000);
+  assertFalse("Row should not yet contain style name v-grid-row-has-data",className.contains("v-grid-row-has-data"));
+  sleep(latency + 1000);
   row=getGrid().getRow(1);
   className=row.getAttribute("class");
-  Assert.assertTrue(className.contains("v-grid-row-has-data"));
+  assertTrue("Row should now contain style name v-grid-row-has-data",className.contains("v-grid-row-has-data"));
 }
