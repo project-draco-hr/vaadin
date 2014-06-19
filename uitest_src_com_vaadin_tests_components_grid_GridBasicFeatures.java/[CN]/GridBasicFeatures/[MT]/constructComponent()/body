@@ -6,16 +6,36 @@
     }
   }
 ;
-  for (int col=0; col < COLUMNS; col++) {
-    ds.addContainerProperty(getColumnProperty(col),String.class,"");
+{
+    int col=0;
+    for (; col < COLUMNS - MANUALLY_FORMATTED_COLUMNS; col++) {
+      ds.addContainerProperty(getColumnProperty(col),String.class,"");
+    }
+    ds.addContainerProperty(getColumnProperty(col++),Integer.class,Integer.valueOf(0));
+    ds.addContainerProperty(getColumnProperty(col++),Date.class,new Date());
+    ds.addContainerProperty(getColumnProperty(col++),String.class,"");
   }
-  for (int row=0; row < ROWS; row++) {
-    Item item=ds.addItem(Integer.valueOf(row));
-    for (int col=0; col < COLUMNS; col++) {
-      item.getItemProperty(getColumnProperty(col)).setValue("(" + row + ", "+ col+ ")");
+{
+    long timestamp=0;
+    for (int row=0; row < ROWS; row++) {
+      Item item=ds.addItem(Integer.valueOf(row));
+      int col=0;
+      for (; col < COLUMNS - MANUALLY_FORMATTED_COLUMNS; col++) {
+        item.getItemProperty(getColumnProperty(col)).setValue("(" + row + ", "+ col+ ")");
+      }
+      item.getItemProperty(getColumnProperty(col++)).setValue(Integer.valueOf(row));
+      item.getItemProperty(getColumnProperty(col++)).setValue(new Date(timestamp));
+      timestamp+=91250000;
+      item.getItemProperty(getColumnProperty(col++)).setValue("<b>" + row + "</b>");
     }
   }
   Grid grid=new Grid(ds);
+{
+    int col=grid.getContainerDatasource().getContainerPropertyIds().size() - MANUALLY_FORMATTED_COLUMNS;
+    grid.getColumn(getColumnProperty(col++)).setRenderer(new NumberRenderer(new DecimalFormat("0,000.00",DecimalFormatSymbols.getInstance(new Locale("fi","FI")))));
+    grid.getColumn(getColumnProperty(col++)).setRenderer(new DateRenderer(new SimpleDateFormat("dd.MM.yy HH:mm")));
+    grid.getColumn(getColumnProperty(col++)).setRenderer(new HtmlRenderer());
+  }
   for (int col=0; col < COLUMNS; col++) {
     grid.getColumn(getColumnProperty(col)).setFooterCaption("Footer " + col);
   }
