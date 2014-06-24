@@ -2,11 +2,8 @@
   getPage().setTitle("Valo Theme Test");
   setContent(root);
   root.setWidth("100%");
-  root.addComponent(buildMenu());
-  viewDisplay.setWidth("100%");
-  viewDisplay.addStyleName("view");
-  root.addComponent(viewDisplay);
-  root.setExpandRatio(viewDisplay,1);
+  root.addMenu(buildTestMenu());
+  root.addMenu(buildMenu());
   navigator=new Navigator(this,viewDisplay);
   navigator.addView("common",CommonParts.class);
   navigator.addView("labels",Labels.class);
@@ -28,7 +25,6 @@
   navigator.addView("calendar",CalendarTest.class);
   navigator.addView("forms",Forms.class);
   navigator.addView("popupviews",PopupViews.class);
-  navigator.addView("random",RandomTests.class);
   navigator.addView("dragging",Dragging.class);
   String f=Page.getCurrent().getUriFragment();
   if (f == null || f.equals("")) {
@@ -46,7 +42,7 @@
         if (event.getViewName().equals(item.getKey())) {
           for (Iterator<Component> it=menu.iterator(); it.hasNext(); ) {
             Component c=it.next();
-            if (item.getValue().equals(c.getCaption())) {
+            if (c.getCaption() != null && c.getCaption().startsWith(item.getValue())) {
               c.addStyleName("selected");
               break;
             }
