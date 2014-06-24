@@ -3,7 +3,7 @@
   Label h1=new Label("Tabs");
   h1.addStyleName("h1");
   addComponent(h1);
-  final HorizontalLayout wrap=new HorizontalLayout();
+  HorizontalLayout wrap=new HorizontalLayout();
   wrap.setSpacing(true);
   wrap.addStyleName("wrapping");
   addComponent(wrap);
@@ -19,6 +19,17 @@
   final CheckBox icon=new CheckBox("Icons");
   icon.setImmediate(true);
   wrap.addComponent(icon);
+  final CheckBox disable=new CheckBox("Disable Tabs");
+  disable.setImmediate(true);
+  wrap.addComponent(disable);
+  Label h3=new Label("Additional Styles");
+  h3.addStyleName("h3");
+  addComponent(h3);
+  wrap=new HorizontalLayout();
+  wrap.setSpacing(true);
+  wrap.addStyleName("wrapping");
+  wrap.setMargin(new MarginInfo(false,false,true,false));
+  addComponent(wrap);
   final CheckBox framed=new CheckBox("Framed",true);
   framed.setImmediate(true);
   wrap.addComponent(framed);
@@ -31,6 +42,9 @@
   final CheckBox padded=new CheckBox("Padded tabbar");
   padded.setImmediate(true);
   wrap.addComponent(padded);
+  final CheckBox compact=new CheckBox("Compact");
+  compact.setImmediate(true);
+  wrap.addComponent(compact);
   final CheckBox iconsOnTop=new CheckBox("Icons on top");
   iconsOnTop.setImmediate(true);
   wrap.addComponent(iconsOnTop);
@@ -43,12 +57,13 @@
       style+=centered.getValue() ? " centered-tabs" : "";
       style+=equal.getValue() ? " equal-width-tabs" : "";
       style+=padded.getValue() ? " padded-tabbar" : "";
+      style+=compact.getValue() ? " compact-tabbar" : "";
       style+=iconsOnTop.getValue() ? " icons-on-top" : "";
       style+=selectedOnly.getValue() ? " only-selected-closable" : "";
       if (tabs != null) {
         removeComponent(tabs);
       }
-      tabs=getTabSheet(caption.getValue(),style.trim(),closable.getValue(),overflow.getValue(),icon.getValue());
+      tabs=getTabSheet(caption.getValue(),style.trim(),closable.getValue(),overflow.getValue(),icon.getValue(),disable.getValue());
       addComponent(tabs);
     }
   }
@@ -57,10 +72,12 @@
   overflow.addValueChangeListener(update);
   caption.addValueChangeListener(update);
   icon.addValueChangeListener(update);
+  disable.addValueChangeListener(update);
   framed.addValueChangeListener(update);
   centered.addValueChangeListener(update);
   equal.addValueChangeListener(update);
   padded.addValueChangeListener(update);
+  compact.addValueChangeListener(update);
   iconsOnTop.addValueChangeListener(update);
   selectedOnly.addValueChangeListener(update);
   icon.setValue(true);

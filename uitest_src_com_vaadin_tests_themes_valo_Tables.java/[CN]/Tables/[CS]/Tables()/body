@@ -4,48 +4,47 @@
   Label h1=new Label("Tables");
   h1.addStyleName("h1");
   addComponent(h1);
-  Table table=getTable("Normal");
-  addComponent(table);
-  table=getTable("Footer");
-  table.setFooterVisible(true);
-  table.setColumnFooter(ValoThemeTest.CAPTION_PROPERTY,"caption");
-  table.setColumnFooter(ValoThemeTest.DESCRIPTION_PROPERTY,"description");
-  table.setColumnFooter(ValoThemeTest.ICON_PROPERTY,"icon");
-  table.setColumnFooter(ValoThemeTest.INDEX_PROPERTY,"index");
-  addComponent(table);
-  table=getTable("Sized ");
-  table.setWidth("300px");
-  addComponent(table);
-  table=getTable("Sized w/ expand ratios");
-  table.setWidth("100%");
-  table.setColumnExpandRatio(ValoThemeTest.CAPTION_PROPERTY,1.0f);
-  table.setColumnExpandRatio(ValoThemeTest.DESCRIPTION_PROPERTY,1.0f);
-  addComponent(table);
-  table=getTable("No stripes");
-  table.addStyleName("no-stripes");
-  addComponent(table);
-  table=getTable("No vertical lines");
-  table.addStyleName("no-vertical-lines");
-  addComponent(table);
-  table=getTable("No horizontal lines");
-  table.addStyleName("no-horizontal-lines");
-  addComponent(table);
-  table=getTable("Borderless");
-  table.addStyleName("borderless");
-  addComponent(table);
-  table=getTable("No headers");
-  table.addStyleName("no-header");
-  addComponent(table);
-  table=getTable("Compact");
-  table.addStyleName("compact");
-  addComponent(table);
-  table=getTable("Small");
-  table.addStyleName("small");
-  addComponent(table);
-  h1=new Label("Tree Tables");
-  h1.addStyleName("h1");
-  addComponent(h1);
-  addComponent(new Label("TreeTables have all the same features as Tables, but they support hierarchical containers as well."));
-  table=getTreeTable(null);
-  addComponent(table);
+  HorizontalLayout wrap=new HorizontalLayout();
+  wrap.addStyleName("wrapping");
+  wrap.setSpacing(true);
+  addComponent(wrap);
+  wrap.addComponents(hierarchical,footer,sized,expandRatios,stripes,verticalLines,horizontalLines,borderless,headers,compact,small,rowIndex,rowCaption,rowIcon);
+  ValueChangeListener update=new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      if (table == null) {
+        table=new Table();
+        table.setContainerDataSource(normalContainer);
+        addComponent(table);
+      }
+      if (hierarchical.getValue() && table instanceof Table) {
+        removeComponent(table);
+        table=new TreeTable();
+        table.setContainerDataSource(hierarchicalContainer);
+        addComponent(table);
+      }
+ else       if (!hierarchical.getValue() && table instanceof TreeTable) {
+        removeComponent(table);
+        table=new Table();
+        table.setContainerDataSource(normalContainer);
+        addComponent(table);
+      }
+      configure(table,footer.getValue(),sized.getValue(),expandRatios.getValue(),stripes.getValue(),verticalLines.getValue(),horizontalLines.getValue(),borderless.getValue(),headers.getValue(),compact.getValue(),small.getValue(),rowIndex.getValue(),rowCaption.getValue(),rowIcon.getValue());
+    }
+  }
+;
+  hierarchical.addValueChangeListener(update);
+  footer.addValueChangeListener(update);
+  sized.addValueChangeListener(update);
+  expandRatios.addValueChangeListener(update);
+  stripes.addValueChangeListener(update);
+  verticalLines.addValueChangeListener(update);
+  horizontalLines.addValueChangeListener(update);
+  borderless.addValueChangeListener(update);
+  headers.addValueChangeListener(update);
+  compact.addValueChangeListener(update);
+  small.addValueChangeListener(update);
+  rowIndex.addValueChangeListener(update);
+  rowCaption.addValueChangeListener(update);
+  rowIcon.addValueChangeListener(update);
+  footer.setValue(false);
 }

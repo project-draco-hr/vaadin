@@ -1,0 +1,104 @@
+{
+  table.setSelectable(true);
+  table.setMultiSelect(true);
+  table.setSortEnabled(true);
+  table.setColumnCollapsingAllowed(true);
+  table.setColumnReorderingAllowed(true);
+  table.setPageLength(6);
+  table.addActionHandler(ValoThemeTest.getActionHandler());
+  table.setDragMode(TableDragMode.MULTIROW);
+  table.setDropHandler(new DropHandler(){
+    @Override public AcceptCriterion getAcceptCriterion(){
+      return AcceptAll.get();
+    }
+    @Override public void drop(    DragAndDropEvent event){
+      Notification.show(event.getTransferable().toString());
+    }
+  }
+);
+  table.setColumnAlignment(ValoThemeTest.DESCRIPTION_PROPERTY,Align.RIGHT);
+  table.setColumnAlignment(ValoThemeTest.INDEX_PROPERTY,Align.CENTER);
+  table.setFooterVisible(footer);
+  if (footer) {
+    table.setColumnFooter(ValoThemeTest.CAPTION_PROPERTY,"caption");
+    table.setColumnFooter(ValoThemeTest.DESCRIPTION_PROPERTY,"description");
+    table.setColumnFooter(ValoThemeTest.ICON_PROPERTY,"icon");
+    table.setColumnFooter(ValoThemeTest.INDEX_PROPERTY,"index");
+  }
+  if (sized) {
+    table.setWidth("400px");
+    table.setHeight("300px");
+  }
+ else {
+    table.setSizeUndefined();
+  }
+  if (expandRatios) {
+    if (!sized) {
+      table.setWidth("100%");
+    }
+  }
+  table.setColumnExpandRatio(ValoThemeTest.CAPTION_PROPERTY,expandRatios ? 1.0f : 0);
+  table.setColumnExpandRatio(ValoThemeTest.DESCRIPTION_PROPERTY,expandRatios ? 1.0f : 0);
+  if (!stripes) {
+    table.addStyleName("no-stripes");
+  }
+ else {
+    table.removeStyleName("no-stripes");
+  }
+  if (!verticalLines) {
+    table.addStyleName("no-vertical-lines");
+  }
+ else {
+    table.removeStyleName("no-vertical-lines");
+  }
+  if (!horizontalLines) {
+    table.addStyleName("no-horizontal-lines");
+  }
+ else {
+    table.removeStyleName("no-horizontal-lines");
+  }
+  if (borderless) {
+    table.addStyleName("borderless");
+  }
+ else {
+    table.removeStyleName("borderless");
+  }
+  if (!headers) {
+    table.addStyleName("no-header");
+  }
+ else {
+    table.removeStyleName("no-header");
+  }
+  if (compact) {
+    table.addStyleName("compact");
+  }
+ else {
+    table.removeStyleName("compact");
+  }
+  if (small) {
+    table.addStyleName("small");
+  }
+ else {
+    table.removeStyleName("small");
+  }
+  if (!rowIndex && !rowCaption && rowIcon) {
+    table.setRowHeaderMode(RowHeaderMode.HIDDEN);
+  }
+  if (rowIndex) {
+    table.setRowHeaderMode(RowHeaderMode.INDEX);
+  }
+  if (rowCaption) {
+    table.setRowHeaderMode(RowHeaderMode.PROPERTY);
+    table.setItemCaptionPropertyId(ValoThemeTest.CAPTION_PROPERTY);
+  }
+ else {
+    table.setItemCaptionPropertyId(null);
+  }
+  if (rowIcon) {
+    table.setRowHeaderMode(RowHeaderMode.ICON_ONLY);
+    table.setItemIconPropertyId(ValoThemeTest.ICON_PROPERTY);
+  }
+ else {
+    table.setItemIconPropertyId(null);
+  }
+}
