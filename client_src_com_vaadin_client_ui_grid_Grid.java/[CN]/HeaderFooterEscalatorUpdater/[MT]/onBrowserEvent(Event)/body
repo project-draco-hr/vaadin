@@ -6,9 +6,21 @@
     RowContainer container=escalator.findRowContainer(e);
     if (container != null) {
       Cell cell=container.getCell(e);
-      Renderer<?> renderer=columns.get(cell.getColumn()).getRenderer();
-      if (renderer instanceof ComplexRenderer) {
-        ((ComplexRenderer<?>)renderer).onBrowserEvent(cell,event);
+      if (cell != null) {
+        GridColumn<?,T> gridColumn=columns.get(cell.getColumn());
+        Renderer<?> renderer;
+        if (container == escalator.getHeader()) {
+          renderer=gridColumn.getHeaderRenderer();
+        }
+ else         if (container == escalator.getFooter()) {
+          renderer=gridColumn.getFooterRenderer();
+        }
+ else {
+          renderer=gridColumn.getRenderer();
+        }
+        if (renderer instanceof ComplexRenderer) {
+          ((ComplexRenderer<?>)renderer).onBrowserEvent(cell,event);
+        }
       }
     }
   }
