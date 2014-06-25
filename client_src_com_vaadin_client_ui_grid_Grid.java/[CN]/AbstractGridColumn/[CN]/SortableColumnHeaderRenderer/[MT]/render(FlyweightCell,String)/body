@@ -3,19 +3,22 @@
   if (grid != null) {
     SortOrder sortingOrder=getSortingOrder();
     Element cellElement=cell.getElement();
-    if (sortingOrder != null) {
-      int sortIndex=grid.getSortOrder().indexOf(sortingOrder);
-      if (sortIndex > -1 && grid.getSortOrder().size() > 1) {
-        cellElement.setAttribute("sort-order",String.valueOf(sortIndex + 1));
+    if (grid.getColumn(cell.getColumn()).isSortable()) {
+      if (sortingOrder != null) {
+        int sortIndex=grid.getSortOrder().indexOf(sortingOrder);
+        if (sortIndex > -1 && grid.getSortOrder().size() > 1) {
+          cellElement.setAttribute("sort-order",String.valueOf(sortIndex + 1));
+        }
+ else {
+          cellElement.removeAttribute("sort-order");
+        }
       }
  else {
-        cellElement.removeAttribute("sort-order");
+        cleanup(cell);
       }
     }
  else {
-      cellElement.removeAttribute("sort-order");
-      cellElement.removeClassName("sort-desc");
-      cellElement.removeClassName("sort-asc");
+      cleanup(cell);
     }
   }
 }
