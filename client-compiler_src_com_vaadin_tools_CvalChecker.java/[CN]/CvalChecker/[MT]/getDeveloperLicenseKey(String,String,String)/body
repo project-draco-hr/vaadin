@@ -1,0 +1,27 @@
+{
+  String licenseName=computeLicenseName(productName);
+  String key=System.getProperty(licenseName);
+  if (key != null && !key.isEmpty()) {
+    return key;
+  }
+  try {
+    String dotLicenseName="." + licenseName;
+    String userHome="file://" + System.getProperty("user.home") + "/";
+    for (    URL url : new URL[]{new URL(userHome + dotLicenseName),new URL(userHome + licenseName),URL.class.getResource("/" + dotLicenseName),URL.class.getResource("/" + licenseName)}) {
+      if (url != null) {
+        try {
+          key=IOUtils.toString(url.openStream());
+          if (key != null && !(key=key.trim()).isEmpty()) {
+            return key;
+          }
+        }
+ catch (        IOException ignored) {
+        }
+      }
+    }
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+  throw new InvalidCvalException(productName,productVersion,productTitle,null,null);
+}

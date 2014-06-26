@@ -1,0 +1,34 @@
+{
+  for (  Class<? extends Component> c : VaadinClasses.getComponents()) {
+    Component newInstance=construct(c);
+    prepareMockUI(newInstance);
+    Set<Method> methods=new HashSet<Method>();
+    methods.addAll(Arrays.asList(c.getMethods()));
+    methods.addAll(Arrays.asList(c.getDeclaredMethods()));
+    for (    Method method : methods) {
+      try {
+        if (method.getName().startsWith("is") || method.getName().startsWith("get")) {
+          if (method.getName().startsWith("getState")) {
+            continue;
+          }
+          if (method.getParameterTypes().length > 0) {
+            continue;
+          }
+          if (excludedMethods.contains(c.getName() + method.getName())) {
+            continue;
+          }
+          if (excludedMethods.contains(method.getName())) {
+            continue;
+          }
+          method.setAccessible(true);
+          method.invoke(newInstance);
+        }
+      }
+ catch (      Exception e) {
+        System.err.println("problem with method " + c.getName() + "# "+ method.getName());
+        e.printStackTrace();
+        throw e;
+      }
+    }
+  }
+}

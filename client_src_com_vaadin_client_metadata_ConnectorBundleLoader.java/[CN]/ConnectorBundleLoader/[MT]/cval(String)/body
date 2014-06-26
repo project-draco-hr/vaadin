@@ -1,0 +1,18 @@
+{
+  if (!cvals.isEmpty()) {
+    String msg="";
+    for (    CValUiInfo c : cvals) {
+      String ns=c.widgetset.replaceFirst("\\.[^\\.]+$","");
+      if (typeName.startsWith(ns)) {
+        cvals.remove(c);
+        msg+=c.product + " " + c.version+ "<br/>";
+      }
+    }
+    if (!msg.isEmpty()) {
+      Widget w=ApplicationConfiguration.getRunningApplications().get(0).getContextMenu().getParent();
+      VNotification n=VNotification.createNotification(0,w);
+      n.setWidget(new HTML("Using Evaluation License of:<br/>" + msg));
+      n.show(Position.BOTTOM_RIGHT);
+    }
+  }
+}

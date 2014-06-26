@@ -1,0 +1,93 @@
+{
+  deleteCache(productNameCval);
+  try {
+    licenseChecker.validateProduct(productNameCval,"2.1",productTitleCval);
+    Assert.fail();
+  }
+ catch (  InvalidCvalException expected) {
+    Assert.assertEquals(productNameCval,expected.name);
+  }
+  Assert.assertFalse(cacheExists(productNameCval));
+  System.setProperty(licenseName,"");
+  try {
+    licenseChecker.validateProduct(productNameCval,"2.1",productTitleCval);
+    Assert.fail();
+  }
+ catch (  InvalidCvalException expected) {
+    Assert.assertEquals(productNameCval,expected.name);
+  }
+  Assert.assertFalse(cacheExists(productNameCval));
+  System.setProperty(licenseName,"invalid");
+  try {
+    licenseChecker.validateProduct(productNameCval,"2.1",productTitleCval);
+    Assert.fail();
+  }
+ catch (  InvalidCvalException expected) {
+    Assert.assertEquals(productNameCval,expected.name);
+  }
+  Assert.assertFalse(cacheExists(productNameCval));
+  System.setProperty(licenseName,VALID_KEY);
+  try {
+    licenseChecker.validateProduct(productNameCval,"3.0",productTitleCval);
+    Assert.fail();
+  }
+ catch (  InvalidCvalException expected) {
+    Assert.assertEquals(productNameCval,expected.name);
+  }
+  Assert.assertFalse(cacheExists(productNameCval));
+  System.setProperty(licenseName,VALID_KEY);
+  licenseChecker.validateProduct(productNameCval,"2.1",productTitleCval);
+  Assert.assertTrue(cacheExists(productNameCval));
+  licenseChecker.setLicenseProvider(unreachableLicenseProvider);
+  licenseChecker.validateProduct(productNameCval,"2.1",productTitleCval);
+  Assert.assertTrue(cacheExists(productNameCval));
+  try {
+    System.setProperty(licenseName,INVALID_KEY);
+    licenseChecker.validateProduct(productNameCval,"2.1",productTitleCval);
+    Assert.fail();
+  }
+ catch (  InvalidCvalException expected) {
+    Assert.fail();
+  }
+catch (  UnreachableCvalServerException expected) {
+    Assert.assertEquals(productNameCval,expected.name);
+  }
+  Assert.assertFalse(cacheExists(productNameCval));
+  try {
+    System.setProperty(licenseName,VALID_KEY);
+    licenseChecker.validateProduct(productNameCval,"2.1",productTitleCval);
+    Assert.fail();
+  }
+ catch (  InvalidCvalException expected) {
+    Assert.fail();
+  }
+catch (  UnreachableCvalServerException expected) {
+    Assert.assertEquals(productNameCval,expected.name);
+  }
+  Assert.assertFalse(cacheExists(productNameCval));
+  deleteCache(productNameCval);
+  licenseChecker.setLicenseProvider(expiredLicenseProviderWithMessage);
+  try {
+    licenseChecker.validateProduct(productNameCval,"2.1",productTitleCval);
+    Assert.fail();
+  }
+ catch (  InvalidCvalException expected) {
+    Assert.assertEquals(productNameCval,expected.name);
+    Assert.assertTrue(expected.getMessage().contains("Custom"));
+  }
+  Assert.assertTrue(cacheExists(productNameCval));
+  licenseChecker.setLicenseProvider(unlimitedLicenseProvider);
+  licenseChecker.validateProduct(productNameCval,"2.1",productTitleCval);
+  Assert.assertTrue(cacheExists(productNameCval));
+  System.setProperty(licenseName,VALID_KEY);
+  deleteCache(productNameCval);
+  licenseChecker.setLicenseProvider(expiredEpochLicenseProvider);
+  try {
+    licenseChecker.validateProduct(productNameCval,"2.1",productTitleCval);
+    Assert.fail();
+  }
+ catch (  InvalidCvalException expected) {
+    Assert.assertEquals(productNameCval,expected.name);
+  }
+  Assert.assertTrue(cacheExists(productNameCval));
+}

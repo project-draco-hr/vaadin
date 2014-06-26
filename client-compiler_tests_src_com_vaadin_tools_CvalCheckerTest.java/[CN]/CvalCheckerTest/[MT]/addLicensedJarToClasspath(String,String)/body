@@ -1,0 +1,18 @@
+{
+  Manifest testManifest=new Manifest();
+  testManifest.getMainAttributes().putValue("Manifest-Version","1.0");
+  testManifest.getMainAttributes().putValue(VAADIN_ADDON_LICENSE,licenseType);
+  testManifest.getMainAttributes().putValue(VAADIN_ADDON_NAME,productName);
+  testManifest.getMainAttributes().putValue(VAADIN_ADDON_TITLE,"Test " + productName);
+  testManifest.getMainAttributes().putValue(VAADIN_ADDON_VERSION,"2");
+  String tmpDir=System.getProperty("java.io.tmpdir");
+  File testJarFile=new File(tmpDir + "vaadin." + productName+ ".jar");
+  testJarFile.deleteOnExit();
+  JarOutputStream target=new JarOutputStream(new FileOutputStream(testJarFile),testManifest);
+  target.close();
+  URL url=new URL("file://" + testJarFile.getAbsolutePath());
+  final Method addURL=URLClassLoader.class.getDeclaredMethod("addURL",new Class[]{URL.class});
+  addURL.setAccessible(true);
+  final URLClassLoader urlClassLoader=(URLClassLoader)Thread.currentThread().getContextClassLoader();
+  addURL.invoke(urlClassLoader,new Object[]{url});
+}

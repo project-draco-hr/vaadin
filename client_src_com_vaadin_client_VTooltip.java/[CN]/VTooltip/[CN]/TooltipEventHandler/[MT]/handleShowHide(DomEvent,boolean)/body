@@ -4,10 +4,9 @@
   if (currentElement == element && handledByFocus == true) {
     return;
   }
-  if (currentElement != null && isActuallyVisible()) {
-    TooltipInfo currentTooltip=getTooltipFor(currentElement);
+  if (currentElement != null && isTooltipOpen()) {
     TooltipInfo newTooltip=getTooltipFor(element);
-    if (currentTooltip != null && currentTooltip.equals(newTooltip)) {
+    if (currentTooltipInfo != null && currentTooltipInfo.equals(newTooltip)) {
       return;
     }
   }
@@ -20,23 +19,18 @@
       closeTimer.cancel();
       closing=false;
     }
+    if (isTooltipOpen()) {
+      closeNow();
+    }
     setTooltipText(info);
     updatePosition(event,isFocused);
-    if (isActuallyVisible() && !isFocused) {
+    int timeout=justClosed ? getQuickOpenDelay() : getOpenDelay();
+    if (timeout == 0) {
       showTooltip();
     }
  else {
-      if (isActuallyVisible()) {
-        closeNow();
-      }
-      int timeout=justClosed ? getQuickOpenDelay() : getOpenDelay();
-      if (timeout == 0) {
-        showTooltip();
-      }
- else {
-        showTimer.schedule(timeout);
-        opening=true;
-      }
+      showTimer.schedule(timeout);
+      opening=true;
     }
   }
   handledByFocus=isFocused;

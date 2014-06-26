@@ -1,0 +1,25 @@
+{
+  WebElement dateSlot=getDriver().findElement(By.className("v-datecellslot"));
+  int dateSlotWidth=dateSlot.getSize().getWidth();
+  noOverlapWidth=dateSlotWidth;
+  oneOverlapWidth=dateSlotWidth / 2;
+  twoOverlapsWidth=dateSlotWidth / 3;
+  Comparator<WebElement> startTimeComparator=new Comparator<WebElement>(){
+    @Override public int compare(    WebElement e1,    WebElement e2){
+      int e1Top=e1.getLocation().getY();
+      int e2Top=e2.getLocation().getY();
+      return e1Top - e2Top;
+    }
+  }
+;
+  List<WebElement> eventElements=getDriver().findElements(By.className("v-calendar-event-content"));
+  Collections.sort(eventElements,startTimeComparator);
+  firstEvent=eventElements.get(0);
+  secondEvent=eventElements.get(1);
+  thirdEvent=eventElements.get(2);
+  List<WebElement> resizeBottomElements=getDriver().findElements(By.className("v-calendar-event-resizebottom"));
+  Collections.sort(resizeBottomElements,startTimeComparator);
+  firstEventBottomResize=resizeBottomElements.get(0);
+  secondEventBottomResize=resizeBottomElements.get(1);
+  thirdEventBottomResize=resizeBottomElements.get(2);
+}

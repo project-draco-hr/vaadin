@@ -1,0 +1,50 @@
+{
+  List<CValUiInfo> ret=new ArrayList<CValUiInfo>();
+  try {
+    Enumeration<URL> manifests=Thread.currentThread().getContextClassLoader().getResources(JarFile.MANIFEST_NAME);
+    while (manifests.hasMoreElements()) {
+      try {
+        URL url=manifests.nextElement();
+        if (!url.getPath().matches(filterPattern)) {
+          continue;
+        }
+        InputStream is=url.openStream();
+        if (is == null) {
+          continue;
+        }
+        Manifest manifest=new Manifest(is);
+        Attributes attribs=manifest.getMainAttributes();
+        String license=attribs.getValue(VAADIN_ADDON_LICENSE);
+        String name=attribs.getValue(VAADIN_ADDON_NAME);
+        String vers=attribs.getValue(VAADIN_ADDON_VERSION) == null ? "" : attribs.getValue(VAADIN_ADDON_VERSION);
+        String title=attribs.getValue(VAADIN_ADDON_TITLE) == null ? name : attribs.getValue(VAADIN_ADDON_TITLE);
+        String widgetsets=attribs.getValue(VAADIN_ADDON_WIDGETSET) == null ? name : attribs.getValue(VAADIN_ADDON_WIDGETSET);
+        if (name == null || license == null) {
+          continue;
+        }
+        if (VAADIN_AGPL.equals(license)) {
+          printAgplLicense(title,vers);
+        }
+ else         if (VAADIN_CVAL.equals(license)) {
+          CvalInfo info;
+          try {
+            info=cvalChecker.validateProduct(name,vers,title);
+            printValidLicense(info,title,vers);
+          }
+ catch (          UnreachableCvalServerException e) {
+            info=CvalChecker.parseJson("{'product':{'name':'" + name + "'}}");
+            printServerUnreachable(title,vers);
+          }
+          for (          String w : widgetsets.split("[, ]+")) {
+            ret.add(new CValUiInfo(title,String.valueOf(computeMajorVersion(vers)),w,info.getType()));
+          }
+        }
+      }
+ catch (      IOException ignored) {
+      }
+    }
+  }
+ catch (  IOException ignored) {
+  }
+  return ret;
+}
