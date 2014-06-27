@@ -1,9 +1,10 @@
 {
+  openDebugLogTab();
   new Select(getTransportSelect()).selectByVisibleText("LONG_POLLING");
-  new Select(getPushModeSelect()).selectByVisibleText("AUTOMATIC");
   assertThat(getStatusText(),containsString("fallbackTransport: long-polling"));
   assertThat(getStatusText(),containsString("transport: long-polling"));
+  clearDebugMessages();
+  new Select(getPushModeSelect()).selectByVisibleText("AUTOMATIC");
+  waitForDebugMessage("Push connection established using long-polling",10);
   waitForServerCounterToUpdate();
-  assertThat(driver.getPageSource(),containsString("Push connection established using long-polling"));
-  new Select(getPushModeSelect()).selectByVisibleText("DISABLED");
 }
