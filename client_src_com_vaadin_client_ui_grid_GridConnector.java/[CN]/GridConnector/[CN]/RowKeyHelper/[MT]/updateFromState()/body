@@ -1,7 +1,6 @@
 {
   boolean changed=false;
-  Set<String> stateKeys=new LinkedHashSet<String>();
-  stateKeys.addAll(getState().selectedKeys);
+  List<String> stateKeys=getState().selectedKeys;
   for (  String key : stateKeys) {
     if (!selectedKeys.contains(key)) {
       changed=true;
@@ -14,8 +13,7 @@
       deselectByHandle(dataSource.getHandleByKey(key));
     }
   }
-  selectedKeys.clear();
-  selectedKeys.addAll(stateKeys);
+  selectedKeys=new LinkedHashSet<String>(stateKeys);
   if (changed) {
     getWidget().fireEvent(new SelectionChangeEvent<JSONObject>(getWidget(),(List<JSONObject>)null,null));
   }

@@ -1,8 +1,12 @@
 {
   SharedSelectionMode mode=getState().selectionMode;
   if (mode == null) {
-    getLogger().warning("ignored mode change");
+    getLogger().fine("ignored mode change");
     return;
   }
-  getLogger().warning(mode.toString());
+  AbstractRowHandleSelectionModel<JSONObject> model=createSelectionModel(mode);
+  if (!model.getClass().equals(selectionModel.getClass())) {
+    selectionModel=model;
+    getWidget().setSelectionModel(model);
+  }
 }
