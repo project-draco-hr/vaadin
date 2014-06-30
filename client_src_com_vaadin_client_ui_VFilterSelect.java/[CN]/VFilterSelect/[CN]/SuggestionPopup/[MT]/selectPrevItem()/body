@@ -1,23 +1,13 @@
 {
   debug("VFS.SP: selectPrevItem()");
-  final MenuItem cur=menu.getSelectedItem();
-  final int index=-1 + menu.getItems().indexOf(cur);
+  final int index=menu.getSelectedIndex() - 1;
   if (index > -1) {
-    final MenuItem newSelectedItem=menu.getItems().get(index);
-    menu.selectItem(newSelectedItem);
-    tb.setText(newSelectedItem.getText());
-    tb.setSelectionRange(lastFilter.length(),newSelectedItem.getText().length() - lastFilter.length());
+    selectItem(menu.getItems().get(index));
   }
  else   if (index == -1) {
-    if (currentPage > 0) {
-      selectPopupItemWhenResponseIsReceived=Select.LAST;
-      filterOptions(currentPage - 1,lastFilter);
-    }
+    selectPrevPage();
   }
  else {
-    final MenuItem newSelectedItem=menu.getItems().get(menu.getItems().size() - 1);
-    menu.selectItem(newSelectedItem);
-    tb.setText(newSelectedItem.getText());
-    tb.setSelectionRange(lastFilter.length(),newSelectedItem.getText().length() - lastFilter.length());
+    selectItem(menu.getItems().get(menu.getItems().size() - 1));
   }
 }
