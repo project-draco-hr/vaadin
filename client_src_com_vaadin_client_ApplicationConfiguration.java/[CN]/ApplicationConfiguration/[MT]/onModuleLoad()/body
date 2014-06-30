@@ -29,6 +29,16 @@
       window.close();
     }
  else {
+      GWT.runAsync(new RunAsyncCallback(){
+        @Override public void onSuccess(){
+          DebugWindowStyles dws=GWT.create(DebugWindowStyles.class);
+          dws.css().ensureInjected();
+        }
+        @Override public void onFailure(        Throwable reason){
+          Window.alert("Failed to load Vaadin debug window styles");
+        }
+      }
+);
       window.init();
     }
     VConsole.setImplementation(window);

@@ -1,0 +1,56 @@
+{
+  VerticalLayout layout=new VerticalLayout();
+  layout.setSpacing(true);
+  scheduleEventPopup=new Window(null,layout);
+  scheduleEventPopup.setWidth("300px");
+  scheduleEventPopup.setModal(true);
+  scheduleEventPopup.center();
+  scheduleEventFieldLayout.addStyleName("light");
+  scheduleEventFieldLayout.setMargin(false);
+  layout.addComponent(scheduleEventFieldLayout);
+  applyEventButton=new Button("Apply",new ClickListener(){
+    private static final long serialVersionUID=1L;
+    @Override public void buttonClick(    ClickEvent event){
+      try {
+        commitCalendarEvent();
+      }
+ catch (      CommitException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+);
+  applyEventButton.addStyleName("primary");
+  Button cancel=new Button("Cancel",new ClickListener(){
+    private static final long serialVersionUID=1L;
+    @Override public void buttonClick(    ClickEvent event){
+      discardCalendarEvent();
+    }
+  }
+);
+  deleteEventButton=new Button("Delete",new ClickListener(){
+    private static final long serialVersionUID=1L;
+    @Override public void buttonClick(    ClickEvent event){
+      deleteCalendarEvent();
+    }
+  }
+);
+  deleteEventButton.addStyleName("borderless");
+  scheduleEventPopup.addCloseListener(new Window.CloseListener(){
+    private static final long serialVersionUID=1L;
+    @Override public void windowClose(    Window.CloseEvent e){
+      discardCalendarEvent();
+    }
+  }
+);
+  HorizontalLayout buttons=new HorizontalLayout();
+  buttons.addStyleName("v-window-bottom-toolbar");
+  buttons.setWidth("100%");
+  buttons.setSpacing(true);
+  buttons.addComponent(deleteEventButton);
+  buttons.addComponent(applyEventButton);
+  buttons.setExpandRatio(applyEventButton,1);
+  buttons.setComponentAlignment(applyEventButton,Alignment.TOP_RIGHT);
+  buttons.addComponent(cancel);
+  layout.addComponent(buttons);
+}

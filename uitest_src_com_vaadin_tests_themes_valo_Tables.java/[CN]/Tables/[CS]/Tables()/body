@@ -1,0 +1,50 @@
+{
+  setMargin(true);
+  setSpacing(true);
+  Label h1=new Label("Tables");
+  h1.addStyleName("h1");
+  addComponent(h1);
+  HorizontalLayout wrap=new HorizontalLayout();
+  wrap.addStyleName("wrapping");
+  wrap.setSpacing(true);
+  addComponent(wrap);
+  wrap.addComponents(hierarchical,footer,sized,expandRatios,stripes,verticalLines,horizontalLines,borderless,headers,compact,small,rowIndex,rowCaption,rowIcon);
+  ValueChangeListener update=new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      if (table == null) {
+        table=new Table();
+        table.setContainerDataSource(normalContainer);
+        addComponent(table);
+      }
+      if (hierarchical.getValue() && table instanceof Table) {
+        removeComponent(table);
+        table=new TreeTable();
+        table.setContainerDataSource(hierarchicalContainer);
+        addComponent(table);
+      }
+ else       if (!hierarchical.getValue() && table instanceof TreeTable) {
+        removeComponent(table);
+        table=new Table();
+        table.setContainerDataSource(normalContainer);
+        addComponent(table);
+      }
+      configure(table,footer.getValue(),sized.getValue(),expandRatios.getValue(),stripes.getValue(),verticalLines.getValue(),horizontalLines.getValue(),borderless.getValue(),headers.getValue(),compact.getValue(),small.getValue(),rowIndex.getValue(),rowCaption.getValue(),rowIcon.getValue());
+    }
+  }
+;
+  hierarchical.addValueChangeListener(update);
+  footer.addValueChangeListener(update);
+  sized.addValueChangeListener(update);
+  expandRatios.addValueChangeListener(update);
+  stripes.addValueChangeListener(update);
+  verticalLines.addValueChangeListener(update);
+  horizontalLines.addValueChangeListener(update);
+  borderless.addValueChangeListener(update);
+  headers.addValueChangeListener(update);
+  compact.addValueChangeListener(update);
+  small.addValueChangeListener(update);
+  rowIndex.addValueChangeListener(update);
+  rowCaption.addValueChangeListener(update);
+  rowIcon.addValueChangeListener(update);
+  footer.setValue(false);
+}

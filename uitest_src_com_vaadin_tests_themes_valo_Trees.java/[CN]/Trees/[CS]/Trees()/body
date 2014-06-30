@@ -1,0 +1,30 @@
+{
+  setMargin(true);
+  Label h1=new Label("Trees");
+  h1.addStyleName("h1");
+  addComponent(h1);
+  HorizontalLayout row=new HorizontalLayout();
+  row.addStyleName("wrapping");
+  row.setSpacing(true);
+  addComponent(row);
+  Tree tree=new Tree();
+  tree.setSelectable(true);
+  tree.setMultiSelect(true);
+  Container generateContainer=ValoThemeTest.generateContainer(10,true);
+  tree.setContainerDataSource(generateContainer);
+  tree.setDragMode(TreeDragMode.NODE);
+  row.addComponent(tree);
+  tree.setItemCaptionPropertyId(ValoThemeTest.CAPTION_PROPERTY);
+  tree.setItemIconPropertyId(ValoThemeTest.ICON_PROPERTY);
+  tree.expandItem(generateContainer.getItemIds().iterator().next());
+  tree.setDropHandler(new DropHandler(){
+    @Override public AcceptCriterion getAcceptCriterion(){
+      return AcceptAll.get();
+    }
+    @Override public void drop(    DragAndDropEvent event){
+      Notification.show(event.getTransferable().toString());
+    }
+  }
+);
+  tree.addActionHandler(ValoThemeTest.getActionHandler());
+}

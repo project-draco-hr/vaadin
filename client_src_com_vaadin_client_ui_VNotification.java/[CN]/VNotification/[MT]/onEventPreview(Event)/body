@@ -1,14 +1,14 @@
 {
   int type=DOM.eventGetType(event);
-  if (delayMsec == -1 || temporaryStyle == STYLE_SYSTEM) {
+  if (infiniteDelay || temporaryStyle == STYLE_SYSTEM) {
     if (type == Event.ONCLICK) {
       if (DOM.isOrHasChild(getElement(),DOM.eventGetTarget(event))) {
-        fade();
+        hide();
         return false;
       }
     }
  else     if (type == Event.ONKEYDOWN && event.getKeyCode() == KeyCodes.KEY_ESCAPE) {
-      fade();
+      hide();
       return false;
     }
     if (temporaryStyle == STYLE_SYSTEM) {
@@ -25,19 +25,19 @@ case Event.ONMOUSEMOVE:
       y=DOM.eventGetClientY(event);
     }
  else     if (Math.abs(DOM.eventGetClientX(event) - x) > mouseMoveThreshold || Math.abs(DOM.eventGetClientY(event) - y) > mouseMoveThreshold) {
-      startDelay();
+      hide();
     }
   break;
 case Event.ONMOUSEDOWN:
 case Event.ONMOUSEWHEEL:
 case Event.ONSCROLL:
-startDelay();
+hide();
 break;
 case Event.ONKEYDOWN:
 if (event.getRepeat()) {
 return true;
 }
-startDelay();
+hide();
 break;
 default :
 break;
