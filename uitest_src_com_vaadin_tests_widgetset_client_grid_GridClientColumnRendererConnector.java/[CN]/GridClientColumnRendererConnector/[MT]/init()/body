@@ -50,6 +50,30 @@
     @Override public void triggerClientSorting(){
       getWidget().sort(Sort.by(getWidget().getColumn(0)));
     }
+    @Override @SuppressWarnings("unchecked") public void triggerClientSortingTest(){
+      Grid<String> grid=getWidget();
+      ListSorter<String> sorter=new ListSorter<String>(grid);
+      sorter.setComparator((GridColumn<String,String>)grid.getColumn(0),new Comparator<String>(){
+        @Override public int compare(        String o1,        String o2){
+          return Integer.parseInt(o1) - Integer.parseInt(o2);
+        }
+      }
+);
+      grid.sort(grid.getColumn(0));
+      sorter.removeFromGrid();
+    }
+    @Override @SuppressWarnings("unchecked") public void shuffle(){
+      Grid<String> grid=getWidget();
+      ListSorter<String> shuffler=new ListSorter<String>(grid);
+      shuffler.setComparator((GridColumn<String,String>)grid.getColumn(0),new Comparator<String>(){
+        @Override public int compare(        String o1,        String o2){
+          return com.google.gwt.user.client.Random.nextInt(3) - 1;
+        }
+      }
+);
+      grid.sort(grid.getColumn(0));
+      shuffler.removeFromGrid();
+    }
   }
 );
 }
