@@ -1,5 +1,9 @@
 {
+  WebElement body=findElement(By.cssSelector("body"));
   WebElement tooltip=getTooltip();
   Assert.assertEquals(value,tooltip.getText());
-  Assert.assertTrue("Tooltip should be in viewport",tooltip.getLocation().getX() >= 0);
+  Assert.assertTrue("Tooltip overflowed to the left",tooltip.getLocation().getX() >= 0);
+  Assert.assertTrue("Tooltip overflowed up",tooltip.getLocation().getY() >= 0);
+  Assert.assertTrue("Tooltip overflowed to the right",tooltip.getLocation().getX() + tooltip.getSize().getWidth() < body.getSize().getWidth());
+  Assert.assertTrue("Tooltip overflowed down",tooltip.getLocation().getY() + tooltip.getSize().getHeight() < body.getSize().getHeight());
 }

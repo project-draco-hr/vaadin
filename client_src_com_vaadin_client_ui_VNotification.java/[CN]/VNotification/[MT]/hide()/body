@@ -1,13 +1,33 @@
 {
-  DOM.removeEventPreview(this);
-  cancelDelay();
-  cancelFade();
-  if (temporaryStyle != null) {
-    removeStyleName(temporaryStyle);
-    removeStyleDependentName(temporaryStyle);
-    temporaryStyle=null;
+  if (notifications.contains(this)) {
+    DOM.removeEventPreview(this);
+    if (getStyleName().contains(VOverlay.ADDITIONAL_CLASSNAME_ANIMATE_IN)) {
+      AnimationUtil.addAnimationEndListener(getElement(),new AnimationEndListener(){
+        @Override public void onAnimationEnd(        NativeEvent event){
+          if (AnimationUtil.getAnimationName(event).contains(VOverlay.ADDITIONAL_CLASSNAME_ANIMATE_IN)) {
+            VNotification.this.hide();
+          }
+        }
+      }
+);
+    }
+ else {
+      if (BrowserInfo.get().isIE8() || BrowserInfo.get().isIE9()) {
+        new Timer(){
+          @Override public void run(){
+            VNotification.super.hide();
+          }
+        }
+.schedule(hideDelay);
+      }
+ else {
+        if (hideDelay > 0) {
+          AnimationUtil.setAnimationDelay(getElement(),hideDelay + "ms");
+        }
+        VNotification.super.hide();
+      }
+      fireEvent(new HideEvent(this));
+      notifications.remove(this);
+    }
   }
-  super.hide();
-  notifications.remove(this);
-  fireEvent(new HideEvent(this));
 }

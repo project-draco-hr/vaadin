@@ -3,6 +3,22 @@
   if (printWriter == null) {
     return;
   }
+  List<CValUiInfo> cvalInfos=null;
+  try {
+    if (cvalChecker != null) {
+      cvalInfos=cvalChecker.run();
+      cvalChecker=null;
+    }
+  }
+ catch (  InvalidCvalException e) {
+    System.err.println("\n\n\n\n" + CvalChecker.LINE);
+    for (    String line : e.getMessage().split("\n")) {
+      System.err.println(line);
+    }
+    System.err.println(CvalChecker.LINE + "\n\n\n\n");
+    System.exit(1);
+    throw new UnableToCompleteException();
+  }
   List<ConnectorBundle> bundles=buildBundles(logger,context.getTypeOracle());
   ClassSourceFileComposerFactory composer=new ClassSourceFileComposerFactory(packageName,className);
   composer.setSuperclass(requestedType);
@@ -78,6 +94,15 @@
     w.println("}");
     w.outdent();
     w.println("});");
+  }
+  if (cvalInfos != null && !cvalInfos.isEmpty()) {
+    w.println("{");
+    for (    CValUiInfo c : cvalInfos) {
+      if ("evaluation".equals(c.type)) {
+        w.println("cvals.add(new CValUiInfo(\"" + c.product + "\", \""+ c.version+ "\", \""+ c.widgetset+ "\", null));");
+      }
+    }
+    w.println("}");
   }
   w.outdent();
   w.println("}");

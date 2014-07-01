@@ -1,10 +1,12 @@
 {
   debug("VFS.SP: setPosition()");
-  int top=getPopupTop();
-  int left=getPopupLeft();
-  if (desiredHeight < 0) {
-    desiredHeight=offsetHeight;
+  int top=-1;
+  int left=-1;
+  menu.setHeight("");
+  if (currentPage > 0) {
+    menu.fixHeightTo(pageLength);
   }
+  offsetHeight=getOffsetHeight();
   final int desiredWidth=getMainWidth();
   Element menuFirstChild=menu.getElement().getFirstChildElement();
   int naturalMenuWidth=menuFirstChild.getOffsetWidth();
@@ -20,25 +22,16 @@
     int rootWidth=naturalMenuWidth - popupOuterPadding;
     getContainerElement().getStyle().setWidth(rootWidth,Unit.PX);
   }
-  final int spaceAvailableBelow=Window.getClientHeight() - (top - Window.getScrollTop());
-  final int spaceAvailableAbove=top - Window.getScrollTop() - VFilterSelect.this.getOffsetHeight();
-  if (spaceAvailableBelow < desiredHeight && spaceAvailableBelow < spaceAvailableAbove) {
-    top-=desiredHeight + VFilterSelect.this.getOffsetHeight();
-    offsetHeight=desiredHeight;
+  if (offsetHeight + getPopupTop() > Window.getClientHeight() + Window.getScrollTop()) {
+    top=getPopupTop() - offsetHeight - VFilterSelect.this.getOffsetHeight();
     if (top < 0) {
-      offsetHeight+=top;
       top=0;
     }
   }
  else {
+    top=getPopupTop();
     int topMargin=(top - topPosition);
     top-=topMargin;
-    offsetHeight=Math.min(desiredHeight,spaceAvailableBelow);
-  }
-  if (getOffsetHeight() != offsetHeight) {
-    int menuHeight=offsetHeight - up.getOffsetHeight() - down.getOffsetHeight()- status.getOffsetHeight();
-    menu.setHeight(menuHeight + "px");
-    getContainerElement().getStyle().setHeight(offsetHeight,Unit.PX);
   }
   offsetWidth=menuFirstChild.getOffsetWidth();
   if (offsetWidth + getPopupLeft() > Window.getClientWidth() + Window.getScrollLeft()) {
@@ -46,6 +39,9 @@
     if (left < 0) {
       left=0;
     }
+  }
+ else {
+    left=getPopupLeft();
   }
   setPopupPosition(left,top);
 }

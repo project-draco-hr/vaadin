@@ -1,10 +1,10 @@
 {
   openDebugLogTab();
   new Select(getTransportSelect()).selectByVisibleText("STREAMING");
-  new Select(getPushModeSelect()).selectByVisibleText("AUTOMATIC");
   assertThat(getStatusText(),containsString("fallbackTransport: long-polling"));
   assertThat(getStatusText(),containsString("transport: streaming"));
+  clearDebugMessages();
+  new Select(getPushModeSelect()).selectByVisibleText("AUTOMATIC");
+  waitForDebugMessage("Push connection established using streaming",10);
   waitForServerCounterToUpdate();
-  assertThat(driver.getPageSource(),not(containsString("Push connection established using websocket")));
-  assertThat(driver.getPageSource(),containsString("Push connection established using streaming"));
 }

@@ -1,0 +1,25 @@
+{
+  int majorVersion=computeMajorVersion(productVersion);
+  if (info != null && info.getExpiredEpoch() != null && !"evaluation".equals(info.getType())) {
+    long ts=info.getExpiredEpoch().getTime() + GRACE_DAYS_MSECS;
+    info.setExpiredEpoch(new Date(ts));
+  }
+  boolean validCache=info != null && info.isValidInfo(productName,productKey) && info.isValidVersion(majorVersion) && !info.isLicenseExpired();
+  int timeout=validCache ? 2000 : 10000;
+  try {
+    CvalInfo srvinfo=parseJson(provider.askServer(productName + "-" + productVersion,productKey,timeout));
+    if (srvinfo != null && srvinfo.isValidInfo(productName,productKey) && srvinfo.isValidVersion(majorVersion)) {
+      cacheLicenseInfo(srvinfo);
+      info=srvinfo;
+    }
+  }
+ catch (  FileNotFoundException e) {
+    return null;
+  }
+catch (  Exception e) {
+    if (info == null) {
+      throw new UnreachableCvalServerException(productName,e);
+    }
+  }
+  return info;
+}

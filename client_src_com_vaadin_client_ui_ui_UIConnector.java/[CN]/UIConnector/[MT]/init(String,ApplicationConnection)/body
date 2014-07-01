@@ -1,9 +1,13 @@
 {
+  if (BrowserInfo.get().isIE() && BrowserInfo.get().getBrowserMajorVersion() < 11) {
+    StyleElement style=Document.get().createStyleElement();
+    style.setType("text/css");
+    getHead().appendChild(style);
+  }
   DOM.sinkEvents(getWidget().getElement(),Event.ONKEYDOWN | Event.ONSCROLL);
   RootPanel root=RootPanel.get(rootPanelId);
   root.getElement().setInnerHTML("");
-  String themeName=applicationConnection.getConfiguration().getThemeName();
-  root.addStyleName(themeName);
+  activeTheme=applicationConnection.getConfiguration().getThemeName();
   root.add(getWidget());
   getWidget().setTabIndex(1);
   if (applicationConnection.getConfiguration().isStandalone()) {

@@ -1,0 +1,29 @@
+{
+  ComboBox s=new ComboBox("Timezone");
+  s.addContainerProperty("caption",String.class,"");
+  s.setItemCaptionPropertyId("caption");
+  s.setFilteringMode(FilteringMode.CONTAINS);
+  Item i=s.addItem(DEFAULT_ITEMID);
+  i.getItemProperty("caption").setValue("Default (" + TimeZone.getDefault().getID() + ")");
+  for (  String id : TimeZone.getAvailableIDs()) {
+    if (!s.containsId(id)) {
+      i=s.addItem(id);
+      i.getItemProperty("caption").setValue(id);
+    }
+  }
+  if (testBench) {
+    s.select("America/New_York");
+  }
+ else {
+    s.select(DEFAULT_ITEMID);
+  }
+  s.setImmediate(true);
+  s.addValueChangeListener(new ValueChangeListener(){
+    private static final long serialVersionUID=1L;
+    @Override public void valueChange(    ValueChangeEvent event){
+      updateCalendarTimeZone(event.getProperty().getValue());
+    }
+  }
+);
+  return s;
+}

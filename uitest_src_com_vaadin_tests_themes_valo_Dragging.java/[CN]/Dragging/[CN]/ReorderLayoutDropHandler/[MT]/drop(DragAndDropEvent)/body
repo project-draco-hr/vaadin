@@ -1,0 +1,37 @@
+{
+  final Transferable transferable=dropEvent.getTransferable();
+  final Component sourceComponent=transferable.getSourceComponent();
+  if (sourceComponent instanceof WrappedComponent) {
+    final TargetDetails dropTargetData=dropEvent.getTargetDetails();
+    final DropTarget target=dropTargetData.getTarget();
+    boolean sourceWasAfterTarget=true;
+    int index=0;
+    final Iterator<Component> componentIterator=layout.getComponentIterator();
+    Component next=null;
+    while (next != target && componentIterator.hasNext()) {
+      next=componentIterator.next();
+      if (next != sourceComponent) {
+        index++;
+      }
+ else {
+        sourceWasAfterTarget=false;
+      }
+    }
+    if (next == null || next != target) {
+      return;
+    }
+    if (dropTargetData.getData("horizontalLocation").equals(HorizontalDropLocation.CENTER.toString())) {
+      if (sourceWasAfterTarget) {
+        index--;
+      }
+    }
+ else     if (dropTargetData.getData("horizontalLocation").equals(HorizontalDropLocation.LEFT.toString())) {
+      index--;
+      if (index < 0) {
+        index=0;
+      }
+    }
+    layout.removeComponent(sourceComponent);
+    layout.addComponent(sourceComponent,index);
+  }
+}

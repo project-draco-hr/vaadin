@@ -1,0 +1,53 @@
+{
+  setMargin(true);
+  Label h1=new Label("Popup Views");
+  h1.addStyleName("h1");
+  addComponent(h1);
+  HorizontalLayout row=new HorizontalLayout();
+  row.addStyleName("wrapping");
+  row.setSpacing(true);
+  addComponent(row);
+  PopupView pv=new PopupView(new Content(){
+    @Override public Component getPopupComponent(){
+      return new VerticalLayout(){
+{
+          setMargin(true);
+          setWidth("300px");
+          addComponent(new Label("Fictum,  deserunt mollit anim laborum astutumque! Magna pars studiorum, prodita quaerimus."));
+        }
+      }
+;
+    }
+    @Override public String getMinimizedValueAsHTML(){
+      return "Click to view";
+    }
+  }
+);
+  row.addComponent(pv);
+  pv.setHideOnMouseOut(true);
+  pv.setCaption("Hide on mouse-out");
+  pv=new PopupView(new Content(){
+    int count=0;
+    @Override public Component getPopupComponent(){
+      try {
+        Thread.sleep(1000);
+      }
+ catch (      InterruptedException e) {
+      }
+      return new VerticalLayout(){
+{
+          setMargin(true);
+          addComponent(new Label("<h3>Thanks for waiting!</h3><p>You've opened this popup <b>" + ++count + " time"+ (count > 1 ? "s" : " only")+ "</b>.</p>",ContentMode.HTML));
+        }
+      }
+;
+    }
+    @Override public String getMinimizedValueAsHTML(){
+      return "Show slow loading content";
+    }
+  }
+);
+  row.addComponent(pv);
+  pv.setHideOnMouseOut(false);
+  pv.setCaption("Hide on click-outside");
+}

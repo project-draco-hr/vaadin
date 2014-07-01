@@ -1,0 +1,18 @@
+{
+  int oldFirstDayOfWeek=calendar.getFirstDayOfWeek();
+  setLocale(l);
+  calendarComponent.setLocale(l);
+  calendar=new GregorianCalendar(l);
+  int newFirstDayOfWeek=calendar.getFirstDayOfWeek();
+  if (viewMode == Mode.WEEK && oldFirstDayOfWeek != newFirstDayOfWeek) {
+    calendar.setTime(calendarComponent.getStartDate());
+    calendar.add(java.util.Calendar.DAY_OF_WEEK,2);
+    calendar.set(GregorianCalendar.DAY_OF_WEEK,newFirstDayOfWeek);
+    Date start=calendar.getTime();
+    calendar.add(GregorianCalendar.DATE,6);
+    Date end=calendar.getTime();
+    calendarComponent.setStartDate(start);
+    calendarComponent.setEndDate(end);
+    setWeekendsHidden(hideWeekendsButton.getValue());
+  }
+}

@@ -1,12 +1,7 @@
 {
-  final int ITEMS_PER_PAGE=10;
-  WebElement dropDownComboBox=driver.findElement(By.className("v-filterselect-input"));
-  dropDownComboBox.sendKeys(Keys.DOWN);
-  for (int i=0; i < ITEMS_PER_PAGE + 1; i++) {
+  WebElement dropDownComboBox=getDropDown();
+  for (int i=0; i < PAGESIZE + 1; i++) {
     dropDownComboBox.sendKeys(Keys.DOWN);
   }
-  String expected="item " + ITEMS_PER_PAGE;
-  List<WebElement> items=driver.findElements(By.className("gwt-MenuItem-selected"));
-  String actual=items.get(0).getText();
-  Assert.assertEquals(expected,actual);
+  assertThat(getSelectedItemText(),is("item " + PAGESIZE));
 }
