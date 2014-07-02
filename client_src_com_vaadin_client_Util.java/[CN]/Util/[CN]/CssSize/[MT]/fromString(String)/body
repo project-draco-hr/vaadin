@@ -1,0 +1,27 @@
+{
+  if (s == null) {
+    return null;
+  }
+  s=s.trim();
+  if ("".equals(s)) {
+    return null;
+  }
+  float size=0;
+  Unit unit=null;
+  MatchResult matcher=sizePattern.exec(s);
+  if (matcher.getGroupCount() > 1) {
+    size=Float.parseFloat(matcher.getGroup(1));
+    if (size < 0) {
+      size=-1;
+      unit=Unit.PX;
+    }
+ else {
+      String symbol=matcher.getGroup(2);
+      unit=unitByType(symbol);
+    }
+  }
+ else {
+    throw new IllegalArgumentException("Invalid size argument: \"" + s + "\" (should match "+ sizePattern.getSource()+ ")");
+  }
+  return new CssSize(size,unit);
+}
