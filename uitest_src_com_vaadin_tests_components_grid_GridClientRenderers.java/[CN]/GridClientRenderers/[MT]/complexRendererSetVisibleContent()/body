@@ -1,16 +1,23 @@
 {
+  DesiredCapabilities desiredCapabilities=getDesiredCapabilities();
   latency=2000;
+  if (BrowserUtil.isIE8(desiredCapabilities)) {
+    latency=3000;
+  }
   String colorRed="rgba(255, 0, 0, 1)";
   String colorWhite="rgba(255, 255, 255, 1)";
-  if (BrowserUtil.isChrome(getDesiredCapabilities())) {
+  if (BrowserUtil.isChrome(desiredCapabilities)) {
     colorRed="rgb(255, 0, 0)";
     colorWhite="rgb(255, 255, 255)";
   }
   openTestURL();
   addColumn(Renderers.CPLX_RENDERER);
-  String backgroundColor=getGrid().getCell(51,1).getCssValue("backgroundColor");
+  sleep((int)(latency * SLEEP_MULTIPLIER));
+  getGrid().scrollToRow(60);
+  TestBenchElement cell=getGrid().getCell(51,1);
+  String backgroundColor=cell.getCssValue("backgroundColor");
   assertEquals("Background color was not red.",colorRed,backgroundColor);
-  sleep(latency + 1000);
-  backgroundColor=getGrid().getCell(51,1).getCssValue("backgroundColor");
+  sleep((int)(latency * SLEEP_MULTIPLIER));
+  backgroundColor=cell.getCssValue("backgroundColor");
   assertEquals("Background color was not white",colorWhite,backgroundColor);
 }
