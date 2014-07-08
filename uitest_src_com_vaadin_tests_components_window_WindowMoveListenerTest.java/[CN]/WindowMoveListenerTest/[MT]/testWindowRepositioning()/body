@@ -1,14 +1,13 @@
 {
   openTestURL();
-  WebElement window=getDriver().findElement(By.id("testwindow"));
+  final WebElement window=getDriver().findElement(By.id("testwindow"));
   WebElement button=getDriver().findElement(By.id("testbutton"));
-  WebElement windowHeader=getDriver().findElement(By.className("v-window-footer"));
-  Point winPos=window.getLocation();
-  Action a=new Actions(driver).clickAndHold(windowHeader).moveByOffset(100,100).release().build();
+  WebElement windowFooter=getDriver().findElement(By.className("v-window-footer"));
+  final Point winPos=window.getLocation();
+  Action a=new Actions(driver).clickAndHold(windowFooter).moveByOffset(100,100).release().build();
   a.perform();
   assertNotEquals("Window was not dragged correctly.",winPos.x,window.getLocation().x);
   assertNotEquals("Window was not dragged correctly.",winPos.y,window.getLocation().y);
   button.click();
-  assertEquals("Window was not re-positioned correctly.",winPos.x,window.getLocation().x);
-  assertEquals("Window was not re-positioned correctly.",winPos.y,window.getLocation().y);
+  waitUntilWindowHasReseted(window,winPos);
 }

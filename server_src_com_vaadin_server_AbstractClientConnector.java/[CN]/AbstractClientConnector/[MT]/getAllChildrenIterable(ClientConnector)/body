@@ -1,3 +1,40 @@
 {
-  return new AllChildrenIterable(connector);
+  Collection<Extension> extensions=connector.getExtensions();
+  boolean hasComponents=connector instanceof HasComponents;
+  boolean hasExtensions=extensions.size() > 0;
+  if (!hasComponents && !hasExtensions) {
+    return Collections.emptyList();
+  }
+  if (hasComponents && !hasExtensions) {
+    return (HasComponents)connector;
+  }
+  if (!hasComponents && hasExtensions) {
+    return extensions;
+  }
+  final Iterator<Component> componentsIterator=((HasComponents)connector).iterator();
+  final Iterator<Extension> extensionsIterator=extensions.iterator();
+  Iterable<? extends ClientConnector> combinedIterable=new Iterable<ClientConnector>(){
+    @Override public Iterator<ClientConnector> iterator(){
+      return new Iterator<ClientConnector>(){
+        @Override public boolean hasNext(){
+          return componentsIterator.hasNext() || extensionsIterator.hasNext();
+        }
+        @Override public ClientConnector next(){
+          if (componentsIterator.hasNext()) {
+            return componentsIterator.next();
+          }
+          if (extensionsIterator.hasNext()) {
+            return extensionsIterator.next();
+          }
+          throw new NoSuchElementException();
+        }
+        @Override public void remove(){
+          throw new UnsupportedOperationException();
+        }
+      }
+;
+    }
+  }
+;
+  return combinedIterable;
 }
