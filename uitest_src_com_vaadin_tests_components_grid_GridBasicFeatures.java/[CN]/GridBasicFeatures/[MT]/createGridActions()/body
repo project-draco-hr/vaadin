@@ -19,4 +19,15 @@
     }
   }
 );
+  LinkedHashMap<String,List<SortOrder>> sortableProperties=new LinkedHashMap<String,List<SortOrder>>();
+  for (  Object propertyId : ds.getSortableContainerPropertyIds()) {
+    sortableProperties.put(propertyId + ", ASC",Sort.by(propertyId).build());
+    sortableProperties.put(propertyId + ", DESC",Sort.by(propertyId,SortDirection.DESCENDING).build());
+  }
+  createSelectAction("Sort by column","State",sortableProperties,"Column 9, ascending",new Command<Grid,List<SortOrder>>(){
+    @Override public void execute(    Grid grid,    List<SortOrder> sortOrder,    Object data){
+      grid.setSortOrder(sortOrder);
+    }
+  }
+);
 }

@@ -14,8 +14,11 @@
     ds.addContainerProperty(getColumnProperty(col++),Integer.class,Integer.valueOf(0));
     ds.addContainerProperty(getColumnProperty(col++),Date.class,new Date());
     ds.addContainerProperty(getColumnProperty(col++),String.class,"");
+    ds.addContainerProperty(getColumnProperty(col++),Integer.class,0);
   }
 {
+    Random rand=new Random();
+    rand.setSeed(13334);
     long timestamp=0;
     for (int row=0; row < ROWS; row++) {
       Item item=ds.addItem(Integer.valueOf(row));
@@ -27,6 +30,7 @@
       item.getItemProperty(getColumnProperty(col++)).setValue(new Date(timestamp));
       timestamp+=91250000;
       item.getItemProperty(getColumnProperty(col++)).setValue("<b>" + row + "</b>");
+      item.getItemProperty(getColumnProperty(col++)).setValue(rand.nextInt());
     }
   }
   Grid grid=new Grid(ds);
@@ -35,6 +39,7 @@
     grid.getColumn(getColumnProperty(col++)).setRenderer(new NumberRenderer(new DecimalFormat("0,000.00",DecimalFormatSymbols.getInstance(new Locale("fi","FI")))));
     grid.getColumn(getColumnProperty(col++)).setRenderer(new DateRenderer(new SimpleDateFormat("dd.MM.yy HH:mm")));
     grid.getColumn(getColumnProperty(col++)).setRenderer(new HtmlRenderer());
+    grid.getColumn(getColumnProperty(col++)).setRenderer(new NumberRenderer());
   }
   for (int col=0; col < COLUMNS; col++) {
     grid.getColumn(getColumnProperty(col)).setFooterCaption("Footer " + col);
