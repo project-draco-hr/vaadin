@@ -1,0 +1,21 @@
+{
+  final VerticalLayout layout=new VerticalLayout();
+  addComponent(layout);
+  final Label label=new Label("");
+  addComponent(label);
+  BeanContainer<String,Bean> beans=new BeanContainer<String,Bean>(Bean.class){
+    @Override public List<String> getItemIds(    int startIndex,    int numberOfIds){
+      label.setValue("rows requested: " + numberOfIds);
+      return super.getItemIds(startIndex,numberOfIds);
+    }
+  }
+;
+  beans.setBeanIdProperty("i");
+  for (int i=0; i < 2000; i++) {
+    beans.addBean(new Bean(i));
+  }
+  final Table table=new Table("Beans",beans);
+  table.setVisibleColumns(new Object[]{"i"});
+  layout.addComponent(table);
+  table.setCurrentPageFirstItemIndex(table.size() - 1);
+}

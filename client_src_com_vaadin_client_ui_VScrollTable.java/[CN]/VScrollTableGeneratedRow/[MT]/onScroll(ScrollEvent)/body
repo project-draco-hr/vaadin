@@ -46,13 +46,14 @@
     client.updateVariable(paintableId,"firstvisible",firstRowInViewPort,false);
     return;
   }
-  if (firstRowInViewPort - pageLength * cache_rate > lastRendered || firstRowInViewPort + pageLength + pageLength * cache_rate < firstRendered) {
+  if (allRenderedRowsAreNew()) {
     rowRequestHandler.setReqFirstRow((firstRowInViewPort - (int)(pageLength * cache_rate)));
     int last=firstRowInViewPort + (int)(cache_rate * pageLength) + pageLength - 1;
     if (last >= totalRows) {
       last=totalRows - 1;
     }
     rowRequestHandler.setReqRows(last - rowRequestHandler.getReqFirstRow() + 1);
+    updatedReqRows=false;
     rowRequestHandler.deferRowFetch();
     return;
   }

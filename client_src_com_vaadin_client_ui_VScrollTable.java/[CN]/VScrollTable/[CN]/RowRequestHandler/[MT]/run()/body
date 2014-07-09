@@ -3,6 +3,16 @@
     VConsole.log("Postponed rowfetch");
     schedule(250);
   }
+ else   if (!updatedReqRows && allRenderedRowsAreNew()) {
+    setReqFirstRow((firstRowInViewPort - (int)(pageLength * cache_rate)));
+    int last=firstRowInViewPort + (int)(cache_rate * pageLength) + pageLength - 1;
+    if (last >= totalRows) {
+      last=totalRows - 1;
+    }
+    setReqRows(last - getReqFirstRow() + 1);
+    updatedReqRows=true;
+    schedule(250);
+  }
  else {
     int firstRendered=scrollBody.getFirstRendered();
     int lastRendered=scrollBody.getLastRendered();
