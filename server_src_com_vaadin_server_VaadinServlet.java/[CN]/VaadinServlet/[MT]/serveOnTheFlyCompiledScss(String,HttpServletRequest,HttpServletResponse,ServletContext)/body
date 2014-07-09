@@ -18,29 +18,17 @@
     return true;
   }
 synchronized (SCSS_MUTEX) {
-    String realFilename=sc.getRealPath(scssFilename);
-    ScssStylesheet scss=ScssStylesheet.get(realFilename);
-    if (scss == null) {
-      if (scssFilename.startsWith("/")) {
-        scssFilename=scssFilename.substring(1);
-      }
-      scss=ScssStylesheet.get(scssFilename);
+    ScssCacheEntry cacheEntry=scssCache.get(scssFilename);
+    if (cacheEntry == null || !cacheEntry.isStillValid()) {
+      cacheEntry=compileScssOnTheFly(filename,scssFilename,sc);
+      scssCache.put(scssFilename,cacheEntry);
     }
-    if (scss == null) {
-      getLogger().log(Level.WARNING,"Scss file {0} exists but ScssStylesheet was not able to find it",scssFilename);
-      return false;
-    }
-    try {
-      getLogger().log(Level.FINE,"Compiling {0} for request to {1}",new Object[]{realFilename,filename});
-      scss.compile();
-    }
- catch (    Exception e) {
-      getLogger().log(Level.WARNING,"Scss compilation failed",e);
+    if (cacheEntry == null) {
       return false;
     }
     response.setHeader("Cache-Control","no-cache");
     final String mimetype=getService().getMimeType(filename);
-    writeResponse(response,mimetype,scss.printState());
+    writeResponse(response,mimetype,cacheEntry.getCss());
     return true;
   }
 }
