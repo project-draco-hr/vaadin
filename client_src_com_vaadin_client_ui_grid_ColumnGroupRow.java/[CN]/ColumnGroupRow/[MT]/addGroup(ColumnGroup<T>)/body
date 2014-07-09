@@ -1,2 +1,18 @@
 {
+  if (groups == null) {
+    throw new IllegalArgumentException("groups may not be null");
+  }
+  Set<GridColumn<?,T>> columns=new HashSet<GridColumn<?,T>>();
+  for (  ColumnGroup<T> group : groups) {
+    if (group == null) {
+      throw new IllegalArgumentException("none of the given group may be null");
+    }
+    columns.addAll(group.getColumns());
+  }
+  validateNewGroupProperties(columns);
+  ColumnGroup<T> group=new ColumnGroup<T>(grid,columns);
+  this.groups.add(group);
+  grid.refreshHeader();
+  grid.refreshFooter();
+  return group;
 }
