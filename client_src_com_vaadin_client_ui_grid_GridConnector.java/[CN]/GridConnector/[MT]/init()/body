@@ -25,7 +25,9 @@
         columnIds[i]=column.id;
         directions[i]=sortOrder.getDirection();
       }
-      getRpcProxy(GridServerRpc.class).sort(columnIds,directions);
+      if (!Arrays.equals(columnIds,getState().sortColumns) || !Arrays.equals(directions,getState().sortDirs)) {
+        getRpcProxy(GridServerRpc.class).sort(columnIds,directions);
+      }
     }
   }
 );
