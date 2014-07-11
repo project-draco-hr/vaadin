@@ -1,14 +1,14 @@
 {
   ArrayList<UI> uis=new ArrayList<UI>(session.getUIs());
   for (  final UI ui : uis) {
-    ui.accessSynchronously(new Runnable(){
-      @Override public void run(){
-        if (ui.isClosing()) {
+    if (ui.isClosing()) {
+      ui.accessSynchronously(new Runnable(){
+        @Override public void run(){
           getLogger().log(Level.FINER,"Removing closed UI {0}",ui.getUIId());
           session.removeUI(ui);
         }
       }
-    }
 );
+    }
   }
 }
