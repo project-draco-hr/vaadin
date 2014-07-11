@@ -1,0 +1,15 @@
+{
+  final DeploymentConfiguration originalConfiguration=super.createDeploymentConfiguration(initParameters);
+  return (DeploymentConfiguration)Proxy.newProxyInstance(DeploymentConfiguration.class.getClassLoader(),new Class[]{DeploymentConfiguration.class},new InvocationHandler(){
+    @Override public Object invoke(    Object proxy,    Method method,    Object[] args) throws Throwable {
+      if (method.getDeclaringClass() == DeploymentConfiguration.class) {
+        DeploymentConfiguration configuration=findDeploymentConfiguration(originalConfiguration);
+        return method.invoke(configuration,args);
+      }
+ else {
+        return method.invoke(proxy,args);
+      }
+    }
+  }
+);
+}
