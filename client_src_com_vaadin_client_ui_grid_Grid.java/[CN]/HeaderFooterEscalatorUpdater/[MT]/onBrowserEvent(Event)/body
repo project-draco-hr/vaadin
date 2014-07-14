@@ -19,7 +19,15 @@
           renderer=gridColumn.getRenderer();
         }
         if (renderer instanceof ComplexRenderer) {
-          ((ComplexRenderer<?>)renderer).onBrowserEvent(cell,event);
+          ComplexRenderer<?> cplxRenderer=(ComplexRenderer<?>)renderer;
+          if (cplxRenderer.getConsumedEvents().contains(event.getType())) {
+            if (cplxRenderer.onBrowserEvent(cell,event)) {
+              return;
+            }
+          }
+        }
+        if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+          setActiveCell(cell);
         }
       }
     }

@@ -2,7 +2,7 @@
   if (grid.getColumn(cell.getColumn()).isSortable()) {
     if (BrowserEvents.TOUCHSTART.equals(event.getType())) {
       if (event.getTouches().length() > 1) {
-        return;
+        return false;
       }
       event.preventDefault();
       Touch touch=event.getChangedTouches().get(0);
@@ -13,7 +13,7 @@
     }
  else     if (BrowserEvents.TOUCHMOVE.equals(event.getType())) {
       if (event.getTouches().length() > 1) {
-        return;
+        return false;
       }
       event.preventDefault();
       Touch touch=event.getChangedTouches().get(0);
@@ -25,7 +25,7 @@
     }
  else     if (BrowserEvents.TOUCHEND.equals(event.getType())) {
       if (event.getTouches().length() > 0) {
-        return;
+        return false;
       }
       if (lazySorter.isRunning()) {
         lazySorter.cancel();
@@ -35,7 +35,7 @@
     }
  else     if (BrowserEvents.TOUCHCANCEL.equals(event.getType())) {
       if (event.getChangedTouches().length() > 1) {
-        return;
+        return false;
       }
       lazySorter.cancel();
     }
@@ -45,5 +45,7 @@
       lazySorter.setMultisort(event.getShiftKey());
       lazySorter.run();
     }
+    return true;
   }
+  return false;
 }
