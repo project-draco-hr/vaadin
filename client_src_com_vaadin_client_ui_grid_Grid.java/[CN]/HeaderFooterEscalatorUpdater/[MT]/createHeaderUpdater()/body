@@ -1,22 +1,26 @@
 {
-  return new HeaderFooterEscalatorUpdater(escalator.getHeader(),true){
-    @Override public boolean isRowVisible(    ColumnGroupRow<T> row){
-      return row.isHeaderVisible();
+  return new EscalatorUpdater(){
+    @Override public void update(    Row row,    Iterable<FlyweightCell> cellsToUpdate){
+      GridHeader.HeaderRow headerRow=header.getRow(row.getRow());
+      int colIndex=-1;
+      for (      FlyweightCell cell : cellsToUpdate) {
+        if (colIndex == -1) {
+          colIndex=cell.getColumn();
+        }
+        while (!columns.get(colIndex).isVisible()) {
+          colIndex++;
+        }
+        headerRow.getRenderer().render(cell,headerRow.getCell(colIndex).getText());
+        colIndex++;
+      }
     }
-    @Override public String getGroupValue(    ColumnGroup<T> group){
-      return group.getHeaderCaption();
+    @Override public void preAttach(    Row row,    Iterable<FlyweightCell> cellsToAttach){
     }
-    @Override public String getColumnValue(    GridColumn<?,T> column){
-      return column.getHeaderCaption();
+    @Override public void postAttach(    Row row,    Iterable<FlyweightCell> attachedCells){
     }
-    @Override public boolean firstRowIsVisible(){
-      return isColumnHeadersVisible();
+    @Override public void preDetach(    Row row,    Iterable<FlyweightCell> cellsToDetach){
     }
-    @Override public Renderer<String> getRenderer(    GridColumn<?,T> column){
-      return column.getHeaderRenderer();
-    }
-    @Override public Renderer<String> getGroupRenderer(    ColumnGroup<T> group){
-      return group.getHeaderRenderer();
+    @Override public void postDetach(    Row row,    Iterable<FlyweightCell> detachedCells){
     }
   }
 ;
