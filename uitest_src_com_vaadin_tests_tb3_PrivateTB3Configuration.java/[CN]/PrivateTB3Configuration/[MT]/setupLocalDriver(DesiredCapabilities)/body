@@ -10,7 +10,12 @@
     }
   }
  else   if (BrowserUtil.isChrome(desiredCapabilities)) {
-    System.setProperty("webdriver.chrome.driver",getProperty("chrome.driver.path"));
+    String propertyName="chrome.driver.path";
+    String chromeDriverPath=getProperty(propertyName);
+    if (chromeDriverPath == null) {
+      throw new RuntimeException("You need to install ChromeDriver to use @" + RunLocally.class.getSimpleName() + " with Chrome."+ "\nFirst install it from https://code.google.com/p/selenium/wiki/ChromeDriver."+ "\nThen update "+ propertiesFile.getAbsolutePath()+ " to define a property named "+ propertyName+ " containing the path of your local ChromeDriver installation.");
+    }
+    System.setProperty("webdriver.chrome.driver",chromeDriverPath);
     driver=new ChromeDriver();
   }
  else   if (BrowserUtil.isSafari(desiredCapabilities)) {
