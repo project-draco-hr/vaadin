@@ -1,0 +1,42 @@
+{
+  if (event.getType().equals(BrowserEvents.CLICK) && event.getButton() == NativeEvent.BUTTON_LEFT && cell != null) {
+    setActiveCell(cell);
+    getElement().focus();
+  }
+ else   if (event.getType().equals(BrowserEvents.KEYDOWN)) {
+    int keyCode=event.getKeyCode();
+    if (keyCode == 0) {
+      keyCode=event.getCharCode();
+    }
+    int newRow=activeRow;
+    int newColumn=activeColumn;
+    RowContainer newContainer=container;
+switch (event.getKeyCode()) {
+case KeyCodes.KEY_DOWN:
+      newRow+=1;
+    break;
+case KeyCodes.KEY_UP:
+  newRow-=1;
+break;
+case KeyCodes.KEY_RIGHT:
+newColumn+=1;
+break;
+case KeyCodes.KEY_LEFT:
+newColumn-=1;
+break;
+}
+if (newRow < 0) {
+newRow=0;
+}
+ else if (newRow >= container.getRowCount()) {
+newRow=container.getRowCount() - 1;
+}
+if (newColumn < 0) {
+newColumn=0;
+}
+ else if (newColumn >= getColumnCount()) {
+newColumn=getColumnCount() - 1;
+}
+setActiveCell(newRow,newColumn,newContainer);
+}
+}

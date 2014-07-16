@@ -4,8 +4,9 @@
   if (Element.is(target)) {
     Element e=Element.as(target);
     RowContainer container=escalator.findRowContainer(e);
+    Cell cell=null;
     if (container != null) {
-      Cell cell=container.getCell(e);
+      cell=container.getCell(e);
       if (cell != null) {
         GridColumn<?,T> gridColumn=columns.get(cell.getColumn());
         Renderer<?> renderer;
@@ -26,10 +27,10 @@
             }
           }
         }
-        if (event.getTypeInt() == Event.ONMOUSEDOWN) {
-          setActiveCell(cell);
-        }
       }
+    }
+    if (activeCellHandler.getNavigationEvents().contains(event.getType())) {
+      activeCellHandler.handleNavigationEvent(event,cell);
     }
   }
 }
