@@ -1,13 +1,9 @@
 {
-  if (event.getType().equals(BrowserEvents.CLICK) && event.getButton() == NativeEvent.BUTTON_LEFT && cell != null) {
+  if (event.getType().equals(BrowserEvents.CLICK) && cell != null) {
     setActiveCell(cell);
     getElement().focus();
   }
  else   if (event.getType().equals(BrowserEvents.KEYDOWN)) {
-    int keyCode=event.getKeyCode();
-    if (keyCode == 0) {
-      keyCode=event.getCharCode();
-    }
     int newRow=activeRow;
     int newColumn=activeColumn;
     RowContainer newContainer=container;
@@ -24,12 +20,35 @@ break;
 case KeyCodes.KEY_LEFT:
 newColumn-=1;
 break;
+default :
+return;
 }
 if (newRow < 0) {
+newContainer=getPreviousContainer(newContainer);
+if (newContainer == container) {
 newRow=0;
 }
+ else if (newContainer == escalator.getBody()) {
+newRow=getLastVisibleRowIndex();
+}
+ else {
+newRow=newContainer.getRowCount() - 1;
+}
+}
  else if (newRow >= container.getRowCount()) {
+newContainer=getNextContainer(newContainer);
+if (newContainer == container) {
 newRow=container.getRowCount() - 1;
+}
+ else if (newContainer == escalator.getBody()) {
+newRow=getFirstVisibleRowIndex();
+}
+ else {
+newRow=0;
+}
+}
+if (newContainer.getRowCount() == 0) {
+return;
 }
 if (newColumn < 0) {
 newColumn=0;
@@ -37,6 +56,8 @@ newColumn=0;
  else if (newColumn >= getColumnCount()) {
 newColumn=getColumnCount() - 1;
 }
+event.preventDefault();
+event.stopPropagation();
 setActiveCell(newRow,newColumn,newContainer);
 }
 }
