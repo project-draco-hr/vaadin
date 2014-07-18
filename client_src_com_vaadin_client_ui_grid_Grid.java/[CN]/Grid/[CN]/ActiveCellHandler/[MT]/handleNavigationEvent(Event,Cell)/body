@@ -20,10 +20,32 @@ break;
 case KeyCodes.KEY_LEFT:
 newColumn-=1;
 break;
+case KeyCodes.KEY_TAB:
+if (event.getShiftKey()) {
+newContainer=getPreviousContainer(container);
+}
+ else {
+newContainer=getNextContainer(container);
+}
+if (newContainer == container) {
+return;
+}
+break;
 default :
 return;
 }
-if (newRow < 0) {
+if (newContainer != container) {
+if (newContainer == escalator.getBody()) {
+newRow=lastActiveBodyRow;
+}
+ else if (newContainer == escalator.getHeader()) {
+newRow=lastActiveHeaderRow;
+}
+ else {
+newRow=lastActiveFooterRow;
+}
+}
+ else if (newRow < 0) {
 newContainer=getPreviousContainer(newContainer);
 if (newContainer == container) {
 newRow=0;
