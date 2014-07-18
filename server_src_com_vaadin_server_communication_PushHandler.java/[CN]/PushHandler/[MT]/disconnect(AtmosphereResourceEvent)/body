@@ -19,8 +19,14 @@ catch (  SessionExpiredException e) {
     VaadinSession.setCurrent(session);
     ui=service.findUI(vaadinRequest);
     if (ui == null) {
-      getLogger().log(Level.SEVERE,"Could not get UI. This should never happen");
-      return;
+      ui=findUiUsingResource(resource,session.getUIs());
+      if (ui == null) {
+        getLogger().log(Level.SEVERE,"Could not get UI. This should never happen," + " except when reloading in Firefox -" + " see http://dev.vaadin.com/ticket/14251.");
+        return;
+      }
+ else {
+        getLogger().log(Level.INFO,"No UI was found based on data in the request," + " but a slower lookup based on the AtmosphereResource succeeded." + " See http://dev.vaadin.com/ticket/14251 for more details.");
+      }
     }
     PushMode pushMode=ui.getPushConfiguration().getPushMode();
     AtmospherePushConnection pushConnection=getConnectionForUI(ui);
