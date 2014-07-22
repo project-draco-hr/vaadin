@@ -1,7 +1,9 @@
 {
   startRequest();
   JSONObject payload=new JSONObject();
-  payload.put(ApplicationConstants.CSRF_TOKEN,new JSONString(getCsrfToken()));
+  if (!getCsrfToken().equals(ApplicationConstants.CSRF_TOKEN_DEFAULT_VALUE)) {
+    payload.put(ApplicationConstants.CSRF_TOKEN,new JSONString(getCsrfToken()));
+  }
   payload.put(ApplicationConstants.RPC_INVOCATIONS,reqInvocations);
   payload.put(ApplicationConstants.SERVER_SYNC_ID,new JSONNumber(lastSeenServerSyncId));
   VConsole.log("Making UIDL Request with params: " + payload);

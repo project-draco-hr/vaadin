@@ -1,0 +1,17 @@
+{
+  Browser runLocallyBrowser=super.getRunLocallyBrowser();
+  if (runLocallyBrowser != null) {
+    return runLocallyBrowser;
+  }
+  String runLocallyValue=getProperty(RUN_LOCALLY_PROPERTY);
+  if (runLocallyValue == null || runLocallyValue.trim().isEmpty()) {
+    return null;
+  }
+  String browserName=runLocallyValue.trim().toUpperCase();
+  try {
+    return Browser.valueOf(browserName);
+  }
+ catch (  IllegalArgumentException e) {
+    throw new RuntimeException("Invalid " + RUN_LOCALLY_PROPERTY + " property from "+ getSource(RUN_LOCALLY_PROPERTY)+ ": "+ runLocallyValue+ ". Expected one of "+ Arrays.toString(Browser.values()));
+  }
+}

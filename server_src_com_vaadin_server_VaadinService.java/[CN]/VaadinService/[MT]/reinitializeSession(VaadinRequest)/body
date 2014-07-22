@@ -1,7 +1,8 @@
 {
   WrappedSession oldSession=request.getWrappedSession();
-  HashMap<String,Object> attrs=new HashMap<String,Object>();
-  for (  String name : oldSession.getAttributeNames()) {
+  Set<String> attributeNames=oldSession.getAttributeNames();
+  HashMap<String,Object> attrs=new HashMap<String,Object>(attributeNames.size() * 2);
+  for (  String name : attributeNames) {
     Object value=oldSession.getAttribute(name);
     if (value instanceof VaadinSession) {
       VaadinSession serviceSession=(VaadinSession)value;

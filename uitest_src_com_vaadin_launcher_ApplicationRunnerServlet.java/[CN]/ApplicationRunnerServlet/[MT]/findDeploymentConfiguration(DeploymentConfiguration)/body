@@ -1,0 +1,58 @@
+{
+  DeploymentConfiguration configuration=CurrentInstance.get(DeploymentConfiguration.class);
+  if (configuration == null) {
+    VaadinSession session=VaadinSession.getCurrent();
+    if (session == null) {
+      HttpServletRequest currentRequest=request.get();
+      if (currentRequest != null) {
+        HttpSession httpSession=currentRequest.getSession(false);
+        if (httpSession != null) {
+          Map<Class<?>,CurrentInstance> oldCurrent=CurrentInstance.setCurrent((VaadinSession)null);
+          try {
+            session=getService().findVaadinSession(new VaadinServletRequest(currentRequest,getService()));
+          }
+  finally {
+            CurrentInstance.restoreInstances(oldCurrent);
+            currentRequest.removeAttribute(VaadinSession.class.getName());
+          }
+        }
+      }
+    }
+    if (session != null) {
+      String name=ApplicationRunnerServlet.class.getName() + ".deploymentConfiguration";
+      try {
+        session.lock();
+        configuration=(DeploymentConfiguration)session.getAttribute(name);
+        if (configuration == null) {
+          Class<?> classToRun;
+          try {
+            classToRun=getClassToRun();
+          }
+ catch (          ClassNotFoundException e) {
+            return originalConfiguration;
+          }
+          CustomDeploymentConfiguration customDeploymentConfiguration=classToRun.getAnnotation(CustomDeploymentConfiguration.class);
+          if (customDeploymentConfiguration != null) {
+            Properties initParameters=new Properties(originalConfiguration.getInitParameters());
+            for (            Conf entry : customDeploymentConfiguration.value()) {
+              initParameters.put(entry.name(),entry.value());
+            }
+            configuration=new DefaultDeploymentConfiguration(getClass(),initParameters);
+          }
+ else {
+            configuration=originalConfiguration;
+          }
+          session.setAttribute(name,configuration);
+        }
+      }
+  finally {
+        session.unlock();
+      }
+      CurrentInstance.set(DeploymentConfiguration.class,configuration);
+    }
+ else {
+      configuration=originalConfiguration;
+    }
+  }
+  return configuration;
+}
