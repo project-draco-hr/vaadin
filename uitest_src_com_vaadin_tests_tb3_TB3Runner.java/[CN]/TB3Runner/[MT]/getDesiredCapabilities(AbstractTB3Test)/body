@@ -1,8 +1,9 @@
 {
   Collection<DesiredCapabilities> desiredCapabilites=getFilteredCapabilities(testClassInstance);
-  if (isRunLocally(testClassInstance)) {
+  Browser runLocallyBrowser=testClassInstance.getRunLocallyBrowser();
+  if (runLocallyBrowser != null) {
     desiredCapabilites=new ArrayList<DesiredCapabilities>();
-    desiredCapabilites.add(testClassInstance.getClass().getAnnotation(RunLocally.class).value().getDesiredCapabilities());
+    desiredCapabilites.add(runLocallyBrowser.getDesiredCapabilities());
   }
   return desiredCapabilites;
 }
