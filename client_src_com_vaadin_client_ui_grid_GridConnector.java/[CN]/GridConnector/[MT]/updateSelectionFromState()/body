@@ -1,20 +1,21 @@
 {
   boolean changed=false;
   List<String> stateKeys=getState().selectedKeys;
-  for (  String key : stateKeys) {
-    if (!selectedKeys.contains(key)) {
-      changed=true;
-      selectByHandle(dataSource.getHandleByKey(key));
-    }
-  }
   for (  String key : selectedKeys) {
     if (!stateKeys.contains(key)) {
       changed=true;
       deselectByHandle(dataSource.getHandleByKey(key));
     }
   }
+  for (  String key : stateKeys) {
+    if (!selectedKeys.contains(key)) {
+      changed=true;
+      selectByHandle(dataSource.getHandleByKey(key));
+    }
+  }
   selectedKeys=new LinkedHashSet<String>(stateKeys);
   if (changed) {
+    updatedFromState=true;
     getWidget().fireEvent(new SelectionChangeEvent<JSONObject>(getWidget(),(List<JSONObject>)null,null));
   }
 }
