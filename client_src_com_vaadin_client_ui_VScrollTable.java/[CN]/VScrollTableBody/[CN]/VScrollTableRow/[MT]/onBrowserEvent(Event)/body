@@ -77,18 +77,14 @@ if (touchStart != null) {
 Util.simulateClickFromTouchEvent(touchStart,this);
 touchStart=null;
 }
-if (contextTouchTimeout != null) {
-contextTouchTimeout.cancel();
-}
+touchContextProvider.cancel();
 break;
 case Event.ONTOUCHMOVE:
 if (isSignificantMove(event)) {
 if (dragmode != 0 && touchStart != null && (TouchScrollDelegate.getActiveScrollDelegate() == null)) {
 startRowDrag(touchStart,type,targetTdOrTr);
 }
-if (contextTouchTimeout != null) {
-contextTouchTimeout.cancel();
-}
+touchContextProvider.cancel();
 touchStart=null;
 }
 break;
@@ -113,21 +109,6 @@ activeScrollDelegate.stopScrolling();
 }
 }
 .schedule(TOUCHSCROLL_TIMEOUT);
-if (contextTouchTimeout == null && actionKeys != null) {
-contextTouchTimeout=new Timer(){
-@Override public void run(){
-if (touchStart != null) {
-showContextMenu(touchStart);
-touchStart=null;
-}
-}
-}
-;
-}
-if (contextTouchTimeout != null) {
-contextTouchTimeout.cancel();
-contextTouchTimeout.schedule(TOUCH_CONTEXT_MENU_TIMEOUT);
-}
 }
 break;
 case Event.ONMOUSEDOWN:

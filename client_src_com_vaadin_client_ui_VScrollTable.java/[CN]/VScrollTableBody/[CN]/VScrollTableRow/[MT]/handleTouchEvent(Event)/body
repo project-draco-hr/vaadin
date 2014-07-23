@@ -1,2 +1,63 @@
 {
+  boolean touchEventHandled=false;
+  if (enabled && hasNativeTouchScrolling) {
+    touchContextProvider.handleTouchEvent(event);
+    final Element targetTdOrTr=getEventTargetTdOrTr(event);
+    final int type=event.getTypeInt();
+switch (type) {
+case Event.ONTOUCHSTART:
+      touchEventHandled=true;
+    touchStart=event;
+  isDragging=false;
+Touch touch=event.getChangedTouches().get(0);
+touchStartX=touch.getClientX();
+touchStartY=touch.getClientY();
+if (dragmode != 0) {
+if (dragTouchTimeout == null) {
+dragTouchTimeout=new Timer(){
+@Override public void run(){
+  if (touchStart != null) {
+    isDragging=true;
+  }
+}
+}
+;
+}
+dragTouchTimeout.schedule(TOUCHSCROLL_TIMEOUT);
+}
+break;
+case Event.ONTOUCHMOVE:
+touchEventHandled=true;
+if (isSignificantMove(event)) {
+if (!isDragging && dragTouchTimeout != null) {
+dragTouchTimeout.cancel();
+dragTouchTimeout=null;
+}
+if (dragmode != 0 && touchStart != null && isDragging) {
+event.preventDefault();
+event.stopPropagation();
+startRowDrag(touchStart,type,targetTdOrTr);
+}
+touchStart=null;
+}
+break;
+case Event.ONTOUCHEND:
+case Event.ONTOUCHCANCEL:
+touchEventHandled=true;
+if (dragTouchTimeout != null) {
+dragTouchTimeout.cancel();
+}
+if (touchStart != null) {
+if (!BrowserInfo.get().isAndroid()) {
+event.preventDefault();
+event.stopPropagation();
+Util.simulateClickFromTouchEvent(touchStart,this);
+}
+touchStart=null;
+}
+isDragging=false;
+break;
+}
+}
+return touchEventHandled;
 }
