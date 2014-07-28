@@ -1,0 +1,15 @@
+{
+  openTestURL();
+  getGridElement().getHeaderCell(0,0).click();
+  new Actions(driver).keyDown(Keys.SHIFT).perform();
+  getGridElement().getHeaderCell(0,11).click();
+  new Actions(driver).keyUp(Keys.SHIFT).perform();
+  String prev=getGridElement().getCell(0,11).getAttribute("innerHTML");
+  for (int i=1; i <= 6; ++i) {
+    assertEquals("Column 11 should contain same values.",prev,getGridElement().getCell(i,11).getAttribute("innerHTML"));
+  }
+  prev=getGridElement().getCell(0,0).getText();
+  for (int i=1; i <= 6; ++i) {
+    assertTrue("Grid is not sorted by column 0.",prev.compareTo(getGridElement().getCell(i,0).getText()) < 0);
+  }
+}
