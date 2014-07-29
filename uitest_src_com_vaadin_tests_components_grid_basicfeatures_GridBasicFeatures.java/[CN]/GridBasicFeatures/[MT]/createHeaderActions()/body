@@ -1,9 +1,51 @@
 {
-  createCategory("Headers",null);
-  createBooleanAction("Visible","Headers",true,new Command<Grid,Boolean>(){
+  createCategory("Header",null);
+  createBooleanAction("Visible","Header",true,new Command<Grid,Boolean>(){
     @Override public void execute(    Grid grid,    Boolean value,    Object data){
-      grid.setColumnHeadersVisible(value);
+      grid.getHeader().setVisible(value);
     }
   }
 );
+  LinkedHashMap<String,String> defaultRows=new LinkedHashMap<String,String>();
+  defaultRows.put("Top","Top");
+  defaultRows.put("Bottom","Bottom");
+  defaultRows.put("Unset","Unset");
+  createMultiClickAction("Default row","Header",defaultRows,new Command<Grid,String>(){
+    @Override public void execute(    Grid grid,    String value,    Object data){
+      HeaderRow defaultRow=null;
+      GridHeader header=grid.getHeader();
+      if (value.equals("Top")) {
+        defaultRow=header.getRow(0);
+      }
+ else       if (value.equals("Bottom")) {
+        defaultRow=header.getRow(header.getRowCount() - 1);
+      }
+      header.setDefaultRow(defaultRow);
+    }
+  }
+,defaultRows.get("Top"));
+  createClickAction("Prepend row","Header",new Command<Grid,Object>(){
+    @Override public void execute(    Grid grid,    Object value,    Object data){
+      grid.getHeader().prependRow();
+    }
+  }
+,null);
+  createClickAction("Append row","Header",new Command<Grid,Object>(){
+    @Override public void execute(    Grid grid,    Object value,    Object data){
+      grid.getHeader().appendRow();
+    }
+  }
+,null);
+  createClickAction("Remove top row","Header",new Command<Grid,Object>(){
+    @Override public void execute(    Grid grid,    Object value,    Object data){
+      grid.getHeader().removeRow(0);
+    }
+  }
+,null);
+  createClickAction("Remove bottom row","Header",new Command<Grid,Object>(){
+    @Override public void execute(    Grid grid,    Object value,    Object data){
+      grid.getHeader().removeRow(grid.getHeader().getRowCount() - 1);
+    }
+  }
+,null);
 }
