@@ -1,0 +1,30 @@
+{
+  Indexed dataSource=new IndexedContainer();
+  Grid grid;
+  dataSource.addContainerProperty("firstName",String.class,"");
+  dataSource.addContainerProperty("lastName",String.class,"");
+  dataSource.addContainerProperty("streetAddress",String.class,"");
+  dataSource.addContainerProperty("zipCode",Integer.class,null);
+  dataSource.addContainerProperty("city",String.class,"");
+  Item i=dataSource.addItem(0);
+  i.getItemProperty("firstName").setValue("Rudolph");
+  i.getItemProperty("lastName").setValue("Reindeer");
+  i.getItemProperty("streetAddress").setValue("Ruukinkatu 2-4");
+  i.getItemProperty("zipCode").setValue(20540);
+  i.getItemProperty("city").setValue("Turku");
+  grid=new Grid(dataSource);
+  grid.setWidth("600px");
+  grid.getColumn("zipCode").setRenderer(new NumberRenderer());
+  addComponent(grid);
+  GridHeader header=grid.getHeader();
+  HeaderRow row=header.prependRow();
+  row.join("firstName","lastName").setText("Full Name");
+  row.join("streetAddress","zipCode","city").setText("Address");
+  header.prependRow().join(dataSource.getContainerPropertyIds().toArray()).setText("All the stuff");
+  GridFooter footer=grid.getFooter();
+  FooterRow footerRow=footer.appendRow();
+  footerRow.join("firstName","lastName").setText("Full Name");
+  footerRow.join("streetAddress","zipCode","city").setText("Address");
+  footer.appendRow().join(dataSource.getContainerPropertyIds().toArray()).setText("All the stuff");
+  footer.setVisible(true);
+}
