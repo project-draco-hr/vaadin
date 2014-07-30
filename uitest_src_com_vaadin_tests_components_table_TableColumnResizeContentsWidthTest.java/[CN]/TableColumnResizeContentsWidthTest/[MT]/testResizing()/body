@@ -1,0 +1,18 @@
+{
+  openTestURL();
+  TableElement table=$(TableElement.class).first();
+  List<ButtonElement> buttons=$(ButtonElement.class).all();
+  WebElement textField=table.findElement(By.className("v-textfield"));
+  WebElement resizer=table.findElement(By.className("v-table-resizer"));
+  assertEquals(100,textField.getSize().width);
+  new Actions(getDriver()).moveToElement(resizer).clickAndHold().moveByOffset(-20,0).release().perform();
+  assertEquals(80,textField.getSize().width);
+  new Actions(getDriver()).moveToElement(resizer).clickAndHold().moveByOffset(40,0).release().perform();
+  assertEquals(120,textField.getSize().width);
+  buttons.get(1).click();
+  sleep(50);
+  assertEquals(80,textField.getSize().width);
+  buttons.get(0).click();
+  sleep(50);
+  assertEquals(100,textField.getSize().width);
+}
