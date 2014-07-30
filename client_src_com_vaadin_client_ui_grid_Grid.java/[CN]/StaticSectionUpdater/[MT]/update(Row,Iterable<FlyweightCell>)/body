@@ -1,11 +1,24 @@
 {
-  GridStaticSection.StaticRow<?> gridRow=section.getRow(row.getRow());
+  GridStaticSection.StaticRow<?> staticRow=section.getRow(row.getRow());
   final List<Integer> columnIndices=getVisibleColumnIndices();
   for (  FlyweightCell cell : cellsToUpdate) {
     int index=columnIndices.get(cell.getColumn());
-    StaticCell metadata=gridRow.getCell(index);
+    final StaticCell metadata=staticRow.getCell(index);
     cell.setColSpan(metadata.getColspan());
-    gridRow.getRenderer().render(cell,metadata.getText());
-    activeCellHandler.updateActiveCellStyle(cell,container);
-  }
+    staticRow.getRenderer().render(cell,null);
+switch (metadata.getType()) {
+case TEXT:
+      cell.getElement().setInnerText(metadata.getText());
+    break;
+case HTML:
+  cell.getElement().setInnerHTML(metadata.getHtml());
+break;
+case WIDGET:
+preDetach(row,Arrays.asList(cell));
+cell.getElement().setInnerHTML("");
+postAttach(row,Arrays.asList(cell));
+break;
+}
+activeCellHandler.updateActiveCellStyle(cell,container);
+}
 }

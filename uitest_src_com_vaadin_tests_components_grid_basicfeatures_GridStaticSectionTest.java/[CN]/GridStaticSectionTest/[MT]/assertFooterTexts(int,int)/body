@@ -1,7 +1,15 @@
 {
   int i=0;
   for (  TestBenchElement cell : getGridElement().getFooterCells(rowIndex)) {
-    assertText(String.format("Footer (%d,%d)",footerId,i),cell);
+    if (i % 3 == 0) {
+      assertText(String.format("Footer (%d,%d)",footerId,i),cell);
+    }
+ else     if (i % 2 == 0) {
+      assertHTML(String.format("<b>Footer (%d,%d)</b>",footerId,i),cell);
+    }
+ else {
+      assertHTML(String.format("<div class=\"gwt-HTML\">Footer (%d,%d)</div>",footerId,i),cell);
+    }
     i++;
   }
   assertEquals("number of footer columns",GridBasicFeatures.COLUMNS,i);

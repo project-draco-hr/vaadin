@@ -1,2 +1,16 @@
 {
+  if (section.getRowCount() > row.getRow()) {
+    GridStaticSection.StaticRow<?> gridRow=section.getRow(row.getRow());
+    List<Integer> columnIndices=getVisibleColumnIndices();
+    for (    FlyweightCell cell : cellsToDetach) {
+      int index=columnIndices.get(cell.getColumn());
+      StaticCell metadata=gridRow.getCell(index);
+      if (StaticCell.Type.WIDGET.equals(metadata.getType()) && metadata.getWidget().isAttached()) {
+        Widget widget=metadata.getWidget();
+        setParent(widget,null);
+        widget.getElement().removeFromParent();
+        getLogger().info("Detached widget " + widget);
+      }
+    }
+  }
 }
