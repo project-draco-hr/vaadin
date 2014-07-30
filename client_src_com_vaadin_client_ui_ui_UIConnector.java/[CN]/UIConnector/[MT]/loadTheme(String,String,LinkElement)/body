@@ -1,0 +1,25 @@
+{
+  LinkElement newThemeLinkElement=Document.get().createLinkElement();
+  newThemeLinkElement.setRel("stylesheet");
+  newThemeLinkElement.setType("text/css");
+  newThemeLinkElement.setHref(newThemeUrl);
+  ResourceLoader.addOnloadHandler(newThemeLinkElement,new ResourceLoadListener(){
+    @Override public void onLoad(    ResourceLoadEvent event){
+      getLogger().info("Loading of " + newTheme + " from "+ newThemeUrl+ " completed");
+      if (tagToReplace != null) {
+        tagToReplace.getParentElement().removeChild(tagToReplace);
+      }
+      activateTheme(newTheme);
+    }
+    @Override public void onError(    ResourceLoadEvent event){
+      getLogger().warning("Could not load theme from " + getThemeUrl(newTheme));
+    }
+  }
+,null);
+  if (tagToReplace != null) {
+    getHead().insertBefore(newThemeLinkElement,tagToReplace);
+  }
+ else {
+    getHead().appendChild(newThemeLinkElement);
+  }
+}
