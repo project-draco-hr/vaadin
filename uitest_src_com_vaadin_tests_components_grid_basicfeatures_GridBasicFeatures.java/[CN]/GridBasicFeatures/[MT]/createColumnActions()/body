@@ -49,5 +49,61 @@
       }
 ,w,c);
     }
+    LinkedHashMap<String,GridStaticCellType> defaultRows=new LinkedHashMap<String,GridStaticCellType>();
+    defaultRows.put("Text Header",GridStaticCellType.TEXT);
+    defaultRows.put("Html Header ",GridStaticCellType.HTML);
+    defaultRows.put("Widget Header",GridStaticCellType.WIDGET);
+    createMultiClickAction("Header Type",getColumnProperty(c),defaultRows,new Command<Grid,GridStaticCellType>(){
+      @Override public void execute(      Grid grid,      GridStaticCellType value,      Object columnIndex){
+        final Object propertyId=(new ArrayList(grid.getContainerDatasource().getContainerPropertyIds()).get((Integer)columnIndex));
+        final HeaderCell cell=grid.getHeader().getDefaultRow().getCell(propertyId);
+switch (value) {
+case TEXT:
+          cell.setText("Text Header");
+        break;
+case HTML:
+      cell.setHtml("HTML Header");
+    break;
+case WIDGET:
+  cell.setComponent(new Button("Button Header",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      log("Button clicked!");
+    }
   }
+));
+default :
+break;
+}
+}
+}
+,c);
+defaultRows=new LinkedHashMap<String,GridStaticCellType>();
+defaultRows.put("Text Footer",GridStaticCellType.TEXT);
+defaultRows.put("Html Footer",GridStaticCellType.HTML);
+defaultRows.put("Widget Footer",GridStaticCellType.WIDGET);
+createMultiClickAction("Footer Type",getColumnProperty(c),defaultRows,new Command<Grid,GridStaticCellType>(){
+@Override public void execute(Grid grid,GridStaticCellType value,Object columnIndex){
+final Object propertyId=(new ArrayList(grid.getContainerDatasource().getContainerPropertyIds()).get((Integer)columnIndex));
+final FooterCell cell=grid.getFooter().getRow(0).getCell(propertyId);
+switch (value) {
+case TEXT:
+cell.setText("Text Footer");
+break;
+case HTML:
+cell.setHtml("HTML Footer");
+break;
+case WIDGET:
+cell.setComponent(new Button("Button Footer",new ClickListener(){
+@Override public void buttonClick(ClickEvent event){
+log("Button clicked!");
+}
+}
+));
+default :
+break;
+}
+}
+}
+,c);
+}
 }
