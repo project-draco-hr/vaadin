@@ -1,0 +1,26 @@
+{
+  openTestURL();
+  List<ButtonElement> buttons=$(ButtonElement.class).all();
+  buttons.get(0).click();
+  sleep(100);
+  buttons.get(1).click();
+  waitForElementPresent(By.className("v-Notification"));
+  NotificationElement notification=$(NotificationElement.class).first();
+  assertEquals("Scrolled to 1000 px",notification.findElement(By.tagName("h1")).getText());
+  try {
+    notification.closeNotification();
+  }
+ catch (  StaleElementReferenceException e) {
+  }
+  WebElement ui=findElement(By.className("v-ui"));
+  testBenchElement(ui).scroll(1020);
+  buttons.get(1).click();
+  waitForElementPresent(By.className("v-Notification"));
+  notification=$(NotificationElement.class).first();
+  assertEquals("Scrolled to 1020 px",notification.findElement(By.tagName("h1")).getText());
+  try {
+    notification.closeNotification();
+  }
+ catch (  StaleElementReferenceException e) {
+  }
+}
