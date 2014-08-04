@@ -3,6 +3,8 @@
   int height=event.getLayoutManager().getOuterHeight(event.getElement());
   com.google.gwt.user.client.Element element=target.getWidget().getElement();
   boolean forceRedraw=false;
+  String oldWidthRanges=currentWidthRanges;
+  String oldHeightRanges=currentHeightRanges;
   currentWidthRanges=resolveBreakpoint("width",width,event.getElement());
   if (!"".equals(currentWidthRanges)) {
     target.getWidget().getElement().setAttribute("width-range",currentWidthRanges);
@@ -21,5 +23,8 @@
   }
   if (forceRedraw) {
     forceRedrawIfIE8(element);
+  }
+  if (!currentWidthRanges.equals(oldWidthRanges) || !currentHeightRanges.equals(oldHeightRanges)) {
+    event.getLayoutManager().setNeedsMeasureRecursively(ResponsiveConnector.this.target);
   }
 }
