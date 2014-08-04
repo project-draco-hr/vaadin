@@ -3,14 +3,27 @@
     cell.setColspan(1);
   }
   for (  List<CELLTYPE> group : cellGroups) {
+    int firstVisibleColumnInGroup=-1;
+    int lastVisibleColumnInGroup=-1;
+    int hiddenInsideGroup=0;
     for (int i=0; i < group.size(); i++) {
       CELLTYPE cell=group.get(i);
-      if (i == 0) {
-        cell.setColspan(group.size());
+      int cellIndex=this.cells.indexOf(cell);
+      boolean columnVisible=getSection().getGrid().getColumn(cellIndex).isVisible();
+      if (columnVisible) {
+        lastVisibleColumnInGroup=i;
+        if (firstVisibleColumnInGroup == -1) {
+          firstVisibleColumnInGroup=i;
+        }
       }
- else {
-        cell.setColspan(0);
+ else       if (firstVisibleColumnInGroup != -1) {
+        hiddenInsideGroup++;
       }
     }
+    if (firstVisibleColumnInGroup == -1 || lastVisibleColumnInGroup == -1 || firstVisibleColumnInGroup == lastVisibleColumnInGroup) {
+      continue;
+    }
+    CELLTYPE firstVisibleCell=group.get(firstVisibleColumnInGroup);
+    firstVisibleCell.setColspan(lastVisibleColumnInGroup - firstVisibleColumnInGroup - hiddenInsideGroup + 1);
   }
 }
