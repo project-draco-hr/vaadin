@@ -26,27 +26,37 @@
   top.addStyleName("valo-menu-title");
   menu.addComponent(top);
   menu.addComponent(createThemeSelect());
-  Label title=new Label("Vaadin<br><strong>Valo Theme Styles</strong>",ContentMode.HTML);
+  Button showMenu=new Button("Menu",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      if (menu.getStyleName().contains("valo-menu-visible")) {
+        menu.removeStyleName("valo-menu-visible");
+      }
+ else {
+        menu.addStyleName("valo-menu-visible");
+      }
+    }
+  }
+);
+  showMenu.addStyleName(ValoTheme.BUTTON_PRIMARY);
+  showMenu.addStyleName(ValoTheme.BUTTON_SMALL);
+  showMenu.addStyleName("valo-menu-toggle");
+  showMenu.setIcon(FontAwesome.LIST);
+  menu.addComponent(showMenu);
+  Label title=new Label("<h3>Vaadin <strong>Valo Theme</strong></h3>",ContentMode.HTML);
   title.setSizeUndefined();
   top.addComponent(title);
   top.setExpandRatio(title,1);
   MenuBar settings=new MenuBar();
-  MenuItem settingsItem=settings.addItem("",FontAwesome.COG,null);
-  settingsItem.setStyleName("icon-only");
+  settings.addStyleName("user-menu");
+  StringGenerator sg=new StringGenerator();
+  MenuItem settingsItem=settings.addItem(sg.nextString(true) + " " + sg.nextString(true)+ sg.nextString(false),new ThemeResource("../tests-valo/img/profile-pic-300px.jpg"),null);
   settingsItem.addItem("Edit Profile",null);
   settingsItem.addItem("Preferences",null);
   settingsItem.addSeparator();
   settingsItem.addItem("Sign Out",null);
-  top.addComponent(settings);
-  final CheckBox enabled=new CheckBox("Enabled",true);
-  enabled.setDescription("Enable or disable the components on the right side");
-  menu.addComponent(enabled);
-  enabled.addValueChangeListener(new ValueChangeListener(){
-    @Override public void valueChange(    ValueChangeEvent event){
-      viewDisplay.setEnabled(enabled.getValue());
-    }
-  }
-);
+  menu.addComponent(settings);
+  menuItemsLayout.setPrimaryStyleName("valo-menuitems");
+  menu.addComponent(menuItemsLayout);
   Label label=null;
   int count=-1;
   for (  final Entry<String,String> item : menuItems.entrySet()) {
@@ -55,7 +65,7 @@
       label.setPrimaryStyleName("valo-menu-subtitle");
       label.addStyleName("h4");
       label.setSizeUndefined();
-      menu.addComponent(label);
+      menuItemsLayout.addComponent(label);
     }
     if (item.getKey().equals("panels")) {
       label.setValue(label.getValue() + " <span class=\"valo-menu-badge\">" + count+ "</span>");
@@ -64,7 +74,7 @@
       label.setPrimaryStyleName("valo-menu-subtitle");
       label.addStyleName("h4");
       label.setSizeUndefined();
-      menu.addComponent(label);
+      menuItemsLayout.addComponent(label);
     }
     if (item.getKey().equals("calendar")) {
       label.setValue(label.getValue() + " <span class=\"valo-menu-badge\">" + count+ "</span>");
@@ -73,7 +83,7 @@
       label.setPrimaryStyleName("valo-menu-subtitle");
       label.addStyleName("h4");
       label.setSizeUndefined();
-      menu.addComponent(label);
+      menuItemsLayout.addComponent(label);
     }
     Button b=new Button(item.getValue(),new ClickListener(){
       @Override public void buttonClick(      ClickEvent event){
@@ -87,7 +97,7 @@
     b.setHtmlContentAllowed(true);
     b.setPrimaryStyleName("valo-menu-item");
     b.setIcon(testIcon.get());
-    menu.addComponent(b);
+    menuItemsLayout.addComponent(b);
     count++;
   }
   label.setValue(label.getValue() + " <span class=\"valo-menu-badge\">" + count+ "</span>");
