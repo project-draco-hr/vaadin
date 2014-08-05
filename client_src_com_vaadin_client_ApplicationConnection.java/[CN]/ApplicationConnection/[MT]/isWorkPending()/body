@@ -1,0 +1,19 @@
+{
+  ConnectorMap connectorMap=getConnectorMap();
+  JsArrayObject<ServerConnector> connectors=connectorMap.getConnectorsAsJsArray();
+  int size=connectors.size();
+  for (int i=0; i < size; i++) {
+    ServerConnector conn=connectors.get(i);
+    ComponentConnector compConn=null;
+    if (conn instanceof ComponentConnector) {
+      compConn=(ComponentConnector)conn;
+      Widget wgt=compConn.getWidget();
+      if (wgt instanceof DeferredWorker) {
+        if (((DeferredWorker)wgt).isWorkPending()) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
