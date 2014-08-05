@@ -3,4 +3,13 @@
   setSelected(logicalRowIndex,selectionPaint);
   logicalRow=logicalRowIndex;
   reschedule();
+  DataSource<T> dataSource=grid.getDataSource();
+  SelectionModel<T> selectionModel=grid.getSelectionModel();
+  if (dataSource instanceof AbstractRemoteDataSource && selectionModel instanceof Batched) {
+    this.remoteDataSource=(AbstractRemoteDataSource<T>)dataSource;
+    this.batchedSelectionModel=(Batched<T>)selectionModel;
+    Collection<T> pinneds=batchedSelectionModel.getSelectedRowsBatch();
+    pinneds.addAll(batchedSelectionModel.getDeselectedRowsBatch());
+    remoteDataSource.transactionPin(pinneds);
+  }
 }

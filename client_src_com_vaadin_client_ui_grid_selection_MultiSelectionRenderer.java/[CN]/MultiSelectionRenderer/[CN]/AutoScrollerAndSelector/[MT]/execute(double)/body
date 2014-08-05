@@ -12,6 +12,11 @@
   if (logicalRow != -1 && logicalRow != this.logicalRow) {
     this.logicalRow=logicalRow;
     setSelected(logicalRow,selectionPaint);
+    if (remoteDataSource != null && batchedSelectionModel != null) {
+      Collection<T> pinneds=batchedSelectionModel.getSelectedRowsBatch();
+      pinneds.addAll(batchedSelectionModel.getDeselectedRowsBatch());
+      remoteDataSource.transactionPin(pinneds);
+    }
   }
   reschedule();
 }

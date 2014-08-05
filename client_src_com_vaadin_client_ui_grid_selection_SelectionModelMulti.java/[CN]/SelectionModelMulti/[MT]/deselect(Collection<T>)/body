@@ -4,12 +4,13 @@
   }
   Set<T> removed=new LinkedHashSet<T>();
   for (  T row : rows) {
-    if (deselectByHandle(grid.getDataSource().getHandle(row))) {
+    RowHandle<T> handle=grid.getDataSource().getHandle(row);
+    if (deselectByHandle(handle)) {
       removed.add(row);
     }
   }
   if (removed.size() > 0) {
-    grid.fireEvent(new SelectionChangeEvent<T>(grid,null,removed));
+    grid.fireEvent(new SelectionChangeEvent<T>(grid,null,removed,isBeingBatchSelected()));
     return true;
   }
   return false;
