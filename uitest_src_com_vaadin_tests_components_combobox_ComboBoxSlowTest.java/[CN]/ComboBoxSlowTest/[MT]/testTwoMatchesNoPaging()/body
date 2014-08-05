@@ -1,6 +1,10 @@
 {
   clickComboBoxTextArea();
   typeString("Item 100");
-  assertEquals(2,getNumberOfSuggestions());
   assertFalse(isPagingActive());
+  WebElement popup=driver.findElement(By.className("v-filterselect-suggestpopup"));
+  List<WebElement> filteredItems=getFilteredItems(popup);
+  assertEquals("unexpected amount of suggestions found",2,filteredItems.size());
+  assertEquals("wrong filtering result","Item 100",filteredItems.get(0).getText());
+  assertEquals("wrong filtering result","Item 1000",filteredItems.get(1).getText());
 }

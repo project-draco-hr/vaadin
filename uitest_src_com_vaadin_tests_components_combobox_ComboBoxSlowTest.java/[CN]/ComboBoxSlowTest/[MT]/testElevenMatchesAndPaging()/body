@@ -2,9 +2,18 @@
   clickComboBoxTextArea();
   sleep(250);
   typeString("Item 12");
-  assertEquals(10,getNumberOfSuggestions());
+  final WebElement popup=driver.findElement(By.className("v-filterselect-suggestpopup"));
+  List<WebElement> filteredItems=getFilteredItems(popup);
+  assertEquals("unexpected amount of suggestions found on first page",10,filteredItems.size());
+  assertEquals("wrong filtering result","Item 12",filteredItems.get(0).getText());
+  assertEquals("wrong filtering result","Item 128",filteredItems.get(9).getText());
   assertTrue(isPagingActive());
   goToNextPage();
-  sleep(500);
-  assertEquals(1,getNumberOfSuggestions());
+  waitUntil(new ExpectedCondition<Boolean>(){
+    @Override public Boolean apply(    WebDriver input){
+      List<WebElement> filteredItems=getFilteredItems(popup);
+      return filteredItems.size() == 1 && "Item 129".equals(filteredItems.get(0).getText());
+    }
+  }
+);
 }
