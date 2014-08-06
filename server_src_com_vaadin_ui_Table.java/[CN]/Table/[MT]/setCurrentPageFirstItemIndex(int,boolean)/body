@@ -21,7 +21,15 @@
     }
     currentPageFirstItemIndex=newIndex;
     if (needsPageBufferReset) {
-      currentPageFirstItemIndexOnLastPage=indexOnLastPage;
+      boolean isLastRowPossiblyPartiallyVisible=true;
+      if (indexOnLastPage != -1) {
+        isLastRowPossiblyPartiallyVisible=false;
+      }
+      int extraRows=isLastRowPossiblyPartiallyVisible ? 0 : 1;
+      currentPageFirstItemIndexOnLastPage=currentPageFirstItemIndex + extraRows;
+    }
+ else {
+      currentPageFirstItemIndexOnLastPage=-1;
     }
   }
  else {
