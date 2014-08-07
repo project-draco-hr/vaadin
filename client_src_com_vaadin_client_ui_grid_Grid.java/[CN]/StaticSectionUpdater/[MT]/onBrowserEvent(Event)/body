@@ -9,18 +9,15 @@
       cell=container.getCell(e);
       if (cell != null) {
         GridColumn<?,T> gridColumn=columns.get(cell.getColumn());
-        Renderer<?> renderer;
         if (container == escalator.getHeader()) {
-          renderer=header.getRow(cell.getRow()).getRenderer();
+          if (getHeader().getRow(cell.getRow()).isDefault()) {
+            handleDefaultRowEvent(cell,event);
+          }
         }
  else         if (container == escalator.getFooter()) {
-          renderer=footer.getRow(cell.getRow()).getRenderer();
         }
- else {
-          renderer=gridColumn.getRenderer();
-        }
-        if (renderer instanceof ComplexRenderer) {
-          ComplexRenderer<?> cplxRenderer=(ComplexRenderer<?>)renderer;
+ else         if (gridColumn.getRenderer() instanceof ComplexRenderer) {
+          ComplexRenderer<?> cplxRenderer=(ComplexRenderer<?>)gridColumn.getRenderer();
           if (cplxRenderer.getConsumedEvents().contains(event.getType())) {
             if (cplxRenderer.onBrowserEvent(cell,event)) {
               return;
