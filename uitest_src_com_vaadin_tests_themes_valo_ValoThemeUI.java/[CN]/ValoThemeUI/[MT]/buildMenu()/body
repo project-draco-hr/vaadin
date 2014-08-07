@@ -1,0 +1,95 @@
+{
+  menuItems.put("common","Common UI Elements");
+  menuItems.put("labels","Labels");
+  menuItems.put("buttons-and-links","Buttons & Links");
+  menuItems.put("textfields","Text Fields");
+  menuItems.put("datefields","Date Fields");
+  menuItems.put("comboboxes","Combo Boxes");
+  menuItems.put("selects","Selects");
+  menuItems.put("checkboxes","Check Boxes & Option Groups");
+  menuItems.put("sliders","Sliders & Progress Bars");
+  menuItems.put("colorpickers","Color Pickers");
+  menuItems.put("menubars","Menu Bars");
+  menuItems.put("trees","Trees");
+  menuItems.put("tables","Tables");
+  menuItems.put("dragging","Drag and Drop");
+  menuItems.put("panels","Panels");
+  menuItems.put("splitpanels","Split Panels");
+  menuItems.put("tabs","Tabs");
+  menuItems.put("accordions","Accordions");
+  menuItems.put("popupviews","Popup Views");
+  menuItems.put("calendar","Calendar");
+  menuItems.put("forms","Forms");
+  HorizontalLayout top=new HorizontalLayout();
+  top.setWidth("100%");
+  top.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+  top.addStyleName("valo-menu-title");
+  menu.addComponent(top);
+  menu.addComponent(createThemeSelect());
+  Label title=new Label("Vaadin<br><strong>Valo Theme Styles</strong>",ContentMode.HTML);
+  title.setSizeUndefined();
+  top.addComponent(title);
+  top.setExpandRatio(title,1);
+  MenuBar settings=new MenuBar();
+  MenuItem settingsItem=settings.addItem("",FontAwesome.COG,null);
+  settingsItem.setStyleName("icon-only");
+  settingsItem.addItem("Edit Profile",null);
+  settingsItem.addItem("Preferences",null);
+  settingsItem.addSeparator();
+  settingsItem.addItem("Sign Out",null);
+  top.addComponent(settings);
+  final CheckBox enabled=new CheckBox("Enabled",true);
+  enabled.setDescription("Enable or disable the components on the right side");
+  menu.addComponent(enabled);
+  enabled.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      viewDisplay.setEnabled(enabled.getValue());
+    }
+  }
+);
+  Label label=null;
+  int count=-1;
+  for (  final Entry<String,String> item : menuItems.entrySet()) {
+    if (item.getKey().equals("labels")) {
+      label=new Label("Components",ContentMode.HTML);
+      label.setPrimaryStyleName("valo-menu-subtitle");
+      label.addStyleName("h4");
+      label.setSizeUndefined();
+      menu.addComponent(label);
+    }
+    if (item.getKey().equals("panels")) {
+      label.setValue(label.getValue() + " <span class=\"valo-menu-badge\">" + count+ "</span>");
+      count=0;
+      label=new Label("Containers",ContentMode.HTML);
+      label.setPrimaryStyleName("valo-menu-subtitle");
+      label.addStyleName("h4");
+      label.setSizeUndefined();
+      menu.addComponent(label);
+    }
+    if (item.getKey().equals("calendar")) {
+      label.setValue(label.getValue() + " <span class=\"valo-menu-badge\">" + count+ "</span>");
+      count=0;
+      label=new Label("Other",ContentMode.HTML);
+      label.setPrimaryStyleName("valo-menu-subtitle");
+      label.addStyleName("h4");
+      label.setSizeUndefined();
+      menu.addComponent(label);
+    }
+    Button b=new Button(item.getValue(),new ClickListener(){
+      @Override public void buttonClick(      ClickEvent event){
+        navigator.navigateTo(item.getKey());
+      }
+    }
+);
+    if (count == 2) {
+      b.setCaption(b.getCaption() + " <span class=\"valo-menu-badge\">123</span>");
+    }
+    b.setHtmlContentAllowed(true);
+    b.setPrimaryStyleName("valo-menu-item");
+    b.setIcon(testIcon.get());
+    menu.addComponent(b);
+    count++;
+  }
+  label.setValue(label.getValue() + " <span class=\"valo-menu-badge\">" + count+ "</span>");
+  return menu;
+}

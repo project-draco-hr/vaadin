@@ -10,12 +10,17 @@
     }
   }
  else   if (event.getTypeInt() == Event.ONMOUSEWHEEL) {
-    int velocity=event.getMouseWheelVelocityY();
-    if (velocity > 0) {
-      lazyPageScroller.scrollDown();
-    }
+    boolean scrollNotActive=!menu.isScrollActive();
+    debug("VFS.SP: onBrowserEvent() scrollNotActive: " + scrollNotActive);
+    if (scrollNotActive) {
+      int velocity=event.getMouseWheelVelocityY();
+      debug("VFS.SP: onBrowserEvent() velocity: " + velocity);
+      if (velocity > 0) {
+        lazyPageScroller.scrollDown();
+      }
  else {
-      lazyPageScroller.scrollUp();
+        lazyPageScroller.scrollUp();
+      }
     }
   }
   handleMouseDownEvent(event);

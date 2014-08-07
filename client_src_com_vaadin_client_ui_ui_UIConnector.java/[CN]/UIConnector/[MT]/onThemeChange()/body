@@ -1,0 +1,20 @@
+{
+  final String oldTheme=activeTheme;
+  final String newTheme=getState().theme;
+  final String oldThemeUrl=getThemeUrl(oldTheme);
+  final String newThemeUrl=getThemeUrl(newTheme);
+  if (SharedUtil.equals(oldTheme,newTheme)) {
+    if (newTheme == null) {
+      return;
+    }
+    if (findStylesheetTag(oldThemeUrl) == null) {
+      replaceTheme(null,newTheme,null,newThemeUrl);
+    }
+ else     if (!getWidget().getParent().getElement().hasClassName(newTheme)) {
+      activateTheme(newTheme);
+    }
+    return;
+  }
+  getLogger().info("Changing theme from " + oldTheme + " to "+ newTheme);
+  replaceTheme(oldTheme,newTheme,oldThemeUrl,newThemeUrl);
+}

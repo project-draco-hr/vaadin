@@ -1,0 +1,32 @@
+{
+  openTestURL();
+  waitForElementVisible(By.className("v-table-row-odd"));
+  for (  NativeButtonElement button : $(NativeButtonElement.class).all()) {
+    button.click();
+  }
+  for (  ButtonElement button : $(ButtonElement.class).all()) {
+    button.click();
+  }
+  getDriver().findElement(By.className("v-app")).click();
+  VerticalLayoutElement vLayout=$(VerticalLayoutElement.class).$(VerticalLayoutElement.class).first();
+  int containerWidth=vLayout.getSize().getWidth();
+  NativeButtonElement nativeButton=vLayout.$(NativeButtonElement.class).first();
+  int buttonWidth=nativeButton.getSize().getWidth();
+  assertButtonWidth(buttonWidth,containerWidth);
+  ButtonElement button=vLayout.$(ButtonElement.class).first();
+  buttonWidth=button.getSize().getWidth();
+  assertButtonWidth(buttonWidth,containerWidth);
+  List<WebElement> rows=findElements(By.className("v-table-cell-content"));
+  int rowWidth=rows.get(0).getSize().getWidth();
+  List<WebElement> rowWrappers=findElements(By.className("v-table-cell-wrapper"));
+  WebElement row=rowWrappers.get(0);
+  containerWidth=row.getSize().getWidth();
+  assertRowWrapperWidth(containerWidth,rowWidth);
+  buttonWidth=row.findElement(By.className("v-button")).getSize().getWidth();
+  assertButtonWidth(buttonWidth,containerWidth);
+  row=rowWrappers.get(1);
+  containerWidth=row.getSize().getWidth();
+  assertRowWrapperWidth(containerWidth,rowWidth);
+  buttonWidth=row.findElement(By.className("v-nativebutton")).getSize().getWidth();
+  assertButtonWidth(buttonWidth,containerWidth);
+}

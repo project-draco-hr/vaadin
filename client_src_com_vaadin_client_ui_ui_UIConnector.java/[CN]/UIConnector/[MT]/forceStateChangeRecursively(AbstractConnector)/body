@@ -1,0 +1,11 @@
+{
+  connector.forceStateChange();
+  for (  ServerConnector child : connector.getChildren()) {
+    if (child instanceof AbstractConnector) {
+      forceStateChangeRecursively((AbstractConnector)child);
+    }
+ else {
+      getLogger().warning("Could not force state change for unknown connector type: " + child.getClass().getName());
+    }
+  }
+}

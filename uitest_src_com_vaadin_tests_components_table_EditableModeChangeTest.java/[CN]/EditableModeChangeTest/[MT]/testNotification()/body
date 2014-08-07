@@ -1,0 +1,20 @@
+{
+  openTestURL();
+  TableElement table=$(TableElement.class).first();
+  TestBenchElement cell_1_0=table.getCell(1,0);
+  assertEquals("original value not found, wrong cell or contents (1st column of the 2nd row expected)","Teppo",cell_1_0.getText());
+  cell_1_0.click();
+  new Actions(getDriver()).doubleClick(cell_1_0).build().perform();
+  sleep(100);
+  WebElement textField=table.getCell(1,0).findElement(By.className("v-textfield"));
+  assertEquals("original value not found, wrong cell or contents (1st column of the 2nd row expected)","Teppo",textField.getAttribute("value"));
+  textField.clear();
+  textField.sendKeys("baa");
+  table.getCell(0,1).click();
+  assertEquals("updated value not found, wrong cell or contents (1st column of the 2nd row expected)","baa",table.getCell(1,0).getText());
+  List<WebElement> selected=table.findElement(By.className("v-table-body")).findElements(By.className("v-selected"));
+  assertEquals(1,selected.size());
+  WebElement content=selected.get(0).findElement(By.className("v-table-cell-wrapper"));
+  assertEquals("expected value not found, wrong cell or contents (1st column of the 1st row expected)","Teemu",content.getText());
+  compareScreen("selection");
+}

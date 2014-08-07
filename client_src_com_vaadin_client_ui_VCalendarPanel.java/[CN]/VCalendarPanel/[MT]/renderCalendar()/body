@@ -1,28 +1,3 @@
 {
-  super.setStylePrimaryName(parent.getStylePrimaryName() + "-calendarpanel");
-  if (focusedDate == null) {
-    Date now=new Date();
-    focusedDate=new FocusedDate(now.getYear(),now.getMonth(),now.getDate());
-    displayedMonth=new FocusedDate(now.getYear(),now.getMonth(),1);
-  }
-  if (getResolution().getCalendarField() <= Resolution.MONTH.getCalendarField() && focusChangeListener != null) {
-    focusChangeListener.focusChanged(new Date(focusedDate.getTime()));
-  }
-  final boolean needsMonth=getResolution().getCalendarField() > Resolution.YEAR.getCalendarField();
-  boolean needsBody=getResolution().getCalendarField() >= Resolution.DAY.getCalendarField();
-  buildCalendarHeader(needsMonth);
-  clearCalendarBody(!needsBody);
-  if (needsBody) {
-    buildCalendarBody();
-  }
-  if (isTimeSelectorNeeded()) {
-    time=new VTime();
-    setWidget(2,0,time);
-    getFlexCellFormatter().setColSpan(2,0,5);
-    getFlexCellFormatter().setStyleName(2,0,parent.getStylePrimaryName() + "-calendarpanel-time");
-  }
- else   if (time != null) {
-    remove(time);
-  }
-  initialRenderDone=true;
+  renderCalendar(true);
 }
