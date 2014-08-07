@@ -1,0 +1,13 @@
+{
+  if (connector.hasEventListener(EventId.FOCUS)) {
+    if (focusedTab == null) {
+      connector.getRpcProxy(FocusAndBlurServerRpc.class).focus();
+    }
+  }
+  removeBlurSchedule();
+  setFocusedTab(newFocusTab);
+  if (focusedTab.hasTooltip()) {
+    focusedTab.setAssistiveDescription(getVTooltip().getUniqueId());
+    getVTooltip().showAssistive(focusedTab.getTooltipInfo());
+  }
+}
