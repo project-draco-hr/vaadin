@@ -1,4 +1,7 @@
 {
+  if (delay != null) {
+    delay.cancel();
+  }
   if (notifications.contains(this)) {
     DOM.removeEventPreview(this);
     if (getStyleName().contains(VOverlay.ADDITIONAL_CLASSNAME_ANIMATE_IN)) {
@@ -12,20 +15,7 @@
 );
     }
  else {
-      if (BrowserInfo.get().isIE8() || BrowserInfo.get().isIE9()) {
-        new Timer(){
-          @Override public void run(){
-            VNotification.super.hide();
-          }
-        }
-.schedule(hideDelay);
-      }
- else {
-        if (hideDelay > 0) {
-          AnimationUtil.setAnimationDelay(getElement(),hideDelay + "ms");
-        }
-        VNotification.super.hide();
-      }
+      VNotification.super.hide();
       fireEvent(new HideEvent(this));
       notifications.remove(this);
     }
