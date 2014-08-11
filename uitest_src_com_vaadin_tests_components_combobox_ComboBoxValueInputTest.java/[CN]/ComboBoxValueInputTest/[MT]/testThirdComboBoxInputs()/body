@@ -1,0 +1,50 @@
+{
+  ComboBoxElement comboBox=$(ComboBoxElement.class).all().get(2);
+  assertEquals("correct selection not found","Null item",comboBox.findElement(By.tagName("input")).getAttribute("value"));
+  assertFalse("suggestions not found even if there should be several",comboBox.getPopupSuggestions().isEmpty());
+  WebElement popup=driver.findElement(By.className("v-filterselect-suggestpopup"));
+  List<WebElement> filteredItems=popup.findElement(By.className("v-filterselect-suggestmenu")).findElements(By.className("gwt-MenuItem"));
+  assertEquals("unexpected amount of suggestions found",4,filteredItems.size());
+  assertEquals("wrong filtering result","Null item",filteredItems.get(0).getText());
+  assertEquals("wrong filtering result","Value 1",filteredItems.get(1).getText());
+  assertEquals("wrong filtering result","Value 3",filteredItems.get(3).getText());
+  assertEquals("wrong selection","Null item",popup.findElement(By.className("v-filterselect-suggestmenu")).findElement(By.className("gwt-MenuItem-selected")).getText());
+  filteredItems.get(2).click();
+  assertFalse("popup found when there should be none",comboBox.isElementPresent(By.vaadin("#popup")));
+  assertEquals("correct selection not found","Value 2",comboBox.findElement(By.tagName("input")).getAttribute("value"));
+  comboBox.openPopup();
+  popup=driver.findElement(By.className("v-filterselect-suggestpopup"));
+  filteredItems=popup.findElement(By.className("v-filterselect-suggestmenu")).findElements(By.className("gwt-MenuItem"));
+  assertEquals("unexpected amount of suggestions found",4,filteredItems.size());
+  assertEquals("wrong filtering result","Null item",filteredItems.get(0).getText());
+  assertEquals("wrong filtering result","Value 1",filteredItems.get(1).getText());
+  assertEquals("wrong filtering result","Value 3",filteredItems.get(3).getText());
+  assertEquals("wrong selection","Value 2",popup.findElement(By.className("v-filterselect-suggestmenu")).findElement(By.className("gwt-MenuItem-selected")).getText());
+  filteredItems.get(0).click();
+  assertFalse("popup found when there should be none",comboBox.isElementPresent(By.vaadin("#popup")));
+  assertEquals("correct selection not found","Null item",comboBox.findElement(By.tagName("input")).getAttribute("value"));
+  comboBox.findElement(By.tagName("input")).clear();
+  comboBox.findElement(By.tagName("input")).sendKeys("value");
+  assertTrue("popup not found when there should be one",comboBox.isElementPresent(By.vaadin("#popup")));
+  popup=driver.findElement(By.className("v-filterselect-suggestpopup"));
+  filteredItems=popup.findElement(By.className("v-filterselect-suggestmenu")).findElements(By.className("gwt-MenuItem"));
+  assertEquals("unexpected amount of suggestions found",3,filteredItems.size());
+  assertEquals("wrong filtering result","Value 1",filteredItems.get(0).getText());
+  assertEquals("wrong filtering result","Value 3",filteredItems.get(2).getText());
+  assertEquals("correct selection not found","value",comboBox.findElement(By.tagName("input")).getAttribute("value"));
+  comboBox.findElement(By.tagName("input")).sendKeys(Keys.ARROW_DOWN);
+  assertEquals("wrong selection","Value 1",popup.findElement(By.className("v-filterselect-suggestmenu")).findElement(By.className("gwt-MenuItem-selected")).getText());
+  comboBox.findElement(By.tagName("input")).sendKeys(Keys.ARROW_DOWN);
+  comboBox.findElement(By.tagName("input")).sendKeys(Keys.ARROW_DOWN);
+  if (getBrowsersExcludingIE().contains(getDesiredCapabilities())) {
+    assertEquals("wrong selection","Value 3",popup.findElement(By.className("v-filterselect-suggestmenu")).findElement(By.className("gwt-MenuItem-selected")).getText());
+  }
+  comboBox.findElement(By.tagName("input")).sendKeys(Keys.RETURN);
+  if (getBrowsersExcludingIE().contains(getDesiredCapabilities())) {
+    assertEquals("correct selection not found","Value 3",comboBox.findElement(By.tagName("input")).getAttribute("value"));
+  }
+  if (Browser.PHANTOMJS.getDesiredCapabilities().equals(getDesiredCapabilities())) {
+    comboBox.openPopup();
+  }
+  assertFalse("popup found when there should be none",comboBox.isElementPresent(By.vaadin("#popup")));
+}
