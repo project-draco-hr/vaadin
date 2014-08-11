@@ -1,0 +1,12 @@
+{
+  if (tries <= 0) {
+    throw new RuntimeException("Tried many times but was not able to click the link...");
+  }
+  $(ButtonElement.class).caption(link).first().click();
+  CssLayoutElement content=wrap(CssLayoutElement.class,findElement(By.className("valo-content")));
+  LabelElement captionElem=content.$(LabelElement.class).first();
+  if (!captionElem.getText().equals(caption)) {
+    System.err.println("Extra click needed on '" + link + "' on remote "+ getDesiredCapabilities()+ " "+ getRemoteControlName());
+    open(link,caption,tries - 1);
+  }
+}
