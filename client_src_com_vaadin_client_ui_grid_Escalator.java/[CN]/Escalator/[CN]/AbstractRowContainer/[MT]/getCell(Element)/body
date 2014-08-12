@@ -5,16 +5,18 @@
   if (root == element || element.getParentElement() == root || !root.isOrHasChild(element)) {
     return null;
   }
-  while (element.getParentElement().getParentElement() != root) {
-    element=element.getParentElement();
+  Element cellElementCandidate=element;
+  while (cellElementCandidate.getParentElement().getParentElement() != root) {
+    cellElementCandidate=cellElementCandidate.getParentElement();
   }
+  final TableCellElement cellElement=TableCellElement.as(cellElementCandidate);
   int domColumnIndex=-1;
-  for (Element e=element; e != null; e=e.getPreviousSiblingElement()) {
+  for (Element e=cellElement; e != null; e=e.getPreviousSiblingElement()) {
     domColumnIndex++;
   }
   int domRowIndex=-1;
-  for (Element e=element.getParentElement(); e != null; e=e.getPreviousSiblingElement()) {
+  for (Element e=cellElement.getParentElement(); e != null; e=e.getPreviousSiblingElement()) {
     domRowIndex++;
   }
-  return new Cell(domRowIndex,domColumnIndex,element);
+  return new Cell(domRowIndex,domColumnIndex,cellElement);
 }

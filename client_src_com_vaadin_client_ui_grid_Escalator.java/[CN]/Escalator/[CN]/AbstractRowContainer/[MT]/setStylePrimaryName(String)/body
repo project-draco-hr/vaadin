@@ -4,16 +4,14 @@
     return;
   }
   this.primaryStyleName=primaryStyleName;
-  Node row=root.getFirstChild();
+  TableRowElement row=root.getRows().getItem(0);
   while (row != null) {
-    Element rowElement=row.cast();
-    UIObject.setStylePrimaryName(rowElement,primaryStyleName + "-row");
-    Node cell=row.getFirstChild();
+    UIObject.setStylePrimaryName(row,primaryStyleName + "-row");
+    TableCellElement cell=row.getCells().getItem(0);
     while (cell != null) {
-      Element cellElement=cell.cast();
-      UIObject.setStylePrimaryName(cellElement,primaryStyleName + "-cell");
-      cell=cell.getNextSibling();
+      UIObject.setStylePrimaryName(cell,primaryStyleName + "-cell");
+      cell=TableCellElement.as(cell.getNextSiblingElement());
     }
-    row=row.getNextSibling();
+    row=TableRowElement.as(row.getNextSiblingElement());
   }
 }
