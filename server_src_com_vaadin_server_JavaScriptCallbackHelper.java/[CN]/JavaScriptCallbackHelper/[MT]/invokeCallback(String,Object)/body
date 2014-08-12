@@ -2,6 +2,6 @@
   if (callbacks.containsKey(name)) {
     throw new IllegalStateException("Can't call callback " + name + " on the client because a callback with the same name is registered on the server.");
   }
-  JSONArray args=new JSONArray(Arrays.asList(arguments));
+  JsonArray args=(JsonArray)JsonCodec.encode(arguments,null,Object[].class,null).getEncodedValue();
   connector.addMethodInvocationToQueue(JavaScriptCallbackRpc.class.getName(),CALL_METHOD,new Object[]{name,args});
 }

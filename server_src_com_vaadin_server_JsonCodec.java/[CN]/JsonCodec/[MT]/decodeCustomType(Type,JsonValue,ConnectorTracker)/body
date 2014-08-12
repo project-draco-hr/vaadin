@@ -1,0 +1,35 @@
+{
+  if (isInternalType(targetType)) {
+    throw new JsonException("decodeCustomType cannot be used for " + targetType + ", which is an internal type");
+  }
+  if (value.getType() == JsonType.NULL) {
+    return null;
+  }
+ else   if (targetType == byte.class || targetType == Byte.class) {
+    return Byte.valueOf((byte)value.asNumber());
+  }
+ else   if (targetType == char.class || targetType == Character.class) {
+    return Character.valueOf(value.asString().charAt(0));
+  }
+ else   if (targetType instanceof Class<?> && ((Class<?>)targetType).isArray()) {
+    Class<?> componentType=((Class<?>)targetType).getComponentType();
+    return decodeArray(componentType,(JsonArray)value,connectorTracker);
+  }
+ else   if (targetType instanceof GenericArrayType) {
+    Type componentType=((GenericArrayType)targetType).getGenericComponentType();
+    return decodeArray(componentType,(JsonArray)value,connectorTracker);
+  }
+ else   if (JsonValue.class.isAssignableFrom(getClassForType(targetType))) {
+    return value;
+  }
+ else   if (Enum.class.isAssignableFrom(getClassForType(targetType))) {
+    Class<?> classForType=getClassForType(targetType);
+    return decodeEnum(classForType.asSubclass(Enum.class),(JsonString)value);
+  }
+ else   if (customSerializers.containsKey(getClassForType(targetType))) {
+    return customSerializers.get(getClassForType(targetType)).deserialize(targetType,value,connectorTracker);
+  }
+ else {
+    return decodeObject(targetType,(JsonObject)value,connectorTracker);
+  }
+}
