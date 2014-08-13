@@ -1,5 +1,6 @@
 {
   if (component != null && components.contains(component)) {
+    int componentIndex=components.indexOf(component);
     super.removeComponent(component);
     keyMapper.remove(component);
     components.remove(component);
@@ -10,6 +11,14 @@
         setSelected(null);
       }
  else {
+        int newSelectedIndex=selectedTabIndexAfterTabRemove(componentIndex);
+        if (0 <= newSelectedIndex && newSelectedIndex < components.size()) {
+          Component newSelectedComponent=components.get(newSelectedIndex);
+          Tab newSelectedTab=tabs.get(newSelectedComponent);
+          if (newSelectedTab.isEnabled()) {
+            setSelected(newSelectedComponent);
+          }
+        }
         updateSelection();
         fireSelectedTabChange();
       }
