@@ -1,0 +1,34 @@
+{
+  openTestURL();
+  TreeTableElement treeTable=$(TreeTableElement.class).first();
+  List<WebElement> rows=treeTable.findElement(By.className("v-table-body")).findElements(By.tagName("tr"));
+  assertEquals("unexpected row count",4,rows.size());
+  treeTable.getCell(0,0).findElement(By.className("v-treetable-treespacer")).click();
+  waitUntilNot(ExpectedConditions.visibilityOfElementLocated(By.className("v-table-scrollposition")));
+  treeTable=$(TreeTableElement.class).first();
+  rows=treeTable.findElement(By.className("v-table-body")).findElements(By.tagName("tr"));
+  assertEquals("unexpected cached row count",46,rows.size());
+  TestBenchElementCommands scrollable=testBenchElement(treeTable.findElement(By.className("v-scrollable")));
+  scrollable.scroll(3969);
+  waitUntilNot(ExpectedConditions.visibilityOfElementLocated(By.className("v-table-scrollposition")));
+  assertEquals("elements found where there should be none",0,treeTable.findElements(By.vaadin("#row[0]/col[0]")).size());
+  assertEquals("unexpected cell contents","root2",treeTable.getCell(201,0).getText());
+  assertEquals("unexpected cell contents","END",treeTable.getCell(203,0).getText());
+  treeTable.getCell(201,0).findElement(By.className("v-treetable-treespacer")).click();
+  waitUntilNot(ExpectedConditions.visibilityOfElementLocated(By.className("v-table-scrollposition")));
+  treeTable=$(TreeTableElement.class).first();
+  rows=treeTable.findElement(By.className("v-table-body")).findElements(By.tagName("tr"));
+  String elementText=rows.get(rows.size() - 1).findElement(By.className("v-table-cell-wrapper")).getText();
+  assertFalse("final row found when it should be beyond cache",elementText.contains("END"));
+  treeTable.getCell(201,0).findElement(By.className("v-treetable-treespacer")).click();
+  waitUntilNot(ExpectedConditions.visibilityOfElementLocated(By.className("v-table-scrollposition")));
+  treeTable=$(TreeTableElement.class).first();
+  rows=treeTable.findElement(By.className("v-table-body")).findElements(By.tagName("tr"));
+  assertEquals("unexpected cached row count",45,rows.size());
+  assertEquals("unexpected cell contents (final row expected)","END",treeTable.getCell(203,0).getText());
+  assertEquals("unexpected cell contents (first visible row expected)","188",treeTable.getCell(189,0).getText());
+  assertEquals("unexpected cell contents (first cached row expected)","158",treeTable.getCell(159,0).getText());
+  assertEquals("elements found where there should be none",0,treeTable.findElements(By.vaadin("#row[158]/col[0]")).size());
+  assertEquals("elements found where there should be none",0,treeTable.findElements(By.vaadin("#row[204]/col[0]")).size());
+  compareScreen("bottom");
+}
