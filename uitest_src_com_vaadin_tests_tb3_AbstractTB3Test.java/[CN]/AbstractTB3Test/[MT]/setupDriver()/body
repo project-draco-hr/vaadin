@@ -10,11 +10,22 @@
   }
  else {
     capabilities=getDesiredCapabilities();
-    if (localWebDriverIsUsed()) {
-      setupLocalDriver(capabilities);
-    }
+    for (int i=1; i <= BROWSER_INIT_ATTEMPTS; i++) {
+      try {
+        if (localWebDriverIsUsed()) {
+          setupLocalDriver(capabilities);
+        }
  else {
-      setupRemoteDriver(capabilities);
+          setupRemoteDriver(capabilities);
+        }
+        break;
+      }
+ catch (      Exception e) {
+        System.err.println("Browser startup for " + capabilities + " failed on attempt "+ i+ ": "+ e.getMessage());
+        if (i == BROWSER_INIT_ATTEMPTS) {
+          throw e;
+        }
+      }
     }
   }
   int w=SCREENSHOT_WIDTH;
