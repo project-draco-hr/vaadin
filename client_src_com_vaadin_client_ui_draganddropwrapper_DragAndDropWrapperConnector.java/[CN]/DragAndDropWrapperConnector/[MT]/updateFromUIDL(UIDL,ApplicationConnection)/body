@@ -37,6 +37,17 @@
     }
     getWidget().startNextUpload();
     getWidget().dragStartMode=uidl.getIntAttribute(DragAndDropWrapperConstants.DRAG_START_MODE);
+    String dragImageComponentConnectorId=uidl.getStringAttribute(DragAndDropWrapperConstants.DRAG_START_COMPONENT_ATTRIBUTE);
+    ComponentConnector connector=null;
+    if (dragImageComponentConnectorId != null) {
+      connector=(ComponentConnector)ConnectorMap.get(client).getConnector(dragImageComponentConnectorId);
+      if (connector == null) {
+        getLogger().log(Level.WARNING,"DragAndDropWrapper drag image component" + " connector now found. Make sure the" + " component is attached.");
+      }
+ else {
+        getWidget().setDragAndDropWidget(connector.getWidget());
+      }
+    }
     getWidget().initDragStartMode();
     getWidget().html5DataFlavors=uidl.getMapAttribute(DragAndDropWrapperConstants.HTML5_DATA_FLAVORS);
     getWidget().hasTooltip=getState().description != null;

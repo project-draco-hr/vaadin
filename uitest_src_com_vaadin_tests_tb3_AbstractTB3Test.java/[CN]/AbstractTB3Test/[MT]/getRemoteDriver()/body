@@ -1,0 +1,17 @@
+{
+  WebDriver d=getDriver();
+  if (d instanceof TestBenchDriverProxy) {
+    try {
+      Field f=TestBenchDriverProxy.class.getDeclaredField("actualDriver");
+      f.setAccessible(true);
+      return (RemoteWebDriver)f.get(d);
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
+  }
+  if (d instanceof RemoteWebDriver) {
+    return (RemoteWebDriver)d;
+  }
+  return null;
+}

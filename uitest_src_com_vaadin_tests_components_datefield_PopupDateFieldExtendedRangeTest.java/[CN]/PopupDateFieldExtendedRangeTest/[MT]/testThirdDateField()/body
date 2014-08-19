@@ -1,0 +1,74 @@
+{
+  DateFieldElement dateField=$(DateFieldElement.class).all().get(2);
+  ButtonElement button=$(ButtonElement.class).first();
+  button.click();
+  sleep(100);
+  dateField.findElement(By.tagName("button")).click();
+  assertTrue("popup not found when there should be one",isElementPresent(By.className("v-datefield-popup")));
+  WebElement popup=findElement(By.className("v-datefield-popup"));
+  assertEquals("unexpected month","helmikuu 2010",popup.findElements(By.className("v-datefield-calendarpanel-month")).get(1).getText());
+  List<WebElement> headerElements=popup.findElement(By.className("v-datefield-calendarpanel-weekdays")).findElements(By.tagName("td"));
+  List<WebElement> weekdays=new ArrayList<WebElement>();
+  for (  WebElement headerElement : headerElements) {
+    if ("columnheader".equals(headerElement.getAttribute("role"))) {
+      weekdays.add(headerElement);
+    }
+  }
+  assertEquals("unexpected weekday count",7,weekdays.size());
+  assertEquals("unexpected first day of week","MA",weekdays.get(0).getText());
+  List<WebElement> weeknumbers=popup.findElements(By.className("v-datefield-calendarpanel-weeknumber"));
+  assertEquals("unexpected weeknumber count",6,weeknumbers.size());
+  assertEquals("unexpected weeknumber content","5",weeknumbers.get(0).getText());
+  assertEquals("unexpected weeknumber content","10",weeknumbers.get(5).getText());
+  assertEquals("unexpected selection","16",popup.findElement(By.className("v-datefield-calendarpanel-day-selected")).getText());
+  assertEquals("unexpected focus","16",popup.findElement(By.className("v-datefield-calendarpanel-day-focused")).getText());
+  List<WebElement> days=popup.findElements(By.className("v-datefield-calendarpanel-day"));
+  assertEquals("unexpected day count",42,days.size());
+  assertEquals("unexpected day content","1",days.get(0).getText());
+  assertEquals("unexpected day content","9",days.get(8).getText());
+  assertEquals("unexpected day content","26",days.get(25).getText());
+  assertEquals("unexpected day content","14",days.get(41).getText());
+  WebElement popupBody=popup.findElement(By.className("v-datefield-calendarpanel"));
+  new Actions(driver).keyDown(Keys.SHIFT).perform();
+  popupBody.sendKeys(Keys.ARROW_LEFT);
+  new Actions(driver).keyUp(Keys.SHIFT).perform();
+  if (!getBrowsersExcludingIE().contains(getDesiredCapabilities()) && !Browser.IE8.getDesiredCapabilities().equals(getDesiredCapabilities())) {
+    popup.findElement(By.className("v-datefield-calendarpanel-prevmonth")).findElement(By.tagName("button")).click();
+  }
+  assertEquals("unexpected month","tammikuu 2010",popup.findElements(By.className("v-datefield-calendarpanel-month")).get(1).getText());
+  weeknumbers=popup.findElements(By.className("v-datefield-calendarpanel-weeknumber"));
+  assertEquals("unexpected weeknumber count",6,weeknumbers.size());
+  assertEquals("unexpected weeknumber content","53",weeknumbers.get(0).getText());
+  assertEquals("unexpected weeknumber content","5",weeknumbers.get(5).getText());
+  assertEquals("unexpected selection",0,popup.findElements(By.className("v-datefield-calendarpanel-day-selected")).size());
+  if (getBrowsersExcludingIE().contains(getDesiredCapabilities()) || Browser.IE8.getDesiredCapabilities().equals(getDesiredCapabilities())) {
+    assertEquals("unexpected focus","16",popup.findElement(By.className("v-datefield-calendarpanel-day-focused")).getText());
+  }
+  days=popup.findElements(By.className("v-datefield-calendarpanel-day"));
+  assertEquals("unexpected day count",42,days.size());
+  assertEquals("unexpected day content","28",days.get(0).getText());
+  assertEquals("unexpected day content","5",days.get(8).getText());
+  assertEquals("unexpected day content","22",days.get(25).getText());
+  assertEquals("unexpected day content","7",days.get(41).getText());
+  new Actions(driver).keyDown(Keys.SHIFT).perform();
+  popupBody.sendKeys(Keys.ARROW_DOWN);
+  new Actions(driver).keyUp(Keys.SHIFT).perform();
+  popup.findElement(By.className("v-datefield-calendarpanel-prevyear")).findElement(By.tagName("button")).click();
+  assertEquals("unexpected month","tammikuu 2009",popup.findElements(By.className("v-datefield-calendarpanel-month")).get(1).getText());
+  weeknumbers=popup.findElements(By.className("v-datefield-calendarpanel-weeknumber"));
+  assertEquals("unexpected weeknumber count",6,weeknumbers.size());
+  assertEquals("unexpected weeknumber content","1",weeknumbers.get(0).getText());
+  assertEquals("unexpected weeknumber content","6",weeknumbers.get(5).getText());
+  assertEquals("unexpected selection",0,popup.findElements(By.className("v-datefield-calendarpanel-day-selected")).size());
+  if (false) {
+    assertEquals("unexpected focus","16",popup.findElement(By.className("v-datefield-calendarpanel-day-focused")).getText());
+  }
+  days=popup.findElements(By.className("v-datefield-calendarpanel-day"));
+  assertEquals("unexpected day count",42,days.size());
+  assertEquals("unexpected day content","29",days.get(0).getText());
+  assertEquals("unexpected day content","6",days.get(8).getText());
+  assertEquals("unexpected day content","23",days.get(25).getText());
+  assertEquals("unexpected day content","8",days.get(41).getText());
+  button.click();
+  assertFalse("popup found when there should be none",isElementPresent(By.className("v-datefield-popup")));
+}

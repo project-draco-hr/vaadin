@@ -2,4 +2,15 @@
   super.onAttach();
   getApplicationConnection().getUIConnector().getWidget().storeFocus();
   setTabStopEnabled(doTabStop);
+  if (BrowserInfo.get().isIE8()) {
+    closeBox.getStyle().setDisplay(Display.NONE);
+    maximizeRestoreBox.getStyle().setDisplay(Display.NONE);
+    Scheduler.get().scheduleFinally(new Command(){
+      @Override public void execute(){
+        closeBox.getStyle().clearDisplay();
+        maximizeRestoreBox.getStyle().clearDisplay();
+      }
+    }
+);
+  }
 }

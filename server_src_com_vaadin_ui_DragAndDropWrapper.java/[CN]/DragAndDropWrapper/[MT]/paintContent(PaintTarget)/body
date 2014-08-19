@@ -1,5 +1,13 @@
 {
   target.addAttribute(DragAndDropWrapperConstants.DRAG_START_MODE,dragStartMode.ordinal());
+  if (dragStartMode.equals(DragStartMode.COMPONENT_OTHER)) {
+    if (dragImageComponent != null) {
+      target.addAttribute(DragAndDropWrapperConstants.DRAG_START_COMPONENT_ATTRIBUTE,dragImageComponent.getConnectorId());
+    }
+ else {
+      throw new IllegalArgumentException("DragStartMode.COMPONENT_OTHER set but no component " + "was defined. Please set a component using DragAnd" + "DropWrapper.setDragStartComponent(Component).");
+    }
+  }
   if (getDropHandler() != null) {
     getDropHandler().getAcceptCriterion().paint(target);
   }

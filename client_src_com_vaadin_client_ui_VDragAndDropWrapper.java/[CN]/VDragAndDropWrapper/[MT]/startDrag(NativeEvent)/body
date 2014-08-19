@@ -1,5 +1,5 @@
 {
-  if (dragStartMode == WRAPPER || dragStartMode == COMPONENT) {
+  if (dragStartMode == WRAPPER || dragStartMode == COMPONENT || dragStartMode == COMPONENT_OTHER) {
     VTransferable transferable=new VTransferable();
     transferable.setDragSource(getConnector());
     ComponentConnector paintable=Util.findPaintable(client,Element.as(event.getEventTarget()));
@@ -9,6 +9,9 @@
     transferable.setData("mouseDown",MouseEventDetailsBuilder.buildMouseEventDetails(event).serialize());
     if (dragStartMode == WRAPPER) {
       dragEvent.createDragImage(getElement(),true);
+    }
+ else     if (dragStartMode == COMPONENT_OTHER && getDragImageWidget() != null) {
+      dragEvent.createDragImage(getDragImageWidget().getElement(),true);
     }
  else {
       dragEvent.createDragImage(widget.getElement(),true);
