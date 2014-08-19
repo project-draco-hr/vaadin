@@ -1,0 +1,217 @@
+{
+  table.setSelectable(true);
+  table.setMultiSelect(true);
+  table.setSortEnabled(true);
+  table.setColumnCollapsingAllowed(true);
+  table.setColumnReorderingAllowed(true);
+  table.setPageLength(6);
+  table.addActionHandler(ValoThemeUI.getActionHandler());
+  table.setDragMode(TableDragMode.MULTIROW);
+  table.setDropHandler(new DropHandler(){
+    @Override public AcceptCriterion getAcceptCriterion(){
+      return AcceptAll.get();
+    }
+    @Override public void drop(    DragAndDropEvent event){
+      Notification.show(event.getTransferable().toString());
+    }
+  }
+);
+  table.setColumnAlignment(ValoThemeUI.DESCRIPTION_PROPERTY,Align.RIGHT);
+  table.setColumnAlignment(ValoThemeUI.INDEX_PROPERTY,Align.CENTER);
+  table.removeContainerProperty("textfield");
+  table.removeGeneratedColumn("textfield");
+  table.removeContainerProperty("button");
+  table.removeGeneratedColumn("button");
+  table.removeContainerProperty("label");
+  table.removeGeneratedColumn("label");
+  table.removeContainerProperty("checkbox");
+  table.removeGeneratedColumn("checkbox");
+  table.removeContainerProperty("datefield");
+  table.removeGeneratedColumn("datefield");
+  table.removeContainerProperty("combobox");
+  table.removeGeneratedColumn("combobox");
+  table.removeContainerProperty("optiongroup");
+  table.removeGeneratedColumn("optiongroup");
+  table.removeContainerProperty("slider");
+  table.removeGeneratedColumn("slider");
+  table.removeContainerProperty("progress");
+  table.removeGeneratedColumn("progress");
+  if (componentsInRows) {
+    table.addContainerProperty("textfield",TextField.class,null);
+    table.addGeneratedColumn("textfield",new ColumnGenerator(){
+      @Override public Object generateCell(      Table source,      Object itemId,      Object columnId){
+        TextField tf=new TextField();
+        tf.setInputPrompt("Type here???");
+        if ((Integer)itemId % 2 == 0) {
+          tf.addStyleName("borderless");
+        }
+        return tf;
+      }
+    }
+);
+    table.addContainerProperty("datefield",TextField.class,null);
+    table.addGeneratedColumn("datefield",new ColumnGenerator(){
+      @Override public Object generateCell(      Table source,      Object itemId,      Object columnId){
+        DateField tf=new DateField();
+        tf.addStyleName("compact");
+        if ((Integer)itemId % 2 == 0) {
+          tf.addStyleName("borderless");
+        }
+        return tf;
+      }
+    }
+);
+    table.addContainerProperty("combobox",TextField.class,null);
+    table.addGeneratedColumn("combobox",new ColumnGenerator(){
+      @Override public Object generateCell(      Table source,      Object itemId,      Object columnId){
+        ComboBox tf=new ComboBox();
+        tf.setInputPrompt("Select");
+        tf.addStyleName("compact");
+        if ((Integer)itemId % 2 == 0) {
+          tf.addStyleName("borderless");
+        }
+        return tf;
+      }
+    }
+);
+    table.addContainerProperty("button",Button.class,null);
+    table.addGeneratedColumn("button",new ColumnGenerator(){
+      @Override public Object generateCell(      Table source,      Object itemId,      Object columnId){
+        Button b=new Button("Button");
+        b.addStyleName("small");
+        return b;
+      }
+    }
+);
+    table.addContainerProperty("label",TextField.class,null);
+    table.addGeneratedColumn("label",new ColumnGenerator(){
+      @Override public Object generateCell(      Table source,      Object itemId,      Object columnId){
+        Label label=new Label("Label component");
+        label.setSizeUndefined();
+        label.addStyleName("bold");
+        return label;
+      }
+    }
+);
+    table.addContainerProperty("checkbox",TextField.class,null);
+    table.addGeneratedColumn("checkbox",new ColumnGenerator(){
+      @Override public Object generateCell(      Table source,      Object itemId,      Object columnId){
+        CheckBox cb=new CheckBox(null,true);
+        return cb;
+      }
+    }
+);
+    table.addContainerProperty("optiongroup",TextField.class,null);
+    table.addGeneratedColumn("optiongroup",new ColumnGenerator(){
+      @Override public Object generateCell(      Table source,      Object itemId,      Object columnId){
+        OptionGroup op=new OptionGroup();
+        op.addItem("Male");
+        op.addItem("Female");
+        op.addStyleName("horizontal");
+        return op;
+      }
+    }
+);
+    table.addContainerProperty("slider",TextField.class,null);
+    table.addGeneratedColumn("slider",new ColumnGenerator(){
+      @Override public Object generateCell(      Table source,      Object itemId,      Object columnId){
+        Slider s=new Slider();
+        s.setValue(30.0);
+        return s;
+      }
+    }
+);
+    table.addContainerProperty("progress",TextField.class,null);
+    table.addGeneratedColumn("progress",new ColumnGenerator(){
+      @Override public Object generateCell(      Table source,      Object itemId,      Object columnId){
+        ProgressBar bar=new ProgressBar();
+        bar.setValue(0.7f);
+        return bar;
+      }
+    }
+);
+  }
+  table.setFooterVisible(footer);
+  if (footer) {
+    table.setColumnFooter(ValoThemeUI.CAPTION_PROPERTY,"caption");
+    table.setColumnFooter(ValoThemeUI.DESCRIPTION_PROPERTY,"description");
+    table.setColumnFooter(ValoThemeUI.ICON_PROPERTY,"icon");
+    table.setColumnFooter(ValoThemeUI.INDEX_PROPERTY,"index");
+  }
+  if (sized) {
+    table.setWidth("400px");
+    table.setHeight("300px");
+  }
+ else {
+    table.setSizeUndefined();
+  }
+  if (expandRatios) {
+    if (!sized) {
+      table.setWidth("100%");
+    }
+  }
+  table.setColumnExpandRatio(ValoThemeUI.CAPTION_PROPERTY,expandRatios ? 1.0f : 0);
+  table.setColumnExpandRatio(ValoThemeUI.DESCRIPTION_PROPERTY,expandRatios ? 1.0f : 0);
+  if (!stripes) {
+    table.addStyleName("no-stripes");
+  }
+ else {
+    table.removeStyleName("no-stripes");
+  }
+  if (!verticalLines) {
+    table.addStyleName("no-vertical-lines");
+  }
+ else {
+    table.removeStyleName("no-vertical-lines");
+  }
+  if (!horizontalLines) {
+    table.addStyleName("no-horizontal-lines");
+  }
+ else {
+    table.removeStyleName("no-horizontal-lines");
+  }
+  if (borderless) {
+    table.addStyleName("borderless");
+  }
+ else {
+    table.removeStyleName("borderless");
+  }
+  if (!headers) {
+    table.addStyleName("no-header");
+  }
+ else {
+    table.removeStyleName("no-header");
+  }
+  if (compact) {
+    table.addStyleName("compact");
+  }
+ else {
+    table.removeStyleName("compact");
+  }
+  if (small) {
+    table.addStyleName("small");
+  }
+ else {
+    table.removeStyleName("small");
+  }
+  if (!rowIndex && !rowCaption && rowIcon) {
+    table.setRowHeaderMode(RowHeaderMode.HIDDEN);
+  }
+  if (rowIndex) {
+    table.setRowHeaderMode(RowHeaderMode.INDEX);
+  }
+  if (rowCaption) {
+    table.setRowHeaderMode(RowHeaderMode.PROPERTY);
+    table.setItemCaptionPropertyId(ValoThemeUI.CAPTION_PROPERTY);
+  }
+ else {
+    table.setItemCaptionPropertyId(null);
+  }
+  if (rowIcon) {
+    table.setRowHeaderMode(RowHeaderMode.ICON_ONLY);
+    table.setItemIconPropertyId(ValoThemeUI.ICON_PROPERTY);
+  }
+ else {
+    table.setItemIconPropertyId(null);
+  }
+}
