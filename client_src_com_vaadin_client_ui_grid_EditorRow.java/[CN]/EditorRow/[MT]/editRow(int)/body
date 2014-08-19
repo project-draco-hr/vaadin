@@ -1,0 +1,17 @@
+{
+  if (!enabled) {
+    throw new IllegalStateException("Cannot edit row: EditorRow is not enabled");
+  }
+  if (state != State.INACTIVE) {
+    throw new IllegalStateException("Cannot edit row: EditorRow already in edit mode");
+  }
+  this.rowIndex=rowIndex;
+  state=State.ACTIVATING;
+  boolean rowVisible=grid.getEscalator().getVisibleRowRange().contains(rowIndex);
+  if (!rowVisible) {
+    grid.scrollToRow(rowIndex,ScrollDestination.MIDDLE);
+  }
+ else {
+    grid.getEscalator().getBody().refreshRows(rowIndex,1);
+  }
+}
