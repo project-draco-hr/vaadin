@@ -19,57 +19,61 @@ case Event.ONDBLCLICK:
       }
     break;
 case Event.ONMOUSEUP:
-  if (targetCellOrRowFound) {
-    boolean clickEventSent=handleClickEvent(event,targetTdOrTr,false);
-    if (event.getButton() == Event.BUTTON_LEFT && isSelectable()) {
-      if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && isMultiSelectModeDefault()) {
-        toggleShiftSelection(false);
-        setRowFocus(this);
-      }
- else       if ((event.getCtrlKey() || event.getMetaKey()) && isMultiSelectModeDefault()) {
-        boolean wasSelected=isSelected();
-        toggleSelection();
-        setRowFocus(this);
-        selectionRangeStart=this;
-        if (wasSelected) {
-          removeRowFromUnsentSelectionRanges(this);
-        }
-      }
- else       if ((event.getCtrlKey() || event.getMetaKey()) && isSingleSelectMode()) {
-        if (!isSelected() || (isSelected() && nullSelectionAllowed)) {
-          if (!isSelected()) {
-            deselectAll();
-          }
-          toggleSelection();
+  if (mouseUpPreviewMatched && lastMouseDownTarget != null && lastMouseDownTarget == getElementTdOrTr(Util.getElementUnderMouse(event))) {
+    if (targetCellOrRowFound) {
+      boolean clickEventSent=handleClickEvent(event,targetTdOrTr,false);
+      if (event.getButton() == Event.BUTTON_LEFT && isSelectable()) {
+        if ((event.getCtrlKey() || event.getMetaKey()) && event.getShiftKey() && isMultiSelectModeDefault()) {
+          toggleShiftSelection(false);
           setRowFocus(this);
         }
-      }
- else       if (event.getShiftKey() && isMultiSelectModeDefault()) {
-        toggleShiftSelection(true);
-      }
- else {
-        boolean currentlyJustThisRowSelected=selectedRowKeys.size() == 1 && selectedRowKeys.contains(getKey());
-        if (!currentlyJustThisRowSelected) {
-          if (isSingleSelectMode() || isMultiSelectModeDefault()) {
-            deselectAll();
+ else         if ((event.getCtrlKey() || event.getMetaKey()) && isMultiSelectModeDefault()) {
+          boolean wasSelected=isSelected();
+          toggleSelection();
+          setRowFocus(this);
+          selectionRangeStart=this;
+          if (wasSelected) {
+            removeRowFromUnsentSelectionRanges(this);
           }
-          toggleSelection();
         }
- else         if ((isSingleSelectMode() || isMultiSelectModeSimple()) && nullSelectionAllowed) {
-          toggleSelection();
+ else         if ((event.getCtrlKey() || event.getMetaKey()) && isSingleSelectMode()) {
+          if (!isSelected() || (isSelected() && nullSelectionAllowed)) {
+            if (!isSelected()) {
+              deselectAll();
+            }
+            toggleSelection();
+            setRowFocus(this);
+          }
         }
-        selectionRangeStart=this;
-        setRowFocus(this);
+ else         if (event.getShiftKey() && isMultiSelectModeDefault()) {
+          toggleShiftSelection(true);
+        }
+ else {
+          boolean currentlyJustThisRowSelected=selectedRowKeys.size() == 1 && selectedRowKeys.contains(getKey());
+          if (!currentlyJustThisRowSelected) {
+            if (isSingleSelectMode() || isMultiSelectModeDefault()) {
+              deselectAll();
+            }
+            toggleSelection();
+          }
+ else           if ((isSingleSelectMode() || isMultiSelectModeSimple()) && nullSelectionAllowed) {
+            toggleSelection();
+          }
+          selectionRangeStart=this;
+          setRowFocus(this);
+        }
+        if (BrowserInfo.get().isIE()) {
+          ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",null);
+        }
+        sendSelectedRows(false);
       }
-      if (BrowserInfo.get().isIE()) {
-        ((Element)event.getEventTarget().cast()).setPropertyJSO("onselectstart",null);
+      if (immediate || clickEventSent) {
+        client.sendPendingVariableChanges();
       }
-      sendSelectedRows(false);
-    }
-    if (immediate || clickEventSent) {
-      client.sendPendingVariableChanges();
     }
   }
+mouseUpPreviewMatched=false;
+lastMouseDownTarget=null;
 break;
 case Event.ONTOUCHEND:
 case Event.ONTOUCHCANCEL:
@@ -127,6 +131,9 @@ contextTouchTimeout.schedule(TOUCH_CONTEXT_MENU_TIMEOUT);
 }
 break;
 case Event.ONMOUSEDOWN:
+lastMouseDownTarget=getElementTdOrTr(Util.getElementUnderMouse(event));
+mouseUpPreviewMatched=false;
+mouseUpEventPreviewRegistration=Event.addNativePreviewHandler(mouseUpPreviewHandler);
 if (targetCellOrRowFound) {
 setRowFocus(this);
 ensureFocus();
