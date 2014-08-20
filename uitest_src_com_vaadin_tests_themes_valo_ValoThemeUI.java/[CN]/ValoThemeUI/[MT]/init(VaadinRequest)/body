@@ -1,8 +1,16 @@
 {
   if (request.getParameter("test") != null) {
     testMode=true;
+    if (browserCantRenderFontsConsistently()) {
+      getPage().getStyles().add(".v-app.v-app.v-app {font-family: Sans-Serif;}");
+    }
   }
-  Responsive.makeResponsive(this);
+  if (getPage().getWebBrowser().isIE() && getPage().getWebBrowser().getBrowserMajorVersion() == 9) {
+    menu.setWidth("320px");
+  }
+  if (!testMode) {
+    Responsive.makeResponsive(this);
+  }
   getPage().setTitle("Valo Theme Test");
   setContent(root);
   root.setWidth("100%");

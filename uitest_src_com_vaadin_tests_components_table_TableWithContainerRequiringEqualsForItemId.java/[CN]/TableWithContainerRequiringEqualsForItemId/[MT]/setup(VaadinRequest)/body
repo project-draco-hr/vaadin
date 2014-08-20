@@ -1,0 +1,28 @@
+{
+  Table t=new Table("Table with 1000 item");
+  t.addGeneratedColumn("Actions",new Table.ColumnGenerator(){
+    @Override public Component generateCell(    final Table source,    final Object itemId,    final Object columnId){
+      Button tripFolderLink=new Button("Button" + itemId);
+      tripFolderLink.addClickListener(new Button.ClickListener(){
+        @Override public void buttonClick(        final ClickEvent event){
+          log.log("Button " + event.getButton().getCaption() + " clicked");
+        }
+      }
+);
+      tripFolderLink.setStyleName(Reindeer.BUTTON_SMALL);
+      return tripFolderLink;
+    }
+  }
+);
+  for (int i=0; i < 1000; i++) {
+    MyEntity myEntity=new MyEntity(i + "st");
+    myEntity.setCreated(new Date(new Date().getTime() - 24 * 60 * 60* 1000L));
+    myEntity.setId(i);
+    container.addBean(myEntity);
+  }
+  t.setContainerDataSource(container);
+  t.setVisibleColumns(new Object[]{"id","created","name","Actions"});
+  addComponent(t);
+  addComponent(log);
+  t.sort(new Object[]{"id"},new boolean[]{false});
+}

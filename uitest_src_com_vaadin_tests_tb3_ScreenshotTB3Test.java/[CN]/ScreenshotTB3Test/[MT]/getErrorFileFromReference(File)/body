@@ -1,3 +1,9 @@
 {
-  return new File(referenceFile.getAbsolutePath().replace(getScreenshotReferenceDirectory(),getScreenshotErrorDirectory()));
+  String absolutePath=referenceFile.getAbsolutePath();
+  String screenshotReferenceDirectory=getScreenshotReferenceDirectory();
+  String screenshotErrorDirectory=getScreenshotErrorDirectory();
+  if (!absolutePath.contains(screenshotReferenceDirectory)) {
+    throw new IllegalStateException("Reference screenshot not in reference directory. Screenshot path: '" + absolutePath + "', directory path: '"+ screenshotReferenceDirectory+ "'");
+  }
+  return new File(absolutePath.replace(screenshotReferenceDirectory,screenshotErrorDirectory));
 }
