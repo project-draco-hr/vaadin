@@ -1,0 +1,22 @@
+{
+  if (this.visible == visible) {
+    return;
+  }
+  this.visible=visible;
+  if (grid != null) {
+    int index=findIndexOfColumn();
+    ColumnConfiguration conf=grid.escalator.getColumnConfiguration();
+    if (visible) {
+      conf.insertColumns(index,1);
+    }
+ else {
+      conf.removeColumns(index,1);
+    }
+    for (    HeaderRow row : grid.getHeader().getRows()) {
+      row.calculateColspans();
+    }
+    for (    FooterRow row : grid.getFooter().getRows()) {
+      row.calculateColspans();
+    }
+  }
+}

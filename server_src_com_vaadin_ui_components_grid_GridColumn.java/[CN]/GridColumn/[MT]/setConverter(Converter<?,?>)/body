@@ -1,0 +1,20 @@
+{
+  Class<?> modelType=getModelType();
+  if (converter != null) {
+    if (!converter.getModelType().isAssignableFrom(modelType)) {
+      throw new IllegalArgumentException("The converter model type " + converter.getModelType() + " is not compatible with the property type "+ modelType);
+    }
+ else     if (!getRenderer().getPresentationType().isAssignableFrom(converter.getPresentationType())) {
+      throw new IllegalArgumentException("The converter presentation type " + converter.getPresentationType() + " is not compatible with the renderer presentation type "+ getRenderer().getPresentationType());
+    }
+  }
+ else {
+    Class<?> rendererPresentationType=getRenderer().getPresentationType();
+    if (!isFirstConverterAssignment && !rendererPresentationType.isAssignableFrom(modelType)) {
+      throw new IllegalArgumentException("Cannot remove converter, " + "as renderer's presentation type " + rendererPresentationType.getName() + " and column's "+ "model "+ modelType.getName()+ " type aren't "+ "directly with each other");
+    }
+  }
+  isFirstConverterAssignment=false;
+  @SuppressWarnings("unchecked") Converter<?,Object> castConverter=(Converter<?,Object>)converter;
+  this.converter=castConverter;
+}

@@ -1,0 +1,85 @@
+{
+  ds=new IndexedContainer(){
+    @Override public List<Object> getItemIds(    int startIndex,    int numberOfIds){
+      log("Requested items " + startIndex + " - "+ (startIndex + numberOfIds));
+      return super.getItemIds(startIndex,numberOfIds);
+    }
+  }
+;
+{
+    int col=0;
+    for (; col < COLUMNS - MANUALLY_FORMATTED_COLUMNS; col++) {
+      ds.addContainerProperty(getColumnProperty(col),String.class,"");
+    }
+    ds.addContainerProperty(getColumnProperty(col++),Integer.class,Integer.valueOf(0));
+    ds.addContainerProperty(getColumnProperty(col++),Date.class,new Date());
+    ds.addContainerProperty(getColumnProperty(col++),String.class,"");
+    ds.addContainerProperty(getColumnProperty(col++),Integer.class,0);
+    ds.addContainerProperty(getColumnProperty(col++),Integer.class,0);
+  }
+{
+    Random rand=new Random();
+    rand.setSeed(13334);
+    long timestamp=0;
+    for (int row=0; row < ROWS; row++) {
+      Item item=ds.addItem(Integer.valueOf(row));
+      int col=0;
+      for (; col < COLUMNS - MANUALLY_FORMATTED_COLUMNS; col++) {
+        item.getItemProperty(getColumnProperty(col)).setValue("(" + row + ", "+ col+ ")");
+      }
+      item.getItemProperty(getColumnProperty(col++)).setValue(Integer.valueOf(row));
+      item.getItemProperty(getColumnProperty(col++)).setValue(new Date(timestamp));
+      timestamp+=91250000;
+      item.getItemProperty(getColumnProperty(col++)).setValue("<b>" + row + "</b>");
+      item.getItemProperty(getColumnProperty(col++)).setValue(rand.nextInt());
+      item.getItemProperty(getColumnProperty(col++)).setValue(rand.nextInt(5));
+    }
+  }
+  Grid grid=new Grid(ds);
+{
+    int col=grid.getContainerDatasource().getContainerPropertyIds().size() - MANUALLY_FORMATTED_COLUMNS;
+    grid.getColumn(getColumnProperty(col++)).setRenderer(new NumberRenderer(new DecimalFormat("0,000.00",DecimalFormatSymbols.getInstance(new Locale("fi","FI")))));
+    grid.getColumn(getColumnProperty(col++)).setRenderer(new DateRenderer(new SimpleDateFormat("dd.MM.yy HH:mm")));
+    grid.getColumn(getColumnProperty(col++)).setRenderer(new HtmlRenderer());
+    grid.getColumn(getColumnProperty(col++)).setRenderer(new NumberRenderer());
+    grid.getColumn(getColumnProperty(col++)).setRenderer(new NumberRenderer());
+  }
+  GridFooter footer=grid.getFooter();
+  footer.appendRow();
+  footer.setVisible(false);
+  for (int col=0; col < COLUMNS; col++) {
+    footer.getRow(0).getCell(getColumnProperty(col)).setText("Footer " + col);
+  }
+  for (int col=0; col < COLUMNS; col++) {
+    grid.getColumn(getColumnProperty(col)).setWidth(100 + col * 50);
+  }
+  grid.addSortOrderChangeListener(new SortOrderChangeListener(){
+    @Override public void sortOrderChange(    SortOrderChangeEvent event){
+      String origin;
+switch (event.getOriginator()) {
+case API:
+        origin="API";
+      break;
+case INTERNAL:
+    origin="INTERNAL";
+  break;
+case USER:
+origin="USER";
+break;
+default :
+origin="!!! ERROR !!!";
+break;
+}
+log("Sort order: " + event.getSortOrder() + " by "+ origin);
+}
+}
+);
+grid.setSelectionMode(SelectionMode.NONE);
+createGridActions();
+createColumnActions();
+createHeaderActions();
+createFooterActions();
+createRowActions();
+addHeightActions();
+return grid;
+}

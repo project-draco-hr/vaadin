@@ -1,0 +1,26 @@
+{
+  GridStaticSection.StaticRow<?> staticRow=section.getRow(row.getRow());
+  final List<Integer> columnIndices=getVisibleColumnIndices();
+  for (  FlyweightCell cell : cellsToUpdate) {
+    int index=columnIndices.get(cell.getColumn());
+    final StaticCell metadata=staticRow.getCell(index);
+    if (staticRow instanceof HeaderRow) {
+      addSortingIndicatorsToHeaderRow((HeaderRow)staticRow,cell);
+    }
+    cell.setColSpan(metadata.getColspan());
+switch (metadata.getType()) {
+case TEXT:
+      cell.getElement().setInnerText(metadata.getText());
+    break;
+case HTML:
+  cell.getElement().setInnerHTML(metadata.getHtml());
+break;
+case WIDGET:
+preDetach(row,Arrays.asList(cell));
+cell.getElement().setInnerHTML("");
+postAttach(row,Arrays.asList(cell));
+break;
+}
+activeCellHandler.updateActiveCellStyle(cell,container);
+}
+}

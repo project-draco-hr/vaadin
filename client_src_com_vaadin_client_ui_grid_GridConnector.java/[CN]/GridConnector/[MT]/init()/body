@@ -1,0 +1,34 @@
+{
+  super.init();
+  registerRpc(GridClientRpc.class,new GridClientRpc(){
+    @Override public void scrollToStart(){
+      getWidget().scrollToStart();
+    }
+    @Override public void scrollToEnd(){
+      getWidget().scrollToEnd();
+    }
+    @Override public void scrollToRow(    int row,    ScrollDestination destination){
+      getWidget().scrollToRow(row,destination);
+    }
+  }
+);
+  getWidget().setSelectionModel(selectionModel);
+  getWidget().addSelectionChangeHandler(internalSelectionChangeHandler);
+  getWidget().addSortHandler(new SortEventHandler<JSONObject>(){
+    @Override public void sort(    SortEvent<JSONObject> event){
+      List<SortOrder> order=event.getOrder();
+      String[] columnIds=new String[order.size()];
+      SortDirection[] directions=new SortDirection[order.size()];
+      for (int i=0; i < order.size(); i++) {
+        SortOrder sortOrder=order.get(i);
+        CustomGridColumn column=(CustomGridColumn)sortOrder.getColumn();
+        columnIds[i]=column.id;
+        directions[i]=sortOrder.getDirection();
+      }
+      if (!Arrays.equals(columnIds,getState().sortColumns) || !Arrays.equals(directions,getState().sortDirs)) {
+        getRpcProxy(GridServerRpc.class).sort(columnIds,directions,event.getOriginator());
+      }
+    }
+  }
+);
+}

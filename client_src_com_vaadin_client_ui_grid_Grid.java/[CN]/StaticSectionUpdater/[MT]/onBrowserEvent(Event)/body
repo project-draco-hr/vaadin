@@ -1,0 +1,35 @@
+{
+  super.onBrowserEvent(event);
+  EventTarget target=event.getEventTarget();
+  if (Element.is(target)) {
+    Element e=Element.as(target);
+    RowContainer container=escalator.findRowContainer(e);
+    Cell cell=null;
+    if (container != null) {
+      cell=container.getCell(e);
+      if (cell != null) {
+        GridColumn<?,T> gridColumn=columns.get(cell.getColumn());
+        if (container == escalator.getHeader()) {
+          if (getHeader().getRow(cell.getRow()).isDefault()) {
+            handleDefaultRowEvent(cell,event);
+          }
+        }
+ else         if (container == escalator.getFooter()) {
+        }
+ else         if (gridColumn.getRenderer() instanceof ComplexRenderer) {
+          ComplexRenderer<?> cplxRenderer=(ComplexRenderer<?>)gridColumn.getRenderer();
+          if (cplxRenderer.getConsumedEvents().contains(event.getType())) {
+            if (cplxRenderer.onBrowserEvent(cell,event)) {
+              return;
+            }
+          }
+        }
+      }
+    }
+    Collection<String> navigation=activeCellHandler.getNavigationEvents();
+    if (navigation.contains(event.getType()) && (Util.getFocusedElement() == getElement() || cell != null)) {
+      activeCellHandler.handleNavigationEvent(event,cell);
+    }
+    handleGridNavigation(event,cell);
+  }
+}

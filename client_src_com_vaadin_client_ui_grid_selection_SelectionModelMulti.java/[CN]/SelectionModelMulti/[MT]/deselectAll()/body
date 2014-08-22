@@ -1,0 +1,15 @@
+{
+  if (selectedRows.size() > 0) {
+    @SuppressWarnings("unchecked") final LinkedHashSet<RowHandle<T>> selectedRowsClone=(LinkedHashSet<RowHandle<T>>)selectedRows.clone();
+    SelectionChangeEvent<T> event=new SelectionChangeEvent<T>(grid,null,getSelectedRows(),isBeingBatchSelected());
+    selectedRows.clear();
+    if (isBeingBatchSelected()) {
+      selectionBatch.clear();
+      deselectionBatch.clear();
+      deselectionBatch.addAll(selectedRowsClone);
+    }
+    grid.fireEvent(event);
+    return true;
+  }
+  return false;
+}

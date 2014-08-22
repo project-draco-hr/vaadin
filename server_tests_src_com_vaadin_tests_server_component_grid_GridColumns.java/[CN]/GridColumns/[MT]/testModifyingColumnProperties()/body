@@ -1,0 +1,24 @@
+{
+  GridColumn column=grid.getColumn("column1");
+  assertNotNull(column);
+  column.setHeaderCaption("CustomHeader");
+  assertEquals("CustomHeader",column.getHeaderCaption());
+  assertEquals(column.getHeaderCaption(),getColumnState("column1").header);
+  column.setVisible(false);
+  assertFalse(column.isVisible());
+  assertFalse(getColumnState("column1").visible);
+  column.setVisible(true);
+  assertTrue(column.isVisible());
+  assertTrue(getColumnState("column1").visible);
+  column.setWidth(100);
+  assertEquals(100,column.getWidth());
+  assertEquals(column.getWidth(),getColumnState("column1").width);
+  try {
+    column.setWidth(-1);
+    fail("Setting width to -1 should throw exception");
+  }
+ catch (  IllegalArgumentException iae) {
+  }
+  assertEquals(100,column.getWidth());
+  assertEquals(100,getColumnState("column1").width);
+}

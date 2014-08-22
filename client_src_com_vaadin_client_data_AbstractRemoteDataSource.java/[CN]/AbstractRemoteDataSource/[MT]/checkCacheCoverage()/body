@@ -1,0 +1,21 @@
+{
+  if (lastRequestStart != -1) {
+    return;
+  }
+  Profiler.enter("AbstractRemoteDataSource.checkCacheCoverage");
+  Range minCacheRange=getMinCacheRange();
+  if (!minCacheRange.intersects(cached) || cached.isEmpty()) {
+    rowCache.clear();
+    cached=Range.between(0,0);
+    handleMissingRows(getMaxCacheRange());
+  }
+ else {
+    discardStaleCacheEntries();
+    if (!minCacheRange.isSubsetOf(cached)) {
+      Range[] missingCachePartition=getMaxCacheRange().partitionWith(cached);
+      handleMissingRows(missingCachePartition[0]);
+      handleMissingRows(missingCachePartition[2]);
+    }
+  }
+  Profiler.leave("AbstractRemoteDataSource.checkCacheCoverage");
+}

@@ -1,0 +1,33 @@
+{
+  LinkedHashMap<String,String> primaryStyleNames=new LinkedHashMap<String,String>();
+  primaryStyleNames.put("v-grid","v-grid");
+  primaryStyleNames.put("v-escalator","v-escalator");
+  primaryStyleNames.put("my-grid","my-grid");
+  createMultiClickAction("Primary style name","State",primaryStyleNames,new Command<Grid,String>(){
+    @Override public void execute(    Grid grid,    String value,    Object data){
+      grid.setPrimaryStyleName(value);
+    }
+  }
+,primaryStyleNames.get("v-grid"));
+  LinkedHashMap<String,SelectionMode> selectionModes=new LinkedHashMap<String,Grid.SelectionMode>();
+  selectionModes.put("single",SelectionMode.SINGLE);
+  selectionModes.put("multi",SelectionMode.MULTI);
+  selectionModes.put("none",SelectionMode.NONE);
+  createSelectAction("Selection mode","State",selectionModes,"none",new Command<Grid,Grid.SelectionMode>(){
+    @Override public void execute(    Grid grid,    SelectionMode selectionMode,    Object data){
+      grid.setSelectionMode(selectionMode);
+    }
+  }
+);
+  LinkedHashMap<String,List<SortOrder>> sortableProperties=new LinkedHashMap<String,List<SortOrder>>();
+  for (  Object propertyId : ds.getSortableContainerPropertyIds()) {
+    sortableProperties.put(propertyId + ", ASC",Sort.by(propertyId).build());
+    sortableProperties.put(propertyId + ", DESC",Sort.by(propertyId,SortDirection.DESCENDING).build());
+  }
+  createSelectAction("Sort by column","State",sortableProperties,"Column 9, ascending",new Command<Grid,List<SortOrder>>(){
+    @Override public void execute(    Grid grid,    List<SortOrder> sortOrder,    Object data){
+      grid.setSortOrder(sortOrder);
+    }
+  }
+);
+}

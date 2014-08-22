@@ -1,0 +1,27 @@
+{
+  openTestURL();
+  GridElement grid=getGridElement();
+  grid.getHeaderCell(0,9).click();
+  grid.getHeaderCell(0,9).click();
+  String row="";
+  for (int i=0; i < 3; ++i) {
+    row+="9";
+    assertEquals("Grid is not sorted by Column 9 using descending direction.","(" + row + ", 0)",grid.getCell(i,0).getText());
+  }
+  assertEquals("2. Sort order: [Column 9 ASCENDING] by USER",getLogRow(2));
+  assertEquals("4. Sort order: [Column 9 DESCENDING] by USER",getLogRow(0));
+  grid.getHeaderCell(0,10).click();
+  assertEquals("6. Sort order: [Column 10 ASCENDING] by USER",getLogRow(0));
+  grid.scrollToRow(50);
+  assertFalse("Scrolling caused and exception when shuffled.",getLogRow(0).contains("Exception"));
+  for (int i=0; i < 5; ++i) {
+    assertGreater("Grid is not sorted by Column 10 using ascending direction",Integer.parseInt(grid.getCell(i + 1,10).getText()),Integer.parseInt(grid.getCell(i,10).getText()));
+  }
+  grid.getHeaderCell(0,7).click();
+  grid.getHeaderCell(0,7).click();
+  for (int i=0; i < 3; ++i) {
+    assertEquals("Grid is not sorted by Column 7 using descending direction","(" + i + ", 0)",grid.getCell(GridBasicFeatures.ROWS - (i + 1),0).getText());
+  }
+  assertEquals("9. Sort order: [Column 7 ASCENDING] by USER",getLogRow(3));
+  assertEquals("11. Sort order: [Column 7 DESCENDING] by USER",getLogRow(1));
+}

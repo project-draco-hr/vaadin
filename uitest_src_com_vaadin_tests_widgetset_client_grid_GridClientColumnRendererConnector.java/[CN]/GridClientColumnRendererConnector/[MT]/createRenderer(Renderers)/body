@@ -1,0 +1,48 @@
+{
+switch (renderer) {
+case TEXT_RENDERER:
+    return new TextRenderer();
+case WIDGET_RENDERER:
+  return new WidgetRenderer<String,Button>(){
+    @Override public Button createWidget(){
+      final Button button=new Button("");
+      button.addClickHandler(new ClickHandler(){
+        @Override public void onClick(        ClickEvent event){
+          button.setText("Clicked");
+        }
+      }
+);
+      return button;
+    }
+    @Override public void render(    FlyweightCell cell,    String data,    Button button){
+      button.setHTML(data);
+    }
+  }
+;
+case HTML_RENDERER:
+return new HtmlRenderer(){
+  @Override public void render(  FlyweightCell cell,  String htmlString){
+    super.render(cell,"<b>" + htmlString + "</b>");
+  }
+}
+;
+case NUMBER_RENDERER:
+return new NumberRenderer<Long>();
+case DATE_RENDERER:
+return new DateRenderer();
+case CPLX_RENDERER:
+return new ComplexRenderer<String>(){
+@Override public void render(FlyweightCell cell,String data){
+cell.getElement().setInnerHTML("<span>" + data + "</span>");
+cell.getElement().getStyle().clearBackgroundColor();
+}
+@Override public void setContentVisible(FlyweightCell cell,boolean hasData){
+cell.getElement().getStyle().setBackgroundColor(hasData ? "green" : "red");
+super.setContentVisible(cell,hasData);
+}
+}
+;
+default :
+return new TextRenderer();
+}
+}

@@ -1,0 +1,17 @@
+{
+  GridStaticSection.StaticRow<?> gridRow=section.getRow(row.getRow());
+  List<Integer> columnIndices=getVisibleColumnIndices();
+  for (  FlyweightCell cell : attachedCells) {
+    int index=columnIndices.get(cell.getColumn());
+    StaticCell metadata=gridRow.getCell(index);
+    if (GridStaticCellType.WIDGET.equals(metadata.getType())) {
+      final Widget widget=metadata.getWidget();
+      final Element cellElement=cell.getElement();
+      if (!widget.isAttached()) {
+        cellElement.appendChild(widget.getElement());
+        setParent(widget,Grid.this);
+        getLogger().info("Attached widget " + widget);
+      }
+    }
+  }
+}

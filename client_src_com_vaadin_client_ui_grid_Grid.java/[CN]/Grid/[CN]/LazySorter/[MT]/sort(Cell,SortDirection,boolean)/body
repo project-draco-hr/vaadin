@@ -1,0 +1,13 @@
+{
+  TableCellElement th=TableCellElement.as(cell.getElement());
+  GridColumn<?,?> columnInstance=getColumnFromVisibleIndex(cell.getColumn());
+  Sort sorting=Sort.by(columnInstance,direction);
+  if (multisort) {
+    for (    SortOrder order : getSortOrder()) {
+      if (order.getColumn() != columnInstance) {
+        sorting=sorting.then(order.getColumn(),order.getDirection());
+      }
+    }
+  }
+  Grid.this.setSortOrder(sorting.build(),SortEventOriginator.USER);
+}

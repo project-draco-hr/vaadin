@@ -1,0 +1,39 @@
+{
+  Profiler.enter("AbstractRemoteDataSource.setRowData");
+  Range received=Range.withLength(firstRowIndex,rowData.size());
+  if (firstRowIndex == lastRequestStart) {
+    cacheStrategy.onDataArrive(Duration.currentTimeMillis() - pendingRequestTime,received.length());
+  }
+  lastRequestStart=-1;
+  Range maxCacheRange=getMaxCacheRange();
+  Range[] partition=received.partitionWith(maxCacheRange);
+  Range newUsefulData=partition[1];
+  if (!newUsefulData.isEmpty()) {
+    for (int i=newUsefulData.getStart(); i < newUsefulData.getEnd(); i++) {
+      rowCache.put(Integer.valueOf(i),rowData.get(i - firstRowIndex));
+    }
+    if (dataChangeHandler != null) {
+      Profiler.enter("AbstractRemoteDataSource.setRowData notify dataChangeHandler");
+      dataChangeHandler.dataUpdated(newUsefulData.getStart(),newUsefulData.length());
+      Profiler.leave("AbstractRemoteDataSource.setRowData notify dataChangeHandler");
+    }
+    if (cached.isEmpty()) {
+      cached=newUsefulData;
+    }
+ else {
+      discardStaleCacheEntries();
+      if (!cached.isEmpty()) {
+        cached=cached.combineWith(newUsefulData);
+      }
+ else {
+        cached=newUsefulData;
+      }
+    }
+    dataChangeHandler.dataAvailable(cached.getStart(),cached.length());
+    updatePinnedRows(rowData);
+  }
+  if (!partition[0].isEmpty() || !partition[2].isEmpty()) {
+  }
+  ensureCoverageCheck();
+  Profiler.leave("AbstractRemoteDataSource.setRowData");
+}
