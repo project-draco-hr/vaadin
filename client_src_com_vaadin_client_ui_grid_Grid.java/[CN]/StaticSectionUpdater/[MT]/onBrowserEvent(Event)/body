@@ -7,18 +7,19 @@
   Element e=Element.as(target);
   RowContainer container=escalator.findRowContainer(e);
   Cell cell=container != null ? container.getCell(e) : null;
-  if (doEditorRowEvent(event,container,cell)) {
+  if (handleEditorRowEvent(event,container,cell)) {
     return;
   }
-  if (container == escalator.getHeader()) {
-    if (getHeader().getRow(cell.getRow()).isDefault()) {
-      handleDefaultRowEvent(cell,event);
-    }
-  }
-  if (doRendererEvent(event,container,cell)) {
+  if (handleHeaderDefaultRowEvent(event,container,cell)) {
     return;
   }
-  if (doActiveCellEvent(event,container,cell)) {
+  if (handleRendererEvent(event,container,cell)) {
+    return;
+  }
+  if (handleNavigationEvent(event,container,cell)) {
+    return;
+  }
+  if (handleActiveCellEvent(event,container,cell)) {
     return;
   }
 }
