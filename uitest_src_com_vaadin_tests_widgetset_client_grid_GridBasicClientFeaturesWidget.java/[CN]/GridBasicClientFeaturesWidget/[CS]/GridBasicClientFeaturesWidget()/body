@@ -1,2 +1,110 @@
 {
+  super(new Grid<List<Data>>());
+  data=new ArrayList<List<Data>>();
+{
+    Random rand=new Random();
+    rand.setSeed(13334);
+    long timestamp=0;
+    for (int row=0; row < ROWS; row++) {
+      List<Data> datarow=createDataRow(COLUMNS);
+      Data d;
+      int col=0;
+      for (; col < COLUMNS - MANUALLY_FORMATTED_COLUMNS; ++col) {
+        d=datarow.get(col);
+        d.value="(" + row + ", "+ col+ ")";
+      }
+      d=datarow.get(col++);
+      d.value=Integer.valueOf(row);
+      d=datarow.get(col++);
+      d.value=new Date(timestamp);
+      timestamp+=91250000;
+      d=datarow.get(col++);
+      d.value="<b>" + row + "</b>";
+      d=datarow.get(col++);
+      d.value=Integer.valueOf(rand.nextInt());
+      d=datarow.get(col++);
+      d.value=Integer.valueOf(rand.nextInt(5));
+    }
+  }
+  ds=new ListDataSource<List<Data>>(data);
+  grid=getTestedWidget();
+  grid.getElement().setId("testComponent");
+  grid.setDataSource(ds);
+  grid.setSelectionMode(SelectionMode.NONE);
+  grid.getEditorRow().setHandler(new EditorRowHandler<List<Data>>(){
+    @Override public Widget getWidget(    GridColumn<?,List<Data>> column){
+      TextBox tb=new TextBox();
+      tb.setText("Column " + grid.getColumns().indexOf(column));
+      return tb;
+    }
+  }
+);
+  sorter=new ListSorter<List<Data>>(grid);
+  int col=0;
+  for (col=0; col < COLUMNS - MANUALLY_FORMATTED_COLUMNS; ++col) {
+    final int c=col;
+    GridColumn<String,List<Data>> column=new GridColumn<String,List<Data>>(createRenderer(Renderers.TEXT_RENDERER)){
+      @Override public String getValue(      List<Data> row){
+        return (String)row.get(c).value;
+      }
+    }
+;
+    column.setWidth(50 + c * 25);
+    grid.addColumn(column);
+  }
+{
+    final int c=col++;
+    grid.addColumn(new GridColumn<Integer,List<Data>>(createRenderer(Renderers.NUMBER_RENDERER)){
+      @Override public Integer getValue(      List<Data> row){
+        return (Integer)row.get(c).value;
+      }
+    }
+);
+  }
+{
+    final int c=col++;
+    grid.addColumn(new GridColumn<Date,List<Data>>(createRenderer(Renderers.DATE_RENDERER)){
+      @Override public Date getValue(      List<Data> row){
+        return (Date)row.get(c).value;
+      }
+    }
+);
+  }
+{
+    final int c=col++;
+    grid.addColumn(new GridColumn<String,List<Data>>(createRenderer(Renderers.HTML_RENDERER)){
+      @Override public String getValue(      List<Data> row){
+        return (String)row.get(c).value;
+      }
+    }
+);
+  }
+{
+    final int c=col++;
+    grid.addColumn(new GridColumn<Integer,List<Data>>(createRenderer(Renderers.NUMBER_RENDERER)){
+      @Override public Integer getValue(      List<Data> row){
+        return (Integer)row.get(c).value;
+      }
+    }
+);
+  }
+{
+    final int c=col++;
+    grid.addColumn(new GridColumn<Integer,List<Data>>(createRenderer(Renderers.NUMBER_RENDERER)){
+      @Override public Integer getValue(      List<Data> row){
+        return (Integer)row.get(c).value;
+      }
+    }
+);
+  }
+  setHeaderTexts(grid.getHeader().getRow(0));
+  createStateMenu();
+  createColumnsMenu();
+  createHeaderMenu();
+  createFooterMenu();
+  createEditorRowMenu();
+  createInternalsMenu();
+  grid.getElement().getStyle().setZIndex(0);
+  addNorth(grid,400);
+  createKeyHandlers();
 }

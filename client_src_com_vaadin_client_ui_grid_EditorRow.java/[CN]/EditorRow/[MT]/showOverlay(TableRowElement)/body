@@ -5,9 +5,15 @@
   int bodyTop=body.getElement().getAbsoluteTop();
   int wrapperTop=tableWrapper.getAbsoluteTop();
   setBounds(editorOverlay,tr.getOffsetLeft(),rowTop + bodyTop - wrapperTop,tr.getOffsetWidth(),tr.getOffsetHeight());
+  tableWrapper.appendChild(editorOverlay);
   for (int i=0; i < tr.getCells().getLength(); i++) {
     Element cell=createCell(tr.getCells().getItem(i));
     editorOverlay.appendChild(cell);
+    Widget editor=getHandler().getWidget(grid.getColumnFromVisibleIndex(i));
+    if (editor != null) {
+      editorWidgets.add(editor);
+      cell.appendChild(editor.getElement());
+      Grid.setParent(editor,grid);
+    }
   }
-  tableWrapper.appendChild(editorOverlay);
 }
