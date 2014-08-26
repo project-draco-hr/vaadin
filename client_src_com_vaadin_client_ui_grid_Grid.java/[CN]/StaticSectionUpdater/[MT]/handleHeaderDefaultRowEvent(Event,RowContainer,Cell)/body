@@ -18,6 +18,7 @@
     lazySorter.setCellReference(cell);
     lazySorter.setMultisort(true);
     lazySorter.schedule(GridConstants.LONG_TAP_DELAY);
+    return true;
   }
  else   if (BrowserEvents.TOUCHMOVE.equals(event.getType())) {
     if (event.getTouches().length() > 1) {
@@ -30,9 +31,10 @@
     if (diffX > GridConstants.LONG_TAP_THRESHOLD || diffY > GridConstants.LONG_TAP_THRESHOLD) {
       lazySorter.cancel();
     }
+    return true;
   }
  else   if (BrowserEvents.TOUCHEND.equals(event.getType())) {
-    if (event.getTouches().length() > 0) {
+    if (event.getTouches().length() > 1) {
       return false;
     }
     if (lazySorter.isRunning()) {
@@ -40,12 +42,14 @@
       lazySorter.setMultisort(false);
       lazySorter.run();
     }
+    return true;
   }
  else   if (BrowserEvents.TOUCHCANCEL.equals(event.getType())) {
-    if (event.getChangedTouches().length() > 1) {
+    if (event.getTouches().length() > 1) {
       return false;
     }
     lazySorter.cancel();
+    return true;
   }
  else   if (BrowserEvents.CLICK.equals(event.getType())) {
     lazySorter.setCellReference(cell);
@@ -53,5 +57,7 @@
     lazySorter.run();
     return false;
   }
-  return true;
+ else {
+    return false;
+  }
 }

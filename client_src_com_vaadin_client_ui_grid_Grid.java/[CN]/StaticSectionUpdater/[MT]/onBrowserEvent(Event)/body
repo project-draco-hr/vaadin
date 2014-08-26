@@ -6,20 +6,30 @@
   }
   Element e=Element.as(target);
   RowContainer container=escalator.findRowContainer(e);
-  Cell cell=container != null ? container.getCell(e) : null;
-  if (handleEditorRowEvent(event,container,cell)) {
-    return;
+  Cell cell;
+  boolean isGrid=Util.findWidget(e,null) == this;
+  if (container == null) {
+    cell=activeCellHandler.getActiveCell();
+    container=activeCellHandler.container;
   }
-  if (handleHeaderDefaultRowEvent(event,container,cell)) {
-    return;
+ else {
+    cell=container.getCell(e);
   }
-  if (handleRendererEvent(event,container,cell)) {
-    return;
-  }
-  if (handleNavigationEvent(event,container,cell)) {
-    return;
-  }
-  if (handleActiveCellEvent(event,container,cell)) {
-    return;
+  if (isGrid) {
+    if (handleEditorRowEvent(event,container,cell)) {
+      return;
+    }
+    if (handleHeaderDefaultRowEvent(event,container,cell)) {
+      return;
+    }
+    if (handleRendererEvent(event,container,cell)) {
+      return;
+    }
+    if (handleNavigationEvent(event,container,cell)) {
+      return;
+    }
+    if (handleActiveCellEvent(event,container,cell)) {
+      return;
+    }
   }
 }
