@@ -3,10 +3,18 @@
   getLogger().info("Using " + position.getClass().getSimpleName() + " for position");
   final Element root=DOM.createDiv();
   setElement(root);
+  ScrollHandler scrollHandler=new ScrollHandler(){
+    @Override public void onScroll(    ScrollEvent event){
+      fireEvent(new ScrollEvent());
+    }
+  }
+;
   root.appendChild(verticalScrollbar.getElement());
+  verticalScrollbar.addScrollHandler(scrollHandler);
   verticalScrollbar.getElement().setTabIndex(-1);
   verticalScrollbar.setScrollbarThickness(Util.getNativeScrollbarSize());
   root.appendChild(horizontalScrollbar.getElement());
+  horizontalScrollbar.addScrollHandler(scrollHandler);
   horizontalScrollbar.getElement().setTabIndex(-1);
   horizontalScrollbar.setScrollbarThickness(Util.getNativeScrollbarSize());
   horizontalScrollbar.addVisibilityHandler(new ScrollbarBundle.VisibilityHandler(){

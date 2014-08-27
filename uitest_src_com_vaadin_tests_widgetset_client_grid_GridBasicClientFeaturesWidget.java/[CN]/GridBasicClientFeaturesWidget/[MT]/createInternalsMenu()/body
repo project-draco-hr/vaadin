@@ -1,0 +1,21 @@
+{
+  String[] listenersPath={"Component","Internals","Listeners"};
+  final Label label=new Label();
+  addSouth(label,20);
+  addMenuCommand("Add scroll listener",new ScheduledCommand(){
+    private HandlerRegistration scrollHandler=null;
+    @Override public void execute(){
+      if (scrollHandler != null) {
+        return;
+      }
+      scrollHandler=grid.addScrollHandler(new ScrollHandler(){
+        @Override public void onScroll(        ScrollEvent event){
+          @SuppressWarnings("hiding") final Grid<?> grid=(Grid<?>)event.getSource();
+          label.setText("scrollTop: " + grid.getScrollTop() + ", scrollLeft: "+ grid.getScrollLeft());
+        }
+      }
+);
+    }
+  }
+,listenersPath);
+}
