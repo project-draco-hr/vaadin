@@ -4,7 +4,7 @@
     createCategory(getColumnProperty(c),"Columns");
     createBooleanAction("Visible",getColumnProperty(c),true,new Command<Grid,Boolean>(){
       @Override public void execute(      Grid grid,      Boolean value,      Object columnIndex){
-        Object propertyId=(new ArrayList(grid.getContainerDatasource().getContainerPropertyIds()).get((Integer)columnIndex));
+        Object propertyId=getColumnProperty((Integer)columnIndex);
         GridColumn column=grid.getColumn(propertyId);
         column.setVisible(!column.isVisible());
       }
@@ -13,6 +13,7 @@
     createClickAction("Remove",getColumnProperty(c),new Command<Grid,String>(){
       @Override public void execute(      Grid grid,      String value,      Object data){
         grid.getContainerDatasource().removeContainerProperty(getColumnProperty((Integer)data));
+        removeCategory("Column " + data);
       }
     }
 ,null,c);
@@ -24,7 +25,7 @@
 ,null,c);
     createBooleanAction("Sortable",getColumnProperty(c),true,new Command<Grid,Boolean>(){
       @Override public void execute(      Grid grid,      Boolean value,      Object columnIndex){
-        Object propertyId=(new ArrayList(grid.getContainerDatasource().getContainerPropertyIds()).get((Integer)columnIndex));
+        Object propertyId=getColumnProperty((Integer)columnIndex);
         GridColumn column=grid.getColumn(propertyId);
         column.setSortable(value);
       }
@@ -33,7 +34,7 @@
     createCategory("Column " + c + " Width",getColumnProperty(c));
     createClickAction("Auto","Column " + c + " Width",new Command<Grid,Integer>(){
       @Override public void execute(      Grid grid,      Integer value,      Object columnIndex){
-        Object propertyId=(new ArrayList(grid.getContainerDatasource().getContainerPropertyIds()).get((Integer)columnIndex));
+        Object propertyId=getColumnProperty((Integer)columnIndex);
         GridColumn column=grid.getColumn(propertyId);
         column.setWidthUndefined();
       }
@@ -42,7 +43,7 @@
     for (int w=50; w < 300; w+=50) {
       createClickAction(w + "px","Column " + c + " Width",new Command<Grid,Integer>(){
         @Override public void execute(        Grid grid,        Integer value,        Object columnIndex){
-          Object propertyId=(new ArrayList(grid.getContainerDatasource().getContainerPropertyIds()).get((Integer)columnIndex));
+          Object propertyId=getColumnProperty((Integer)columnIndex);
           GridColumn column=grid.getColumn(propertyId);
           column.setWidth(value);
         }
@@ -55,7 +56,7 @@
     defaultRows.put("Widget Header",GridStaticCellType.WIDGET);
     createMultiClickAction("Header Type",getColumnProperty(c),defaultRows,new Command<Grid,GridStaticCellType>(){
       @Override public void execute(      Grid grid,      GridStaticCellType value,      Object columnIndex){
-        final Object propertyId=(new ArrayList(grid.getContainerDatasource().getContainerPropertyIds()).get((Integer)columnIndex));
+        final Object propertyId=getColumnProperty((Integer)columnIndex);
         final HeaderCell cell=grid.getHeader().getDefaultRow().getCell(propertyId);
 switch (value) {
 case TEXT:
@@ -83,7 +84,7 @@ defaultRows.put("Html Footer",GridStaticCellType.HTML);
 defaultRows.put("Widget Footer",GridStaticCellType.WIDGET);
 createMultiClickAction("Footer Type",getColumnProperty(c),defaultRows,new Command<Grid,GridStaticCellType>(){
 @Override public void execute(Grid grid,GridStaticCellType value,Object columnIndex){
-final Object propertyId=(new ArrayList(grid.getContainerDatasource().getContainerPropertyIds()).get((Integer)columnIndex));
+final Object propertyId=getColumnProperty((Integer)columnIndex);
 final FooterCell cell=grid.getFooter().getRow(0).getCell(propertyId);
 switch (value) {
 case TEXT:
