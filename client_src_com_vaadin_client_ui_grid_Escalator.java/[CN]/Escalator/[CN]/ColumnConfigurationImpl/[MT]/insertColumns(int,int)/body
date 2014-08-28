@@ -17,5 +17,12 @@
     for (    final AbstractRowContainer rowContainer : rowContainers) {
       rowContainer.paintInsertColumns(index,numberOfColumns,frozen);
     }
+    scroller.recalculateScrollbarsForVirtualViewport();
+    int pixelsToInsertedColumn=columnConfiguration.getCalculatedColumnsWidth(Range.withLength(0,index));
+    final boolean columnsWereAddedToTheLeftOfViewport=scroller.lastScrollLeft > pixelsToInsertedColumn;
+    if (columnsWereAddedToTheLeftOfViewport) {
+      int insertedColumnsWidth=columnConfiguration.getCalculatedColumnsWidth(Range.withLength(index,numberOfColumns));
+      horizontalScrollbar.setScrollPos(scroller.lastScrollLeft + insertedColumnsWidth);
+    }
   }
 }
