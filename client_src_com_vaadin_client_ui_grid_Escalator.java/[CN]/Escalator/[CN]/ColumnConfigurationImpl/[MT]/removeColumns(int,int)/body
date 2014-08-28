@@ -28,6 +28,11 @@
       final int newScrollLeft=Math.max(firstRemovedColumnLeft,leftByDiff);
       horizontalScrollbar.setScrollPos(newScrollLeft);
     }
+    boolean scrollbarWasNeeded=horizontalScrollbar.getOffsetSize() < horizontalScrollbar.getScrollSize();
     scroller.recalculateScrollbarsForVirtualViewport();
+    boolean scrollbarIsStillNeeded=horizontalScrollbar.getOffsetSize() < horizontalScrollbar.getScrollSize();
+    if (scrollbarWasNeeded && !scrollbarIsStillNeeded) {
+      body.verifyEscalatorCount();
+    }
   }
 }

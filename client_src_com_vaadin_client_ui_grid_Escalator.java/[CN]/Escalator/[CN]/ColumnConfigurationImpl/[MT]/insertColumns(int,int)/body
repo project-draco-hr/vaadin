@@ -14,10 +14,15 @@
     frozenColumns+=numberOfColumns;
   }
   if (hasColumnAndRowData()) {
+    boolean scrollbarWasNeeded=horizontalScrollbar.getOffsetSize() < horizontalScrollbar.getScrollSize();
+    scroller.recalculateScrollbarsForVirtualViewport();
+    boolean scrollbarIsNowNeeded=horizontalScrollbar.getOffsetSize() < horizontalScrollbar.getScrollSize();
+    if (!scrollbarWasNeeded && scrollbarIsNowNeeded) {
+      body.verifyEscalatorCount();
+    }
     header.paintInsertColumns(index,numberOfColumns,frozen);
     body.paintInsertColumns(index,numberOfColumns,frozen);
     footer.paintInsertColumns(index,numberOfColumns,frozen);
-    scroller.recalculateScrollbarsForVirtualViewport();
     int pixelsToInsertedColumn=columnConfiguration.getCalculatedColumnsWidth(Range.withLength(0,index));
     final boolean columnsWereAddedToTheLeftOfViewport=scroller.lastScrollLeft > pixelsToInsertedColumn;
     if (columnsWereAddedToTheLeftOfViewport) {
