@@ -1,6 +1,16 @@
 {
-  if (targetElement == null) {
-    return "";
+  Element oldTarget=targetElement;
+  Widget targetWidget=Util.findPaintable(client,targetElement).getWidget();
+  targetElement=targetWidget.getElement();
+  String subPart=null;
+  boolean hasSubParts=targetWidget instanceof SubPartAware;
+  if (oldTarget != targetElement) {
+    if (hasSubParts) {
+      subPart=((SubPartAware)targetWidget).getSubPartName(DOM.asOld(oldTarget));
+    }
+    if (!hasSubParts || subPart == null) {
+      return null;
+    }
   }
   List<ConnectorPath> hierarchy=getConnectorHierarchyForElement(targetElement);
   List<String> path=new ArrayList<String>();
@@ -22,5 +32,5 @@
   if (path.size() == 0) {
     return null;
   }
-  return getBestSelector(generateQueries(path),targetElement);
+  return getBestSelector(generateQueries(path),targetElement,subPart);
 }
