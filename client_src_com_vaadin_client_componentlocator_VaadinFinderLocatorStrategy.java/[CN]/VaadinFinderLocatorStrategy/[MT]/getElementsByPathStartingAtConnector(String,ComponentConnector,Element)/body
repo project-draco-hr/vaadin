@@ -9,15 +9,16 @@
   }
   List<Element> output=new ArrayList<Element>();
   if (null != connectors && !connectors.isEmpty()) {
-    if (pathComponents.length > 1) {
-      for (      ComponentConnector connector : connectors) {
+    for (    ComponentConnector connector : connectors) {
+      if (!actualRoot.isOrHasChild(connector.getWidget().getElement())) {
+        continue;
+      }
+      if (pathComponents.length > 1) {
         if (connector.getWidget() instanceof SubPartAware) {
           output.add(((SubPartAware)connector.getWidget()).getSubPartElement(pathComponents[1]));
         }
       }
-    }
  else {
-      for (      ComponentConnector connector : connectors) {
         output.add(connector.getWidget().getElement());
       }
     }
