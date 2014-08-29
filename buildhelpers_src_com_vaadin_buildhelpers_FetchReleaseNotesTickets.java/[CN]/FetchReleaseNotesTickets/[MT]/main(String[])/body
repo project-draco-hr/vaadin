@@ -1,10 +1,20 @@
 {
-  String versions=System.getProperty("vaadin.version");
-  if (versions == null || versions.equals("")) {
+  String versionsProperty=System.getProperty("vaadin.version");
+  if (versionsProperty == null || versionsProperty.equals("")) {
     usage();
   }
   String milestone="";
-  for (  String version : versions.split(" ")) {
+  List<String> versions=new ArrayList<String>();
+  for (  String version : versionsProperty.split(" ")) {
+    if (version.endsWith(".0") || version.matches(".*\\.rc\\d+")) {
+      version=version.replaceAll("\\.rc\\d+$","");
+      versions.addAll(findPrereleaseVersions(version));
+    }
+ else {
+      versions.add(version);
+    }
+  }
+  for (  String version : versions) {
     if (!milestone.equals("")) {
       milestone+="&amp;";
     }
