@@ -1,0 +1,10 @@
+{
+  BrowserWindowOpener opener=new BrowserWindowOpener("url");
+  StreamResource resource=EasyMock.createMock(StreamResource.class);
+  opener.setResource(resource);
+  assertEquals("Unexpected resource is got on getResource() method",resource,opener.getResource());
+  Assert.assertNull("Unexpected resource is got on getUrl() method",opener.getUrl());
+  URLReference ref=opener.getState(false).resources.get(BrowserWindowOpenerState.locationResource);
+  Assert.assertTrue("Url reference in the state is not ResourceReference",ref instanceof ResourceReference);
+  Assert.assertEquals("Unexpected resource saved in state",resource,((ResourceReference)ref).getResource());
+}
