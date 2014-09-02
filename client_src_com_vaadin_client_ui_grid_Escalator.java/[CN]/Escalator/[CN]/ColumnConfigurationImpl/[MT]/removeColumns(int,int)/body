@@ -1,7 +1,12 @@
 {
   assertArgumentsAreValidAndWithinRange(index,numberOfColumns);
+  removeColumnsAdjustScrollbar(index,numberOfColumns);
+  header.paintRemoveColumns(index,numberOfColumns);
+  body.paintRemoveColumns(index,numberOfColumns);
+  footer.paintRemoveColumns(index,numberOfColumns);
   flyweightRow.removeCells(index,numberOfColumns);
-  if (index < frozenColumns) {
+  columns.subList(index,index + numberOfColumns).clear();
+  if (index < getFrozenColumnCount()) {
     if (index + numberOfColumns < frozenColumns) {
       frozenColumns-=numberOfColumns;
     }
@@ -9,30 +14,11 @@
       frozenColumns=index;
     }
   }
-  List<Column> removedColumns=new ArrayList<Column>();
-  for (int i=0; i < numberOfColumns; i++) {
-    removedColumns.add(columns.remove(index));
-  }
-  if (hasSomethingInDom()) {
-    header.paintRemoveColumns(index,numberOfColumns);
-    body.paintRemoveColumns(index,numberOfColumns);
-    footer.paintRemoveColumns(index,numberOfColumns);
-    final int firstRemovedColumnLeft=columnConfiguration.getCalculatedColumnsWidth(Range.withLength(0,index));
-    final boolean columnsWereRemovedFromLeftOfTheViewport=scroller.lastScrollLeft > firstRemovedColumnLeft;
-    if (columnsWereRemovedFromLeftOfTheViewport) {
-      int removedColumnsPxAmount=0;
-      for (      ColumnConfigurationImpl.Column removedColumn : removedColumns) {
-        removedColumnsPxAmount+=removedColumn.getCalculatedWidth();
-      }
-      final int leftByDiff=(int)(scroller.lastScrollLeft - removedColumnsPxAmount);
-      final int newScrollLeft=Math.max(firstRemovedColumnLeft,leftByDiff);
-      horizontalScrollbar.setScrollPos(newScrollLeft);
-    }
-    boolean scrollbarWasNeeded=horizontalScrollbar.getOffsetSize() < horizontalScrollbar.getScrollSize();
-    scroller.recalculateScrollbarsForVirtualViewport();
-    boolean scrollbarIsStillNeeded=horizontalScrollbar.getOffsetSize() < horizontalScrollbar.getScrollSize();
-    if (scrollbarWasNeeded && !scrollbarIsStillNeeded) {
-      body.verifyEscalatorCount();
-    }
+  scroller.recalculateScrollbarsForVirtualViewport();
+  body.verifyEscalatorCount();
+  if (getColumnConfiguration().getColumnCount() > 0) {
+    readjustRows(header);
+    readjustRows(body);
+    readjustRows(footer);
   }
 }
