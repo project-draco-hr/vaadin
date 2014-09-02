@@ -2,7 +2,9 @@
   if (this.visible == visible) {
     return;
   }
-  this.visible=visible;
+  if (visible) {
+    this.visible=true;
+  }
   if (grid != null) {
     int index=findIndexOfColumn();
     ColumnConfiguration conf=grid.escalator.getColumnConfiguration();
@@ -12,6 +14,11 @@
  else {
       conf.removeColumns(index,1);
     }
+  }
+  if (!visible) {
+    this.visible=false;
+  }
+  if (grid != null) {
     for (    HeaderRow row : grid.getHeader().getRows()) {
       row.calculateColspans();
     }
