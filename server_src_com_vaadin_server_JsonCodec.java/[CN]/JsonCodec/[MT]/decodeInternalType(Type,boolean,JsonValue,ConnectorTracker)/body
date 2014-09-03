@@ -1,0 +1,52 @@
+{
+  if (!isInternalType(targetType)) {
+    throw new JsonException("Type " + targetType + " is not a supported internal type.");
+  }
+  String transportType=getInternalTransportType(targetType);
+  if (encodedJsonValue.getType() == JsonType.NULL) {
+    return null;
+  }
+ else   if (targetType == Void.class) {
+    throw new JsonException("Something other than null was encoded for a null type");
+  }
+  if (targetType == UidlValue.class) {
+    return decodeUidlValue((JsonArray)encodedJsonValue,connectorTracker);
+  }
+  if (JsonConstants.VTYPE_LIST.equals(transportType)) {
+    return decodeList(targetType,restrictToInternalTypes,(JsonArray)encodedJsonValue,connectorTracker);
+  }
+ else   if (JsonConstants.VTYPE_SET.equals(transportType)) {
+    return decodeSet(targetType,restrictToInternalTypes,(JsonArray)encodedJsonValue,connectorTracker);
+  }
+ else   if (JsonConstants.VTYPE_MAP.equals(transportType)) {
+    return decodeMap(targetType,restrictToInternalTypes,encodedJsonValue,connectorTracker);
+  }
+  if (JsonConstants.VTYPE_ARRAY.equals(transportType)) {
+    return decodeObjectArray(targetType,(JsonArray)encodedJsonValue,connectorTracker);
+  }
+ else   if (JsonConstants.VTYPE_STRINGARRAY.equals(transportType)) {
+    return decodeStringArray((JsonArray)encodedJsonValue);
+  }
+  if (JsonConstants.VTYPE_CONNECTOR.equals(transportType)) {
+    return connectorTracker.getConnector(encodedJsonValue.asString());
+  }
+  if (JsonConstants.VTYPE_STRING.equals(transportType)) {
+    return encodedJsonValue.asString();
+  }
+ else   if (JsonConstants.VTYPE_INTEGER.equals(transportType)) {
+    return (int)encodedJsonValue.asNumber();
+  }
+ else   if (JsonConstants.VTYPE_LONG.equals(transportType)) {
+    return (long)encodedJsonValue.asNumber();
+  }
+ else   if (JsonConstants.VTYPE_FLOAT.equals(transportType)) {
+    return (float)encodedJsonValue.asNumber();
+  }
+ else   if (JsonConstants.VTYPE_DOUBLE.equals(transportType)) {
+    return encodedJsonValue.asNumber();
+  }
+ else   if (JsonConstants.VTYPE_BOOLEAN.equals(transportType)) {
+    return encodedJsonValue.asBoolean();
+  }
+  throw new JsonException("Unknown type " + transportType);
+}

@@ -1,10 +1,17 @@
 {
-  Widget widget=VPopupView.this;
-  while (shortcutActionHandler == null && widget != null) {
-    if (widget instanceof ShortcutActionHandlerOwner) {
-      shortcutActionHandler=((ShortcutActionHandlerOwner)widget).getShortcutActionHandler();
-    }
-    widget=widget.getParent();
-  }
+  popupShowInProgress=true;
   super.show();
+  Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+    @Override public void execute(){
+      try {
+        if (shortcutActionHandler == null) {
+          shortcutActionHandler=findShortcutActionHandler();
+        }
+      }
+  finally {
+        popupShowInProgress=false;
+      }
+    }
+  }
+);
 }

@@ -7,21 +7,26 @@
  else     if (details != null) {
       message+="<br/><br/>" + details;
     }
-    JSONObject appError=new JSONObject();
+    JsonObject appError=Json.createObject();
     appError.put("caption",caption);
     appError.put("message",message);
-    appError.put("url",url);
-    JSONObject meta=new JSONObject();
+    if (url == null) {
+      appError.put("url",Json.createNull());
+    }
+ else {
+      appError.put("url",url);
+    }
+    JsonObject meta=Json.createObject();
     meta.put("appError",appError);
-    JSONObject json=new JSONObject();
-    json.put("changes",new JSONObject());
-    json.put("resources",new JSONObject());
-    json.put("locales",new JSONObject());
+    JsonObject json=Json.createObject();
+    json.put("changes",Json.createObject());
+    json.put("resources",Json.createObject());
+    json.put("locales",Json.createObject());
     json.put("meta",meta);
     json.put(ApplicationConstants.SERVER_SYNC_ID,-1);
-    returnString=json.toString();
+    returnString=JsonUtil.stringify(json);
   }
- catch (  JSONException e) {
+ catch (  JsonException e) {
     getLogger().log(Level.WARNING,"Error creating critical notification JSON message",e);
   }
   return "for(;;);[" + returnString + "]";

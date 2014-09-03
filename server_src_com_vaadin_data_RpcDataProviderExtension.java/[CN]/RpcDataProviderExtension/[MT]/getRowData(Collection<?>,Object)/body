@@ -1,21 +1,16 @@
 {
   Item item=container.getItem(itemId);
-  String[] row=new String[propertyIds.size()];
-  JSONArray rowData=new JSONArray();
+  JsonArray rowData=Json.createArray();
   Grid grid=getGrid();
-  try {
-    for (    Object propertyId : propertyIds) {
-      GridColumn column=grid.getColumn(propertyId);
-      Object propertyValue=item.getItemProperty(propertyId).getValue();
-      Object encodedValue=encodeValue(propertyValue,column.getRenderer(),column.getConverter(),grid.getLocale());
-      rowData.put(encodedValue);
-    }
-    final JSONObject rowObject=new JSONObject();
-    rowObject.put(GridState.JSONKEY_DATA,rowData);
-    rowObject.put(GridState.JSONKEY_ROWKEY,keyMapper.getKey(itemId));
-    return rowObject;
+  int i=0;
+  for (  Object propertyId : propertyIds) {
+    GridColumn column=grid.getColumn(propertyId);
+    Object propertyValue=item.getItemProperty(propertyId).getValue();
+    JsonValue encodedValue=encodeValue(propertyValue,column.getRenderer(),column.getConverter(),grid.getLocale());
+    rowData.set(i++,encodedValue);
   }
- catch (  final JSONException e) {
-    throw new RuntimeException("Grid was unable to serialize " + "data for row (this should've been caught " + "eariler by other Grid logic)",e);
-  }
+  final JsonObject rowObject=Json.createObject();
+  rowObject.put(GridState.JSONKEY_DATA,rowData);
+  rowObject.put(GridState.JSONKEY_ROWKEY,keyMapper.getKey(itemId));
+  return rowObject;
 }

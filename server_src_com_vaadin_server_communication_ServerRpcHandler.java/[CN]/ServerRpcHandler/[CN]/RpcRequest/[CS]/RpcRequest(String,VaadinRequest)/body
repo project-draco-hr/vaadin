@@ -1,15 +1,21 @@
 {
-  json=new JSONObject(jsonString);
-  String csrfToken=json.optString(ApplicationConstants.CSRF_TOKEN);
-  if (csrfToken.equals("")) {
-    csrfToken=ApplicationConstants.CSRF_TOKEN_DEFAULT_VALUE;
+  json=JsonUtil.parse(jsonString);
+  JsonValue token=json.get(ApplicationConstants.CSRF_TOKEN);
+  if (token == null) {
+    this.csrfToken=ApplicationConstants.CSRF_TOKEN_DEFAULT_VALUE;
   }
-  this.csrfToken=csrfToken;
+ else {
+    String csrfToken=token.asString();
+    if (csrfToken.equals("")) {
+      csrfToken=ApplicationConstants.CSRF_TOKEN_DEFAULT_VALUE;
+    }
+    this.csrfToken=csrfToken;
+  }
   if (request.getService().getDeploymentConfiguration().isSyncIdCheckEnabled()) {
-    syncId=json.getInt(ApplicationConstants.SERVER_SYNC_ID);
+    syncId=(int)json.getNumber(ApplicationConstants.SERVER_SYNC_ID);
   }
  else {
     syncId=-1;
   }
-  invocations=json.getJSONArray(ApplicationConstants.RPC_INVOCATIONS);
+  invocations=json.getArray(ApplicationConstants.RPC_INVOCATIONS);
 }

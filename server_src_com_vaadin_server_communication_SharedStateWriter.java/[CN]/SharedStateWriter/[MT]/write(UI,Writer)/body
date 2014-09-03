@@ -1,16 +1,16 @@
 {
   Collection<ClientConnector> dirtyVisibleConnectors=ui.getConnectorTracker().getDirtyVisibleConnectors();
-  JSONObject sharedStates=new JSONObject();
+  JsonObject sharedStates=Json.createObject();
   for (  ClientConnector connector : dirtyVisibleConnectors) {
     try {
-      JSONObject stateJson=connector.encodeState();
-      if (stateJson != null && stateJson.length() != 0) {
+      JsonObject stateJson=connector.encodeState();
+      if (stateJson != null && stateJson.keys().length != 0) {
         sharedStates.put(connector.getConnectorId(),stateJson);
       }
     }
- catch (    JSONException e) {
+ catch (    JsonException e) {
       throw new PaintException("Failed to serialize shared state for connector " + connector.getClass().getName() + " ("+ connector.getConnectorId()+ "): "+ e.getMessage(),e);
     }
   }
-  writer.write(sharedStates.toString());
+  writer.write(JsonUtil.stringify(sharedStates));
 }
