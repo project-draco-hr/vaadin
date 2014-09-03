@@ -39,28 +39,7 @@
       if (event.getNativeKeyCode() != KeyCodes.KEY_ENTER) {
         return;
       }
-      final Cell cell=event.getActiveCell();
-      final GridColumn<?,T> column=columns.get(cell.getColumn());
-      if (event.isShiftKeyDown() && sortOrder != null) {
-        final SortOrder so=getSortOrder(column);
-        if (so != null) {
-          final int idx=sortOrder.indexOf(so);
-          sortOrder.set(idx,so.getOpposite());
-        }
- else {
-          sortOrder.add(new SortOrder(column));
-        }
-      }
- else {
-        if (sortOrder.size() == 1 && sortOrder.get(0).getColumn() == column) {
-          sortOrder.set(0,sortOrder.get(0).getOpposite());
-        }
- else {
-          sortOrder.clear();
-          sortOrder.add(new SortOrder(column));
-        }
-      }
-      setSortOrder(sortOrder,SortEventOriginator.USER);
+      sorter.sort(event.getActiveCell(),event.isShiftKeyDown());
     }
   }
 );

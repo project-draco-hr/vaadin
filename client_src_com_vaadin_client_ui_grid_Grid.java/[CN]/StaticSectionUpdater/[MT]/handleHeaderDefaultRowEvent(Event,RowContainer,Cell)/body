@@ -15,9 +15,7 @@
     event.preventDefault();
     Touch touch=event.getChangedTouches().get(0);
     rowEventTouchStartingPoint=new Point(touch.getClientX(),touch.getClientY());
-    lazySorter.setCellReference(cell);
-    lazySorter.setMultisort(true);
-    lazySorter.schedule(GridConstants.LONG_TAP_DELAY);
+    sorter.sortAfterDelay(GridConstants.LONG_TAP_DELAY,cell,true);
     return true;
   }
  else   if (BrowserEvents.TOUCHMOVE.equals(event.getType())) {
@@ -29,7 +27,7 @@
     double diffX=Math.abs(touch.getClientX() - rowEventTouchStartingPoint.getX());
     double diffY=Math.abs(touch.getClientY() - rowEventTouchStartingPoint.getY());
     if (diffX > GridConstants.LONG_TAP_THRESHOLD || diffY > GridConstants.LONG_TAP_THRESHOLD) {
-      lazySorter.cancel();
+      sorter.cancelDelayedSort();
     }
     return true;
   }
@@ -37,10 +35,9 @@
     if (event.getTouches().length() > 1) {
       return false;
     }
-    if (lazySorter.isRunning()) {
-      lazySorter.cancel();
-      lazySorter.setMultisort(false);
-      lazySorter.run();
+    if (sorter.isDelayedSortScheduled()) {
+      sorter.cancelDelayedSort();
+      sorter.sort(cell,false);
     }
     return true;
   }
@@ -48,13 +45,11 @@
     if (event.getTouches().length() > 1) {
       return false;
     }
-    lazySorter.cancel();
+    sorter.cancelDelayedSort();
     return true;
   }
  else   if (BrowserEvents.CLICK.equals(event.getType())) {
-    lazySorter.setCellReference(cell);
-    lazySorter.setMultisort(event.getShiftKey());
-    lazySorter.run();
+    sorter.sort(cell,event.getShiftKey());
     return false;
   }
  else {
