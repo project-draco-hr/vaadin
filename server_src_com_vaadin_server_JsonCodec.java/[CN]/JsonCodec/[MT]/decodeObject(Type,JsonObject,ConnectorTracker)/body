@@ -1,0 +1,17 @@
+{
+  Class<?> targetClass=getClassForType(targetType);
+  try {
+    Object decodedObject=targetClass.newInstance();
+    for (    BeanProperty property : getProperties(targetClass)) {
+      String fieldName=property.getName();
+      JsonValue encodedFieldValue=serializedObject.get(fieldName);
+      Type fieldType=property.getType();
+      Object decodedFieldValue=decodeInternalOrCustomType(fieldType,encodedFieldValue,connectorTracker);
+      property.setValue(decodedObject,decodedFieldValue);
+    }
+    return decodedObject;
+  }
+ catch (  Exception e) {
+    throw new RuntimeException(e);
+  }
+}

@@ -1,0 +1,17 @@
+{
+  openTestURL();
+  int y=rescheduleEvent(20);
+  WebElement startElement=getDriver().findElement(By.className("start"));
+  WebElement endElement=getDriver().findElement(By.className("end"));
+  long start=Long.parseLong(startElement.getText());
+  long end=Long.parseLong(endElement.getText());
+  long duration=end - start;
+  int yNew=rescheduleEvent(20);
+  startElement=getDriver().findElement(By.className("start"));
+  endElement=getDriver().findElement(By.className("end"));
+  long newStart=Long.parseLong(startElement.getText());
+  long newEnd=Long.parseLong(endElement.getText());
+  Assert.assertTrue("Second rescheduling did not change the event start time",newStart > start);
+  Assert.assertEquals("Duration of the event after second rescheduling has been changed",duration,newEnd - newStart);
+  Assert.assertTrue("Second rescheduling did not change the event Y coordinate",yNew > y);
+}

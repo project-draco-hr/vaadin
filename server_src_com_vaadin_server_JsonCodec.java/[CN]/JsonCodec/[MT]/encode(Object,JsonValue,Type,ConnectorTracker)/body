@@ -1,0 +1,57 @@
+{
+  if (null == value) {
+    return ENCODE_RESULT_NULL;
+  }
+  JsonValue toReturn;
+  if (value instanceof JsonValue) {
+    toReturn=(JsonValue)value;
+  }
+ else   if (value instanceof String) {
+    toReturn=Json.create((String)value);
+  }
+ else   if (value instanceof Boolean) {
+    toReturn=Json.create((Boolean)value);
+  }
+ else   if (value instanceof Number) {
+    toReturn=Json.create(((Number)value).doubleValue());
+  }
+ else   if (value instanceof Character) {
+    toReturn=Json.create(Character.toString((Character)value));
+  }
+ else   if (value instanceof String[]) {
+    toReturn=toJsonArray((String[])value);
+  }
+ else   if (value instanceof Collection) {
+    toReturn=encodeCollection(valueType,(Collection<?>)value,connectorTracker);
+  }
+ else   if (value instanceof Map) {
+    toReturn=encodeMap(valueType,(Map<?,?>)value,connectorTracker);
+  }
+ else   if (value instanceof Connector) {
+    if (value instanceof Component && !(LegacyCommunicationManager.isComponentVisibleToClient((Component)value))) {
+      return ENCODE_RESULT_NULL;
+    }
+    toReturn=Json.create(((Connector)value).getConnectorId());
+  }
+ else   if (value instanceof Enum) {
+    toReturn=Json.create(((Enum<?>)value).name());
+  }
+ else   if (customSerializers.containsKey(value.getClass())) {
+    toReturn=serializeJson(value,connectorTracker);
+  }
+ else   if (valueType instanceof GenericArrayType) {
+    toReturn=encodeArrayContents(((GenericArrayType)valueType).getGenericComponentType(),value,connectorTracker);
+  }
+ else   if (valueType instanceof Class<?>) {
+    if (((Class<?>)valueType).isArray()) {
+      toReturn=encodeArrayContents(((Class<?>)valueType).getComponentType(),value,connectorTracker);
+    }
+ else {
+      return encodeObject(value,(Class<?>)valueType,(JsonObject)diffState,connectorTracker);
+    }
+  }
+ else {
+    throw new JsonException("Can not encode type " + valueType);
+  }
+  return new EncodeResult(toReturn);
+}

@@ -1,11 +1,14 @@
 {
-  JSONArray keys=new JSONArray();
-  JSONArray values=new JSONArray();
+  JsonArray keys=Json.createArray();
+  JsonArray values=Json.createArray();
   for (  Entry<?,?> entry : map.entrySet()) {
     EncodeResult encodedKey=encode(entry.getKey(),null,keyType,connectorTracker);
     EncodeResult encodedValue=encode(entry.getValue(),null,valueType,connectorTracker);
-    keys.put(encodedKey.getEncodedValue());
-    values.put(encodedValue.getEncodedValue());
+    keys.set(keys.length(),encodedKey.getEncodedValue());
+    values.set(values.length(),encodedValue.getEncodedValue());
   }
-  return new JSONArray(Arrays.asList(keys,values));
+  JsonArray jsonMap=Json.createArray();
+  jsonMap.set(0,keys);
+  jsonMap.set(1,values);
+  return jsonMap;
 }

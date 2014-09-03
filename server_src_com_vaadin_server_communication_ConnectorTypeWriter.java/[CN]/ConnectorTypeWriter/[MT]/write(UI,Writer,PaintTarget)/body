@@ -1,14 +1,14 @@
 {
   Collection<ClientConnector> dirtyVisibleConnectors=ui.getConnectorTracker().getDirtyVisibleConnectors();
-  JSONObject connectorTypes=new JSONObject();
+  JsonObject connectorTypes=Json.createObject();
   for (  ClientConnector connector : dirtyVisibleConnectors) {
     String connectorType=target.getTag(connector);
     try {
       connectorTypes.put(connector.getConnectorId(),connectorType);
     }
- catch (    JSONException e) {
+ catch (    JsonException e) {
       throw new PaintException("Failed to send connector type for connector " + connector.getConnectorId() + ": "+ e.getMessage(),e);
     }
   }
-  writer.write(connectorTypes.toString());
+  writer.write(JsonUtil.stringify(connectorTypes));
 }

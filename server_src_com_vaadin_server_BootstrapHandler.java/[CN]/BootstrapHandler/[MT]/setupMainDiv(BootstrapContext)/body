@@ -14,7 +14,6 @@
   VaadinRequest request=context.getRequest();
   VaadinService vaadinService=request.getService();
   String vaadinLocation=vaadinService.getStaticFileLocation(request) + "/VAADIN/";
-  fragmentNodes.add(new Element(Tag.valueOf("iframe"),"").attr("tabIndex","-1").attr("id","__gwt_historyFrame").attr("style","position:absolute;width:0;height:0;border:0;overflow:hidden").attr("src","javascript:false"));
   if (context.getPushMode().isEnabled()) {
     String pushJS=vaadinLocation;
     if (context.getRequest().getService().getDeploymentConfiguration().isProductionMode()) {
@@ -30,7 +29,7 @@
   Element mainScriptTag=new Element(Tag.valueOf("script"),"").attr("type","text/javascript");
   StringBuilder builder=new StringBuilder();
   builder.append("//<![CDATA[\n");
-  builder.append("if (!window.vaadin) alert(" + JSONObject.quote("Failed to load the bootstrap javascript: " + bootstrapLocation) + ");\n");
+  builder.append("if (!window.vaadin) alert(" + JsonUtil.quote("Failed to load the bootstrap javascript: " + bootstrapLocation) + ");\n");
   appendMainScriptTagContents(context,builder);
   builder.append("//]]>");
   mainScriptTag.appendChild(new DataNode(builder.toString(),mainScriptTag.baseUri()));

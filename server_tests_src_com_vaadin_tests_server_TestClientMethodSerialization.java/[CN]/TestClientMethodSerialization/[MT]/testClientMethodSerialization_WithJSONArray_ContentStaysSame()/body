@@ -1,7 +1,10 @@
 {
-  JSONArray originalArray=new JSONArray(Arrays.asList("callbackParameter1","callBackParameter2","12345"));
+  JsonArray originalArray=Json.createArray();
+  originalArray.set(0,"callbackParameter1");
+  originalArray.set(1,"callBackParameter2");
+  originalArray.set(2,"12345");
   ClientMethodInvocation original=new ClientMethodInvocation(null,"interfaceName",JAVASCRIPT_CALLBACK_METHOD,new Object[]{"callBackMethodName",originalArray});
   ClientMethodInvocation copy=(ClientMethodInvocation)serializeAndDeserialize(original);
-  JSONArray copyArray=(JSONArray)copy.getParameters()[1];
-  assertEquals(originalArray.toString(),copyArray.toString());
+  JsonArray copyArray=(JsonArray)copy.getParameters()[1];
+  assertEquals(JsonUtil.stringify(originalArray),JsonUtil.stringify(copyArray));
 }
