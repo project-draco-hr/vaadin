@@ -1,6 +1,20 @@
 {
   this.textFieldEnabled=textFieldEnabled;
-  text.setEnabled(textFieldEnabled);
+  if (BrowserInfo.get().isIE()) {
+    if (!textFieldEnabled) {
+      text.getElement().setAttribute("unselectable","on");
+      text.getElement().setAttribute("readonly","");
+      text.setTabIndex(-2);
+    }
+ else     if (textFieldEnabled && text.getElement().hasAttribute("unselectable")) {
+      text.getElement().removeAttribute("unselectable");
+      text.getElement().removeAttribute("readonly");
+      text.setTabIndex(0);
+    }
+  }
+ else {
+    text.setEnabled(textFieldEnabled);
+  }
   if (textFieldEnabled) {
     calendarToggle.setTabIndex(-1);
     Roles.getButtonRole().setAriaHiddenState(calendarToggle.getElement(),true);
