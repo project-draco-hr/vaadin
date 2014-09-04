@@ -1,35 +1,39 @@
 {
-  if (row == activeRow && column == activeColumn && container == this.container) {
+  if (row == activeRow && activeCellRange.contains(column) && container == this.container) {
     return;
   }
   int oldRow=activeRow;
-  int oldColumn=activeColumn;
   activeRow=row;
-  activeColumn=column;
+  Range oldRange=activeCellRange;
   if (container == escalator.getBody()) {
     scrollToRow(activeRow);
+    activeCellRange=Range.withLength(column,1);
   }
-  if (activeColumn >= escalator.getColumnConfiguration().getFrozenColumnCount()) {
-    escalator.scrollToColumn(activeColumn,ScrollDestination.ANY,10);
+ else {
+    int i=0;
+    Element cell=container.getRowElement(activeRow).getFirstChildElement();
+    do {
+      int colSpan=cell.getPropertyInt(FlyweightCell.COLSPAN_ATTR);
+      Range cellRange=Range.withLength(i,colSpan);
+      if (cellRange.contains(column)) {
+        activeCellRange=cellRange;
+        break;
+      }
+      cell=cell.getNextSiblingElement();
+      ++i;
+    }
+ while (cell != null);
+  }
+  if (column >= escalator.getColumnConfiguration().getFrozenColumnCount()) {
+    escalator.scrollToColumn(column,ScrollDestination.ANY,10);
   }
   if (this.container == container) {
-    if (container != escalator.getBody()) {
-      if (oldColumn == activeColumn && oldRow != activeRow) {
-        refreshRow(oldRow);
-      }
- else       if (oldColumn != activeColumn) {
-        refreshHeader();
-        refreshFooter();
-      }
+    if (oldRange.equals(activeCellRange) && oldRow != activeRow) {
+      refreshRow(oldRow);
     }
  else {
-      if (oldRow != activeRow) {
-        refreshRow(oldRow);
-      }
-      if (oldColumn != activeColumn) {
-        refreshHeader();
-        refreshFooter();
-      }
+      refreshHeader();
+      refreshFooter();
     }
   }
  else {
@@ -44,7 +48,7 @@
  else {
       lastActiveFooterRow=oldRow;
     }
-    if (oldColumn != activeColumn) {
+    if (!oldRange.equals(activeCellRange)) {
       refreshHeader();
       refreshFooter();
       if (oldContainer == escalator.getBody()) {

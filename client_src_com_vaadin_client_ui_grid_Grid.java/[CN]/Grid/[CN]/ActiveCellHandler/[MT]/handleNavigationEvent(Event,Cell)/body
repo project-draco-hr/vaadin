@@ -5,20 +5,26 @@
   }
  else   if (event.getType().equals(BrowserEvents.KEYDOWN)) {
     int newRow=activeRow;
-    int newColumn=activeColumn;
     RowContainer newContainer=container;
+    int newColumn=activeCellRange.getStart();
 switch (event.getKeyCode()) {
 case KeyCodes.KEY_DOWN:
-      newRow+=1;
+      ++newRow;
     break;
 case KeyCodes.KEY_UP:
-  newRow-=1;
+  --newRow;
 break;
 case KeyCodes.KEY_RIGHT:
-newColumn+=1;
+if (activeCellRange.getEnd() >= getVisibleColumnIndices().size()) {
+return;
+}
+++newColumn;
 break;
 case KeyCodes.KEY_LEFT:
-newColumn-=1;
+if (newColumn == 0) {
+return;
+}
+--newColumn;
 break;
 case KeyCodes.KEY_TAB:
 if (event.getShiftKey()) {
@@ -71,12 +77,6 @@ newRow=0;
 }
 if (newContainer.getRowCount() == 0) {
 return;
-}
-if (newColumn < 0) {
-newColumn=0;
-}
- else if (newColumn >= getColumnCount()) {
-newColumn=getColumnCount() - 1;
 }
 event.preventDefault();
 event.stopPropagation();
