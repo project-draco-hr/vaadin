@@ -1,12 +1,18 @@
 {
+  long rangeInMinutesForDay=0;
   if (isTimeOnDifferentDays()) {
-    long range=(getEndTime().getTime() - getEnd().getTime()) / DateConstants.MINUTEINMILLIS;
-    if (getEnd().compareTo(targetDay) != 0) {
-      return getRangeInMinutes() - range;
+    if (targetDay.compareTo(getStart()) == 0) {
+      rangeInMinutesForDay=DateConstants.DAYINMINUTES - (getStartTime().getTime() - getStart().getTime()) / DateConstants.MINUTEINMILLIS;
     }
-    return range;
+ else     if (targetDay.compareTo(getEnd()) == 0) {
+      rangeInMinutesForDay=(getEndTime().getTime() - getEnd().getTime()) / DateConstants.MINUTEINMILLIS;
+    }
+ else {
+      rangeInMinutesForDay=DateConstants.DAYINMINUTES;
+    }
   }
  else {
-    return getRangeInMinutes();
+    rangeInMinutesForDay=getRangeInMinutes();
   }
+  return rangeInMinutesForDay;
 }

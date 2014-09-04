@@ -1,13 +1,17 @@
 {
   int pixelLength=0;
   int currentSlot=0;
-  int firstHourInMinutes=firstHour * 60;
+  int firstHourInMinutes=firstHour * DateConstants.HOURINMINUTES;
+  int endHourInMinutes=lastHour * DateConstants.HOURINMINUTES;
   if (firstHourInMinutes > startFromMinutes) {
+    durationInMinutes=durationInMinutes - (firstHourInMinutes - startFromMinutes);
     startFromMinutes=0;
   }
  else {
     startFromMinutes-=firstHourInMinutes;
   }
+  int shownHeightInMinutes=endHourInMinutes - firstHourInMinutes + DateConstants.HOURINMINUTES;
+  durationInMinutes=Math.min(durationInMinutes,shownHeightInMinutes - startFromMinutes);
   int slotsTillEvent=startFromMinutes / slotInMinutes;
   int startOverFlowTime=slotInMinutes - (startFromMinutes % slotInMinutes);
   if (startOverFlowTime == slotInMinutes) {
