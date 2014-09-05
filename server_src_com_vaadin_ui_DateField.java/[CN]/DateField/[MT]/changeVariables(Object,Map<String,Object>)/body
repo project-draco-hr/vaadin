@@ -41,11 +41,20 @@
       }
  catch (      Converter.ConversionException e) {
         if (oldDate != null) {
-          setValue(null);
+          preventValueChangeEvent=true;
+          try {
+            setValue(null);
+          }
+  finally {
+            preventValueChangeEvent=false;
+          }
           dateString=newDateString;
         }
         currentParseErrorMessage=e.getLocalizedMessage();
         uiHasValidDateString=false;
+        if (oldDate != null) {
+          fireValueChange(false);
+        }
         notifyFormOfValidityChange();
         markAsDirty();
       }
