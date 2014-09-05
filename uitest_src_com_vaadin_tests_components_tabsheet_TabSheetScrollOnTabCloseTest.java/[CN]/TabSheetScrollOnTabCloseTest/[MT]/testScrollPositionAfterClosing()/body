@@ -1,0 +1,21 @@
+{
+  openTestURL();
+  TabSheetElement ts=$(TabSheetElement.class).first();
+  WebElement tabSheetScroller=ts.findElement(By.className("v-tabsheet-scrollerNext"));
+  for (int i=0; i < 4; i++) {
+    tabSheetScroller.click();
+  }
+  checkDisplayedStatus(ts,"tab3",false);
+  checkDisplayedStatus(ts,"tab4",true);
+  for (int i=0; i < 4; i++) {
+    $(ButtonElement.class).get(i).click();
+    checkDisplayedStatus(ts,"tab3" + i,false);
+    checkDisplayedStatus(ts,"tab4",true);
+    checkDisplayedStatus(ts,"tab6",true);
+  }
+  for (int i=7; i < 10; i++) {
+    $(ButtonElement.class).get(i).click();
+    checkFirstTab(ts,"tab4");
+    checkDisplayedStatus(ts,"tab6",true);
+  }
+}
