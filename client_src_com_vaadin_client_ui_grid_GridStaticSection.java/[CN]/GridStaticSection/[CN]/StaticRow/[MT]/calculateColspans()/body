@@ -1,16 +1,13 @@
 {
-  for (  CELLTYPE cell : cells) {
+  for (  CELLTYPE cell : this.cells.values()) {
     cell.setColspan(1);
   }
-  for (  List<CELLTYPE> group : cellGroups) {
+  for (  List<GridColumn<?,?>> group : cellGroups) {
     int firstVisibleColumnInGroup=-1;
     int lastVisibleColumnInGroup=-1;
     int hiddenInsideGroup=0;
     for (int i=0; i < group.size(); i++) {
-      CELLTYPE cell=group.get(i);
-      int cellIndex=this.cells.indexOf(cell);
-      boolean columnVisible=getSection().getGrid().getColumn(cellIndex).isVisible();
-      if (columnVisible) {
+      if (group.get(i).isVisible()) {
         lastVisibleColumnInGroup=i;
         if (firstVisibleColumnInGroup == -1) {
           firstVisibleColumnInGroup=i;
@@ -23,7 +20,8 @@
     if (firstVisibleColumnInGroup == -1 || lastVisibleColumnInGroup == -1 || firstVisibleColumnInGroup == lastVisibleColumnInGroup) {
       continue;
     }
-    CELLTYPE firstVisibleCell=group.get(firstVisibleColumnInGroup);
+    GridColumn<?,?> firstVisibleColumn=group.get(firstVisibleColumnInGroup);
+    CELLTYPE firstVisibleCell=getCell(firstVisibleColumn);
     firstVisibleCell.setColspan(lastVisibleColumnInGroup - firstVisibleColumnInGroup - hiddenInsideGroup + 1);
   }
 }

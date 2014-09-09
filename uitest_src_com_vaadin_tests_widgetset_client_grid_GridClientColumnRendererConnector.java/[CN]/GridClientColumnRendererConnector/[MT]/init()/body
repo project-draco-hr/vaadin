@@ -13,17 +13,16 @@
   }
   GridColumn<String,String> c=createColumnWithRenderer(Renderers.TEXT_RENDERER);
   grid.addColumn(c);
-  grid.getHeader().getDefaultRow().getCell(0).setText("Column 1");
+  grid.getHeader().getDefaultRow().getCell(c).setText("Column 1");
   c=createColumnWithRenderer(Renderers.CPLX_RENDERER);
   grid.addColumn(c);
-  grid.getHeader().getDefaultRow().getCell(1).setText("Column 2");
+  grid.getHeader().getDefaultRow().getCell(c).setText("Column 2");
   grid.addSortHandler(new SortEventHandler<String>(){
     @Override public void sort(    SortEvent<String> event){
       Element console=Document.get().getElementById("testDebugConsole");
       String text="Client-side sort event received<br>" + "Columns: " + event.getOrder().size() + ", order: ";
       for (      SortOrder order : event.getOrder()) {
-        int colIdx=getWidget().getColumns().indexOf(order.getColumn());
-        String columnHeader=getWidget().getHeader().getDefaultRow().getCell(colIdx).getText();
+        String columnHeader=getWidget().getHeader().getDefaultRow().getCell(order.getColumn()).getText();
         text+=columnHeader + ": " + order.getDirection().toString();
       }
       console.setInnerHTML(text);
@@ -32,20 +31,18 @@
 );
   registerRpc(GridClientColumnRendererRpc.class,new GridClientColumnRendererRpc(){
     @Override public void addColumn(    Renderers renderer){
+      GridColumn<?,String> column;
       if (renderer == Renderers.NUMBER_RENDERER) {
-        GridColumn<Number,String> numberColumn=createNumberColumnWithRenderer(renderer);
-        getWidget().addColumn(numberColumn);
+        column=createNumberColumnWithRenderer(renderer);
       }
  else       if (renderer == Renderers.DATE_RENDERER) {
-        GridColumn<Date,String> dateColumn=createDateColumnWithRenderer(renderer);
-        getWidget().addColumn(dateColumn);
+        column=createDateColumnWithRenderer(renderer);
       }
  else {
-        GridColumn<String,String> column=createColumnWithRenderer(renderer);
-        getWidget().addColumn(column);
+        column=createColumnWithRenderer(renderer);
       }
-      int idx=getWidget().getColumnCount() - 1;
-      getWidget().getHeader().getDefaultRow().getCell(idx).setText("Column " + String.valueOf(getWidget().getColumnCount() + 1));
+      getWidget().addColumn(column);
+      getWidget().getHeader().getDefaultRow().getCell(column).setText("Column " + String.valueOf(getWidget().getColumnCount() + 1));
     }
     @Override public void detachAttach(){
       HasWidgets parent=(HasWidgets)getWidget().getParent();
