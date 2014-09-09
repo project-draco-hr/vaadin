@@ -3,35 +3,34 @@
   final String oppositeStyleAttribute=isVertical() ? "width" : "height";
   final String domProperty=isVertical() ? "offsetHeight" : "offsetWidth";
   base.getStyle().clearProperty(oppositeStyleAttribute);
-  if (!getElement().hasParentElement()) {
-    return;
-  }
-  final Element p=getElement().getParentElement();
-  if (p.getPropertyInt(domProperty) > 50) {
-    if (isVertical()) {
-      setHeight();
-    }
+  if (getElement().hasParentElement()) {
+    final Element p=getElement().getParentElement();
+    if (p.getPropertyInt(domProperty) > MIN_SIZE) {
+      if (isVertical()) {
+        setHeight();
+      }
  else {
-      base.getStyle().clearProperty(styleAttribute);
-    }
-  }
- else {
-    base.getStyle().setPropertyPx(styleAttribute,MIN_SIZE);
-    Scheduler.get().scheduleDeferred(new Command(){
-      @Override public void execute(){
-        final Element p=getElement().getParentElement();
-        if (p.getPropertyInt(domProperty) > (MIN_SIZE + 5)) {
-          if (isVertical()) {
-            setHeight();
-          }
- else {
-            base.getStyle().clearProperty(styleAttribute);
-          }
-          setValue(value,false);
-        }
+        base.getStyle().clearProperty(styleAttribute);
       }
     }
+ else {
+      base.getStyle().setPropertyPx(styleAttribute,MIN_SIZE);
+      Scheduler.get().scheduleDeferred(new Command(){
+        @Override public void execute(){
+          final Element p=getElement().getParentElement();
+          if (p.getPropertyInt(domProperty) > (MIN_SIZE + 5)) {
+            if (isVertical()) {
+              setHeight();
+            }
+ else {
+              base.getStyle().clearProperty(styleAttribute);
+            }
+            setValue(value,false);
+          }
+        }
+      }
 );
+    }
   }
   if (!isVertical()) {
     Scheduler.get().scheduleDeferred(new Command(){
