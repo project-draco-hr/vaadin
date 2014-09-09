@@ -21,6 +21,7 @@
   escalator.addRowVisibilityChangeHandler(new RowVisibilityChangeHandler(){
     @Override public void onRowVisibilityChange(    RowVisibilityChangeEvent event){
       if (dataSource != null) {
+        dataIsBeingFetched=true;
         dataSource.ensureAvailability(event.getFirstVisibleRow(),event.getVisibleRowCount());
       }
     }
@@ -40,6 +41,12 @@
         return;
       }
       sorter.sort(event.getActiveCell(),event.isShiftKeyDown());
+    }
+  }
+);
+  addDataAvailableHandler(new DataAvailableHandler(){
+    @Override public void onDataAvailable(    DataAvailableEvent event){
+      dataIsBeingFetched=false;
     }
   }
 );
