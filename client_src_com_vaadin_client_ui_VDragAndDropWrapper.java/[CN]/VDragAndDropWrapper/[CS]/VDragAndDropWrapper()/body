@@ -3,13 +3,39 @@
   hookHtml5Events(getElement());
   setStyleName(CLASSNAME);
   addDomHandler(new MouseDownHandler(){
-    @Override public void onMouseDown(    MouseDownEvent event){
+    @Override public void onMouseDown(    final MouseDownEvent event){
       if (getConnector().isEnabled() && event.getNativeEvent().getButton() == Event.BUTTON_LEFT && startDrag(event.getNativeEvent())) {
         event.preventDefault();
+        startX=event.getClientX();
+        startY=event.getClientY();
       }
     }
   }
 ,MouseDownEvent.getType());
+  addDomHandler(new MouseUpHandler(){
+    @Override public void onMouseUp(    final MouseUpEvent event){
+      final int deltaX=Math.abs(event.getClientX() - startX);
+      final int deltaY=Math.abs(event.getClientY() - startY);
+      if ((deltaX + deltaY) < MIN_PX_DELTA) {
+        setFocusOnLastElement(event);
+      }
+    }
+    private void setFocusOnLastElement(    final MouseUpEvent event){
+      Element el=event.getRelativeElement();
+      getLastChildElement(el).focus();
+    }
+    private Element getLastChildElement(    Element el){
+      do {
+        if (el == null) {
+          break;
+        }
+        el=el.getFirstChildElement();
+      }
+ while (el.getFirstChildElement() != null);
+      return el;
+    }
+  }
+,MouseUpEvent.getType());
   addDomHandler(new TouchStartHandler(){
     @Override public void onTouchStart(    TouchStartEvent event){
       if (getConnector().isEnabled() && startDrag(event.getNativeEvent())) {
