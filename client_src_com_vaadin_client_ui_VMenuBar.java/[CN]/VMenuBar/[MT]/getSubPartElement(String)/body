@@ -1,5 +1,28 @@
 {
-  int index=Integer.parseInt(subPart.substring(SUBPART_PREFIX.length()));
-  CustomMenuItem item=getItems().get(index);
-  return item.getElement();
+  if (subPart.startsWith(SUBPART_PREFIX)) {
+    int index=Integer.parseInt(subPart.substring(SUBPART_PREFIX.length()));
+    CustomMenuItem item=getItems().get(index);
+    return item.getElement();
+  }
+ else {
+    Queue<CustomMenuItem> submenuItems=new LinkedList<CustomMenuItem>();
+    for (    CustomMenuItem item : getItems()) {
+      if (isItemNamed(item,subPart)) {
+        return item.getElement();
+      }
+      if (item.getSubMenu() != null) {
+        submenuItems.addAll(item.getSubMenu().getItems());
+      }
+    }
+    while (!submenuItems.isEmpty()) {
+      CustomMenuItem item=submenuItems.poll();
+      if (!item.isSeparator() && isItemNamed(item,subPart)) {
+        return item.getElement();
+      }
+      if (item.getSubMenu() != null && item.getSubMenu().menuVisible) {
+        submenuItems.addAll(item.getSubMenu().getItems());
+      }
+    }
+    return null;
+  }
 }
