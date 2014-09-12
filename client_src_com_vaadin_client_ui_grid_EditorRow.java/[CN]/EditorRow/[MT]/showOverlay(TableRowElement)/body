@@ -5,6 +5,13 @@
   int bodyTop=body.getElement().getAbsoluteTop();
   int wrapperTop=tableWrapper.getAbsoluteTop();
   setBounds(editorOverlay,tr.getOffsetLeft(),rowTop + bodyTop - wrapperTop,tr.getOffsetWidth(),tr.getOffsetHeight());
+  updateHorizontalScrollPosition();
+  scrollHandler=grid.addScrollHandler(new ScrollHandler(){
+    @Override public void onScroll(    ScrollEvent event){
+      updateHorizontalScrollPosition();
+    }
+  }
+);
   tableWrapper.appendChild(editorOverlay);
   for (int i=0; i < tr.getCells().getLength(); i++) {
     Element cell=createCell(tr.getCells().getItem(i));
