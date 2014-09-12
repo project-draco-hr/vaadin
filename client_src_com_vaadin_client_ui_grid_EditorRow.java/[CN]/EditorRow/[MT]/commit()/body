@@ -1,0 +1,17 @@
+{
+  if (!enabled) {
+    throw new IllegalStateException("Cannot commit: EditorRow is not enabled");
+  }
+  if (state != State.ACTIVE) {
+    throw new IllegalStateException("Cannot commit: EditorRow is not in edit mode");
+  }
+  state=State.COMMITTING;
+  handler.commit(new EditorRowRequest(rowIndex,new RequestCallback(){
+    @Override public void onResponse(    EditorRowRequest request){
+      if (state == State.COMMITTING) {
+        state=State.ACTIVE;
+      }
+    }
+  }
+));
+}
