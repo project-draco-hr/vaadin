@@ -1,0 +1,14 @@
+{
+  try {
+    Method method=AbstractClientConnector.class.getDeclaredMethod("isThis",Object.class);
+    int modifiers=method.getModifiers();
+    if (Modifier.isFinal(modifiers) || !Modifier.isProtected(modifiers) || Modifier.isStatic(modifiers)) {
+      Assert.fail("isThis has invalid modifiers, CDI proxies will not work.");
+    }
+  }
+ catch (  SecurityException e) {
+  }
+catch (  NoSuchMethodException e) {
+    Assert.fail("isThis is missing, CDI proxies will not work.");
+  }
+}
