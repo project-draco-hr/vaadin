@@ -1,0 +1,37 @@
+{
+  if (sortableContainer == null) {
+    new UnsupportedOperationException("Wrapped container is not Sortable");
+  }
+  if (propertyId.length == 0) {
+    sortableContainer.sort(propertyId,ascending);
+    return;
+  }
+  List<Object> actualSortProperties=new ArrayList<Object>();
+  List<Boolean> actualSortDirections=new ArrayList<Boolean>();
+  for (int i=0; i < propertyId.length; ++i) {
+    Object property=propertyId[i];
+    SortDirection direction;
+    boolean isAscending=i < ascending.length ? ascending[i] : true;
+    if (isAscending) {
+      direction=SortDirection.ASCENDING;
+    }
+ else {
+      direction=SortDirection.DESCENDING;
+    }
+    if (propertyGenerators.containsKey(property)) {
+      for (      SortOrder s : propertyGenerators.get(property).getSortProperties(new SortOrder(property,direction))) {
+        actualSortProperties.add(s.getPropertyId());
+        actualSortDirections.add(s.getDirection() == SortDirection.ASCENDING);
+      }
+    }
+ else {
+      actualSortProperties.add(property);
+      actualSortDirections.add(isAscending);
+    }
+  }
+  boolean[] actualAscending=new boolean[actualSortDirections.size()];
+  for (int i=0; i < actualAscending.length; ++i) {
+    actualAscending[i]=actualSortDirections.get(i);
+  }
+  sortableContainer.sort(actualSortProperties.toArray(),actualAscending);
+}
