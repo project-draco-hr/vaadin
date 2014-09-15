@@ -4,6 +4,17 @@
   }
   super.containerItemSetChange(event);
   keyMapperReset=true;
-  setCurrentPageFirstItemIndex(getCurrentPageFirstItemIndex(),false);
+  int currentFirstItemIndex=getCurrentPageFirstItemIndex();
+  if (event.getContainer().size() == 0) {
+    scrollRepairOnReAdding.setItemId(getCurrentPageFirstItemIndex());
+  }
+ else {
+    if (scrollRepairOnReAdding.needRepairScrollPosition(event.getContainer())) {
+      currentFirstItemIndex=scrollRepairOnReAdding.getItemId();
+    }
+    scrollRepairOnReAdding.resetItemId();
+    scrollRepairOnReAdding.setContainerData(event.getContainer());
+  }
+  setCurrentPageFirstItemIndex(currentFirstItemIndex,false);
   refreshRowCache();
 }

@@ -1,0 +1,17 @@
+{
+  openTestURL();
+  WebElement buttonReAddRows=findElement(By.id("button1"));
+  scrollUp();
+  waitUntilNot(new ExpectedCondition<Boolean>(){
+    @Override public Boolean apply(    WebDriver input){
+      return $(TableElement.class).first().getCell(49,0) == null;
+    }
+  }
+,10);
+  WebElement row=$(TableElement.class).first().getCell(49,0);
+  int rowLocation=row.getLocation().getY();
+  buttonReAddRows.click();
+  row=$(TableElement.class).first().getCell(49,0);
+  int newRowLocation=row.getLocation().getY();
+  assertThat("Scroll position should be the same as before Re-Adding all rows",rowLocation == newRowLocation,is(true));
+}
