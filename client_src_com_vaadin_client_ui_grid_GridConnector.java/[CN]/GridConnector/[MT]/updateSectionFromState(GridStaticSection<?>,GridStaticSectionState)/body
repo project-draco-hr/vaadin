@@ -1,2 +1,38 @@
 {
+  while (section.getRowCount() != 0) {
+    section.removeRow(0);
+  }
+  for (  RowState rowState : state.rows) {
+    GridStaticSection.StaticRow<?> row=section.appendRow();
+    for (    CellState cellState : rowState.cells) {
+      CustomGridColumn column=columnIdToColumn.get(cellState.columnId);
+      GridStaticSection.StaticCell cell=row.getCell(column);
+switch (cellState.type) {
+case TEXT:
+        cell.setText(cellState.text);
+      break;
+case HTML:
+    cell.setHtml(cellState.html);
+  break;
+case WIDGET:
+ComponentConnector connector=(ComponentConnector)cellState.connector;
+cell.setWidget(connector.getWidget());
+break;
+default :
+throw new IllegalStateException("unexpected cell type: " + cellState.type);
+}
+}
+for (List<String> group : rowState.cellGroups) {
+GridColumn<?,?>[] columns=new GridColumn<?,?>[group.size()];
+for (int i=0; i < group.size(); ++i) {
+columns[i]=columnIdToColumn.get(group.get(i));
+}
+row.join(columns);
+}
+if (section instanceof GridHeader && rowState.defaultRow) {
+((GridHeader)section).setDefaultRow((HeaderRow)row);
+}
+}
+section.setVisible(state.visible);
+section.requestSectionRefresh();
 }
