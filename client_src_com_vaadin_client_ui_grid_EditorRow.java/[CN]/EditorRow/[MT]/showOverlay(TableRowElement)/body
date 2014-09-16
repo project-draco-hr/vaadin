@@ -9,7 +9,11 @@
   for (int i=0; i < tr.getCells().getLength(); i++) {
     Element cell=createCell(tr.getCells().getItem(i));
     editorOverlay.appendChild(cell);
-    Widget editor=getHandler().getWidget(grid.getColumnFromVisibleIndex(i));
+    GridColumn<?,T> column=grid.getColumnFromVisibleIndex(i);
+    if (column instanceof SelectionColumn) {
+      continue;
+    }
+    Widget editor=getHandler().getWidget(column);
     if (editor != null) {
       editorWidgets.add(editor);
       cell.appendChild(editor.getElement());
