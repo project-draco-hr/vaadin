@@ -1,0 +1,44 @@
+{
+  container.addGeneratedProperty("miles",new PropertyValueGenerator<Double>(){
+    @Override public Double getValue(    Item item,    Object itemId,    Object propertyId){
+      return (Double)item.getItemProperty("km").getValue() * MILES_CONVERSION;
+    }
+    @Override public Class<Double> getType(){
+      return Double.class;
+    }
+    @Override public Filter modifyFilter(    Filter filter) throws UnsupportedFilterException {
+      if (filter instanceof Compare.LessOrEqual) {
+        Double value=(Double)((Compare.LessOrEqual)filter).getValue();
+        value=value / MILES_CONVERSION;
+        return new Compare.LessOrEqual("km",value);
+      }
+      return super.modifyFilter(filter);
+    }
+  }
+);
+  for (  Object itemId : container.getItemIds()) {
+    Item item=container.getItem(itemId);
+    Double km=(Double)item.getItemProperty("km").getValue();
+    Double miles=(Double)item.getItemProperty("miles").getValue();
+    assertTrue(miles.equals(km * MILES_CONVERSION));
+  }
+  Filter filter=new Compare.LessOrEqual("miles",MILES_CONVERSION);
+  container.addContainerFilter(filter);
+  for (  Object itemId : container.getItemIds()) {
+    Item item=container.getItem(itemId);
+    assertTrue("Item did not pass original filter.",filter.passesFilter(itemId,item));
+  }
+  assertTrue(container.getContainerFilters().contains(filter));
+  container.removeContainerFilter(filter);
+  assertFalse(container.getContainerFilters().contains(filter));
+  boolean allPass=true;
+  for (  Object itemId : container.getItemIds()) {
+    Item item=container.getItem(itemId);
+    if (!filter.passesFilter(itemId,item)) {
+      allPass=false;
+    }
+  }
+  if (allPass) {
+    fail("Removing filter did not introduce any previous filtered items");
+  }
+}
