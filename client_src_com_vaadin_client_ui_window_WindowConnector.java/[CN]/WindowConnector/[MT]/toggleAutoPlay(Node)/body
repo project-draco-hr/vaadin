@@ -1,0 +1,21 @@
+{
+  if (node instanceof Element) {
+    Element el=(Element)node;
+    if ("audio".equalsIgnoreCase(el.getTagName()) || "video".equalsIgnoreCase(el.getTagName())) {
+      if (el.hasAttribute("autoplay")) {
+        el.removeAttribute("autoplay");
+        el.setAttribute("_autoplay","");
+      }
+ else       if (el.hasAttribute("_autoplay")) {
+        el.removeAttribute("_autoplay");
+        el.setAttribute("autoplay","");
+      }
+    }
+  }
+  if (node.hasChildNodes()) {
+    NodeList<Node> nl=node.getChildNodes();
+    for (int i=0; i < nl.getLength(); i++) {
+      toggleAutoPlay(nl.getItem(i));
+    }
+  }
+}
