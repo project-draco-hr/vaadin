@@ -1,4 +1,5 @@
 {
+  httpSessionLock=new ReentrantLock();
   mockServletConfig=new MockServletConfig();
   mockServlet=new VaadinServlet();
   mockServlet.init(mockServletConfig);
@@ -10,11 +11,26 @@
       lock.lock();
     }
     @Override public Object getAttribute(    String name){
-      String lockAttribute=mockService.getServiceName() + ".lock";
-      if (lockAttribute.equals(name)) {
-        return lock;
+      Object res;
+      try {
+        Thread.sleep(100);
+        org.junit.Assert.assertTrue("Deadlock detected",httpSessionLock.tryLock(5,TimeUnit.SECONDS));
+        String lockAttribute=mockService.getServiceName() + ".lock";
+        if (lockAttribute.equals(name)) {
+          res=lock;
+        }
+ else         if ("com.vaadin.server.VaadinSession.Mock Servlet".equals(name)) {
+          res=session;
+        }
+ else {
+          res=super.getAttribute(name);
+        }
+        httpSessionLock.unlock();
       }
-      return super.getAttribute(name);
+ catch (      InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+      return res;
     }
   }
 ;
@@ -35,10 +51,19 @@
 ;
   vaadinRequest=new VaadinServletRequest(EasyMock.createMock(HttpServletRequest.class),mockService){
     @Override public String getParameter(    String name){
-      if ("theme".equals(name)) {
+      if ("theme".equals(name) || "restartApplication".equals(name) || "ignoreRestart".equals(name)|| "closeApplication".equals(name)) {
         return null;
       }
+ else       if (UIInitHandler.BROWSER_DETAILS_PARAMETER.equals(name)) {
+        return "1";
+      }
       return super.getParameter(name);
+    }
+    @Override public String getMethod(){
+      return "POST";
+    }
+    @Override public WrappedSession getWrappedSession(    boolean allowSessionCreation){
+      return mockWrappedSession;
     }
   }
 ;
