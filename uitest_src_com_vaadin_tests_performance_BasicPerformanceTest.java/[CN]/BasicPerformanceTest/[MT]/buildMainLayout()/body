@@ -7,7 +7,7 @@
   performanceReportArea.setWidth("200px");
   TestUtils.installPerformanceReporting(performanceReportArea);
   VerticalLayout leftBar=new VerticalLayout();
-  leftBar.setSizeUndefined();
+  leftBar.setWidth("250px");
   leftBar.addComponent(new Label("This is the left bar"));
   leftBar.addComponent(performanceReportArea);
   leftBar.addComponent(reportPerformanceButton);
@@ -54,6 +54,20 @@
         }
       }
       updatePerformanceReporting("Update labels",100,100);
+    }
+  }
+));
+  leftBar.addComponent(new Button("Update one label",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      Component child=contentLayout.getComponent(0);
+      if (child instanceof Panel) {
+        Panel panel=(Panel)child;
+        child=panel.getContent();
+      }
+      AbstractOrderedLayout layout=(AbstractOrderedLayout)((AbstractOrderedLayout)child).getComponent(0);
+      Label label=(Label)layout.getComponent(0);
+      label.setValue("New value " + updateOneCount++);
+      updatePerformanceReporting("Update one",10,10);
     }
   }
 ));
