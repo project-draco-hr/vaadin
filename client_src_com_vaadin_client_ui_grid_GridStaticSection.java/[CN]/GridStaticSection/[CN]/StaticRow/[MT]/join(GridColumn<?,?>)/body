@@ -1,0 +1,27 @@
+{
+  if (columns.length <= 1) {
+    throw new IllegalArgumentException("You can't merge less than 2 columns together.");
+  }
+  final List<?> columnList=section.grid.getColumns();
+  int firstIndex=columnList.indexOf(columns[0]);
+  int i=0;
+  for (  GridColumn<?,?> column : columns) {
+    if (!cells.containsKey(column)) {
+      throw new IllegalArgumentException("Given column does not exists on row " + column);
+    }
+ else     if (getCellGroupForColumn(column) != null) {
+      throw new IllegalStateException("Column is already in a group.");
+    }
+ else     if (!column.equals(columnList.get(firstIndex + (i++)))) {
+      throw new IllegalStateException("Columns are in invalid order or not in a continuous range");
+    }
+  }
+  cellGroups.add(Arrays.asList(columns));
+  calculateColspans();
+  for (i=0; i < columns.length; ++i) {
+    if (columns[i].isVisible()) {
+      return getCell(columns[i]);
+    }
+  }
+  return getCell(columns[0]);
+}

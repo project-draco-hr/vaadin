@@ -1,0 +1,110 @@
+{
+  createCategory("Columns",null);
+  for (int c=0; c < COLUMNS; c++) {
+    createCategory(getColumnProperty(c),"Columns");
+    createBooleanAction("Visible",getColumnProperty(c),true,new Command<Grid,Boolean>(){
+      @Override public void execute(      Grid grid,      Boolean value,      Object columnIndex){
+        Object propertyId=getColumnProperty((Integer)columnIndex);
+        GridColumn column=grid.getColumn(propertyId);
+        column.setVisible(!column.isVisible());
+      }
+    }
+,c);
+    createClickAction("Remove",getColumnProperty(c),new Command<Grid,String>(){
+      @Override public void execute(      Grid grid,      String value,      Object data){
+        grid.getContainerDatasource().removeContainerProperty(getColumnProperty((Integer)data));
+        removeCategory("Column " + data);
+      }
+    }
+,null,c);
+    createClickAction("Freeze",getColumnProperty(c),new Command<Grid,String>(){
+      @Override public void execute(      Grid grid,      String value,      Object data){
+        grid.setLastFrozenPropertyId(getColumnProperty((Integer)data));
+      }
+    }
+,null,c);
+    createBooleanAction("Sortable",getColumnProperty(c),true,new Command<Grid,Boolean>(){
+      @Override public void execute(      Grid grid,      Boolean value,      Object columnIndex){
+        Object propertyId=getColumnProperty((Integer)columnIndex);
+        GridColumn column=grid.getColumn(propertyId);
+        column.setSortable(value);
+      }
+    }
+,c);
+    createCategory("Column " + c + " Width",getColumnProperty(c));
+    createClickAction("Auto","Column " + c + " Width",new Command<Grid,Integer>(){
+      @Override public void execute(      Grid grid,      Integer value,      Object columnIndex){
+        Object propertyId=getColumnProperty((Integer)columnIndex);
+        GridColumn column=grid.getColumn(propertyId);
+        column.setWidthUndefined();
+      }
+    }
+,-1,c);
+    for (int w=50; w < 300; w+=50) {
+      createClickAction(w + "px","Column " + c + " Width",new Command<Grid,Integer>(){
+        @Override public void execute(        Grid grid,        Integer value,        Object columnIndex){
+          Object propertyId=getColumnProperty((Integer)columnIndex);
+          GridColumn column=grid.getColumn(propertyId);
+          column.setWidth(value);
+        }
+      }
+,w,c);
+    }
+    LinkedHashMap<String,GridStaticCellType> defaultRows=new LinkedHashMap<String,GridStaticCellType>();
+    defaultRows.put("Text Header",GridStaticCellType.TEXT);
+    defaultRows.put("Html Header ",GridStaticCellType.HTML);
+    defaultRows.put("Widget Header",GridStaticCellType.WIDGET);
+    createMultiClickAction("Header Type",getColumnProperty(c),defaultRows,new Command<Grid,GridStaticCellType>(){
+      @Override public void execute(      Grid grid,      GridStaticCellType value,      Object columnIndex){
+        final Object propertyId=getColumnProperty((Integer)columnIndex);
+        final HeaderCell cell=grid.getHeader().getDefaultRow().getCell(propertyId);
+switch (value) {
+case TEXT:
+          cell.setText("Text Header");
+        break;
+case HTML:
+      cell.setHtml("HTML Header");
+    break;
+case WIDGET:
+  cell.setComponent(new Button("Button Header",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      log("Button clicked!");
+    }
+  }
+));
+default :
+break;
+}
+}
+}
+,c);
+defaultRows=new LinkedHashMap<String,GridStaticCellType>();
+defaultRows.put("Text Footer",GridStaticCellType.TEXT);
+defaultRows.put("Html Footer",GridStaticCellType.HTML);
+defaultRows.put("Widget Footer",GridStaticCellType.WIDGET);
+createMultiClickAction("Footer Type",getColumnProperty(c),defaultRows,new Command<Grid,GridStaticCellType>(){
+@Override public void execute(Grid grid,GridStaticCellType value,Object columnIndex){
+final Object propertyId=getColumnProperty((Integer)columnIndex);
+final FooterCell cell=grid.getFooter().getRow(0).getCell(propertyId);
+switch (value) {
+case TEXT:
+cell.setText("Text Footer");
+break;
+case HTML:
+cell.setHtml("HTML Footer");
+break;
+case WIDGET:
+cell.setComponent(new Button("Button Footer",new ClickListener(){
+@Override public void buttonClick(ClickEvent event){
+log("Button clicked!");
+}
+}
+));
+default :
+break;
+}
+}
+}
+,c);
+}
+}

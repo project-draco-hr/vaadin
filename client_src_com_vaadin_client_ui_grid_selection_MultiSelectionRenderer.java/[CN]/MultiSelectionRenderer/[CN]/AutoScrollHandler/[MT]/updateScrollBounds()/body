@@ -1,0 +1,19 @@
+{
+  final Element root=Element.as(grid.getElement());
+  final Element tableWrapper=Element.as(root.getChild(2));
+  final TableElement table=TableElement.as(tableWrapper.getFirstChildElement());
+  final Element thead=table.getTHead();
+  final Element tfoot=table.getTFoot();
+  final int topBorder=getClientTop(root) + thead.getOffsetHeight();
+  final int bottomBorder=getClientTop(tfoot);
+  final int scrollCompensation=getScrollCompensation();
+  topBound=scrollCompensation + topBorder + SCROLL_AREA_GRADIENT_PX;
+  bottomBound=scrollCompensation + bottomBorder - SCROLL_AREA_GRADIENT_PX;
+  gradientArea=SCROLL_AREA_GRADIENT_PX;
+  if (bottomBound - topBound < MIN_NO_AUTOSCROLL_AREA_PX) {
+    int adjustment=MIN_NO_AUTOSCROLL_AREA_PX - (bottomBound - topBound);
+    topBound-=adjustment / 2;
+    bottomBound+=adjustment / 2;
+    gradientArea-=adjustment / 2;
+  }
+}

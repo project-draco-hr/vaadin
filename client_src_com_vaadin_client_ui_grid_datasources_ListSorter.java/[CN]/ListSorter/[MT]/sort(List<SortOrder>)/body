@@ -1,0 +1,34 @@
+{
+  DataSource<T> ds=grid.getDataSource();
+  if (!(ds instanceof ListDataSource)) {
+    throw new IllegalStateException("Grid " + grid + " data source is not a ListDataSource!");
+  }
+  ((ListDataSource<T>)ds).sort(new Comparator<T>(){
+    @Override @SuppressWarnings({"rawtypes","unchecked"}) public int compare(    T a,    T b){
+      for (      SortOrder o : order) {
+        GridColumn column=o.getColumn();
+        Comparator cmp=ListSorter.this.comparators.get(column);
+        int result=0;
+        Object value_a=column.getValue(a);
+        Object value_b=column.getValue(b);
+        if (cmp != null) {
+          result=cmp.compare(value_a,value_b);
+        }
+ else {
+          if (!(value_a instanceof Comparable)) {
+            throw new IllegalStateException("Column " + column + " has no assigned comparator and value "+ value_a+ " isn't naturally comparable");
+          }
+          result=((Comparable)value_a).compareTo(value_b);
+        }
+        if (result != 0) {
+          return o.getDirection() == SortDirection.ASCENDING ? result : -result;
+        }
+      }
+      if (order.size() > 0) {
+        return order.get(0).getDirection() == SortDirection.ASCENDING ? a.hashCode() - b.hashCode() : b.hashCode() - a.hashCode();
+      }
+      return a.hashCode() - b.hashCode();
+    }
+  }
+);
+}

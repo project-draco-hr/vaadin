@@ -1,0 +1,81 @@
+{
+  Grid<String> grid=getWidget();
+  grid.setSelectionMode(Grid.SelectionMode.NONE);
+  List<String> columnData=new ArrayList<String>();
+  for (int i=0; i < 100; i++) {
+    columnData.add(String.valueOf(i));
+  }
+  if (Location.getParameter("latency") != null) {
+    grid.setDataSource(new DelayedDataSource(new ListDataSource<String>(columnData),Integer.parseInt(Location.getParameter("latency"))));
+  }
+ else {
+    grid.setDataSource(new ListDataSource<String>(columnData));
+  }
+  GridColumn<String,String> c=createColumnWithRenderer(Renderers.TEXT_RENDERER);
+  grid.addColumn(c);
+  grid.getHeader().getDefaultRow().getCell(c).setText("Column 1");
+  c=createColumnWithRenderer(Renderers.CPLX_RENDERER);
+  grid.addColumn(c);
+  grid.getHeader().getDefaultRow().getCell(c).setText("Column 2");
+  grid.addSortHandler(new SortEventHandler<String>(){
+    @Override public void sort(    SortEvent<String> event){
+      Element console=Document.get().getElementById("testDebugConsole");
+      String text="Client-side sort event received<br>" + "Columns: " + event.getOrder().size() + ", order: ";
+      for (      SortOrder order : event.getOrder()) {
+        String columnHeader=getWidget().getHeader().getDefaultRow().getCell(order.getColumn()).getText();
+        text+=columnHeader + ": " + order.getDirection().toString();
+      }
+      console.setInnerHTML(text);
+    }
+  }
+);
+  registerRpc(GridClientColumnRendererRpc.class,new GridClientColumnRendererRpc(){
+    @Override public void addColumn(    Renderers renderer){
+      GridColumn<?,String> column;
+      if (renderer == Renderers.NUMBER_RENDERER) {
+        column=createNumberColumnWithRenderer(renderer);
+      }
+ else       if (renderer == Renderers.DATE_RENDERER) {
+        column=createDateColumnWithRenderer(renderer);
+      }
+ else {
+        column=createColumnWithRenderer(renderer);
+      }
+      getWidget().addColumn(column);
+      getWidget().getHeader().getDefaultRow().getCell(column).setText("Column " + String.valueOf(getWidget().getColumnCount() + 1));
+    }
+    @Override public void detachAttach(){
+      HasWidgets parent=(HasWidgets)getWidget().getParent();
+      parent.remove(getWidget());
+      parent.add(getWidget());
+    }
+    @Override public void triggerClientSorting(){
+      getWidget().sort(Sort.by(getWidget().getColumn(0)));
+    }
+    @Override @SuppressWarnings("unchecked") public void triggerClientSortingTest(){
+      Grid<String> grid=getWidget();
+      ListSorter<String> sorter=new ListSorter<String>(grid);
+      sorter.setComparator((GridColumn<String,String>)grid.getColumn(0),new Comparator<String>(){
+        @Override public int compare(        String o1,        String o2){
+          return Integer.parseInt(o1) - Integer.parseInt(o2);
+        }
+      }
+);
+      grid.sort(grid.getColumn(0));
+      sorter.removeFromGrid();
+    }
+    @Override @SuppressWarnings("unchecked") public void shuffle(){
+      Grid<String> grid=getWidget();
+      ListSorter<String> shuffler=new ListSorter<String>(grid);
+      shuffler.setComparator((GridColumn<String,String>)grid.getColumn(0),new Comparator<String>(){
+        @Override public int compare(        String o1,        String o2){
+          return com.google.gwt.user.client.Random.nextInt(3) - 1;
+        }
+      }
+);
+      grid.sort(grid.getColumn(0));
+      shuffler.removeFromGrid();
+    }
+  }
+);
+}

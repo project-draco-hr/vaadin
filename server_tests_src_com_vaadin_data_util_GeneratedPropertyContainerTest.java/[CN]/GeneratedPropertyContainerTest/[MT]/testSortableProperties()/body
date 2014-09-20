@@ -1,0 +1,20 @@
+{
+  container.addGeneratedProperty("baz",new PropertyValueGenerator<String>(){
+    @Override public String getValue(    Item item,    Object itemId,    Object propertyId){
+      return item.getItemProperty("foo").getValue() + " " + item.getItemProperty("bar").getValue();
+    }
+    @Override public Class<String> getType(){
+      return String.class;
+    }
+    @Override public SortOrder[] getSortProperties(    SortOrder order){
+      SortOrder[] sortOrder=new SortOrder[1];
+      sortOrder[0]=new SortOrder("bar",order.getDirection());
+      return sortOrder;
+    }
+  }
+);
+  container.sort(new Object[]{"baz"},new boolean[]{true});
+  assertEquals("foo 0",container.getItem(container.getIdByIndex(0)).getItemProperty("baz").getValue());
+  container.sort(new Object[]{"baz"},new boolean[]{false});
+  assertEquals("foo 10",container.getItem(container.getIdByIndex(0)).getItemProperty("baz").getValue());
+}

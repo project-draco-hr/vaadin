@@ -1,0 +1,10 @@
+{
+  JClassType createRendererClass=ConnectorBundle.findInheritedMethod(type,"createRenderer").getEnclosingType();
+  if (createRendererClass.getQualifiedSourceName().equals(AbstractRendererConnector.class.getCanonicalName())) {
+    JMethod getRenderer=ConnectorBundle.findInheritedMethod(type,"getRenderer");
+    JClassType rendererType=getRenderer.getReturnType().isClass();
+    bundle.setNeedsGwtConstructor(rendererType);
+    bundle.setNeedsReturnType(type,getRenderer);
+    logger.log(Type.DEBUG,"Renderer type of " + type + " is "+ rendererType);
+  }
+}

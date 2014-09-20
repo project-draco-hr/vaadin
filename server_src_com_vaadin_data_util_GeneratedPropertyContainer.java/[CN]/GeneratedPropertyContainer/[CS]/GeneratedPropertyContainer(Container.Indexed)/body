@@ -1,0 +1,30 @@
+{
+  wrappedContainer=container;
+  propertyGenerators=new HashMap<Object,PropertyValueGenerator<?>>();
+  if (wrappedContainer instanceof Sortable) {
+    sortableContainer=(Sortable)wrappedContainer;
+  }
+  if (wrappedContainer instanceof Filterable) {
+    activeFilters=new HashMap<Filter,List<Filter>>();
+    filterableContainer=(Filterable)wrappedContainer;
+  }
+ else {
+    activeFilters=null;
+  }
+  if (wrappedContainer instanceof ItemSetChangeNotifier) {
+    ((ItemSetChangeNotifier)wrappedContainer).addItemSetChangeListener(new ItemSetChangeListener(){
+      @Override public void containerItemSetChange(      ItemSetChangeEvent event){
+        fireItemSetChange();
+      }
+    }
+);
+  }
+  if (wrappedContainer instanceof PropertySetChangeNotifier) {
+    ((PropertySetChangeNotifier)wrappedContainer).addPropertySetChangeListener(new PropertySetChangeListener(){
+      @Override public void containerPropertySetChange(      PropertySetChangeEvent event){
+        fireContainerPropertySetChange();
+      }
+    }
+);
+  }
+}

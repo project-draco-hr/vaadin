@@ -1,0 +1,46 @@
+{
+  initWidget(escalator);
+  getElement().setTabIndex(0);
+  activeCellHandler=new ActiveCellHandler();
+  setStylePrimaryName("v-grid");
+  escalator.getHeader().setEscalatorUpdater(createHeaderUpdater());
+  escalator.getBody().setEscalatorUpdater(createBodyUpdater());
+  escalator.getFooter().setEscalatorUpdater(createFooterUpdater());
+  header.setGrid(this);
+  HeaderRow defaultRow=header.appendRow();
+  header.setDefaultRow(defaultRow);
+  footer.setGrid(this);
+  editorRow.setGrid(this);
+  setSelectionMode(SelectionMode.SINGLE);
+  escalator.addScrollHandler(new ScrollHandler(){
+    @Override public void onScroll(    ScrollEvent event){
+      fireEvent(new ScrollEvent());
+    }
+  }
+);
+  escalator.addRowVisibilityChangeHandler(new RowVisibilityChangeHandler(){
+    @Override public void onRowVisibilityChange(    RowVisibilityChangeEvent event){
+      if (dataSource != null) {
+        dataSource.ensureAvailability(event.getFirstVisibleRow(),event.getVisibleRowCount());
+      }
+    }
+  }
+);
+  addSelectionChangeHandler(new SelectionChangeHandler<T>(){
+    @Override public void onSelectionChange(    SelectionChangeEvent<T> event){
+      refreshBody();
+    }
+  }
+);
+  sinkEvents(getHeader().getConsumedEvents());
+  sinkEvents(Arrays.asList(BrowserEvents.KEYDOWN,BrowserEvents.KEYUP,BrowserEvents.KEYPRESS,BrowserEvents.DBLCLICK));
+  addHeaderKeyUpHandler(new HeaderKeyUpHandler(){
+    @Override public void onKeyUp(    GridKeyUpEvent event){
+      if (event.getNativeKeyCode() != KeyCodes.KEY_ENTER) {
+        return;
+      }
+      sorter.sort(event.getActiveCell(),event.isShiftKeyDown());
+    }
+  }
+);
+}

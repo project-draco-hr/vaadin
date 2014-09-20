@@ -1,0 +1,11 @@
+{
+  Type type=TypeData.getType(getClass());
+  try {
+    Type rendererType=type.getMethod("getRenderer").getReturnType();
+    @SuppressWarnings("unchecked") Renderer<T> instance=(Renderer<T>)rendererType.createInstance();
+    return instance;
+  }
+ catch (  NoDataException e) {
+    throw new IllegalStateException("Default implementation of createRenderer() does not work for " + Util.getSimpleName(this) + ". This might be caused by explicitely using "+ "super.createRenderer() or some unspecified "+ "problem with the widgetset compilation.",e);
+  }
+}

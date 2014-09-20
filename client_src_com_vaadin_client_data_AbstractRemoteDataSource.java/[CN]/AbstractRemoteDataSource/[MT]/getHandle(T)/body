@@ -1,0 +1,15 @@
+{
+  Object key=getRowKey(row);
+  if (key == null) {
+    throw new NullPointerException("key may not be null (row: " + row + ")");
+  }
+  if (pinnedRows.containsKey(key)) {
+    return pinnedRows.get(key);
+  }
+ else   if (rowCache.containsValue(row)) {
+    return new RowHandleImpl(row,key);
+  }
+ else {
+    throw new IllegalStateException("The cache of this DataSource " + "does not currently contain the row " + row);
+  }
+}

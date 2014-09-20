@@ -1,0 +1,20 @@
+{
+  GeneratedPropertyListener listener=new GeneratedPropertyListener();
+  GeneratedPropertyListener removedListener=new GeneratedPropertyListener();
+  container.addPropertySetChangeListener(listener);
+  container.addPropertySetChangeListener(removedListener);
+  container.addGeneratedProperty("foo",new PropertyValueGenerator<String>(){
+    @Override public String getValue(    Item item,    Object itemId,    Object propertyId){
+      return "";
+    }
+    @Override public Class<String> getType(){
+      return String.class;
+    }
+  }
+);
+  container.addContainerProperty("baz",String.class,"");
+  container.removePropertySetChangeListener(removedListener);
+  container.removeGeneratedProperty("foo");
+  assertEquals("Listener was not called correctly.",3,listener.getCallCount());
+  assertEquals("Removed listener was not called correctly.",2,removedListener.getCallCount());
+}

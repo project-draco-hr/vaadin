@@ -1,0 +1,22 @@
+{
+  Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand(){
+    @Override public void execute(){
+      if (defaultRowHeightShouldBeAutodetected && isAttached()) {
+        final Element detectionTr=DOM.createTR();
+        detectionTr.setClassName(getStylePrimaryName() + "-row");
+        final Element cellElem=DOM.createElement(getCellElementTagName());
+        cellElem.setClassName(getStylePrimaryName() + "-cell");
+        cellElem.setInnerHTML("foo");
+        detectionTr.appendChild(cellElem);
+        root.appendChild(detectionTr);
+        defaultRowHeight=Math.max(1,cellElem.getOffsetHeight());
+        root.removeChild(detectionTr);
+        if (root.hasChildNodes()) {
+          reapplyDefaultRowHeights();
+        }
+        defaultRowHeightShouldBeAutodetected=false;
+      }
+    }
+  }
+);
+}

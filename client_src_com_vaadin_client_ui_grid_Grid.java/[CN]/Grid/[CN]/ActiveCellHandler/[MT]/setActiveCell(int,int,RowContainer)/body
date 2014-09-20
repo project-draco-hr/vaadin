@@ -1,0 +1,64 @@
+{
+  if (row == activeRow && activeCellRange.contains(column) && container == this.container) {
+    refreshRow(activeRow);
+    return;
+  }
+  int oldRow=activeRow;
+  activeRow=row;
+  Range oldRange=activeCellRange;
+  if (container == escalator.getBody()) {
+    scrollToRow(activeRow);
+    activeCellRange=Range.withLength(column,1);
+  }
+ else {
+    int i=0;
+    Element cell=container.getRowElement(activeRow).getFirstChildElement();
+    do {
+      int colSpan=cell.getPropertyInt(FlyweightCell.COLSPAN_ATTR);
+      Range cellRange=Range.withLength(i,colSpan);
+      if (cellRange.contains(column)) {
+        activeCellRange=cellRange;
+        break;
+      }
+      cell=cell.getNextSiblingElement();
+      ++i;
+    }
+ while (cell != null);
+  }
+  if (column >= escalator.getColumnConfiguration().getFrozenColumnCount()) {
+    escalator.scrollToColumn(column,ScrollDestination.ANY,10);
+  }
+  if (this.container == container) {
+    if (oldRange.equals(activeCellRange) && oldRow != activeRow) {
+      refreshRow(oldRow);
+    }
+ else {
+      refreshHeader();
+      refreshFooter();
+    }
+  }
+ else {
+    RowContainer oldContainer=this.container;
+    this.container=container;
+    if (oldContainer == escalator.getBody()) {
+      lastActiveBodyRow=oldRow;
+    }
+ else     if (oldContainer == escalator.getHeader()) {
+      lastActiveHeaderRow=oldRow;
+    }
+ else {
+      lastActiveFooterRow=oldRow;
+    }
+    if (!oldRange.equals(activeCellRange)) {
+      refreshHeader();
+      refreshFooter();
+      if (oldContainer == escalator.getBody()) {
+        oldContainer.refreshRows(oldRow,1);
+      }
+    }
+ else {
+      oldContainer.refreshRows(oldRow,1);
+    }
+  }
+  refreshRow(activeRow);
+}

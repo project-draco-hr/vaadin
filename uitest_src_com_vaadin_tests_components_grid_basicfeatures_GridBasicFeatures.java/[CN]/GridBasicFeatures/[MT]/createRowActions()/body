@@ -1,0 +1,85 @@
+{
+  createCategory("Body rows",null);
+  final Command<Grid,String> newRowCommand=new Command<Grid,String>(){
+    @Override public void execute(    Grid c,    String value,    Object data){
+      Item item=ds.addItemAt(0,new Object());
+      for (int i=0; i < COLUMNS; i++) {
+        Class<?> type=ds.getType(getColumnProperty(i));
+        if (String.class.isAssignableFrom(type)) {
+          Property<String> itemProperty=getProperty(item,i);
+          itemProperty.setValue("newcell: " + i);
+        }
+ else         if (Integer.class.isAssignableFrom(type)) {
+          Property<Integer> itemProperty=getProperty(item,i);
+          itemProperty.setValue(Integer.valueOf(i));
+        }
+ else {
+        }
+      }
+    }
+    private <T extends Object>Property<T> getProperty(    Item item,    int i){
+      @SuppressWarnings("unchecked") Property<T> itemProperty=item.getItemProperty(getColumnProperty(i));
+      return itemProperty;
+    }
+  }
+;
+  createClickAction("Add 18 rows","Body rows",new Command<Grid,String>(){
+    @Override public void execute(    Grid c,    String value,    Object data){
+      for (int i=0; i < 18; i++) {
+        newRowCommand.execute(c,value,data);
+      }
+    }
+  }
+,null);
+  createClickAction("Add first row","Body rows",newRowCommand,null);
+  createClickAction("Remove first row","Body rows",new Command<Grid,String>(){
+    @Override public void execute(    Grid c,    String value,    Object data){
+      Object firstItemId=ds.getIdByIndex(0);
+      ds.removeItem(firstItemId);
+    }
+  }
+,null);
+  createClickAction("Modify first row (getItemProperty)","Body rows",new Command<Grid,String>(){
+    @SuppressWarnings("unchecked") @Override public void execute(    Grid c,    String value,    Object data){
+      Object firstItemId=ds.getIdByIndex(0);
+      Item item=ds.getItem(firstItemId);
+      for (int i=0; i < COLUMNS; i++) {
+        Property<?> property=item.getItemProperty(getColumnProperty(i));
+        if (property.getType().equals(String.class)) {
+          ((Property<String>)property).setValue("modified: " + i);
+        }
+      }
+    }
+  }
+,null);
+  createClickAction("Modify first row (getContainerProperty)","Body rows",new Command<Grid,String>(){
+    @SuppressWarnings("unchecked") @Override public void execute(    Grid c,    String value,    Object data){
+      Object firstItemId=ds.getIdByIndex(0);
+      for (      Object containerPropertyId : ds.getContainerPropertyIds()) {
+        Property<?> property=ds.getContainerProperty(firstItemId,containerPropertyId);
+        if (property.getType().equals(String.class)) {
+          ((Property<String>)property).setValue("modified: " + containerPropertyId);
+        }
+      }
+    }
+  }
+,null);
+  createBooleanAction("Select first row","Body rows",false,new Command<Grid,Boolean>(){
+    @Override public void execute(    Grid grid,    Boolean select,    Object data){
+      final Object firstItemId=grid.getContainerDatasource().firstItemId();
+      if (select.booleanValue()) {
+        grid.select(firstItemId);
+      }
+ else {
+        grid.deselect(firstItemId);
+      }
+    }
+  }
+);
+  createClickAction("Remove all rows","Body rows",new Command<Grid,String>(){
+    @SuppressWarnings("unchecked") @Override public void execute(    Grid c,    String value,    Object data){
+      ds.removeAllItems();
+    }
+  }
+,null);
+}

@@ -1,0 +1,24 @@
+{
+  assertArgumentsAreValidAndWithinRange(index,numberOfColumns);
+  removeColumnsAdjustScrollbar(index,numberOfColumns);
+  header.paintRemoveColumns(index,numberOfColumns);
+  body.paintRemoveColumns(index,numberOfColumns);
+  footer.paintRemoveColumns(index,numberOfColumns);
+  flyweightRow.removeCells(index,numberOfColumns);
+  columns.subList(index,index + numberOfColumns).clear();
+  if (index < getFrozenColumnCount()) {
+    if (index + numberOfColumns < frozenColumns) {
+      frozenColumns-=numberOfColumns;
+    }
+ else {
+      frozenColumns=index;
+    }
+  }
+  scroller.recalculateScrollbarsForVirtualViewport();
+  body.verifyEscalatorCount();
+  if (getColumnConfiguration().getColumnCount() > 0) {
+    readjustRows(header);
+    readjustRows(body);
+    readjustRows(footer);
+  }
+}

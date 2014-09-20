@@ -1,0 +1,52 @@
+{
+  if (container == null) {
+    throw new IllegalArgumentException("Cannot set the datasource to null");
+  }
+  if (datasource == container) {
+    return;
+  }
+  if (datasource instanceof PropertySetChangeNotifier) {
+    ((PropertySetChangeNotifier)datasource).removePropertySetChangeListener(propertyListener);
+  }
+  if (datasourceExtension != null) {
+    removeExtension(datasourceExtension);
+  }
+  datasource=container;
+  if (editorRow != null) {
+    editorRow.detach();
+  }
+  editorRow=new EditorRow(this);
+  if (container instanceof Container.Sortable) {
+    Collection<?> sortableProps=((Container.Sortable)getContainerDatasource()).getSortableContainerPropertyIds();
+    Iterator<SortOrder> i=sortOrder.iterator();
+    while (i.hasNext()) {
+      if (!sortableProps.contains(i.next().getPropertyId())) {
+        i.remove();
+      }
+    }
+    sort(SortEventOriginator.INTERNAL);
+  }
+ else {
+    clearSortOrder();
+  }
+  datasourceExtension=new RpcDataProviderExtension(container);
+  datasourceExtension.extend(this);
+  if (selectionModel != null) {
+    selectionModel.reset();
+  }
+  if (datasource instanceof PropertySetChangeNotifier) {
+    ((PropertySetChangeNotifier)datasource).addPropertySetChangeListener(propertyListener);
+  }
+  getState().columns.clear();
+  setLastFrozenPropertyId(null);
+  HeaderRow row=getHeader().getDefaultRow();
+  for (  Object propertyId : datasource.getContainerPropertyIds()) {
+    if (!columns.containsKey(propertyId)) {
+      GridColumn column=appendColumn(propertyId);
+      if (datasource instanceof Sortable) {
+        column.setSortable(((Sortable)datasource).getSortableContainerPropertyIds().contains(propertyId));
+      }
+      row.getCell(propertyId).setText(String.valueOf(propertyId));
+    }
+  }
+}

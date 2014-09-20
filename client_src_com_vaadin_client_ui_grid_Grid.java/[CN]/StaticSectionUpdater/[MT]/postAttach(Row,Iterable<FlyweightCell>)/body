@@ -1,0 +1,15 @@
+{
+  GridStaticSection.StaticRow<?> gridRow=section.getRow(row.getRow());
+  List<GridColumn<?,T>> columns=getVisibleColumns();
+  for (  FlyweightCell cell : attachedCells) {
+    StaticCell metadata=gridRow.getCell(columns.get(cell.getColumn()));
+    if (GridStaticCellType.WIDGET.equals(metadata.getType())) {
+      final Widget widget=metadata.getWidget();
+      final Element cellElement=cell.getElement();
+      if (!widget.isAttached()) {
+        cellElement.appendChild(widget.getElement());
+        setParent(widget,Grid.this);
+      }
+    }
+  }
+}

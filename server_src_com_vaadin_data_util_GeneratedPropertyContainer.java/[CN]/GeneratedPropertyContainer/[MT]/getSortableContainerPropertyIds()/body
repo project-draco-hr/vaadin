@@ -1,0 +1,17 @@
+{
+  if (sortableContainer == null) {
+    new UnsupportedOperationException("Wrapped container is not Sortable");
+  }
+  Set<Object> sortablePropertySet=new HashSet<Object>(sortableContainer.getSortableContainerPropertyIds());
+  for (  Entry<?,PropertyValueGenerator<?>> entry : propertyGenerators.entrySet()) {
+    Object property=entry.getKey();
+    SortOrder order=new SortOrder(property,SortDirection.ASCENDING);
+    if (entry.getValue().getSortProperties(order).length > 0) {
+      sortablePropertySet.add(property);
+    }
+ else {
+      sortablePropertySet.remove(property);
+    }
+  }
+  return sortablePropertySet;
+}

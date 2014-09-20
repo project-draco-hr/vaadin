@@ -1,0 +1,43 @@
+{
+  String[] splitArgs=subPart.split("\\[");
+  String type=splitArgs[0];
+  int[] indices=new int[splitArgs.length - 1];
+  for (int i=0; i < indices.length; ++i) {
+    String tmp=splitArgs[i + 1];
+    indices[i]=Integer.parseInt(tmp.substring(0,tmp.length() - 1));
+  }
+  RowContainer container=null;
+  if (type.equalsIgnoreCase("header")) {
+    container=escalator.getHeader();
+  }
+ else   if (type.equalsIgnoreCase("cell")) {
+    Range visibleRowRange=escalator.getVisibleRowRange();
+    if (indices.length > 0 && !visibleRowRange.contains(indices[0])) {
+      try {
+        scrollToRow(indices[0]);
+      }
+ catch (      IllegalArgumentException e) {
+        getLogger().log(Level.SEVERE,e.getMessage());
+      }
+      return null;
+    }
+    container=escalator.getBody();
+  }
+ else   if (type.equalsIgnoreCase("footer")) {
+    container=escalator.getFooter();
+  }
+  if (null != container) {
+    if (indices.length == 0) {
+      return DOM.asOld(container.getElement());
+    }
+ else {
+      try {
+        return DOM.asOld(getSubPart(container,indices));
+      }
+ catch (      Exception e) {
+        getLogger().log(Level.SEVERE,e.getMessage());
+      }
+    }
+  }
+  return null;
+}

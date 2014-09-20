@@ -1,0 +1,16 @@
+{
+  IndexedContainer container=new IndexedContainer();
+  container.addContainerProperty(INT_ARRAY_PROPERTY,int[].class,new int[]{});
+  container.addContainerProperty(VOID_PROPERTY,Void.class,null);
+  Item item=container.addItem(ITEM_ID);
+  @SuppressWarnings("unchecked") Property<int[]> propertyIntArray=item.getItemProperty(INT_ARRAY_PROPERTY);
+  propertyIntArray.setValue(new int[]{1,1,2,3,5,8,13});
+  Label debugLabel=new Label(INIT_DEBUG_LABEL_CAPTION);
+  debugLabel.setId(DEBUG_LABEL_ID);
+  Grid grid=new Grid(container);
+  grid.getColumn(INT_ARRAY_PROPERTY).setRenderer(new IntArrayRenderer());
+  grid.getColumn(VOID_PROPERTY).setRenderer(new RowAwareRenderer(debugLabel));
+  grid.setSelectionMode(SelectionMode.NONE);
+  addComponent(grid);
+  addComponent(debugLabel);
+}

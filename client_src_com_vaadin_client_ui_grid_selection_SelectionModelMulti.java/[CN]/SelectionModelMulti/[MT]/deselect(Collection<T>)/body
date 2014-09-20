@@ -1,0 +1,17 @@
+{
+  if (rows == null) {
+    throw new IllegalArgumentException("Rows cannot be null");
+  }
+  Set<T> removed=new LinkedHashSet<T>();
+  for (  T row : rows) {
+    RowHandle<T> handle=grid.getDataSource().getHandle(row);
+    if (deselectByHandle(handle)) {
+      removed.add(row);
+    }
+  }
+  if (removed.size() > 0) {
+    grid.fireEvent(new SelectionChangeEvent<T>(grid,null,removed,isBeingBatchSelected()));
+    return true;
+  }
+  return false;
+}

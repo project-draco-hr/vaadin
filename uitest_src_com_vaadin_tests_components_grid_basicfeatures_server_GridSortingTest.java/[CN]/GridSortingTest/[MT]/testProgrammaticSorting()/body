@@ -1,0 +1,26 @@
+{
+  openTestURL();
+  GridElement grid=getGridElement();
+  sortBy("Column 9, DESC");
+  assertEquals("3. Sort order: [Column 9 DESCENDING] by API",getLogRow(0));
+  assertTrue("Column 9 should have the sort-desc stylename",grid.getHeaderCell(0,9).getAttribute("class").contains("sort-desc"));
+  String row="";
+  for (int i=0; i < 3; ++i) {
+    row+="9";
+    assertEquals("Grid is not sorted by Column 9 using descending direction.","(" + row + ", 0)",grid.getCell(i,0).getText());
+  }
+  sortBy("Column 10, ASC");
+  assertFalse("Column 9 should no longer have the sort-desc stylename",grid.getHeaderCell(0,9).getAttribute("class").contains("sort-desc"));
+  assertTrue("Column 10 should have the sort-asc stylename",grid.getHeaderCell(0,10).getAttribute("class").contains("sort-asc"));
+  grid.scrollToRow(50);
+  assertFalse("Scrolling caused and exception when shuffled.",getLogRow(0).contains("Exception"));
+  for (int i=0; i < 5; ++i) {
+    assertGreater("Grid is not sorted by Column 10 using ascending direction",Integer.parseInt(grid.getCell(i + 1,10).getText()),Integer.parseInt(grid.getCell(i,10).getText()));
+  }
+  sortBy("Column 7, DESC");
+  for (int i=0; i < 3; ++i) {
+    assertEquals("Grid is not sorted by Column 7 using descending direction","(" + i + ", 0)",grid.getCell(GridBasicFeatures.ROWS - (i + 1),0).getText());
+  }
+  assertFalse("Column 10 should no longer have the sort-asc stylename",grid.getHeaderCell(0,10).getAttribute("class").contains("sort-asc"));
+  assertTrue("Column 7 should have the sort-desc stylename",grid.getHeaderCell(0,7).getAttribute("class").contains("sort-desc"));
+}

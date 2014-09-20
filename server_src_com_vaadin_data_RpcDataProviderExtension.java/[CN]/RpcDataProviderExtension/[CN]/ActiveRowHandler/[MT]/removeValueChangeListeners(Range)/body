@@ -1,0 +1,15 @@
+{
+  for (int i=range.getStart(); i < range.getEnd(); i++) {
+    final Object itemId=container.getIdByIndex(i);
+    final Item item=container.getItem(itemId);
+    final GridValueChangeListener listener=valueChangeListeners.remove(itemId);
+    if (listener != null) {
+      for (      final Object propertyId : item.getItemPropertyIds()) {
+        final Property<?> property=item.getItemProperty(propertyId);
+        if (property instanceof ValueChangeNotifier) {
+          ((ValueChangeNotifier)property).removeValueChangeListener(listener);
+        }
+      }
+    }
+  }
+}

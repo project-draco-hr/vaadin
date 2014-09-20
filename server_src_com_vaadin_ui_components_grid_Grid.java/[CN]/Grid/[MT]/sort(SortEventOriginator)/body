@@ -1,0 +1,34 @@
+{
+  Container c=getContainerDatasource();
+  if (c instanceof Container.Sortable) {
+    Container.Sortable cs=(Container.Sortable)c;
+    final int items=sortOrder.size();
+    Object[] propertyIds=new Object[items];
+    boolean[] directions=new boolean[items];
+    String[] columnKeys=new String[items];
+    SortDirection[] stateDirs=new SortDirection[items];
+    for (int i=0; i < items; ++i) {
+      SortOrder order=sortOrder.get(i);
+      columnKeys[i]=this.columnKeys.key(order.getPropertyId());
+      stateDirs[i]=order.getDirection();
+      propertyIds[i]=order.getPropertyId();
+switch (order.getDirection()) {
+case ASCENDING:
+        directions[i]=true;
+      break;
+case DESCENDING:
+    directions[i]=false;
+  break;
+default :
+throw new IllegalArgumentException("getDirection() of " + order + " returned an unexpected value");
+}
+}
+cs.sort(propertyIds,directions);
+fireEvent(new SortOrderChangeEvent(this,new ArrayList<SortOrder>(sortOrder),originator));
+getState().sortColumns=columnKeys;
+getState(false).sortDirs=stateDirs;
+}
+ else {
+throw new IllegalStateException("Container is not sortable (does not implement Container.Sortable)");
+}
+}
