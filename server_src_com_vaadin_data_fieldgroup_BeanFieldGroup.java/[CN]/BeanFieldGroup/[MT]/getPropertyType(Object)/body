@@ -3,16 +3,15 @@
     return super.getPropertyType(propertyId);
   }
  else {
-    java.lang.reflect.Field f;
     try {
-      f=getField(beanType,propertyId.toString());
-      return f.getType();
+      Class<?> type=BeanUtil.getPropertyType(beanType,propertyId.toString());
+      if (type == null) {
+        throw new BindException("Cannot determine type of propertyId '" + propertyId + "'. The propertyId was not found in "+ beanType.getName());
+      }
+      return type;
     }
- catch (    SecurityException e) {
-      throw new BindException("Cannot determine type of propertyId '" + propertyId + "'.",e);
-    }
-catch (    NoSuchFieldException e) {
-      throw new BindException("Cannot determine type of propertyId '" + propertyId + "'. The propertyId was not found in "+ beanType.getName(),e);
+ catch (    IntrospectionException e) {
+      throw new BindException("Cannot determine type of propertyId '" + propertyId + "'. Unable to introspect "+ beanType,e);
     }
   }
 }
