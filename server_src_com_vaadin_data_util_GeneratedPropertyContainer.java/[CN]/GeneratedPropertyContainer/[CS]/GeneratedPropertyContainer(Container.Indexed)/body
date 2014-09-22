@@ -14,7 +14,17 @@
   if (wrappedContainer instanceof ItemSetChangeNotifier) {
     ((ItemSetChangeNotifier)wrappedContainer).addItemSetChangeListener(new ItemSetChangeListener(){
       @Override public void containerItemSetChange(      ItemSetChangeEvent event){
-        fireItemSetChange();
+        if (event instanceof ItemAddEvent) {
+          final ItemAddEvent addEvent=(ItemAddEvent)event;
+          fireItemSetChange(new GeneratedItemAddEvent(addEvent));
+        }
+ else         if (event instanceof ItemRemoveEvent) {
+          final ItemRemoveEvent removeEvent=(ItemRemoveEvent)event;
+          fireItemSetChange(new GeneratedItemRemoveEvent(removeEvent));
+        }
+ else {
+          fireItemSetChange();
+        }
       }
     }
 );
