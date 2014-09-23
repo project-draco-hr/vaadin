@@ -11,7 +11,12 @@
   item.getItemProperty("bar").setValue("321");
   item.getItemProperty("baz").setValue(new TestBean());
   item.getItemProperty("bah").setValue(new ExtendedBean());
+  UI ui=EasyMock.createNiceMock(UI.class);
+  ConnectorTracker ct=EasyMock.createNiceMock(ConnectorTracker.class);
+  EasyMock.expect(ui.getConnectorTracker()).andReturn(ct).anyTimes();
+  EasyMock.replay(ui,ct);
   grid=new Grid(c);
+  grid.setParent(ui);
   foo=grid.getColumn("foo");
   bar=grid.getColumn("bar");
   baz=grid.getColumn("baz");
