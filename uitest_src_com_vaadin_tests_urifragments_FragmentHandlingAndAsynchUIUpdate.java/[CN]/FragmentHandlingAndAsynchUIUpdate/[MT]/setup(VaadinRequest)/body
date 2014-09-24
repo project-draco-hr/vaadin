@@ -1,0 +1,16 @@
+{
+  Button button=new Button("Click Me 10 times, wait for ui to settle (10 seconds) then click the back button 10 times.");
+  button.setId(BUTTON_ID);
+  button.addClickListener(new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      Label c=new Label("Thank you for clicking");
+      c.setId(String.valueOf(fragmentId));
+      getLayout().addComponent(c);
+      log(String.format("Button was clicked for fragmentId %s",fragmentId));
+      Page.getCurrent().setUriFragment(String.format(FRAG_NAME_TPL,fragmentId++));
+    }
+  }
+);
+  getLayout().addComponent(button);
+  Page.getCurrent().addUriFragmentChangedListener(createUriFragmentChangedListener());
+}

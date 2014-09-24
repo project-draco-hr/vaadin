@@ -1,0 +1,28 @@
+{
+  return new UriFragmentChangedListener(){
+    @Override public void uriFragmentChanged(    final UriFragmentChangedEvent event){
+      log(String.format("uriFragmentChanged %s",event.getUriFragment()));
+      if (!event.getUriFragment().startsWith("FRAG")) {
+        return;
+      }
+      Iterator<Component> it=getLayout().iterator();
+      final String frag=event.getUriFragment().substring(4);
+      Component fragComp=null;
+      while (it.hasNext()) {
+        Component comp=it.next();
+        if (comp.getId() != null && comp instanceof Label && comp.getId().equals(frag)) {
+          fragComp=comp;
+          break;
+        }
+      }
+      if (fragComp == null) {
+        return;
+      }
+      final Label fragLabel=(Label)fragComp;
+      createThread(frag,fragLabel).start();
+      fragLabel.setCaption(String.format("Thread running for %s!",frag));
+      UI.getCurrent().setPollInterval(1000);
+    }
+  }
+;
+}

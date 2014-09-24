@@ -1,0 +1,19 @@
+{
+  openTestURL();
+  new Thread(new Runnable(){
+    @Override public void run(){
+      assertFragment(String.format(FRAG_NAME_TPL,START_FRAG_ID + 3));
+      ((JavascriptExecutor)driver).executeScript("history.back()");
+      assertFragment(String.format(FRAG_NAME_TPL,START_FRAG_ID + 9));
+    }
+  }
+).start();
+  new Thread(new Runnable(){
+    @Override public void run(){
+      for (int i=0; i < 10; i++) {
+        getDriver().findElement(By.id(FragmentHandlingAndAsynchUIUpdate.BUTTON_ID)).click();
+      }
+    }
+  }
+).start();
+}
