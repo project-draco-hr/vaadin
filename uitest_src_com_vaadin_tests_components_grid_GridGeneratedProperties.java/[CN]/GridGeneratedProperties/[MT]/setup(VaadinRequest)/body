@@ -1,0 +1,52 @@
+{
+  container=new GeneratedPropertyContainer(createContainer());
+  Grid grid=new Grid(container);
+  addComponent(grid);
+  container.addGeneratedProperty("miles",new PropertyValueGenerator<Double>(){
+    @Override public Double getValue(    Item item,    Object itemId,    Object propertyId){
+      return (Double)item.getItemProperty("km").getValue() * MILES_CONVERSION;
+    }
+    @Override public Class<Double> getType(){
+      return Double.class;
+    }
+    @Override public Filter modifyFilter(    Filter filter) throws UnsupportedFilterException {
+      if (filter instanceof Compare.Greater) {
+        Double value=(Double)((Compare.Greater)filter).getValue();
+        value=value / MILES_CONVERSION;
+        return new Compare.Greater("km",value);
+      }
+      return super.modifyFilter(filter);
+    }
+  }
+);
+  final Button filterButton=new Button("Add filter");
+  filterButton.addClickListener(new ClickListener(){
+    boolean active=false;
+    @Override public void buttonClick(    ClickEvent event){
+      if (active) {
+        ((Filterable)container).removeContainerFilter(filter);
+        filterButton.setCaption("Add filter");
+        active=false;
+        return;
+      }
+      ((Filterable)container).addContainerFilter(filter);
+      filterButton.setCaption("Remove filter");
+      active=true;
+    }
+  }
+);
+  container.addGeneratedProperty("foo",new PropertyValueGenerator<String>(){
+    @Override public String getValue(    Item item,    Object itemId,    Object propertyId){
+      return item.getItemProperty("foo").getValue() + " " + item.getItemProperty("bar").getValue();
+    }
+    @Override public Class<String> getType(){
+      return String.class;
+    }
+    @Override public SortOrder[] getSortProperties(    SortOrder order){
+      return Sort.by("bar",order.getDirection()).build().toArray(new SortOrder[1]);
+    }
+  }
+);
+  container.removeContainerProperty("bar");
+  addComponent(filterButton);
+}
