@@ -2,24 +2,5 @@
   if (value == null || value.trim().equals("")) {
     return null;
   }
-  if (locale == null) {
-    locale=Locale.getDefault();
-  }
-  String result=value.replace(" ","_").toUpperCase(locale);
-  try {
-    return Enum.valueOf(targetType,result);
-  }
- catch (  Exception ee) {
-    try {
-      EnumSet<?> set=EnumSet.allOf(targetType);
-      for (      Enum e : set) {
-        if (e.name().toUpperCase(locale).equals(result)) {
-          return e;
-        }
-      }
-    }
- catch (    Exception e) {
-    }
-    throw new ConversionException(ee);
-  }
+  return stringToEnum(value,targetType,locale);
 }
