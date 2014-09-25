@@ -1,0 +1,17 @@
+{
+  openTestURL();
+  selectMenuPath("Component","Filter","Column 1 starts with \"(23\"");
+  boolean foundElements=false;
+  for (int row=0; row < 100; row++) {
+    try {
+      GridCellElement cell=getGridElement().getCell(row,1);
+      foundElements=true;
+      assertTrue("Unexpected cell contents. " + "Did the ItemSetChange work after all?",cell.getText().startsWith("(23"));
+    }
+ catch (    NoSuchElementException e) {
+      assertTrue("No rows were found",foundElements);
+      return;
+    }
+  }
+  fail("unexpected amount of rows post-filter. Did the ItemSetChange work after all?");
+}
