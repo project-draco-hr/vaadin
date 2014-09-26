@@ -1,0 +1,13 @@
+{
+  Integer buffer=getBufferSize();
+  StringBuilder builder=new StringBuilder();
+  for (int i=0; i < buffer; i++) {
+    builder.append('a');
+  }
+  byte[] bytes=builder.toString().getBytes(Charset.forName("UTF-8"));
+  ByteArrayInputStream inputStream=new ByteArrayInputStream(bytes);
+  InputStreamImpl stream=new InputStreamImpl(inputStream,buffer / 2);
+  new CustomLayout(stream);
+  Assert.assertTrue("Stream is not closed in CustomLayout CTOR ",stream.isClosed());
+  Assert.assertEquals("Number of read bytes is incorrect",bytes.length,stream.getCount());
+}

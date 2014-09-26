@@ -1,0 +1,25 @@
+{
+  Field[] fields=CustomLayout.class.getDeclaredFields();
+  List<Field> list=new ArrayList<Field>(fields.length);
+  for (  Field field : fields) {
+    if ((field.getModifiers() & Modifier.STATIC) > 0) {
+      list.add(field);
+    }
+  }
+  Field field=null;
+  if (list.size() == 1) {
+    field=list.get(0);
+  }
+ else {
+    for (    Field fld : list) {
+      if (fld.getName().toLowerCase(Locale.ENGLISH).startsWith("buffer")) {
+        field=fld;
+        break;
+      }
+    }
+  }
+  Assert.assertNotNull("Unable to find default buffer size in CustomLayout class",field);
+  field.setAccessible(true);
+  Integer buffer=(Integer)field.get(null);
+  return buffer;
+}
