@@ -1,13 +1,13 @@
 {
   Item item=container.getItem(itemId);
-  JsonArray rowData=Json.createArray();
+  JsonObject rowData=Json.createObject();
   Grid grid=getGrid();
   int i=0;
   for (  Object propertyId : propertyIds) {
     GridColumn column=grid.getColumn(propertyId);
     Object propertyValue=item.getItemProperty(propertyId).getValue();
     JsonValue encodedValue=encodeValue(propertyValue,column.getRenderer(),column.getConverter(),grid.getLocale());
-    rowData.set(i++,encodedValue);
+    rowData.put(columnKeys.key(propertyId),encodedValue);
   }
   final JsonObject rowObject=Json.createObject();
   rowObject.put(GridState.JSONKEY_DATA,rowData);
