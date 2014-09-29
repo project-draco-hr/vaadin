@@ -1,0 +1,23 @@
+{
+  if (sortInfo == null) {
+    return;
+  }
+  GridCellElement headerCell=getGridElement().getHeaderCell(0,column);
+  String classValue=headerCell.getAttribute("class");
+  boolean isSortedAscending=sortInfo.sortDirection == SortDirection.ASCENDING && classValue.contains("sort-asc");
+  boolean isSortedDescending=sortInfo.sortDirection == SortDirection.DESCENDING && classValue.contains("sort-desc");
+  if (isSortedAscending || isSortedDescending) {
+    String sortOrderAttribute=headerCell.getAttribute("sort-order");
+    if (sortOrderAttribute == null) {
+      if (!(sortInfo.sortOrder == 1 && onlyOneColumnIsSorted)) {
+        fail("missing sort-order element attribute from column " + column);
+      }
+    }
+ else {
+      assertEquals("sort order was not as expected",String.valueOf(sortInfo.sortOrder),sortOrderAttribute);
+    }
+  }
+ else {
+    fail("column index " + column + " was not sorted as "+ sortInfo.sortDirection+ " (class: "+ classValue+ ")");
+  }
+}
