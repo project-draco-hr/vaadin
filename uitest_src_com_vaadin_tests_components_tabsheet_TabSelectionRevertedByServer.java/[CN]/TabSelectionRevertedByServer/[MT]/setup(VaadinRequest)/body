@@ -1,0 +1,31 @@
+{
+  final TabSheet tabsheet=new TabSheet();
+  tabsheet.setWidth("400px");
+  Component lastLabel=null;
+  for (int i=1; i <= 5; i++) {
+    String caption="Tab " + i;
+    Label label=new Label(caption);
+    tabsheet.addTab(label,caption);
+    lastLabel=label;
+  }
+  tabsheet.setSelectedTab(0);
+  final Component lastTab=lastLabel;
+  tabsheet.addSelectedTabChangeListener(new SelectedTabChangeListener(){
+    @Override public void selectedTabChange(    SelectedTabChangeEvent event){
+      if (tabsheet.getSelectedTab().equals(lastTab)) {
+        tabsheet.setSelectedTab(0);
+        Notification.show("Focus set back to tab at position 0");
+      }
+    }
+  }
+);
+  addComponent(tabsheet);
+  Button button=new Button("Select Last Tab");
+  button.addClickListener(new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      tabsheet.setSelectedTab(lastTab);
+    }
+  }
+);
+  addComponent(button);
+}
