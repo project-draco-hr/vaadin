@@ -15,22 +15,15 @@
   final MouseEventDetails details=MouseEventDetailsBuilder.buildMouseEventDetails(evt);
   executeEventCommand(new ScheduledCommand(){
     @Override public void execute(){
-      sendClickEventNow=true;
-      if (details.getButton() == MouseButton.LEFT && selectable) {
-        if (immediate) {
-          sendClickEventNow=false;
-          if (isSelected() && selectedIds.size() == 1 && !isNullSelectionAllowed) {
-            sendClickEventNow=true;
-          }
+      clickEventPending=false;
+      if ((details.getButton() == MouseButton.LEFT || details.getButton() == MouseButton.MIDDLE) && !details.isDoubleClick() && selectable) {
+        clickEventPending=true;
+        if (isSelected() && selectedIds.size() == 1 && !isNullSelectionAllowed) {
+          clickEventPending=false;
         }
-        client.updateVariable(paintableId,"clickedKey",key,false);
-        client.updateVariable(paintableId,"clickEvent",details.toString(),false);
       }
- else {
-        client.updateVariable(paintableId,"clickedKey",key,false);
-        client.updateVariable(paintableId,"clickEvent",details.toString(),sendClickEventNow);
-        sendClickEventNow=false;
-      }
+      client.updateVariable(paintableId,"clickedKey",key,false);
+      client.updateVariable(paintableId,"clickEvent",details.toString(),!clickEventPending);
     }
   }
 );
