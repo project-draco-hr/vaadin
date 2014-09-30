@@ -8,15 +8,18 @@
   int type=DOM.eventGetType(event);
 switch (type) {
 case Event.ONCLICK:
-    if (disallowNextClick) {
-      event.stopPropagation();
-      disallowNextClick=false;
-      return;
-    }
-  break;
+    boolean isPhantomClickPossible=BrowserInfo.get().isSafari() && BrowserInfo.get().isTouchDevice() && BrowserInfo.get().getBrowserMajorVersion() == 8;
+  long clickTime=isPhantomClickPossible ? System.currentTimeMillis() : 0;
+if (disallowNextClick || isPhantomClickPossible && (clickTime - lastClickTime < 100)) {
+  event.stopPropagation();
+  disallowNextClick=false;
+  return;
+}
+lastClickTime=clickTime;
+break;
 case Event.ONMOUSEDOWN:
 if (DOM.isOrHasChild(getElement(),DOM.eventGetTarget(event))) {
-  setHovering(true);
+setHovering(true);
 }
 if (event.getButton() == Event.BUTTON_LEFT) {
 mousedownX=event.getClientX();
@@ -28,7 +31,7 @@ DOM.setCapture(getElement());
 isCapturing=true;
 addStyleName(CLASSNAME_PRESSED);
 if (BrowserInfo.get().isIE8() || BrowserInfo.get().isIE9()) {
-  event.preventDefault();
+event.preventDefault();
 }
 }
 break;
