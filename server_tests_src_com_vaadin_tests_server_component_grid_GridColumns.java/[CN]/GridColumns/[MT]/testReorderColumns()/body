@@ -1,0 +1,19 @@
+{
+  Set<?> containerProperties=new LinkedHashSet<Object>(grid.getContainerDatasource().getContainerPropertyIds());
+  Object[] properties=new Object[]{"column3","column2","column6"};
+  grid.setColumnOrder(properties);
+  int i=0;
+  for (  Object property : properties) {
+    containerProperties.remove(property);
+    assertEquals(columnIdMapper.key(property),state.columnOrder.get(i++));
+  }
+  for (  Object property : containerProperties) {
+    assertEquals(columnIdMapper.key(property),state.columnOrder.get(i++));
+  }
+  try {
+    grid.setColumnOrder("foo","bar","baz");
+    fail("Grid allowed sorting with non-existent properties");
+  }
+ catch (  IllegalArgumentException e) {
+  }
+}
