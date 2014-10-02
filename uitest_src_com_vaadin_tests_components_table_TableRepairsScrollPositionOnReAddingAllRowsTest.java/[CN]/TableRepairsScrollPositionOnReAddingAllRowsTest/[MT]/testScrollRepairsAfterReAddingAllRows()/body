@@ -1,17 +1,61 @@
 {
   openTestURL();
-  WebElement buttonReAddRows=findElement(By.id("button1"));
+  WebElement row0=$(TableElement.class).first().getCell(0,0);
+  int rowLocation0=row0.getLocation().getY();
   scrollUp();
   waitUntilNot(new ExpectedCondition<Boolean>(){
     @Override public Boolean apply(    WebDriver input){
-      return $(TableElement.class).first().getCell(49,0) == null;
+      return $(TableElement.class).first().getCell(48,0) == null;
     }
   }
 ,10);
-  WebElement row=$(TableElement.class).first().getCell(49,0);
+  WebElement row=$(TableElement.class).first().getCell(48,0);
   int rowLocation=row.getLocation().getY();
-  buttonReAddRows.click();
-  row=$(TableElement.class).first().getCell(49,0);
+  hitButton("buttonReAddAllViaAddAll");
+  row=$(TableElement.class).first().getCell(48,0);
   int newRowLocation=row.getLocation().getY();
-  assertThat("Scroll position should be the same as before Re-Adding all rows",(double)newRowLocation,closeTo(rowLocation,1));
+  assertThat("Scroll position should be the same as before Re-Adding rows via addAll()",(double)newRowLocation,closeTo(rowLocation,row.getSize().height + 1));
+  scrollUp();
+  waitUntilNot(new ExpectedCondition<Boolean>(){
+    @Override public Boolean apply(    WebDriver input){
+      return $(TableElement.class).first().getCell(48,0) == null;
+    }
+  }
+,10);
+  row=$(TableElement.class).first().getCell(48,0);
+  rowLocation=row.getLocation().getY();
+  hitButton("buttonReplaceByAnotherCollectionViaAddAll");
+  row=$(TableElement.class).first().getCell(48,0);
+  newRowLocation=row.getLocation().getY();
+  assertThat("Scroll position should be the same as before Replacing rows via addAll()",(double)newRowLocation,closeTo(rowLocation,row.getSize().height + 1));
+  hitButton("buttonReplaceByAnotherCollectionViaAdd");
+  row=$(TableElement.class).first().getCell(0,0);
+  newRowLocation=row.getLocation().getY();
+  assertThat("Scroll position should be 0",(double)newRowLocation,closeTo(rowLocation0,1));
+  hitButton("buttonRestore");
+  scrollUp();
+  waitUntilNot(new ExpectedCondition<Boolean>(){
+    @Override public Boolean apply(    WebDriver input){
+      return $(TableElement.class).first().getCell(48,0) == null;
+    }
+  }
+,10);
+  hitButton("buttonReplaceBySubsetOfSmallerSize");
+  row=$(TableElement.class).first().getCell(5,0);
+  newRowLocation=row.getLocation().getY();
+  assertThat("Scroll position should be 0",(double)newRowLocation,closeTo(rowLocation0,1));
+  hitButton("buttonRestore");
+  scrollUp();
+  waitUntilNot(new ExpectedCondition<Boolean>(){
+    @Override public Boolean apply(    WebDriver input){
+      return $(TableElement.class).first().getCell(48,0) == null;
+    }
+  }
+,10);
+  row=$(TableElement.class).first().getCell(48,0);
+  rowLocation=row.getLocation().getY();
+  hitButton("buttonReplaceByWholeSubsetPlusOnNew");
+  row=$(TableElement.class).first().getCell(48,0);
+  newRowLocation=row.getLocation().getY();
+  assertThat("Scroll position should be the same as before Replacing",(double)newRowLocation,closeTo(rowLocation,row.getSize().height + 1));
 }
