@@ -37,4 +37,27 @@
     }
   }
 ,primaryStyleNamePath);
+  addMenuCommand("Edit and refresh Row 0",new ScheduledCommand(){
+    @Override public void execute(){
+      DataSource<List<Data>> ds=grid.getDataSource();
+      RowHandle<List<Data>> rowHandle=ds.getHandle(ds.getRow(0));
+      rowHandle.getRow().get(0).value="Foo";
+      rowHandle.updateRow();
+    }
+  }
+,"Component","State");
+  addMenuCommand("Delayed edit of Row 0",new ScheduledCommand(){
+    @Override public void execute(){
+      DataSource<List<Data>> ds=grid.getDataSource();
+      final RowHandle<List<Data>> rowHandle=ds.getHandle(ds.getRow(0));
+      new Timer(){
+        @Override public void run(){
+          rowHandle.getRow().get(0).value="Bar";
+          rowHandle.updateRow();
+        }
+      }
+.schedule(1500);
+    }
+  }
+,"Component","State");
 }
