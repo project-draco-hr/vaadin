@@ -10,7 +10,9 @@
   Range newUsefulData=partition[1];
   if (!newUsefulData.isEmpty()) {
     for (int i=newUsefulData.getStart(); i < newUsefulData.getEnd(); i++) {
-      rowCache.put(Integer.valueOf(i),rowData.get(i - firstRowIndex));
+      final T row=rowData.get(i - firstRowIndex);
+      indexToRowMap.put(Integer.valueOf(i),row);
+      keyToIndexMap.put(getRowKey(row),Integer.valueOf(i));
     }
     if (dataChangeHandler != null) {
       Profiler.enter("AbstractRemoteDataSource.setRowData notify dataChangeHandler");

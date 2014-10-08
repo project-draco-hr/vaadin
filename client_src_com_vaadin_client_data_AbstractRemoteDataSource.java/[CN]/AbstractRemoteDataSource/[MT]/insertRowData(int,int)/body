@@ -4,16 +4,17 @@
     int oldCacheEnd=cached.getEnd();
     cached=cached.splitAt(firstRowIndex)[0];
     for (int i=firstRowIndex; i < oldCacheEnd; i++) {
-      rowCache.remove(Integer.valueOf(i));
+      T row=indexToRowMap.remove(Integer.valueOf(i));
+      keyToIndexMap.remove(getRowKey(row));
     }
   }
  else   if (firstRowIndex < cached.getStart()) {
     Range oldCached=cached;
     cached=cached.offsetBy(count);
-    for (int i=0; i < rowCache.size(); i++) {
-      Integer oldIndex=Integer.valueOf(oldCached.getEnd() - i);
-      Integer newIndex=Integer.valueOf(cached.getEnd() - i);
-      rowCache.put(newIndex,rowCache.remove(oldIndex));
+    for (int i=0; i < indexToRowMap.size(); i++) {
+      int oldIndex=oldCached.getEnd() - i;
+      int newIndex=cached.getEnd() - i;
+      moveRowFromIndexToIndex(oldIndex,newIndex);
     }
   }
   dataChangeHandler.dataAdded(firstRowIndex,count);

@@ -1,11 +1,7 @@
 {
   Profiler.enter("AbstractRemoteDataSource.removeRowData");
-  for (int i=0; i < count; i++) {
-    Integer oldIndex=Integer.valueOf(firstRowIndex + count + i);
-    if (rowCache.containsKey(oldIndex)) {
-      Integer newIndex=Integer.valueOf(firstRowIndex + i);
-      rowCache.put(newIndex,rowCache.remove(oldIndex));
-    }
+  for (int i=firstRowIndex + count; i < cached.getEnd(); i++) {
+    moveRowFromIndexToIndex(i,i - count);
   }
   Range removedRange=Range.withLength(firstRowIndex,count);
   if (cached.isSubsetOf(removedRange)) {
