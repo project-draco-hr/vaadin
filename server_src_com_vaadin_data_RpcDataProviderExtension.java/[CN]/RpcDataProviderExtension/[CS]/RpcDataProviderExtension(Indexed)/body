@@ -2,15 +2,7 @@
   this.container=container;
   rpc=getRpcProxy(DataProviderRpc.class);
   registerRpc(new DataRequestRpc(){
-    private Collection<String> allTemporarilyPinnedKeys=new ArrayList<String>();
-    @Override public void requestRows(    int firstRow,    int numberOfRows,    int firstCachedRowIndex,    int cacheSize,    List<String> temporarilyPinnedKeys){
-      for (      String key : temporarilyPinnedKeys) {
-        Object itemId=keyMapper.getItemId(key);
-        if (!keyMapper.isPinned(itemId)) {
-          keyMapper.pin(itemId);
-        }
-      }
-      allTemporarilyPinnedKeys.addAll(temporarilyPinnedKeys);
+    @Override public void requestRows(    int firstRow,    int numberOfRows,    int firstCachedRowIndex,    int cacheSize){
       Range active=Range.withLength(firstRow,numberOfRows);
       if (cacheSize != 0) {
         Range cached=Range.withLength(firstCachedRowIndex,cacheSize);
@@ -21,25 +13,13 @@
       pushRows(firstRow,itemIds);
       activeRowHandler.setActiveRows(active.getStart(),active.length());
     }
-    @Override public void releaseTemporarilyPinnedKeys(){
-      final SelectionChangeListener listener=new SelectionChangeListener(){
-        @Override public void selectionChange(        SelectionChangeEvent event){
-          for (          String tempPinnedKey : allTemporarilyPinnedKeys) {
-            if (!keyMapper.isPinned(tempPinnedKey)) {
-              continue;
-            }
-            Object itemId=keyMapper.getItemId(tempPinnedKey);
-            Integer index=keyMapper.indexToItemId.inverse().get(itemId);
-            if (!getGrid().isSelected(itemId) && !activeRowHandler.activeRange.contains(index.intValue())) {
-              keyMapper.unpin(itemId);
-            }
-          }
-          allTemporarilyPinnedKeys=new ArrayList<String>();
-          getGrid().removeSelectionChangeListener(this);
-        }
+    @Override public void setPinned(    String key,    boolean isPinned){
+      if (isPinned) {
+        keyMapper.pin(keyMapper.getItemId(key));
       }
-;
-      getGrid().addSelectionChangeListener(listener);
+ else {
+        keyMapper.unpin(keyMapper.getItemId(key));
+      }
     }
   }
 );

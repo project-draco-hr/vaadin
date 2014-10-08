@@ -1,11 +1,4 @@
 {
   Range cached=getCachedRange();
-  Collection<JSONObject> newRows=new ArrayList<JSONObject>(temporarilyPinnedRows);
-  newRows.removeAll(prevRows);
-  List<String> temporarilyPinnedKeys=new ArrayList<String>(newRows.size());
-  for (  JSONObject row : newRows) {
-    temporarilyPinnedKeys.add((String)getRowKey(row));
-  }
-  getRpcProxy(DataRequestRpc.class).requestRows(firstRowIndex,numberOfRows,cached.getStart(),cached.length(),temporarilyPinnedKeys);
-  prevRows=temporarilyPinnedRows;
+  rpcProxy.requestRows(firstRowIndex,numberOfRows,cached.getStart(),cached.length());
 }
