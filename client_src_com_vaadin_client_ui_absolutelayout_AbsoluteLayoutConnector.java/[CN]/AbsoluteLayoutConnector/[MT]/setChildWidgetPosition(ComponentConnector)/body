@@ -1,3 +1,17 @@
 {
-  getWidget().setWidgetPosition(child.getWidget(),getState().connectorToCssPosition.get(child.getConnectorId()));
+  String position=getState().connectorToCssPosition.get(child.getConnectorId());
+  if (position == null) {
+    position="";
+  }
+  String width=child.getState().width;
+  if (width != null && width.endsWith("%")) {
+    position=addDefaultPositionIfMissing(position,"left");
+    position=addDefaultPositionIfMissing(position,"right");
+  }
+  String height=child.getState().height;
+  if (height != null && height.endsWith("%")) {
+    position=addDefaultPositionIfMissing(position,"top");
+    position=addDefaultPositionIfMissing(position,"bottom");
+  }
+  getWidget().setWidgetPosition(child.getWidget(),position);
 }
