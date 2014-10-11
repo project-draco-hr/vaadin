@@ -1,0 +1,26 @@
+{
+  PropertyDescriptor[] descriptors=beanInfo.getPropertyDescriptors();
+  List<PropertyDescriptor> result=new ArrayList<PropertyDescriptor>(descriptors.length);
+  for (  PropertyDescriptor descriptor : descriptors) {
+    try {
+      Method readMethod=getMethodFromBridge(descriptor.getReadMethod());
+      if (readMethod != null) {
+        Method writeMethod=getMethodFromBridge(descriptor.getWriteMethod(),readMethod.getReturnType());
+        if (writeMethod == null) {
+          writeMethod=descriptor.getWriteMethod();
+        }
+        PropertyDescriptor descr=new PropertyDescriptor(descriptor.getName(),readMethod,writeMethod);
+        result.add(descr);
+      }
+ else {
+        result.add(descriptor);
+      }
+    }
+ catch (    SecurityException ignore) {
+    }
+catch (    IntrospectionException e) {
+      result.add(descriptor);
+    }
+  }
+  return result;
+}
