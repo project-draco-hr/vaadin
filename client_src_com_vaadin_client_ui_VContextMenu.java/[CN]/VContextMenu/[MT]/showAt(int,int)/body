@@ -12,6 +12,7 @@
   }
   Util.sinkOnloadForImages(menu.getElement());
   focusedElement=Util.getFocusedElement();
+  setHeight("");
   setPopupPositionAndShow(new PositionCallback(){
     @Override public void setPosition(    int offsetWidth,    int offsetHeight){
       offsetWidth=menu.getOffsetWidth();
@@ -24,11 +25,10 @@
         }
       }
       if (offsetHeight + top > Window.getClientHeight()) {
-        top=top - offsetHeight;
-        if (top < 0) {
-          top=0;
-          setHeight(Window.getClientHeight() + "px");
-        }
+        top=Math.max(0,Window.getClientHeight() - offsetHeight);
+      }
+      if (top == 0) {
+        setHeight(Window.getClientHeight() + "px");
       }
       setPopupPosition(left,top);
       Scheduler.get().scheduleDeferred(new Command(){
