@@ -1,0 +1,63 @@
+{
+  final Window w=new Window();
+  w.setWidth("300px");
+  w.setHeight("300px");
+  w.center();
+  addWindow(w);
+  w.focus();
+  VerticalLayout content=new VerticalLayout();
+  content.setMargin(true);
+  TextField textField=new TextField();
+  textField.setSizeFull();
+  content.addComponent(textField);
+  w.setContent(content);
+  final CheckBox cbDefault=new CheckBox("Use default (ESC) shortcut");
+  cbDefault.setId("default");
+  addComponent(cbDefault);
+  final CheckBox cbOther=new CheckBox("Use R shortcut");
+  cbOther.setId("other");
+  addComponent(cbOther);
+  final CheckBox cbCtrl=new CheckBox("Use CTRL+A shortcut");
+  cbCtrl.setId("control");
+  addComponent(cbCtrl);
+  final CheckBox cbShift=new CheckBox("Use SHIFT+H shortcut");
+  cbShift.setId("shift");
+  addComponent(cbShift);
+  cbOther.setValue(true);
+  cbCtrl.setValue(true);
+  cbShift.setValue(true);
+  Property.ValueChangeListener listener=new Property.ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      if (Boolean.TRUE.equals(cbDefault.getValue())) {
+        w.resetCloseShortcuts();
+      }
+ else {
+        w.removeCloseShortcuts();
+      }
+      if (Boolean.TRUE.equals(cbOther.getValue())) {
+        w.addCloseShortcut(KeyCode.R);
+      }
+      if (Boolean.TRUE.equals(cbCtrl.getValue())) {
+        w.addCloseShortcut(KeyCode.A,ModifierKey.CTRL);
+      }
+      if (Boolean.TRUE.equals(cbShift.getValue())) {
+        w.addCloseShortcut(KeyCode.H,ModifierKey.SHIFT);
+      }
+    }
+  }
+;
+  cbDefault.addValueChangeListener(listener);
+  cbOther.addValueChangeListener(listener);
+  cbCtrl.addValueChangeListener(listener);
+  cbShift.addValueChangeListener(listener);
+  cbDefault.setValue(true);
+  Button button=new Button("Reopen window",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      w.close();
+      addWindow(w);
+      w.focus();
+    }
+  }
+);
+  addComponent(button);
+}
