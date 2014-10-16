@@ -62,9 +62,9 @@
     }
   }
 );
-  Button buttonReplaceByWholeSubsetPlusOnNew=new Button("Replace rows by whole subset plus one new item");
-  buttonReplaceByWholeSubsetPlusOnNew.setId("buttonReplaceByWholeSubsetPlusOnNew");
-  buttonReplaceByWholeSubsetPlusOnNew.addClickListener(new ClickListener(){
+  Button buttonReplaceByWholeSubsetPlusOneNew=new Button("Replace rows by whole subset plus one new item");
+  buttonReplaceByWholeSubsetPlusOneNew.setId("buttonReplaceByWholeSubsetPlusOneNew");
+  buttonReplaceByWholeSubsetPlusOneNew.addClickListener(new ClickListener(){
     @Override public void buttonClick(    com.vaadin.ui.Button.ClickEvent event){
       cont.removeAllItems();
       List<TableItem> list=new ArrayList<TableItem>(restoringItemList);
@@ -72,6 +72,32 @@
       ti.setName("AnotherItem3_" + 80);
       list.add(ti);
       cont.addAll(list);
+    }
+  }
+);
+  Button buttonRemoveAllAddOne=new Button("Remove all items and add only one new item");
+  buttonRemoveAllAddOne.setId("buttonRemoveAllAddOne");
+  buttonRemoveAllAddOne.addClickListener(new ClickListener(){
+    @Override public void buttonClick(    com.vaadin.ui.Button.ClickEvent event){
+      cont.removeAllItems();
+      TableItem ti=new TableItem();
+      ti.setName("Item_" + 20);
+      cont.addBean(ti);
+    }
+  }
+);
+  Button buttonReplaceByNewDatasource=new Button("Remove all items and add new datasource");
+  buttonReplaceByNewDatasource.setId("buttonReplaceByNewDatasource");
+  buttonReplaceByNewDatasource.addClickListener(new ClickListener(){
+    @Override public void buttonClick(    com.vaadin.ui.Button.ClickEvent event){
+      cont.removeAllItems();
+      BeanItemContainer<TableItem> newContainer=new BeanItemContainer<TableItem>(TableItem.class);
+      for (int i=0; i < 50; i++) {
+        TableItem ti=new TableItem();
+        ti.setName("Item_" + i);
+        newContainer.addBean(ti);
+      }
+      table.setContainerDataSource(newContainer);
     }
   }
 );
@@ -85,7 +111,9 @@
   getLayout().addComponent(buttonReplaceByAnotherCollectionViaAddAll);
   getLayout().addComponent(buttonReplaceByAnotherCollectionViaAdd);
   getLayout().addComponent(buttonReplaceBySubsetOfSmallerSize);
-  getLayout().addComponent(buttonReplaceByWholeSubsetPlusOnNew);
+  getLayout().addComponent(buttonReplaceByWholeSubsetPlusOneNew);
+  getLayout().addComponent(buttonRemoveAllAddOne);
+  getLayout().addComponent(buttonReplaceByNewDatasource);
   getLayout().addComponent(buttonRestore);
   getLayout().addComponent(table);
 }
