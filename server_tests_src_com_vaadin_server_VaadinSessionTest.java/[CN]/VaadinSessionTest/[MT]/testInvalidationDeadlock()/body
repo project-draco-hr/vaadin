@@ -1,0 +1,22 @@
+{
+  new Thread(new Runnable(){
+    @Override public void run(){
+      try {
+        Thread.sleep(150);
+        httpSessionLock.lock();
+        mockService.fireSessionDestroy(session);
+        httpSessionLock.unlock();
+      }
+ catch (      InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+).start();
+  try {
+    mockService.findVaadinSession(vaadinRequest);
+  }
+ catch (  Exception e) {
+    throw new RuntimeException(e);
+  }
+}

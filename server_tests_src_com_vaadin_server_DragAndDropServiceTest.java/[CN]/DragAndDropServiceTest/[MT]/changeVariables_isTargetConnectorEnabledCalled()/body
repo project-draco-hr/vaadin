@@ -1,0 +1,16 @@
+{
+  final List<Level> levels=new ArrayList<Level>();
+  Logger.getLogger(DragAndDropService.class.getName()).addHandler(new StreamHandler(){
+    @Override public void publish(    LogRecord record){
+      levels.add(record.getLevel());
+    }
+  }
+);
+  Map<String,Object> variables=new HashMap<String,Object>();
+  TestDropTarget target=new TestDropTarget();
+  variables.put("dhowner",target);
+  DragAndDropService service=new DragAndDropService(EasyMock.createMock(VaadinSession.class));
+  service.changeVariables(null,variables);
+  Assert.assertTrue("isConnectorEnabled() method is not called",target.isConnectorEnabledCalled());
+  Assert.assertTrue("No warning on drop to disabled target",levels.contains(Level.WARNING));
+}

@@ -2,6 +2,7 @@
   return new Statement(){
     @Override public void evaluate() throws Throwable {
       Throwable caughtThrowable=null;
+      int retryCount=getRetryCount();
       for (int i=0; i <= retryCount; i++) {
         try {
           base.evaluate();
@@ -14,6 +15,13 @@
         }
       }
       throw caughtThrowable;
+    }
+    private int getRetryCount(){
+      String retryCount=System.getProperty("com.vaadin.testbench.max.retries");
+      if (retryCount != null && retryCount != "") {
+        return Integer.parseInt(retryCount);
+      }
+      return 0;
     }
   }
 ;
