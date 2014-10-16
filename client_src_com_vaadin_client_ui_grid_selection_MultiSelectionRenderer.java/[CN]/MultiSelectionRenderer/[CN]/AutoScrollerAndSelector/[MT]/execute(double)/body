@@ -8,10 +8,12 @@
   if (intPixelsToScroll != 0) {
     grid.setScrollTop(grid.getScrollTop() + intPixelsToScroll);
   }
-  int logicalRow=getLogicalRowIndex(Util.getElementFromPoint(pageX,pageY));
-  if (logicalRow != -1 && logicalRow != this.logicalRow) {
-    this.logicalRow=logicalRow;
-    setSelected(logicalRow,selectionPaint);
+  int constrainedPageY=Math.max(bodyAbsoluteTop,Math.min(bodyAbsoluteBottom,pageY));
+  int logicalRow=getLogicalRowIndex(Util.getElementFromPoint(initialPageX,constrainedPageY));
+  int incrementOrDecrement=(logicalRow > lastModifiedLogicalRow) ? 1 : -1;
+  while (logicalRow != -1 && lastModifiedLogicalRow != logicalRow) {
+    lastModifiedLogicalRow+=incrementOrDecrement;
+    setSelected(lastModifiedLogicalRow,selectionPaint);
   }
   reschedule();
 }
