@@ -2,7 +2,7 @@
   if (numberOfRows == 0) {
     return;
   }
-  final Range viewportRange=Range.withLength(getLogicalRowIndex(visualRowOrder.getFirst()),visualRowOrder.size());
+  final Range viewportRange=getVisibleRowRange();
   final Range removedRowsRange=Range.withLength(index,numberOfRows);
   final Range[] partitions=removedRowsRange.partitionWith(viewportRange);
   final Range removedAbove=partitions[0];
@@ -22,8 +22,9 @@
   }
   if (!removedVisualInside.isEmpty()) {
     int escalatorRowCount=bodyElem.getChildCount();
-    final int escalatorRowsToRemove=escalatorRowCount - getRowCount();
-    if (escalatorRowsToRemove > 0) {
+    int rowsLeft=getRowCount();
+    if (rowsLeft < escalatorRowCount) {
+      int escalatorRowsToRemove=escalatorRowCount - rowsLeft;
       for (int i=0; i < escalatorRowsToRemove; i++) {
         final TableRowElement tr=visualRowOrder.remove(removedVisualInside.getStart());
         paintRemoveRow(tr,index);

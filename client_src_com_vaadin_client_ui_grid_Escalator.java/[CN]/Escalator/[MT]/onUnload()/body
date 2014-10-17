@@ -5,6 +5,14 @@
   scroller.detachTouchListeners(getElement());
   header.paintRemoveRows(0,header.getRowCount());
   footer.paintRemoveRows(0,footer.getRowCount());
-  body.paintRemoveRows(0,body.getRowCount());
+  int rowsToRemove=bodyElem.getChildCount();
+  for (int i=0; i < rowsToRemove; i++) {
+    int index=rowsToRemove - i - 1;
+    TableRowElement tr=bodyElem.getRows().getItem(index);
+    body.paintRemoveRow(tr,index);
+    body.removeRowPosition(tr);
+  }
+  body.visualRowOrder.clear();
+  body.setTopRowLogicalIndex(0);
   super.onUnload();
 }
