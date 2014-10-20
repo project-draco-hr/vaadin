@@ -1,5 +1,4 @@
 {
-  super.onBrowserEvent(event);
   EventTarget target=event.getEventTarget();
   if (!Element.is(target)) {
     return;
@@ -15,10 +14,11 @@
  else {
     cell=container.getCell(e);
   }
+  if (handleEditorRowEvent(event,container,cell)) {
+    return;
+  }
+  super.onBrowserEvent(event);
   if (isGrid) {
-    if (handleEditorRowEvent(event,container,cell)) {
-      return;
-    }
     if (handleHeaderDefaultRowEvent(event,container,cell)) {
       return;
     }
