@@ -1,0 +1,85 @@
+{
+  if (event.getType().equals(BrowserEvents.CLICK)) {
+    setCellFocus(cell);
+    getElement().focus();
+  }
+ else   if (event.getType().equals(BrowserEvents.KEYDOWN)) {
+    int newRow=rowWithFocus;
+    RowContainer newContainer=containerWithFocus;
+    int newColumn=cellFocusRange.getStart();
+switch (event.getKeyCode()) {
+case KeyCodes.KEY_DOWN:
+      ++newRow;
+    break;
+case KeyCodes.KEY_UP:
+  --newRow;
+break;
+case KeyCodes.KEY_RIGHT:
+if (cellFocusRange.getEnd() >= getVisibleColumns().size()) {
+return;
+}
+newColumn=cellFocusRange.getEnd();
+break;
+case KeyCodes.KEY_LEFT:
+if (newColumn == 0) {
+return;
+}
+--newColumn;
+break;
+case KeyCodes.KEY_TAB:
+if (event.getShiftKey()) {
+newContainer=getPreviousContainer(containerWithFocus);
+}
+ else {
+newContainer=getNextContainer(containerWithFocus);
+}
+if (newContainer == containerWithFocus) {
+return;
+}
+break;
+default :
+return;
+}
+if (newContainer != containerWithFocus) {
+if (newContainer == escalator.getBody()) {
+newRow=lastFocusedBodyRow;
+}
+ else if (newContainer == escalator.getHeader()) {
+newRow=lastFocusedHeaderRow;
+}
+ else {
+newRow=lastFocusedFooterRow;
+}
+}
+ else if (newRow < 0) {
+newContainer=getPreviousContainer(newContainer);
+if (newContainer == containerWithFocus) {
+newRow=0;
+}
+ else if (newContainer == escalator.getBody()) {
+newRow=getLastVisibleRowIndex();
+}
+ else {
+newRow=newContainer.getRowCount() - 1;
+}
+}
+ else if (newRow >= containerWithFocus.getRowCount()) {
+newContainer=getNextContainer(newContainer);
+if (newContainer == containerWithFocus) {
+newRow=containerWithFocus.getRowCount() - 1;
+}
+ else if (newContainer == escalator.getBody()) {
+newRow=getFirstVisibleRowIndex();
+}
+ else {
+newRow=0;
+}
+}
+if (newContainer.getRowCount() == 0) {
+return;
+}
+event.preventDefault();
+event.stopPropagation();
+setCellFocus(newRow,newColumn,newContainer);
+}
+}

@@ -1,0 +1,24 @@
+{
+  int cellRow=cell.getRow();
+  int cellColumn=cell.getColumn();
+  int colSpan=cell.getColSpan();
+  boolean columnHasFocus=Range.withLength(cellColumn,colSpan).intersects(cellFocusRange);
+  if (cellContainer == containerWithFocus) {
+    if (cellRow == rowWithFocus && columnHasFocus) {
+      if (cellWithFocusStyle != cell.getElement()) {
+        if (cellWithFocusStyle != null) {
+          setStyleName(cellWithFocusStyle,cellFocusStyleName,false);
+        }
+        cellWithFocusStyle=cell.getElement();
+        setStyleName(cellWithFocusStyle,cellFocusStyleName,true);
+      }
+    }
+ else     if (cellWithFocusStyle == cell.getElement()) {
+      setStyleName(cellWithFocusStyle,cellFocusStyleName,false);
+      cellWithFocusStyle=null;
+    }
+  }
+  if (cellContainer == escalator.getHeader() || cellContainer == escalator.getFooter()) {
+    setStyleName(cell.getElement(),headerFooterFocusStyleName,columnHasFocus);
+  }
+}
