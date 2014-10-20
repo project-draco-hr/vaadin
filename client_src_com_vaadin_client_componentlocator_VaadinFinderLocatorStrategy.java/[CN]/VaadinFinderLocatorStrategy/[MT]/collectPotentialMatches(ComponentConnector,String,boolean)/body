@@ -1,9 +1,14 @@
 {
   ArrayList<ComponentConnector> potentialMatches=new ArrayList<ComponentConnector>();
+  String widgetName=getWidgetName(pathFragment);
+  if (LocatorUtil.isUIElement(pathFragment)) {
+    if (connectorMatchesPathFragment(parent,widgetName)) {
+      potentialMatches.add(parent);
+    }
+  }
   if (parent instanceof HasComponentsConnector) {
     List<ComponentConnector> children=((HasComponentsConnector)parent).getChildComponents();
     for (    ComponentConnector child : children) {
-      String widgetName=getWidgetName(pathFragment);
       if (connectorMatchesPathFragment(child,widgetName)) {
         potentialMatches.add(child);
       }
