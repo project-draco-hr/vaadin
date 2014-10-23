@@ -1,0 +1,14 @@
+{
+  TestUI ui=new TestUI();
+  final Window window=new Window();
+  final boolean[] eventFired=new boolean[1];
+  ui.addComponentDetachListener(new ComponentDetachListener(){
+    @Override public void componentDetachedFromContainer(    ComponentDetachEvent event){
+      eventFired[0]=event.getDetachedComponent().equals(window);
+    }
+  }
+);
+  ui.addWindow(window);
+  ui.removeWindow(window);
+  Assert.assertTrue("Detach event is not fired for removed window",eventFired[0]);
+}
