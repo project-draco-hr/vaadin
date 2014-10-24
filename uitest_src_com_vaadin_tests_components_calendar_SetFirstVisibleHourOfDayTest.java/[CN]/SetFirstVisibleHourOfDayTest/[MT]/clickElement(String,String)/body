@@ -1,0 +1,21 @@
+{
+  List<WebElement> elements=findElements(By.className(className));
+  boolean found=false;
+  for (  WebElement webElement : elements) {
+    if (webElement.getText().equals(text)) {
+      webElement.click();
+      if (BrowserUtil.isIE8(getDesiredCapabilities())) {
+        try {
+          testBenchElement(webElement).click(webElement.getSize().getWidth() - 5,9);
+        }
+ catch (        StaleElementReferenceException e) {
+        }
+      }
+      found=true;
+      break;
+    }
+  }
+  if (!found) {
+    Assert.fail("Element " + className + " with text "+ text+ " not found.");
+  }
+}
