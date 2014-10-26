@@ -1,123 +1,29 @@
 {
-  NativeEvent nativeEvent=event.getNativeEvent();
-  int typeInt=event.getTypeInt();
-  if (typeInt == Event.ONKEYDOWN) {
-    int keyCode=event.getNativeEvent().getKeyCode();
-    if (keyCode == KeyCodes.KEY_ESCAPE) {
-      interruptDrag();
-      event.cancel();
-      event.getNativeEvent().preventDefault();
-    }
+  if (getEventHandleStrategy().isDragInterrupted(event,managerMediator)) {
+    interruptDrag();
+    event.cancel();
+    event.getNativeEvent().preventDefault();
     return;
   }
+  int typeInt=event.getTypeInt();
+  if (typeInt == Event.ONKEYDOWN) {
+    getEventHandleStrategy().handleKeyDownEvent(event,managerMediator);
+    return;
+  }
+  NativeEvent nativeEvent=event.getNativeEvent();
   currentDrag.setCurrentGwtEvent(nativeEvent);
-  updateDragImagePosition();
-  Node targetNode=Node.as(nativeEvent.getEventTarget());
-  Element targetElement;
-  if (Element.is(targetNode)) {
-    targetElement=Element.as(targetNode);
+  String display=getEventHandleStrategy().updateDragImage(event,managerMediator);
+  Element targetElement=getEventHandleStrategy().getTargetElement(event,managerMediator);
+  try {
+    if (handleDragImage(targetElement,event)) {
+      return;
+    }
   }
- else {
-    targetElement=targetNode.getParentElement();
+ catch (  RuntimeException e) {
+    throw e;
   }
-  if (WidgetUtil.isTouchEvent(nativeEvent) || dragElement != null) {
-    String display=dragElement.getStyle().getDisplay();
-    dragElement.getStyle().setDisplay(Display.NONE);
-    try {
-      int x=WidgetUtil.getTouchOrMouseClientX(nativeEvent);
-      int y=WidgetUtil.getTouchOrMouseClientY(nativeEvent);
-      targetElement=WidgetUtil.getElementFromPoint(x,y);
-      if (targetElement == null) {
-        event.cancel();
-        nativeEvent.stopPropagation();
-        return;
-      }
- else {
-switch (typeInt) {
-case Event.ONMOUSEOVER:
-case Event.ONMOUSEOUT:
-          return;
-case Event.ONMOUSEMOVE:
-case Event.ONTOUCHMOVE:
-        VDropHandler findDragTarget=findDragTarget(targetElement);
-      if (findDragTarget != currentDropHandler) {
-        if (currentDropHandler != null) {
-          currentDropHandler.dragLeave(currentDrag);
-          currentDrag.getDropDetails().clear();
-          serverCallback=null;
-        }
-        currentDropHandler=findDragTarget;
-        if (findDragTarget != null) {
-        }
-        if (currentDropHandler != null) {
-          currentDrag.setElementOver(targetElement);
-          currentDropHandler.dragEnter(currentDrag);
-        }
-      }
- else       if (findDragTarget != null) {
-        currentDrag.setElementOver(targetElement);
-        currentDropHandler.dragOver(currentDrag);
-      }
-    nativeEvent.preventDefault();
-  return;
-default :
-currentDrag.setElementOver(targetElement);
-break;
-}
-}
-}
- catch (RuntimeException e) {
-throw e;
-}
  finally {
-dragElement.getStyle().setProperty("display",display);
-}
-}
-switch (typeInt) {
-case Event.ONMOUSEOVER:
-VDropHandler target=findDragTarget(targetElement);
-if (target != null && target != currentDropHandler) {
-if (currentDropHandler != null) {
-currentDropHandler.dragLeave(currentDrag);
-currentDrag.getDropDetails().clear();
-}
-currentDropHandler=target;
-currentDrag.setElementOver(targetElement);
-target.dragEnter(currentDrag);
-}
- else if (target == null && currentDropHandler != null) {
-currentDropHandler.dragLeave(currentDrag);
-currentDrag.getDropDetails().clear();
-currentDropHandler=null;
-}
-break;
-case Event.ONMOUSEOUT:
-Element relatedTarget=Element.as(nativeEvent.getRelatedEventTarget());
-VDropHandler newDragHanler=findDragTarget(relatedTarget);
-if (dragElement != null && dragElement.isOrHasChild(relatedTarget)) {
-return;
-}
-if (currentDropHandler != null && currentDropHandler != newDragHanler) {
-currentDropHandler.dragLeave(currentDrag);
-currentDrag.getDropDetails().clear();
-currentDropHandler=null;
-serverCallback=null;
-}
-break;
-case Event.ONMOUSEMOVE:
-case Event.ONTOUCHMOVE:
-if (currentDropHandler != null) {
-currentDrag.setElementOver(targetElement);
-currentDropHandler.dragOver(currentDrag);
-}
-nativeEvent.preventDefault();
-break;
-case Event.ONTOUCHEND:
-event.getNativeEvent().preventDefault();
-case Event.ONMOUSEUP:
-endDrag();
-break;
-default :
-break;
-}
+    getEventHandleStrategy().restoreDragImage(display,managerMediator,event);
+  }
+  getEventHandleStrategy().handleEvent(targetElement,event,managerMediator);
 }
