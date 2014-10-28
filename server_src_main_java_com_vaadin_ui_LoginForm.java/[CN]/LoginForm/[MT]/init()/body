@@ -1,0 +1,21 @@
+{
+  if (initialized) {
+    return;
+  }
+  LoginFormState state=getState();
+  state.userNameFieldConnector=createUsernameField();
+  state.passwordFieldConnector=createPasswordField();
+  state.loginButtonConnector=createLoginButton();
+  StreamResource resource=new StreamResource(new LoginStreamSource(),LoginFormConstants.LOGIN_RESOURCE_NAME);
+  resource.setMIMEType("text/html; charset=utf-8");
+  resource.setCacheTime(-1);
+  setResource(LoginFormConstants.LOGIN_RESOURCE_NAME,resource);
+  registerRpc(new LoginFormRpc(){
+    @Override public void submitCompleted(){
+      login();
+    }
+  }
+);
+  initialized=true;
+  setContent(createContent(getUsernameField(),getPasswordField(),getLoginButton()));
+}
