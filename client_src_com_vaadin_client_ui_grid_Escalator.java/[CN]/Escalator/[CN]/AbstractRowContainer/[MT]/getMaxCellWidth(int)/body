@@ -1,0 +1,18 @@
+{
+  int maxCellWidth=-1;
+  NodeList<TableRowElement> rows=root.getRows();
+  for (int row=0; row < rows.getLength(); row++) {
+    TableRowElement rowElement=rows.getItem(row);
+    TableCellElement cellOriginal=rowElement.getCells().getItem(colIndex);
+    if (cellIsPartOfSpan(cellOriginal)) {
+      throw new IllegalArgumentException("Encountered a column " + "spanned cell in column " + colIndex + ".");
+    }
+    TableCellElement cellClone=TableCellElement.as((Element)cellOriginal.cloneNode(true));
+    cellClone.getStyle().clearHeight();
+    cellClone.getStyle().clearWidth();
+    rowElement.insertBefore(cellClone,cellOriginal);
+    maxCellWidth=Math.max(cellClone.getOffsetWidth(),maxCellWidth);
+    cellClone.removeFromParent();
+  }
+  return maxCellWidth;
+}
