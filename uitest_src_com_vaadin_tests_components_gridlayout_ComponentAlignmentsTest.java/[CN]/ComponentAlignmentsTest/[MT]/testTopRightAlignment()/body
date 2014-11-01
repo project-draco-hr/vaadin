@@ -1,0 +1,11 @@
+{
+  openTestURL();
+  CheckBoxElement checkbox=$(CheckBoxElement.class).get(1);
+  WebElement parent=checkbox.findElement(By.xpath(".."));
+  int leftSpaceSize=checkbox.getLocation().getX() - parent.getLocation().getX();
+  int rightSpaceSize=parent.getLocation().getX() + parent.getSize().getWidth() - checkbox.getLocation().getX() - checkbox.getSize().getWidth();
+  Assert.assertTrue("No space on the left for centered element",leftSpaceSize > 0);
+  Assert.assertTrue("There is some space on the right for the element",rightSpaceSize <= 1);
+  int sizeDiff=parent.getSize().getWidth() - checkbox.getSize().getWidth();
+  Assert.assertTrue("Element is not in aligned to the right",Math.abs(sizeDiff - leftSpaceSize) <= 1);
+}
