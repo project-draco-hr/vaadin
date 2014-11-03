@@ -1,0 +1,25 @@
+{
+  Grid gridAdd=new Grid();
+  gridAdd.setHeight("240px");
+  gridAdd.setWidth("140px");
+  addComponent(gridAdd);
+  Indexed dataSource=gridAdd.getContainerDatasource();
+  dataSource.addContainerProperty("foo",Integer.class,0);
+  for (int i=0; i < 10; ++i) {
+    Object id=dataSource.addItem();
+    dataSource.getItem(id).getItemProperty("foo").setValue(i);
+  }
+  dataSource=new IndexedContainer();
+  dataSource.addContainerProperty("bar",Integer.class,0);
+  for (int i=0; i < 10; ++i) {
+    Object id=dataSource.addItem();
+    dataSource.getItem(id).getItemProperty("bar").setValue(i);
+  }
+  Grid gridRemove=new Grid(dataSource);
+  gridRemove.setHeight("150px");
+  gridRemove.setWidth("140px");
+  addComponent(gridRemove);
+  for (int i=0; i < 5; ++i) {
+    dataSource.removeItem(dataSource.getIdByIndex(i));
+  }
+}
