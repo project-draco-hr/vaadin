@@ -1,0 +1,15 @@
+{
+  Actions actions=new Actions(getDriver());
+  actions.sendKeys(Keys.TAB);
+  actions.sendKeys(Keys.SPACE).perform();
+  findElement(By.className("v-debugwindow-tab")).click();
+  List<WebElement> messages=findElements(By.className("v-debugwindow-message"));
+  for (  WebElement message : messages) {
+    if (message.getAttribute("innerHTML").startsWith("JSON parsing")) {
+      String text=message.getAttribute("innerHTML");
+      int index=text.lastIndexOf(' ');
+      return text.substring(index);
+    }
+  }
+  return null;
+}

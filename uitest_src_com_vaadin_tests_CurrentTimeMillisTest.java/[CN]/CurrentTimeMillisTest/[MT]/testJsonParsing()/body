@@ -1,0 +1,22 @@
+{
+  setDebug(true);
+  openTestURL();
+  boolean highResTimeSupported=!BrowserUtil.isIE8(getDesiredCapabilities()) && !BrowserUtil.isIE(getDesiredCapabilities(),9) && !BrowserUtil.isPhantomJS(getDesiredCapabilities())&& !BrowserUtil.isSafari(getDesiredCapabilities());
+  String time=getJsonParsingTime();
+  Assert.assertNotNull("JSON parsing time is not found",time);
+  time=time.trim();
+  if (time.endsWith("ms")) {
+    time=time.substring(0,time.length() - 2);
+  }
+  if (highResTimeSupported) {
+    if (BrowserUtil.isChrome(getDesiredCapabilities())) {
+      Assert.assertTrue("High resolution time is not used in " + "JSON parsing mesurement. Time=" + time,time.equals("0") || time.indexOf('.') > 0);
+    }
+ else {
+      Assert.assertTrue("High resolution time is not used in " + "JSON parsing mesurement. Time=" + time,time.indexOf('.') > 0);
+    }
+  }
+ else {
+    Assert.assertFalse("Unexpected dot is detected in browser " + "that doesn't support high resolution time and " + "should report time as integer number. Time="+ time,time.indexOf('.') > 0);
+  }
+}

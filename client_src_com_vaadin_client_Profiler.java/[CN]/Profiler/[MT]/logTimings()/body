@@ -11,15 +11,22 @@
     getLogger().warning("No profiling events recorded, this might happen if another __gwtStatsEvent handler is installed.");
     return;
   }
+  Set<Node> extendedTimeNodes=new HashSet<Node>();
   for (int i=0; i < gwtStatsEvents.length(); i++) {
     GwtStatsEvent gwtStatsEvent=gwtStatsEvents.get(i);
     String eventName=gwtStatsEvent.getEventName();
     String type=gwtStatsEvent.getType();
+    boolean isExtendedEvent=gwtStatsEvent.isExtendedEvent();
     boolean isBeginEvent="begin".equals(type);
     Node stackTop=stack.getLast();
     boolean inEvent=eventName.equals(stackTop.getName()) && !isBeginEvent;
     if (!inEvent && stack.size() >= 2 && eventName.equals(stack.get(stack.size() - 2).getName()) && !isBeginEvent) {
-      stackTop.leave(gwtStatsEvent.getMillis());
+      if (extendedTimeNodes.contains(stackTop) && isExtendedEvent) {
+        stackTop.leave(gwtStatsEvent.getRelativeMillis());
+      }
+ else {
+        stackTop.leave(gwtStatsEvent.getMillis());
+      }
       stack.removeLast();
       stackTop=stack.getLast();
       inEvent=true;
@@ -30,15 +37,28 @@
         return;
       }
       Node previousStackTop=stack.removeLast();
-      previousStackTop.leave(gwtStatsEvent.getMillis());
+      if (extendedTimeNodes.contains(previousStackTop)) {
+        previousStackTop.leave(gwtStatsEvent.getRelativeMillis());
+      }
+ else {
+        previousStackTop.leave(gwtStatsEvent.getMillis());
+      }
     }
  else {
+      double millis=isExtendedEvent ? gwtStatsEvent.getRelativeMillis() : gwtStatsEvent.getMillis();
       if (!inEvent) {
-        stackTop=stackTop.enterChild(eventName,gwtStatsEvent.getMillis());
+        stackTop=stackTop.enterChild(eventName,millis);
         stack.add(stackTop);
+        if (isExtendedEvent) {
+          extendedTimeNodes.add(stackTop);
+        }
       }
       if (!isBeginEvent) {
-        stack.add(stackTop.enterChild(eventName + "." + type,gwtStatsEvent.getMillis()));
+        Node subNode=stackTop.enterChild(eventName + "." + type,millis);
+        if (isExtendedEvent) {
+          extendedTimeNodes.add(subNode);
+        }
+        stack.add(subNode);
       }
     }
   }
