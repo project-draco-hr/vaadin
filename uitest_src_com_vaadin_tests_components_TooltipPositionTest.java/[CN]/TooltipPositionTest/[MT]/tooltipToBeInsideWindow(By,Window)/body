@@ -1,0 +1,34 @@
+{
+  return new ExpectedCondition<Boolean>(){
+    @Override public Boolean apply(    WebDriver input){
+      List<WebElement> elements=findElements(tooltipLocator);
+      if (elements.isEmpty()) {
+        return false;
+      }
+      WebElement element=elements.get(0);
+      try {
+        if (!element.isDisplayed()) {
+          return false;
+        }
+        Point topLeft=element.getLocation();
+        int xLeft=topLeft.getX();
+        int yTop=topLeft.getY();
+        if (xLeft < 0 || yTop < 0) {
+          return false;
+        }
+        Dimension elementSize=element.getSize();
+        int xRight=xLeft + elementSize.getWidth() - 1;
+        int yBottom=yTop + elementSize.getHeight() - 1;
+        Dimension browserSize=window.getSize();
+        return xRight < browserSize.getWidth() && yBottom < browserSize.getHeight();
+      }
+ catch (      StaleElementReferenceException e) {
+        return false;
+      }
+    }
+    @Override public String toString(){
+      return "the tooltip to be displayed inside the window";
+    }
+  }
+;
+}
