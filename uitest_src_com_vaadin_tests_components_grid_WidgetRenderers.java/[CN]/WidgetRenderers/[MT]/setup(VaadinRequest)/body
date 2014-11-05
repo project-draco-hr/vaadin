@@ -6,7 +6,7 @@
   final Item item=container.getItem(container.addItem());
   item.getItemProperty(ProgressBarRenderer.class).setValue(0.3);
   item.getItemProperty(ButtonRenderer.class).setValue("Click");
-  item.getItemProperty(ImageRenderer.class).setValue(new ThemeResource("window/img/resize.png"));
+  item.getItemProperty(ImageRenderer.class).setValue(new ThemeResource("window/img/close.png"));
   Grid grid=new Grid(container);
   grid.setId("test-grid");
   grid.setSelectionMode(SelectionMode.NONE);
@@ -17,6 +17,11 @@
     }
   }
 ));
-  grid.getColumn(ImageRenderer.class).setRenderer(new ImageRenderer());
+  grid.getColumn(ImageRenderer.class).setRenderer(new ImageRenderer(new RendererClickListener(){
+    @Override public void click(    RendererClickEvent event){
+      item.getItemProperty(ImageRenderer.class).setValue(new ThemeResource("window/img/maximize.png"));
+    }
+  }
+));
   addComponent(grid);
 }
