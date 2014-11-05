@@ -20,6 +20,10 @@ case Event.ONTOUCHCANCEL:
 if (columnReordering && Util.isTouchEventOrLeftMouseButton(event)) {
   dragging=false;
   DOM.releaseCapture(getElement());
+  if (Util.isTouchEvent(event)) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
   if (moved) {
     hideFloatingCopy();
     tHead.removeSlotFocus();
@@ -31,10 +35,8 @@ if (columnReordering && Util.isTouchEventOrLeftMouseButton(event)) {
         reOrderColumn(cid,closestSlot);
       }
     }
-  }
-  if (Util.isTouchEvent(event)) {
-    event.preventDefault();
-    event.stopPropagation();
+    moved=false;
+    break;
   }
 }
 if (!moved) {
