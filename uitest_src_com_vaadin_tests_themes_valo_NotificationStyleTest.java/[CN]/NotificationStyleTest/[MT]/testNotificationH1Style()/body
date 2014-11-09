@@ -1,0 +1,11 @@
+{
+  openTestURL();
+  $(ButtonElement.class).first().click();
+  new Actions(getDriver()).moveByOffset(10,10).perform();
+  waitUntil(notificationPresentCondition(),2);
+  WebElement notification=findElement(By.className("v-Notification"));
+  List<WebElement> headers=notification.findElements(By.tagName("h1"));
+  String textAlign=headers.get(0).getCssValue("text-align");
+  String textAlignInnerHeader=headers.get(1).getCssValue("text-align");
+  Assert.assertNotEquals("Styles for notification defined h1 tag " + "and custom HTML tag are the same",textAlign,textAlignInnerHeader);
+}
