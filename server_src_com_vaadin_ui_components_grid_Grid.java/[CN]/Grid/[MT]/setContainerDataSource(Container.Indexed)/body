@@ -29,6 +29,10 @@
  else {
     clearSortOrder();
   }
+  Set<Object> properties=new HashSet<Object>(columns.keySet());
+  for (  Object propertyId : properties) {
+    removeColumn(propertyId);
+  }
   datasourceExtension=new RpcDataProviderExtension(container);
   datasourceExtension.extend(this,columnKeys);
   if (selectionModel != null) {
@@ -37,15 +41,12 @@
   if (datasource instanceof PropertySetChangeNotifier) {
     ((PropertySetChangeNotifier)datasource).addPropertySetChangeListener(propertyListener);
   }
-  getState().columns.clear();
   setLastFrozenPropertyId(null);
   HeaderRow row=getHeader().getDefaultRow();
   for (  Object propertyId : datasource.getContainerPropertyIds()) {
-    if (!columns.containsKey(propertyId)) {
-      GridColumn column=appendColumn(propertyId);
-      if (datasource instanceof Sortable) {
-        column.setSortable(((Sortable)datasource).getSortableContainerPropertyIds().contains(propertyId));
-      }
+    GridColumn column=appendColumn(propertyId);
+    if (datasource instanceof Sortable) {
+      column.setSortable(((Sortable)datasource).getSortableContainerPropertyIds().contains(propertyId));
     }
   }
 }
