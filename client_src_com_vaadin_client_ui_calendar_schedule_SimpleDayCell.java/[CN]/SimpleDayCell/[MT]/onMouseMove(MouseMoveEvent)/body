@@ -46,14 +46,21 @@
   }
   Date from=e.getStart();
   Date to=e.getEnd();
-  long duration=to.getTime() - from.getTime();
   long daysMs=dayDiff * DateConstants.DAYINMILLIS;
   long weeksMs=weekDiff * DateConstants.WEEKINMILLIS;
-  from.setTime(startDateFrom.getTime() + weeksMs + daysMs);
-  to.setTime((from.getTime() + duration));
+  setDates(e,from,to,weeksMs + daysMs,false);
   e.setStart(from);
   e.setEnd(to);
-  e.setStartTime(new Date(from.getTime()));
-  e.setEndTime(new Date(to.getTime()));
+  if (w.isTimeSpecificEvent()) {
+    Date start=new Date();
+    Date end=new Date();
+    setDates(e,start,end,weeksMs + daysMs,true);
+    e.setStartTime(start);
+    e.setEndTime(end);
+  }
+ else {
+    e.setStartTime(new Date(from.getTime()));
+    e.setEndTime(new Date(to.getTime()));
+  }
   updateDragPosition(w,dayDiff,weekDiff);
 }

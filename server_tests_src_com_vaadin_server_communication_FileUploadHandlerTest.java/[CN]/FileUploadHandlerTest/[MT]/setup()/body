@@ -1,0 +1,17 @@
+{
+  handler=new FileUploadHandler();
+  InputStream inputStream=new InputStream(){
+    private int counter=0;
+    @Override public int read() throws IOException {
+      counter++;
+      if (counter > 6) {
+        throw new RuntimeException("-1 is ignored by FileUploadHandler");
+      }
+      return -1;
+    }
+  }
+;
+  request=Mockito.mock(VaadinRequest.class);
+  Mockito.when(request.getInputStream()).thenReturn(inputStream);
+  Mockito.when(request.getHeader("Content-Length")).thenReturn("211");
+}

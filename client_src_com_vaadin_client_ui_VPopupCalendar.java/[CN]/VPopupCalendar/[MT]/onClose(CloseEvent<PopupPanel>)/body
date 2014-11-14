@@ -4,12 +4,16 @@
     if (!BrowserInfo.get().isTouchDevice() && textFieldEnabled) {
       focus();
     }
-    Timer t=new Timer(){
-      @Override public void run(){
-        open=false;
+    open=false;
+    if (cursorOverCalendarToggleButton) {
+      preventOpenPopupCalendar=true;
+      Timer unPreventClickTimer=new Timer(){
+        @Override public void run(){
+          preventOpenPopupCalendar=false;
+        }
       }
-    }
 ;
-    t.schedule(100);
+      unPreventClickTimer.schedule(300);
+    }
   }
 }

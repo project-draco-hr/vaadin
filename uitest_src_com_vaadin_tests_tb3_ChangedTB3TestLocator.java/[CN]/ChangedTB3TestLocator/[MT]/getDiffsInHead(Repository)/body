@@ -1,0 +1,12 @@
+{
+  RevWalk rw=new RevWalk(repository);
+  ObjectId head=repository.resolve(Constants.HEAD);
+  RevCommit commit=rw.parseCommit(head);
+  RevCommit parent=rw.parseCommit(commit.getParent(0).getId());
+  DiffFormatter df=new DiffFormatter(DisabledOutputStream.INSTANCE);
+  df.setRepository(repository);
+  df.setDiffComparator(RawTextComparator.DEFAULT);
+  df.setDetectRenames(true);
+  List<DiffEntry> diffs=df.scan(parent.getTree(),commit.getTree());
+  return diffs;
+}

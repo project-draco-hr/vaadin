@@ -1,0 +1,15 @@
+{
+  List<Class<? extends T>> affectedTestClasses=new ArrayList<Class<? extends T>>();
+  List<String> affectedFiles=getAffectedFiles();
+  for (  Class c : classes) {
+    String[] packageParts=c.getName().split("\\.");
+    String lastPart=packageParts[packageParts.length - 2];
+    for (    String f : affectedFiles) {
+      if (f.toLowerCase().contains(lastPart.toLowerCase())) {
+        affectedTestClasses.add(c);
+        break;
+      }
+    }
+  }
+  return affectedTestClasses;
+}

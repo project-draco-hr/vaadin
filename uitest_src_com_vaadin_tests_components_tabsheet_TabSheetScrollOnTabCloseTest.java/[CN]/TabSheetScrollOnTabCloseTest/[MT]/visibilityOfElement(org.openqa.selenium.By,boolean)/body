@@ -1,0 +1,23 @@
+{
+  return new ExpectedCondition<Boolean>(){
+    @Override public Boolean apply(    WebDriver driver){
+      List<WebElement> matchingElements=driver.findElements(locator);
+      if (matchingElements.isEmpty()) {
+        return !expectedVisibility;
+      }
+ else {
+        try {
+          WebElement first=matchingElements.get(0);
+          return first.isDisplayed() == expectedVisibility;
+        }
+ catch (        StaleElementReferenceException e) {
+          return !expectedVisibility;
+        }
+      }
+    }
+    @Override public String toString(){
+      return "element " + (expectedVisibility ? "" : "not ") + "expected to be visible: "+ locator;
+    }
+  }
+;
+}

@@ -11,5 +11,16 @@
   javaCalendar.setTime(end);
   javaCalendar.add(java.util.Calendar.DATE,durationInDays);
   Date newEnd=javaCalendar.getTime();
+  if (start.equals(end)) {
+    int firstDay=event.getComponent().getFirstVisibleDayOfWeek();
+    int lastDay=event.getComponent().getLastVisibleDayOfWeek();
+    int dayOfWeek=javaCalendar.get(Calendar.DAY_OF_WEEK);
+    while (!(firstDay <= dayOfWeek && dayOfWeek <= lastDay)) {
+      javaCalendar.add(java.util.Calendar.DATE,-1);
+      dayOfWeek=javaCalendar.get(Calendar.DAY_OF_WEEK);
+    }
+    newStart=javaCalendar.getTime();
+    newEnd=javaCalendar.getTime();
+  }
   setDates(event,newStart,newEnd);
 }

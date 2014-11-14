@@ -1,0 +1,21 @@
+{
+  try {
+    FileRepositoryBuilder builder=new FileRepositoryBuilder();
+    Repository repository=builder.setWorkTree(new File(".")).readEnvironment().findGitDir().build();
+    List<DiffEntry> diffsInWorkingTree=getDiffsInWorkingTree(repository);
+    if (diffsInWorkingTree.isEmpty()) {
+      return getDiffsInHead(repository);
+    }
+    return diffsInWorkingTree;
+  }
+ catch (  IOException e) {
+    e.printStackTrace();
+  }
+catch (  NoWorkTreeException e) {
+    e.printStackTrace();
+  }
+catch (  GitAPIException e) {
+    e.printStackTrace();
+  }
+  return null;
+}

@@ -1,0 +1,23 @@
+{
+  final TabSheet tabSheet=new TabSheet();
+  for (int i=0; i < 10; i++) {
+    Tab tab=tabSheet.addTab(new CssLayout(),"tab " + i);
+    tab.setClosable(true);
+    tab.setId("tab" + i);
+  }
+  tabSheet.setWidth(250,Unit.PIXELS);
+  addComponent(tabSheet);
+  addComponent(new Label("Close tab number"));
+  for (int i=0; i < 10; i++) {
+    final String tabCaption="tab " + i;
+    final Button b=new Button("" + i);
+    b.addClickListener(new Button.ClickListener(){
+      @Override public void buttonClick(      ClickEvent event){
+        b.setEnabled(false);
+        tabSheet.removeTab(getTab(tabSheet,tabCaption));
+      }
+    }
+);
+    addComponent(b);
+  }
+}

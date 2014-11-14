@@ -1,0 +1,38 @@
+{
+  final Table table=new Table();
+  table.setSelectable(true);
+  table.setImmediate(true);
+  BeanItemContainer<TableBean> container=createContainer();
+  table.setContainerDataSource(container);
+  final Label selectedSize=new Label();
+  selectedSize.addStyleName("selected-rows");
+  Button changeMode=new Button("Set multiselect",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      table.setMultiSelect(true);
+      table.setMultiSelectMode(MultiSelectMode.SIMPLE);
+      BeanItemContainer<TableBean> container=createContainer();
+      table.setContainerDataSource(container);
+    }
+  }
+);
+  changeMode.addStyleName("multiselect");
+  Button delete=new Button("Delete selected",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      if (table.getValue() instanceof Collection) {
+        Collection<?> rows=(Collection<?>)table.getValue();
+        for (        Object row : rows) {
+          table.getContainerDataSource().removeItem(row);
+        }
+        rows=(Collection<?>)table.getValue();
+        selectedSize.setValue(String.valueOf(rows.size()));
+      }
+ else {
+        table.getContainerDataSource().removeItem(table.getValue());
+        selectedSize.setValue(table.getValue() == null ? "0" : "1");
+      }
+    }
+  }
+);
+  delete.addStyleName("delete");
+  addComponents(delete,changeMode,selectedSize,table);
+}

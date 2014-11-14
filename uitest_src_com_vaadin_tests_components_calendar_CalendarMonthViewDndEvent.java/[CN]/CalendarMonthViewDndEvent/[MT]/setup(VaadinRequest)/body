@@ -1,0 +1,37 @@
+{
+  final Calendar calendar=new Calendar("Test calendar");
+  final java.util.Calendar cal=getAdjustedCalendar();
+  Date from=cal.getTime();
+  Date start=new Date(from.getTime() - 24 * 3600000);
+  calendar.setStartDate(start);
+  cal.add(java.util.Calendar.HOUR,1);
+  Date to=cal.getTime();
+  cal.add(java.util.Calendar.MONTH,1);
+  calendar.setEndDate(cal.getTime());
+  final BasicEvent basicEvent=new BasicEvent("event","description",from,to);
+  HorizontalLayout info=new HorizontalLayout();
+  info.setSpacing(true);
+  info.setMargin(true);
+  addComponent(info);
+  final Label startLbl=new Label(String.valueOf(from.getTime()));
+  startLbl.addStyleName("start");
+  info.addComponent(startLbl);
+  final Label endLbl=new Label(String.valueOf(to.getTime()));
+  endLbl.addStyleName("end");
+  info.addComponent(endLbl);
+  BasicEventProvider provider=new BasicEventProvider();
+  provider.addEvent(basicEvent);
+  calendar.setEventProvider(provider);
+  provider.addEventSetChangeListener(new EventSetChangeListener(){
+    @Override public void eventSetChange(    EventSetChangeEvent event){
+      List<CalendarEvent> events=event.getProvider().getEvents(new Date(0),new Date(Long.MAX_VALUE));
+      CalendarEvent calEvent=events.get(0);
+      Date startEvent=calEvent.getStart();
+      Date endEvent=calEvent.getEnd();
+      startLbl.setValue(String.valueOf(startEvent.getTime()));
+      endLbl.setValue(String.valueOf(endEvent.getTime()));
+    }
+  }
+);
+  addComponent(calendar);
+}
