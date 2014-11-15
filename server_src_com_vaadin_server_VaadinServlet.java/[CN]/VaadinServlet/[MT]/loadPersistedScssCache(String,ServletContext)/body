@@ -1,0 +1,15 @@
+{
+  String realFilename=sc.getRealPath(scssFilename);
+  File scssCacheFile=getScssCacheFile(new File(realFilename));
+  if (!scssCacheFile.exists()) {
+    return null;
+  }
+  String jsonString=Files.toString(scssCacheFile,Charsets.UTF_8);
+  JsonObject entryJson=Json.parse(jsonString);
+  String cacheVersion=entryJson.getString("version");
+  if (!Version.getFullVersion().equals(cacheVersion)) {
+    scssCacheFile.delete();
+    return null;
+  }
+  return new ScssCacheEntry(entryJson);
+}
