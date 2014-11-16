@@ -7,7 +7,7 @@
   View view2=control.createMock(View.class);
   ViewChangeTestListener listener=new ViewChangeTestListener();
   Navigator navigator=createNavigator(manager,display);
-  EasyMock.expect(provider.getViewName("test1")).andReturn("test1");
+  EasyMock.expect(provider.getViewName("test1")).andReturn("test1").times(2);
   EasyMock.expect(provider.getView("test1")).andReturn(view1);
   ViewChangeEvent event1=new ViewChangeEvent(navigator,null,view1,"test1","");
   listener.addExpectedIsViewChangeAllowed(event1,true);
@@ -16,7 +16,7 @@
   display.showView(view1);
   manager.setState("test1");
   listener.addExpectedNavigatorViewChange(event1);
-  EasyMock.expect(provider.getViewName("test2")).andReturn("test2");
+  EasyMock.expect(provider.getViewName("test2")).andReturn("test2").times(2);
   EasyMock.expect(provider.getView("test2")).andReturn(view2);
   ViewChangeEvent event2=new ViewChangeEvent(navigator,view1,view2,"test2","");
   listener.addExpectedIsViewChangeAllowed(event2,true);

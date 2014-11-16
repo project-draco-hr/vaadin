@@ -1,14 +1,7 @@
 {
-  String longestViewName=null;
-  ViewProvider longestViewNameProvider=null;
+  ViewProvider longestViewNameProvider=getViewProvider(navigationState);
+  String longestViewName=longestViewNameProvider == null ? null : longestViewNameProvider.getViewName(navigationState);
   View viewWithLongestName=null;
-  for (  ViewProvider provider : providers) {
-    String viewName=provider.getViewName(navigationState);
-    if (null != viewName && (longestViewName == null || viewName.length() > longestViewName.length())) {
-      longestViewName=viewName;
-      longestViewNameProvider=provider;
-    }
-  }
   if (longestViewName != null) {
     viewWithLongestName=longestViewNameProvider.getView(longestViewName);
   }
@@ -21,7 +14,12 @@
     if (navigationState.length() > longestViewName.length() + 1) {
       parameters=navigationState.substring(longestViewName.length() + 1);
     }
-    navigateTo(viewWithLongestName,longestViewName,parameters);
+    if (getCurrentView() == null || !SharedUtil.equals(getCurrentView(),viewWithLongestName)) {
+      navigateTo(viewWithLongestName,longestViewName,parameters);
+    }
+ else {
+      updateNavigationState(new ViewChangeEvent(this,getCurrentView(),viewWithLongestName,longestViewName,parameters));
+    }
   }
  else {
     throw new IllegalArgumentException("Trying to navigate to an unknown state '" + navigationState + "' and an error view provider not present");

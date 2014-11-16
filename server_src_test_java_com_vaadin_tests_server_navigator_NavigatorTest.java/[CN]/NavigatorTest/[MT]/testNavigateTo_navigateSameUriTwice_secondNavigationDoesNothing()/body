@@ -1,0 +1,38 @@
+{
+  NavigationStateManager manager=new NavigationStateManager(){
+    private String state;
+    @Override public void setState(    String state){
+      this.state=state;
+    }
+    @Override public void setNavigator(    Navigator navigator){
+    }
+    @Override public String getState(){
+      return state;
+    }
+  }
+;
+  final String viewName="view";
+  final View view=EasyMock.createMock(View.class);
+  ViewProvider provider=new ViewProvider(){
+    @Override public String getViewName(    String viewAndParameters){
+      return viewName;
+    }
+    @Override public View getView(    String viewName){
+      return view;
+    }
+  }
+;
+  final int[] count=new int[]{0};
+  Navigator navigator=new Navigator(createMockUI(),manager,EasyMock.createMock(ViewDisplay.class)){
+    @Override protected void navigateTo(    View view,    String viewName,    String parameters){
+      count[0]=count[0] + 1;
+      super.navigateTo(view,viewName,parameters);
+    }
+  }
+;
+  navigator.addProvider(provider);
+  navigator.navigateTo(viewName);
+  Assert.assertEquals(1,count[0]);
+  navigator.navigateTo(viewName);
+  Assert.assertEquals(1,count[0]);
+}
