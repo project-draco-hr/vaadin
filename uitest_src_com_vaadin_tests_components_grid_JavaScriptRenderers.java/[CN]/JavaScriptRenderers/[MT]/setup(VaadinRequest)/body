@@ -1,0 +1,15 @@
+{
+  IndexedContainer container=new IndexedContainer();
+  container.addContainerProperty("id",Integer.class,Integer.valueOf(0));
+  container.addContainerProperty("bean",MyBean.class,null);
+  for (int i=0; i < 1000; i++) {
+    Integer itemId=Integer.valueOf(i);
+    Item item=container.addItem(itemId);
+    item.getItemProperty("id").setValue(itemId);
+    item.getItemProperty("bean").setValue(new MyBean(i + 1,Integer.toString(i - 1)));
+  }
+  Grid grid=new Grid(container);
+  grid.getColumn("bean").setRenderer(new MyBeanJSRenderer());
+  grid.getColumn("bean").setWidth(250);
+  addComponent(grid);
+}
