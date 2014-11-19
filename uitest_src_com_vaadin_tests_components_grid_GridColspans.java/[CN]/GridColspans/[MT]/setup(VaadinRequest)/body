@@ -1,6 +1,6 @@
 {
   Indexed dataSource=new IndexedContainer();
-  Grid grid;
+  final Grid grid;
   dataSource.addContainerProperty("firstName",String.class,"");
   dataSource.addContainerProperty("lastName",String.class,"");
   dataSource.addContainerProperty("streetAddress",String.class,"");
@@ -26,4 +26,11 @@
   footerRow.join("firstName","lastName").setText("Full Name");
   footerRow.join("streetAddress","zipCode","city").setText("Address");
   footer.appendRow().join(dataSource.getContainerPropertyIds().toArray()).setText("All the stuff");
+  addComponent(new Button("Show/Hide firstName",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      GridColumn column=grid.getColumn("firstName");
+      column.setVisible(!column.isVisible());
+    }
+  }
+));
 }
