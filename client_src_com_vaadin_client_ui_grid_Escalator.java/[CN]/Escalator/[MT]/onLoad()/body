@@ -6,6 +6,18 @@
   header.paintInsertRows(0,header.getRowCount());
   footer.paintInsertRows(0,footer.getRowCount());
   recalculateElementSizes();
+  boolean columnsChanged=false;
+  for (  ColumnConfigurationImpl.Column column : columnConfiguration.columns) {
+    boolean columnChanged=column.measureAndSetWidthIfNeeded();
+    if (columnChanged) {
+      columnsChanged=true;
+    }
+  }
+  if (columnsChanged) {
+    header.reapplyColumnWidths();
+    body.reapplyColumnWidths();
+    footer.reapplyColumnWidths();
+  }
   scroller.attachScrollListener(verticalScrollbar.getElement());
   scroller.attachScrollListener(horizontalScrollbar.getElement());
   scroller.attachMousewheelListener(getElement());

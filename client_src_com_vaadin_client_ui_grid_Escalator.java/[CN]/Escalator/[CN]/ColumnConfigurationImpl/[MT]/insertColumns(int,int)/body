@@ -22,6 +22,12 @@
   header.paintInsertColumns(index,numberOfColumns,frozen);
   body.paintInsertColumns(index,numberOfColumns,frozen);
   footer.paintInsertColumns(index,numberOfColumns,frozen);
+  if (header.getRowCount() > 0 || body.getRowCount() > 0 || footer.getRowCount() > 0) {
+    for (int col=index; col < index + numberOfColumns; col++) {
+      getColumnConfiguration().setColumnWidth(col,-1);
+      columnConfiguration.columns.get(col).widthIsFinalized();
+    }
+  }
   int pixelsToInsertedColumn=columnConfiguration.getCalculatedColumnsWidth(Range.withLength(0,index));
   final boolean columnsWereAddedToTheLeftOfViewport=scroller.lastScrollLeft > pixelsToInsertedColumn;
   if (columnsWereAddedToTheLeftOfViewport) {
