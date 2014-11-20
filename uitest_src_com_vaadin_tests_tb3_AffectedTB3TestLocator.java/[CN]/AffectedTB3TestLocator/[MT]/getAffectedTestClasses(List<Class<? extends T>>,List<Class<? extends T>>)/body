@@ -1,14 +1,7 @@
 {
-  List<Class<? extends T>> affectedWithPackageTestClasses=getTestClassesWithAffectedPackageName(allTestClasses);
+  Set testClasses=new HashSet(changedTestClasses);
+  testClasses.addAll(getTestClassesWithAffectedPackageName(allTestClasses));
   List<Class<? extends T>> affectedTestClasses=new ArrayList<Class<? extends T>>();
-  affectedTestClasses.addAll(affectedWithPackageTestClasses);
-  for (  Class<? extends T> changedTestClass : changedTestClasses) {
-    for (    Class<? extends T> affectedTestClass : affectedWithPackageTestClasses) {
-      if (!changedTestClass.getName().equals(affectedTestClass.getName())) {
-        affectedTestClasses.add(changedTestClass);
-        break;
-      }
-    }
-  }
+  affectedTestClasses.addAll(testClasses);
   return affectedTestClasses;
 }
