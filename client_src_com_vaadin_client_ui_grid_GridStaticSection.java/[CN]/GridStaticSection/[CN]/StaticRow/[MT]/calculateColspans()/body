@@ -2,26 +2,19 @@
   for (  CELLTYPE cell : this.cells.values()) {
     cell.setColspan(1);
   }
-  for (  List<GridColumn<?,?>> group : cellGroups) {
-    int firstVisibleColumnInGroup=-1;
-    int lastVisibleColumnInGroup=-1;
-    int hiddenInsideGroup=0;
-    for (int i=0; i < group.size(); i++) {
-      if (group.get(i).isVisible()) {
-        lastVisibleColumnInGroup=i;
-        if (firstVisibleColumnInGroup == -1) {
-          firstVisibleColumnInGroup=i;
+  List<GridColumn<?,?>> columnOrder=new ArrayList<GridColumn<?,?>>(section.grid.getColumns());
+  for (  Set<GridColumn<?,?>> group : cellGroups.keySet()) {
+    if (!checkCellGroupAndOrder(columnOrder,group)) {
+      cellGroups.get(group).setColspan(1);
+    }
+ else {
+      int colSpan=group.size();
+      for (      GridColumn<?,?> column : group) {
+        if (!column.isVisible()) {
+          --colSpan;
         }
       }
- else       if (firstVisibleColumnInGroup != -1) {
-        hiddenInsideGroup++;
-      }
+      cellGroups.get(group).setColspan(colSpan);
     }
-    if (firstVisibleColumnInGroup == -1 || lastVisibleColumnInGroup == -1 || firstVisibleColumnInGroup == lastVisibleColumnInGroup) {
-      continue;
-    }
-    GridColumn<?,?> firstVisibleColumn=group.get(firstVisibleColumnInGroup);
-    CELLTYPE firstVisibleCell=getCell(firstVisibleColumn);
-    firstVisibleCell.setColspan(lastVisibleColumnInGroup - firstVisibleColumnInGroup - hiddenInsideGroup + 1);
   }
 }
