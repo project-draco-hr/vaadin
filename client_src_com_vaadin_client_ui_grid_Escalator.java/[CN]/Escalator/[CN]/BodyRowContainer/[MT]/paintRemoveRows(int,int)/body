@@ -51,6 +51,14 @@
       if (viewportBottom <= contentBottom) {
         paintRemoveRowsAtMiddle(removedLogicalInside,removedVisualInside,0);
       }
+ else       if (removedVisualInside.contains(0) && numberOfRows >= visualRowOrder.size()) {
+        double left=horizontalScrollbar.getScrollPos();
+        int top=contentBottom - visualRowOrder.size() * getDefaultRowHeight();
+        setBodyScrollPosition(left,top);
+        Range allEscalatorRows=Range.withLength(0,visualRowOrder.size());
+        int logicalTargetIndex=getRowCount() - allEscalatorRows.length();
+        moveAndUpdateEscalatorRows(allEscalatorRows,0,logicalTargetIndex);
+      }
  else       if (contentBottom + (numberOfRows * getDefaultRowHeight()) - viewportBottom < getDefaultRowHeight()) {
         paintRemoveRowsAtBottom(removedLogicalInside,removedVisualInside);
         updateTopRowLogicalIndex(-removedLogicalInside.length());

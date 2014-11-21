@@ -2,7 +2,14 @@
   WebElement escalator=getEscalator();
   WebElement tableSection=escalator.findElement(By.tagName(sectionTag));
   try {
-    return tableSection.findElement(By.xpath("tr[" + (row + 1) + "]"));
+    if (row >= 0) {
+      int fromFirst=row + 1;
+      return tableSection.findElement(By.xpath("tr[" + fromFirst + "]"));
+    }
+ else {
+      int fromLast=Math.abs(row + 1);
+      return tableSection.findElement(By.xpath("tr[last() - " + fromLast + "]"));
+    }
   }
  catch (  NoSuchElementException e) {
     return null;
