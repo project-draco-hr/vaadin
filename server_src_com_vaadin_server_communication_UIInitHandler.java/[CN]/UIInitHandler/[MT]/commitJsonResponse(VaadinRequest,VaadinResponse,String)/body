@@ -1,13 +1,10 @@
 {
   response.setContentType(JsonConstants.JSON_CONTENT_TYPE);
   response.setHeader("Cache-Control","no-cache");
-  OutputStreamWriter outputWriter=new OutputStreamWriter(response.getOutputStream(),"UTF-8");
-  try {
-    outputWriter.write(json);
-    outputWriter.flush();
-  }
-  finally {
-    outputWriter.close();
-  }
+  byte[] b=json.getBytes("UTF-8");
+  response.setHeader("Content-Length",String.valueOf(b.length));
+  OutputStream outputStream=response.getOutputStream();
+  outputStream.write(b);
+  outputStream.flush();
   return true;
 }
