@@ -1,5 +1,6 @@
 {
   final int iw=columnIndex == getHierarchyColumnIndex() ? scrollBody.getMaxIndent() : 0;
+  saveNaturalColumnWidthIfNotSaved(columnIndex);
   if (isDefinedWidth()) {
     if (iw > width) {
       return iw;
@@ -7,19 +8,6 @@
     return width;
   }
  else {
-    if (naturalWidth < 0) {
-      final int hw=((Element)getElement().getLastChild()).getOffsetWidth() + getHeaderPadding();
-      if (columnIndex < 0) {
-        columnIndex=0;
-        for (Iterator<Widget> it=tHead.iterator(); it.hasNext(); columnIndex++) {
-          if (it.next() == this) {
-            break;
-          }
-        }
-      }
-      final int cw=scrollBody.getColWidth(columnIndex);
-      naturalWidth=(hw > cw ? hw : cw);
-    }
     if (iw > naturalWidth) {
       return iw;
     }

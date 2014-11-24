@@ -16,6 +16,8 @@
     final HeaderCell hCell=(HeaderCell)headCells.next();
     final FooterCell fCell=(FooterCell)footCells.next();
     boolean needsIndent=hierarchyColumnIndent > 0 && hCell.isHierarchyColumn();
+    hCell.saveNaturalColumnWidthIfNotSaved(i);
+    fCell.saveNaturalColumnWidthIfNotSaved(i);
     int w=hCell.getWidth();
     if (hCell.isDefinedWidth()) {
       if (needsIndent && w < hierarchyColumnIndent) {
@@ -36,8 +38,10 @@
         int footerWidth=fCell.getNaturalColumnWidth(i);
         w=headerWidth > footerWidth ? headerWidth : footerWidth;
       }
-      hCell.setNaturalMinimumColumnWidth(w);
-      fCell.setNaturalMinimumColumnWidth(w);
+      if (w != 0) {
+        hCell.setNaturalMinimumColumnWidth(w);
+        fCell.setNaturalMinimumColumnWidth(w);
+      }
     }
     widths[i]=w;
     total+=w;
