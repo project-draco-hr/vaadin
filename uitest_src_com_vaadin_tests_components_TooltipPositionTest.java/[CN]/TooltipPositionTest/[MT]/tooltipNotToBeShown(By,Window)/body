@@ -1,0 +1,21 @@
+{
+  return new ExpectedCondition<Boolean>(){
+    @Override public Boolean apply(    WebDriver input){
+      List<WebElement> elements=findElements(tooltipLocator);
+      if (elements.isEmpty()) {
+        return true;
+      }
+      WebElement tooltip=elements.get(0);
+      try {
+        return isOutsideOfWindow(tooltip);
+      }
+ catch (      StaleElementReferenceException e) {
+        return true;
+      }
+    }
+    @Override public String toString(){
+      return "the tooltip not to be displayed inside the window";
+    }
+  }
+;
+}
