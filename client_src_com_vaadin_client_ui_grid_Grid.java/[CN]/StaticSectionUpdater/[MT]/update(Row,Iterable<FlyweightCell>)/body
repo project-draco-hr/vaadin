@@ -7,18 +7,30 @@
       addSortingIndicatorsToHeaderRow((HeaderRow)staticRow,cell);
     }
     cell.setColSpan(metadata.getColspan());
+    TableCellElement element=cell.getElement();
 switch (metadata.getType()) {
 case TEXT:
-      cell.getElement().setInnerText(metadata.getText());
+      element.setInnerText(metadata.getText());
     break;
 case HTML:
-  cell.getElement().setInnerHTML(metadata.getHtml());
+  element.setInnerHTML(metadata.getHtml());
 break;
 case WIDGET:
 preDetach(row,Arrays.asList(cell));
-cell.getElement().setInnerHTML("");
+element.setInnerHTML("");
 postAttach(row,Arrays.asList(cell));
 break;
+}
+String oldStyleName=element.getPropertyString(CUSTOM_STYLE_PROPERTY_NAME);
+String newStyleName=metadata.getStyleName();
+if (!SharedUtil.equals(oldStyleName,newStyleName)) {
+if (oldStyleName != null) {
+element.removeClassName(oldStyleName);
+}
+if (newStyleName != null) {
+element.addClassName(newStyleName);
+}
+element.setPropertyString(CUSTOM_STYLE_PROPERTY_NAME,newStyleName);
 }
 cellFocusHandler.updateFocusedCellStyle(cell,container);
 }

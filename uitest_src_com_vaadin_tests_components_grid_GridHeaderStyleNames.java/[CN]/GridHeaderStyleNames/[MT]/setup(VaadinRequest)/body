@@ -1,0 +1,25 @@
+{
+  Grid grid=new Grid();
+  grid.setContainerDataSource(BeanItemContainerGenerator.createContainer(100));
+  ageHeaderCell=grid.getDefaultHeaderRow().getCell("age");
+  HeaderRow row=grid.prependHeaderRow();
+  mergedCityCountryCell=row.join("city","country");
+  mergedCityCountryCell.setText("Merged cell");
+  addComponent(grid);
+  FooterRow footerRow=grid.appendFooterRow();
+  ageFooterCell=footerRow.getCell("age");
+  getPage().getStyles().add(".age {background-image: linear-gradient(to bottom,green 2%, #efefef 98%) !important;}");
+  getPage().getStyles().add(".valo .v-grid-header .v-grid-cell.city-country {background-image: linear-gradient(to bottom,yellow 2%, #efefef 98%);}");
+  getPage().getStyles().add(".valo .v-grid-footer .v-grid-cell.age-footer {background-image: linear-gradient(to bottom,blue 2%, #efefef 98%);}");
+  setStyles(true);
+  Button b=new Button("Toggle styles");
+  b.addClickListener(new ClickListener(){
+    private boolean stylesOn=true;
+    @Override public void buttonClick(    ClickEvent event){
+      setStyles(!stylesOn);
+      stylesOn=!stylesOn;
+    }
+  }
+);
+  addComponent(b);
+}
