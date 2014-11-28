@@ -3,9 +3,10 @@
   DiffCommand diffCommand=git.diff();
   List<DiffEntry> diffsInWorkingTree=new ArrayList<DiffEntry>();
   for (  DiffEntry diff : diffCommand.call()) {
-    if (!diff.getNewPath().startsWith("uitest/junit")) {
-      diffsInWorkingTree.add(diff);
+    if (pathIsExcluded(diff.getNewPath())) {
+      continue;
     }
+    diffsInWorkingTree.add(diff);
   }
   return diffsInWorkingTree;
 }

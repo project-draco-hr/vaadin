@@ -84,6 +84,7 @@
           webappcontext.stop();
           server.stop();
           webappcontext.start();
+          disableAtmosphereAnnotationScan(webappcontext);
           server.start();
         }
       }
@@ -101,11 +102,7 @@
     }
   }
   webappcontext.start();
-  for (  ServletHolder servletHolder : webappcontext.getServletHandler().getServlets()) {
-    if (servletHolder.getInitParameter("org.atmosphere.cpr.scanClassPath") == null) {
-      servletHolder.setInitParameter("org.atmosphere.cpr.scanClassPath","false");
-    }
-  }
+  disableAtmosphereAnnotationScan(webappcontext);
   try {
     server.start();
     if (serverArgs.containsKey("shutdownPort")) {
