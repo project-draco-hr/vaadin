@@ -1,4 +1,11 @@
 {
   String qualifiedClassName=tagNameToClassName(node);
-  return createComponent(qualifiedClassName);
+  try {
+    Class<? extends DesignSynchronizable> componentClass=resolveComponentClass(qualifiedClassName);
+    DesignSynchronizable newComponent=componentClass.newInstance();
+    return newComponent;
+  }
+ catch (  Exception e) {
+    throw createException(e,qualifiedClassName);
+  }
 }

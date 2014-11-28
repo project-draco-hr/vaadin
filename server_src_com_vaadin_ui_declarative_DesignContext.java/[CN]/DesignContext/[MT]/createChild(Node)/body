@@ -1,41 +1,27 @@
 {
   DesignSynchronizable component=instantiateComponent(componentDesign);
+  component.synchronizeFromDesign(componentDesign,this);
   org.jsoup.nodes.Attributes attributes=componentDesign.attributes();
-  String id=attributes.get(ID_ATTRIBUTE);
+  String id=component.getCaption();
   if (id != null && id.length() > 0) {
-    Component oldComponent=globalIds.put(camelCase(id),component);
-    if (oldComponent != null) {
-      throw new RuntimeException("Duplicate ids: " + id);
+    boolean mappingExists=mapGlobalId(id,component);
+    if (mappingExists) {
+      throw new LayoutInflaterException("The following global id is not unique: " + id);
     }
   }
   String localId=null;
   for (  Attribute attribute : attributes.asList()) {
     if (attribute.getKey().startsWith(LOCAL_ID_PREFIX)) {
       if (localId != null) {
-        throw new RuntimeException("Duplicate local ids specified: " + localId + " and "+ attribute.getValue());
+        throw new LayoutInflaterException("Duplicate local ids specified: " + localId + " and "+ attribute.getKey().substring(LOCAL_ID_PREFIX.length()));
       }
       localId=attribute.getKey().substring(LOCAL_ID_PREFIX.length());
-      localIds.put(camelCase(localId),component);
+      mapLocalId(localId,component);
     }
   }
-  String caption=null;
-  if (componentDesign.nodeName().equals("v-button")) {
-    String buttonCaption=textContent(componentDesign);
-    if (buttonCaption != null && !(buttonCaption.equals(""))) {
-      caption=buttonCaption;
-    }
-  }
-  if (caption == null) {
-    String componentCaption=attributes.get(CAPTION_ATTRIBUTE);
-    if (componentCaption != null && !("".equals(componentCaption))) {
-      caption=componentCaption;
-    }
-  }
+  String caption=component.getCaption();
   if (caption != null) {
-    Component oldComponent=captions.put(camelCase(caption),component);
-    if (oldComponent != null) {
-      throw new RuntimeException("Duplicate captions: " + caption);
-    }
+    mapCaption(caption,component);
   }
   return component;
 }

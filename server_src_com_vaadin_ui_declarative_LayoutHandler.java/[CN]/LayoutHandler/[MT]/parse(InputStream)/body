@@ -1,0 +1,23 @@
+{
+  Document doc;
+  try {
+    doc=Jsoup.parse(html,"UTF-8","",Parser.htmlParser());
+  }
+ catch (  IOException e) {
+    throw new LayoutInflaterException("The html document cannot be parsed.");
+  }
+  DesignContext designContext=new DesignContext(doc);
+  designContext.getPrefixes(doc);
+  Node root=doc.body();
+  DesignSynchronizable componentRoot=null;
+  for (  Node element : root.childNodes()) {
+    if (element instanceof Element) {
+      if (componentRoot != null) {
+        throw new LayoutInflaterException("The first level of a component hierarchy should contain a single root component, but found " + "two: " + componentRoot + " and "+ element+ ".");
+      }
+      componentRoot=designContext.createChild(element);
+      designContext.setComponentRoot(componentRoot);
+    }
+  }
+  return designContext;
+}

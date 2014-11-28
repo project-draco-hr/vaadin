@@ -4,11 +4,16 @@
   String prefix=packageToPrefix.get(packageName);
   if (prefix == null) {
     prefix=packageName.replace('.','_');
-    prefixToPackage.put(prefix,packageName);
-    packageToPrefix.put(packageName,prefix);
+    twoWayMap(prefix,packageName,prefixToPackage,packageToPrefix);
   }
   prefix=prefix + "-";
   String className=classNameToElementName(componentClass.getSimpleName());
   Element newElement=doc.createElement(prefix + className);
+  childComponent.synchronizeToDesign(newElement,this);
+  String localId=componentToLocalId.get(childComponent);
+  if (localId != null) {
+    localId=LOCAL_ID_PREFIX + localId;
+    newElement.attr(localId,"");
+  }
   return newElement;
 }

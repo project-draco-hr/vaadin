@@ -8,12 +8,12 @@
   }
   String[] parts=tagName.split("-");
   if (parts.length < 2) {
-    throw new RuntimeException("The tagname '" + tagName + "' is invalid: missing prefix.");
+    throw new LayoutInflaterException("The tagname '" + tagName + "' is invalid: missing prefix.");
   }
   String prefixName=parts[0];
   String packageName=prefixToPackage.get(prefixName);
   if (packageName == null) {
-    throw new RuntimeException("Unknown tag: " + tagName);
+    throw new LayoutInflaterException("Unknown tag: " + tagName);
   }
   int firstCharacterIndex=prefixName.length() + 1;
   tagName=tagName.substring(firstCharacterIndex,firstCharacterIndex + 1).toUpperCase(Locale.ENGLISH) + tagName.substring(firstCharacterIndex + 1);
@@ -24,7 +24,7 @@
       tagName=tagName.substring(0,i) + tagName.substring(i + 1,i + 2).toUpperCase(Locale.ENGLISH) + tagName.substring(i + 2);
     }
  else {
-      System.out.println("ends with '-', really?");
+      System.out.println("A tag name should not end with '-'.");
     }
   }
   return packageName + "." + tagName;
