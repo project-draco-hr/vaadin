@@ -1,0 +1,32 @@
+{
+  getLogger().info("Assigning attribute " + attribute + " -> "+ value);
+  boolean success=false;
+  try {
+    Method setter=findSetterForAttribute(component.getClass(),attribute);
+    if (setter == null) {
+      success=false;
+    }
+ else     if (value != null) {
+      getLogger().info("Setting the value from attributes");
+      Object param=parseAttributeValue(setter.getParameterTypes()[0],value);
+      setter.invoke(component,param);
+      success=true;
+    }
+ else {
+      Method getter=findGetter(component.getClass(),setter);
+      if (getter != null) {
+        getLogger().info("Setting the default value");
+        Object defaultValue=getter.invoke(defaultInstance);
+        setter.invoke(component,defaultValue);
+        success=true;
+      }
+    }
+  }
+ catch (  Exception e) {
+    getLogger().log(Level.WARNING,"Failed to set attribute " + attribute,e);
+  }
+  if (!success) {
+    getLogger().info("property " + attribute + " ignored by default attribute handler");
+  }
+  return success;
+}
