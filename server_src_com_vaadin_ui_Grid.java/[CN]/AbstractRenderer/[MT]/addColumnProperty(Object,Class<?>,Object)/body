@@ -1,0 +1,19 @@
+{
+  if (!columns.containsKey(propertyId)) {
+    if (!datasource.getContainerPropertyIds().contains(propertyId)) {
+      datasource.addContainerProperty(propertyId,type,defaultValue);
+    }
+ else {
+      Property<?> containerProperty=datasource.getContainerProperty(datasource.firstItemId(),propertyId);
+      if (containerProperty.getType() == type) {
+        appendColumn(propertyId);
+      }
+ else {
+        throw new IllegalStateException("DataSource already has the given property " + propertyId + " with a different type");
+      }
+    }
+  }
+ else {
+    throw new IllegalStateException("Grid already has a column for property " + propertyId);
+  }
+}
