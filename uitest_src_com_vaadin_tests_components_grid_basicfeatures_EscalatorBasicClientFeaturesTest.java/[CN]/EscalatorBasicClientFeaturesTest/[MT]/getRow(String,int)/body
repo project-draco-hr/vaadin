@@ -1,17 +1,17 @@
 {
-  WebElement escalator=getEscalator();
+  TestBenchElement escalator=getEscalator();
   WebElement tableSection=escalator.findElement(By.tagName(sectionTag));
-  try {
-    if (row >= 0) {
-      int fromFirst=row + 1;
-      return tableSection.findElement(By.xpath("tr[" + fromFirst + "]"));
-    }
+  By xpath;
+  if (row >= 0) {
+    int fromFirst=row + 1;
+    xpath=By.xpath("tr[" + fromFirst + "]");
+  }
  else {
-      int fromLast=Math.abs(row + 1);
-      return tableSection.findElement(By.xpath("tr[last() - " + fromLast + "]"));
-    }
+    int fromLast=Math.abs(row + 1);
+    xpath=By.xpath("tr[last() - " + fromLast + "]");
   }
- catch (  NoSuchElementException e) {
-    return null;
+  if (tableSection != null && ((TestBenchElement)tableSection).isElementPresent(xpath)) {
+    return (TestBenchElement)tableSection.findElement(xpath);
   }
+  return null;
 }
