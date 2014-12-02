@@ -1,0 +1,21 @@
+{
+  Method getter=findGetterForAttribute(component.getClass(),attribute);
+  if (getter == null) {
+    getLogger().warning("Could not find getter for attribute " + attribute);
+  }
+ else {
+    try {
+      Object value=getter.invoke(component);
+      Object defaultValue=getter.invoke(defaultInstance);
+      if (value == defaultValue || (value != null && value.equals(defaultValue))) {
+      }
+ else {
+        String attributeValue=toAttributeValue(getter.getReturnType(),value);
+        attr.put(attribute,attributeValue);
+      }
+    }
+ catch (    Exception e) {
+      getLogger().log(Level.SEVERE,"Failed to invoke getter for attribute " + attribute,e);
+    }
+  }
+}

@@ -1,5 +1,8 @@
 {
-  getLogger().info("Assigning attribute " + attribute + " -> "+ value);
+  String value=null;
+  if (attributes.hasKey(attribute)) {
+    value=attributes.get(attribute);
+  }
   boolean success=false;
   try {
     Method setter=findSetterForAttribute(component.getClass(),attribute);
@@ -7,15 +10,13 @@
       success=false;
     }
  else     if (value != null) {
-      getLogger().info("Setting the value from attributes");
-      Object param=parseAttributeValue(setter.getParameterTypes()[0],value);
+      Object param=fromAttributeValue(setter.getParameterTypes()[0],value);
       setter.invoke(component,param);
       success=true;
     }
  else {
-      Method getter=findGetter(component.getClass(),setter);
+      Method getter=findGetterForSetter(component.getClass(),setter);
       if (getter != null) {
-        getLogger().info("Setting the default value");
         Object defaultValue=getter.invoke(defaultInstance);
         setter.invoke(component,defaultValue);
         success=true;

@@ -1,13 +1,16 @@
 {
   Attributes attr=design.attributes();
-  DesignSynchronizable def=designContext.getDefaultInstance(this.getClass());
-  for (  String property : getDefaultAttributes()) {
-    String value=null;
-    if (attr.hasKey(property)) {
-      value=attr.get(property);
-    }
-    DesignAttributeHandler.assignAttribute(this,property,value,def);
+  AbstractComponent def=designContext.getDefaultInstance(this.getClass());
+  for (  String attribute : getDefaultAttributes()) {
+    DesignAttributeHandler.readAttribute(this,attribute,attr,def);
   }
-  DesignAttributeHandler.assignWidth(this,attr,def);
-  DesignAttributeHandler.assignHeight(this,attr,def);
+  DesignAttributeHandler.readWidth(this,attr,def);
+  DesignAttributeHandler.readHeight(this,attr,def);
+  if (attr.hasKey("error")) {
+    UserError error=new UserError(attr.get("error"),ContentMode.HTML,ErrorLevel.ERROR);
+    setComponentError(error);
+  }
+ else {
+    setComponentError(def.getComponentError());
+  }
 }
