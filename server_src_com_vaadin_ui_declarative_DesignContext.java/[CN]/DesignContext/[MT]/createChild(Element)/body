@@ -2,20 +2,20 @@
   DesignSynchronizable component=instantiateComponent(componentDesign);
   component.synchronizeFromDesign(componentDesign,this);
   org.jsoup.nodes.Attributes attributes=componentDesign.attributes();
-  String id=component.getCaption();
+  String id=component.getId();
   if (id != null && id.length() > 0) {
-    boolean mappingExists=mapGlobalId(id,component);
+    boolean mappingExists=mapId(id,component);
     if (mappingExists) {
-      throw new LayoutInflaterException("The following global id is not unique: " + id);
+      throw new DesignException("The following global id is not unique: " + id);
     }
   }
   String localId=null;
   for (  Attribute attribute : attributes.asList()) {
-    if (attribute.getKey().startsWith(LOCAL_ID_PREFIX)) {
+    if (attribute.getKey().equals(LOCAL_ID_ATTRIBUTE)) {
       if (localId != null) {
-        throw new LayoutInflaterException("Duplicate local ids specified: " + localId + " and "+ attribute.getKey().substring(LOCAL_ID_PREFIX.length()));
+        throw new DesignException("Duplicate local ids specified: " + localId + ".");
       }
-      localId=attribute.getKey().substring(LOCAL_ID_PREFIX.length());
+      localId=attribute.getValue();
       mapLocalId(localId,component);
     }
   }
