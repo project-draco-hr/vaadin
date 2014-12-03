@@ -1,0 +1,30 @@
+{
+  super.synchronizeToDesign(design,designContext);
+  Element designElement=design;
+  for (  Component child : this) {
+    DesignSynchronizable childComponent=(DesignSynchronizable)child;
+    Element childNode=designContext.createNode(childComponent);
+    designElement.appendChild(childNode);
+    childComponent.synchronizeToDesign(childNode,designContext);
+    Alignment alignment=getComponentAlignment(child);
+    if (alignment.isMiddle()) {
+      childNode.attr(":middle","");
+    }
+ else     if (alignment.isBottom()) {
+      childNode.attr(":bottom","");
+    }
+    if (alignment.isCenter()) {
+      childNode.attr(":center","");
+    }
+ else     if (alignment.isRight()) {
+      childNode.attr(":right","");
+    }
+    float expandRatio=getExpandRatio(child);
+    if (expandRatio == 1.0f) {
+      childNode.attr(":expand","");
+    }
+ else     if (expandRatio > 0) {
+      childNode.attr(":expand",DesignAttributeHandler.formatDesignAttribute(expandRatio));
+    }
+  }
+}
