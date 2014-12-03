@@ -1,0 +1,18 @@
+{
+  super.synchronizeToDesign(design,designContext);
+  Element designElement=design;
+  for (  Component child : this) {
+    DesignSynchronizable childComponent=(DesignSynchronizable)child;
+    Element childNode=designContext.createNode(childComponent);
+    designElement.appendChild(childNode);
+    childComponent.synchronizeToDesign(childNode,designContext);
+    ComponentPosition position=getPosition(child);
+    writePositionAttribute(childNode,ATTR_TOP,position.getTopUnits().getSymbol(),position.getTopValue());
+    writePositionAttribute(childNode,ATTR_RIGHT,position.getRightUnits().getSymbol(),position.getRightValue());
+    writePositionAttribute(childNode,ATTR_BOTTOM,position.getBottomUnits().getSymbol(),position.getBottomValue());
+    writePositionAttribute(childNode,ATTR_LEFT,position.getLeftUnits().getSymbol(),position.getLeftValue());
+    if (position.getZIndex() >= 0) {
+      childNode.attr(ATTR_Z_INDEX,String.valueOf(position.zIndex));
+    }
+  }
+}
