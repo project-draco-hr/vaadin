@@ -4,13 +4,20 @@
   for (  String attribute : getDefaultAttributes()) {
     DesignAttributeHandler.readAttribute(this,attribute,attr,def);
   }
-  DesignAttributeHandler.readWidth(this,attr,def);
-  DesignAttributeHandler.readHeight(this,attr,def);
+  readSize(attr,def);
   if (attr.hasKey("error")) {
     UserError error=new UserError(attr.get("error"),ContentMode.HTML,ErrorLevel.ERROR);
     setComponentError(error);
   }
  else {
     setComponentError(def.getComponentError());
+  }
+  Set<String> supported=new HashSet<String>();
+  supported.addAll(getDefaultAttributes());
+  supported.addAll(getCustomAttributes());
+  for (  Attribute a : attr) {
+    if (!a.getKey().startsWith(":") && !supported.contains(a.getKey())) {
+      getLogger().info("Unsupported attribute found when synchronizing from design : " + a.getKey());
+    }
   }
 }

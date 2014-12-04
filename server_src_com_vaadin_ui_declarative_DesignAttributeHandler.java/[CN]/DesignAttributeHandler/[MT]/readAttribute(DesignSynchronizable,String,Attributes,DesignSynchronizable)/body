@@ -1,5 +1,8 @@
 {
   String value=null;
+  if (component == null || attribute == null || attributes == null || defaultInstance == null) {
+    throw new IllegalArgumentException("Parameters with null value not allowed");
+  }
   if (attributes.hasKey(attribute)) {
     value=attributes.get(attribute);
   }
@@ -15,12 +18,10 @@
       success=true;
     }
  else {
-      Method getter=findGetterForSetter(component.getClass(),setter);
-      if (getter != null) {
-        Object defaultValue=getter.invoke(defaultInstance);
-        setter.invoke(component,defaultValue);
-        success=true;
-      }
+      Method getter=findGetterForAttribute(component.getClass(),attribute);
+      Object defaultValue=getter.invoke(defaultInstance);
+      setter.invoke(component,defaultValue);
+      success=true;
     }
   }
  catch (  Exception e) {

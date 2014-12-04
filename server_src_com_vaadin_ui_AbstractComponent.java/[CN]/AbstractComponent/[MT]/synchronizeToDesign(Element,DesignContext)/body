@@ -1,12 +1,14 @@
 {
-  DesignAttributeHandler.clearNode(design);
+  DesignAttributeHandler.clearElement(design);
   AbstractComponent def=designContext.getDefaultInstance(this.getClass());
   Attributes attr=design.attributes();
   for (  String attribute : getDefaultAttributes()) {
     DesignAttributeHandler.writeAttribute(this,attribute,attr,def);
   }
-  DesignAttributeHandler.writeSize(this,attr,def);
-  if (getComponentError() != null) {
-    attr.put("error",getComponentError().getFormattedHtmlMessage());
+  writeSize(attr,def);
+  String errorMsg=getComponentError() != null ? getComponentError().getFormattedHtmlMessage() : null;
+  String defErrorMsg=def.getComponentError() != null ? def.getComponentError().getFormattedHtmlMessage() : null;
+  if (!SharedUtil.equals(errorMsg,defErrorMsg)) {
+    attr.put("error",errorMsg);
   }
 }

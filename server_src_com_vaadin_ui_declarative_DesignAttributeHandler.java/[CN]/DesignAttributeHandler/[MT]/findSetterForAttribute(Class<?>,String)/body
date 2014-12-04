@@ -1,10 +1,4 @@
 {
-  String methodName=toSetterName(attribute);
-  for (  Method method : clazz.getMethods()) {
-    if (method.getName().equals(methodName) && method.getParameterTypes().length == 1 && isSupported(method.getParameterTypes()[0])) {
-      return method;
-    }
-  }
-  getLogger().warning("Could not find setter with supported type for property " + attribute);
-  return null;
+  resolveSupportedAttributes(clazz);
+  return cache.get(clazz).getSetter(attribute);
 }

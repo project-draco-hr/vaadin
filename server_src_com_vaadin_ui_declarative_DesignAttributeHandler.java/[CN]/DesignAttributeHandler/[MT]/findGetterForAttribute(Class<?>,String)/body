@@ -1,10 +1,4 @@
 {
-  List<String> methodNames=toGetterNames(attribute);
-  for (  Method method : clazz.getMethods()) {
-    if (methodNames.contains(method.getName()) && method.getParameterTypes().length == 0 && isSupported(method.getReturnType())) {
-      return method;
-    }
-  }
-  getLogger().warning("Could not find getter with supported return type for attribute " + attribute);
-  return null;
+  resolveSupportedAttributes(clazz);
+  return cache.get(clazz).getGetter(attribute);
 }
