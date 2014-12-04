@@ -1,0 +1,27 @@
+{
+  getWidget().setHeaderVisible(state.visible);
+  while (getWidget().getHeaderRowCount() > 0) {
+    getWidget().removeHeaderRow(0);
+  }
+  for (  RowState rowState : state.rows) {
+    HeaderRow row=getWidget().appendHeaderRow();
+    for (    CellState cellState : rowState.cells) {
+      CustomGridColumn column=columnIdToColumn.get(cellState.columnId);
+      updateHeaderCellFromState(row.getCell(column),cellState);
+    }
+    for (    Set<String> group : rowState.cellGroups.keySet()) {
+      GridColumn<?,?>[] columns=new GridColumn<?,?>[group.size()];
+      CellState cellState=rowState.cellGroups.get(group);
+      int i=0;
+      for (      String columnId : group) {
+        columns[i]=columnIdToColumn.get(columnId);
+        i++;
+      }
+      updateHeaderCellFromState(row.join(columns),cellState);
+    }
+    if (rowState.defaultRow) {
+      getWidget().setDefaultHeaderRow(row);
+    }
+    row.setStyleName(rowState.styleName);
+  }
+}

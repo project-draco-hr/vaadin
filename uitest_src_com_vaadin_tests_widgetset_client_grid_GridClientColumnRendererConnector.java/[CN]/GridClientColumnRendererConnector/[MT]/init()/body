@@ -13,16 +13,16 @@
   }
   GridColumn<String,String> c=createColumnWithRenderer(Renderers.TEXT_RENDERER);
   grid.addColumn(c);
-  grid.getHeader().getDefaultRow().getCell(c).setText("Column 1");
+  grid.getDefaultHeaderRow().getCell(c).setText("Column 1");
   c=createColumnWithRenderer(Renderers.CPLX_RENDERER);
   grid.addColumn(c);
-  grid.getHeader().getDefaultRow().getCell(c).setText("Column 2");
+  grid.getDefaultHeaderRow().getCell(c).setText("Column 2");
   grid.addSortHandler(new SortHandler<String>(){
     @Override public void sort(    SortEvent<String> event){
       Element console=Document.get().getElementById("testDebugConsole");
       String text="Client-side sort event received<br>" + "Columns: " + event.getOrder().size() + ", order: ";
       for (      SortOrder order : event.getOrder()) {
-        String columnHeader=getWidget().getHeader().getDefaultRow().getCell(order.getColumn()).getText();
+        String columnHeader=getWidget().getDefaultHeaderRow().getCell(order.getColumn()).getText();
         text+=columnHeader + ": " + order.getDirection().toString();
       }
       console.setInnerHTML(text);
@@ -42,7 +42,7 @@
         column=createColumnWithRenderer(renderer);
       }
       getWidget().addColumn(column);
-      getWidget().getHeader().getDefaultRow().getCell(column).setText("Column " + String.valueOf(getWidget().getColumnCount() + 1));
+      getWidget().getDefaultHeaderRow().getCell(column).setText("Column " + String.valueOf(getWidget().getColumnCount() + 1));
     }
     @Override public void detachAttach(){
       HasWidgets parent=(HasWidgets)getWidget().getParent();

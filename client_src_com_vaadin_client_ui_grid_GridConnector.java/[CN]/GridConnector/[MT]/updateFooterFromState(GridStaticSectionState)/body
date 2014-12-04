@@ -1,0 +1,24 @@
+{
+  getWidget().setFooterVisible(state.visible);
+  while (getWidget().getFooterRowCount() > 0) {
+    getWidget().removeFooterRow(0);
+  }
+  for (  RowState rowState : state.rows) {
+    FooterRow row=getWidget().appendFooterRow();
+    for (    CellState cellState : rowState.cells) {
+      CustomGridColumn column=columnIdToColumn.get(cellState.columnId);
+      updateFooterCellFromState(row.getCell(column),cellState);
+    }
+    for (    Set<String> group : rowState.cellGroups.keySet()) {
+      GridColumn<?,?>[] columns=new GridColumn<?,?>[group.size()];
+      CellState cellState=rowState.cellGroups.get(group);
+      int i=0;
+      for (      String columnId : group) {
+        columns[i]=columnIdToColumn.get(columnId);
+        i++;
+      }
+      updateFooterCellFromState(row.join(columns),cellState);
+    }
+    row.setStyleName(rowState.styleName);
+  }
+}
