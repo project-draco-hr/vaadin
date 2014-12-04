@@ -4,9 +4,11 @@
   Grid grid=getGrid();
   for (  Object propertyId : propertyIds) {
     Column column=grid.getColumn(propertyId);
-    Object propertyValue=item.getItemProperty(propertyId).getValue();
-    JsonValue encodedValue=encodeValue(propertyValue,column.getRenderer(),column.getConverter(),grid.getLocale());
-    rowData.put(columnKeys.key(propertyId),encodedValue);
+    if (column != null) {
+      Object propertyValue=item.getItemProperty(propertyId).getValue();
+      JsonValue encodedValue=encodeValue(propertyValue,column.getRenderer(),column.getConverter(),grid.getLocale());
+      rowData.put(columnKeys.key(propertyId),encodedValue);
+    }
   }
   final JsonObject rowObject=Json.createObject();
   rowObject.put(GridState.JSONKEY_DATA,rowData);
