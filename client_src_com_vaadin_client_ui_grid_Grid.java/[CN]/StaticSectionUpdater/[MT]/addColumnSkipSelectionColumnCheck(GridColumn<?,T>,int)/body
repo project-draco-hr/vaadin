@@ -3,13 +3,9 @@
   header.addColumn(column);
   footer.addColumn(column);
   ((AbstractGridColumn<?,T>)column).setGrid(this);
-  if (column.isVisible()) {
-    int visibleIndex=findVisibleColumnIndex(column);
-    ColumnConfiguration conf=escalator.getColumnConfiguration();
-    conf.insertColumns(visibleIndex,1);
-    conf.setColumnWidth(visibleIndex,column.getWidth());
-  }
-  if (lastFrozenColumn != null && ((AbstractGridColumn<?,T>)lastFrozenColumn).findIndexOfColumn() < index) {
+  escalator.getColumnConfiguration().insertColumns(index,1);
+  column.reapplyWidth();
+  if (lastFrozenColumn != null && indexOfColumn(lastFrozenColumn) < index) {
     refreshFrozenColumns();
   }
   Set<String> events=new HashSet<String>();
