@@ -1,0 +1,21 @@
+{
+  Grid grid=getGrid();
+  JsonObject cellStyles=null;
+  for (  Object propertyId : propertyIds) {
+    String style=generator.getStyle(grid,itemId,propertyId);
+    if (style != null) {
+      if (cellStyles == null) {
+        cellStyles=Json.createObject();
+      }
+      String columnKey=columnKeys.key(propertyId);
+      cellStyles.put(columnKey,style);
+    }
+  }
+  if (cellStyles != null) {
+    rowObject.put(GridState.JSONKEY_CELLSTYLES,cellStyles);
+  }
+  String rowStyle=generator.getStyle(grid,itemId,null);
+  if (rowStyle != null) {
+    rowObject.put(GridState.JSONKEY_ROWSTYLE,rowStyle);
+  }
+}

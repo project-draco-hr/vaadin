@@ -2,7 +2,6 @@
   Item item=container.getItem(itemId);
   JsonObject rowData=Json.createObject();
   Grid grid=getGrid();
-  int i=0;
   for (  Object propertyId : propertyIds) {
     Column column=grid.getColumn(propertyId);
     Object propertyValue=item.getItemProperty(propertyId).getValue();
@@ -12,5 +11,9 @@
   final JsonObject rowObject=Json.createObject();
   rowObject.put(GridState.JSONKEY_DATA,rowData);
   rowObject.put(GridState.JSONKEY_ROWKEY,keyMapper.getKey(itemId));
+  CellStyleGenerator cellStyleGenerator=grid.getCellStyleGenerator();
+  if (cellStyleGenerator != null) {
+    setGeneratedStyles(cellStyleGenerator,rowObject,propertyIds,itemId);
+  }
   return rowObject;
 }
