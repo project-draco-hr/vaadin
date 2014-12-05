@@ -1,2 +1,31 @@
 {
+  super.onStateChanged(stateChangeEvent);
+  Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+    @Override public void execute(){
+      if (stateChangeEvent.hasPropertyChanged("columns")) {
+        purgeRemovedColumns();
+        for (        GridColumnState state : getState().columns) {
+          if (!columnIdToColumn.containsKey(state.id)) {
+            addColumnFromStateChangeEvent(state);
+          }
+          updateColumnFromState(columnIdToColumn.get(state.id),state);
+        }
+      }
+      if (stateChangeEvent.hasPropertyChanged("columnOrder")) {
+        if (orderNeedsUpdate(getState().columnOrder)) {
+          updateColumnOrderFromState(getState().columnOrder);
+        }
+      }
+      if (stateChangeEvent.hasPropertyChanged("header")) {
+        updateSectionFromState(getWidget().getHeader(),getState().header);
+      }
+      if (stateChangeEvent.hasPropertyChanged("footer")) {
+        updateSectionFromState(getWidget().getFooter(),getState().footer);
+      }
+      if (stateChangeEvent.hasPropertyChanged("editorRowEnabled")) {
+        getWidget().getEditorRow().setEnabled(getState().editorRowEnabled);
+      }
+    }
+  }
+);
 }
