@@ -1,4 +1,6 @@
 {
+  ColumnConfiguration conf=getEscalator().getColumnConfiguration();
+  conf.removeColumns(0,conf.getColumnCount());
   List<GridColumn<?,T>> newOrder=new ArrayList<GridColumn<?,T>>();
   if (selectionColumn != null) {
     newOrder.add(selectionColumn);
@@ -18,6 +20,7 @@
     newOrder.addAll(columns);
   }
   columns=newOrder;
+  conf.insertColumns(0,columns.size());
   for (  GridColumn<?,T> column : columns) {
     column.reapplyWidth();
   }
@@ -27,7 +30,4 @@
   for (  FooterRow row : footer.getRows()) {
     row.calculateColspans();
   }
-  refreshHeader();
-  refreshBody();
-  refreshFooter();
 }
