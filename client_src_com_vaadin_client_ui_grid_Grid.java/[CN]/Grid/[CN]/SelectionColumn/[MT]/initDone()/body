@@ -1,3 +1,19 @@
 {
+  if (getSelectionModel() instanceof SelectionModel.Multi && header.getDefaultRow() != null) {
+    final SelectionModel.Multi<T> model=(Multi<T>)getSelectionModel();
+    final CheckBox checkBox=new CheckBox();
+    checkBox.addValueChangeHandler(new ValueChangeHandler<Boolean>(){
+      @Override public void onValueChange(      ValueChangeEvent<Boolean> event){
+        if (event.getValue()) {
+          fireEvent(new SelectAllEvent<T>(model));
+        }
+ else {
+          model.deselectAll();
+        }
+      }
+    }
+);
+    header.getDefaultRow().getCell(this).setWidget(checkBox);
+  }
   initDone=true;
 }
