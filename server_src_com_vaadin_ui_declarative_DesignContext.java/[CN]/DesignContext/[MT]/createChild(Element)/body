@@ -1,27 +1,6 @@
 {
   DesignSynchronizable component=instantiateComponent(componentDesign);
-  component.synchronizeFromDesign(componentDesign,this);
-  org.jsoup.nodes.Attributes attributes=componentDesign.attributes();
-  String id=component.getId();
-  if (id != null && id.length() > 0) {
-    boolean mappingExists=mapId(id,component);
-    if (mappingExists) {
-      throw new DesignException("The following global id is not unique: " + id);
-    }
-  }
-  String localId=null;
-  for (  Attribute attribute : attributes.asList()) {
-    if (attribute.getKey().equals(LOCAL_ID_ATTRIBUTE)) {
-      if (localId != null) {
-        throw new DesignException("Duplicate local ids specified: " + localId + ".");
-      }
-      localId=attribute.getValue();
-      mapLocalId(localId,component);
-    }
-  }
-  String caption=component.getCaption();
-  if (caption != null) {
-    mapCaption(caption,component);
-  }
+  synchronizeAndRegister(component,componentDesign);
+  fireComponentCreatedEvent(componentToLocalId.get(component),component);
   return component;
 }

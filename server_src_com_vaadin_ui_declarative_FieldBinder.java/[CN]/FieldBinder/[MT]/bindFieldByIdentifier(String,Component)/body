@@ -1,0 +1,29 @@
+{
+  try {
+    String fieldName=asFieldName(identifier);
+    if (fieldName.length() == 0) {
+      return false;
+    }
+    Field field=fieldMap.get(fieldName);
+    if (field == null) {
+      getLogger().fine("No field was found by identifier " + identifier);
+      return false;
+    }
+    Object fieldValue=ReflectTools.getJavaFieldValue(bindTarget,field);
+    if (fieldValue != null) {
+      getLogger().severe("The field with identifier \"" + identifier + "\" already mapped");
+      throw new FieldBindingException("Duplicate identifier found for a field");
+    }
+    ReflectTools.setJavaFieldValue(bindTarget,field,instance);
+    return true;
+  }
+ catch (  IllegalAccessException e) {
+    throw new FieldBindingException("Field binding failed",e);
+  }
+catch (  IllegalArgumentException e) {
+    throw new FieldBindingException("Field binding failed",e);
+  }
+catch (  InvocationTargetException e) {
+    throw new FieldBindingException("Field binding failed",e);
+  }
+}
