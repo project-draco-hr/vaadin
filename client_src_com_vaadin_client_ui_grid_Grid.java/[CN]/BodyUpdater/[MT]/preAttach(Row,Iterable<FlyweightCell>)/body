@@ -2,7 +2,12 @@
   for (  FlyweightCell cell : cellsToAttach) {
     Renderer<?> renderer=findRenderer(cell);
     if (renderer instanceof ComplexRenderer) {
-      ((ComplexRenderer<?>)renderer).init(cell);
+      try {
+        ((ComplexRenderer<?>)renderer).init(cell);
+      }
+ catch (      RuntimeException e) {
+        getLogger().log(Level.SEVERE,"Error initing cell in column " + cell.getColumn(),e);
+      }
     }
   }
 }
