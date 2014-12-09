@@ -2,11 +2,19 @@
   if (itemIds == null) {
     throw new IllegalArgumentException("itemIds may not be null");
   }
-  final boolean hasSomeDifferingElements=!selection.containsAll(itemIds);
-  if (hasSomeDifferingElements) {
+  final boolean selectionWillChange=!selection.containsAll(itemIds) && selection.size() < selectionLimit;
+  if (selectionWillChange) {
     final HashSet<Object> oldSelection=new HashSet<Object>(selection);
-    selection.addAll(itemIds);
+    if (selection.size() + itemIds.size() >= selectionLimit) {
+      Iterator<?> iterator=itemIds.iterator();
+      while (iterator.hasNext() && selection.size() < selectionLimit) {
+        selection.add(iterator.next());
+      }
+    }
+ else {
+      selection.addAll(itemIds);
+    }
     fireSelectionChangeEvent(oldSelection,selection);
   }
-  return hasSomeDifferingElements;
+  return selectionWillChange;
 }
