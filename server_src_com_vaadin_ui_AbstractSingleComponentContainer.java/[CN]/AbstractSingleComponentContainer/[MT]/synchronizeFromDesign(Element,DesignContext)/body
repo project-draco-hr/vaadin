@@ -1,0 +1,15 @@
+{
+  super.synchronizeFromDesign(design,designContext);
+  int childCount=design.children().size();
+  if (childCount > 1) {
+    throw new DesignException("The container of type " + getClass().toString() + " can have only one child component.");
+  }
+ else   if (childCount == 1) {
+    Element childElement=design.children().get(0);
+    DesignSynchronizable newChild=designContext.createChild(childElement);
+    setContent(newChild);
+  }
+ else {
+    setContent(null);
+  }
+}
