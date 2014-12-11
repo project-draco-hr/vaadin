@@ -1,0 +1,22 @@
+{
+  Attributes attr=tabElement.attributes();
+  if (tabElement.children().size() != 1) {
+    throw new DesignException("A tab must have exactly one child element");
+  }
+  Element content=tabElement.child(0);
+  DesignSynchronizable child=designContext.createChild(content);
+  Tab tab=this.addTab(child);
+  tab.setVisible(DesignAttributeHandler.readAttribute("visible",attr,tab.isVisible(),Boolean.class));
+  tab.setClosable(DesignAttributeHandler.readAttribute("closable",attr,tab.isClosable(),Boolean.class));
+  tab.setCaption(DesignAttributeHandler.readAttribute("caption",attr,tab.getCaption(),String.class));
+  tab.setEnabled(DesignAttributeHandler.readAttribute("enabled",attr,tab.isEnabled(),Boolean.class));
+  tab.setIcon(DesignAttributeHandler.readAttribute("icon",attr,tab.getIcon(),Resource.class));
+  tab.setIconAlternateText(DesignAttributeHandler.readAttribute("icon-alt",attr,tab.getIconAlternateText(),String.class));
+  tab.setDescription(DesignAttributeHandler.readAttribute("description",attr,tab.getDescription(),String.class));
+  tab.setStyleName(DesignAttributeHandler.readAttribute("style-name",attr,tab.getStyleName(),String.class));
+  tab.setId(DesignAttributeHandler.readAttribute("id",attr,tab.getId(),String.class));
+  boolean selected=DesignAttributeHandler.readAttribute("selected",attr,false,Boolean.class);
+  if (selected) {
+    this.setSelectedTab(tab.getComponent());
+  }
+}
