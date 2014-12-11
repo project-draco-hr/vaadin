@@ -17,11 +17,16 @@
     }
  else {
       String symbol=matcher.group(2);
-      unit=Unit.getUnitFromSymbol(symbol);
+      if ((symbol != null && symbol.length() > 0) || defaultUnit == null) {
+        unit=Unit.getUnitFromSymbol(symbol);
+      }
+ else {
+        unit=defaultUnit;
+      }
     }
   }
  else {
     throw new IllegalArgumentException("Invalid size argument: \"" + s + "\" (should match "+ sizePattern.pattern()+ ")");
   }
-  return new Size(size,unit);
+  return new SizeWithUnit(size,unit);
 }
