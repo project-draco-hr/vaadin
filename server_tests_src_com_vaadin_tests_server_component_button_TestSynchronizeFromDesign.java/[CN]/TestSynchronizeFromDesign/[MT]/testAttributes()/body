@@ -1,0 +1,17 @@
+{
+  Attributes attributes=new Attributes();
+  attributes.put("tabindex","3");
+  attributes.put("plain-text","");
+  attributes.put("icon-alt","OK");
+  attributes.put("click-shortcut","ctrl-shift-o");
+  Button button=(Button)ctx.createChild(createButtonWithAttributes(attributes));
+  assertEquals(3,button.getTabIndex());
+  assertEquals(false,button.isHtmlContentAllowed());
+  assertEquals("OK",button.getIconAlternateText());
+  Field field=Button.class.getDeclaredField("clickShortcut");
+  field.setAccessible(true);
+  ClickShortcut value=(ClickShortcut)field.get(button);
+  assertEquals(KeyCode.O,value.getKeyCode());
+  assertEquals(ModifierKey.CTRL,value.getModifiers()[0]);
+  assertEquals(ModifierKey.SHIFT,value.getModifiers()[1]);
+}

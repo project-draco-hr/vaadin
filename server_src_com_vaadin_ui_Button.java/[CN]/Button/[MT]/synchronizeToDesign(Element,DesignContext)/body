@@ -1,7 +1,17 @@
 {
   super.synchronizeToDesign(design,designContext);
+  Attributes attr=design.attributes();
+  Button def=designContext.getDefaultInstance(this.getClass());
   String content=getCaption();
   if (content != null) {
     design.html(content);
+  }
+  DesignAttributeHandler.writeAttribute("tabindex",attr,getTabIndex(),def.getTabIndex(),Integer.class);
+  if (!isHtmlContentAllowed()) {
+    design.attr("plain-text","");
+  }
+  DesignAttributeHandler.writeAttribute("icon-alt",attr,getIconAlternateText(),def.getIconAlternateText(),String.class);
+  if (clickShortcut != null) {
+    DesignAttributeHandler.writeAttribute("click-shortcut",attr,clickShortcut,null,ShortcutAction.class);
   }
 }
