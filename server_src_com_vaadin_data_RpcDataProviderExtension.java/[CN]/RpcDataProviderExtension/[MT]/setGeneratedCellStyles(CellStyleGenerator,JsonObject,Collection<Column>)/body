@@ -1,0 +1,18 @@
+{
+  JsonObject cellStyles=null;
+  for (  Column column : columns) {
+    Object propertyId=column.getColumnProperty();
+    cellReference.set(propertyId);
+    String style=generator.getStyle(cellReference);
+    if (style != null) {
+      if (cellStyles == null) {
+        cellStyles=Json.createObject();
+      }
+      String columnKey=columnKeys.key(propertyId);
+      cellStyles.put(columnKey,style);
+    }
+  }
+  if (cellStyles != null) {
+    rowObject.put(GridState.JSONKEY_CELLSTYLES,cellStyles);
+  }
+}

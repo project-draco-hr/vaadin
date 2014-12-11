@@ -11,9 +11,14 @@
   final JsonObject rowObject=Json.createObject();
   rowObject.put(GridState.JSONKEY_DATA,rowData);
   rowObject.put(GridState.JSONKEY_ROWKEY,keyMapper.getKey(itemId));
+  rowReference.set(itemId);
   CellStyleGenerator cellStyleGenerator=grid.getCellStyleGenerator();
   if (cellStyleGenerator != null) {
-    setGeneratedStyles(cellStyleGenerator,rowObject,columns,itemId);
+    setGeneratedCellStyles(cellStyleGenerator,rowObject,columns);
+  }
+  RowStyleGenerator rowStyleGenerator=grid.getRowStyleGenerator();
+  if (rowStyleGenerator != null) {
+    setGeneratedRowStyles(rowStyleGenerator,rowObject);
   }
   return rowObject;
 }
