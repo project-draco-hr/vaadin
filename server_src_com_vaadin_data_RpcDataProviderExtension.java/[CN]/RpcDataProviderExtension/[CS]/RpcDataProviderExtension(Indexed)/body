@@ -3,15 +3,7 @@
   rpc=getRpcProxy(DataProviderRpc.class);
   registerRpc(new DataRequestRpc(){
     @Override public void requestRows(    int firstRow,    int numberOfRows,    int firstCachedRowIndex,    int cacheSize){
-      Range active=Range.withLength(firstRow,numberOfRows);
-      if (cacheSize != 0) {
-        Range cached=Range.withLength(firstCachedRowIndex,cacheSize);
-        active=active.combineWith(cached);
-      }
-      List<?> itemIds=RpcDataProviderExtension.this.container.getItemIds(firstRow,numberOfRows);
-      keyMapper.preActiveRowsChange(active,firstRow,itemIds);
-      pushRows(firstRow,itemIds);
-      activeRowHandler.setActiveRows(active.getStart(),active.length());
+      pushRowData(firstRow,numberOfRows,firstCachedRowIndex,cacheSize);
     }
     @Override public void setPinned(    String key,    boolean isPinned){
       Object itemId=keyMapper.getItemId(key);
@@ -26,7 +18,6 @@
     }
   }
 );
-  getState().containerSize=container.size();
   if (container instanceof ItemSetChangeNotifier) {
     ((ItemSetChangeNotifier)container).addItemSetChangeListener(itemListener);
   }
