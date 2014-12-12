@@ -1,0 +1,23 @@
+{
+  Document doc=Design.createHtml(ctx);
+  DesignContext newContext=Design.parse(doc.toString());
+  findElements(newContext);
+  checkHierarchy(newContext);
+  String[] expectedPrefixes={"my"};
+  String[] expectedPackageNames={"com.addon.mypackage"};
+  int index=0;
+  Element head=doc.head();
+  for (  Node child : head.childNodes()) {
+    if ("meta".equals(child.nodeName())) {
+      String name=child.attributes().get("name");
+      if ("package-mapping".equals(name)) {
+        String content=child.attributes().get("content");
+        String[] parts=content.split(":");
+        assertEquals("Unexpected prefix.",expectedPrefixes[index],parts[0]);
+        assertEquals("Unexpected package name.",expectedPackageNames[index],parts[1]);
+        index++;
+      }
+    }
+  }
+  assertEquals("Unexpected number of prefix - package name pairs.",1,index);
+}
