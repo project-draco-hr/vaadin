@@ -1,0 +1,23 @@
+{
+  BeanItem<PersonBeanWithValidationAnnotations> item=new BeanItem<PersonBeanWithValidationAnnotations>(new PersonBeanWithValidationAnnotations());
+  final FieldGroup fieldGroup=new FieldGroup(item);
+  bindTextField(item,fieldGroup,"First Name","firstName");
+  bindTextField(item,fieldGroup,"Last Name","lastName");
+  final Label validationErrors=new Label();
+  validationErrors.setId("validationErrors");
+  addComponent(validationErrors);
+  addButton("Submit",new Button.ClickListener(){
+    @Override public void buttonClick(    Button.ClickEvent event){
+      validationErrors.setValue("");
+      try {
+        fieldGroup.commit();
+      }
+ catch (      FieldGroup.CommitException e) {
+        if (e.getCause() != null && e.getCause() instanceof Validator.InvalidValueException) {
+          validationErrors.setValue(StringEscapeUtils.unescapeHtml(AbstractErrorMessage.getErrorMessageForException(e.getCause()).getFormattedHtmlMessage()));
+        }
+      }
+    }
+  }
+);
+}

@@ -2,31 +2,20 @@
   if (!isBuffered()) {
     return;
   }
-  for (  Field<?> f : fieldToPropertyId.keySet()) {
-    Property.Transactional<?> property=(Property.Transactional<?>)f.getPropertyDataSource();
-    if (property == null) {
-      throw new CommitException("Property \"" + fieldToPropertyId.get(f) + "\" not bound to datasource.");
-    }
-    property.startTransaction();
-  }
+  startTransactions();
   try {
     firePreCommitEvent();
-    for (    Field<?> f : fieldToPropertyId.keySet()) {
-      f.commit();
+    List<InvalidValueException> invalidValueExceptions=commitFields();
+    if (invalidValueExceptions.isEmpty()) {
+      firePostCommitEvent();
+      commitTransactions();
     }
-    firePostCommitEvent();
-    for (    Field<?> f : fieldToPropertyId.keySet()) {
-      ((Property.Transactional<?>)f.getPropertyDataSource()).commit();
+ else {
+      throwInvalidValueException(invalidValueExceptions);
     }
   }
  catch (  Exception e) {
-    for (    Field<?> f : fieldToPropertyId.keySet()) {
-      try {
-        ((Property.Transactional<?>)f.getPropertyDataSource()).rollback();
-      }
- catch (      Exception rollbackException) {
-      }
-    }
+    rollbackTransactions();
     throw new CommitException("Commit failed",e);
   }
 }

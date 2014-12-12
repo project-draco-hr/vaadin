@@ -1,5 +1,5 @@
 {
-  if (getWidget().hasTemplate()) {
+  if (templateUpdated) {
     return;
   }
   String templateName=getState().templateName;
@@ -7,8 +7,11 @@
   if (templateName != null) {
     templateContents=getConnection().getResource("layouts/" + templateName + ".html");
     if (templateContents == null) {
-      templateContents="<em>Layout file layouts/" + templateName + ".html is missing. Components will be drawn for debug purposes.</em>";
+      getWidget().getElement().setInnerHTML("<em>Layout file layouts/" + templateName + ".html is missing. Components will be drawn for debug purposes.</em>");
     }
   }
-  getWidget().initializeHTML(templateContents,getConnection().getThemeUri());
+  if (templateContents != null) {
+    getWidget().initializeHTML(templateContents,getConnection().getThemeUri());
+  }
+  templateUpdated=true;
 }
