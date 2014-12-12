@@ -24,8 +24,9 @@
 ;
     designContext.addComponentCreationListener(creationListener);
     designContext.synchronizeAndRegister(componentRoot,element);
-    if (!binder.isAllFieldsBound()) {
-      throw new DesignException("Found unbound fields from component root");
+    Collection<String> unboundFields=binder.getUnboundFields();
+    if (!unboundFields.isEmpty()) {
+      throw new DesignException("Found unbound fields from component root " + unboundFields);
     }
     designContext.removeComponentCreationListener(creationListener);
   }

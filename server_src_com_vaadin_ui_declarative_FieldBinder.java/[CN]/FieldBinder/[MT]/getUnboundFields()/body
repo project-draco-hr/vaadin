@@ -1,11 +1,10 @@
 {
-  boolean success=true;
+  List<String> unboundFields=new ArrayList<String>();
   for (  Field f : fieldMap.values()) {
     try {
       Object value=ReflectTools.getJavaFieldValue(bindTarget,f);
       if (value == null) {
-        success=false;
-        getLogger().severe("Found unbound field :" + f.getName());
+        unboundFields.add(f.getName());
       }
     }
  catch (    IllegalArgumentException e) {
@@ -18,5 +17,8 @@ catch (    InvocationTargetException e) {
       throw new FieldBindingException("Could not get field value",e);
     }
   }
-  return success;
+  if (unboundFields.size() > 0) {
+    getLogger().severe("Found unbound fields in component root :" + unboundFields);
+  }
+  return unboundFields;
 }

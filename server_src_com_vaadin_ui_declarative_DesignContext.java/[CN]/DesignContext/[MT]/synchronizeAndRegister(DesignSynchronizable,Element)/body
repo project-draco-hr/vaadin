@@ -8,15 +8,9 @@
       throw new DesignException("The following global id is not unique: " + id);
     }
   }
-  String localId=null;
-  for (  Attribute attribute : attributes.asList()) {
-    if (attribute.getKey().equals(LOCAL_ID_ATTRIBUTE)) {
-      if (localId != null) {
-        throw new DesignException("Duplicate local ids specified: " + localId + ".");
-      }
-      localId=attribute.getValue();
-      mapLocalId(localId,component);
-    }
+  if (attributes.hasKey(LOCAL_ID_ATTRIBUTE)) {
+    String localId=attributes.get(LOCAL_ID_ATTRIBUTE);
+    mapLocalId(localId,component);
   }
   String caption=component.getCaption();
   if (caption != null) {
