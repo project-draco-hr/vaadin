@@ -11,7 +11,7 @@
  else {
     grid.setDataSource(new ListDataSource<String>(columnData));
   }
-  GridColumn<String,String> c=createColumnWithRenderer(Renderers.TEXT_RENDERER);
+  Grid.Column<String,String> c=createColumnWithRenderer(Renderers.TEXT_RENDERER);
   grid.addColumn(c);
   grid.getDefaultHeaderRow().getCell(c).setText("Column 1");
   c=createColumnWithRenderer(Renderers.CPLX_RENDERER);
@@ -31,7 +31,7 @@
 );
   registerRpc(GridClientColumnRendererRpc.class,new GridClientColumnRendererRpc(){
     @Override public void addColumn(    Renderers renderer){
-      GridColumn<?,String> column;
+      Grid.Column<?,String> column;
       if (renderer == Renderers.NUMBER_RENDERER) {
         column=createNumberColumnWithRenderer(renderer);
       }
@@ -55,7 +55,7 @@
     @Override @SuppressWarnings("unchecked") public void triggerClientSortingTest(){
       Grid<String> grid=getWidget();
       ListSorter<String> sorter=new ListSorter<String>(grid);
-      sorter.setComparator((GridColumn<String,String>)grid.getColumn(0),new Comparator<String>(){
+      sorter.setComparator((Grid.Column<String,String>)grid.getColumn(0),new Comparator<String>(){
         @Override public int compare(        String o1,        String o2){
           return Integer.parseInt(o1) - Integer.parseInt(o2);
         }
@@ -67,7 +67,7 @@
     @Override @SuppressWarnings("unchecked") public void shuffle(){
       Grid<String> grid=getWidget();
       ListSorter<String> shuffler=new ListSorter<String>(grid);
-      shuffler.setComparator((GridColumn<String,String>)grid.getColumn(0),new Comparator<String>(){
+      shuffler.setComparator((Grid.Column<String,String>)grid.getColumn(0),new Comparator<String>(){
         @Override public int compare(        String o1,        String o2){
           return com.google.gwt.user.client.Random.nextInt(3) - 1;
         }

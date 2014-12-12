@@ -1,0 +1,26 @@
+{
+  EventTarget target=getNativeEvent().getEventTarget();
+  if (!Element.is(target)) {
+    return;
+  }
+  Element targetElement=Element.as(target);
+  if (grid.isElementInChildWidget(targetElement)) {
+    return;
+  }
+  final RowContainer container=grid.escalator.findRowContainer(targetElement);
+  if (container == null) {
+    return;
+  }
+  targetCell=container.getCell(targetElement);
+  if (targetCell == null) {
+    return;
+  }
+  Section section=Section.FOOTER;
+  if (container == grid.escalator.getHeader()) {
+    section=Section.HEADER;
+  }
+ else   if (container == grid.escalator.getBody()) {
+    section=Section.BODY;
+  }
+  doDispatch(handler,section);
+}

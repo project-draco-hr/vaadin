@@ -1,0 +1,27 @@
+{
+  final Column<?,T> column=getColumn(cell.getColumn());
+  if (!column.isSortable()) {
+    return;
+  }
+  final SortOrder so=getSortOrder(column);
+  if (multisort) {
+    if (so != null) {
+      final int idx=sortOrder.indexOf(so);
+      sortOrder.set(idx,so.getOpposite());
+    }
+ else {
+      sortOrder.add(new SortOrder(column));
+    }
+  }
+ else {
+    int items=sortOrder.size();
+    sortOrder.clear();
+    if (so != null && items == 1) {
+      sortOrder.add(so.getOpposite());
+    }
+ else {
+      sortOrder.add(new SortOrder(column));
+    }
+  }
+  Grid.this.sort(true);
+}

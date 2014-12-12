@@ -1,0 +1,52 @@
+{
+  DivElement tableWrapper=DivElement.as(tr.getParentElement().getParentElement().getParentElement());
+  AbstractRowContainer body=(AbstractRowContainer)grid.getEscalator().getBody();
+  int rowTop=body.getRowTop(tr);
+  int bodyTop=body.getElement().getAbsoluteTop();
+  int wrapperTop=tableWrapper.getAbsoluteTop();
+  setBounds(editorOverlay,tr.getOffsetLeft(),rowTop + bodyTop - wrapperTop,tr.getOffsetWidth(),tr.getOffsetHeight());
+  updateHorizontalScrollPosition();
+  scrollHandler=grid.addScrollHandler(new ScrollHandler(){
+    @Override public void onScroll(    ScrollEvent event){
+      updateHorizontalScrollPosition();
+    }
+  }
+);
+  tableWrapper.appendChild(editorOverlay);
+  for (int i=0; i < tr.getCells().getLength(); i++) {
+    Element cell=createCell(tr.getCells().getItem(i));
+    editorOverlay.appendChild(cell);
+    Column<?,T> column=grid.getColumn(i);
+    if (column == grid.selectionColumn) {
+      continue;
+    }
+    Widget editor=getHandler().getWidget(column);
+    if (editor != null) {
+      columnToWidget.put(column,editor);
+      attachWidget(editor,cell);
+    }
+  }
+  Button save=new Button();
+  save.setText("Save");
+  save.setStyleName("v-editor-row-save");
+  save.addClickHandler(new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      save();
+      cancel();
+    }
+  }
+);
+  setBounds(save.getElement(),0,tr.getOffsetHeight() + 5,50,25);
+  attachWidget(save,editorOverlay);
+  Button cancel=new Button();
+  cancel.setText("Cancel");
+  cancel.setStyleName("v-editor-row-cancel");
+  cancel.addClickHandler(new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      cancel();
+    }
+  }
+);
+  setBounds(cancel.getElement(),55,tr.getOffsetHeight() + 5,50,25);
+  attachWidget(cancel,editorOverlay);
+}
