@@ -1,0 +1,22 @@
+{
+  if (locale == null) {
+    locale=Locale.getDefault();
+  }
+  String result=value.replace(" ","_").toUpperCase(locale);
+  try {
+    return Enum.valueOf(enumType,result);
+  }
+ catch (  Exception ee) {
+    try {
+      EnumSet<T> set=EnumSet.allOf(enumType);
+      for (      T e : set) {
+        if (e.name().toUpperCase(locale).equals(result)) {
+          return e;
+        }
+      }
+    }
+ catch (    Exception e) {
+    }
+    throw new ConversionException(ee);
+  }
+}
