@@ -1,11 +1,14 @@
 {
-  Document doc=Design.createHtml(ctx);
-  DesignContext newContext=Design.parse(doc.toString());
+  ByteArrayOutputStream out=new ByteArrayOutputStream();
+  Design.write(ctx,out);
+  ByteArrayInputStream in=new ByteArrayInputStream(out.toByteArray());
+  DesignContext newContext=Design.read(in,null);
   findElements(newContext);
   checkHierarchy(newContext);
   String[] expectedPrefixes={"my"};
   String[] expectedPackageNames={"com.addon.mypackage"};
   int index=0;
+  Document doc=Jsoup.parse(out.toString("UTF-8"));
   Element head=doc.head();
   for (  Node child : head.childNodes()) {
     if ("meta".equals(child.nodeName())) {
