@@ -15,13 +15,16 @@
   }
   if (verticalScrollNeeded) {
     tableWrapperWidth-=verticalScrollbar.getScrollbarThickness();
+    tableWrapperWidth=Math.max(0,tableWrapperWidth);
   }
   if (horizontalScrollNeeded) {
     tableWrapperHeight-=horizontalScrollbar.getScrollbarThickness();
+    tableWrapperHeight=Math.max(0,tableWrapperHeight);
   }
   tableWrapper.getStyle().setHeight(tableWrapperHeight,Unit.PX);
   tableWrapper.getStyle().setWidth(tableWrapperWidth,Unit.PX);
-  verticalScrollbar.setOffsetSize(tableWrapperHeight - footer.heightOfSection - header.heightOfSection);
+  double vScrollbarHeight=Math.max(0,tableWrapperHeight - footer.heightOfSection - header.heightOfSection);
+  verticalScrollbar.setOffsetSize(vScrollbarHeight);
   verticalScrollbar.setScrollSize(scrollContentHeight);
   double prevScrollPos=horizontalScrollbar.getScrollPos();
   double unfrozenPixels=columnConfiguration.getCalculatedColumnsWidth(Range.between(columnConfiguration.getFrozenColumnCount(),columnConfiguration.getColumnCount()));
@@ -43,7 +46,7 @@
     hCornerStyle.clearDisplay();
     fCornerStyle.clearDisplay();
     if (horizontalScrollbar.showsScrollHandle()) {
-      int offset=horizontalScrollbar.getScrollbarThickness();
+      double offset=horizontalScrollbar.getScrollbarThickness();
       fCornerStyle.setBottom(offset,Unit.PX);
     }
  else {
