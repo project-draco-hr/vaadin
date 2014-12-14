@@ -1,0 +1,37 @@
+{
+  DesignContext designContext=new DesignContext(doc);
+  designContext.getPrefixes(doc);
+  Element root=doc.body();
+  Elements children=root.children();
+  if (children.size() != 1) {
+    throw new DesignException("The first level of a component hierarchy should contain exactly one root component, but found " + children.size());
+  }
+  Element element=children.first();
+  if (componentRoot != null) {
+    final FieldBinder binder;
+    try {
+      binder=new FieldBinder(componentRoot,classWithFields);
+    }
+ catch (    IntrospectionException e) {
+      throw new DesignException("Could not bind fields of the root component",e);
+    }
+    ComponentCreationListener creationListener=new ComponentCreationListener(){
+      @Override public void componentCreated(      ComponentCreatedEvent event){
+        binder.bindField(event.getComponent(),event.getLocalId());
+      }
+    }
+;
+    designContext.addComponentCreationListener(creationListener);
+    designContext.synchronizeAndRegister(componentRoot,element);
+    Collection<String> unboundFields=binder.getUnboundFields();
+    if (!unboundFields.isEmpty()) {
+      throw new DesignException("Found unbound fields from component root " + unboundFields);
+    }
+    designContext.removeComponentCreationListener(creationListener);
+  }
+ else {
+    componentRoot=designContext.createChild(element);
+  }
+  designContext.setRootComponent(componentRoot);
+  return designContext;
+}
