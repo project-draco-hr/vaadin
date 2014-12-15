@@ -1,6 +1,6 @@
 {
   String value=null;
-  if (component == null || attribute == null || attributes == null || defaultInstance == null) {
+  if (component == null || attribute == null || attributes == null) {
     throw new IllegalArgumentException("Parameters with null value not allowed");
   }
   if (attributes.hasKey(attribute)) {
@@ -18,10 +18,7 @@
       success=true;
     }
  else {
-      Method getter=findGetterForAttribute(component.getClass(),attribute);
-      Object defaultValue=getter.invoke(defaultInstance);
-      setter.invoke(component,defaultValue);
-      success=true;
+      getLogger().log(Level.WARNING,"Attribute value for " + attribute + " is null, this should not happen");
     }
   }
  catch (  Exception e) {

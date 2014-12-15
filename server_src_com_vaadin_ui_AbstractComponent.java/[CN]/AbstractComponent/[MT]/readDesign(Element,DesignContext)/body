@@ -1,8 +1,10 @@
 {
   Attributes attr=design.attributes();
-  AbstractComponent def=designContext.getDefaultInstance(this.getClass());
   for (  String attribute : getDefaultAttributes()) {
-    DesignAttributeHandler.readAttribute(this,attribute,attr,def);
+    if (!design.hasAttr(attribute)) {
+      continue;
+    }
+    DesignAttributeHandler.readAttribute(this,attribute,attr);
   }
   if (attr.hasKey("immediate")) {
     String str=attr.get("immediate");
@@ -18,13 +20,10 @@
  else {
     setLocale(null);
   }
-  readSize(attr,def);
+  readSize(attr);
   if (attr.hasKey("error")) {
     UserError error=new UserError(attr.get("error"),ContentMode.HTML,ErrorLevel.ERROR);
     setComponentError(error);
-  }
- else {
-    setComponentError(def.getComponentError());
   }
   setResponsive(attr.hasKey("responsive") && !attr.get("responsive").equalsIgnoreCase("false"));
   Set<String> supported=new HashSet<String>();

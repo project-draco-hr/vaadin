@@ -1,14 +1,18 @@
 {
   super.readDesign(design,designContext);
-  Button def=designContext.getDefaultInstance(this.getClass());
   Attributes attr=design.attributes();
   String content=design.html();
   setCaption(content);
-  setTabIndex(DesignAttributeHandler.readAttribute("tabindex",attr,def.getTabIndex(),Integer.class));
-  setHtmlContentAllowed(!DesignAttributeHandler.readAttribute(DESIGN_ATTR_PLAIN_TEXT,attr,false,Boolean.class));
-  setIconAlternateText(DesignAttributeHandler.readAttribute("icon-alt",attr,def.getIconAlternateText(),String.class));
+  if (attr.hasKey("tabindex")) {
+    setTabIndex(DesignAttributeHandler.readAttribute("tabindex",attr,Integer.class));
+  }
+  Boolean plain=DesignAttributeHandler.readAttribute(DESIGN_ATTR_PLAIN_TEXT,attr,Boolean.class);
+  if (plain == null || !plain) {
+    setHtmlContentAllowed(true);
+  }
+  setIconAlternateText(DesignAttributeHandler.readAttribute("icon-alt",attr,String.class));
   removeClickShortcut();
-  ShortcutAction action=DesignAttributeHandler.readAttribute("click-shortcut",attr,null,ShortcutAction.class);
+  ShortcutAction action=DesignAttributeHandler.readAttribute("click-shortcut",attr,ShortcutAction.class);
   if (action != null) {
     setClickShortcut(action.getKeyCode(),action.getModifiers());
   }

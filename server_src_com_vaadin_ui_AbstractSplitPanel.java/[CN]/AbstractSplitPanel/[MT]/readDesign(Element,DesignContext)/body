@@ -1,27 +1,21 @@
 {
   super.readDesign(design,designContext);
-  AbstractSplitPanel def=designContext.getDefaultInstance(this.getClass());
-  boolean reversed=DesignAttributeHandler.readAttribute("reversed",design.attributes(),def.getSplitterState().positionReversed,Boolean.class);
+  boolean reversed=false;
+  if (design.hasAttr("reversed")) {
+    reversed=DesignAttributeHandler.readAttribute("reversed",design.attributes(),Boolean.class);
+    setSplitPosition(getSplitPosition(),reversed);
+  }
   if (design.hasAttr("split-position")) {
-    SizeWithUnit splitPosition=SizeWithUnit.parseStringSize(design.attr("split-position"),def.getSplitPositionUnit());
+    SizeWithUnit splitPosition=SizeWithUnit.parseStringSize(design.attr("split-position"),Unit.PERCENTAGE);
     setSplitPosition(splitPosition.getSize(),splitPosition.getUnit(),reversed);
   }
- else {
-    setSplitPosition(def.getSplitPosition(),def.getSplitPositionUnit(),reversed);
-  }
   if (design.hasAttr("min-split-position")) {
-    SizeWithUnit minSplitPosition=SizeWithUnit.parseStringSize(design.attr("min-split-position"),def.getMinSplitPositionUnit());
+    SizeWithUnit minSplitPosition=SizeWithUnit.parseStringSize(design.attr("min-split-position"),Unit.PERCENTAGE);
     setMinSplitPosition(minSplitPosition.getSize(),minSplitPosition.getUnit());
   }
- else {
-    setMinSplitPosition(def.getMinSplitPosition(),def.getMinSplitPositionUnit());
-  }
   if (design.hasAttr("max-split-position")) {
-    SizeWithUnit maxSplitPosition=SizeWithUnit.parseStringSize(design.attr("max-split-position"),def.getMaxSplitPositionUnit());
+    SizeWithUnit maxSplitPosition=SizeWithUnit.parseStringSize(design.attr("max-split-position"),Unit.PERCENTAGE);
     setMaxSplitPosition(maxSplitPosition.getSize(),maxSplitPosition.getUnit());
-  }
- else {
-    setMaxSplitPosition(def.getMaxSplitPosition(),def.getMaxSplitPositionUnit());
   }
   removeAllComponents();
   if (design.children().size() > 2) {

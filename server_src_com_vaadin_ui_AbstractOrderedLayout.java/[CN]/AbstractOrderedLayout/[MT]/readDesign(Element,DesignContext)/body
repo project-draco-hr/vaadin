@@ -1,13 +1,7 @@
 {
   super.readDesign(design,designContext);
-  removeAllComponents();
-  AbstractOrderedLayout def=designContext.getDefaultInstance(this.getClass());
   if (design.hasAttr("margin")) {
-    String value=design.attr("margin");
-    setMargin(value.isEmpty() || value.equalsIgnoreCase("true"));
-  }
- else {
-    setMargin(def.getMargin().getBitMask() != 0);
+    setMargin(DesignAttributeHandler.readAttribute("margin",design.attributes(),Boolean.class));
   }
   for (  Element childComponent : design.children()) {
     Attributes attr=childComponent.attributes();
