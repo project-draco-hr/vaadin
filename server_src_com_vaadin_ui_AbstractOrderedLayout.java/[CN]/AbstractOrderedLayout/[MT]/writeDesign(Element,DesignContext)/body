@@ -1,10 +1,13 @@
 {
   super.writeDesign(design,designContext);
-  AbstractOrderedLayout def=designContext.getDefaultInstance(this.getClass());
+  AbstractOrderedLayout def=(AbstractOrderedLayout)designContext.getDefaultInstance(this);
   if (getMargin().getBitMask() != def.getMargin().getBitMask()) {
     design.attr("margin","");
   }
   Element designElement=design;
+  if (!designContext.shouldWriteChildren(this,def)) {
+    return;
+  }
   for (  Component child : this) {
     Element childNode=designContext.createNode(child);
     designElement.appendChild(childNode);
