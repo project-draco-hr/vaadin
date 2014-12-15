@@ -1,6 +1,6 @@
 {
   if (state == State.ACTIVATING) {
-    handler.bind(new EditorRequest<T>(grid,rowIndex,new RequestCallback<T>(){
+    EditorRequest<T> request=new EditorRequest<T>(grid,rowIndex,new RequestCallback<T>(){
       @Override public void onResponse(      EditorRequest<T> request){
         if (state == State.ACTIVATING) {
           state=State.ACTIVE;
@@ -8,7 +8,9 @@
         }
       }
     }
-));
+);
+    handler.bind(request);
+    completeIfSync(request);
     grid.getEscalator().setScrollLocked(Direction.VERTICAL,true);
   }
 }
