@@ -1,0 +1,29 @@
+{
+  registerRpc(EditorClientRpc.class,new EditorClientRpc(){
+    @Override public void bind(    final int rowIndex){
+      Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+        @Override public void execute(){
+          serverInitiated=true;
+          GridConnector.this.getWidget().editRow(rowIndex);
+        }
+      }
+);
+    }
+    @Override public void cancel(    int rowIndex){
+      serverInitiated=true;
+      GridConnector.this.getWidget().cancelEditor();
+    }
+    @Override public void confirmBind(){
+      Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+        @Override public void execute(){
+          endRequest();
+        }
+      }
+);
+    }
+    @Override public void confirmSave(){
+      endRequest();
+    }
+  }
+);
+}

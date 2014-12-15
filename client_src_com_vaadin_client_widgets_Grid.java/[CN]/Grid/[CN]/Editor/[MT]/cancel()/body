@@ -1,0 +1,12 @@
+{
+  if (!enabled) {
+    throw new IllegalStateException("Cannot cancel edit: editor is not enabled");
+  }
+  if (state == State.INACTIVE) {
+    throw new IllegalStateException("Cannot cancel edit: editor is not in edit mode");
+  }
+  hideOverlay();
+  grid.getEscalator().setScrollLocked(Direction.VERTICAL,false);
+  handler.cancel(new EditorRequest<T>(grid,rowIndex,null));
+  state=State.INACTIVE;
+}

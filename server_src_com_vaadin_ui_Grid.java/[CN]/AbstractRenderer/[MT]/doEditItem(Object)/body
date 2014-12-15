@@ -1,16 +1,16 @@
 {
-  if (!isEditorRowEnabled()) {
-    throw new IllegalStateException("Editor row is not enabled");
+  if (!isEditorEnabled()) {
+    throw new IllegalStateException("Item editor is not enabled");
   }
   Item item=getContainerDataSource().getItem(itemId);
   if (item == null) {
     throw new IllegalArgumentException("Item with id " + itemId + " not found in current container");
   }
-  editorRowFieldGroup.setItemDataSource(item);
+  editorFieldGroup.setItemDataSource(item);
   editedItemId=itemId;
   for (  Column column : getColumns()) {
     Object propertyId=column.getColumnProperty();
-    Field<?> editor=getEditorRowField(propertyId);
+    Field<?> editor=getEditorField(propertyId);
     getColumn(propertyId).getState().editorConnector=editor;
   }
 }
