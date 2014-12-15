@@ -7,18 +7,10 @@
     DesignAttributeHandler.readAttribute(this,attribute,attr);
   }
   if (attr.hasKey("immediate")) {
-    String str=attr.get("immediate");
-    boolean immediate="".equals(str) ? true : Boolean.valueOf(str);
-    setImmediate(immediate);
-  }
- else {
-    explicitImmediateValue=null;
+    setImmediate(DesignAttributeHandler.getBoolean(attr.get("immediate")));
   }
   if (attr.hasKey("locale")) {
     setLocale(getLocaleFromString(attr.get("locale")));
-  }
- else {
-    setLocale(null);
   }
   readSize(attr);
   if (attr.hasKey("error")) {
@@ -28,7 +20,9 @@
   if (design.hasAttr("tabindex") && this instanceof Focusable) {
     ((Focusable)this).setTabIndex(DesignAttributeHandler.readAttribute("tabindex",design.attributes(),Integer.class));
   }
-  setResponsive(attr.hasKey("responsive") && !attr.get("responsive").equalsIgnoreCase("false"));
+  if (attr.hasKey("responsive")) {
+    setResponsive(DesignAttributeHandler.getBoolean(attr.get("responsive")));
+  }
   Set<String> supported=new HashSet<String>();
   supported.addAll(getDefaultAttributes());
   supported.addAll(getCustomAttributes());
