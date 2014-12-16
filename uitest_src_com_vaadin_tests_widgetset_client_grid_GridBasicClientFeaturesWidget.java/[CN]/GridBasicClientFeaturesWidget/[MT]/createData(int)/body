@@ -1,0 +1,28 @@
+{
+  List<List<Data>> dataList=new ArrayList<List<Data>>();
+  Random rand=new Random();
+  rand.setSeed(13334);
+  long timestamp=0;
+  for (int row=0; row < rowCount; row++) {
+    List<Data> datarow=createDataRow(COLUMNS);
+    dataList.add(datarow);
+    Data d;
+    int col=0;
+    for (; col < COLUMNS - MANUALLY_FORMATTED_COLUMNS; ++col) {
+      d=datarow.get(col);
+      d.value="(" + row + ", "+ col+ ")";
+    }
+    d=datarow.get(col++);
+    d.value=Integer.valueOf(row);
+    d=datarow.get(col++);
+    d.value=new Date(timestamp);
+    timestamp+=91250000;
+    d=datarow.get(col++);
+    d.value="<b>" + row + "</b>";
+    d=datarow.get(col++);
+    d.value=Integer.valueOf(rand.nextInt());
+    d=datarow.get(col++);
+    d.value=Integer.valueOf(rand.nextInt(5));
+  }
+  return dataList;
+}
