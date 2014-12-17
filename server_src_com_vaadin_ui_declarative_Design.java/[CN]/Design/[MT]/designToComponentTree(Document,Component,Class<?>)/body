@@ -1,6 +1,6 @@
 {
   DesignContext designContext=new DesignContext(doc);
-  designContext.getPrefixes(doc);
+  designContext.readPackageMappings(doc);
   Element root=doc.body();
   Elements children=root.children();
   if (children.size() != 1) {
@@ -22,7 +22,7 @@
     }
 ;
     designContext.addComponentCreationListener(creationListener);
-    designContext.synchronizeAndRegister(componentRoot,element);
+    designContext.readDesign(element,componentRoot);
     Collection<String> unboundFields=binder.getUnboundFields();
     if (!unboundFields.isEmpty()) {
       throw new DesignException("Found unbound fields from component root " + unboundFields);
@@ -30,7 +30,7 @@
     designContext.removeComponentCreationListener(creationListener);
   }
  else {
-    componentRoot=designContext.createChild(element);
+    componentRoot=designContext.readDesign(element);
   }
   designContext.setRootComponent(componentRoot);
   return designContext;
