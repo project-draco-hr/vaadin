@@ -1,0 +1,26 @@
+{
+  if (okToLeave) {
+    okToLeave=false;
+    return true;
+  }
+ else {
+    final Window confirmationWindow=new Window("Confirm");
+    confirmationWindow.setModal(true);
+    confirmationWindow.setClosable(true);
+    VerticalLayout confirmationWindowLayout=new VerticalLayout();
+    confirmationWindow.setContent(confirmationWindowLayout);
+    confirmationWindowLayout.setMargin(true);
+    confirmationWindowLayout.setSpacing(true);
+    confirmationWindowLayout.addComponent(new Label("Really exit this view?"));
+    confirmationWindowLayout.addComponent(new Button("Yeah, sure!",new Button.ClickListener(){
+      @Override public void buttonClick(      ClickEvent buttonEvent){
+        okToLeave=true;
+        getUI().removeWindow(confirmationWindow);
+        event.getNavigator().navigateTo(event.getViewName() + "/" + event.getParameters());
+      }
+    }
+));
+    getUI().addWindow(confirmationWindow);
+    return false;
+  }
+}

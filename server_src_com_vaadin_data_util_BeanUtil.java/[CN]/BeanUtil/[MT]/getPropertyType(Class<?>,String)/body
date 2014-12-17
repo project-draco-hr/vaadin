@@ -1,0 +1,17 @@
+{
+  if (propertyId.contains(".")) {
+    String[] parts=propertyId.split("\\.",2);
+    Class<?> propertyBean=getPropertyType(clazz,parts[0]);
+    return getPropertyType(propertyBean,parts[1]);
+  }
+ else {
+    List<PropertyDescriptor> descriptors=getBeanPropertyDescriptor(clazz);
+    for (    PropertyDescriptor descriptor : descriptors) {
+      final Method getMethod=descriptor.getReadMethod();
+      if (descriptor.getName().equals(propertyId) && getMethod != null && getMethod.getDeclaringClass() != Object.class) {
+        return descriptor.getPropertyType();
+      }
+    }
+    return null;
+  }
+}
