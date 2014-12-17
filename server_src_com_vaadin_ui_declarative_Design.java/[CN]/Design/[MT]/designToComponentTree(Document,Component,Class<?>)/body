@@ -3,11 +3,14 @@
   designContext.readPackageMappings(doc);
   Element root=doc.body();
   Elements children=root.children();
-  if (children.size() != 1) {
-    throw new DesignException("The first level of a component hierarchy should contain exactly one root component, but found " + children.size());
+  if (children.size() > 1) {
+    throw new DesignException("The first level of a component hierarchy should contain at most one root component, but found " + children.size() + ".");
   }
-  Element element=children.first();
+  Element element=children.size() == 0 ? null : children.first();
   if (componentRoot != null) {
+    if (element == null) {
+      throw new DesignException("The root element cannot be null when the specified root Component is" + " not null.");
+    }
     final FieldBinder binder;
     try {
       binder=new FieldBinder(componentRoot,classWithFields);
@@ -30,7 +33,7 @@
     designContext.removeComponentCreationListener(creationListener);
   }
  else {
-    componentRoot=designContext.readDesign(element);
+    componentRoot=element == null ? null : designContext.readDesign(element);
   }
   designContext.setRootComponent(componentRoot);
   return designContext;
