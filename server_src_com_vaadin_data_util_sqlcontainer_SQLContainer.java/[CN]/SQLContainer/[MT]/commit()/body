@@ -8,13 +8,15 @@
       }
     }
     for (    RowItem item : modifiedItems) {
-      if (queryDelegate.storeRow(item) > 0) {
-        item.commit();
-      }
+      if (!removedItems.containsKey(item.getId())) {
+        if (queryDelegate.storeRow(item) > 0) {
+          item.commit();
+        }
  else {
-        queryDelegate.rollback();
-        refresh();
-        throw new ConcurrentModificationException("Item with the ID '" + item.getId() + "' has been externally modified.");
+          queryDelegate.rollback();
+          refresh();
+          throw new ConcurrentModificationException("Item with the ID '" + item.getId() + "' has been externally modified.");
+        }
       }
     }
     for (    RowItem item : addedItems) {

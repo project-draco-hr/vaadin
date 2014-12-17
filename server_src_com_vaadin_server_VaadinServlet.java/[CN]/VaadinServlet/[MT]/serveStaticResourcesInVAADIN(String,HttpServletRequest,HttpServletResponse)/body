@@ -16,12 +16,20 @@
     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     return;
   }
+  String cacheControl="public, max-age=0, must-revalidate";
+  int resourceCacheTime=getCacheTime(filename);
+  if (resourceCacheTime > 0) {
+    cacheControl="max-age=" + String.valueOf(resourceCacheTime);
+  }
+  response.setHeader("Cache-Control",cacheControl);
+  response.setDateHeader("Expires",System.currentTimeMillis() + (resourceCacheTime * 1000));
   long lastModifiedTime=0;
   URLConnection connection=null;
   try {
     connection=resourceUrl.openConnection();
     lastModifiedTime=connection.getLastModified();
     lastModifiedTime=lastModifiedTime - lastModifiedTime % 1000;
+    response.setDateHeader("Last-Modified",lastModifiedTime);
     if (browserHasNewestVersion(request,lastModifiedTime)) {
       response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
       return;
@@ -46,15 +54,6 @@ catch (    IOException e) {
   final String mimetype=sc.getMimeType(filename);
   if (mimetype != null) {
     response.setContentType(mimetype);
-  }
-  if (lastModifiedTime > 0) {
-    response.setDateHeader("Last-Modified",lastModifiedTime);
-    String cacheControl="public, max-age=0, must-revalidate";
-    int resourceCacheTime=getCacheTime(filename);
-    if (resourceCacheTime > 0) {
-      cacheControl="max-age=" + String.valueOf(resourceCacheTime);
-    }
-    response.setHeader("Cache-Control",cacheControl);
   }
   writeStaticResourceResponse(request,response,resourceUrl);
 }

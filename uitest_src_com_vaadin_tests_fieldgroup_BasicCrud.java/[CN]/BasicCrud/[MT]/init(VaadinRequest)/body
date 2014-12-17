@@ -1,0 +1,25 @@
+{
+  VerticalLayout main=new VerticalLayout();
+  main.setMargin(true);
+  main.setSpacing(true);
+  final Table t=new Table();
+  t.setSelectable(true);
+  PersonContainer c=PersonContainer.createWithTestData();
+  c.addBean(new Person("first","Last","email","phone","street",12332,"Turku"));
+  c.addBean(new Person("Foo","Bar","me@some.where","123","homestreet 12",10000,"Glasgow"));
+  t.setContainerDataSource(c);
+  t.setVisibleColumns("firstName","lastName","email","phoneNumber","address.streetAddress","address.postalCode","address.city");
+  t.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      form.edit((Person)t.getValue());
+    }
+  }
+);
+  form=new Form();
+  t.setSizeFull();
+  main.setSizeFull();
+  main.addComponent(t);
+  main.addComponent(form);
+  main.setExpandRatio(t,1);
+  setContent(main);
+}

@@ -1,0 +1,39 @@
+{
+  int wholeSize=DOM.getElementPropertyInt(wrapper,"clientHeight");
+  int pixelPosition=DOM.getElementPropertyInt(splitter,"offsetTop");
+  if ((pixelPosition > 0 && pixelPosition + getSplitterSize() > wholeSize) || (positionReversed && pixelPosition < 0)) {
+    pixelPosition=wholeSize - getSplitterSize();
+    if (pixelPosition < 0) {
+      pixelPosition=0;
+    }
+    setSplitPosition(pixelPosition + "px",false);
+    return;
+  }
+  firstContainer.getStyle().setHeight(pixelPosition,Unit.PX);
+  int secondContainerHeight=(wholeSize - pixelPosition - getSplitterSize());
+  if (secondContainerHeight < 0) {
+    secondContainerHeight=0;
+  }
+  secondContainer.getStyle().setHeight(secondContainerHeight,Unit.PX);
+  secondContainer.getStyle().setTop(pixelPosition + getSplitterSize(),Unit.PX);
+  LayoutManager layoutManager=LayoutManager.get(client);
+  ConnectorMap connectorMap=ConnectorMap.get(client);
+  if (firstChild != null) {
+    ComponentConnector connector=connectorMap.getConnector(firstChild);
+    if (connector.isRelativeHeight()) {
+      layoutManager.reportHeightAssignedToRelative(connector,pixelPosition);
+    }
+ else {
+      layoutManager.setNeedsMeasure(connector);
+    }
+  }
+  if (secondChild != null) {
+    ComponentConnector connector=connectorMap.getConnector(secondChild);
+    if (connector.isRelativeHeight()) {
+      layoutManager.reportHeightAssignedToRelative(connector,secondContainerHeight);
+    }
+ else {
+      layoutManager.setNeedsMeasure(connector);
+    }
+  }
+}

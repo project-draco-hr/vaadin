@@ -6,10 +6,13 @@
   tab.updateFromState(tabState);
   tab.setEnabledOnServer((!disabledTabKeys.contains(tabKeys.get(index))));
   tab.setHiddenOnServer(!tabState.visible);
-  if (scrolledOutOfView(index)) {
+  if (scrolledOutOfView(index) && !isIndexSkippingHiddenTabs()) {
     tab.setVisible(false);
   }
  else {
+    if (isIndexSkippingHiddenTabs() && tabState.visible) {
+      scrollerIndex=0;
+    }
     tab.setVisible(tabState.visible);
   }
   tab.recalculateCaptionWidth();
