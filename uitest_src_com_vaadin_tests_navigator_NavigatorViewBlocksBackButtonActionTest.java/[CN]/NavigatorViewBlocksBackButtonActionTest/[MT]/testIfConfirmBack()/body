@@ -1,0 +1,14 @@
+{
+  openTestURL();
+  final String initialUrl=driver.getCurrentUrl();
+  for (int i=0; i < 2; i++) {
+    WebElement button=$(ButtonElement.class).first();
+    button.click();
+    driver.navigate().back();
+    WebElement buttonConfirmView=$(ButtonElement.class).first();
+    buttonConfirmView.click();
+    waitForElementPresent(By.id(NavigatorViewBlocksBackButtonAction.LABEL_MAINVIEW_ID));
+    String currentUrl=driver.getCurrentUrl();
+    assertEquals("Current URL should be equal to initial main view URL",initialUrl,currentUrl);
+  }
+}

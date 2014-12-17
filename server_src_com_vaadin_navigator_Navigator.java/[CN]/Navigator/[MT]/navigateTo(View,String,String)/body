@@ -1,6 +1,9 @@
 {
   ViewChangeEvent event=new ViewChangeEvent(this,currentView,view,viewName,parameters);
   if (!fireBeforeViewChange(event)) {
+    if (currentNavigationState != null) {
+      getStateManager().setState(currentNavigationState);
+    }
     return;
   }
   if (null != viewName && getStateManager() != null) {
@@ -10,6 +13,7 @@
     }
     if (!navigationState.equals(getStateManager().getState())) {
       getStateManager().setState(navigationState);
+      currentNavigationState=navigationState;
     }
   }
   if (display != null) {
