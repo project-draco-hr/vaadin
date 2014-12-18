@@ -1,21 +1,21 @@
 {
   Profiler.enter("AbstractRemoteDataSource.insertRowData");
   size+=count;
-  if (cached.contains(firstRowIndex)) {
+  if (firstRowIndex < cached.getStart()) {
+    Range oldCached=cached;
+    cached=cached.offsetBy(count);
+    for (int i=1; i <= indexToRowMap.size(); i++) {
+      int oldIndex=oldCached.getEnd() - i;
+      int newIndex=cached.getEnd() - i;
+      moveRowFromIndexToIndex(oldIndex,newIndex);
+    }
+  }
+ else   if (cached.contains(firstRowIndex)) {
     int oldCacheEnd=cached.getEnd();
     cached=cached.splitAt(firstRowIndex)[0];
     for (int i=firstRowIndex; i < oldCacheEnd; i++) {
       T row=indexToRowMap.remove(Integer.valueOf(i));
       keyToIndexMap.remove(getRowKey(row));
-    }
-  }
- else   if (firstRowIndex < cached.getStart()) {
-    Range oldCached=cached;
-    cached=cached.offsetBy(count);
-    for (int i=0; i < indexToRowMap.size(); i++) {
-      int oldIndex=oldCached.getEnd() - i;
-      int newIndex=cached.getEnd() - i;
-      moveRowFromIndexToIndex(oldIndex,newIndex);
     }
   }
   assertDataChangeHandlerIsInjected();
