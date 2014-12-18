@@ -1,12 +1,18 @@
 {
   String innerHtml;
-  String escapedCaption=Util.escapeHTML(calendarEvent.getCaption());
   String timeAsText=calendarEvent.getTimeAsText();
-  if (bigMode) {
-    innerHtml="<span>" + timeAsText + "</span><br />"+ escapedCaption;
+  String htmlOrText;
+  if (dateCell.weekgrid.getCalendar().isEventCaptionAsHtml()) {
+    htmlOrText=calendarEvent.getCaption();
   }
  else {
-    innerHtml="<span>" + timeAsText + "<span>:</span></span> "+ escapedCaption;
+    htmlOrText=Util.escapeHTML(calendarEvent.getCaption());
+  }
+  if (bigMode) {
+    innerHtml="<span>" + timeAsText + "</span><br />"+ htmlOrText;
+  }
+ else {
+    innerHtml="<span>" + timeAsText + "<span>:</span></span> "+ htmlOrText;
   }
   caption.setInnerHTML(innerHtml);
   eventContent.setInnerHTML("");
