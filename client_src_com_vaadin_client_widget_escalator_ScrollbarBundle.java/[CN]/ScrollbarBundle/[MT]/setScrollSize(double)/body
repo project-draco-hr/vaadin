@@ -1,6 +1,18 @@
 {
-  internalSetScrollSize(Math.max(0,px));
-  forceScrollbar(showsScrollHandle());
-  recalculateMaxScrollPos();
-  fireVisibilityChangeIfNeeded();
+  boolean newScrollSizeIsSmallerThanOffsetSize=px <= getOffsetSize();
+  boolean scrollSizeBecomesSmallerThanOffsetSize=showsScrollHandle() && newScrollSizeIsSmallerThanOffsetSize;
+  if (scrollSizeBecomesSmallerThanOffsetSize && getScrollPos() != 0) {
+    scrollSizeTemporaryScrollHandler=addScrollHandler(new ScrollHandler(){
+      @Override public void onScroll(      ScrollEvent event){
+        setScrollSizeNow(px);
+        scrollSizeTemporaryScrollHandler.removeHandler();
+        scrollSizeTemporaryScrollHandler=null;
+      }
+    }
+);
+    setScrollPos(0);
+  }
+ else {
+    setScrollSizeNow(px);
+  }
 }
