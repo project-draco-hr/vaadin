@@ -1,9 +1,12 @@
 {
+  int rowIndex=row.getRow();
+  rowReference.set(rowIndex,null);
   for (  FlyweightCell cell : detachedCells) {
     Renderer renderer=findRenderer(cell);
     if (renderer instanceof ComplexRenderer) {
       try {
-        ((ComplexRenderer)renderer).destroy(cell);
+        rendererCellReference.set(cell,getColumn(cell.getColumn()));
+        ((ComplexRenderer)renderer).destroy(rendererCellReference);
       }
  catch (      RuntimeException e) {
         getLogger().log(Level.SEVERE,"Error destroying cell in column " + cell.getColumn(),e);

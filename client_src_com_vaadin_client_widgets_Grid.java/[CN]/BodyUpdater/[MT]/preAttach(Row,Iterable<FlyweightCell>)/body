@@ -1,9 +1,12 @@
 {
+  int rowIndex=row.getRow();
+  rowReference.set(rowIndex,getDataSource().getRow(rowIndex));
   for (  FlyweightCell cell : cellsToAttach) {
     Renderer<?> renderer=findRenderer(cell);
     if (renderer instanceof ComplexRenderer) {
       try {
-        ((ComplexRenderer<?>)renderer).init(cell);
+        rendererCellReference.set(cell,getColumn(cell.getColumn()));
+        ((ComplexRenderer<?>)renderer).init(rendererCellReference);
       }
  catch (      RuntimeException e) {
         getLogger().log(Level.SEVERE,"Error initing cell in column " + cell.getColumn(),e);
