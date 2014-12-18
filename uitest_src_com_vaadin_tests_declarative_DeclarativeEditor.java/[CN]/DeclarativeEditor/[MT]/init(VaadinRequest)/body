@@ -1,0 +1,29 @@
+{
+  main=new HorizontalSplitPanel();
+  editor=new TextArea();
+  editor.setSizeFull();
+  try {
+    editor.setValue(IOUtils.toString(getClass().getResourceAsStream("DeclarativeEditorInitial.html")));
+  }
+ catch (  ReadOnlyException e) {
+    e.printStackTrace();
+  }
+catch (  IOException e) {
+    e.printStackTrace();
+  }
+  editor.addTextChangeListener(new TextChangeListener(){
+    @Override public void textChange(    TextChangeEvent event){
+      editor.setComponentError(null);
+      updateTree(event.getText());
+    }
+  }
+);
+  Panel editorPanel=new Panel(editor);
+  editorPanel.setSizeFull();
+  treeHolder=new VerticalLayout();
+  treeHolder.setSizeFull();
+  main.addComponents(editorPanel,treeHolder);
+  main.setSizeFull();
+  setContent(main);
+  updateTree(editor.getValue());
+}

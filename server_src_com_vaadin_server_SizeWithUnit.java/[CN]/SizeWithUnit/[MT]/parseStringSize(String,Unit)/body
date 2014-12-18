@@ -1,0 +1,32 @@
+{
+  if (s == null) {
+    return null;
+  }
+  s=s.trim();
+  if ("".equals(s)) {
+    return null;
+  }
+  float size=0;
+  Unit unit=null;
+  Matcher matcher=sizePattern.matcher(s);
+  if (matcher.find()) {
+    size=Float.parseFloat(matcher.group(1));
+    if (size < 0) {
+      size=-1;
+      unit=Unit.PIXELS;
+    }
+ else {
+      String symbol=matcher.group(2);
+      if ((symbol != null && symbol.length() > 0) || defaultUnit == null) {
+        unit=Unit.getUnitFromSymbol(symbol);
+      }
+ else {
+        unit=defaultUnit;
+      }
+    }
+  }
+ else {
+    throw new IllegalArgumentException("Invalid size argument: \"" + s + "\" (should match "+ sizePattern.pattern()+ ")");
+  }
+  return new SizeWithUnit(size,unit);
+}

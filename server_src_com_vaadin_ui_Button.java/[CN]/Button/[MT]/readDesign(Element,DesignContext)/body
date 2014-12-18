@@ -1,0 +1,18 @@
+{
+  super.readDesign(design,designContext);
+  Attributes attr=design.attributes();
+  String content=design.html();
+  setCaption(content);
+  Boolean plain=DesignAttributeHandler.readAttribute(DESIGN_ATTR_PLAIN_TEXT,attr,Boolean.class);
+  if (plain == null || !plain) {
+    setHtmlContentAllowed(true);
+  }
+  if (attr.hasKey("icon-alt")) {
+    setIconAlternateText(DesignAttributeHandler.readAttribute("icon-alt",attr,String.class));
+  }
+  removeClickShortcut();
+  ShortcutAction action=DesignAttributeHandler.readAttribute("click-shortcut",attr,ShortcutAction.class);
+  if (action != null) {
+    setClickShortcut(action.getKeyCode(),action.getModifiers());
+  }
+}

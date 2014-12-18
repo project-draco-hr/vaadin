@@ -1,0 +1,18 @@
+{
+  Class<? extends Component> annotatedClass=findClassWithAnnotation(rootComponent.getClass(),DesignRoot.class);
+  if (annotatedClass == null) {
+    throw new IllegalArgumentException("The class " + rootComponent.getClass().getName() + " or any of its superclasses do not have an @DesignRoot annotation");
+  }
+  DesignRoot designAnnotation=annotatedClass.getAnnotation(DesignRoot.class);
+  String filename=designAnnotation.value();
+  if (filename.equals("")) {
+    filename=annotatedClass.getSimpleName() + ".html";
+  }
+  InputStream stream=annotatedClass.getResourceAsStream(filename);
+  if (stream == null) {
+    throw new DesignException("Unable to find design file " + filename + " in "+ annotatedClass.getPackage().getName());
+  }
+  Document doc=parse(stream);
+  DesignContext context=designToComponentTree(doc,rootComponent,annotatedClass);
+  return context;
+}

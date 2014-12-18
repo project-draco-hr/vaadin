@@ -1,0 +1,22 @@
+{
+  component.readDesign(componentDesign,this);
+  org.jsoup.nodes.Attributes attributes=componentDesign.attributes();
+  String id=component.getId();
+  if (id != null && id.length() > 0) {
+    boolean mappingExists=mapId(id,component);
+    if (mappingExists) {
+      throw new DesignException("The following global id is not unique: " + id);
+    }
+  }
+  if (attributes.hasKey(LOCAL_ID_ATTRIBUTE)) {
+    String localId=attributes.get(LOCAL_ID_ATTRIBUTE);
+    boolean mappingExists=mapLocalId(localId,component);
+    if (mappingExists) {
+      throw new DesignException("the following local id is not unique: " + localId);
+    }
+  }
+  String caption=component.getCaption();
+  if (caption != null) {
+    mapCaption(caption,component);
+  }
+}

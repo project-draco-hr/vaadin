@@ -1,0 +1,34 @@
+{
+  super.writeDesign(design,designContext);
+  AbstractOrderedLayout def=(AbstractOrderedLayout)designContext.getDefaultInstance(this);
+  if (getMargin().getBitMask() != def.getMargin().getBitMask()) {
+    design.attr("margin","");
+  }
+  if (!designContext.shouldWriteChildren(this,def)) {
+    return;
+  }
+  for (  Component child : this) {
+    Element childElement=designContext.createElement(child);
+    design.appendChild(childElement);
+    Alignment alignment=getComponentAlignment(child);
+    if (alignment.isMiddle()) {
+      childElement.attr(":middle","");
+    }
+ else     if (alignment.isBottom()) {
+      childElement.attr(":bottom","");
+    }
+    if (alignment.isCenter()) {
+      childElement.attr(":center","");
+    }
+ else     if (alignment.isRight()) {
+      childElement.attr(":right","");
+    }
+    float expandRatio=getExpandRatio(child);
+    if (expandRatio == 1.0f) {
+      childElement.attr(":expand","");
+    }
+ else     if (expandRatio > 0) {
+      childElement.attr(":expand",DesignAttributeHandler.formatFloat(expandRatio));
+    }
+  }
+}
