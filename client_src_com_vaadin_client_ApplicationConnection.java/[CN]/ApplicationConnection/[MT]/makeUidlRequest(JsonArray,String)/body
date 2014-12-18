@@ -1,0 +1,16 @@
+{
+  startRequest();
+  JsonObject payload=Json.createObject();
+  if (!getCsrfToken().equals(ApplicationConstants.CSRF_TOKEN_DEFAULT_VALUE)) {
+    payload.put(ApplicationConstants.CSRF_TOKEN,getCsrfToken());
+  }
+  payload.put(ApplicationConstants.RPC_INVOCATIONS,reqInvocations);
+  payload.put(ApplicationConstants.SERVER_SYNC_ID,lastSeenServerSyncId);
+  VConsole.log("Making UIDL Request with params: " + payload.toJson());
+  String uri=translateVaadinUri(ApplicationConstants.APP_PROTOCOL_PREFIX + ApplicationConstants.UIDL_PATH + '/');
+  if (extraParams != null && extraParams.length() > 0) {
+    uri=addGetParameters(uri,extraParams);
+  }
+  uri=addGetParameters(uri,UIConstants.UI_ID_PARAMETER + "=" + configuration.getUIId());
+  doUidlRequest(uri,payload);
+}

@@ -1,15 +1,15 @@
 {
-  JSONArray reqJson=new JSONArray();
+  JsonArray reqJson=Json.createArray();
   if (!pendingInvocations.isEmpty()) {
     if (ApplicationConfiguration.isDebugMode()) {
       Util.logVariableBurst(this,pendingInvocations.values());
     }
     for (    MethodInvocation invocation : pendingInvocations.values()) {
-      JSONArray invocationJson=new JSONArray();
-      invocationJson.set(0,new JSONString(invocation.getConnectorId()));
-      invocationJson.set(1,new JSONString(invocation.getInterfaceName()));
-      invocationJson.set(2,new JSONString(invocation.getMethodName()));
-      JSONArray paramJson=new JSONArray();
+      JsonArray invocationJson=Json.createArray();
+      invocationJson.set(0,invocation.getConnectorId());
+      invocationJson.set(1,invocation.getInterfaceName());
+      invocationJson.set(2,invocation.getMethodName());
+      JsonArray paramJson=Json.createArray();
       Type[] parameterTypes=null;
       if (!isLegacyVariableChange(invocation) && !isJavascriptRpc(invocation)) {
         try {
@@ -27,10 +27,11 @@
           type=parameterTypes[i];
         }
         Object value=invocation.getParameters()[i];
-        paramJson.set(i,JsonEncoder.encode(value,type,this));
+        JsonValue jsonValue=JsonEncoder.encode(value,type,this);
+        paramJson.set(i,jsonValue);
       }
       invocationJson.set(3,paramJson);
-      reqJson.set(reqJson.size(),invocationJson);
+      reqJson.set(reqJson.length(),invocationJson);
     }
     pendingInvocations.clear();
     lastInvocationTag=0;

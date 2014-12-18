@@ -1,0 +1,21 @@
+{
+  ConnectorMap connectorMap=ConnectorMap.get(connection);
+  String connectorId=rpcCall.getString(0);
+  String interfaceName=rpcCall.getString(1);
+  String methodName=rpcCall.getString(2);
+  JsonArray parametersJson=rpcCall.getArray(3);
+  ServerConnector connector=connectorMap.getConnector(connectorId);
+  MethodInvocation invocation=new MethodInvocation(connectorId,interfaceName,methodName);
+  if (connector instanceof HasJavaScriptConnectorHelper) {
+    ((HasJavaScriptConnectorHelper)connector).getJavascriptConnectorHelper().invokeJsRpc(invocation,parametersJson);
+  }
+ else {
+    if (connector == null) {
+      throw new IllegalStateException("Target connector (" + connector + ") not found for RCC to "+ getSignature(invocation));
+    }
+    parseMethodParameters(invocation,parametersJson,connection);
+    VConsole.log("Server to client RPC call: " + invocation);
+    applyInvocation(invocation,connector);
+  }
+  return invocation;
+}
