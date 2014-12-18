@@ -1,0 +1,20 @@
+{
+  super.writeDesign(design,designContext);
+  AbsoluteLayout def=designContext.getDefaultInstance(this);
+  if (!designContext.shouldWriteChildren(this,def)) {
+    return;
+  }
+  for (  Component child : this) {
+    Element childElement=designContext.createElement(child);
+    design.appendChild(childElement);
+    child.writeDesign(childElement,designContext);
+    ComponentPosition position=getPosition(child);
+    writePositionAttribute(childElement,ATTR_TOP,position.getTopUnits().getSymbol(),position.getTopValue());
+    writePositionAttribute(childElement,ATTR_RIGHT,position.getRightUnits().getSymbol(),position.getRightValue());
+    writePositionAttribute(childElement,ATTR_BOTTOM,position.getBottomUnits().getSymbol(),position.getBottomValue());
+    writePositionAttribute(childElement,ATTR_LEFT,position.getLeftUnits().getSymbol(),position.getLeftValue());
+    if (position.getZIndex() >= 0) {
+      childElement.attr(ATTR_Z_INDEX,String.valueOf(position.zIndex));
+    }
+  }
+}

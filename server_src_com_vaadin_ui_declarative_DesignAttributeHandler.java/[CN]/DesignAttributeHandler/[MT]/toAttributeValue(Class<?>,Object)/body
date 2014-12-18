@@ -1,0 +1,41 @@
+{
+  if (value == null) {
+    return "";
+  }
+  if (sourceType == Resource.class) {
+    if (value instanceof ExternalResource) {
+      return ((ExternalResource)value).getURL();
+    }
+ else     if (value instanceof ThemeResource) {
+      return "theme://" + ((ThemeResource)value).getResourceId();
+    }
+ else     if (value instanceof FontAwesome) {
+      return "font://" + ((FontAwesome)value).name();
+    }
+ else     if (value instanceof FileResource) {
+      String path=((FileResource)value).getSourceFile().getPath();
+      if (File.separatorChar != '/') {
+        return path.replace(File.separatorChar,'/');
+      }
+ else {
+        return path;
+      }
+    }
+ else {
+      getLogger().warning("Unknown resource type " + value.getClass().getName());
+      return null;
+    }
+  }
+ else   if (sourceType == Float.class || sourceType == Float.TYPE) {
+    return formatFloat(((Float)value).floatValue());
+  }
+ else   if (sourceType == Double.class || sourceType == Double.TYPE) {
+    return formatDouble(((Double)value).doubleValue());
+  }
+ else   if (sourceType == ShortcutAction.class) {
+    return formatShortcutAction((ShortcutAction)value);
+  }
+ else {
+    return value.toString();
+  }
+}

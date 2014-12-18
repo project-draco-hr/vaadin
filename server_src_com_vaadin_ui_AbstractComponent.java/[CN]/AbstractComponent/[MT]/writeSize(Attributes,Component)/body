@@ -1,0 +1,41 @@
+{
+  if (hasEqualSize(defaultInstance)) {
+    return;
+  }
+  boolean widthFull=getWidth() == 100f && getWidthUnits().equals(Sizeable.Unit.PERCENTAGE);
+  boolean heightFull=getHeight() == 100f && getHeightUnits().equals(Sizeable.Unit.PERCENTAGE);
+  boolean widthAuto=getWidth() == -1;
+  boolean heightAuto=getHeight() == -1;
+  if (widthFull && heightFull) {
+    attributes.put("size-full","true");
+  }
+ else   if (widthAuto && heightAuto) {
+    attributes.put("size-auto","true");
+  }
+ else {
+    if (!hasEqualWidth(defaultInstance)) {
+      if (widthFull) {
+        attributes.put("width-full","true");
+      }
+ else       if (widthAuto) {
+        attributes.put("width-auto","true");
+      }
+ else {
+        String widthString=DesignAttributeHandler.formatFloat(getWidth()) + getWidthUnits().getSymbol();
+        attributes.put("width",widthString);
+      }
+    }
+    if (!hasEqualHeight(defaultInstance)) {
+      if (heightFull) {
+        attributes.put("height-full","true");
+      }
+ else       if (heightAuto) {
+        attributes.put("height-auto","true");
+      }
+ else {
+        String heightString=DesignAttributeHandler.formatFloat(getHeight()) + getHeightUnits().getSymbol();
+        attributes.put("height",heightString);
+      }
+    }
+  }
+}

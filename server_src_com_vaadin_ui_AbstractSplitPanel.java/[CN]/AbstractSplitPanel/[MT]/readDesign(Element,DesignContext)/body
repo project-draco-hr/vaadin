@@ -1,0 +1,32 @@
+{
+  super.readDesign(design,designContext);
+  boolean reversed=false;
+  if (design.hasAttr("reversed")) {
+    reversed=DesignAttributeHandler.readAttribute("reversed",design.attributes(),Boolean.class);
+    setSplitPosition(getSplitPosition(),reversed);
+  }
+  if (design.hasAttr("split-position")) {
+    SizeWithUnit splitPosition=SizeWithUnit.parseStringSize(design.attr("split-position"),Unit.PERCENTAGE);
+    setSplitPosition(splitPosition.getSize(),splitPosition.getUnit(),reversed);
+  }
+  if (design.hasAttr("min-split-position")) {
+    SizeWithUnit minSplitPosition=SizeWithUnit.parseStringSize(design.attr("min-split-position"),Unit.PERCENTAGE);
+    setMinSplitPosition(minSplitPosition.getSize(),minSplitPosition.getUnit());
+  }
+  if (design.hasAttr("max-split-position")) {
+    SizeWithUnit maxSplitPosition=SizeWithUnit.parseStringSize(design.attr("max-split-position"),Unit.PERCENTAGE);
+    setMaxSplitPosition(maxSplitPosition.getSize(),maxSplitPosition.getUnit());
+  }
+  if (design.children().size() > 2) {
+    throw new DesignException("A split panel can contain at most two components.");
+  }
+  for (  Element childElement : design.children()) {
+    Component childComponent=designContext.readDesign(childElement);
+    if (childElement.hasAttr(":second")) {
+      setSecondComponent(childComponent);
+    }
+ else {
+      addComponent(childComponent);
+    }
+  }
+}

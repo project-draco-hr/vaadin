@@ -1,0 +1,31 @@
+{
+  String value=null;
+  if (component == null || attribute == null || attributes == null) {
+    throw new IllegalArgumentException("Parameters with null value not allowed");
+  }
+  if (attributes.hasKey(attribute)) {
+    value=attributes.get(attribute);
+  }
+  boolean success=false;
+  try {
+    Method setter=findSetterForAttribute(component.getClass(),attribute);
+    if (setter == null) {
+      success=false;
+    }
+ else     if (value != null) {
+      Object param=fromAttributeValue(setter.getParameterTypes()[0],value);
+      setter.invoke(component,param);
+      success=true;
+    }
+ else {
+      getLogger().log(Level.WARNING,"Attribute value for " + attribute + " is null, this should not happen");
+    }
+  }
+ catch (  Exception e) {
+    getLogger().log(Level.WARNING,"Failed to set attribute " + attribute,e);
+  }
+  if (!success) {
+    getLogger().info("property " + attribute + " ignored by default attribute handler");
+  }
+  return success;
+}
