@@ -10,8 +10,8 @@
   final Range removedVisualInside=convertToVisual(removedLogicalInside);
   final boolean firstVisualRowIsRemoved=!removedVisualInside.isEmpty() && removedVisualInside.getStart() == 0;
   if (!removedAbove.isEmpty() || firstVisualRowIsRemoved) {
-    final int yDelta=removedAbove.length() * getDefaultRowHeight();
-    final int firstLogicalRowHeight=getDefaultRowHeight();
+    final double yDelta=removedAbove.length() * getDefaultRowHeight();
+    final double firstLogicalRowHeight=getDefaultRowHeight();
     final boolean removalScrollsToShowFirstLogicalRow=verticalScrollbar.getScrollPos() - yDelta < firstLogicalRowHeight;
     if (removedVisualInside.isEmpty() && (!removalScrollsToShowFirstLogicalRow || !firstVisualRowIsRemoved)) {
       adjustScrollPosIgnoreEvents(-yDelta);
@@ -46,14 +46,14 @@
       }
     }
  else {
-      final int contentBottom=getRowCount() * getDefaultRowHeight();
-      final int viewportBottom=(int)(tBodyScrollTop + calculateHeight());
+      final double contentBottom=getRowCount() * getDefaultRowHeight();
+      final double viewportBottom=tBodyScrollTop + calculateHeight();
       if (viewportBottom <= contentBottom) {
         paintRemoveRowsAtMiddle(removedLogicalInside,removedVisualInside,0);
       }
  else       if (removedVisualInside.contains(0) && numberOfRows >= visualRowOrder.size()) {
         double left=horizontalScrollbar.getScrollPos();
-        int top=contentBottom - visualRowOrder.size() * getDefaultRowHeight();
+        double top=contentBottom - visualRowOrder.size() * getDefaultRowHeight();
         setBodyScrollPosition(left,top);
         Range allEscalatorRows=Range.withLength(0,visualRowOrder.size());
         int logicalTargetIndex=getRowCount() - allEscalatorRows.length();
@@ -79,7 +79,7 @@
         scroller.onScroll();
         moveAndUpdateEscalatorRows(Range.withOnly(escalatorRowCount - 1),0,getLogicalRowIndex(visualRowOrder.getFirst()) - 1);
         updateTopRowLogicalIndex(-1);
-        final int rowsScrolled=(int)(Math.ceil((viewportBottom - (double)contentBottom) / getDefaultRowHeight()));
+        final int rowsScrolled=(int)(Math.ceil((viewportBottom - contentBottom) / getDefaultRowHeight()));
         final int start=escalatorRowCount - (removedVisualInside.length() - rowsScrolled);
         final Range visualRefreshRange=Range.between(start,escalatorRowCount);
         final int logicalTargetIndex=getLogicalRowIndex(visualRowOrder.getFirst()) + start;

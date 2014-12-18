@@ -1,10 +1,12 @@
 {
   DivElement tableWrapper=DivElement.as(tr.getParentElement().getParentElement().getParentElement());
   AbstractRowContainer body=(AbstractRowContainer)grid.getEscalator().getBody();
-  int rowTop=body.getRowTop(tr);
+  double rowTop=body.getRowTop(tr);
   int bodyTop=body.getElement().getAbsoluteTop();
   int wrapperTop=tableWrapper.getAbsoluteTop();
-  setBounds(editorOverlay,tr.getOffsetLeft(),rowTop + bodyTop - wrapperTop,tr.getOffsetWidth(),tr.getOffsetHeight());
+  double width=Util.getRequiredWidthBoundingClientRectDouble(tr);
+  double height=Util.getRequiredHeightBoundingClientRectDouble(tr);
+  setBounds(editorOverlay,tr.getOffsetLeft(),rowTop + bodyTop - wrapperTop,width,height);
   updateHorizontalScrollPosition();
   scrollHandler=grid.addScrollHandler(new ScrollHandler(){
     @Override public void onScroll(    ScrollEvent event){
