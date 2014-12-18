@@ -1,0 +1,24 @@
+{
+  if (target == null || attribute == null || value == null) {
+    throw new IllegalArgumentException("Parameters with null value not allowed");
+  }
+  boolean success=false;
+  try {
+    Method setter=findSetterForAttribute(target.getClass(),attribute);
+    if (setter == null) {
+      success=false;
+    }
+ else {
+      Object param=fromAttributeValue(setter.getParameterTypes()[0],value);
+      setter.invoke(target,param);
+      success=true;
+    }
+  }
+ catch (  Exception e) {
+    getLogger().log(Level.WARNING,"Failed to set attribute " + attribute,e);
+  }
+  if (!success) {
+    getLogger().info("property " + attribute + " ignored by default attribute handler");
+  }
+  return success;
+}

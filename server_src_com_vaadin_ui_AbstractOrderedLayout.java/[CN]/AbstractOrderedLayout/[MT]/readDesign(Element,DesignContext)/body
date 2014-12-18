@@ -1,0 +1,46 @@
+{
+  super.readDesign(design,designContext);
+  if (design.hasAttr("margin")) {
+    setMargin(DesignAttributeHandler.readAttribute("margin",design.attributes(),Boolean.class));
+  }
+  for (  Element childComponent : design.children()) {
+    Attributes attr=childComponent.attributes();
+    Component newChild=designContext.readDesign(childComponent);
+    addComponent(newChild);
+    int bitMask=0;
+    if (attr.hasKey(":middle")) {
+      bitMask+=AlignmentInfo.Bits.ALIGNMENT_VERTICAL_CENTER;
+    }
+ else     if (attr.hasKey(":bottom")) {
+      bitMask+=AlignmentInfo.Bits.ALIGNMENT_BOTTOM;
+    }
+ else {
+      bitMask+=AlignmentInfo.Bits.ALIGNMENT_TOP;
+    }
+    if (attr.hasKey(":center")) {
+      bitMask+=AlignmentInfo.Bits.ALIGNMENT_HORIZONTAL_CENTER;
+    }
+ else     if (attr.hasKey(":right")) {
+      bitMask+=AlignmentInfo.Bits.ALIGNMENT_RIGHT;
+    }
+ else {
+      bitMask+=AlignmentInfo.Bits.ALIGNMENT_LEFT;
+    }
+    setComponentAlignment(newChild,new Alignment(bitMask));
+    if (attr.hasKey(":expand")) {
+      String value=attr.get(":expand");
+      if (value.length() > 0) {
+        try {
+          float ratio=Float.valueOf(value);
+          setExpandRatio(newChild,ratio);
+        }
+ catch (        NumberFormatException nfe) {
+          getLogger().info("Failed to parse expand ratio " + value);
+        }
+      }
+ else {
+        setExpandRatio(newChild,1.0f);
+      }
+    }
+  }
+}

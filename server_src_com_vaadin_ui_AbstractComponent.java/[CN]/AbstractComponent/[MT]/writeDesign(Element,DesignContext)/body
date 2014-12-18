@@ -1,0 +1,26 @@
+{
+  DesignAttributeHandler.clearElement(design);
+  AbstractComponent def=designContext.getDefaultInstance(this);
+  Attributes attr=design.attributes();
+  for (  String attribute : getDefaultAttributes()) {
+    DesignAttributeHandler.writeAttribute(this,attribute,attr,def);
+  }
+  if (explicitImmediateValue != null) {
+    DesignAttributeHandler.writeAttribute("immediate",attr,explicitImmediateValue,def.isImmediate(),Boolean.class);
+  }
+  if (getLocale() != null && (getParent() == null || !getLocale().equals(getParent().getLocale()))) {
+    design.attr("locale",getLocale().toString());
+  }
+  writeSize(attr,def);
+  String errorMsg=getComponentError() != null ? getComponentError().getFormattedHtmlMessage() : null;
+  String defErrorMsg=def.getComponentError() != null ? def.getComponentError().getFormattedHtmlMessage() : null;
+  if (!SharedUtil.equals(errorMsg,defErrorMsg)) {
+    attr.put("error",errorMsg);
+  }
+  if (this instanceof Focusable) {
+    DesignAttributeHandler.writeAttribute("tabindex",attr,((Focusable)this).getTabIndex(),((Focusable)def).getTabIndex(),Integer.class);
+  }
+  if (isResponsive()) {
+    attr.put("responsive","");
+  }
+}

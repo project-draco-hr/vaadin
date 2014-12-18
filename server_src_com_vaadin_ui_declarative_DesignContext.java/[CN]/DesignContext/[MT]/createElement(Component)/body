@@ -1,0 +1,18 @@
+{
+  Class<?> componentClass=childComponent.getClass();
+  String packageName=componentClass.getPackage().getName();
+  String prefix=packageToPrefix.get(packageName);
+  if (prefix == null) {
+    prefix=packageName.replace('.','_');
+    twoWayMap(prefix,packageName,prefixToPackage,packageToPrefix);
+  }
+  prefix=prefix + "-";
+  String className=classNameToElementName(componentClass.getSimpleName());
+  Element newElement=doc.createElement(prefix + className);
+  childComponent.writeDesign(newElement,this);
+  String localId=componentToLocalId.get(childComponent);
+  if (localId != null) {
+    newElement.attr(LOCAL_ID_ATTRIBUTE,localId);
+  }
+  return newElement;
+}

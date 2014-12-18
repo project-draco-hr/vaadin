@@ -76,6 +76,7 @@ catch (  UnreachableCvalServerException expected) {
     Assert.assertTrue(expected.getMessage().contains("Custom"));
   }
   Assert.assertTrue(cacheExists(productNameCval));
+  deleteCache(productNameCval);
   licenseChecker.setLicenseProvider(unlimitedLicenseProvider);
   licenseChecker.validateProduct(productNameCval,"2.1",productTitleCval);
   Assert.assertTrue(cacheExists(productNameCval));
@@ -89,5 +90,9 @@ catch (  UnreachableCvalServerException expected) {
  catch (  InvalidCvalException expected) {
     assertEquals(productNameCval,expected.name);
   }
+  Assert.assertTrue(cacheExists(productNameCval));
+  deleteCache(productNameCval);
+  licenseChecker.setLicenseProvider(nullVersionLicenseProvider);
+  licenseChecker.validateProduct(productNameCval,"2.1",productTitleCval);
   Assert.assertTrue(cacheExists(productNameCval));
 }

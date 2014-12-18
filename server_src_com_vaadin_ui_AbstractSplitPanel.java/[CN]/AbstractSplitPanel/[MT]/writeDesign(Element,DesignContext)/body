@@ -1,0 +1,33 @@
+{
+  super.writeDesign(design,designContext);
+  AbstractSplitPanel def=(AbstractSplitPanel)designContext.getDefaultInstance(this);
+  if (getSplitPosition() != def.getSplitPosition() || !def.getSplitPositionUnit().equals(getSplitPositionUnit())) {
+    String splitPositionString=asString(getSplitPosition()) + getSplitPositionUnit();
+    design.attr("split-position",splitPositionString);
+  }
+  if (getMinSplitPosition() != def.getMinSplitPosition() || !def.getMinSplitPositionUnit().equals(getMinSplitPositionUnit())) {
+    design.attr("min-split-position",asString(getMinSplitPosition()) + getMinSplitPositionUnit());
+  }
+  if (getMaxSplitPosition() != def.getMaxSplitPosition() || !def.getMaxSplitPositionUnit().equals(getMaxSplitPositionUnit())) {
+    design.attr("max-split-position",asString(getMaxSplitPosition()) + getMaxSplitPositionUnit());
+  }
+  if (getSplitterState().positionReversed) {
+    design.attr("reversed","");
+  }
+  if (!designContext.shouldWriteChildren(this,def)) {
+    return;
+  }
+  Component firstComponent=getFirstComponent();
+  Component secondComponent=getSecondComponent();
+  if (firstComponent != null) {
+    Element childElement=designContext.createElement(firstComponent);
+    design.appendChild(childElement);
+  }
+  if (secondComponent != null) {
+    Element childElement=designContext.createElement(secondComponent);
+    if (firstComponent == null) {
+      childElement.attr(":second","");
+    }
+    design.appendChild(childElement);
+  }
+}

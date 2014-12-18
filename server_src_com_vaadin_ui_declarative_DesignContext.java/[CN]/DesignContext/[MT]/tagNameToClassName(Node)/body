@@ -1,0 +1,28 @@
+{
+  String tagName=node.nodeName();
+  if (tagName.equals("v-addon")) {
+    return node.attr("class");
+  }
+  String[] parts=tagName.split("-");
+  if (parts.length < 2) {
+    throw new DesignException("The tagname '" + tagName + "' is invalid: missing prefix.");
+  }
+  String prefixName=parts[0];
+  String packageName=prefixToPackage.get(prefixName);
+  if (packageName == null) {
+    throw new DesignException("Unknown tag: " + tagName);
+  }
+  int firstCharacterIndex=prefixName.length() + 1;
+  tagName=tagName.substring(firstCharacterIndex,firstCharacterIndex + 1).toUpperCase(Locale.ENGLISH) + tagName.substring(firstCharacterIndex + 1);
+  int i;
+  while ((i=tagName.indexOf("-")) != -1) {
+    int length=tagName.length();
+    if (i != length - 1) {
+      tagName=tagName.substring(0,i) + tagName.substring(i + 1,i + 2).toUpperCase(Locale.ENGLISH) + tagName.substring(i + 2);
+    }
+ else {
+      System.out.println("A tag name should not end with '-'.");
+    }
+  }
+  return packageName + "." + tagName;
+}

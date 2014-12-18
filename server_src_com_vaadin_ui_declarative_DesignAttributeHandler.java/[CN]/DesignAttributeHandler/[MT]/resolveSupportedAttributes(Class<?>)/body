@@ -1,0 +1,25 @@
+{
+  if (clazz == null) {
+    throw new IllegalArgumentException("The clazz can not be null");
+  }
+  if (cache.containsKey(clazz.getCanonicalName())) {
+    return;
+  }
+  BeanInfo beanInfo;
+  try {
+    beanInfo=Introspector.getBeanInfo(clazz);
+  }
+ catch (  IntrospectionException e) {
+    throw new RuntimeException("Could not get supported attributes for class " + clazz.getName());
+  }
+  AttributeCacheEntry entry=new AttributeCacheEntry();
+  for (  PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
+    Method getter=descriptor.getReadMethod();
+    Method setter=descriptor.getWriteMethod();
+    if (getter != null && setter != null && isSupported(descriptor.getPropertyType())) {
+      String attribute=toAttributeName(descriptor.getName());
+      entry.addAttribute(attribute,getter,setter);
+    }
+  }
+  cache.put(clazz,entry);
+}

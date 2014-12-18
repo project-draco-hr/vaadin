@@ -1,0 +1,33 @@
+{
+  Attributes attr=design.attributes();
+  for (  String attribute : getDefaultAttributes()) {
+    if (design.hasAttr(attribute)) {
+      DesignAttributeHandler.assignValue(this,attribute,design.attr(attribute));
+    }
+  }
+  if (attr.hasKey("immediate")) {
+    setImmediate(DesignAttributeHandler.parseBoolean(attr.get("immediate")));
+  }
+  if (attr.hasKey("locale")) {
+    setLocale(getLocaleFromString(attr.get("locale")));
+  }
+  readSize(attr);
+  if (attr.hasKey("error")) {
+    UserError error=new UserError(attr.get("error"),ContentMode.HTML,ErrorLevel.ERROR);
+    setComponentError(error);
+  }
+  if (design.hasAttr("tabindex") && this instanceof Focusable) {
+    ((Focusable)this).setTabIndex(DesignAttributeHandler.readAttribute("tabindex",design.attributes(),Integer.class));
+  }
+  if (attr.hasKey("responsive")) {
+    setResponsive(DesignAttributeHandler.parseBoolean(attr.get("responsive")));
+  }
+  Set<String> supported=new HashSet<String>();
+  supported.addAll(getDefaultAttributes());
+  supported.addAll(getCustomAttributes());
+  for (  Attribute a : attr) {
+    if (!a.getKey().startsWith(":") && !supported.contains(a.getKey())) {
+      getLogger().info("Unsupported attribute found when reading from design : " + a.getKey());
+    }
+  }
+}

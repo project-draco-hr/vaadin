@@ -1,0 +1,24 @@
+{
+  Element head=doc.head();
+  if (head == null) {
+    return;
+  }
+  for (  Node child : head.childNodes()) {
+    if (child instanceof Element) {
+      Element childElement=(Element)child;
+      if ("meta".equals(childElement.tagName())) {
+        Attributes attributes=childElement.attributes();
+        if (attributes.hasKey("name") && attributes.hasKey("content") && "package-mapping".equals(attributes.get("name"))) {
+          String contentString=attributes.get("content");
+          String[] parts=contentString.split(":");
+          if (parts.length != 2) {
+            throw new DesignException("The meta tag '" + child.toString() + "' cannot be parsed.");
+          }
+          String prefixName=parts[0];
+          String packageName=parts[1];
+          twoWayMap(prefixName,packageName,prefixToPackage,packageToPrefix);
+        }
+      }
+    }
+  }
+}
