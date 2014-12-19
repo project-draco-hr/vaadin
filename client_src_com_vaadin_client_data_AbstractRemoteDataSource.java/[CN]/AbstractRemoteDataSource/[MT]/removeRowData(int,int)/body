@@ -1,7 +1,8 @@
 {
   Profiler.enter("AbstractRemoteDataSource.removeRowData");
   size-=count;
-  for (int i=firstRowIndex + count; i < cached.getEnd(); i++) {
+  int firstMoved=Math.max(firstRowIndex + count,cached.getStart());
+  for (int i=firstMoved; i < cached.getEnd(); i++) {
     moveRowFromIndexToIndex(i,i - count);
   }
   Range removedRange=Range.withLength(firstRowIndex,count);
@@ -13,6 +14,9 @@
     Range remainsBefore=partitions[0];
     Range transposedRemainsAfter=partitions[2].offsetBy(-removedRange.length());
     cached=remainsBefore.combineWith(transposedRemainsAfter);
+  }
+ else   if (removedRange.getEnd() <= cached.getStart()) {
+    cached=cached.offsetBy(-removedRange.length());
   }
   assertDataChangeHandlerIsInjected();
   dataChangeHandler.dataRemoved(firstRowIndex,count);
