@@ -1,6 +1,7 @@
 {
-  boolean startWithin=getStart() >= bounds.getStart();
-  boolean endWithin=getEnd() <= bounds.getEnd();
+  boolean startWithin=bounds.contains(getStart());
+  boolean endWithin=bounds.contains(getEnd());
+  boolean boundsWithin=getStart() < bounds.getStart() && getEnd() >= bounds.getEnd();
   if (startWithin) {
     if (endWithin) {
       return this;
@@ -13,8 +14,11 @@
     if (endWithin) {
       return Range.between(bounds.getStart(),getEnd());
     }
- else {
+ else     if (boundsWithin) {
       return bounds;
+    }
+ else {
+      return Range.withLength(getStart(),0);
     }
   }
 }
