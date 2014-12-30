@@ -3,13 +3,14 @@
   if (configuration == null) {
     VaadinSession session=VaadinSession.getCurrent();
     if (session == null) {
-      HttpServletRequest currentRequest=request.get();
+      HttpServletRequest currentRequest=VaadinServletService.getCurrentServletRequest();
       if (currentRequest != null) {
         HttpSession httpSession=currentRequest.getSession(false);
         if (httpSession != null) {
           Map<Class<?>,CurrentInstance> oldCurrent=CurrentInstance.setCurrent((VaadinSession)null);
           try {
-            session=getService().findVaadinSession(new VaadinServletRequest(currentRequest,getService()));
+            VaadinServletService service=(VaadinServletService)VaadinService.getCurrent();
+            session=service.findVaadinSession(new VaadinServletRequest(currentRequest,service));
           }
   finally {
             CurrentInstance.restoreInstances(oldCurrent);
@@ -24,9 +25,10 @@
         session.lock();
         configuration=(DeploymentConfiguration)session.getAttribute(name);
         if (configuration == null) {
+          ApplicationRunnerServlet servlet=(ApplicationRunnerServlet)VaadinServlet.getCurrent();
           Class<?> classToRun;
           try {
-            classToRun=getClassToRun();
+            classToRun=servlet.getClassToRun();
           }
  catch (          ClassNotFoundException e) {
             return originalConfiguration;
@@ -37,7 +39,7 @@
             for (            Conf entry : customDeploymentConfiguration.value()) {
               initParameters.put(entry.name(),entry.value());
             }
-            configuration=new DefaultDeploymentConfiguration(getClass(),initParameters);
+            configuration=new DefaultDeploymentConfiguration(servlet.getClass(),initParameters);
           }
  else {
             configuration=originalConfiguration;
