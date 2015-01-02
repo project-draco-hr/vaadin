@@ -1,0 +1,40 @@
+{
+  Set<Class<?>> classes=new HashSet<Class<?>>();
+  for (  Class<?> c : VaadinClasses.getAllServerSideClasses()) {
+    while (c != null && c.getName().startsWith("com.vaadin.")) {
+      classes.add(c);
+      c=c.getSuperclass();
+    }
+  }
+  for (  Class<?> c : classes) {
+    boolean found=false;
+    for (    Method m : c.getDeclaredMethods()) {
+      if (m.getName().equals("addListener")) {
+        if (m.getParameterTypes().length != 1) {
+          continue;
+        }
+        String packageName="com.vaadin.tests.server";
+        if (Component.class.isAssignableFrom(c)) {
+          packageName+=".component." + c.getSimpleName().toLowerCase();
+          continue;
+        }
+        if (!found) {
+          found=true;
+          System.out.println("package " + packageName + ";");
+          System.out.println("import " + AbstractListenerMethodsTestBase.class.getName() + ";");
+          System.out.println("import " + c.getName() + ";");
+          System.out.println("public class " + c.getSimpleName() + "Listeners extends "+ AbstractListenerMethodsTestBase.class.getSimpleName()+ " {");
+        }
+        String listenerClassName=m.getParameterTypes()[0].getSimpleName();
+        String eventClassName=listenerClassName.replaceFirst("Listener$","Event");
+        System.out.println("public void test" + listenerClassName + "() throws Exception {");
+        System.out.println("    testListener(" + c.getSimpleName() + ".class, "+ eventClassName+ ".class, "+ listenerClassName+ ".class);");
+        System.out.println("}");
+      }
+    }
+    if (found) {
+      System.out.println("}");
+      System.out.println();
+    }
+  }
+}
