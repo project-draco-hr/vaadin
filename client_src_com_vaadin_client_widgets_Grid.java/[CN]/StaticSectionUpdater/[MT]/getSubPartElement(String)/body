@@ -26,6 +26,21 @@
  else   if (type.equalsIgnoreCase("footer")) {
     container=escalator.getFooter();
   }
+ else   if (type.equalsIgnoreCase("editor")) {
+    if (editor.getState() != State.ACTIVE) {
+      return null;
+    }
+    if (indices.length == 0) {
+      return DOM.asOld(editor.editorOverlay);
+    }
+ else     if (indices.length == 1 && indices[0] < columns.size()) {
+      escalator.scrollToColumn(indices[0],ScrollDestination.ANY,0);
+      return editor.getWidget(columns.get(indices[0])).getElement();
+    }
+ else {
+      return null;
+    }
+  }
   if (null != container) {
     if (indices.length == 0) {
       return DOM.asOld(container.getElement());

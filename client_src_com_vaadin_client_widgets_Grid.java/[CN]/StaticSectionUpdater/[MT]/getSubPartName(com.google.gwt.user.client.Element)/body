@@ -12,5 +12,17 @@
       return containerType.get(i) + "[" + cell.getRow()+ (containerRow ? "]" : "][" + cell.getColumn() + "]");
     }
   }
+  if (editor.getState() == State.ACTIVE) {
+    if (editor.editorOverlay.isOrHasChild(subElement)) {
+      int i=0;
+      for (      Column<?,T> column : columns) {
+        if (editor.getWidget(column).getElement().isOrHasChild(subElement)) {
+          return "editor[" + i + "]";
+        }
+        ++i;
+      }
+      return "editor";
+    }
+  }
   return null;
 }

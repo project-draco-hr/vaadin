@@ -1,0 +1,12 @@
+{
+  selectMenuPath("Component","Editor","Edit item 5");
+  assertFalse(logContainsText("Exception occured, java.lang.IllegalStateException"));
+  GridEditorElement editor=getGridElement().getEditor();
+  WebElement intField=editor.getField(7);
+  intField.clear();
+  intField.sendKeys("banana phone");
+  editor.save();
+  assertTrue("No exception on invalid value.",logContainsText("Exception occured, com.vaadin.data.fieldgroup.FieldGroup$CommitExceptionCommit failed"));
+  selectMenuPath("Component","Editor","Edit item 100");
+  assertFalse("Exception should not exist",isElementPresent(NotificationElement.class));
+}
