@@ -1,12 +1,11 @@
 {
   openTestURL();
-  WebElement window=driver.findElement(By.id(WINDOW_ID));
+  WindowElement window=$(WindowElement.class).id(WINDOW_ID);
   WebElement scrollableElement=window.findElement(By.className("v-scrollable"));
   TestBenchElementCommands scrollable=testBenchElement(scrollableElement);
   scrollable.scroll(1000);
-  WebElement comboBox=driver.findElement(By.id(COMBOBOX_ID));
-  WebElement selectButton=driver.findElement(By.className("v-filterselect-button"));
-  selectButton.click();
-  Thread.sleep(1000);
-  compareScreen(getScreenshotBaseName());
+  ComboBoxElement comboBox=$(ComboBoxElement.class).id(COMBOBOX_ID);
+  comboBox.openPopup();
+  waitForElementPresent(By.className("v-filterselect-suggestpopup"));
+  compareScreen("combobox-open");
 }

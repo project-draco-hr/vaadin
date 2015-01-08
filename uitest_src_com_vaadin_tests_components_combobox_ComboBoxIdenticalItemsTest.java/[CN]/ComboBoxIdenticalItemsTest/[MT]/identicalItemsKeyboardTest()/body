@@ -1,16 +1,14 @@
 {
   openTestURL();
-  waitForElementVisible(By.className("v-filterselect"));
-  waitForElementVisible(By.id("Log"));
-  select=findElement(By.vaadin("/VVerticalLayout[0]/ChildComponentContainer[1]/VVerticalLayout[0]/ChildComponentContainer[1]/VFilterSelect[0]/domChild[0]"));
-  select.click();
-  Keys[] downDownEnter=new Keys[]{Keys.ARROW_DOWN,Keys.ARROW_DOWN,Keys.ENTER};
-  sendKeys(downDownEnter);
-  assertLogText("1. Item one-1 selected");
-  sendKeys(downDownEnter);
-  assertLogText("2. Item one-2 selected");
-  sendKeys(downDownEnter);
-  assertLogText("3. Item two selected");
-  sendKeys(new Keys[]{Keys.ARROW_UP,Keys.ARROW_UP,Keys.ARROW_UP,Keys.ENTER});
-  assertLogText("4. Item one-1 selected");
+  int delay=BrowserUtil.isPhantomJS(getDesiredCapabilities()) ? 500 : 0;
+  ComboBoxElement combobox=$(ComboBoxElement.class).first();
+  combobox.sendKeys(delay,Keys.ARROW_DOWN,getReturn());
+  waitUntilLogText("1. Item one-1 selected");
+  Keys[] downDownEnter=new Keys[]{Keys.ARROW_DOWN,Keys.ARROW_DOWN,getReturn()};
+  combobox.sendKeys(delay,downDownEnter);
+  waitUntilLogText("2. Item one-2 selected");
+  combobox.sendKeys(delay,downDownEnter);
+  waitUntilLogText("3. Item two selected");
+  combobox.sendKeys(delay,new Keys[]{Keys.ARROW_UP,Keys.ARROW_UP,Keys.ARROW_UP,getReturn()});
+  waitUntilLogText("4. Item one-1 selected");
 }
