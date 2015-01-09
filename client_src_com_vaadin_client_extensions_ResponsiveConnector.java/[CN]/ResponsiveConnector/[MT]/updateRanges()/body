@@ -1,0 +1,31 @@
+{
+  LayoutManager layoutManager=LayoutManager.get(getConnection());
+  com.google.gwt.user.client.Element element=target.getWidget().getElement();
+  int width=layoutManager.getOuterWidth(element);
+  int height=layoutManager.getOuterHeight(element);
+  boolean forceRedraw=false;
+  String oldWidthRanges=currentWidthRanges;
+  String oldHeightRanges=currentHeightRanges;
+  currentWidthRanges=resolveBreakpoint("width",width);
+  if (!"".equals(currentWidthRanges)) {
+    element.setAttribute("width-range",currentWidthRanges);
+    forceRedraw=true;
+  }
+ else {
+    element.removeAttribute("width-range");
+  }
+  currentHeightRanges=resolveBreakpoint("height",height);
+  if (!"".equals(currentHeightRanges)) {
+    element.setAttribute("height-range",currentHeightRanges);
+    forceRedraw=true;
+  }
+ else {
+    element.removeAttribute("height-range");
+  }
+  if (forceRedraw) {
+    forceRedrawIfIE8(element);
+  }
+  if (!currentWidthRanges.equals(oldWidthRanges) || !currentHeightRanges.equals(oldHeightRanges)) {
+    layoutManager.setNeedsMeasureRecursively(ResponsiveConnector.this.target);
+  }
+}
