@@ -1,33 +1,3 @@
 {
-  if (BrowserInfo.get().requiresOverflowAutoFix()) {
-    final String originalOverflow=elem.getStyle().getProperty("overflow");
-    if ("hidden".equals(originalOverflow)) {
-      return;
-    }
-    final int scrolltop=elem.getScrollTop();
-    final int scrollleft=elem.getScrollLeft();
-    elem.getStyle().setProperty("overflow","hidden");
-    Scheduler.get().scheduleDeferred(new Command(){
-      @Override public void execute(){
-        elem.getStyle().setProperty("overflow",originalOverflow);
-        if (scrolltop > 0 || elem.getScrollTop() > 0) {
-          int scrollvalue=scrolltop;
-          if (scrollvalue == 0) {
-            scrollvalue=elem.getScrollTop();
-          }
-          elem.setScrollTop(scrollvalue - 1);
-          elem.setScrollTop(scrollvalue);
-        }
-        if ((BrowserInfo.get().isChrome() || (BrowserInfo.get().isSafari() && BrowserInfo.get().getWebkitVersion() >= 534)) && (scrollleft > 0 || elem.getScrollLeft() > 0)) {
-          int scrollvalue=scrollleft;
-          if (scrollvalue == 0) {
-            scrollvalue=elem.getScrollLeft();
-          }
-          elem.setScrollLeft(scrollvalue - 1);
-          elem.setScrollLeft(scrollvalue);
-        }
-      }
-    }
-);
-  }
+  WidgetUtil.runWebkitOverflowAutoFix(elem);
 }
