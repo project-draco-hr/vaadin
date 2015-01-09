@@ -10,7 +10,7 @@
   }
   Scheduler.get().scheduleDeferred(new Command(){
     @Override public void execute(){
-      if (!hasActiveRequest()) {
+      if (!isApplicationRunning() || !(hasActiveRequest() || deferredSendPending)) {
         getLoadingIndicator().hide();
         extendLiferaySession();
       }

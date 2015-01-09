@@ -1,4 +1,5 @@
 {
+  boolean showLoadingIndicator=false;
   JsonArray reqJson=Json.createArray();
   if (!pendingInvocations.isEmpty()) {
     if (ApplicationConfiguration.isDebugMode()) {
@@ -16,10 +17,14 @@
           Type type=new Type(invocation.getInterfaceName(),null);
           Method method=type.getMethod(invocation.getMethodName());
           parameterTypes=method.getParameterTypes();
+          showLoadingIndicator|=!TypeDataStore.isBackgroundMessage(method);
         }
  catch (        NoDataException e) {
           throw new RuntimeException("No type data for " + invocation.toString(),e);
         }
+      }
+ else {
+        showLoadingIndicator=true;
       }
       for (int i=0; i < invocation.getParameters().length; ++i) {
         Type type=null;
@@ -44,6 +49,9 @@
     String widgetsetVersion=Version.getFullVersion();
     extraParams+="v-wsver=" + widgetsetVersion;
     getConfiguration().setWidgetsetVersionSent();
+  }
+  if (showLoadingIndicator) {
+    getLoadingIndicator().trigger();
   }
   makeUidlRequest(reqJson,extraParams);
 }
