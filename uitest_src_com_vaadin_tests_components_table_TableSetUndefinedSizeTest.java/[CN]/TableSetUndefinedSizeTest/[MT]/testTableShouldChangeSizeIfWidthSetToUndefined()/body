@@ -1,0 +1,16 @@
+{
+  openTestURL();
+  $(ButtonElement.class).caption("width 500px").first().click();
+  final TableElement table=$(TableElement.class).first();
+  final int previousWidth=table.getSize().getWidth();
+  $(ButtonElement.class).caption("undefined width").first().click();
+  waitUntil(new ExpectedCondition<Boolean>(){
+    @Override public Boolean apply(    WebDriver input){
+      return previousWidth != table.getSize().getWidth();
+    }
+    @Override public String toString(){
+      return "table to change size (was: " + previousWidth + ")";
+    }
+  }
+);
+}
