@@ -1,14 +1,21 @@
 {
-  log.setText("Row " + request.getRowIndex() + " edit committed");
-  List<Data> rowData=ds.getRow(request.getRowIndex());
-  int i=0;
-  for (; i < COLUMNS - MANUALLY_FORMATTED_COLUMNS; i++) {
-    rowData.get(i).value=getWidget(i).getText();
+  try {
+    log.setText("Row " + request.getRowIndex() + " edit committed");
+    List<Data> rowData=ds.getRow(request.getRowIndex());
+    int i=0;
+    for (; i < COLUMNS - MANUALLY_FORMATTED_COLUMNS; i++) {
+      rowData.get(i).value=getWidget(i).getText();
+    }
+    rowData.get(i).value=Integer.valueOf(getWidget(i++).getText());
+    rowData.get(i).value=new Date(getWidget(i++).getText());
+    rowData.get(i).value=getWidget(i++).getText();
+    rowData.get(i).value=Integer.valueOf(getWidget(i++).getText());
+    rowData.get(i).value=Integer.valueOf(getWidget(i++).getText());
+    ds.asList().set(request.getRowIndex(),rowData);
+    request.success();
   }
-  rowData.get(i).value=Integer.valueOf(getWidget(i++).getText());
-  rowData.get(i).value=new Date(getWidget(i++).getText());
-  rowData.get(i).value=getWidget(i++).getText();
-  rowData.get(i).value=Integer.valueOf(getWidget(i++).getText());
-  rowData.get(i).value=Integer.valueOf(getWidget(i++).getText());
-  ds.asList().set(request.getRowIndex(),rowData);
+ catch (  Exception e) {
+    Logger.getLogger(getClass().getName()).warning(e.toString());
+    request.fail();
+  }
 }
