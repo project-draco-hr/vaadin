@@ -1,0 +1,40 @@
+{
+  if (vaadinUri == null) {
+    return null;
+  }
+  if (vaadinUri.startsWith("theme://")) {
+    final String themeUri=getThemeUri();
+    vaadinUri=themeUri + vaadinUri.substring(7);
+  }
+  if (vaadinUri.startsWith(ApplicationConstants.PUBLISHED_PROTOCOL_PREFIX)) {
+    vaadinUri=ApplicationConstants.APP_PROTOCOL_PREFIX + ApplicationConstants.PUBLISHED_FILE_PATH + vaadinUri.substring(ApplicationConstants.PUBLISHED_PROTOCOL_PREFIX.length());
+  }
+  if (vaadinUri.startsWith(ApplicationConstants.APP_PROTOCOL_PREFIX)) {
+    String relativeUrl=vaadinUri.substring(ApplicationConstants.APP_PROTOCOL_PREFIX.length());
+    String serviceUrl=getServiceUrl();
+    String serviceUrlParameterName=getServiceUrlParameterName();
+    if (serviceUrlParameterName != null) {
+      String[] parts=relativeUrl.split("\\?",2);
+      String path=parts[0];
+      if (parts.length > 1) {
+        String appUrlParams=parts[1];
+        serviceUrl=SharedUtil.addGetParameters(serviceUrl,appUrlParams);
+      }
+      if (!path.startsWith("/")) {
+        path='/' + path;
+      }
+      String pathParam=serviceUrlParameterName + "=" + encodeQueryStringParameterValue(path);
+      serviceUrl=SharedUtil.addGetParameters(serviceUrl,pathParam);
+      vaadinUri=serviceUrl;
+    }
+ else {
+      vaadinUri=serviceUrl + relativeUrl;
+    }
+  }
+  if (vaadinUri.startsWith(ApplicationConstants.VAADIN_PROTOCOL_PREFIX)) {
+    final String vaadinDirUri=getVaadinDirUrl();
+    String relativeUrl=vaadinUri.substring(ApplicationConstants.VAADIN_PROTOCOL_PREFIX.length());
+    vaadinUri=vaadinDirUri + relativeUrl;
+  }
+  return vaadinUri;
+}

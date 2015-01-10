@@ -41,6 +41,22 @@
     head.appendElement("link").attr("rel","shortcut icon").attr("type","image/vnd.microsoft.icon").attr("href",themeUri + "/favicon.ico");
     head.appendElement("link").attr("rel","icon").attr("type","image/vnd.microsoft.icon").attr("href",themeUri + "/favicon.ico");
   }
+  JavaScript javaScript=uiClass.getAnnotation(JavaScript.class);
+  if (javaScript != null) {
+    String[] resources=javaScript.value();
+    for (    String resource : resources) {
+      String url=registerDependency(context,uiClass,resource);
+      head.appendElement("script").attr("type","text/javascript").attr("src",url);
+    }
+  }
+  StyleSheet styleSheet=uiClass.getAnnotation(StyleSheet.class);
+  if (styleSheet != null) {
+    String[] resources=styleSheet.value();
+    for (    String resource : resources) {
+      String url=registerDependency(context,uiClass,resource);
+      head.appendElement("link").attr("rel","stylesheet").attr("type","text/css").attr("href",url);
+    }
+  }
   Element body=document.body();
   body.attr("scroll","auto");
   body.addClass(ApplicationConstants.GENERATED_BODY_CLASSNAME);
