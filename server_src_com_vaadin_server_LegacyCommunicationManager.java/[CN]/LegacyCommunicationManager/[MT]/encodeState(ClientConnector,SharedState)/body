@@ -5,13 +5,10 @@
   JsonValue diffState=connectorTracker.getDiffState(connector);
   boolean supportsDiffState=!JavaScriptConnectorState.class.isAssignableFrom(stateType);
   if (diffState == null && supportsDiffState) {
-    try {
-      SharedState referenceState=stateType.newInstance();
-      EncodeResult encodeResult=JsonCodec.encode(referenceState,null,stateType,uI.getConnectorTracker());
-      diffState=encodeResult.getEncodedValue();
-    }
- catch (    Exception e) {
-      getLogger().log(Level.WARNING,"Error creating reference object for state of type {0}",stateType.getName());
+    diffState=referenceDiffStates.get(stateType);
+    if (diffState == null) {
+      diffState=createReferenceDiffStateState(stateType);
+      referenceDiffStates.put(stateType,diffState);
     }
   }
   EncodeResult encodeResult=JsonCodec.encode(state,diffState,stateType,uI.getConnectorTracker());
