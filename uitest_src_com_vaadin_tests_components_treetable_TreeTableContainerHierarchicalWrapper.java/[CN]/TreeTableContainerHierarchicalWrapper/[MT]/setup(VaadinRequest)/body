@@ -1,0 +1,25 @@
+{
+  treetable=new TreeTable();
+  treetable.setImmediate(true);
+  treetable.setWidth("100%");
+  treetable.setHeight(null);
+  treetable.setPageLength(0);
+  treetable.setContainerDataSource(hierarchicalWrapper);
+  treetable.addExpandListener(new ExpandListener(){
+    @Override public void nodeExpand(    ExpandEvent event){
+      Bean parent=((Bean)event.getItemId());
+      if (!hierarchicalWrapper.hasChildren(parent)) {
+        for (int i=1; i <= 5; i++) {
+          Bean newChild=new Bean(parent.getId() + "-" + i);
+          beanContainer.addBean(newChild);
+          hierarchicalWrapper.setParent(newChild,parent);
+        }
+      }
+    }
+  }
+);
+  for (int i=0; i < 3; i++) {
+    beanContainer.addBean(new Bean("Item " + i));
+  }
+  addComponent(treetable);
+}
