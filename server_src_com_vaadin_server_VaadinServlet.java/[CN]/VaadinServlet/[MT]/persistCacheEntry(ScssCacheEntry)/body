@@ -1,0 +1,19 @@
+{
+  String scssFileName=cacheEntry.getScssFileName();
+  if (scssFileName == null) {
+    if (!scssCompileWarWarningEmitted) {
+      getLogger().warning("Could not persist scss cache because no real file was found for the compiled scss file. " + "This might happen e.g. if serving the scss file directly from a .war file.");
+      scssCompileWarWarningEmitted=true;
+    }
+    return;
+  }
+  File scssFile=new File(scssFileName);
+  File cacheFile=getScssCacheFile(scssFile);
+  String cacheEntryJsonString=cacheEntry.asJson();
+  try {
+    Files.write(cacheEntryJsonString,cacheFile,Charsets.UTF_8);
+  }
+ catch (  IOException e) {
+    getLogger().log(Level.WARNING,"Error persisting scss cache " + cacheFile,e);
+  }
+}

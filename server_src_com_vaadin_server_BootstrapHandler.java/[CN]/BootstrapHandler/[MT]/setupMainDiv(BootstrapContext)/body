@@ -15,6 +15,7 @@
   VaadinRequest request=context.getRequest();
   VaadinService vaadinService=request.getService();
   String vaadinLocation=vaadinService.getStaticFileLocation(request) + "/VAADIN/";
+  String versionQueryParam="?v=" + Version.getFullVersion();
   if (context.getPushMode().isEnabled()) {
     String pushJS=vaadinLocation;
     if (context.getRequest().getService().getDeploymentConfiguration().isProductionMode()) {
@@ -23,9 +24,10 @@
  else {
       pushJS+=ApplicationConstants.VAADIN_PUSH_DEBUG_JS;
     }
+    pushJS+=versionQueryParam;
     fragmentNodes.add(new Element(Tag.valueOf("script"),"").attr("type","text/javascript").attr("src",pushJS));
   }
-  String bootstrapLocation=vaadinLocation + ApplicationConstants.VAADIN_BOOTSTRAP_JS;
+  String bootstrapLocation=vaadinLocation + ApplicationConstants.VAADIN_BOOTSTRAP_JS + versionQueryParam;
   fragmentNodes.add(new Element(Tag.valueOf("script"),"").attr("type","text/javascript").attr("src",bootstrapLocation));
   Element mainScriptTag=new Element(Tag.valueOf("script"),"").attr("type","text/javascript");
   StringBuilder builder=new StringBuilder();

@@ -1,0 +1,18 @@
+{
+  VaadinServletService service=super.createServletService(deploymentConfiguration);
+  final SystemMessagesProvider provider=service.getSystemMessagesProvider();
+  service.setSystemMessagesProvider(new SystemMessagesProvider(){
+    @Override public SystemMessages getSystemMessages(    SystemMessagesInfo systemMessagesInfo){
+      if (systemMessagesInfo.getRequest() == null) {
+        return provider.getSystemMessages(systemMessagesInfo);
+      }
+      Object messages=systemMessagesInfo.getRequest().getAttribute(CUSTOM_SYSTEM_MESSAGES_PROPERTY);
+      if (messages instanceof SystemMessages) {
+        return (SystemMessages)messages;
+      }
+      return provider.getSystemMessages(systemMessagesInfo);
+    }
+  }
+);
+  return service;
+}

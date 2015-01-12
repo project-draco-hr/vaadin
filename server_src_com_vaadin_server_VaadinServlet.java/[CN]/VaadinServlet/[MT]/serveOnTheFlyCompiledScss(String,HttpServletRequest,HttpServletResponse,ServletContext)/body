@@ -19,10 +19,19 @@
   }
 synchronized (SCSS_MUTEX) {
     ScssCacheEntry cacheEntry=scssCache.get(scssFilename);
+    if (cacheEntry == null) {
+      try {
+        cacheEntry=loadPersistedScssCache(scssFilename,sc);
+      }
+ catch (      Exception e) {
+        getLogger().log(Level.WARNING,"Could not read persisted scss cache",e);
+      }
+    }
     if (cacheEntry == null || !cacheEntry.isStillValid()) {
       cacheEntry=compileScssOnTheFly(filename,scssFilename,sc);
-      scssCache.put(scssFilename,cacheEntry);
+      persistCacheEntry(cacheEntry);
     }
+    scssCache.put(scssFilename,cacheEntry);
     if (cacheEntry == null) {
       return false;
     }
