@@ -6,35 +6,30 @@
   if (stateChangeEvent.hasPropertyChanged("selectedKeys")) {
     updateSelectionFromState();
   }
-  Scheduler.get().scheduleDeferred(new ScheduledCommand(){
-    @Override public void execute(){
-      if (stateChangeEvent.hasPropertyChanged("columns")) {
-        purgeRemovedColumns();
-        for (        GridColumnState state : getState().columns) {
-          if (!columnIdToColumn.containsKey(state.id)) {
-            addColumnFromStateChangeEvent(state);
-          }
-          updateColumnFromState(columnIdToColumn.get(state.id),state);
-        }
+  if (stateChangeEvent.hasPropertyChanged("columns")) {
+    purgeRemovedColumns();
+    for (    GridColumnState state : getState().columns) {
+      if (!columnIdToColumn.containsKey(state.id)) {
+        addColumnFromStateChangeEvent(state);
       }
-      if (stateChangeEvent.hasPropertyChanged("columnOrder")) {
-        if (orderNeedsUpdate(getState().columnOrder)) {
-          updateColumnOrderFromState(getState().columnOrder);
-        }
-      }
-      if (stateChangeEvent.hasPropertyChanged("header")) {
-        updateHeaderFromState(getState().header);
-      }
-      if (stateChangeEvent.hasPropertyChanged("footer")) {
-        updateFooterFromState(getState().footer);
-      }
-      if (stateChangeEvent.hasPropertyChanged("editorEnabled")) {
-        getWidget().setEditorEnabled(getState().editorEnabled);
-      }
-      if (stateChangeEvent.hasPropertyChanged("frozenColumnCount")) {
-        getWidget().setFrozenColumnCount(getState().frozenColumnCount);
-      }
+      updateColumnFromState(columnIdToColumn.get(state.id),state);
     }
   }
-);
+  if (stateChangeEvent.hasPropertyChanged("columnOrder")) {
+    if (orderNeedsUpdate(getState().columnOrder)) {
+      updateColumnOrderFromState(getState().columnOrder);
+    }
+  }
+  if (stateChangeEvent.hasPropertyChanged("header")) {
+    updateHeaderFromState(getState().header);
+  }
+  if (stateChangeEvent.hasPropertyChanged("footer")) {
+    updateFooterFromState(getState().footer);
+  }
+  if (stateChangeEvent.hasPropertyChanged("editorEnabled")) {
+    getWidget().setEditorEnabled(getState().editorEnabled);
+  }
+  if (stateChangeEvent.hasPropertyChanged("frozenColumnCount")) {
+    getWidget().setFrozenColumnCount(getState().frozenColumnCount);
+  }
 }
