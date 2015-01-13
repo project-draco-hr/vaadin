@@ -2,13 +2,28 @@
   super.init();
   registerRpc(GridClientRpc.class,new GridClientRpc(){
     @Override public void scrollToStart(){
-      getWidget().scrollToStart();
+      Scheduler.get().scheduleFinally(new ScheduledCommand(){
+        @Override public void execute(){
+          getWidget().scrollToStart();
+        }
+      }
+);
     }
     @Override public void scrollToEnd(){
-      getWidget().scrollToEnd();
+      Scheduler.get().scheduleFinally(new ScheduledCommand(){
+        @Override public void execute(){
+          getWidget().scrollToEnd();
+        }
+      }
+);
     }
-    @Override public void scrollToRow(    int row,    ScrollDestination destination){
-      getWidget().scrollToRow(row,destination);
+    @Override public void scrollToRow(    final int row,    final ScrollDestination destination){
+      Scheduler.get().scheduleFinally(new ScheduledCommand(){
+        @Override public void execute(){
+          getWidget().scrollToRow(row,destination);
+        }
+      }
+);
     }
   }
 );
