@@ -35,4 +35,12 @@
   if (stateChangeEvent.hasPropertyChanged("frozenColumnCount")) {
     getWidget().setFrozenColumnCount(getState().frozenColumnCount);
   }
+  String activeTheme=getConnection().getUIConnector().getActiveTheme();
+  if (lastKnownTheme == null) {
+    lastKnownTheme=activeTheme;
+  }
+ else   if (!lastKnownTheme.equals(activeTheme)) {
+    getWidget().resetSizesFromDom();
+    lastKnownTheme=activeTheme;
+  }
 }

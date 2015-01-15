@@ -1,0 +1,20 @@
+{
+  if (!isAttached()) {
+    defaultRowHeightShouldBeAutodetected=true;
+    return;
+  }
+  final Element detectionTr=DOM.createTR();
+  detectionTr.setClassName(getStylePrimaryName() + "-row");
+  final Element cellElem=DOM.createElement(getCellElementTagName());
+  cellElem.setClassName(getStylePrimaryName() + "-cell");
+  cellElem.setInnerText("Ij");
+  detectionTr.appendChild(cellElem);
+  root.appendChild(detectionTr);
+  double boundingHeight=WidgetUtil.getRequiredHeightBoundingClientRectDouble(cellElem);
+  defaultRowHeight=Math.max(1.0d,boundingHeight);
+  root.removeChild(detectionTr);
+  if (root.hasChildNodes()) {
+    reapplyDefaultRowHeights();
+    applyHeightByRows();
+  }
+}
