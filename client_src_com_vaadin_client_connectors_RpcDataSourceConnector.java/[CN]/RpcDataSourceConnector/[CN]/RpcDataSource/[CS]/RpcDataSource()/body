@@ -1,2 +1,22 @@
 {
+  registerRpc(DataProviderRpc.class,new DataProviderRpc(){
+    @Override public void setRowData(    int firstRow,    JsonArray rowArray){
+      ArrayList<JsonObject> rows=new ArrayList<JsonObject>(rowArray.length());
+      for (int i=0; i < rowArray.length(); i++) {
+        JsonObject rowObject=rowArray.getObject(i);
+        rows.add(rowObject);
+      }
+      dataSource.setRowData(firstRow,rows);
+    }
+    @Override public void removeRowData(    int firstRow,    int count){
+      dataSource.removeRowData(firstRow,count);
+    }
+    @Override public void insertRowData(    int firstRow,    int count){
+      dataSource.insertRowData(firstRow,count);
+    }
+    @Override public void resetDataAndSize(    int size){
+      dataSource.resetDataAndSize(size);
+    }
+  }
+);
 }
