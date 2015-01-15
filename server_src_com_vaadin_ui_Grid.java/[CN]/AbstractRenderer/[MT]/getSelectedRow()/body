@@ -2,7 +2,13 @@
   if (selectionModel instanceof SelectionModel.Single) {
     return ((SelectionModel.Single)selectionModel).getSelectedRow();
   }
+ else   if (selectionModel instanceof SelectionModel.Multi) {
+    throw new IllegalStateException("Cannot get unique selected row: " + "Grid is in multiselect mode " + "(the current selection model is " + selectionModel.getClass().getName() + ").");
+  }
+ else   if (selectionModel instanceof SelectionModel.None) {
+    throw new IllegalStateException("Cannot get selected row: " + "Grid selection is disabled " + "(the current selection model is " + selectionModel.getClass().getName() + ").");
+  }
  else {
-    throw new IllegalStateException(Grid.class.getSimpleName() + " does not support the 'getSelectedRow' shortcut method " + "unless the selection model implements "+ SelectionModel.Single.class.getName()+ ". The current one does not ("+ selectionModel.getClass().getName()+ ")");
+    throw new IllegalStateException("Cannot get selected row: " + "Grid selection model does not implement " + SelectionModel.Single.class.getName() + " or "+ SelectionModel.Multi.class.getName()+ "(the current model is "+ selectionModel.getClass().getName()+ ").");
   }
 }

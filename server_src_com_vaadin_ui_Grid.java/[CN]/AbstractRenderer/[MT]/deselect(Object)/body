@@ -8,7 +8,10 @@
  else   if (selectionModel instanceof SelectionModel.Multi) {
     return ((SelectionModel.Multi)selectionModel).deselect(itemId);
   }
+ else   if (selectionModel instanceof SelectionModel.None) {
+    throw new IllegalStateException("Cannot deselect row '" + itemId + "': Grid selection is disabled "+ "(the current selection model is "+ selectionModel.getClass().getName()+ ").");
+  }
  else {
-    throw new IllegalStateException(Grid.class.getSimpleName() + " does not support the 'deselect' shortcut method " + "unless the selection model implements "+ SelectionModel.Single.class.getName()+ " or "+ SelectionModel.Multi.class.getName()+ ". The current one does not ("+ selectionModel.getClass().getName()+ ").");
+    throw new IllegalStateException("Cannot deselect row '" + itemId + "': Grid selection model does not implement "+ SelectionModel.Single.class.getName()+ " or "+ SelectionModel.Multi.class.getName()+ "(the current model is "+ selectionModel.getClass().getName()+ ").");
   }
 }
