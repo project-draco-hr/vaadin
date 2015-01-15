@@ -3,12 +3,14 @@
   if (pathInfo == null) {
     return false;
   }
-  if ((request.getContextPath() != null) && (request.getRequestURI().startsWith("/VAADIN/"))) {
-    serveStaticResourcesInVAADIN(request.getRequestURI(),request,response);
+  String decodedRequestURI=URLDecoder.decode(request.getRequestURI(),"UTF-8");
+  if ((request.getContextPath() != null) && (decodedRequestURI.startsWith("/VAADIN/"))) {
+    serveStaticResourcesInVAADIN(decodedRequestURI,request,response);
     return true;
   }
- else   if (request.getRequestURI().startsWith(request.getContextPath() + "/VAADIN/")) {
-    serveStaticResourcesInVAADIN(request.getRequestURI().substring(request.getContextPath().length()),request,response);
+  String decodedContextPath=URLDecoder.decode(request.getContextPath(),"UTF-8");
+  if (decodedRequestURI.startsWith(decodedContextPath + "/VAADIN/")) {
+    serveStaticResourcesInVAADIN(decodedRequestURI.substring(decodedContextPath.length()),request,response);
     return true;
   }
   return false;
