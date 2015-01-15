@@ -1,12 +1,5 @@
 {
-  String logMsg="Exception occured, " + event.getThrowable().getClass().getName();
-  String exceptionMsg=event.getThrowable().getMessage();
-  if (exceptionMsg != null && exceptionMsg.length() > 0) {
-    logMsg+=exceptionMsg;
-  }
-  log.log(logMsg);
-  final Throwable t=event.getThrowable();
-  if (t != null) {
-    t.printStackTrace();
-  }
+  final Throwable throwable=DefaultErrorHandler.findRelevantThrowable(event.getThrowable());
+  log.log("Exception occured, " + throwable.getClass().getName() + ": "+ throwable.getMessage());
+  throwable.printStackTrace();
 }
