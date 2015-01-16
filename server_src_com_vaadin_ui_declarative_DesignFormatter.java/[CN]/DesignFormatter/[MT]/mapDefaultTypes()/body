@@ -1,0 +1,68 @@
+{
+  for (  Class<?> c : new Class<?>[]{Integer.class,Byte.class,Short.class,Long.class,BigDecimal.class}) {
+    DesignToStringConverter<?> conv=new DesignToStringConverter(c);
+    converterMap.put(c,conv);
+    try {
+      converterMap.put((Class<?>)c.getField("TYPE").get(null),conv);
+    }
+ catch (    Exception e) {
+      ;
+    }
+  }
+  Converter<String,Boolean> booleanConverter=new Converter<String,Boolean>(){
+    @Override public Boolean convertToModel(    String value,    Class<? extends Boolean> targetType,    Locale locale) throws Converter.ConversionException {
+      return !value.equalsIgnoreCase("false");
+    }
+    @Override public String convertToPresentation(    Boolean value,    Class<? extends String> targetType,    Locale locale) throws Converter.ConversionException {
+      return String.valueOf(value.booleanValue());
+    }
+    @Override public Class<Boolean> getModelType(){
+      return Boolean.class;
+    }
+    @Override public Class<String> getPresentationType(){
+      return String.class;
+    }
+  }
+;
+  converterMap.put(Boolean.class,booleanConverter);
+  converterMap.put(boolean.class,booleanConverter);
+  DecimalFormatSymbols symbols=new DecimalFormatSymbols(new Locale("en_US"));
+  DecimalFormat fmt=new DecimalFormat("0.###",symbols);
+  fmt.setGroupingUsed(false);
+  converterMap.put(Float.class,new DesignFormatConverter<Float>(Float.class,fmt));
+  converterMap.put(Float.TYPE,new DesignFormatConverter<Float>(Float.class,fmt));
+  converterMap.put(Double.class,new DesignFormatConverter<Double>(Double.class,fmt));
+  converterMap.put(Double.TYPE,new DesignFormatConverter<Double>(Double.class,fmt));
+  converterMap.put(String.class,new Converter<String,String>(){
+    @Override public String convertToModel(    String value,    Class<? extends String> targetType,    Locale locale) throws Converter.ConversionException {
+      return value;
+    }
+    @Override public String convertToPresentation(    String value,    Class<? extends String> targetType,    Locale locale) throws Converter.ConversionException {
+      return value;
+    }
+    @Override public Class<String> getModelType(){
+      return String.class;
+    }
+    @Override public Class<String> getPresentationType(){
+      return String.class;
+    }
+  }
+);
+  Converter<String,Character> charConverter=new DesignToStringConverter<Character>(Character.class){
+    @Override public Character convertToModel(    String value,    Class<? extends Character> targetType,    Locale locale) throws Converter.ConversionException {
+      return value.charAt(0);
+    }
+  }
+;
+  converterMap.put(Character.class,charConverter);
+  converterMap.put(Character.TYPE,charConverter);
+  converterMap.put(Date.class,new DesignDateConverter());
+  converterMap.put(ShortcutAction.class,new DesignShortcutActionConverter(ShortcutKeyMapper.DEFAULT));
+  converterMap.put(Resource.class,new DesignResourceConverter());
+  converterMap.put(TimeZone.class,new DesignToStringConverter<TimeZone>(TimeZone.class,"getTimeZone"){
+    @Override public String convertToPresentation(    TimeZone value,    Class<? extends String> targetType,    Locale locale) throws Converter.ConversionException {
+      return value.getID();
+    }
+  }
+);
+}

@@ -1,0 +1,16 @@
+{
+  StringBuffer result=new StringBuffer();
+  Pattern pattern=Pattern.compile("(^|[^A-Z])([A-Z]{2,})([A-Z]|$)");
+  Matcher matcher=pattern.matcher(param);
+  while (matcher.find()) {
+    String matched=matcher.group(2);
+    if (matcher.group(1).isEmpty()) {
+      matcher.appendReplacement(result,matched.toLowerCase() + matcher.group(3));
+    }
+ else {
+      matcher.appendReplacement(result,matcher.group(1) + matched.substring(0,1) + matched.substring(1).toLowerCase()+ matcher.group(3));
+    }
+  }
+  matcher.appendTail(result);
+  return result.toString();
+}

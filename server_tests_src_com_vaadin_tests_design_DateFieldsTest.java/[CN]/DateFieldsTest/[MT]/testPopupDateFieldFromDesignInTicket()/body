@@ -1,0 +1,9 @@
+{
+  ByteArrayInputStream bis=new ByteArrayInputStream("<!DOCTYPE html><html><head></head><body><v-date-field range-start=\"2014-05-05\" range-end=\"2014-06-05\" date-out-of-range-message=\"Please select a sensible date\" resolution=\"day\" date-format=\"yyyy-MM-dd\" lenient show-iso-week-numbers parse-error-message=\"You are doing it wrong\" time-zone=\"GMT+5\" value=\"2014-05-15\"></v-date-field></body></html>".getBytes());
+  DateField result=(DateField)Design.read(bis);
+  assertEquals(Resolution.DAY,result.getResolution());
+  assertTrue(result.isShowISOWeekNumbers());
+  assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2014-05-15"),result.getValue());
+  assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2014-06-05"),result.getRangeEnd());
+  assertEquals(TimeZone.getTimeZone("GMT+5"),result.getTimeZone());
+}
