@@ -1,8 +1,12 @@
 {
   registerRpc(EditorClientRpc.class,new EditorClientRpc(){
     @Override public void bind(    final int rowIndex){
-      serverInitiated=true;
-      GridConnector.this.getWidget().editRow(rowIndex);
+      Scheduler.get().scheduleFinally(new ScheduledCommand(){
+        @Override public void execute(){
+          GridConnector.this.getWidget().editRow(rowIndex);
+        }
+      }
+);
     }
     @Override public void cancel(    int rowIndex){
       serverInitiated=true;
