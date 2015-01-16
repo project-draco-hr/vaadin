@@ -1,0 +1,39 @@
+{
+  super(new Grid<String[]>());
+  grid=getTestedWidget();
+  grid.getElement().getStyle().setZIndex(0);
+  grid.setHeight("400px");
+  grid.setSelectionMode(SelectionMode.NONE);
+  addNorth(grid,400);
+  addMenuCommand("Use",setRestishCommand,"DataSources","RESTish");
+  addMenuCommand("Next request +10",new ScheduledCommand(){
+    @Override public void execute(){
+      restishDataSource.backend.addRows(10);
+    }
+  }
+,"DataSources","RESTish");
+  addMenuCommand("Next request -10",new ScheduledCommand(){
+    @Override public void execute(){
+      restishDataSource.backend.addRows(-10);
+    }
+  }
+,"DataSources","RESTish");
+  addMenuCommand("Push data change",new ScheduledCommand(){
+    @Override public void execute(){
+      restishDataSource.backend.pushRowChanges();
+    }
+  }
+,"DataSources","RESTish");
+  addMenuCommand("Push data change +10",new ScheduledCommand(){
+    @Override public void execute(){
+      restishDataSource.backend.pushRowChanges(10);
+    }
+  }
+,"DataSources","RESTish");
+  addMenuCommand("Push data change -10",new ScheduledCommand(){
+    @Override public void execute(){
+      restishDataSource.backend.pushRowChanges(-10);
+    }
+  }
+,"DataSources","RESTish");
+}

@@ -1,0 +1,16 @@
+{
+  int rowIndex=row.getRow();
+  rowReference.set(rowIndex,null,row.getElement());
+  for (  FlyweightCell cell : detachedCells) {
+    Renderer renderer=findRenderer(cell);
+    if (renderer instanceof ComplexRenderer) {
+      try {
+        rendererCellReference.set(cell,getColumn(cell.getColumn()));
+        ((ComplexRenderer)renderer).destroy(rendererCellReference);
+      }
+ catch (      RuntimeException e) {
+        getLogger().log(Level.SEVERE,"Error destroying cell in column " + cell.getColumn(),e);
+      }
+    }
+  }
+}

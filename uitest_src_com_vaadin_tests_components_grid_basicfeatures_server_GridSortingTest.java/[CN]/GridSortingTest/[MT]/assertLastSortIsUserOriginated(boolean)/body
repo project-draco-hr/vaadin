@@ -1,0 +1,18 @@
+{
+  List<WebElement> userOriginatedMessages=getDriver().findElements(By.xpath("//*[contains(text(),'SortOrderChangeEvent: isUserOriginated')]"));
+  Collections.sort(userOriginatedMessages,new Comparator<WebElement>(){
+    @Override public int compare(    WebElement o1,    WebElement o2){
+      return o1.getText().compareTo(o2.getText());
+    }
+  }
+);
+  String newestEntry=userOriginatedMessages.get(userOriginatedMessages.size() - 1).getText();
+  String[] parts=newestEntry.split(" ");
+  boolean wasUserOriginated=Boolean.parseBoolean(parts[parts.length - 1]);
+  if (isUserOriginated) {
+    assertTrue("expected the sort to be user originated, but wasn't",wasUserOriginated);
+  }
+ else {
+    assertFalse("expected the sort not to be user originated, but it was",wasUserOriginated);
+  }
+}

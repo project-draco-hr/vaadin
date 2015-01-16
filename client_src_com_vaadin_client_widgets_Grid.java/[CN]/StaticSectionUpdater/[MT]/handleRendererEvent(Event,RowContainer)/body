@@ -1,0 +1,19 @@
+{
+  if (container == escalator.getBody()) {
+    Column<?,T> gridColumn=eventCell.getColumn();
+    boolean enterKey=event.getType().equals(BrowserEvents.KEYDOWN) && event.getKeyCode() == KeyCodes.KEY_ENTER;
+    boolean doubleClick=event.getType().equals(BrowserEvents.DBLCLICK);
+    if (gridColumn.getRenderer() instanceof ComplexRenderer) {
+      ComplexRenderer<?> cplxRenderer=(ComplexRenderer<?>)gridColumn.getRenderer();
+      if (cplxRenderer.getConsumedEvents().contains(event.getType())) {
+        if (cplxRenderer.onBrowserEvent(eventCell,event)) {
+          return true;
+        }
+      }
+      if ((enterKey || doubleClick) && cplxRenderer.onActivate(eventCell)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}

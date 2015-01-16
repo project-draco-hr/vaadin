@@ -1,0 +1,13 @@
+{
+  if (!enabled) {
+    throw new IllegalStateException("Cannot save: editor is not enabled");
+  }
+  if (state != State.ACTIVE) {
+    throw new IllegalStateException("Cannot save: editor is not in edit mode");
+  }
+  state=State.SAVING;
+  enableButtons(false);
+  saveTimeout.schedule(SAVE_TIMEOUT_MS);
+  EditorRequest<T> request=new EditorRequest<T>(grid,rowIndex,saveRequestCallback);
+  handler.save(request);
+}

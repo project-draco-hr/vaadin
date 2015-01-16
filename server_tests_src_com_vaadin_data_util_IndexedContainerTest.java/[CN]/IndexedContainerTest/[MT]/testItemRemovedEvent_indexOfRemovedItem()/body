@@ -1,0 +1,10 @@
+{
+  IndexedContainer container=new IndexedContainer();
+  container.addItem();
+  Object secondItemId=container.addItem();
+  ItemSetChangeListener removeListener=createListenerMockFor(container);
+  Capture<ItemRemoveEvent> capturedEvent=captureRemoveEvent(removeListener);
+  EasyMock.replay(removeListener);
+  container.removeItem(secondItemId);
+  assertEquals(1,capturedEvent.getValue().getFirstIndex());
+}

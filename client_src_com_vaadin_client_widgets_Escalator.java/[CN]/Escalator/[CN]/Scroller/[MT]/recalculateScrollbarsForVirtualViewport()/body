@@ -1,0 +1,60 @@
+{
+  double scrollContentHeight=body.calculateEstimatedTotalRowHeight();
+  double scrollContentWidth=columnConfiguration.calculateRowWidth();
+  double tableWrapperHeight=heightOfEscalator;
+  double tableWrapperWidth=widthOfEscalator;
+  boolean verticalScrollNeeded=scrollContentHeight > tableWrapperHeight - header.heightOfSection - footer.heightOfSection;
+  boolean horizontalScrollNeeded=scrollContentWidth > tableWrapperWidth;
+  if (verticalScrollNeeded != horizontalScrollNeeded) {
+    if (!verticalScrollNeeded && horizontalScrollNeeded) {
+      verticalScrollNeeded=scrollContentHeight > tableWrapperHeight - header.heightOfSection - footer.heightOfSection- horizontalScrollbar.getScrollbarThickness();
+    }
+ else {
+      horizontalScrollNeeded=scrollContentWidth > tableWrapperWidth - verticalScrollbar.getScrollbarThickness();
+    }
+  }
+  if (verticalScrollNeeded) {
+    tableWrapperWidth-=verticalScrollbar.getScrollbarThickness();
+    tableWrapperWidth=Math.max(0,tableWrapperWidth);
+  }
+  if (horizontalScrollNeeded) {
+    tableWrapperHeight-=horizontalScrollbar.getScrollbarThickness();
+    tableWrapperHeight=Math.max(0,tableWrapperHeight);
+  }
+  tableWrapper.getStyle().setHeight(tableWrapperHeight,Unit.PX);
+  tableWrapper.getStyle().setWidth(tableWrapperWidth,Unit.PX);
+  double vScrollbarHeight=Math.max(0,tableWrapperHeight - footer.heightOfSection - header.heightOfSection);
+  verticalScrollbar.setOffsetSize(vScrollbarHeight);
+  verticalScrollbar.setScrollSize(scrollContentHeight);
+  double prevScrollPos=horizontalScrollbar.getScrollPos();
+  double unfrozenPixels=columnConfiguration.getCalculatedColumnsWidth(Range.between(columnConfiguration.getFrozenColumnCount(),columnConfiguration.getColumnCount()));
+  double frozenPixels=scrollContentWidth - unfrozenPixels;
+  double hScrollOffsetWidth=tableWrapperWidth - frozenPixels;
+  horizontalScrollbar.setOffsetSize(hScrollOffsetWidth);
+  horizontalScrollbar.setScrollSize(unfrozenPixels);
+  horizontalScrollbar.getElement().getStyle().setLeft(frozenPixels,Unit.PX);
+  horizontalScrollbar.setScrollPos(prevScrollPos);
+  if (horizontalScrollbar.showsScrollHandle()) {
+    horizontalScrollbarDeco.getStyle().clearDisplay();
+  }
+ else {
+    horizontalScrollbarDeco.getStyle().setDisplay(Display.NONE);
+  }
+  Style hCornerStyle=headerDeco.getStyle();
+  Style fCornerStyle=footerDeco.getStyle();
+  if (verticalScrollbar.showsScrollHandle()) {
+    hCornerStyle.clearDisplay();
+    fCornerStyle.clearDisplay();
+    if (horizontalScrollbar.showsScrollHandle()) {
+      double offset=horizontalScrollbar.getScrollbarThickness();
+      fCornerStyle.setBottom(offset,Unit.PX);
+    }
+ else {
+      fCornerStyle.clearBottom();
+    }
+  }
+ else {
+    hCornerStyle.setDisplay(Display.NONE);
+    fCornerStyle.setDisplay(Display.NONE);
+  }
+}

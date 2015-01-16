@@ -1,0 +1,20 @@
+{
+  final Grid grid=new Grid();
+  grid.setSelectionMode(SelectionMode.SINGLE);
+  grid.addColumn("Theme");
+  for (  String theme : themes) {
+    Object itemId=grid.addRow(theme);
+    if (theme.equals(getTheme())) {
+      grid.select(itemId);
+    }
+  }
+  grid.addSelectionListener(new SelectionListener(){
+    @Override public void select(    SelectionEvent event){
+      Object selectedItemId=grid.getSelectedRow();
+      Object theme=grid.getContainerDataSource().getItem(selectedItemId).getItemProperty("Theme").getValue();
+      setTheme(String.valueOf(theme));
+    }
+  }
+);
+  addComponent(grid);
+}

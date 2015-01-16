@@ -1,0 +1,28 @@
+{
+  StaticSection.StaticRow<?> staticRow=section.getRow(row.getRow());
+  final List<Column<?,T>> columns=getColumns();
+  setCustomStyleName(row.getElement(),staticRow.getStyleName());
+  for (  FlyweightCell cell : cellsToUpdate) {
+    final StaticSection.StaticCell metadata=staticRow.getCell(columns.get(cell.getColumn()));
+    if (staticRow instanceof HeaderRow) {
+      addSortingIndicatorsToHeaderRow((HeaderRow)staticRow,cell);
+    }
+    cell.setColSpan(metadata.getColspan());
+    TableCellElement element=cell.getElement();
+switch (metadata.getType()) {
+case TEXT:
+      element.setInnerText(metadata.getText());
+    break;
+case HTML:
+  element.setInnerHTML(metadata.getHtml());
+break;
+case WIDGET:
+preDetach(row,Arrays.asList(cell));
+element.setInnerHTML("");
+postAttach(row,Arrays.asList(cell));
+break;
+}
+setCustomStyleName(element,metadata.getStyleName());
+cellFocusHandler.updateFocusedCellStyle(cell,container);
+}
+}

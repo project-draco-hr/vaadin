@@ -1,0 +1,22 @@
+{
+  if (element == null) {
+    throw new IllegalArgumentException("Element cannot be null");
+  }
+  if (root == element || element.getParentElement() == root || !root.isOrHasChild(element)) {
+    return null;
+  }
+  Element cellElementCandidate=element;
+  while (cellElementCandidate.getParentElement().getParentElement() != root) {
+    cellElementCandidate=cellElementCandidate.getParentElement();
+  }
+  final TableCellElement cellElement=TableCellElement.as(cellElementCandidate);
+  int domColumnIndex=-1;
+  for (Element e=cellElement; e != null; e=e.getPreviousSiblingElement()) {
+    domColumnIndex++;
+  }
+  int domRowIndex=-1;
+  for (Element e=cellElement.getParentElement(); e != null; e=e.getPreviousSiblingElement()) {
+    domRowIndex++;
+  }
+  return new Cell(domRowIndex,domColumnIndex,cellElement);
+}

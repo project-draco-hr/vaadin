@@ -1,0 +1,95 @@
+{
+  for (int i=0; i < COLUMNS; i++) {
+    final int index=i;
+    final Grid.Column<?,List<Data>> column=grid.getColumn(index);
+    addMenuCommand("Sortable",new ScheduledCommand(){
+      @Override public void execute(){
+        column.setSortable(!column.isSortable());
+      }
+    }
+,"Component","Columns","Column " + i);
+    addMenuCommand("auto",new ScheduledCommand(){
+      @Override public void execute(){
+        column.setWidth(-1);
+      }
+    }
+,"Component","Columns","Column " + i,"Width");
+    addMenuCommand("50px",new ScheduledCommand(){
+      @Override public void execute(){
+        column.setWidth(50);
+      }
+    }
+,"Component","Columns","Column " + i,"Width");
+    addMenuCommand("200px",new ScheduledCommand(){
+      @Override public void execute(){
+        column.setWidth(200);
+      }
+    }
+,"Component","Columns","Column " + i,"Width");
+    addMenuCommand("Text Header",new ScheduledCommand(){
+      @Override public void execute(){
+        column.setHeaderCaption("Text Header");
+      }
+    }
+,"Component","Columns","Column " + i,"Header Type");
+    addMenuCommand("HTML Header",new ScheduledCommand(){
+      @Override public void execute(){
+        grid.getHeaderRow(0).getCell(column).setHtml("<b>HTML Header</b>");
+      }
+    }
+,"Component","Columns","Column " + i,"Header Type");
+    addMenuCommand("Widget Header",new ScheduledCommand(){
+      @Override public void execute(){
+        final Button button=new Button("Button Header");
+        button.addClickHandler(new ClickHandler(){
+          @Override public void onClick(          ClickEvent event){
+            button.setText("Clicked");
+          }
+        }
+);
+        grid.getHeaderRow(0).getCell(column).setWidget(button);
+      }
+    }
+,"Component","Columns","Column " + i,"Header Type");
+    addMenuCommand("Text Footer",new ScheduledCommand(){
+      @Override public void execute(){
+        grid.getFooterRow(0).getCell(column).setText("Text Footer");
+      }
+    }
+,"Component","Columns","Column " + i,"Footer Type");
+    addMenuCommand("HTML Footer",new ScheduledCommand(){
+      @Override public void execute(){
+        grid.getFooterRow(0).getCell(column).setHtml("<b>HTML Footer</b>");
+      }
+    }
+,"Component","Columns","Column " + i,"Footer Type");
+    addMenuCommand("Widget Footer",new ScheduledCommand(){
+      @Override public void execute(){
+        final Button button=new Button("Button Footer");
+        button.addClickHandler(new ClickHandler(){
+          @Override public void onClick(          ClickEvent event){
+            button.setText("Clicked");
+          }
+        }
+);
+        grid.getFooterRow(0).getCell(column).setWidget(button);
+      }
+    }
+,"Component","Columns","Column " + i,"Footer Type");
+    addMenuCommand("Broken renderer",new ScheduledCommand(){
+      @Override public void execute(){
+        final Renderer<Object> originalRenderer=(Renderer<Object>)column.getRenderer();
+        column.setRenderer(new Renderer<Object>(){
+          @Override public void render(          RendererCellReference cell,          Object data){
+            if (cell.getRowIndex() == cell.getColumnIndex()) {
+              throw new RuntimeException("I'm broken");
+            }
+            originalRenderer.render(cell,data);
+          }
+        }
+);
+      }
+    }
+,"Component","Columns","Column " + i);
+  }
+}

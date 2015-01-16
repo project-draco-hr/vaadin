@@ -1,0 +1,16 @@
+{
+  if (!isEditorEnabled()) {
+    throw new IllegalStateException("Item editor is not enabled");
+  }
+  Item item=getContainerDataSource().getItem(itemId);
+  if (item == null) {
+    throw new IllegalArgumentException("Item with id " + itemId + " not found in current container");
+  }
+  editorFieldGroup.setItemDataSource(item);
+  editedItemId=itemId;
+  for (  Column column : getColumns()) {
+    Object propertyId=column.getPropertyId();
+    Field<?> editor=getEditorField(propertyId);
+    getColumn(propertyId).getState().editorConnector=editor;
+  }
+}

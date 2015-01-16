@@ -1,0 +1,13 @@
+{
+  BeanItemContainer<Person> container=new BeanItemContainer<Person>(Person.class){
+    @Override public Object addItem(){
+      BeanItem<Person> item=addBean(new Person());
+      return getBeanIdResolver().getIdForBean(item.getBean());
+    }
+  }
+;
+  setContainerRemoveColumns(container);
+  grid.addRow("name");
+  Assert.assertEquals(1,container.size());
+  Assert.assertEquals("name",container.getIdByIndex(0).getFirstName());
+}
