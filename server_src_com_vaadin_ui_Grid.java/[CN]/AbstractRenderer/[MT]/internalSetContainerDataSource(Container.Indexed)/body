@@ -41,6 +41,9 @@
       if (datasource instanceof Sortable) {
         column.setSortable(((Sortable)datasource).getSortableContainerPropertyIds().contains(propertyId));
       }
+ else {
+        column.setSortable(false);
+      }
     }
   }
  else {
@@ -48,6 +51,9 @@
     for (    Object property : columns.keySet()) {
       if (!properties.contains(property)) {
         throw new IllegalStateException("Found at least one column in Grid that does not exist in the given container: " + property + " with the header \""+ getColumn(property).getHeaderCaption()+ "\"");
+      }
+      if (!(datasource instanceof Sortable) || !((Sortable)datasource).getSortableContainerPropertyIds().contains(property)) {
+        columns.get(property).setSortable(false);
       }
     }
   }
