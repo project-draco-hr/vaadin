@@ -1,0 +1,19 @@
+{
+  try {
+    Thread.sleep(1000);
+  }
+ catch (  InterruptedException e) {
+    Assert.fail();
+  }
+  WebElement element=findElement(By.cssSelector(".v-table-body-wrapper"));
+  assertNotNull("There must be a table",element);
+  String overflow=element.getCssValue("overflow");
+  if (!"hidden".equals(overflow)) {
+    String detectHorizontalScroll="return arguments[0].scrollWidth > arguments[0].clientWidth";
+    Boolean horizontal=(Boolean)((TestBenchCommandExecutor)getDriver()).executeScript(detectHorizontalScroll,element);
+    assertEquals("there must be no horizontal scrollbar",false,horizontal);
+    String detectVerticalScroll="return arguments[0].scrollHeight > arguments[0].clientHeight";
+    Boolean vertical=(Boolean)((TestBenchCommandExecutor)getDriver()).executeScript(detectVerticalScroll,element);
+    assertEquals("there must be no vertical scrollbar",false,vertical);
+  }
+}

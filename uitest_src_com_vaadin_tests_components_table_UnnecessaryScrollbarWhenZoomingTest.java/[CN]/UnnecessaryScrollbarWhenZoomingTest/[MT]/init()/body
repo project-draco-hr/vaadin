@@ -1,0 +1,13 @@
+{
+  testBench().resizeViewPortTo(995,400);
+  DesiredCapabilities capabilities=getDesiredCapabilities();
+  if (BrowserUtil.isChrome(capabilities) || BrowserUtil.isPhantomJS(capabilities)) {
+    zoomSetter=new ChromeZoomLevelSetter(driver);
+  }
+ else {
+    zoomSetter=new NonChromeZoomLevelSetter(driver);
+  }
+  zoomSetter.resetZoom();
+  openTestURL();
+  new WebDriverWait(getDriver(),30).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".v-table-body-wrapper")));
+}

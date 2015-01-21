@@ -1,0 +1,17 @@
+{
+  EmbeddedElement embedded=$(EmbeddedElement.class).first();
+  final ImageElement image=$(ImageElement.class).first();
+  final String initial=image.getAttribute("src");
+  $(ButtonElement.class).first().click();
+  waitUntil(new ExpectedCondition<Boolean>(){
+    @Override public Boolean apply(    WebDriver input){
+      return !initial.equals(image.getAttribute("src"));
+    }
+    @Override public String toString(){
+      return "image source to be updated (was: " + initial + ")";
+    }
+  }
+);
+  assertTrue("ThemeResource image source didn't update correctly.",image.getAttribute("src").contains("/reindeer/"));
+  assertThat("Embedded and Image aren't using the same source for the image despite sharing the ThemeResource.",embedded.findElement(By.tagName("img")).getAttribute("src"),is(image.getAttribute("src")));
+}
