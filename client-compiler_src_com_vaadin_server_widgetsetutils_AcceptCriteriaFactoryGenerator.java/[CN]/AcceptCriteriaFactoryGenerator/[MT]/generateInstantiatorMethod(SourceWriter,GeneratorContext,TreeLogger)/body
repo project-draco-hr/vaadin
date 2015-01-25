@@ -3,7 +3,9 @@
   sourceWriter.indent();
   sourceWriter.println("name = name.intern();");
   JClassType criteriaType=context.getTypeOracle().findType(VAcceptCriterion.class.getName());
-  for (  JClassType clientClass : criteriaType.getSubtypes()) {
+  JClassType[] subtypes=criteriaType.getSubtypes();
+  Arrays.sort(subtypes,ConnectorBundle.jClassComparator);
+  for (  JClassType clientClass : subtypes) {
     AcceptCriterion annotation=clientClass.getAnnotation(AcceptCriterion.class);
     if (annotation != null) {
       String clientClassName=clientClass.getQualifiedSourceName();
