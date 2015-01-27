@@ -6,8 +6,8 @@
   for (Integer i=0; i < 3; ++i) {
     grid.addRow(i);
   }
-  sheet.addTab(grid);
-  sheet.addTab(new Label("Hidden"));
+  sheet.addTab(grid,"Grid");
+  sheet.addTab(new Label("Hidden"),"Label");
   addComponent(sheet);
   addComponent(new Button("Add row to Grid",new Button.ClickListener(){
     private Integer k=0;
@@ -23,6 +23,25 @@
       if (firstItemId != null) {
         grid.getContainerDataSource().removeItem(firstItemId);
       }
+    }
+  }
+));
+  addComponent(new Button("Add CellStyleGenerator",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      grid.setCellStyleGenerator(new CellStyleGenerator(){
+        @Override public String getStyle(        CellReference cellReference){
+          int rowIndex=((Integer)cellReference.getItemId()).intValue();
+          Object propertyId=cellReference.getPropertyId();
+          if (rowIndex % 4 == 1) {
+            return null;
+          }
+ else           if (rowIndex % 4 == 3 && "Column 1".equals(propertyId)) {
+            return null;
+          }
+          return propertyId.toString().replace(' ','_');
+        }
+      }
+);
     }
   }
 ));

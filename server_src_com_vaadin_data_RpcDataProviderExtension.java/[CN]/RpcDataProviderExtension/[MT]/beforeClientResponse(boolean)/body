@@ -1,14 +1,26 @@
 {
-  if (initial) {
-    clientInitialized=true;
+  if (initial || bareItemSetTriggeredSizeChange) {
     int size=container.size();
     rpc.resetDataAndSize(size);
     int numberOfRows=Math.min(40,size);
     pushRowData(0,numberOfRows,0,0);
   }
+ else {
+    for (    Runnable r : rowChanges) {
+      r.run();
+    }
+    if (refreshCache) {
+      int firstRow=activeRowHandler.activeRange.getStart();
+      int numberOfRows=activeRowHandler.activeRange.length();
+      pushRowData(firstRow,numberOfRows,firstRow,numberOfRows);
+    }
+  }
   for (  Object itemId : updatedItemIds) {
     internalUpdateRowData(itemId);
   }
+  rowChanges.clear();
+  refreshCache=false;
   updatedItemIds.clear();
+  bareItemSetTriggeredSizeChange=false;
   super.beforeClientResponse(initial);
 }

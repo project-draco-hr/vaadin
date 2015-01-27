@@ -1,6 +1,12 @@
 {
-  if (clientInitialized) {
-    rpc.insertRowData(index,count);
+  if (rowChanges.isEmpty()) {
+    markAsDirty();
   }
+  rowChanges.add(new Runnable(){
+    @Override public void run(){
+      rpc.insertRowData(index,count);
+    }
+  }
+);
   activeRowHandler.insertRows(index,count);
 }

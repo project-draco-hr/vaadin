@@ -1,6 +1,12 @@
 {
-  if (clientInitialized) {
-    rpc.removeRowData(firstIndex,count);
+  if (rowChanges.isEmpty()) {
+    markAsDirty();
   }
-  activeRowHandler.removeRows(firstIndex,count);
+  rowChanges.add(new Runnable(){
+    @Override public void run(){
+      rpc.removeRowData(index,count);
+    }
+  }
+);
+  activeRowHandler.removeRows(index,count);
 }
