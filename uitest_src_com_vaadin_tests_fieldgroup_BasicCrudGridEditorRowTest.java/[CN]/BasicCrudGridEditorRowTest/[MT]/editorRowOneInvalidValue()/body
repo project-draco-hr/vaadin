@@ -1,0 +1,12 @@
+{
+  GridCellElement ritaBirthdate=grid.getCell(2,3);
+  new Actions(getDriver()).doubleClick(ritaBirthdate).perform();
+  GridEditorElement editor=grid.getEditor();
+  DateFieldElement dateField=editor.$(DateFieldElement.class).first();
+  WebElement input=dateField.findElement(By.xpath("input"));
+  input.sendKeys("Invalid",Keys.TAB);
+  editor.save();
+  Assert.assertTrue("Editor wasn't displayed.",editor.isDisplayed());
+  Assert.assertTrue("DateField wasn't displayed.",dateField.isDisplayed());
+  Assert.assertTrue("DateField didn't have 'v-invalid' css class.",hasCssClass(dateField,"v-datefield-error"));
+}

@@ -5,17 +5,17 @@
   startTransactions();
   try {
     firePreCommitEvent();
-    List<InvalidValueException> invalidValueExceptions=commitFields();
+    Map<Field<?>,InvalidValueException> invalidValueExceptions=commitFields();
     if (invalidValueExceptions.isEmpty()) {
       firePostCommitEvent();
       commitTransactions();
     }
  else {
-      throwInvalidValueException(invalidValueExceptions);
+      throw new FieldGroupInvalidValueException(invalidValueExceptions);
     }
   }
  catch (  Exception e) {
     rollbackTransactions();
-    throw new CommitException("Commit failed",e);
+    throw new CommitException("Commit failed",this,e);
   }
 }

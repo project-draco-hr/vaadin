@@ -1,0 +1,13 @@
+{
+  Map<Field<?>,InvalidValueException> invalidFields=event.getCause().getInvalidFields();
+  if (!invalidFields.isEmpty()) {
+    FieldGroup fieldGroup=event.getCause().getFieldGroup();
+    Object propertyId=getFirstPropertyId(fieldGroup,invalidFields.keySet());
+    Field<?> field=fieldGroup.getField(propertyId);
+    String caption=getColumn(propertyId).getHeaderCaption();
+    Notification.show(caption + ": " + invalidFields.get(field).getLocalizedMessage(),Type.ERROR_MESSAGE);
+  }
+ else {
+    com.vaadin.server.ErrorEvent.findErrorHandler(Grid.this).error(new ConnectorErrorEvent(Grid.this,event.getCause()));
+  }
+}
