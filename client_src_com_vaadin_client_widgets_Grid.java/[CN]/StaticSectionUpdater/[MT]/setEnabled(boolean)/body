@@ -4,6 +4,10 @@
   }
   this.enabled=enabled;
   getElement().setTabIndex(enabled ? 0 : -1);
-  getEscalator().setScrollLocked(Direction.VERTICAL,!enabled);
+  boolean editorOpen=editor.getState() != State.INACTIVE;
+  if (editorOpen) {
+    editor.setGridEnabled(enabled);
+  }
+  getEscalator().setScrollLocked(Direction.VERTICAL,!enabled || editorOpen);
   getEscalator().setScrollLocked(Direction.HORIZONTAL,!enabled);
 }
