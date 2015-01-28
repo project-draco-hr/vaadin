@@ -1,0 +1,19 @@
+{
+  cleanup(cell);
+  Column<?,?> column=getColumn(cell.getColumn());
+  SortOrder sortingOrder=getSortOrder(column);
+  if (!headerRow.isDefault() || !column.isSortable() || sortingOrder == null) {
+    return;
+  }
+  Element cellElement=cell.getElement();
+  if (SortDirection.ASCENDING == sortingOrder.getDirection()) {
+    cellElement.addClassName("sort-asc");
+  }
+ else {
+    cellElement.addClassName("sort-desc");
+  }
+  int sortIndex=Grid.this.getSortOrder().indexOf(sortingOrder);
+  if (sortIndex > -1 && Grid.this.getSortOrder().size() > 1) {
+    cellElement.setAttribute("sort-order",String.valueOf(sortIndex + 1));
+  }
+}

@@ -1,0 +1,20 @@
+{
+  if (topBound == -1) {
+    topBound=Math.min(finalTopBound,pageY);
+    bottomBound=Math.max(finalBottomBound,pageY);
+  }
+ else {
+    int oldTopBound=topBound;
+    if (topBound < finalTopBound) {
+      topBound=Math.max(topBound,Math.min(finalTopBound,pageY));
+    }
+    int oldBottomBound=bottomBound;
+    if (bottomBound > finalBottomBound) {
+      bottomBound=Math.min(bottomBound,Math.max(finalBottomBound,pageY));
+    }
+    final boolean topDidNotMove=oldTopBound == topBound;
+    final boolean bottomDidNotMove=oldBottomBound == bottomBound;
+    final boolean wasVerticalMovement=pageY != this.pageY;
+    scrollAreaShouldRebound=(topDidNotMove && bottomDidNotMove && wasVerticalMovement);
+  }
+}

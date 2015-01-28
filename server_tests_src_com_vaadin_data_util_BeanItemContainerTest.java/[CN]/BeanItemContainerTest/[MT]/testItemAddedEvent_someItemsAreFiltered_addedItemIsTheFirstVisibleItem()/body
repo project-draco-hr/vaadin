@@ -1,0 +1,11 @@
+{
+  BeanItemContainer<Person> container=new BeanItemContainer<Person>(Person.class);
+  Person bean=new Person("John");
+  ItemSetChangeListener addListener=createListenerMockFor(container);
+  Capture<ItemAddEvent> capturedEvent=captureAddEvent(addListener);
+  EasyMock.replay(addListener);
+  List<Person> beans=Arrays.asList(new Person("Jack"),bean);
+  container.addFilter(new Compare.Equal("name","John"));
+  container.addAll(beans);
+  assertEquals(bean,capturedEvent.getValue().getFirstItemId());
+}

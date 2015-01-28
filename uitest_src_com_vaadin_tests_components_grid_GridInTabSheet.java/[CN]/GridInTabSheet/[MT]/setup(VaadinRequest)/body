@@ -1,0 +1,29 @@
+{
+  TabSheet sheet=new TabSheet();
+  final Grid grid=new Grid();
+  grid.setSelectionMode(SelectionMode.MULTI);
+  grid.addColumn("count",Integer.class);
+  for (Integer i=0; i < 3; ++i) {
+    grid.addRow(i);
+  }
+  sheet.addTab(grid);
+  sheet.addTab(new Label("Hidden"));
+  addComponent(sheet);
+  addComponent(new Button("Add row to Grid",new Button.ClickListener(){
+    private Integer k=0;
+    @Override public void buttonClick(    ClickEvent event){
+      grid.addRow(100 + (k++));
+    }
+  }
+));
+  addComponent(new Button("Remove row from Grid",new Button.ClickListener(){
+    private Integer k=0;
+    @Override public void buttonClick(    ClickEvent event){
+      Object firstItemId=grid.getContainerDataSource().firstItemId();
+      if (firstItemId != null) {
+        grid.getContainerDataSource().removeItem(firstItemId);
+      }
+    }
+  }
+));
+}

@@ -1,0 +1,59 @@
+{
+  super.init();
+  registerRpc(GridClientRpc.class,new GridClientRpc(){
+    @Override public void scrollToStart(){
+      Scheduler.get().scheduleFinally(new ScheduledCommand(){
+        @Override public void execute(){
+          getWidget().scrollToStart();
+        }
+      }
+);
+    }
+    @Override public void scrollToEnd(){
+      Scheduler.get().scheduleFinally(new ScheduledCommand(){
+        @Override public void execute(){
+          getWidget().scrollToEnd();
+        }
+      }
+);
+    }
+    @Override public void scrollToRow(    final int row,    final ScrollDestination destination){
+      Scheduler.get().scheduleFinally(new ScheduledCommand(){
+        @Override public void execute(){
+          getWidget().scrollToRow(row,destination);
+        }
+      }
+);
+    }
+  }
+);
+  getWidget().addSelectionHandler(internalSelectionChangeHandler);
+  getWidget().addBodyClickHandler(itemClickHandler);
+  getWidget().addBodyDoubleClickHandler(itemClickHandler);
+  getWidget().addSortHandler(new SortHandler<JsonObject>(){
+    @Override public void sort(    SortEvent<JsonObject> event){
+      List<SortOrder> order=event.getOrder();
+      String[] columnIds=new String[order.size()];
+      SortDirection[] directions=new SortDirection[order.size()];
+      for (int i=0; i < order.size(); i++) {
+        SortOrder sortOrder=order.get(i);
+        CustomGridColumn column=(CustomGridColumn)sortOrder.getColumn();
+        columnIds[i]=column.id;
+        directions[i]=sortOrder.getDirection();
+      }
+      if (!Arrays.equals(columnIds,getState().sortColumns) || !Arrays.equals(directions,getState().sortDirs)) {
+        getRpcProxy(GridServerRpc.class).sort(columnIds,directions,event.isUserOriginated());
+      }
+    }
+  }
+);
+  getWidget().addSelectAllHandler(new SelectAllHandler<JsonObject>(){
+    @Override public void onSelectAll(    SelectAllEvent<JsonObject> event){
+      getRpcProxy(GridServerRpc.class).selectAll();
+    }
+  }
+);
+  getWidget().setEditorHandler(new CustomEditorHandler());
+  getLayoutManager().registerDependency(this,getWidget().getElement());
+  layout();
+}

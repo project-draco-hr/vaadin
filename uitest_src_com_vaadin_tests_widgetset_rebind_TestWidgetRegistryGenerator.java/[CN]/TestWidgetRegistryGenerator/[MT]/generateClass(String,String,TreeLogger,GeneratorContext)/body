@@ -1,0 +1,32 @@
+{
+  PrintWriter printWriter=context.tryCreate(logger,packageName,className);
+  if (printWriter == null) {
+    return;
+  }
+  ClassSourceFileComposerFactory composer=null;
+  composer=new ClassSourceFileComposerFactory(packageName,className);
+  composer.setSuperclass(TestWidgetRegistry.class.getCanonicalName());
+  List<JClassType> testWidgets=findTestWidgets(logger,context.getTypeOracle());
+  SourceWriter w=composer.createSourceWriter(context,printWriter);
+  w.println("public %s() {",className);
+  w.indent();
+  w.println("super();");
+  w.println();
+  for (  JClassType testWidgetType : testWidgets) {
+    w.println("register(\"%s\", new %s() {",escape(testWidgetType.getQualifiedSourceName()),Invoker.class.getCanonicalName());
+    w.indent();
+    w.println("public Object invoke(Object target, Object... params) {");
+    w.indent();
+    w.println("return new %s();",testWidgetType.getQualifiedSourceName());
+    w.outdent();
+    w.println("}");
+    w.outdent();
+    w.println("});");
+    w.println();
+  }
+  w.outdent();
+  w.println("}");
+  w.outdent();
+  w.println("}");
+  context.commit(logger,printWriter);
+}

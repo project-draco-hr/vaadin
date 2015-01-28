@@ -1,0 +1,154 @@
+{
+  LinkedHashMap<String,String> primaryStyleNames=new LinkedHashMap<String,String>();
+  primaryStyleNames.put("v-grid","v-grid");
+  primaryStyleNames.put("v-escalator","v-escalator");
+  primaryStyleNames.put("my-grid","my-grid");
+  createMultiClickAction("Primary style name","State",primaryStyleNames,new Command<Grid,String>(){
+    @Override public void execute(    Grid grid,    String value,    Object data){
+      grid.setPrimaryStyleName(value);
+    }
+  }
+,primaryStyleNames.get("v-grid"));
+  LinkedHashMap<String,SelectionMode> selectionModes=new LinkedHashMap<String,Grid.SelectionMode>();
+  selectionModes.put("single",SelectionMode.SINGLE);
+  selectionModes.put("multi",SelectionMode.MULTI);
+  selectionModes.put("none",SelectionMode.NONE);
+  createSelectAction("Selection mode","State",selectionModes,"none",new Command<Grid,Grid.SelectionMode>(){
+    @Override public void execute(    Grid grid,    SelectionMode selectionMode,    Object data){
+      grid.setSelectionMode(selectionMode);
+      if (selectionMode == SelectionMode.SINGLE) {
+        grid.addSelectionListener(selectionListener);
+      }
+ else {
+        grid.removeSelectionListener(selectionListener);
+      }
+    }
+  }
+);
+  LinkedHashMap<String,Integer> selectionLimits=new LinkedHashMap<String,Integer>();
+  selectionLimits.put("2",Integer.valueOf(2));
+  selectionLimits.put("1000",Integer.valueOf(1000));
+  selectionLimits.put("Integer.MAX_VALUE",Integer.valueOf(Integer.MAX_VALUE));
+  createSelectAction("Selection limit","State",selectionLimits,"1000",new Command<Grid,Integer>(){
+    @Override public void execute(    Grid grid,    Integer limit,    Object data){
+      if (!(grid.getSelectionModel() instanceof MultiSelectionModel)) {
+        grid.setSelectionMode(SelectionMode.MULTI);
+      }
+      ((MultiSelectionModel)grid.getSelectionModel()).setSelectionLimit(limit.intValue());
+    }
+  }
+);
+  LinkedHashMap<String,List<SortOrder>> sortableProperties=new LinkedHashMap<String,List<SortOrder>>();
+  for (  Object propertyId : ds.getSortableContainerPropertyIds()) {
+    sortableProperties.put(propertyId + ", ASC",Sort.by(propertyId).build());
+    sortableProperties.put(propertyId + ", DESC",Sort.by(propertyId,SortDirection.DESCENDING).build());
+  }
+  createSelectAction("Sort by column","State",sortableProperties,"Column 9, ascending",new Command<Grid,List<SortOrder>>(){
+    @Override public void execute(    Grid grid,    List<SortOrder> sortOrder,    Object data){
+      grid.setSortOrder(sortOrder);
+    }
+  }
+);
+  createBooleanAction("Reverse Grid Columns","State",false,new Command<Grid,Boolean>(){
+    @Override public void execute(    Grid c,    Boolean value,    Object data){
+      List<Object> ids=new ArrayList<Object>();
+      ids.addAll(ds.getContainerPropertyIds());
+      if (!value) {
+        c.setColumnOrder(ids.toArray());
+      }
+ else {
+        Object[] idsArray=new Object[ids.size()];
+        for (int i=0; i < ids.size(); ++i) {
+          idsArray[i]=ids.get((ids.size() - 1) - i);
+        }
+        c.setColumnOrder(idsArray);
+      }
+    }
+  }
+);
+  LinkedHashMap<String,CellStyleGenerator> cellStyleGenerators=new LinkedHashMap<String,CellStyleGenerator>();
+  LinkedHashMap<String,RowStyleGenerator> rowStyleGenerators=new LinkedHashMap<String,RowStyleGenerator>();
+  rowStyleGenerators.put(ROW_STYLE_GENERATOR_NONE,null);
+  rowStyleGenerators.put(ROW_STYLE_GENERATOR_ROW_NUMBERS,new RowStyleGenerator(){
+    @Override public String getStyle(    RowReference rowReference){
+      return "row" + rowReference.getItemId();
+    }
+  }
+);
+  rowStyleGenerators.put(ROW_STYLE_GENERATOR_ROW_NUMBERS_FOR_3_OF_4,new RowStyleGenerator(){
+    @Override public String getStyle(    RowReference rowReference){
+      int rowIndex=((Integer)rowReference.getItemId()).intValue();
+      if (rowIndex % 4 == 0) {
+        return null;
+      }
+ else {
+        return "row" + rowReference.getItemId();
+      }
+    }
+  }
+);
+  cellStyleGenerators.put(CELL_STYLE_GENERATOR_NONE,null);
+  cellStyleGenerators.put(CELL_STYLE_GENERATOR_PROPERTY_TO_STRING,new CellStyleGenerator(){
+    @Override public String getStyle(    CellReference cellReference){
+      return cellReference.getPropertyId().toString().replace(' ','-');
+    }
+  }
+);
+  cellStyleGenerators.put(CELL_STYLE_GENERATOR_SPECIAL,new CellStyleGenerator(){
+    @Override public String getStyle(    CellReference cellReference){
+      int rowIndex=((Integer)cellReference.getItemId()).intValue();
+      Object propertyId=cellReference.getPropertyId();
+      if (rowIndex % 4 == 1) {
+        return null;
+      }
+ else       if (rowIndex % 4 == 3 && "Column 1".equals(propertyId)) {
+        return null;
+      }
+      return propertyId.toString().replace(' ','_');
+    }
+  }
+);
+  createSelectAction("Row style generator","State",rowStyleGenerators,CELL_STYLE_GENERATOR_NONE,new Command<Grid,RowStyleGenerator>(){
+    @Override public void execute(    Grid grid,    RowStyleGenerator generator,    Object data){
+      grid.setRowStyleGenerator(generator);
+    }
+  }
+);
+  createSelectAction("Cell style generator","State",cellStyleGenerators,CELL_STYLE_GENERATOR_NONE,new Command<Grid,CellStyleGenerator>(){
+    @Override public void execute(    Grid grid,    CellStyleGenerator generator,    Object data){
+      grid.setCellStyleGenerator(generator);
+    }
+  }
+);
+  LinkedHashMap<String,Integer> frozenOptions=new LinkedHashMap<String,Integer>();
+  for (int i=-1; i <= COLUMNS; i++) {
+    frozenOptions.put(String.valueOf(i),Integer.valueOf(i));
+  }
+  createSelectAction("Frozen column count","State",frozenOptions,"0",new Command<Grid,Integer>(){
+    @Override public void execute(    Grid c,    Integer value,    Object data){
+      c.setFrozenColumnCount(value.intValue());
+    }
+  }
+);
+  LinkedHashMap<String,Integer> containerDelayValues=new LinkedHashMap<String,Integer>();
+  for (  int delay : new int[]{0,500,2000,10000}) {
+    containerDelayValues.put(String.valueOf(delay),Integer.valueOf(delay));
+  }
+  createSelectAction("Container delay","State",containerDelayValues,"0",new Command<Grid,Integer>(){
+    @Override public void execute(    Grid grid,    Integer delay,    Object data){
+      containerDelay=delay.intValue();
+    }
+  }
+);
+  createBooleanAction("ItemClickListener","State",false,new Command<Grid,Boolean>(){
+    @Override public void execute(    Grid c,    Boolean value,    Object data){
+      if (!value) {
+        c.removeItemClickListener(itemClickListener);
+      }
+ else {
+        c.addItemClickListener(itemClickListener);
+      }
+    }
+  }
+);
+}

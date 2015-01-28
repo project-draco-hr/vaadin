@@ -1,0 +1,28 @@
+{
+  BeanItemContainer<Person> container=new BeanItemContainer<Person>(Person.class){
+    @Override public Object addItem(){
+      BeanItem<Person> item=addBean(new Person(){
+        @Override public void setFirstName(        String firstName){
+          if ("name".equals(firstName)) {
+            throw new RuntimeException(firstName);
+          }
+ else {
+            super.setFirstName(firstName);
+          }
+        }
+      }
+);
+      return getBeanIdResolver().getIdForBean(item.getBean());
+    }
+  }
+;
+  setContainerRemoveColumns(container);
+  try {
+    grid.addRow("name");
+    Assert.fail("Adding row should throw MethodException");
+  }
+ catch (  MethodException e) {
+    Assert.assertEquals("Got the wrong exception","name",e.getCause().getMessage());
+    Assert.assertEquals("There should be no rows in the container",0,container.size());
+  }
+}

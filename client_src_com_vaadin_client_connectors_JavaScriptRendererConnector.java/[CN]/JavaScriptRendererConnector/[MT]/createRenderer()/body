@@ -1,0 +1,70 @@
+{
+  helper.ensureJavascriptInited();
+  if (!hasFunction("render")) {
+    throw new RuntimeException("JavaScriptRenderer " + helper.getInitFunctionName() + " must have a function named 'render'");
+  }
+  final boolean hasInit=hasFunction("init");
+  final boolean hasDestroy=hasFunction("destroy");
+  final boolean hasOnActivate=hasFunction("onActivate");
+  final boolean hasGetConsumedEvents=hasFunction("getConsumedEvents");
+  final boolean hasOnBrowserEvent=hasFunction("onBrowserEvent");
+  return new ComplexRenderer<JsonValue>(){
+    @Override public void render(    RendererCellReference cell,    JsonValue data){
+      render(helper.getConnectorWrapper(),getJsCell(cell),Util.json2jso(data));
+    }
+    private JavaScriptObject getJsCell(    CellReference<?> cell){
+      updateCellReference(cellReferenceWrapper,cell);
+      return cellReferenceWrapper;
+    }
+    public native void render(    JavaScriptObject wrapper,    JavaScriptObject cell,    JavaScriptObject data);
+    @Override public void init(    RendererCellReference cell){
+      if (hasInit) {
+        init(helper.getConnectorWrapper(),getJsCell(cell));
+      }
+    }
+    private native void init(    JavaScriptObject wrapper,    JavaScriptObject cell);
+    private native void updateCellReference(    JavaScriptObject cellWrapper,    CellReference<?> target);
+    @Override public void destroy(    RendererCellReference cell){
+      if (hasDestroy) {
+        destory(helper.getConnectorWrapper(),getJsCell(cell));
+      }
+ else {
+        super.destroy(cell);
+      }
+    }
+    private native void destory(    JavaScriptObject wrapper,    JavaScriptObject cell);
+    @Override public boolean onActivate(    CellReference<?> cell){
+      if (hasOnActivate) {
+        return onActivate(helper.getConnectorWrapper(),getJsCell(cell));
+      }
+ else {
+        return super.onActivate(cell);
+      }
+    }
+    private native boolean onActivate(    JavaScriptObject wrapper,    JavaScriptObject cell);
+    @Override public Collection<String> getConsumedEvents(){
+      if (hasGetConsumedEvents) {
+        JsArrayString events=getConsumedEvents(helper.getConnectorWrapper());
+        ArrayList<String> list=new ArrayList<String>(events.length());
+        for (int i=0; i < events.length(); i++) {
+          list.add(events.get(i));
+        }
+        return list;
+      }
+ else {
+        return super.getConsumedEvents();
+      }
+    }
+    private native JsArrayString getConsumedEvents(    JavaScriptObject wrapper);
+    @Override public boolean onBrowserEvent(    CellReference<?> cell,    NativeEvent event){
+      if (hasOnBrowserEvent) {
+        return onBrowserEvent(helper.getConnectorWrapper(),getJsCell(cell),event);
+      }
+ else {
+        return super.onBrowserEvent(cell,event);
+      }
+    }
+    private native boolean onBrowserEvent(    JavaScriptObject wrapper,    JavaScriptObject cell,    NativeEvent event);
+  }
+;
+}

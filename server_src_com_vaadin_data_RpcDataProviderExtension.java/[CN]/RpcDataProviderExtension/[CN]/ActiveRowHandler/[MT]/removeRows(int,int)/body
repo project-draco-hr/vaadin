@@ -1,0 +1,16 @@
+{
+  int lastRemoved=firstIndex + count;
+  if (lastRemoved < activeRange.getStart()) {
+    activeRange=activeRange.offsetBy(-count);
+  }
+ else   if (firstIndex < activeRange.getEnd()) {
+    final Range deprecated=Range.between(Math.max(activeRange.getStart(),firstIndex),Math.min(activeRange.getEnd(),lastRemoved + 1));
+    for (int i=deprecated.getStart(); i < deprecated.getEnd(); ++i) {
+      Object itemId=keyMapper.itemIdAtIndex(i);
+      valueChangeListeners.remove(itemId);
+    }
+    activeRange=Range.withLength(activeRange.getStart(),activeRange.length() - deprecated.length());
+  }
+ else {
+  }
+}

@@ -1,0 +1,15 @@
+{
+  JClassType originalType=type;
+  while (type != null) {
+    if (type.getQualifiedBinaryName().equals(AbstractRendererConnector.class.getName())) {
+      JParameterizedType parameterized=type.isParameterized();
+      if (parameterized == null) {
+        logger.log(Type.ERROR,type.getQualifiedSourceName() + " must define the generic parameter of the inherited " + AbstractRendererConnector.class.getSimpleName());
+        throw new UnableToCompleteException();
+      }
+      return parameterized.getTypeArgs()[0];
+    }
+    type=type.getSuperclass();
+  }
+  throw new IllegalArgumentException("The type " + originalType.getQualifiedSourceName() + " does not extend "+ AbstractRendererConnector.class.getName());
+}

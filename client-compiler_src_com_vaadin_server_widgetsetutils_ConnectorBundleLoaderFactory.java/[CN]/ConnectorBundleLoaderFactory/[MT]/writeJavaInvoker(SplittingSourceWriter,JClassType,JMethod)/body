@@ -16,7 +16,12 @@
       w.print(", ");
     }
     String parameterTypeName=getBoxedTypeName(parameterType);
-    w.print("(" + parameterTypeName + ") params["+ i+ "]");
+    if (parameterTypeName.startsWith("elemental.json.Json")) {
+      w.print("%s.<%s>obj2jso(params[%d])",JsonDecoder.class.getCanonicalName(),parameterTypeName,i);
+    }
+ else {
+      w.print("(" + parameterTypeName + ") params["+ i+ "]");
+    }
   }
   w.println(");");
   if (!hasReturnType) {

@@ -19,7 +19,7 @@
     final UIDL opUidl=(UIDL)it.next();
     String itemHtml=opUidl.getStringAttribute("caption");
     if (!htmlContentAllowed) {
-      itemHtml=Util.escapeHTML(itemHtml);
+      itemHtml=WidgetUtil.escapeHTML(itemHtml);
     }
     String iconUrl=opUidl.getStringAttribute("icon");
     if (iconUrl != null && iconUrl.length() != 0) {
@@ -37,7 +37,7 @@
         op.setStyleName("v-radiobutton");
       }
       if (iconUrl != null && iconUrl.length() != 0) {
-        Util.sinkOnloadForImages(op.getElement());
+        WidgetUtil.sinkOnloadForImages(op.getElement());
         op.addHandler(iconLoadHandler,LoadEvent.getType());
       }
       op.addStyleName(CLASSNAME_OPTION);
@@ -50,7 +50,7 @@
     boolean enabled=optionEnabled && !isReadonly() && isEnabled();
     op.setEnabled(enabled);
     optionsEnabled.put(op,optionEnabled);
-    setStyleName(op.getElement(),ApplicationConnection.DISABLED_CLASSNAME,!(optionEnabled && isEnabled()));
+    setStyleName(op.getElement(),StyleConstants.DISABLED,!(optionEnabled && isEnabled()));
     newwidgets.add(op);
   }
   if (!newwidgets.equals(existingwidgets)) {

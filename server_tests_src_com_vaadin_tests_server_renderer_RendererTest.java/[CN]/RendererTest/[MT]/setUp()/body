@@ -1,0 +1,24 @@
+{
+  VaadinSession.setCurrent(new AlwaysLockedVaadinSession(null));
+  IndexedContainer c=new IndexedContainer();
+  c.addContainerProperty("foo",Integer.class,0);
+  c.addContainerProperty("bar",String.class,"");
+  c.addContainerProperty("baz",TestBean.class,null);
+  c.addContainerProperty("bah",ExtendedBean.class,null);
+  Object id=c.addItem();
+  Item item=c.getItem(id);
+  item.getItemProperty("foo").setValue(123);
+  item.getItemProperty("bar").setValue("321");
+  item.getItemProperty("baz").setValue(new TestBean());
+  item.getItemProperty("bah").setValue(new ExtendedBean());
+  UI ui=EasyMock.createNiceMock(UI.class);
+  ConnectorTracker ct=EasyMock.createNiceMock(ConnectorTracker.class);
+  EasyMock.expect(ui.getConnectorTracker()).andReturn(ct).anyTimes();
+  EasyMock.replay(ui,ct);
+  grid=new Grid(c);
+  grid.setParent(ui);
+  foo=grid.getColumn("foo");
+  bar=grid.getColumn("bar");
+  baz=grid.getColumn("baz");
+  bah=grid.getColumn("bah");
+}

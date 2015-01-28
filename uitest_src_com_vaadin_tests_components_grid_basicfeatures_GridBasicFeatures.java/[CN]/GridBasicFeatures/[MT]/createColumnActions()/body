@@ -1,0 +1,108 @@
+{
+  createCategory("Columns",null);
+  for (int c=0; c < COLUMNS; c++) {
+    final int index=c;
+    createCategory(getColumnProperty(c),"Columns");
+    createClickAction("Add / Remove",getColumnProperty(c),new Command<Grid,String>(){
+      @Override public void execute(      Grid grid,      String value,      Object data){
+        String columnProperty=getColumnProperty((Integer)data);
+        if (grid.getColumn(columnProperty) == null) {
+          grid.addColumn(columnProperty);
+        }
+ else {
+          grid.removeColumn(columnProperty);
+        }
+      }
+    }
+,null,c);
+    createBooleanAction("Sortable",getColumnProperty(c),true,new Command<Grid,Boolean>(){
+      @Override public void execute(      Grid grid,      Boolean value,      Object columnIndex){
+        Object propertyId=getColumnProperty((Integer)columnIndex);
+        Column column=grid.getColumn(propertyId);
+        column.setSortable(value);
+      }
+    }
+,c);
+    createCategory("Column " + c + " Width",getColumnProperty(c));
+    createClickAction("Auto","Column " + c + " Width",new Command<Grid,Integer>(){
+      @Override public void execute(      Grid grid,      Integer value,      Object columnIndex){
+        Object propertyId=getColumnProperty((Integer)columnIndex);
+        Column column=grid.getColumn(propertyId);
+        column.setWidthUndefined();
+      }
+    }
+,-1,c);
+    createClickAction("25.5px","Column " + c + " Width",new Command<Grid,Void>(){
+      @Override @SuppressWarnings("boxing") public void execute(      Grid grid,      Void value,      Object columnIndex){
+        grid.getColumns().get((Integer)columnIndex).setWidth(25.5);
+      }
+    }
+,null,c);
+    for (int w=50; w < 300; w+=50) {
+      createClickAction(w + "px","Column " + c + " Width",new Command<Grid,Integer>(){
+        @Override public void execute(        Grid grid,        Integer value,        Object columnIndex){
+          Object propertyId=getColumnProperty((Integer)columnIndex);
+          Column column=grid.getColumn(propertyId);
+          column.setWidth(value);
+        }
+      }
+,w,c);
+    }
+    LinkedHashMap<String,GridStaticCellType> defaultRows=new LinkedHashMap<String,GridStaticCellType>();
+    defaultRows.put("Text Header",GridStaticCellType.TEXT);
+    defaultRows.put("Html Header ",GridStaticCellType.HTML);
+    defaultRows.put("Widget Header",GridStaticCellType.WIDGET);
+    createMultiClickAction("Header Type",getColumnProperty(c),defaultRows,new Command<Grid,GridStaticCellType>(){
+      @Override public void execute(      Grid grid,      GridStaticCellType value,      Object columnIndex){
+        final Object propertyId=getColumnProperty((Integer)columnIndex);
+        final HeaderCell cell=grid.getDefaultHeaderRow().getCell(propertyId);
+switch (value) {
+case TEXT:
+          cell.setText("Text Header");
+        break;
+case HTML:
+      cell.setHtml("HTML Header");
+    break;
+case WIDGET:
+  cell.setComponent(new Button("Button Header",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      log("Button clicked!");
+    }
+  }
+));
+default :
+break;
+}
+}
+}
+,c);
+defaultRows=new LinkedHashMap<String,GridStaticCellType>();
+defaultRows.put("Text Footer",GridStaticCellType.TEXT);
+defaultRows.put("Html Footer",GridStaticCellType.HTML);
+defaultRows.put("Widget Footer",GridStaticCellType.WIDGET);
+createMultiClickAction("Footer Type",getColumnProperty(c),defaultRows,new Command<Grid,GridStaticCellType>(){
+@Override public void execute(Grid grid,GridStaticCellType value,Object columnIndex){
+final Object propertyId=getColumnProperty((Integer)columnIndex);
+final FooterCell cell=grid.getFooterRow(0).getCell(propertyId);
+switch (value) {
+case TEXT:
+cell.setText("Text Footer");
+break;
+case HTML:
+cell.setHtml("HTML Footer");
+break;
+case WIDGET:
+cell.setComponent(new Button("Button Footer",new ClickListener(){
+@Override public void buttonClick(ClickEvent event){
+log("Button clicked!");
+}
+}
+));
+default :
+break;
+}
+}
+}
+,c);
+}
+}
