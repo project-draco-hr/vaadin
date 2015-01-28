@@ -9,7 +9,13 @@
   if (isAttached()) {
     paintInsertRows(index,numberOfRows);
     if (rows == numberOfRows) {
-      columnAutoWidthAssignScheduler.reschedule();
+      Map<Integer,Double> colWidths=new HashMap<Integer,Double>();
+      Double width=Double.valueOf(ColumnConfigurationImpl.Column.DEFAULT_COLUMN_WIDTH_PX);
+      for (int i=0; i < getColumnConfiguration().getColumnCount(); i++) {
+        Integer col=Integer.valueOf(i);
+        colWidths.put(col,width);
+      }
+      getColumnConfiguration().setColumnWidths(colWidths);
     }
   }
 }

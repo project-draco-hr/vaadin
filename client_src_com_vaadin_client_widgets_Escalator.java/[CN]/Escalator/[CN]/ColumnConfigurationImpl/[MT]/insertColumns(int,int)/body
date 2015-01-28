@@ -23,10 +23,13 @@
   body.paintInsertColumns(index,numberOfColumns,frozen);
   footer.paintInsertColumns(index,numberOfColumns,frozen);
   if (header.getRowCount() > 0 || body.getRowCount() > 0 || footer.getRowCount() > 0) {
-    for (int col=index; col < index + numberOfColumns; col++) {
-      getColumnConfiguration().setColumnWidth(col,-1);
-      columnConfiguration.columns.get(col).widthIsFinalized();
+    Map<Integer,Double> colWidths=new HashMap<Integer,Double>();
+    Double width=Double.valueOf(Column.DEFAULT_COLUMN_WIDTH_PX);
+    for (int i=index; i < index + numberOfColumns; i++) {
+      Integer col=Integer.valueOf(i);
+      colWidths.put(col,width);
     }
+    getColumnConfiguration().setColumnWidths(colWidths);
   }
   double pixelsToInsertedColumn=columnConfiguration.getCalculatedColumnsWidth(Range.withLength(0,index));
   final boolean columnsWereAddedToTheLeftOfViewport=scroller.lastScrollLeft > pixelsToInsertedColumn;

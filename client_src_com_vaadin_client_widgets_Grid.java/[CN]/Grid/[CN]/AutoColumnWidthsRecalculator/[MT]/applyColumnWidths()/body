@@ -1,0 +1,24 @@
+{
+  Map<Integer,Double> selfWidths=new LinkedHashMap<Integer,Double>();
+  List<Column<?,T>> columns=getColumns();
+  for (int index=0; index < columns.size(); index++) {
+    selfWidths.put(index,columns.get(index).getWidth());
+  }
+  Grid.this.escalator.getColumnConfiguration().setColumnWidths(selfWidths);
+  Map<Integer,Double> constrainedWidths=new LinkedHashMap<Integer,Double>();
+  for (int index=0; index < columns.size(); index++) {
+    Column<?,T> column=columns.get(index);
+    boolean hasAutoWidth=column.getWidth() < 0;
+    if (!hasAutoWidth) {
+      continue;
+    }
+    double actualWidth=column.getWidthActual();
+    if (actualWidth < getMinWidth(column)) {
+      constrainedWidths.put(index,column.getMinimumWidth());
+    }
+ else     if (actualWidth > getMaxWidth(column)) {
+      constrainedWidths.put(index,column.getMaximumWidth());
+    }
+  }
+  Grid.this.escalator.getColumnConfiguration().setColumnWidths(constrainedWidths);
+}
