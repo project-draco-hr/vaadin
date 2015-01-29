@@ -1,0 +1,13 @@
+{
+  if (!isEditorEnabled()) {
+    throw new IllegalStateException("Item editor is not enabled");
+  }
+ else   if (editedItemId != null) {
+    throw new IllegalStateException("Editing item + " + itemId + " failed. Item editor is already editing item "+ editedItemId);
+  }
+ else   if (!getContainerDataSource().containsId(itemId)) {
+    throw new IllegalArgumentException("Item with id " + itemId + " not found in current container");
+  }
+  editedItemId=itemId;
+  getEditorRpc().bind(getContainerDataSource().indexOfId(itemId));
+}

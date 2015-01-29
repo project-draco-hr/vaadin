@@ -1,0 +1,55 @@
+{
+  DivElement tableWrapper=DivElement.as(tr.getParentElement().getParentElement().getParentElement());
+  AbstractRowContainer body=(AbstractRowContainer)grid.getEscalator().getBody();
+  double rowTop=body.getRowTop(tr);
+  int bodyTop=body.getElement().getAbsoluteTop();
+  int wrapperTop=tableWrapper.getAbsoluteTop();
+  double width=WidgetUtil.getRequiredWidthBoundingClientRectDouble(tr);
+  double height=WidgetUtil.getRequiredHeightBoundingClientRectDouble(tr);
+  setBounds(editorOverlay,tr.getOffsetLeft(),rowTop + bodyTop - wrapperTop,width,height);
+  updateHorizontalScrollPosition();
+  scrollHandler=grid.addScrollHandler(new ScrollHandler(){
+    @Override public void onScroll(    ScrollEvent event){
+      updateHorizontalScrollPosition();
+    }
+  }
+);
+  tableWrapper.appendChild(editorOverlay);
+  for (int i=0; i < tr.getCells().getLength(); i++) {
+    Element cell=createCell(tr.getCells().getItem(i));
+    editorOverlay.appendChild(cell);
+    Column<?,T> column=grid.getColumn(i);
+    if (column == grid.selectionColumn) {
+      continue;
+    }
+    Widget editor=getHandler().getWidget(column);
+    if (editor != null) {
+      columnToWidget.put(column,editor);
+      attachWidget(editor,cell);
+    }
+  }
+  saveButton=new Button();
+  saveButton.setText("Save");
+  saveButton.setStylePrimaryName("v-nativebutton");
+  saveButton.addStyleName(styleName + "-save");
+  saveButton.addClickHandler(new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      save();
+    }
+  }
+);
+  setBounds(saveButton.getElement(),0,tr.getOffsetHeight() + 5,50,25);
+  attachWidget(saveButton,editorOverlay);
+  cancelButton=new Button();
+  cancelButton.setText("Cancel");
+  cancelButton.setStylePrimaryName("v-nativebutton");
+  cancelButton.addStyleName(styleName + "-cancel");
+  cancelButton.addClickHandler(new ClickHandler(){
+    @Override public void onClick(    ClickEvent event){
+      cancel();
+    }
+  }
+);
+  setBounds(cancelButton.getElement(),55,tr.getOffsetHeight() + 5,50,25);
+  attachWidget(cancelButton,editorOverlay);
+}

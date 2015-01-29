@@ -1,0 +1,13 @@
+{
+  for (  Entry<JClassType,Map<JMethod,Set<MethodAttribute>>> typeEntry : bundle.getMethodAttributes().entrySet()) {
+    JClassType type=typeEntry.getKey();
+    for (    Entry<JMethod,Set<MethodAttribute>> methodEntry : typeEntry.getValue().entrySet()) {
+      JMethod method=methodEntry.getKey();
+      Set<MethodAttribute> attributes=methodEntry.getValue();
+      for (      MethodAttribute attribute : attributes) {
+        w.println("store.setMethodAttribute(%s, \"%s\", %s.%s);",getClassLiteralString(type),method.getName(),MethodAttribute.class.getCanonicalName(),attribute.name());
+        w.splitIfNeeded();
+      }
+    }
+  }
+}

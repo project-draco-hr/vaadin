@@ -1,0 +1,17 @@
+{
+  this.grid=grid;
+  this.state=state;
+  this.propertyId=propertyId;
+  internalSetRenderer(new ObjectRenderer(){
+    private boolean warned=false;
+    private final String DEFAULT_RENDERER_WARNING="This column uses " + "a dummy default ObjectRenderer. A more suitable " + "renderer should be set using the setRenderer() "+ "method.";
+    @Override public JsonValue encode(    Object value){
+      if (!warned && !(value instanceof String)) {
+        getLogger().warning(Column.this.toString() + ": " + DEFAULT_RENDERER_WARNING);
+        warned=true;
+      }
+      return super.encode(value);
+    }
+  }
+);
+}

@@ -1,0 +1,27 @@
+{
+  if (millisLeft <= 0 || cancelled) {
+    scroller.currentFlickScroller=null;
+    return;
+  }
+  final double timestamp=Duration.currentTimeMillis();
+  if (prevTime == 0) {
+    prevTime=timestamp;
+    AnimationScheduler.get().requestAnimationFrame(this);
+    return;
+  }
+  double currentLeft=horizontalScrollbar.getScrollPos();
+  double currentTop=verticalScrollbar.getScrollPos();
+  final double timeDiff=timestamp - prevTime;
+  double left=currentLeft - velX * timeDiff;
+  setScrollLeft(left);
+  velX-=xFric * timeDiff;
+  double top=currentTop - velY * timeDiff;
+  setScrollTop(top);
+  velY-=yFric * timeDiff;
+  cancelBecauseOfEdgeOrCornerMaybe();
+  prevTime=timestamp;
+  millisLeft-=timeDiff;
+  lastLeft=currentLeft;
+  lastTop=currentTop;
+  AnimationScheduler.get().requestAnimationFrame(this);
+}

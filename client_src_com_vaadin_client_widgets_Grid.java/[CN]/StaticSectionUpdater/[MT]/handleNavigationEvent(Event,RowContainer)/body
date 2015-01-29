@@ -1,0 +1,47 @@
+{
+  if (!event.getType().equals(BrowserEvents.KEYDOWN)) {
+    return false;
+  }
+  int newRow=-1;
+  RowContainer container=escalator.getBody();
+switch (event.getKeyCode()) {
+case KeyCodes.KEY_HOME:
+    if (container.getRowCount() > 0) {
+      newRow=0;
+    }
+  break;
+case KeyCodes.KEY_END:
+if (container.getRowCount() > 0) {
+  newRow=container.getRowCount() - 1;
+}
+break;
+case KeyCodes.KEY_PAGEUP:
+{
+Range range=escalator.getVisibleRowRange();
+if (!range.isEmpty()) {
+int firstIndex=getFirstVisibleRowIndex();
+newRow=firstIndex - range.length();
+if (newRow < 0) {
+  newRow=0;
+}
+}
+break;
+}
+case KeyCodes.KEY_PAGEDOWN:
+{
+Range range=escalator.getVisibleRowRange();
+if (!range.isEmpty()) {
+int lastIndex=getLastVisibleRowIndex();
+newRow=lastIndex + range.length();
+if (newRow >= container.getRowCount()) {
+newRow=container.getRowCount() - 1;
+}
+}
+break;
+}
+default :
+return false;
+}
+scrollToRow(newRow);
+return true;
+}

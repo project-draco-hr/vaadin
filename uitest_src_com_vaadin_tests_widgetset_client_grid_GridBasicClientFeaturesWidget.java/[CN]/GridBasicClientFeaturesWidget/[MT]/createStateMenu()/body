@@ -1,0 +1,152 @@
+{
+  String[] selectionModePath={"Component","State","Selection mode"};
+  String[] primaryStyleNamePath={"Component","State","Primary Stylename"};
+  String[] rowStyleGeneratorNamePath={"Component","State","Row style generator"};
+  String[] cellStyleGeneratorNamePath={"Component","State","Cell style generator"};
+  addMenuCommand("multi",new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setSelectionMode(SelectionMode.MULTI);
+    }
+  }
+,selectionModePath);
+  addMenuCommand("single",new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setSelectionMode(SelectionMode.SINGLE);
+    }
+  }
+,selectionModePath);
+  addMenuCommand("none",new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setSelectionMode(SelectionMode.NONE);
+    }
+  }
+,selectionModePath);
+  addMenuCommand("v-grid",new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setStylePrimaryName("v-grid");
+    }
+  }
+,primaryStyleNamePath);
+  addMenuCommand("v-escalator",new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setStylePrimaryName("v-escalator");
+    }
+  }
+,primaryStyleNamePath);
+  addMenuCommand("v-custom-style",new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setStylePrimaryName("v-custom-style");
+    }
+  }
+,primaryStyleNamePath);
+  addMenuCommand("Edit and refresh Row 0",new ScheduledCommand(){
+    @Override public void execute(){
+      DataSource<List<Data>> ds=grid.getDataSource();
+      RowHandle<List<Data>> rowHandle=ds.getHandle(ds.getRow(0));
+      rowHandle.getRow().get(0).value="Foo";
+      rowHandle.updateRow();
+    }
+  }
+,"Component","State");
+  addMenuCommand("Delayed edit of Row 0",new ScheduledCommand(){
+    @Override public void execute(){
+      DataSource<List<Data>> ds=grid.getDataSource();
+      final RowHandle<List<Data>> rowHandle=ds.getHandle(ds.getRow(0));
+      new Timer(){
+        @Override public void run(){
+          rowHandle.getRow().get(0).value="Bar";
+          rowHandle.updateRow();
+        }
+      }
+.schedule(5000);
+    }
+  }
+,"Component","State");
+  addMenuCommand(ROW_STYLE_GENERATOR_NONE,new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setRowStyleGenerator(null);
+    }
+  }
+,rowStyleGeneratorNamePath);
+  addMenuCommand(ROW_STYLE_GENERATOR_EVERY_THIRD,new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setRowStyleGenerator(new RowStyleGenerator<List<Data>>(){
+        @Override public String getStyle(        RowReference<List<Data>> rowReference){
+          if (rowReference.getRowIndex() % 3 == 0) {
+            return "third";
+          }
+ else {
+            Integer value=(Integer)rowReference.getRow().get(COLUMNS - MANUALLY_FORMATTED_COLUMNS).value;
+            return value.toString();
+          }
+        }
+      }
+);
+    }
+  }
+,rowStyleGeneratorNamePath);
+  addMenuCommand(ROW_STYLE_GENERATOR_ROW_INDEX,new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setRowStyleGenerator(new RowStyleGenerator<List<Data>>(){
+        @Override public String getStyle(        RowReference<List<Data>> rowReference){
+          return Integer.toString(rowReference.getRowIndex());
+        }
+      }
+);
+    }
+  }
+,rowStyleGeneratorNamePath);
+  addMenuCommand(CELL_STYLE_GENERATOR_NONE,new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setCellStyleGenerator(null);
+    }
+  }
+,cellStyleGeneratorNamePath);
+  addMenuCommand(CELL_STYLE_GENERATOR_SIMPLE,new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setCellStyleGenerator(new CellStyleGenerator<List<Data>>(){
+        @Override public String getStyle(        CellReference<List<Data>> cellReference){
+          Grid.Column<?,List<Data>> column=cellReference.getColumn();
+          if (column == grid.getColumn(2)) {
+            return "two";
+          }
+ else           if (column == grid.getColumn(COLUMNS - MANUALLY_FORMATTED_COLUMNS)) {
+            Integer value=(Integer)column.getValue(cellReference.getRow());
+            return value.toString();
+          }
+ else {
+            return null;
+          }
+        }
+      }
+);
+    }
+  }
+,cellStyleGeneratorNamePath);
+  addMenuCommand(CELL_STYLE_GENERATOR_COL_INDEX,new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setCellStyleGenerator(new CellStyleGenerator<List<Data>>(){
+        @Override public String getStyle(        CellReference<List<Data>> cellReference){
+          return cellReference.getRowIndex() + "_" + grid.getColumns().indexOf(cellReference.getColumn());
+        }
+      }
+);
+    }
+  }
+,cellStyleGeneratorNamePath);
+  for (int i=-1; i <= COLUMNS; i++) {
+    final int index=i;
+    addMenuCommand(Integer.toString(index) + " columns",new ScheduledCommand(){
+      @Override public void execute(){
+        grid.setFrozenColumnCount(index);
+      }
+    }
+,"Component","State","Frozen column count");
+  }
+  addMenuCommand("Enabled",new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setEnabled(!grid.isEnabled());
+    }
+  }
+,"Component","State");
+}

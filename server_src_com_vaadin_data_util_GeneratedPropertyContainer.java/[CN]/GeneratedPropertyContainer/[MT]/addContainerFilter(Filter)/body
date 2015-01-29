@@ -1,0 +1,19 @@
+{
+  if (filterableContainer == null) {
+    throw new UnsupportedOperationException("Wrapped container is not filterable");
+  }
+  List<Filter> addedFilters=new ArrayList<Filter>();
+  for (  Entry<?,PropertyValueGenerator<?>> entry : propertyGenerators.entrySet()) {
+    Object property=entry.getKey();
+    if (filter.appliesToProperty(property)) {
+      Filter modifiedFilter=entry.getValue().modifyFilter(filter);
+      filterableContainer.addContainerFilter(modifiedFilter);
+      addedFilters.add(modifiedFilter);
+    }
+  }
+  if (addedFilters.isEmpty()) {
+    addedFilters.add(filter);
+    filterableContainer.addContainerFilter(filter);
+  }
+  activeFilters.put(filter,addedFilters);
+}

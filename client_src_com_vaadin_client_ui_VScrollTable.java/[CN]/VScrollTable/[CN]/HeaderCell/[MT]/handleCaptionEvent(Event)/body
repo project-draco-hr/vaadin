@@ -2,7 +2,7 @@
 switch (DOM.eventGetType(event)) {
 case Event.ONTOUCHSTART:
 case Event.ONMOUSEDOWN:
-    if (columnReordering && Util.isTouchEventOrLeftMouseButton(event)) {
+    if (columnReordering && WidgetUtil.isTouchEventOrLeftMouseButton(event)) {
       if (event.getTypeInt() == Event.ONTOUCHSTART) {
         event.stopPropagation();
       }
@@ -17,10 +17,10 @@ case Event.ONMOUSEDOWN:
 case Event.ONMOUSEUP:
 case Event.ONTOUCHEND:
 case Event.ONTOUCHCANCEL:
-if (columnReordering && Util.isTouchEventOrLeftMouseButton(event)) {
+if (columnReordering && WidgetUtil.isTouchEventOrLeftMouseButton(event)) {
   dragging=false;
   DOM.releaseCapture(getElement());
-  if (Util.isTouchEvent(event)) {
+  if (WidgetUtil.isTouchEvent(event)) {
     event.preventDefault();
     event.stopPropagation();
   }
@@ -40,7 +40,7 @@ if (columnReordering && Util.isTouchEventOrLeftMouseButton(event)) {
   }
 }
 if (!moved) {
-if (sortable && Util.isTouchEventOrLeftMouseButton(event)) {
+if (sortable && WidgetUtil.isTouchEventOrLeftMouseButton(event)) {
   if (sortColumn.equals(cid)) {
     client.updateVariable(paintableId,"sortascending",!sortAscending,false);
   }
@@ -56,7 +56,7 @@ if (sortable && Util.isTouchEventOrLeftMouseButton(event)) {
   rowRequestHandler.run();
 }
 fireHeaderClickedEvent(event);
-if (Util.isTouchEvent(event)) {
+if (WidgetUtil.isTouchEvent(event)) {
   event.preventDefault();
   event.stopPropagation();
 }
@@ -68,7 +68,7 @@ fireHeaderClickedEvent(event);
 break;
 case Event.ONTOUCHMOVE:
 case Event.ONMOUSEMOVE:
-if (dragging && Util.isTouchEventOrLeftMouseButton(event)) {
+if (dragging && WidgetUtil.isTouchEventOrLeftMouseButton(event)) {
 if (event.getTypeInt() == Event.ONTOUCHMOVE) {
 event.stopPropagation();
 }
@@ -76,7 +76,7 @@ if (!moved) {
 createFloatingCopy();
 moved=true;
 }
-final int clientX=Util.getTouchOrMouseClientX(event);
+final int clientX=WidgetUtil.getTouchOrMouseClientX(event);
 final int x=clientX + tHead.hTableWrapper.getScrollLeft();
 int slotX=headerX;
 closestSlot=colIndex;

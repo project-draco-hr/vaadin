@@ -1,29 +1,29 @@
 {
   if (null == value) {
-    return JSONNull.getInstance();
+    return Json.createNull();
   }
- else   if (value instanceof JSONValue) {
-    return (JSONValue)value;
+ else   if (value instanceof JsonValue) {
+    return (JsonValue)value;
   }
  else   if (value instanceof String[]) {
     String[] array=(String[])value;
-    JSONArray jsonArray=new JSONArray();
+    JsonArray jsonArray=Json.createArray();
     for (int i=0; i < array.length; ++i) {
-      jsonArray.set(i,new JSONString(array[i]));
+      jsonArray.set(i,array[i]);
     }
     return jsonArray;
   }
  else   if (value instanceof String) {
-    return new JSONString((String)value);
+    return Json.create((String)value);
   }
  else   if (value instanceof Boolean) {
-    return JSONBoolean.getInstance((Boolean)value);
+    return Json.create((Boolean)value);
   }
  else   if (value instanceof Byte) {
-    return new JSONNumber((Byte)value);
+    return Json.create((Byte)value);
   }
  else   if (value instanceof Character) {
-    return new JSONString(String.valueOf(value));
+    return Json.create(String.valueOf(value));
   }
  else   if (value instanceof Object[] && type == null) {
     return encodeLegacyObjectArray((Object[])value,connection);
@@ -36,7 +36,7 @@
   }
  else   if (value instanceof Connector) {
     Connector connector=(Connector)value;
-    return new JSONString(connector.getConnectorId());
+    return Json.create(connector.getConnectorId());
   }
  else   if (value instanceof Collection) {
     return encodeCollection((Collection)value,type,connection);
@@ -54,18 +54,18 @@
     }
     String transportType=getTransportType(value);
     if (transportType != null) {
-      return new JSONString(String.valueOf(value));
+      return Json.create(String.valueOf(value));
     }
  else     if (type != null) {
       try {
         JsArrayObject<Property> properties=type.getPropertiesAsArray();
-        JSONObject jsonObject=new JSONObject();
+        JsonObject jsonObject=Json.createObject();
         int size=properties.size();
         for (int i=0; i < size; i++) {
           Property property=properties.get(i);
           Object propertyValue=property.getValue(value);
           Type propertyType=property.getType();
-          JSONValue encodedPropertyValue=encode(propertyValue,propertyType,connection);
+          JsonValue encodedPropertyValue=encode(propertyValue,propertyType,connection);
           jsonObject.put(property.getName(),encodedPropertyValue);
         }
         return jsonObject;

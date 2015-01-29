@@ -1,0 +1,19 @@
+{
+  Column column=grid.getColumn("column1");
+  assertNotNull(column);
+  grid.getContainerDataSource().removeContainerProperty("column1");
+  try {
+    column.setHeaderCaption("asd");
+    fail("Succeeded in modifying a detached column");
+  }
+ catch (  IllegalStateException ise) {
+  }
+  try {
+    column.setWidth(123);
+    fail("Succeeded in modifying a detached column");
+  }
+ catch (  IllegalStateException ise) {
+  }
+  assertNull(grid.getColumn("column1"));
+  assertNull(getColumnState("column1"));
+}

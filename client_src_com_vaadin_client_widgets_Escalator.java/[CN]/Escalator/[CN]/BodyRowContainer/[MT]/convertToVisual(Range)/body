@@ -1,0 +1,13 @@
+{
+  if (logicalRange.isEmpty()) {
+    return logicalRange;
+  }
+ else   if (visualRowOrder.isEmpty()) {
+    return Range.withLength(0,0);
+  }
+  final int maxEscalatorRows=getMaxEscalatorRowCapacity();
+  final int currentTopRowIndex=getLogicalRowIndex(visualRowOrder.getFirst());
+  final Range[] partitions=logicalRange.partitionWith(Range.withLength(currentTopRowIndex,maxEscalatorRows));
+  final Range insideRange=partitions[1];
+  return insideRange.offsetBy(-currentTopRowIndex);
+}

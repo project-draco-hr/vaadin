@@ -1,0 +1,13 @@
+{
+  setDebug(true);
+  openTestURL();
+  GridElement gridElement=getGridElement();
+  gridElement.getRow(50);
+  selectMenuPath("Component","Columns","Column 0","Broken renderer");
+  assertFalse("Notification was present",isElementPresent(NotificationElement.class));
+  gridElement.getRow(0);
+  assertTrue("Notification was not present",isElementPresent(NotificationElement.class));
+  assertFalse("Text in broken cell should have old value","(0, 0)".equals(gridElement.getCell(0,0).getText()));
+  assertEquals("Neighbour cell should be updated","(0, 1)",gridElement.getCell(0,1).getText());
+  assertEquals("Neighbour cell should be updated","(1, 0)",gridElement.getCell(1,0).getText());
+}
