@@ -1,0 +1,30 @@
+{
+  try {
+    BeanInfo bi=Introspector.getBeanInfo(c);
+    for (    PropertyDescriptor pd : bi.getPropertyDescriptors()) {
+      Method readMethod=pd.getReadMethod();
+      Method writeMethod=pd.getWriteMethod();
+      if (readMethod == null || writeMethod == null) {
+        continue;
+      }
+      try {
+        c.getDeclaredMethod(readMethod.getName());
+      }
+ catch (      Exception e) {
+        if (debug) {
+          System.out.println("Skipped " + c.getSimpleName() + "."+ readMethod.getName());
+        }
+        continue;
+      }
+      if (debug) {
+        System.out.println("Testing " + c.getSimpleName() + "."+ readMethod.getName());
+      }
+      Object v1=readMethod.invoke(o1);
+      Object v2=readMethod.invoke(o2);
+      assertEquals(pd.getDisplayName(),v1,v2);
+    }
+  }
+ catch (  Exception e) {
+    throw new RuntimeException(e);
+  }
+}
