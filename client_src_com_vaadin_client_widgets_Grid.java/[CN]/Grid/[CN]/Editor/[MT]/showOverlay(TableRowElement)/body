@@ -6,7 +6,8 @@
   int wrapperTop=tableWrapper.getAbsoluteTop();
   double width=WidgetUtil.getRequiredWidthBoundingClientRectDouble(tr);
   double height=WidgetUtil.getRequiredHeightBoundingClientRectDouble(tr);
-  setBounds(editorOverlay,tr.getOffsetLeft(),rowTop + bodyTop - wrapperTop,width,height);
+  double overlayTop=rowTop + bodyTop - wrapperTop;
+  setBounds(editorOverlay,tr.getOffsetLeft(),overlayTop,width,height);
   updateHorizontalScrollPosition();
   scrollHandler=grid.addScrollHandler(new ScrollHandler(){
     @Override public void onScroll(    ScrollEvent event){
@@ -38,7 +39,6 @@
     }
   }
 );
-  setBounds(saveButton.getElement(),0,tr.getOffsetHeight() + 5,50,25);
   attachWidget(saveButton,editorOverlay);
   cancelButton=new Button();
   cancelButton.setText("Cancel");
@@ -50,6 +50,8 @@
     }
   }
 );
-  setBounds(cancelButton.getElement(),55,tr.getOffsetHeight() + 5,50,25);
   attachWidget(cancelButton,editorOverlay);
+  double buttonTop=getButtonTop(tr,saveButton.getOffsetHeight());
+  setBounds(saveButton.getElement(),0,buttonTop,BUTTON_WIDTH,BUTTON_HEIGHT);
+  setBounds(cancelButton.getElement(),BUTTON_WIDTH + BUTTON_MARGIN,buttonTop,BUTTON_WIDTH,BUTTON_HEIGHT);
 }
