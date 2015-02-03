@@ -1,0 +1,8 @@
+{
+  VaadinResponse response=mock(VaadinResponse.class);
+  stream.writeResponse(mock(VaadinRequest.class),response);
+  verify(response).setHeader(eq("Content-Disposition"),contains("attachment;"));
+  String encodedFileName=URLEncoder.encode(filename,"utf-8");
+  verify(response).setHeader(eq("Content-Disposition"),contains(String.format("filename=\"%s\";",encodedFileName)));
+  verify(response).setHeader(eq("Content-Disposition"),contains(String.format("filename*=utf-8''%s",encodedFileName)));
+}
