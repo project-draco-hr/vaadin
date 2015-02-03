@@ -1,5 +1,5 @@
 {
-  if (!isSupported(outputType)) {
+  if (!getFormatter().canConvert(outputType)) {
     throw new IllegalArgumentException("output type: " + outputType.getName() + " not supported");
   }
   if (!attributes.hasKey(attribute)) {
@@ -8,7 +8,7 @@
  else {
     try {
       String value=attributes.get(attribute);
-      return (T)fromAttributeValue(outputType,value);
+      return getFormatter().parse(value,outputType);
     }
  catch (    Exception e) {
       throw new DesignException("Failed to read attribute " + attribute,e);
