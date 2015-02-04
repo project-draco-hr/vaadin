@@ -27,12 +27,20 @@
   converterMap.put(Boolean.class,booleanConverter);
   converterMap.put(boolean.class,booleanConverter);
   DecimalFormatSymbols symbols=new DecimalFormatSymbols(new Locale("en_US"));
-  DecimalFormat fmt=new DecimalFormat("0.###",symbols);
+  final DecimalFormat fmt=new DecimalFormat("0.###",symbols);
   fmt.setGroupingUsed(false);
-  converterMap.put(Float.class,new DesignFormatConverter<Float>(Float.class,fmt));
-  converterMap.put(Float.TYPE,new DesignFormatConverter<Float>(Float.class,fmt));
-  converterMap.put(Double.class,new DesignFormatConverter<Double>(Double.class,fmt));
-  converterMap.put(Double.TYPE,new DesignFormatConverter<Double>(Double.class,fmt));
+  converterMap.put(Float.class,new StringToFloatConverter(){
+    @Override protected java.text.NumberFormat getFormat(    Locale locale){
+      return fmt;
+    }
+  }
+);
+  converterMap.put(Double.class,new StringToDoubleConverter(){
+    @Override protected java.text.NumberFormat getFormat(    Locale locale){
+      return fmt;
+    }
+  }
+);
   converterMap.put(String.class,new Converter<String,String>(){
     @Override public String convertToModel(    String value,    Class<? extends String> targetType,    Locale locale) throws Converter.ConversionException {
       return value;
