@@ -19,13 +19,12 @@
     Element cell=createCell(tr.getCells().getItem(i));
     editorOverlay.appendChild(cell);
     Column<?,T> column=grid.getColumn(i);
-    if (column == grid.selectionColumn) {
-      continue;
-    }
-    Widget editor=getHandler().getWidget(column);
-    if (editor != null) {
-      columnToWidget.put(column,editor);
-      attachWidget(editor,cell);
+    if (column.isEditable()) {
+      Widget editor=getHandler().getWidget(column);
+      if (editor != null) {
+        columnToWidget.put(column,editor);
+        attachWidget(editor,cell);
+      }
     }
   }
   attachWidget(saveButton,editorOverlay);
