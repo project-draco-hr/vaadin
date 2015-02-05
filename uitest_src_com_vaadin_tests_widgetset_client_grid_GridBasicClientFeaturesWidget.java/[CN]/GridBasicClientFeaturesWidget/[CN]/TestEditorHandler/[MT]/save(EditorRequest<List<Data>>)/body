@@ -1,4 +1,9 @@
 {
+  if (secondEditorError) {
+    log.setText("Syntethic fail of editor in column 2");
+    request.failure(Collections.<Column<?,List<Data>>>singleton(grid.getColumn(2)));
+    return;
+  }
   try {
     log.setText("Row " + request.getRowIndex() + " edit committed");
     List<Data> rowData=ds.getRow(request.getRowIndex());
@@ -16,6 +21,6 @@
   }
  catch (  Exception e) {
     Logger.getLogger(getClass().getName()).warning(e.toString());
-    request.fail();
+    request.failure(null);
   }
 }
