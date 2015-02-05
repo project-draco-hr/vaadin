@@ -1,23 +1,17 @@
 {
-  DivElement tableWrapper=DivElement.as(tr.getParentElement().getParentElement().getParentElement());
-  AbstractRowContainer body=(AbstractRowContainer)grid.getEscalator().getBody();
-  double rowTop=body.getRowTop(tr);
-  int bodyTop=body.getElement().getAbsoluteTop();
-  int wrapperTop=tableWrapper.getAbsoluteTop();
-  double width=WidgetUtil.getRequiredWidthBoundingClientRectDouble(tr);
-  double height=WidgetUtil.getRequiredHeightBoundingClientRectDouble(tr);
-  double overlayTop=rowTop + bodyTop - wrapperTop;
-  setBounds(editorOverlay,tr.getOffsetLeft(),overlayTop,width,height);
+  DivElement gridElement=DivElement.as(grid.getElement());
   scrollHandler=grid.addScrollHandler(new ScrollHandler(){
     @Override public void onScroll(    ScrollEvent event){
       updateHorizontalScrollPosition();
     }
   }
 );
-  tableWrapper.appendChild(editorOverlay);
+  gridElement.appendChild(editorOverlay);
+  editorOverlay.appendChild(cellWrapper);
+  editorOverlay.appendChild(messageAndButtonsWrapper);
   for (int i=0; i < tr.getCells().getLength(); i++) {
     Element cell=createCell(tr.getCells().getItem(i));
-    editorOverlay.appendChild(cell);
+    cellWrapper.appendChild(cell);
     Column<?,T> column=grid.getColumn(i);
     if (column.isEditable()) {
       Widget editor=getHandler().getWidget(column);
@@ -27,10 +21,30 @@
       }
     }
   }
-  attachWidget(saveButton,editorOverlay);
-  attachWidget(cancelButton,editorOverlay);
-  double buttonTop=getButtonTop(tr,saveButton.getOffsetHeight());
-  setBounds(saveButton.getElement(),SAVE_BUTTON_LEFT_MARGIN_PX,buttonTop,BUTTON_WIDTH,BUTTON_HEIGHT);
-  setBounds(cancelButton.getElement(),CANCEL_BUTTON_LEFT_MARGIN_PX,buttonTop,BUTTON_WIDTH,BUTTON_HEIGHT);
+  if (!messageAndButtonsWrapper.isOrHasChild(messageWrapper)) {
+    messageAndButtonsWrapper.appendChild(messageWrapper);
+    messageAndButtonsWrapper.appendChild(buttonsWrapper);
+  }
+  attachWidget(saveButton,buttonsWrapper);
+  attachWidget(cancelButton,buttonsWrapper);
   updateHorizontalScrollPosition();
+  AbstractRowContainer body=(AbstractRowContainer)grid.getEscalator().getBody();
+  double rowTop=body.getRowTop(tr);
+  int bodyTop=body.getElement().getAbsoluteTop();
+  int gridTop=gridElement.getAbsoluteTop();
+  double overlayTop=rowTop + bodyTop - gridTop;
+  if (buttonsShouldBeRenderedBelow(tr)) {
+    editorOverlay.getStyle().setTop(overlayTop,Unit.PX);
+    editorOverlay.getStyle().clearBottom();
+  }
+ else {
+    editorOverlay.appendChild(cellWrapper);
+    int gridHeight=grid.getElement().getOffsetHeight();
+    editorOverlay.getStyle().setBottom(gridHeight - overlayTop - tr.getOffsetHeight(),Unit.PX);
+    editorOverlay.getStyle().clearTop();
+  }
+  int nativeScrollbarSize=WidgetUtil.getNativeScrollbarSize();
+  if (nativeScrollbarSize > 0) {
+    editorOverlay.getStyle().setRight(nativeScrollbarSize,Unit.PX);
+  }
 }
