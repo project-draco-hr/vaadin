@@ -18,6 +18,7 @@
       grid.setSelectionMode(selectionMode);
       if (selectionMode == SelectionMode.SINGLE) {
         grid.addSelectionListener(selectionListener);
+        ((SelectionModel.Single)grid.getSelectionModel()).setDeselectAllowed(singleSelectAllowDeselect);
       }
  else {
         grid.removeSelectionListener(selectionListener);
@@ -147,6 +148,16 @@
       }
  else {
         c.addItemClickListener(itemClickListener);
+      }
+    }
+  }
+);
+  createBooleanAction("Single select allow deselect","State",singleSelectAllowDeselect,new Command<Grid,Boolean>(){
+    @Override public void execute(    Grid c,    Boolean value,    Object data){
+      singleSelectAllowDeselect=value.booleanValue();
+      SelectionModel model=c.getSelectionModel();
+      if (model instanceof SelectionModel.Single) {
+        ((SelectionModel.Single)model).setDeselectAllowed(singleSelectAllowDeselect);
       }
     }
   }
