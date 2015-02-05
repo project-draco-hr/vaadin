@@ -1,0 +1,26 @@
+{
+  setContainerDataSource(container);
+  setColumnOrder((Object[])columns);
+  HeaderRow row=addHeaderRowAt(0);
+  row.join("firstName","lastName").setHtml("<b>Name</b>");
+  Button b=new Button("The address, yo");
+  b.addClickListener(new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      HeaderRow row=addHeaderRowAt(0);
+      List<Object> pids=new ArrayList<Object>();
+      for (      Column c : getColumns()) {
+        pids.add(c.getPropertyId());
+      }
+      row.join(pids.toArray()).setText("The big header");
+    }
+  }
+);
+  b.setSizeFull();
+  row.join("address.streetAddress","address.postalCode","address.city","address.country").setComponent(b);
+  getColumn("age").setWidth(25);
+  removeColumn("salary");
+  setEditorEnabled(true);
+  setSizeFull();
+  getColumn("age").getEditorField().addValidator(new IntegerRangeValidator("Must be between 0 and 100",0,100));
+  addFooterRowAt(0);
+}
