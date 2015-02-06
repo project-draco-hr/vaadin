@@ -1,0 +1,16 @@
+{
+  super.readDesign(design,designContext);
+  String altText="";
+  for (  Node child : design.childNodes()) {
+    if (child instanceof Element && ((Element)child).tagName().equals("source") && child.hasAttr("href")) {
+      addSource(DesignAttributeHandler.readAttribute("href",child.attributes(),Resource.class));
+    }
+ else {
+      altText+=child.toString();
+    }
+  }
+  altText=altText.trim();
+  if (!altText.isEmpty()) {
+    setAltText(altText);
+  }
+}
