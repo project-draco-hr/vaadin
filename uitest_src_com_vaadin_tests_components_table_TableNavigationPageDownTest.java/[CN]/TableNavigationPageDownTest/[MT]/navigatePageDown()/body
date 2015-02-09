@@ -1,12 +1,7 @@
 {
   testBenchElement(wrapper).scroll(ROW_NUMBER * rowHeight - (int)(2.8 * pageHeight));
   waitForScrollToFinish();
-  lastRow=getLastVisibleRow();
-  lastRow.click();
-  for (int j=0; j < 3; j++) {
-    lastRowNumber=getRowNumber(lastRow);
-    new Actions(driver).sendKeys(Keys.PAGE_DOWN).build().perform();
-    waitForRowsToUpdate();
-  }
-  assertEquals("Last table row should be visible",ROW_NUMBER - 1,lastRowNumber);
+  getLastVisibleRow().click();
+  sendPageDownUntilBottomIsReached();
+  assertEquals("Last table row should be visible",ROW_NUMBER - 1,getLastVisibleRowNumber());
 }
