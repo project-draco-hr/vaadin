@@ -10,12 +10,25 @@
     }
   }
 ;
+  int scrollbarThickness=WidgetUtil.getNativeScrollbarSize();
+  if (BrowserInfo.get().isIE()) {
+    if (BrowserInfo.get().isIE9()) {
+      scrollbarThickness+=2;
+    }
+ else {
+      scrollbarThickness+=1;
+    }
+  }
   root.appendChild(verticalScrollbar.getElement());
   verticalScrollbar.addScrollHandler(scrollHandler);
-  verticalScrollbar.setScrollbarThickness(WidgetUtil.getNativeScrollbarSize());
+  verticalScrollbar.setScrollbarThickness(scrollbarThickness);
+  if (BrowserInfo.get().isIE8()) {
+    Style vScrollStyle=verticalScrollbar.getElement().getStyle();
+    vScrollStyle.setRight(verticalScrollbar.getScrollbarThickness() - 1,Unit.PX);
+  }
   root.appendChild(horizontalScrollbar.getElement());
   horizontalScrollbar.addScrollHandler(scrollHandler);
-  horizontalScrollbar.setScrollbarThickness(WidgetUtil.getNativeScrollbarSize());
+  horizontalScrollbar.setScrollbarThickness(scrollbarThickness);
   horizontalScrollbar.addVisibilityHandler(new ScrollbarBundle.VisibilityHandler(){
     @Override public void visibilityChanged(    ScrollbarBundle.VisibilityChangeEvent event){
       applyHeightByRows();
@@ -30,16 +43,16 @@
   table.appendChild(bodyElem);
   table.appendChild(footElem);
   Style hCornerStyle=headerDeco.getStyle();
-  hCornerStyle.setWidth(WidgetUtil.getNativeScrollbarSize(),Unit.PX);
+  hCornerStyle.setWidth(verticalScrollbar.getScrollbarThickness(),Unit.PX);
   hCornerStyle.setDisplay(Display.NONE);
   root.appendChild(headerDeco);
   Style fCornerStyle=footerDeco.getStyle();
-  fCornerStyle.setWidth(WidgetUtil.getNativeScrollbarSize(),Unit.PX);
+  fCornerStyle.setWidth(verticalScrollbar.getScrollbarThickness(),Unit.PX);
   fCornerStyle.setDisplay(Display.NONE);
   root.appendChild(footerDeco);
   Style hWrapperStyle=horizontalScrollbarDeco.getStyle();
   hWrapperStyle.setDisplay(Display.NONE);
-  hWrapperStyle.setHeight(WidgetUtil.getNativeScrollbarSize(),Unit.PX);
+  hWrapperStyle.setHeight(horizontalScrollbar.getScrollbarThickness(),Unit.PX);
   root.appendChild(horizontalScrollbarDeco);
   setStylePrimaryName("v-escalator");
   setHeight(null);
