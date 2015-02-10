@@ -1,15 +1,21 @@
 {
-  Range active=Range.withLength(firstRowToPush,numberOfRows);
-  if (cacheSize != 0) {
-    Range cached=Range.withLength(firstCachedRowIndex,cacheSize);
-    active=active.combineWith(cached);
+  Range newRange=Range.withLength(firstRowToPush,numberOfRows);
+  Range cached=Range.withLength(firstCachedRowIndex,cacheSize);
+  Range fullRange=newRange;
+  if (!cached.isEmpty()) {
+    fullRange=newRange.combineWith(cached);
   }
-  keyMapper.setActiveRange(active);
-  List<?> itemIds=container.getItemIds(firstRowToPush,numberOfRows);
+  List<?> itemIds=container.getItemIds(fullRange.getStart(),fullRange.length());
+  keyMapper.setActiveRows(itemIds);
   JsonArray rows=Json.createArray();
-  for (int i=0; i < itemIds.size(); ++i) {
-    rows.set(i,getRowData(getGrid().getColumns(),itemIds.get(i)));
+  int diff=0;
+  if (!cached.isEmpty() && newRange.getStart() > cached.getStart()) {
+    diff=cached.length();
+  }
+  for (int i=0; i < newRange.length() && i + diff < itemIds.size(); ++i) {
+    Object itemId=itemIds.get(i + diff);
+    rows.set(i,getRowData(getGrid().getColumns(),itemId));
   }
   rpc.setRowData(firstRowToPush,rows);
-  activeRowHandler.setActiveRows(active.getStart(),active.length());
+  activeRowHandler.setActiveRows(fullRange);
 }
