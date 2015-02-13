@@ -18,4 +18,23 @@
     }
   }
 ,listenersPath);
+  addMenuCommand("Add ColumnReorder listener",new ScheduledCommand(){
+    private HandlerRegistration columnReorderHandler=null;
+    @Override public void execute(){
+      if (columnReorderHandler != null) {
+        return;
+      }
+      final Label columnOrderLabel=new Label();
+      columnOrderLabel.getElement().setId("columnreorder");
+      addLineEnd(columnOrderLabel,300);
+      columnReorderHandler=grid.addColumnReorderHandler(new ColumnReorderHandler<List<Data>>(){
+        private int eventIndex=0;
+        @Override public void onColumnReorder(        ColumnReorderEvent<List<Data>> event){
+          columnOrderLabel.getElement().setAttribute("columns","" + (++eventIndex));
+        }
+      }
+);
+    }
+  }
+,listenersPath);
 }
