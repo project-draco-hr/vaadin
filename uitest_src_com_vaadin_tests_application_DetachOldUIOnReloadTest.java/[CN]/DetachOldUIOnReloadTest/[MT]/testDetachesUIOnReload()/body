@@ -1,0 +1,17 @@
+{
+  openTestURL();
+  List<LabelElement> labels=$(LabelElement.class).all();
+  assertEquals("initial label incorrect","This is UI 0",lastLabelText(labels));
+  assertFalse("reloading button not found",$(ButtonElement.class).caption(RELOAD).all().isEmpty());
+  openTestURL();
+  click(READ_LOG);
+  checkLabels("first",1);
+  click(RELOAD);
+  click(READ_LOG);
+  checkLabels("second",2);
+  openTestURL();
+  click(READ_LOG);
+  checkLabels("third",3);
+  openTestURL("restartApplication");
+  checkLabels("final",0);
+}
