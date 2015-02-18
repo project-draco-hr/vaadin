@@ -30,6 +30,25 @@
     }
   }
 );
+  addFunction("sendDifferentTypeOfData",new JavaScriptFunction(){
+    @Override public void call(    JsonArray arguments){
+      for (int i=0; i < arguments.length(); i++) {
+        JsonValue arg=arguments.get(i);
+        if (arg instanceof JsonObject) {
+          JsonObject o=(JsonObject)arg;
+          log.log("Argument[" + i + "] type: "+ arg.getClass().getName());
+          for (          String key : o.keys()) {
+            JsonValue v=o.get(key);
+            log.log("Argument[" + i + "]["+ key+ "] type: "+ v.getClass().getName()+ ", value: "+ v.asString());
+          }
+        }
+ else {
+          log.log("Argument[" + i + "] type: "+ arg.getClass().getName()+ ", value: "+ arg.asString());
+        }
+      }
+    }
+  }
+);
   getRpcProxy(TestRpc.class).sendRpc("RPC message");
   callFunction("messageToClient","Callback message");
   getState().setMessages(Arrays.asList("First state message","Second state message"));
