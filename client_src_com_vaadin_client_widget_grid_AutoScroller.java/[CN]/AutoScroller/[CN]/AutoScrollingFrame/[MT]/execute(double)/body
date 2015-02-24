@@ -1,0 +1,19 @@
+{
+  final double timeDiff=timestamp - prevTimestamp;
+  prevTimestamp=timestamp;
+  reboundScrollArea(timeDiff);
+  pixelsToScroll+=scrollSpeed * (timeDiff / 1000.0d);
+  final int intPixelsToScroll=(int)pixelsToScroll;
+  pixelsToScroll-=intPixelsToScroll;
+  if (intPixelsToScroll != 0) {
+    if (scrollDirection == ScrollAxis.VERTICAL) {
+      grid.setScrollTop(grid.getScrollTop() + intPixelsToScroll);
+      callback.onVerticalAutoScroll(intPixelsToScroll);
+    }
+ else {
+      grid.setScrollLeft(grid.getScrollLeft() + intPixelsToScroll);
+      callback.onHorizontalAutoScroll(intPixelsToScroll);
+    }
+  }
+  reschedule();
+}
