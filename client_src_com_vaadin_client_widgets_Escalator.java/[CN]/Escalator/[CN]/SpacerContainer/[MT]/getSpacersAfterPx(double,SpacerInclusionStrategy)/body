@@ -1,0 +1,20 @@
+{
+  ArrayList<SpacerImpl> spacers=new ArrayList<SpacerImpl>(rowIndexToSpacer.values());
+  for (int i=0; i < spacers.size(); i++) {
+    SpacerImpl spacer=spacers.get(i);
+    double top=spacer.getTop();
+    double bottom=top + spacer.getHeight();
+    if (top > px) {
+      return spacers.subList(i,spacers.size());
+    }
+ else     if (bottom > px) {
+      if (strategy == SpacerInclusionStrategy.NONE) {
+        return spacers.subList(i + 1,spacers.size());
+      }
+ else {
+        return spacers.subList(i,spacers.size());
+      }
+    }
+  }
+  return Collections.emptySet();
+}
