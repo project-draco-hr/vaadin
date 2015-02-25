@@ -6,13 +6,32 @@
   final int intPixelsToScroll=(int)pixelsToScroll;
   pixelsToScroll-=intPixelsToScroll;
   if (intPixelsToScroll != 0) {
+    double scrollPos;
+    double maxScrollPos;
+    double newScrollPos;
     if (scrollDirection == ScrollAxis.VERTICAL) {
-      grid.setScrollTop(grid.getScrollTop() + intPixelsToScroll);
-      callback.onVerticalAutoScroll(intPixelsToScroll);
+      scrollPos=grid.getScrollTop();
+      maxScrollPos=getMaxScrollTop();
     }
  else {
-      grid.setScrollLeft(grid.getScrollLeft() + intPixelsToScroll);
-      callback.onHorizontalAutoScroll(intPixelsToScroll);
+      scrollPos=grid.getScrollLeft();
+      maxScrollPos=getMaxScrollLeft();
+    }
+    if (intPixelsToScroll > 0 && scrollPos < maxScrollPos || intPixelsToScroll < 0 && scrollPos > 0) {
+      newScrollPos=scrollPos + intPixelsToScroll;
+      if (scrollDirection == ScrollAxis.VERTICAL) {
+        grid.setScrollTop(newScrollPos);
+      }
+ else {
+        grid.setScrollLeft(newScrollPos);
+      }
+      callback.onAutoScroll(intPixelsToScroll);
+      if (newScrollPos <= 0) {
+        callback.onAutoScrollReachedMin();
+      }
+ else       if (newScrollPos >= maxScrollPos) {
+        callback.onAutoScrollReachedMax();
+      }
     }
   }
   reschedule();
