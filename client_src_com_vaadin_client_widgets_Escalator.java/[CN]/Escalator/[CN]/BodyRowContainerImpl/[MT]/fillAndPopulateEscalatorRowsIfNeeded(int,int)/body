@@ -4,16 +4,25 @@
   if (escalatorRowsNeeded > 0) {
     final List<TableRowElement> addedRows=paintInsertStaticRows(index,escalatorRowsNeeded);
     visualRowOrder.addAll(index,addedRows);
-    for (int i=0; i < addedRows.size(); i++) {
-      setRowPosition(addedRows.get(i),0,(index + i) * getDefaultRowHeight());
-    }
-    for (int i=index + addedRows.size(); i < visualRowOrder.size(); i++) {
-      final TableRowElement tr=visualRowOrder.get(i);
-      setRowPosition(tr,0,i * getDefaultRowHeight());
+    double y=index * getDefaultRowHeight() + spacerContainer.getSpacerHeightsSumUntilIndex(index);
+    for (int i=index; i < visualRowOrder.size(); i++) {
+      final TableRowElement tr;
+      if (i - index < addedRows.size()) {
+        tr=addedRows.get(i - index);
+      }
+ else {
+        tr=visualRowOrder.get(i);
+      }
+      getLogger().warning("y: " + y + ", index: "+ i);
+      setRowPosition(tr,0,y);
+      y+=getDefaultRowHeight();
+      double spacerHeight=spacerContainer.getSpacerHeight(i);
+      getLogger().warning("height: " + spacerHeight + ", index: "+ i);
+      y+=spacerHeight;
     }
     return addedRows;
   }
  else {
-    return new ArrayList<TableRowElement>();
+    return Collections.emptyList();
   }
 }
