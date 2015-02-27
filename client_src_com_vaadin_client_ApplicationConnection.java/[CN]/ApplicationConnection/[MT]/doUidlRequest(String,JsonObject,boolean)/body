@@ -1,12 +1,10 @@
 {
   RequestCallback requestCallback=new RequestCallback(){
     @Override public void onError(    Request request,    Throwable exception){
-      handleCommunicationError(exception.getMessage(),-1);
+      handleError(exception.getMessage(),-1);
     }
-    private void handleCommunicationError(    String details,    int statusCode){
-      if (!handleErrorInDelegate(details,statusCode)) {
-        showCommunicationError(details,statusCode);
-      }
+    private void handleError(    String details,    int statusCode){
+      handleCommunicationError(details,statusCode);
       endRequest();
       setApplicationRunning(false);
     }
@@ -26,7 +24,7 @@ case 0:
 ).schedule(100);
         }
  else {
-          handleCommunicationError("Invalid status code 0 (server down?)",statusCode);
+          handleError("Invalid status code 0 (server down?)",statusCode);
         }
       return;
 case 401:
@@ -52,7 +50,7 @@ endRequest();
 return;
 }
  else if ((statusCode / 100) == 5) {
-handleCommunicationError("Server error. Error code: " + statusCode,statusCode);
+handleError("Server error. Error code: " + statusCode,statusCode);
 return;
 }
 String contentType=response.getHeader("Content-Type");
