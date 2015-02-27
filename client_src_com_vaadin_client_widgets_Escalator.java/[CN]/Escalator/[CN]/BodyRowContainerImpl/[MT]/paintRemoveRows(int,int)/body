@@ -2,9 +2,9 @@
   if (numberOfRows == 0) {
     return;
   }
-  getLogger().warning("[[spacers]] removing rows");
   final Range viewportRange=getVisibleRowRange();
   final Range removedRowsRange=Range.withLength(index,numberOfRows);
+  spacerContainer.paintRemoveSpacers(removedRowsRange);
   final Range[] partitions=removedRowsRange.partitionWith(viewportRange);
   final Range removedAbove=partitions[0];
   final Range removedLogicalInside=partitions[1];
@@ -22,7 +22,7 @@
     }
   }
   if (!removedVisualInside.isEmpty()) {
-    int escalatorRowCount=bodyElem.getChildCount();
+    int escalatorRowCount=body.getEscalatorRowCount();
     int rowsLeft=getRowCount();
     if (rowsLeft < escalatorRowCount) {
       int escalatorRowsToRemove=escalatorRowCount - rowsLeft;
@@ -34,9 +34,12 @@
       escalatorRowCount-=escalatorRowsToRemove;
       body.setBodyScrollPosition(tBodyScrollLeft,0);
       final int dirtyRowsStart=removedLogicalInside.getStart();
+      double y=getRowTop(dirtyRowsStart);
       for (int i=dirtyRowsStart; i < escalatorRowCount; i++) {
         final TableRowElement tr=visualRowOrder.get(i);
-        setRowPosition(tr,0,i * getDefaultRowHeight());
+        setRowPosition(tr,0,y);
+        y+=getDefaultRowHeight();
+        y+=spacerContainer.getSpacerHeight(i);
       }
       final int rowsToUpdateDataOn=numberOfRows - escalatorRowsToRemove;
       final int start=Math.max(0,escalatorRowCount - rowsToUpdateDataOn);
@@ -74,6 +77,7 @@
           final TableRowElement tr=visualRowOrder.get(i);
           setRowPosition(tr,0,(int)newTop);
           newTop+=getDefaultRowHeight();
+          newTop+=spacerContainer.getSpacerHeight(i + removedLogicalInside.getStart());
         }
         final double newScrollTop=contentBottom - calculateHeight();
         setScrollTop(newScrollTop);

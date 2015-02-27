@@ -3,10 +3,11 @@
   final int logicalTargetIndex=getLogicalRowIndex(visualRowOrder.getLast()) - (removedVisualInside.length() - 1) + logicalOffset;
   moveAndUpdateEscalatorRows(removedVisualInside,escalatorRowCount,logicalTargetIndex);
   final ListIterator<TableRowElement> iterator=visualRowOrder.listIterator(removedVisualInside.getStart());
-  double rowTop=(removedLogicalInside.getStart() + logicalOffset) * getDefaultRowHeight();
+  double rowTop=getRowTop(removedLogicalInside.getStart() + logicalOffset);
   for (int i=removedVisualInside.getStart(); i < escalatorRowCount - removedVisualInside.length(); i++) {
     final TableRowElement tr=iterator.next();
     setRowPosition(tr,0,rowTop);
     rowTop+=getDefaultRowHeight();
+    rowTop+=spacerContainer.getSpacerHeight(i + removedLogicalInside.getStart());
   }
 }
