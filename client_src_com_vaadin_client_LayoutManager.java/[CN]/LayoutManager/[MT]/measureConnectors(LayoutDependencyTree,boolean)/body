@@ -9,9 +9,7 @@
     for (int i=0; i < pendingOverflowCount; i++) {
       String connectorId=pendingOverflowConnectorsIds.get(i);
       ComponentConnector componentConnector=(ComponentConnector)connectorMap.getConnector(connectorId);
-      boolean connectorChangesExpected=!currentDependencyTree.noMoreChangesExpected(componentConnector);
-      boolean parentChangesExcpected=componentConnector.getParent() instanceof ComponentConnector && !currentDependencyTree.noMoreChangesExpected((ComponentConnector)componentConnector.getParent());
-      if (connectorChangesExpected || parentChangesExcpected) {
+      if (delayOverflowFix(componentConnector)) {
         delayedOverflowFixes.add(connectorId);
         continue;
       }
