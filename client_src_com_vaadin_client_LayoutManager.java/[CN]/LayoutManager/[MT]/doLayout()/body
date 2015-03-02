@@ -22,8 +22,10 @@
   dump=needsMeasure.dump();
   dumpLength=dump.length();
   for (int i=0; i < dumpLength; i++) {
-    String layoutId=dump.get(i);
-    currentDependencyTree.setNeedsMeasure(layoutId,true);
+    ServerConnector connector=connectorMap.getConnector(dump.get(i));
+    if (connector != null) {
+      currentDependencyTree.setNeedsMeasure((ComponentConnector)connector,true);
+    }
   }
   needsMeasure=FastStringSet.create();
   measureNonConnectors();
