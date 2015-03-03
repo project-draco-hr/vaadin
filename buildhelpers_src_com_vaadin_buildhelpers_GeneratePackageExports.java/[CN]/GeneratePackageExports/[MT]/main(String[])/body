@@ -1,6 +1,6 @@
 {
   if (args.length < 2) {
-    System.err.println("Invalid number of parameters\n" + "Usage: java -cp .. GenerateManifest <package.jar> <accepted package prefixes>\n" + "Use -Dvaadin.version to specify the version to be used for the packages");
+    System.err.println("Invalid number of parameters\n" + "Usage: java -cp .. GenerateManifest <package.jar> <accepted package prefixes>\n" + "Use -Dvaadin.version to specify the version to be used for the packages\n"+ "Use -DincludeNumberPackages=1 to include package names which start with a number (not 100% OSGi compatible)");
     System.exit(1);
   }
   String jarFilename=args[0];
@@ -16,7 +16,11 @@
   for (int i=1; i < args.length; i++) {
     acceptedPackagePrefixes.add(args[i]);
   }
-  HashSet<String> packages=getPackages(jar,acceptedPackagePrefixes);
+  boolean includeNumberPackages=false;
+  if ("1".equals(System.getProperty("includeNumberPackages"))) {
+    includeNumberPackages=true;
+  }
+  HashSet<String> packages=getPackages(jar,acceptedPackagePrefixes,includeNumberPackages);
   if (packages.isEmpty()) {
     return;
   }
