@@ -1,11 +1,10 @@
 {
   final NodeList<TableRowElement> childRows=root.getRows();
-  if (column == 0 && this instanceof BodyRowContainer) {
-    getLogger().warning("[[spacers]] update freeze position");
-  }
   for (int row=0; row < childRows.getLength(); row++) {
     final TableRowElement tr=childRows.getItem(row);
-    TableCellElement cell=tr.getCells().getItem(column);
-    position.set(cell,scrollLeft,0);
+    if (rowCanBeFrozen(tr)) {
+      TableCellElement cell=tr.getCells().getItem(column);
+      position.set(cell,scrollLeft,0);
+    }
   }
 }

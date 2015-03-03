@@ -1,0 +1,22 @@
+{
+  String style=element.getAttribute("style");
+  String transform=getTransformFromStyle(style);
+  if (transform != null) {
+    return getTranslateValues(transform);
+  }
+  double[] result=new double[]{-1,-1};
+  String left=getLeftFromStyle(style);
+  if (left != null) {
+    result[1]=getPixelValue(left);
+  }
+  String top=getTopFromStyle(style);
+  if (top != null) {
+    result[0]=getPixelValue(top);
+  }
+  if (result[0] != -1 && result[1] != -1) {
+    return result;
+  }
+ else {
+    throw new IllegalArgumentException("Could not parse the top position from the CSS \"" + style + "\"");
+  }
+}
