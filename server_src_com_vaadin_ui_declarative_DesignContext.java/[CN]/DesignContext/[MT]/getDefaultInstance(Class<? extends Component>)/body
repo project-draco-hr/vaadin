@@ -1,16 +1,8 @@
 {
   Component instance=instanceCache.get(componentClass);
   if (instance == null) {
-    try {
-      instance=componentClass.newInstance();
-      instanceCache.put(componentClass,instance);
-    }
- catch (    InstantiationException e) {
-      throw new RuntimeException("Could not instantiate " + componentClass.getName());
-    }
-catch (    IllegalAccessException e) {
-      throw new RuntimeException("Could not instantiate " + componentClass.getName());
-    }
+    instance=instantiateClass(componentClass.getName());
+    instanceCache.put(componentClass,instance);
   }
   return instance;
 }
