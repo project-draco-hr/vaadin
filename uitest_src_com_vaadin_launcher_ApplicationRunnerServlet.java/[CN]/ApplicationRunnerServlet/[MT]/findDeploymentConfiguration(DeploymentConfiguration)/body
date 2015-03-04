@@ -10,7 +10,9 @@
           Map<Class<?>,CurrentInstance> oldCurrent=CurrentInstance.setCurrent((VaadinSession)null);
           try {
             VaadinServletService service=(VaadinServletService)VaadinService.getCurrent();
-            session=service.findVaadinSession(new VaadinServletRequest(currentRequest,service));
+            if (service != null) {
+              session=service.findVaadinSession(new VaadinServletRequest(currentRequest,service));
+            }
           }
   finally {
             CurrentInstance.restoreInstances(oldCurrent);

@@ -32,7 +32,7 @@
   new Actions(driver).keyDown(Keys.SHIFT).perform();
   popupBody.sendKeys(Keys.ARROW_LEFT);
   new Actions(driver).keyUp(Keys.SHIFT).perform();
-  if (!getBrowsersExcludingIE().contains(getDesiredCapabilities()) && !Browser.IE8.getDesiredCapabilities().equals(getDesiredCapabilities())) {
+  if (BrowserUtil.isIE(getDesiredCapabilities()) && !BrowserUtil.isIE8(getDesiredCapabilities())) {
     popup.findElement(By.className("v-datefield-calendarpanel-prevmonth")).findElement(By.tagName("button")).click();
   }
   assertEquals("unexpected month","tammikuu 2010",popup.findElements(By.className("v-datefield-calendarpanel-month")).get(1).getText());
@@ -41,7 +41,7 @@
   assertEquals("unexpected weeknumber content","53",weeknumbers.get(0).getText());
   assertEquals("unexpected weeknumber content","5",weeknumbers.get(5).getText());
   assertEquals("unexpected selection",0,popup.findElements(By.className("v-datefield-calendarpanel-day-selected")).size());
-  if (getBrowsersExcludingIE().contains(getDesiredCapabilities()) || Browser.IE8.getDesiredCapabilities().equals(getDesiredCapabilities())) {
+  if (!BrowserUtil.isIE(getDesiredCapabilities()) || BrowserUtil.isIE8(getDesiredCapabilities())) {
     assertEquals("unexpected focus","16",popup.findElement(By.className("v-datefield-calendarpanel-day-focused")).getText());
   }
   days=popup.findElements(By.className("v-datefield-calendarpanel-day"));

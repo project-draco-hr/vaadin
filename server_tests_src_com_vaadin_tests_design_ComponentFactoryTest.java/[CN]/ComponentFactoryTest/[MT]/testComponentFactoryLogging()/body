@@ -1,0 +1,13 @@
+{
+  final List<String> messages=new ArrayList<String>();
+  currentComponentFactory.set(new ComponentFactory(){
+    @Override public Component createComponent(    String fullyQualifiedClassName,    DesignContext context){
+      messages.add("Requested class " + fullyQualifiedClassName);
+      return defaultFactory.createComponent(fullyQualifiedClassName,context);
+    }
+  }
+);
+  Design.read(new ByteArrayInputStream("<v-label />".getBytes()));
+  Assert.assertEquals("There should be one message logged",1,messages.size());
+  Assert.assertEquals("Requested class " + Label.class.getCanonicalName(),messages.get(0));
+}

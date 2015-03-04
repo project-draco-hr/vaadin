@@ -1,15 +1,14 @@
 {
   Range removed=Range.withLength(firstIndex,count);
   if (removed.intersects(activeRange)) {
-    final Range deprecated=removed.restrictTo(activeRange);
-    for (int i=deprecated.getStart(); i < deprecated.getEnd(); ++i) {
-      Object itemId=keyMapper.itemIdAtIndex(i);
-      valueChangeListeners.remove(itemId);
-    }
-    activeRange=Range.withLength(activeRange.getStart(),activeRange.length() - deprecated.length());
+    final Range[] deprecated=activeRange.partitionWith(removed);
+    removeValueChangeListeners(deprecated[1]);
+    moveListeners(deprecated[2],-deprecated[1].length());
+    activeRange=Range.withLength(activeRange.getStart(),activeRange.length() - deprecated[1].length());
   }
  else {
     if (removed.getEnd() < activeRange.getStart()) {
+      moveListeners(activeRange,-count);
       activeRange=activeRange.offsetBy(-count);
     }
   }

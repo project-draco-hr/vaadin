@@ -5,7 +5,12 @@
   footer.autodetectRowHeightLater();
   header.paintInsertRows(0,header.getRowCount());
   footer.paintInsertRows(0,footer.getRowCount());
-  recalculateElementSizes();
+  Scheduler.get().scheduleDeferred(new Command(){
+    @Override public void execute(){
+      recalculateElementSizes();
+    }
+  }
+);
   boolean columnsChanged=false;
   for (  ColumnConfigurationImpl.Column column : columnConfiguration.columns) {
     boolean columnChanged=column.measureAndSetWidthIfNeeded();
@@ -18,6 +23,8 @@
     body.reapplyColumnWidths();
     footer.reapplyColumnWidths();
   }
+  verticalScrollbar.onLoad();
+  horizontalScrollbar.onLoad();
   scroller.attachScrollListener(verticalScrollbar.getElement());
   scroller.attachScrollListener(horizontalScrollbar.getElement());
   scroller.attachMousewheelListener(getElement());

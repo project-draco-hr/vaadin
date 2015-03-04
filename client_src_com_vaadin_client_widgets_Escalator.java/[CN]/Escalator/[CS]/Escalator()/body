@@ -3,38 +3,7 @@
   getLogger().info("Using " + position.getClass().getSimpleName() + " for position");
   final Element root=DOM.createDiv();
   setElement(root);
-  ScrollHandler scrollHandler=new ScrollHandler(){
-    @Override public void onScroll(    ScrollEvent event){
-      scroller.onScroll();
-      fireEvent(new ScrollEvent());
-    }
-  }
-;
-  int scrollbarThickness=WidgetUtil.getNativeScrollbarSize();
-  if (BrowserInfo.get().isIE()) {
-    if (BrowserInfo.get().isIE9()) {
-      scrollbarThickness+=2;
-    }
- else {
-      scrollbarThickness+=1;
-    }
-  }
-  root.appendChild(verticalScrollbar.getElement());
-  verticalScrollbar.addScrollHandler(scrollHandler);
-  verticalScrollbar.setScrollbarThickness(scrollbarThickness);
-  if (BrowserInfo.get().isIE8()) {
-    Style vScrollStyle=verticalScrollbar.getElement().getStyle();
-    vScrollStyle.setRight(verticalScrollbar.getScrollbarThickness() - 1,Unit.PX);
-  }
-  root.appendChild(horizontalScrollbar.getElement());
-  horizontalScrollbar.addScrollHandler(scrollHandler);
-  horizontalScrollbar.setScrollbarThickness(scrollbarThickness);
-  horizontalScrollbar.addVisibilityHandler(new ScrollbarBundle.VisibilityHandler(){
-    @Override public void visibilityChanged(    ScrollbarBundle.VisibilityChangeEvent event){
-      applyHeightByRows();
-    }
-  }
-);
+  setupScrollbars(root);
   tableWrapper=DivElement.as(DOM.createDiv());
   root.appendChild(tableWrapper);
   final Element table=DOM.createTable();

@@ -1,0 +1,16 @@
+{
+  openTestURL();
+  GridElement gridElement=getGridElement();
+  List<GridCellElement> headerCells=gridElement.getHeaderCells(0);
+  final List<Integer> columnWidths=new ArrayList<Integer>();
+  for (  GridCellElement cell : headerCells) {
+    columnWidths.add(cell.getSize().getWidth());
+  }
+  selectMenuPath("Component","State","Reverse grid columns");
+  gridElement=getGridElement();
+  headerCells=gridElement.getHeaderCells(0);
+  final int size=headerCells.size();
+  for (int i=0; i < size - 1; i++) {
+    assertEquals("Column widths don't match after reset, index after flip " + i,columnWidths.get(i),Integer.valueOf(headerCells.get(size - 1 - i).getSize().getWidth()));
+  }
+}
