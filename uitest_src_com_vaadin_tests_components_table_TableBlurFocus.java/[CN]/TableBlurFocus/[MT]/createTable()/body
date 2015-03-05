@@ -1,0 +1,41 @@
+{
+  Table table=new Table(){
+    @Override public void changeVariables(    Object source,    Map<String,Object> variables){
+      log("variable change");
+      super.changeVariables(source,variables);
+    }
+  }
+;
+  table.setSelectable(true);
+  table.setImmediate(true);
+  table.addContainerProperty(Columns.COLUMN1,String.class," ");
+  table.addContainerProperty(Columns.COLUMN2,Label.class,null);
+  table.addContainerProperty(Columns.COLUMN3,Button.class,null);
+  table.addContainerProperty(Columns.COLUMN4,String.class," ");
+  table.setColumnCollapsingAllowed(true);
+  table.setColumnCollapsible(Columns.COLUMN4,true);
+  table.setColumnCollapsed(Columns.COLUMN4,true);
+  table.setSortEnabled(true);
+  table.setFooterVisible(true);
+  table.setPageLength(14);
+  table.addGeneratedColumn(Columns.COLUMN5,new Table.ColumnGenerator(){
+    @Override public Object generateCell(    Table source,    Object itemId,    Object columnId){
+      return "Generated";
+    }
+  }
+);
+  table.setColumnHeader(Columns.COLUMN1,"Column");
+  for (int x=0; x < 120; x++) {
+    final Label buttonLabel=new Label("Not clicked");
+    Button button=new Button("Click me?",new Button.ClickListener(){
+      @Override public void buttonClick(      Button.ClickEvent event){
+        ++count;
+        buttonLabel.setValue("Clicked " + count + " times");
+        Notification.show("Clicked!");
+      }
+    }
+);
+    table.addItem(new Object[]{"entryString" + x,buttonLabel,button," "},"entryID" + x);
+  }
+  return table;
+}

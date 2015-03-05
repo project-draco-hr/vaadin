@@ -1,0 +1,19 @@
+{
+  System.out.println(">>>" + getBaseURL() + TEST_URL);
+  driver.get(getUrl());
+  sleep(4000);
+  driver.switchTo().defaultContent();
+  sleep(2000);
+  switchIntoIframe();
+  waitForElementVisible(By.id("scroll-button"));
+  ButtonElement scrollbutton=$(ButtonElement.class).id("scroll-button");
+  scrollbutton.click();
+  sleep(1000);
+  Long scrollPosition=getWindowsScrollPosition();
+  assertThat("Scroll position should be greater than 100 (it was " + scrollPosition + ")",scrollPosition > 100);
+  TableElement table=$(TableElement.class).first();
+  table.getRow(13).getCell(0).click();
+  sleep(1000);
+  Long scrollPosition2=getWindowsScrollPosition();
+  assertThat("Scroll position should stay about the same. Old was " + scrollPosition + " and new one "+ scrollPosition2,Math.abs(scrollPosition - scrollPosition2) < 10);
+}
