@@ -1,0 +1,45 @@
+{
+  VerticalLayout layout=new VerticalLayout();
+  layout.setSizeFull();
+  final Table table=new Table();
+  table.setColumnReorderingAllowed(true);
+  table.setSizeFull();
+  BeanItemContainer<TestItem> cont=new BeanItemContainer<TestItem>(TestItem.class);
+  for (int i=0; i < ROW_COUNT; i++) {
+    TestItem ti=new TestItem();
+    ti.setValue1("Value1_" + i);
+    ti.setValue2("Value2_" + (ROW_COUNT - i));
+    ti.setValue3("Value3_" + i);
+    ti.setValue4("Value4_" + (ROW_COUNT - i));
+    ti.setValue5("Value5_" + i);
+    cont.addBean(ti);
+  }
+  table.setContainerDataSource(cont);
+  table.setImmediate(true);
+  table.setSelectable(true);
+  table.setMultiSelect(false);
+  table.setPageLength(10);
+  table.setDragMode(Table.TableDragMode.ROW);
+  table.setDropHandler(new DropHandler(){
+    @Override public void drop(    DragAndDropEvent dragAndDropEvent){
+    }
+    @Override public AcceptCriterion getAcceptCriterion(){
+      return AcceptAll.get();
+    }
+  }
+);
+  table.addColumnReorderListener(new ColumnReorderListener(){
+    @Override public void columnReorder(    ColumnReorderEvent event){
+      System.out.println("columnReorder");
+    }
+  }
+);
+  table.addHeaderClickListener(new HeaderClickListener(){
+    @Override public void headerClick(    HeaderClickEvent event){
+      System.out.println("Header was clicked");
+    }
+  }
+);
+  layout.addComponent(table);
+  addComponent(layout);
+}
