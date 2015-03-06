@@ -14,7 +14,13 @@
     handleReceivedJSONMessage(start,jsonText,json);
   }
  else {
-    setApplicationRunning(true);
-    handleWhenCSSLoaded(jsonText,json);
+    if (!cssLoaded) {
+      setApplicationRunning(true);
+      handleWhenCSSLoaded(jsonText,json);
+    }
+ else {
+      getLogger().warning("Ignored received message because application has already been stopped");
+      return;
+    }
   }
 }

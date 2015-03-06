@@ -1,21 +1,10 @@
 {
   String returnString="";
   try {
-    if (message == null) {
-      message=details;
-    }
- else     if (details != null) {
-      message+="<br/><br/>" + details;
-    }
     JsonObject appError=Json.createObject();
-    appError.put("caption",caption);
-    appError.put("message",message);
-    if (url == null) {
-      appError.put("url",Json.createNull());
-    }
- else {
-      appError.put("url",url);
-    }
+    putValueOrJsonNull(appError,"caption",caption);
+    putValueOrJsonNull(appError,"url",url);
+    putValueOrJsonNull(appError,"message",createCriticalNotificationMessage(message,details));
     JsonObject meta=Json.createObject();
     meta.put("appError",appError);
     JsonObject json=Json.createObject();

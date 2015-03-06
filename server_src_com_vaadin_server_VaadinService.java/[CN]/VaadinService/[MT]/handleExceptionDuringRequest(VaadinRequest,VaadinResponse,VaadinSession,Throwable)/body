@@ -4,6 +4,9 @@
   }
   try {
     ErrorHandler errorHandler=ErrorEvent.findErrorHandler(vaadinSession);
+    if (errorHandler != null) {
+      errorHandler.error(new ErrorEvent(t));
+    }
     if (ServletPortletHelper.isUIDLRequest(request)) {
       SystemMessages ci=getSystemMessages(ServletPortletHelper.findLocale(null,vaadinSession,request),request);
       try {
@@ -12,14 +15,8 @@
  catch (      IOException e) {
         getLogger().log(Level.WARNING,"Failed to write critical notification response to the client",e);
       }
-      if (errorHandler != null) {
-        errorHandler.error(new ErrorEvent(t));
-      }
     }
  else {
-      if (errorHandler != null) {
-        errorHandler.error(new ErrorEvent(t));
-      }
       throw new ServiceException(t);
     }
   }

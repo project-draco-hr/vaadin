@@ -1,0 +1,22 @@
+{
+  HashSet<String> packages=new HashSet<String>();
+  Pattern startsWithNumber=Pattern.compile("\\.\\d");
+  for (Enumeration<JarEntry> it=jar.entries(); it.hasMoreElements(); ) {
+    JarEntry entry=it.nextElement();
+    boolean classFile=entry.getName().endsWith(".class");
+    boolean directory=entry.isDirectory();
+    if (!classFile && !directory) {
+      continue;
+    }
+    if (!acceptEntry(entry.getName(),acceptedPackagePrefixes)) {
+      continue;
+    }
+    int lastSlash=entry.getName().lastIndexOf('/');
+    String pkg=entry.getName().substring(0,lastSlash).replace('/','.');
+    if (!includeNumberPackages && startsWithNumber.matcher(pkg).find()) {
+      continue;
+    }
+    packages.add(pkg);
+  }
+  return packages;
+}

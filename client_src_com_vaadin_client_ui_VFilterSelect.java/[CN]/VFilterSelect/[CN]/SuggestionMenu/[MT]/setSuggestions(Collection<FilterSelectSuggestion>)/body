@@ -5,14 +5,19 @@
   setKeyboardSelectedItem(null);
   clearItems();
   final Iterator<FilterSelectSuggestion> it=suggestions.iterator();
+  boolean isFirstIteration=true;
   while (it.hasNext()) {
     final FilterSelectSuggestion s=it.next();
     final MenuItem mi=new MenuItem(s.getDisplayString(),true,s);
     Roles.getListitemRole().set(mi.getElement());
     WidgetUtil.sinkOnloadForImages(mi.getElement());
     this.addItem(mi);
-    if (s == currentSuggestion) {
+    if (isFirstIteration && !allowNewItem) {
       selectItem(mi);
     }
+    if (tb.getText().equals(s.getReplacementString()) && s == currentSuggestion) {
+      selectItem(mi);
+    }
+    isFirstIteration=false;
   }
 }

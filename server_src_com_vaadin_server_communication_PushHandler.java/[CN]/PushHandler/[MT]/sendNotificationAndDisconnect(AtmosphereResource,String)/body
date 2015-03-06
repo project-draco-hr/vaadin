@@ -1,5 +1,9 @@
 {
   try {
+    if (resource instanceof AtmosphereResourceImpl && !((AtmosphereResourceImpl)resource).isInScope()) {
+      getLogger().fine("sendNotificationAndDisconnect called for resource no longer in scope");
+      return;
+    }
     resource.getResponse().getWriter().write(notificationJson);
     resource.resume();
   }
