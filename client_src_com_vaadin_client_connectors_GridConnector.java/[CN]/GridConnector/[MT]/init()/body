@@ -28,6 +28,18 @@
     @Override public void recalculateColumnWidths(){
       getWidget().recalculateColumnWidths();
     }
+    @Override public void setDetailsConnectorChanges(    Set<ConnectorIndexChange> connectorChanges,    int fetchId){
+      customDetailsGenerator.setDetailsConnectorChanges(connectorChanges);
+      for (      ConnectorIndexChange change : connectorChanges) {
+        Integer newIndex=change.getNewIndex();
+        if (newIndex != null) {
+          int index=newIndex.intValue();
+          getWidget().setDetailsVisible(index,false);
+          getWidget().setDetailsVisible(index,true);
+        }
+      }
+      detailsConnectorFetcher.responseReceived(fetchId);
+    }
   }
 );
   getWidget().addSelectionHandler(internalSelectionChangeHandler);
@@ -57,7 +69,7 @@
   }
 );
   getWidget().setEditorHandler(new CustomEditorHandler());
-  getWidget().setDetailsGenerator(new CustomDetailsGenerator());
+  getWidget().setDetailsGenerator(customDetailsGenerator);
   getLayoutManager().registerDependency(this,getWidget().getElement());
   layout();
 }
