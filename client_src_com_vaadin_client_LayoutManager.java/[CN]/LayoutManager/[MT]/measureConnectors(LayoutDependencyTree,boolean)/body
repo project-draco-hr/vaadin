@@ -9,9 +9,7 @@
     for (int i=0; i < pendingOverflowCount; i++) {
       String connectorId=pendingOverflowConnectorsIds.get(i);
       ComponentConnector componentConnector=(ComponentConnector)connectorMap.getConnector(connectorId);
-      boolean connectorChangesExpected=!currentDependencyTree.noMoreChangesExpected(componentConnector);
-      boolean parentChangesExcpected=componentConnector.getParent() instanceof ComponentConnector && !currentDependencyTree.noMoreChangesExpected((ComponentConnector)componentConnector.getParent());
-      if (connectorChangesExpected || parentChangesExcpected) {
+      if (delayOverflowFix(componentConnector)) {
         delayedOverflowFixes.add(connectorId);
         continue;
       }
@@ -43,7 +41,7 @@
       ComponentConnector componentConnector=(ComponentConnector)connectorMap.getConnector(connectorId);
       Element parentElement=componentConnector.getWidget().getElement().getParentElement();
       parentElement.getStyle().setProperty("overflow",originalOverflows.get(parentElement));
-      layoutDependencyTree.setNeedsMeasure(connectorId,true);
+      layoutDependencyTree.setNeedsMeasure(componentConnector,true);
     }
     Profiler.leave("Overflow fix restore");
     if (!pendingOverflowFixes.isEmpty()) {
@@ -69,7 +67,7 @@
       measureConnector(connectors.get(i));
     }
     for (int i=0; i < connectorCount; i++) {
-      layoutDependencyTree.setNeedsMeasure(connectors.get(i).getConnectorId(),false);
+      layoutDependencyTree.setNeedsMeasure(connectors.get(i),false);
     }
     measureCount+=connectorCount;
     Profiler.leave("Layout measureAll");
@@ -84,8 +82,8 @@
       measureCount++;
     }
     for (int i=0; i < length; i++) {
-      String connectorId=measureTargets.get(i);
-      layoutDependencyTree.setNeedsMeasure(connectorId,false);
+      ComponentConnector connector=(ComponentConnector)connectorMap.getConnector(measureTargets.get(i));
+      layoutDependencyTree.setNeedsMeasure(connector,false);
     }
   }
   Profiler.leave("Layout measure from tree");
