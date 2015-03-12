@@ -11,9 +11,11 @@
       return false;
     }
     stream=((ConnectorResource)resource).getStream();
-    if (stream.getParameter("Content-Disposition") == null) {
-      stream.setParameter("Content-Disposition","attachment; filename=\"" + stream.getFileName() + "\"");
+    String contentDisposition=stream.getParameter(DownloadStream.CONTENT_DISPOSITION);
+    if (contentDisposition == null) {
+      contentDisposition="attachment; " + DownloadStream.getContentDispositionFilename(stream.getFileName());
     }
+    stream.setParameter(DownloadStream.CONTENT_DISPOSITION,contentDisposition);
     if (isOverrideContentType()) {
       stream.setContentType("application/octet-stream;charset=UTF-8");
     }

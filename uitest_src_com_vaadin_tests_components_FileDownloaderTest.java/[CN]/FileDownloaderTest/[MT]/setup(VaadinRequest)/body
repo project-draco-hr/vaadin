@@ -1,5 +1,4 @@
 {
-  addComponent(log);
   List<Class<? extends Component>> components=new ArrayList<Class<? extends Component>>();
   components.add(Button.class);
   components.add(NativeButton.class);
@@ -41,6 +40,11 @@
   }
   resource=new ClassResource(new EmbeddedPdf().getClass(),"test.pdf");
   addComponents("Class resource pdf",resource,components);
+  Button downloadUtf8File=new Button("Download UTF-8 named file");
+  FileDownloader fd=new FileDownloader(new ClassResource(new EmbeddedPdf().getClass(),"??????-?????????.pdf"));
+  fd.setOverrideContentType(false);
+  fd.extend(downloadUtf8File);
+  addComponent(downloadUtf8File);
   addComponent(new Button("Remove first download button",new ClickListener(){
     @Override public void buttonClick(    ClickEvent event){
       Layout parent=(Layout)firstDownloadComponent.getParent();
@@ -52,7 +56,7 @@
     @Override public void buttonClick(    ClickEvent event){
       FileDownloader e=(FileDownloader)firstDownloadComponent.getExtensions().iterator().next();
       e.remove();
-      log.log("FileDownload detached");
+      log("FileDownload detached");
     }
   }
 ));
