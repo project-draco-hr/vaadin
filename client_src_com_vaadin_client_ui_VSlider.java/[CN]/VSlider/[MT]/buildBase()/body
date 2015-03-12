@@ -4,7 +4,7 @@
   final String domProperty=isVertical() ? "offsetHeight" : "offsetWidth";
   base.getStyle().clearProperty(oppositeStyleAttribute);
   if (getElement().hasParentElement()) {
-    final Element p=getElement().getParentElement();
+    final Element p=getElement();
     if (p.getPropertyInt(domProperty) > MIN_SIZE) {
       if (isVertical()) {
         setHeight();
@@ -17,8 +17,8 @@
       base.getStyle().setPropertyPx(styleAttribute,MIN_SIZE);
       Scheduler.get().scheduleDeferred(new Command(){
         @Override public void execute(){
-          final Element p=getElement().getParentElement();
-          if (p.getPropertyInt(domProperty) > (MIN_SIZE + 5)) {
+          final Element p=getElement();
+          if (p.getPropertyInt(domProperty) > (MIN_SIZE + 5) || propertyNotNullOrEmpty(styleAttribute,p)) {
             if (isVertical()) {
               setHeight();
             }
@@ -27,6 +27,9 @@
             }
             setValue(value,false);
           }
+        }
+        private boolean propertyNotNullOrEmpty(        final String styleAttribute,        final Element p){
+          return p.getStyle().getProperty(styleAttribute) != null && !p.getStyle().getProperty(styleAttribute).isEmpty();
         }
       }
 );

@@ -32,12 +32,7 @@
  else {
     style.clearMarginRight();
   }
-  if (isRelativeWidth()) {
-    style.setPropertyPx("width",(int)availableWidth);
-  }
- else {
-    style.clearProperty("width");
-  }
+  style.setPropertyPx("width",(int)availableWidth);
   double allocatedContentWidth=0;
   if (isRelativeWidth()) {
     String percentWidth=getWidget().getElement().getStyle().getWidth();
@@ -45,6 +40,8 @@
     allocatedContentWidth=availableWidth * (percentage / 100);
     reportActualRelativeWidth(Math.round((float)allocatedContentWidth));
   }
+  style.setLeft(Math.round(currentLocation),Unit.PX);
+  double padding=0;
   AlignmentInfo alignment=getAlignment();
   if (!alignment.isLeft()) {
     double usedWidth;
@@ -55,22 +52,22 @@
       usedWidth=getWidgetWidth();
     }
     if (alignment.isHorizontalCenter()) {
-      currentLocation+=(allocatedSpace - usedWidth) / 2d;
+      padding=(allocatedSpace - usedWidth) / 2d;
       if (captionAboveCompnent) {
         captionStyle.setLeft(Math.round(usedWidth - captionWidth) / 2,Unit.PX);
       }
     }
  else {
-      currentLocation+=(allocatedSpace - usedWidth);
+      padding=(allocatedSpace - usedWidth);
       if (captionAboveCompnent) {
         captionStyle.setLeft(Math.round(usedWidth - captionWidth),Unit.PX);
       }
     }
+    widget.getElement().getStyle().setLeft(Math.round(padding),Unit.PX);
   }
  else {
     if (captionAboveCompnent) {
       captionStyle.setLeft(0,Unit.PX);
     }
   }
-  style.setLeft(Math.round(currentLocation),Unit.PX);
 }
