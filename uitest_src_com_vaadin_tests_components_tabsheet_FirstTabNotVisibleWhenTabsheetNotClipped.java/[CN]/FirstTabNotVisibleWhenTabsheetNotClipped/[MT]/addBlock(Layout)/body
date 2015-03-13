@@ -1,0 +1,25 @@
+{
+  layout.setWidth("300px");
+  TabSheet tabsheet=new TabSheet();
+  String[] letters={"A","B","C","D"};
+  HashMap<String,TabSheet.Tab> tabMap=new HashMap<String,TabSheet.Tab>();
+  for (  String letter : letters) {
+    VerticalLayout vLayout=new VerticalLayout();
+    vLayout.addComponent(new Label(letter + 1));
+    vLayout.addComponent(new Label(letter + 2));
+    vLayout.addComponent(new Label(letter + 3));
+    tabsheet.addTab(vLayout);
+    tabsheet.getTab(vLayout).setCaption("tab " + letter);
+    tabMap.put("tab " + letter,tabsheet.getTab(vLayout));
+  }
+  VerticalLayout vtabLayout=new VerticalLayout();
+  for (  String letter : letters) {
+    Button btntab=new Button("show tab " + letter);
+    btntab.setId("tab " + letter);
+    btntab.addClickListener(createTabListener(tabMap,tabsheet));
+    vtabLayout.addComponent(btntab);
+  }
+  layout.addComponent(vtabLayout);
+  layout.addComponent(tabsheet);
+  addComponent(layout);
+}
