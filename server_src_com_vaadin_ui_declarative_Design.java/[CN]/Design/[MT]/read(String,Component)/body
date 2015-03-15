@@ -3,5 +3,15 @@
   if (stream == null) {
     throw new DesignException("File " + filename + " was not found in the package "+ rootComponent.getClass().getPackage().getName());
   }
-  return read(stream,rootComponent);
+  try {
+    return read(stream,rootComponent);
+  }
+  finally {
+    try {
+      stream.close();
+    }
+ catch (    IOException e) {
+      getLogger().log(Level.FINE,"Error closing design stream",e);
+    }
+  }
 }

@@ -12,7 +12,17 @@
   if (stream == null) {
     throw new DesignException("Unable to find design file " + filename + " in "+ annotatedClass.getPackage().getName());
   }
-  Document doc=parse(stream);
-  DesignContext context=designToComponentTree(doc,rootComponent,annotatedClass);
-  return context;
+  try {
+    Document doc=parse(stream);
+    DesignContext context=designToComponentTree(doc,rootComponent,annotatedClass);
+    return context;
+  }
+  finally {
+    try {
+      stream.close();
+    }
+ catch (    IOException e) {
+      getLogger().log(Level.FINE,"Error closing design stream",e);
+    }
+  }
 }
