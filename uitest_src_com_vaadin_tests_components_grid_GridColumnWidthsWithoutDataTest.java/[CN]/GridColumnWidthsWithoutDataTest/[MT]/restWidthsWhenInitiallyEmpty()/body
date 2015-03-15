@@ -1,0 +1,14 @@
+{
+  setDebug(true);
+  openTestURL();
+  $(ButtonElement.class).caption("Recreate without data").first().click();
+  GridElement grid=$(GridElement.class).first();
+  int[] baseWidths=getColWidths(grid);
+  Assert.assertEquals("Sanity check",2,baseWidths.length);
+  Assert.assertTrue("Columns should have roughly equal width",Math.abs(baseWidths[0] - baseWidths[1]) < 10);
+  Assert.assertTrue("Columns should not have default widths",baseWidths[0] > 140);
+  Assert.assertTrue("Columns should not have default widths",baseWidths[1] > 140);
+  addData();
+  assertSameWidths(baseWidths,getColWidths(grid));
+  Assert.assertFalse("Notification was present",isElementPresent(NotificationElement.class));
+}
