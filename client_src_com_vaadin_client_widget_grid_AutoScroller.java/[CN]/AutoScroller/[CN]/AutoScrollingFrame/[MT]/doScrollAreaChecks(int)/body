@@ -1,0 +1,20 @@
+{
+  if (startBound == -1) {
+    startBound=Math.min(finalStartBound,pageCordinate);
+    endBound=Math.max(finalEndBound,pageCordinate);
+  }
+ else {
+    int oldTopBound=startBound;
+    if (startBound < finalStartBound) {
+      startBound=Math.max(startBound,Math.min(finalStartBound,pageCordinate));
+    }
+    int oldBottomBound=endBound;
+    if (endBound > finalEndBound) {
+      endBound=Math.min(endBound,Math.max(finalEndBound,pageCordinate));
+    }
+    final boolean startDidNotMove=oldTopBound == startBound;
+    final boolean endDidNotMove=oldBottomBound == endBound;
+    final boolean wasMovement=pageCordinate != scrollingAxisPageCoordinate;
+    scrollAreaShouldRebound=(startDidNotMove && endDidNotMove && wasMovement);
+  }
+}

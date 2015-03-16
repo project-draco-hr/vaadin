@@ -1,0 +1,18 @@
+{
+  if (!isColumnReorderingAllowed()) {
+    return false;
+  }
+  if (container != escalator.getHeader()) {
+    return false;
+  }
+  if (eventCell.getColumnIndex() < escalator.getColumnConfiguration().getFrozenColumnCount()) {
+    return false;
+  }
+  if (event.getTypeInt() == Event.ONMOUSEDOWN && event.getButton() == NativeEvent.BUTTON_LEFT || event.getTypeInt() == Event.ONTOUCHSTART) {
+    dndHandler.onDragStartOnDraggableElement(event,headerCellDndCallback);
+    event.preventDefault();
+    event.stopPropagation();
+    return true;
+  }
+  return false;
+}

@@ -1,0 +1,62 @@
+{
+  String[] menupath=new String[]{"Component","Row details"};
+  addMenuCommand("Set generator",new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setDetailsGenerator(new DetailsGenerator(){
+        @Override public Widget getDetails(        int rowIndex){
+          FlowPanel panel=new FlowPanel();
+          final Label label=new Label("Row: " + rowIndex + ".");
+          Button button=new Button("Button",new ClickHandler(){
+            @Override public void onClick(            ClickEvent event){
+              label.setText("clicked");
+            }
+          }
+);
+          panel.add(label);
+          panel.add(button);
+          return panel;
+        }
+      }
+);
+    }
+  }
+,menupath);
+  addMenuCommand("Set faulty generator",new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setDetailsGenerator(new DetailsGenerator(){
+        @Override public Widget getDetails(        int rowIndex){
+          throw new RuntimeException("This is by design.");
+        }
+      }
+);
+    }
+  }
+,menupath);
+  addMenuCommand("Set empty generator",new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setDetailsGenerator(new DetailsGenerator(){
+        @Override public Widget getDetails(        int rowIndex){
+          return null;
+        }
+      }
+);
+    }
+  }
+,menupath);
+  addMenuCommand("Toggle details for row 1",new ScheduledCommand(){
+    boolean visible=false;
+    @Override public void execute(){
+      visible=!visible;
+      grid.setDetailsVisible(1,visible);
+    }
+  }
+,menupath);
+  addMenuCommand("Toggle details for row 100",new ScheduledCommand(){
+    boolean visible=false;
+    @Override public void execute(){
+      visible=!visible;
+      grid.setDetailsVisible(100,visible);
+    }
+  }
+,menupath);
+}

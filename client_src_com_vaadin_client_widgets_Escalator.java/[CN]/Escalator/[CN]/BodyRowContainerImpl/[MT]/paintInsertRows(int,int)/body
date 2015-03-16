@@ -1,0 +1,40 @@
+{
+  if (numberOfRows == 0) {
+    return;
+  }
+  spacerContainer.shiftSpacersByRows(index,numberOfRows);
+  final List<TableRowElement> addedRows=fillAndPopulateEscalatorRowsIfNeeded(index,numberOfRows);
+  scroller.recalculateScrollbarsForVirtualViewport();
+  final boolean addedRowsAboveCurrentViewport=index * getDefaultRowHeight() < getScrollTop();
+  final boolean addedRowsBelowCurrentViewport=index * getDefaultRowHeight() > getScrollTop() + calculateHeight();
+  if (addedRowsAboveCurrentViewport) {
+    final double yDelta=numberOfRows * getDefaultRowHeight();
+    moveViewportAndContent(yDelta);
+    updateTopRowLogicalIndex(numberOfRows);
+  }
+ else   if (addedRowsBelowCurrentViewport) {
+  }
+ else {
+    final int unupdatedLogicalStart=index + addedRows.size();
+    final int visualOffset=getLogicalRowIndex(visualRowOrder.getFirst());
+    final int rowsStillNeeded=numberOfRows - addedRows.size();
+    if (rowsStillNeeded > 0) {
+      final Range unupdatedVisual=convertToVisual(Range.withLength(unupdatedLogicalStart,rowsStillNeeded));
+      final int end=getEscalatorRowCount();
+      final int start=end - unupdatedVisual.length();
+      final int visualTargetIndex=unupdatedLogicalStart - visualOffset;
+      moveAndUpdateEscalatorRows(Range.between(start,end),visualTargetIndex,unupdatedLogicalStart);
+      double rowTop=(unupdatedLogicalStart + (end - start)) * getDefaultRowHeight();
+      final ListIterator<TableRowElement> i=visualRowOrder.listIterator(visualTargetIndex + (end - start));
+      int logicalRowIndexCursor=unupdatedLogicalStart;
+      while (i.hasNext()) {
+        rowTop+=spacerContainer.getSpacerHeight(logicalRowIndexCursor++);
+        final TableRowElement tr=i.next();
+        setRowPosition(tr,0,rowTop);
+        rowTop+=getDefaultRowHeight();
+      }
+    }
+    fireRowVisibilityChangeEvent();
+    sortDomElements();
+  }
+}
