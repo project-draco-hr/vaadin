@@ -28,15 +28,16 @@
     @Override public void recalculateColumnWidths(){
       getWidget().recalculateColumnWidths();
     }
-    @Override public void setDetailsConnectorChanges(    Set<ConnectorIndexChange> connectorChanges,    int fetchId){
+    @Override public void setDetailsConnectorChanges(    Set<DetailsConnectorChange> connectorChanges,    int fetchId){
       customDetailsGenerator.setDetailsConnectorChanges(connectorChanges);
-      for (      ConnectorIndexChange change : connectorChanges) {
-        Integer newIndex=change.getNewIndex();
-        if (newIndex != null) {
-          int index=newIndex.intValue();
-          getWidget().setDetailsVisible(index,false);
-          getWidget().setDetailsVisible(index,true);
+      for (      DetailsConnectorChange change : connectorChanges) {
+        Integer index=change.getNewIndex();
+        if (index == null) {
+          index=change.getOldIndex();
         }
+        int i=index.intValue();
+        getWidget().setDetailsVisible(i,false);
+        getWidget().setDetailsVisible(i,true);
       }
       detailsConnectorFetcher.responseReceived(fetchId);
     }
