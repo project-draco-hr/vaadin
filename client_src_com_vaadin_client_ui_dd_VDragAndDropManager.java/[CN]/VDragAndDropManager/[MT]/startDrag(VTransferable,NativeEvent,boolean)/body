@@ -67,19 +67,13 @@ case Event.ONTOUCHMOVE:
 int currentX=WidgetUtil.getTouchOrMouseClientX(event.getNativeEvent());
 int currentY=WidgetUtil.getTouchOrMouseClientY(event.getNativeEvent());
 if (Math.abs(startX - currentX) > MINIMUM_DISTANCE_TO_START_DRAG || Math.abs(startY - currentY) > MINIMUM_DISTANCE_TO_START_DRAG) {
-if (deferredStartRegistration != null) {
-deferredStartRegistration.removeHandler();
-deferredStartRegistration=null;
-}
+ensureDeferredRegistrationCleanup();
 currentDrag.setCurrentGwtEvent(event.getNativeEvent());
 startDrag.execute();
 }
 break;
 default :
-if (deferredStartRegistration != null) {
-deferredStartRegistration.removeHandler();
-deferredStartRegistration=null;
-}
+ensureDeferredRegistrationCleanup();
 currentDrag=null;
 clearDragElement();
 break;

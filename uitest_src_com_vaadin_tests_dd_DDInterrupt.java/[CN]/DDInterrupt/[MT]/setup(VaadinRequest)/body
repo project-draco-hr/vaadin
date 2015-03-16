@@ -1,0 +1,34 @@
+{
+  final CssLayout layout=new CssLayout();
+  layout.setWidth("500px");
+  layout.setHeight("500px");
+  addButton("Click to interrupt next drag.",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      sp.interruptNext();
+    }
+  }
+);
+  final Label draggableLabel=new Label("Drag me");
+  draggableLabel.setId("draggable");
+  DragAndDropWrapper dndLayoutWrapper=new DragAndDropWrapper(layout);
+  addComponent(dndLayoutWrapper);
+  DragAndDropWrapper labelWrapper=new DragAndDropWrapper(draggableLabel);
+  draggableLabel.setSizeUndefined();
+  labelWrapper.setDragStartMode(DragStartMode.COMPONENT);
+  labelWrapper.setSizeUndefined();
+  layout.addComponent(labelWrapper);
+  dndLayoutWrapper.setDropHandler(new DropHandler(){
+    @Override public AcceptCriterion getAcceptCriterion(){
+      return AcceptAll.get();
+    }
+    @Override public void drop(    DragAndDropEvent event){
+      TargetDetailsImpl targetDetails=(TargetDetailsImpl)event.getTargetDetails();
+      int x=targetDetails.getMouseEvent().getRelativeX();
+      int y=targetDetails.getMouseEvent().getRelativeY();
+      draggableLabel.setWidth(x,Unit.PIXELS);
+      draggableLabel.setHeight(y,Unit.PIXELS);
+    }
+  }
+);
+  sp=SpacebarPanner.wrap(this);
+}
