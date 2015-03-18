@@ -26,21 +26,25 @@
 ;
   converterMap.put(Boolean.class,booleanConverter);
   converterMap.put(boolean.class,booleanConverter);
-  DecimalFormatSymbols symbols=new DecimalFormatSymbols(new Locale("en_US"));
+  final DecimalFormatSymbols symbols=new DecimalFormatSymbols(new Locale("en_US"));
   final DecimalFormat fmt=new DecimalFormat("0.###",symbols);
   fmt.setGroupingUsed(false);
-  converterMap.put(Float.class,new StringToFloatConverter(){
-    @Override protected java.text.NumberFormat getFormat(    Locale locale){
+  Converter<String,?> floatConverter=new StringToFloatConverter(){
+    @Override protected NumberFormat getFormat(    Locale locale){
       return fmt;
     }
   }
-);
-  converterMap.put(Double.class,new StringToDoubleConverter(){
-    @Override protected java.text.NumberFormat getFormat(    Locale locale){
+;
+  converterMap.put(Float.class,floatConverter);
+  converterMap.put(float.class,floatConverter);
+  Converter<String,?> doubleConverter=new StringToDoubleConverter(){
+    @Override protected NumberFormat getFormat(    Locale locale){
       return fmt;
     }
   }
-);
+;
+  converterMap.put(Double.class,doubleConverter);
+  converterMap.put(double.class,doubleConverter);
   converterMap.put(String.class,new Converter<String,String>(){
     @Override public String convertToModel(    String value,    Class<? extends String> targetType,    Locale locale) throws Converter.ConversionException {
       return value;
@@ -63,7 +67,7 @@
   }
 ;
   converterMap.put(Character.class,charConverter);
-  converterMap.put(Character.TYPE,charConverter);
+  converterMap.put(char.class,charConverter);
   converterMap.put(Date.class,new DesignDateConverter());
   converterMap.put(ShortcutAction.class,new DesignShortcutActionConverter());
   converterMap.put(Resource.class,new DesignResourceConverter());
