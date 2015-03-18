@@ -1,0 +1,12 @@
+{
+  String servletName=servletRegistration.getName();
+  String attributeName=getAttributeName(servletName);
+  if (servletContext.getAttribute(attributeName) != null) {
+    getLogger().warning("Atmosphere already initialized");
+    return;
+  }
+  getLogger().finer("Creating AtmosphereFramework for " + servletName);
+  AtmosphereFramework framework=PushRequestHandler.initAtmosphere(new FakeServletConfig(servletRegistration,servletContext));
+  servletContext.setAttribute(attributeName,framework);
+  getLogger().finer("Created AtmosphereFramework for " + servletName);
+}
