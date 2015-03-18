@@ -1,5 +1,5 @@
 {
-  for (  Class<?> c : new Class<?>[]{Integer.class,Byte.class,Short.class,Long.class,BigDecimal.class}) {
+  for (  Class<?> c : new Class<?>[]{Byte.class,Short.class,Integer.class,Long.class}) {
     DesignToStringConverter<?> conv=new DesignToStringConverter(c);
     converterMap.put(c,conv);
     try {
@@ -45,6 +45,15 @@
 ;
   converterMap.put(Double.class,doubleConverter);
   converterMap.put(double.class,doubleConverter);
+  final DecimalFormat bigDecimalFmt=new DecimalFormat("0.###",symbols);
+  bigDecimalFmt.setGroupingUsed(false);
+  bigDecimalFmt.setParseBigDecimal(true);
+  converterMap.put(BigDecimal.class,new StringToBigDecimalConverter(){
+    @Override protected NumberFormat getFormat(    Locale locale){
+      return bigDecimalFmt;
+    }
+  }
+);
   converterMap.put(String.class,new Converter<String,String>(){
     @Override public String convertToModel(    String value,    Class<? extends String> targetType,    Locale locale) throws Converter.ConversionException {
       return value;
