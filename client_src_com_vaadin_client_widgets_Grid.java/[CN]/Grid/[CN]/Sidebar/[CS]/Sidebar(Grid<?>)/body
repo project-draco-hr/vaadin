@@ -1,9 +1,18 @@
 {
   this.grid=grid;
-  rootContainer=new VerticalPanel();
+  rootContainer=new FlowPanel();
   initWidget(rootContainer);
   openCloseButton=new VButton();
   openCloseButton.addClickHandler(openCloseButtonHandler);
   rootContainer.add(openCloseButton);
-  rootContainer.setCellHorizontalAlignment(openCloseButton,HorizontalAlignmentConstant.endOf(com.google.gwt.i18n.client.HasDirection.Direction.LTR));
+  content=new FlowPanel(){
+    @Override public boolean remove(    Widget w){
+      boolean removed=super.remove(w);
+      if (removed) {
+        updateVisibility();
+      }
+      return removed;
+    }
+  }
+;
 }
