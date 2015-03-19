@@ -1,0 +1,15 @@
+{
+  if (this.hidden != hidden) {
+    if (hidden) {
+      grid.escalator.getColumnConfiguration().removeColumns(grid.getVisibleColumns().indexOf(this),1);
+      this.hidden=hidden;
+    }
+ else {
+      this.hidden=hidden;
+      grid.escalator.getColumnConfiguration().insertColumns(grid.getVisibleColumns().indexOf(this),1);
+    }
+    grid.columnHider.updateToggleValue(this);
+    scheduleColumnWidthRecalculator();
+    this.grid.fireEvent(new ColumnVisibilityChangeEvent<T>(this,hidden,userOriginated));
+  }
+}
