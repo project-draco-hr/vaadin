@@ -1,0 +1,42 @@
+{
+  Command<Grid,DetailsGenerator> swapDetailsGenerator=new Command<Grid,DetailsGenerator>(){
+    @Override public void execute(    Grid c,    DetailsGenerator generator,    Object data){
+      grid.setDetailsGenerator(generator);
+    }
+  }
+;
+  Command<Grid,Boolean> openOrCloseItemId=new Command<Grid,Boolean>(){
+    @Override @SuppressWarnings("boxing") public void execute(    Grid g,    Boolean visible,    Object itemId){
+      g.setDetailsVisible(itemId,visible);
+    }
+  }
+;
+  createCategory("Generators","Details");
+  createClickAction("NULL","Generators",swapDetailsGenerator,DetailsGenerator.NULL);
+  createClickAction("\"Watching\"","Generators",swapDetailsGenerator,watchingDetailsGenerator);
+  createClickAction("Detailed","Generators",swapDetailsGenerator,detailedDetailsGenerator);
+  createClickAction("Hierarchical","Generators",swapDetailsGenerator,hierarchicalDetailsGenerator);
+  createClickAction("- Change Component","Generators",new Command<Grid,Void>(){
+    @Override public void execute(    Grid c,    Void value,    Object data){
+      Label label=(Label)detailsPanel.getContent();
+      if (label.getValue().equals("One")) {
+        detailsPanel.setContent(new Label("Two"));
+      }
+ else {
+        detailsPanel.setContent(new Label("One"));
+      }
+    }
+  }
+,null);
+  createClickAction("Toggle firstItemId","Details",new Command<Grid,Void>(){
+    @Override public void execute(    Grid g,    Void value,    Object data){
+      Object firstItemId=g.getContainerDataSource().firstItemId();
+      boolean toggle=g.isDetailsVisible(firstItemId);
+      g.setDetailsVisible(firstItemId,!toggle);
+      g.setDetailsVisible(firstItemId,toggle);
+    }
+  }
+,null);
+  createBooleanAction("Open firstItemId","Details",false,openOrCloseItemId,ds.firstItemId());
+  createBooleanAction("Open 995","Details",false,openOrCloseItemId,ds.getIdByIndex(995));
+}
