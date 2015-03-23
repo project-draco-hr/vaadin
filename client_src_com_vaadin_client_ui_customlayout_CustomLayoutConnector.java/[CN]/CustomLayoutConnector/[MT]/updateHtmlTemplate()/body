@@ -6,12 +6,13 @@
   String templateContents=getState().templateContents;
   if (templateName != null) {
     templateContents=getConnection().getResource("layouts/" + templateName + ".html");
-    if (templateContents == null) {
-      getWidget().getElement().setInnerHTML("<em>Layout file layouts/" + templateName + ".html is missing. Components will be drawn for debug purposes.</em>");
-    }
   }
   if (templateContents != null) {
     getWidget().initializeHTML(templateContents,getConnection().getThemeUri());
+  }
+ else {
+    String warning=templateName != null ? "Layout file layouts/" + templateName + ".html is missing." : "Layout file not specified.";
+    getWidget().getElement().setInnerHTML("<em>" + warning + " Components will be drawn for debug purposes.</em>");
   }
   templateUpdated=true;
 }
