@@ -6,7 +6,13 @@
     }
  else {
       this.hidden=hidden;
-      grid.escalator.getColumnConfiguration().insertColumns(grid.getVisibleColumns().indexOf(this),1);
+      final int columnIndex=grid.getVisibleColumns().indexOf(this);
+      grid.escalator.getColumnConfiguration().insertColumns(columnIndex,1);
+      int gridFrozenColumns=grid.getFrozenColumnCount();
+      int escalatorFrozenColumns=grid.escalator.getColumnConfiguration().getFrozenColumnCount();
+      if (gridFrozenColumns > escalatorFrozenColumns && escalatorFrozenColumns == columnIndex) {
+        grid.escalator.getColumnConfiguration().setFrozenColumnCount(++escalatorFrozenColumns);
+      }
     }
     grid.columnHider.updateToggleValue(this);
     scheduleColumnWidthRecalculator();
