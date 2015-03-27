@@ -5,6 +5,7 @@
   if (indexWidthMap.isEmpty()) {
     return;
   }
+  List<Integer> autosizeColumns=new ArrayList<Integer>();
   for (  Entry<Integer,Double> entry : indexWidthMap.entrySet()) {
     int index=entry.getKey().intValue();
     double width=entry.getValue().doubleValue();
@@ -12,8 +13,14 @@
       subpixelBrowserBugDetector.invalidateFix();
     }
     checkValidColumnIndex(index);
-    columns.get(index).setWidth(width);
+    if (width >= 0) {
+      columns.get(index).setWidth(width);
+    }
+ else {
+      autosizeColumns.add(index);
+    }
   }
+  autosizeColumns(autosizeColumns);
   widthsArray=null;
   header.reapplyColumnWidths();
   body.reapplyColumnWidths();
