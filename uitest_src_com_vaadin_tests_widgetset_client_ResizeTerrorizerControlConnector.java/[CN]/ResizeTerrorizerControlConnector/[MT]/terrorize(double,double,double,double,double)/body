@@ -1,0 +1,42 @@
+{
+  final AbstractComponentConnector target=getTarget();
+  final AnimationScheduler scheduler=AnimationScheduler.get();
+  AnimationCallback callback=new AnimationCallback(){
+    double startTime=-1;
+    int frameCount=0;
+    @Override public void execute(    double timestamp){
+      frameCount++;
+      boolean done=false;
+      if (startTime == -1) {
+        startTime=timestamp;
+      }
+      double time=timestamp - startTime;
+      if (time > duration) {
+        time=duration;
+        done=true;
+      }
+      double progress=time / duration;
+      double widthToSet=startWidth + (endWidth - startWidth) * progress;
+      double heightToSet=startHeight + (endHeight - startHeight) * progress;
+      if (widthToSet != startWidth) {
+        target.getWidget().setWidth(widthToSet + "px");
+      }
+      if (heightToSet != startHeight) {
+        target.getWidget().setHeight(heightToSet + "px");
+      }
+      if (target.getWidget() instanceof RequiresResize) {
+        ((RequiresResize)target.getWidget()).onResize();
+      }
+      if (!done) {
+        scheduler.requestAnimationFrame(this);
+      }
+ else {
+        double fps=Math.round(frameCount / (duration / 1000));
+        String results=frameCount + " frames, " + fps+ " fps";
+        getWidget().showResults(results);
+      }
+    }
+  }
+;
+  scheduler.requestAnimationFrame(callback);
+}
