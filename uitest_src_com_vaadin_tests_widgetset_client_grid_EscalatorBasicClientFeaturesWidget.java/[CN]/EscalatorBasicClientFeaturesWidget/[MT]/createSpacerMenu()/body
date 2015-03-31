@@ -12,12 +12,26 @@
 ;
     @Override public void execute(){
       BodyRowContainer body=escalator.getBody();
-      if (body.getSpacerUpdater().equals(SpacerUpdater.NULL)) {
+      if (SpacerUpdater.NULL.equals(body.getSpacerUpdater())) {
         body.setSpacerUpdater(CUSTOM);
       }
  else {
         body.setSpacerUpdater(SpacerUpdater.NULL);
       }
+    }
+  }
+,menupath);
+  addMenuCommand("Focusable Updater",new ScheduledCommand(){
+    @Override public void execute(){
+      escalator.getBody().setSpacerUpdater(new SpacerUpdater(){
+        @Override public void init(        Spacer spacer){
+          spacer.getElement().appendChild(DOM.createInputText());
+        }
+        @Override public void destroy(        Spacer spacer){
+          spacer.getElement().removeAllChildren();
+        }
+      }
+);
     }
   }
 ,menupath);
