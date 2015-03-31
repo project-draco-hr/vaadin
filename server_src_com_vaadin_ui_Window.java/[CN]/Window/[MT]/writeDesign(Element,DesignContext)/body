@@ -1,0 +1,19 @@
+{
+  super.writeDesign(design,context);
+  Window def=context.getDefaultInstance(this);
+  if (getState().centered) {
+    design.attr("center","");
+  }
+  DesignAttributeHandler.writeAttribute("position",design.attributes(),getPosition(),def.getPosition(),String.class);
+  CloseShortcut shortcut=getCloseShortcut();
+  if (shortcut != null) {
+    CloseShortcut defShortcut=def.getCloseShortcut();
+    if (defShortcut == null || shortcut.getKeyCode() != defShortcut.getKeyCode() || !Arrays.equals(shortcut.getModifiers(),defShortcut.getModifiers())) {
+      DesignAttributeHandler.writeAttribute("close-shortcut",design.attributes(),shortcut,null,CloseShortcut.class);
+    }
+  }
+  for (  Component c : getAssistiveDescription()) {
+    Element child=context.createElement(c).attr(":assistive-description","");
+    design.appendChild(child);
+  }
+}
