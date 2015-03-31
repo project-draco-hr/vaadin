@@ -1,0 +1,38 @@
+{
+  System.out.println("TableBlurFocus/TableInIframeRowClickScrollJumpTest");
+  Button button=new Button("click to focus");
+  button.addFocusListener(new FocusListener(){
+    @Override public void focus(    FocusEvent event){
+      log("focus");
+    }
+  }
+);
+  button.addBlurListener(new BlurListener(){
+    @Override public void blur(    BlurEvent event){
+      log("blur");
+    }
+  }
+);
+  final Button scrollButton=new Button("focus lowest button to scroll down");
+  scrollButton.setId("scroll-button");
+  scrollButton.addClickListener(new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      focusButton.focus();
+    }
+  }
+);
+  Label spacerLabel=new Label("spacer");
+  spacerLabel.setHeight("300px");
+  addComponent(button);
+  addComponent(scrollButton);
+  addComponent(createTable());
+  addComponent(spacerLabel);
+  addComponent(focusButton=new Button("for focus"));
+  focusButton.setId("focus-button");
+  focusButton.addFocusListener(new FocusListener(){
+    @Override public void focus(    FocusEvent event){
+      focusButton.setCaption("focused");
+    }
+  }
+);
+}

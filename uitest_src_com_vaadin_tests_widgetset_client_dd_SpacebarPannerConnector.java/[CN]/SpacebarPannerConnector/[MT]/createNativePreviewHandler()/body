@@ -1,0 +1,61 @@
+{
+  return new NativePreviewHandler(){
+    private boolean spacebarDown=false;
+    private boolean shouldPan=false;
+    private boolean mouseDown=false;
+    private int lastMouseX;
+    private int lastMouseY;
+    @Override public void onPreviewNativeEvent(    NativePreviewEvent event){
+      NativeEvent ne=event.getNativeEvent();
+      int type=event.getTypeInt();
+switch (type) {
+case Event.ONKEYDOWN:
+        if (ne.getKeyCode() == KeyCodes.KEY_SPACE) {
+          event.cancel();
+          ne.preventDefault();
+          ne.stopPropagation();
+          spacebarDown=true;
+          break;
+        }
+case Event.ONKEYUP:
+      if (ne.getKeyCode() == KeyCodes.KEY_SPACE) {
+        spacebarDown=false;
+      }
+    break;
+case Event.ONMOUSEDOWN:
+  logger.log(Level.INFO,"Drag started");
+lastMouseX=ne.getClientX();
+lastMouseY=ne.getClientY();
+shouldPan=spacebarDown || trigger;
+mouseDown=true;
+break;
+case Event.ONMOUSEUP:
+shouldPan=false || trigger;
+mouseDown=false;
+break;
+case Event.ONMOUSEMOVE:
+if (mouseDown && shouldPan) {
+logger.log(Level.INFO,"In mousemove: mouseDown:" + mouseDown + ", shouldPan: "+ shouldPan);
+trigger=false;
+vui.removeStyleName("triggered");
+logger.log(Level.INFO,"Panning!");
+int currentClientX=ne.getClientX();
+int currentClientY=ne.getClientY();
+int deltaX=lastMouseX - currentClientX;
+int deltaY=lastMouseY - currentClientY;
+lastMouseX=currentClientX;
+lastMouseY=currentClientY;
+VDragAndDropManager.get().interruptDrag();
+Element uiElement=vui.getElement();
+int top=uiElement.getScrollTop();
+int left=uiElement.getScrollLeft();
+uiElement.setScrollTop(top + deltaY);
+uiElement.setScrollLeft(left + deltaX);
+}
+default :
+break;
+}
+}
+}
+;
+}

@@ -1,0 +1,28 @@
+{
+  String design="<v-menu-bar auto-open='true' plain-text tabindex=5> " + "<menu>File" + "<menu>Save</menu>"+ "<menu icon=\"theme://../runo/icons/16/folder.png\">Open</menu>"+ "<menu separator='true' />"+ "<menu disabled='true'>Exit</menu>"+ "<menu visible='false'>Not for everybody</menu>"+ "</menu>"+ "<menu description=\"This contains many items in sub menus\">Other"+ "<menu style-name=\"fancy\">Sub"+ "<menu checkable='true' checked='true'>Option 1 - no <b>html</b></menu>"+ "<menu checkable='true'>Option 2</menu>"+ "<menu checkable='true'>Option 3</menu>"+ "</menu>"+ "</menu>"+ "<menu more icon=\"theme://icon.png\">foo</menu>"+ "</v-menu-bar>";
+  MenuBar menuBar=new MenuBar();
+  menuBar.setHtmlContentAllowed(false);
+  menuBar.setTabIndex(5);
+  menuBar.setAutoOpen(true);
+  MenuItem fileMenu=menuBar.addItem("File",null);
+  fileMenu.addItem("Save",null);
+  fileMenu.addItem("Open",new ThemeResource("../runo/icons/16/folder.png"),null);
+  fileMenu.addSeparator();
+  fileMenu.addItem("Exit",null).setEnabled(false);
+  fileMenu.addItem("Not for everybody",null).setVisible(false);
+  MenuItem otherMenu=menuBar.addItem("Other",null);
+  otherMenu.setDescription("This contains many items in sub menus");
+  MenuItem subMenu=otherMenu.addItem("Sub",null);
+  subMenu.setStyleName("fancy");
+  MenuItem option1=subMenu.addItem("Option 1 - no <b>html</b>",null);
+  option1.setCheckable(true);
+  option1.setChecked(true);
+  subMenu.addItem("Option 2",null).setCheckable(true);
+  subMenu.addItem("Option 3",null).setCheckable(true);
+  menuBar.setMoreMenuItem(null);
+  MenuItem moreMenu=menuBar.getMoreMenuItem();
+  moreMenu.setIcon(new ThemeResource("icon.png"));
+  moreMenu.setText("foo");
+  testRead(design,menuBar);
+  testWrite(design,menuBar);
+}

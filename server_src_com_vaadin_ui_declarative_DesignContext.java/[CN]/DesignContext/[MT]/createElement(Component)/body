@@ -1,14 +1,7 @@
 {
-  Class<?> componentClass=childComponent.getClass();
-  String packageName=componentClass.getPackage().getName();
-  String prefix=packageToPrefix.get(packageName);
-  if (prefix == null) {
-    prefix=packageName.replace('.','_');
-    twoWayMap(prefix,packageName,prefixToPackage,packageToPrefix);
-  }
-  prefix=prefix + "-";
-  String className=classNameToElementName(componentClass.getSimpleName());
-  Element newElement=doc.createElement(prefix + className);
+  ComponentMapper componentMapper=Design.getComponentMapper();
+  String tagName=componentMapper.componentToTag(childComponent,this);
+  Element newElement=doc.createElement(tagName);
   childComponent.writeDesign(newElement,this);
   String localId=componentToLocalId.get(childComponent);
   if (localId != null) {
