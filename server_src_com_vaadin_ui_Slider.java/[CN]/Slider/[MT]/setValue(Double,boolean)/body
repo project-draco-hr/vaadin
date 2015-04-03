@@ -1,19 +1,7 @@
 {
-  final double v=value.doubleValue();
-  final int resolution=getResolution();
-  double newValue;
-  if (resolution > 0) {
-    newValue=Math.floor(v * Math.pow(10,resolution));
-    newValue=newValue / Math.pow(10,resolution);
-    if (getMin() > newValue || getMax() < newValue) {
-      throw new ValueOutOfBoundsException(newValue);
-    }
-  }
- else {
-    newValue=(int)v;
-    if (getMin() > newValue || getMax() < newValue) {
-      throw new ValueOutOfBoundsException(newValue);
-    }
+  double newValue=getRoundedValue(value);
+  if (getMin() > newValue || getMax() < newValue) {
+    throw new ValueOutOfBoundsException(newValue);
   }
   getState().value=newValue;
   super.setValue(newValue,repaintIsNotNeeded);
