@@ -1,0 +1,14 @@
+{
+  Class<ServerRpc> serverRpcClass=null;
+  if (implementationClass != null) {
+    for (    Class<?> candidateInterface : implementationClass.getInterfaces()) {
+      if (ServerRpc.class.isAssignableFrom(candidateInterface)) {
+        if (serverRpcClass != null) {
+          throw new RuntimeException("Use registerRpc(T implementation, Class<T> rpcInterfaceType) if the Rpc implementation implements more than one interface");
+        }
+        serverRpcClass=(Class<ServerRpc>)candidateInterface;
+      }
+    }
+  }
+  return serverRpcClass;
+}

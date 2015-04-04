@@ -1,0 +1,12 @@
+{
+  AbstractClientConnector mock=mock(AbstractClientConnector.class);
+  MultiServerRpcMock implementation=new MultiServerRpcMock();
+  Mockito.doCallRealMethod().when(mock).registerRpc(implementation);
+  try {
+    mock.registerRpc(implementation);
+    Assert.fail("expected exception");
+  }
+ catch (  Exception expected) {
+    Assert.assertEquals(expected.getMessage(),"Use registerRpc(T implementation, Class<T> rpcInterfaceType) if the Rpc implementation implements more than one interface");
+  }
+}
