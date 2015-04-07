@@ -1,5 +1,5 @@
 {
-  VConsole.log("Recompiling widgetset using<br/>" + serverUrl + "<br/>and then reloading in super dev mode");
+  getLogger().info("Recompiling widgetset using<br/>" + serverUrl + "<br/>and then reloading in super dev mode");
   VNotification n=new VNotification();
   n.show("<b>Recompiling widgetset, please wait</b>",VNotification.CENTERED,VNotification.STYLE_SYSTEM);
   JsonpRequestBuilder b=new JsonpRequestBuilder();
@@ -7,20 +7,20 @@
   b.setTimeout(COMPILE_TIMEOUT_IN_SECONDS * 1000);
   b.requestObject(serverUrl + "recompile/" + GWT.getModuleName()+ "?"+ getRecompileParameters(GWT.getModuleName()),new AsyncCallback<RecompileResult>(){
     @Override public void onSuccess(    RecompileResult result){
-      VConsole.log("JSONP compile call successful");
+      getLogger().fine("JSONP compile call successful");
       if (!result.ok()) {
-        VConsole.log("* result: " + result);
+        getLogger().fine("* result: " + result);
         failed();
         return;
       }
       setSession(getSuperDevModeHookKey(),getSuperDevWidgetSetUrl(GWT.getModuleName(),serverUrl));
       setSession(SKIP_RECOMPILE,"1");
-      VConsole.log("* result: OK. Reloading");
+      getLogger().fine("* result: OK. Reloading");
       Location.reload();
     }
     @Override public void onFailure(    Throwable caught){
-      VConsole.error("JSONP compile call failed");
-      VConsole.error(caught.getClass().getSimpleName() + ": " + caught.getMessage());
+      getLogger().severe("JSONP compile call failed");
+      getLogger().severe(caught.getClass().getSimpleName() + ": " + caught.getMessage());
       failed();
     }
     private void failed(){
