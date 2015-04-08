@@ -1,13 +1,13 @@
 {
-  ToggleButton toggle=new ToggleButton();
-  toggle.addStyleName("column-hiding-toggle");
-  toggle.addValueChangeHandler(new ValueChangeHandler<Boolean>(){
-    @Override public void onValueChange(    ValueChangeEvent<Boolean> event){
-      column.setHidden(!event.getValue(),true);
+  MenuItem toggle=new MenuItem(createHTML(column),true,new ScheduledCommand(){
+    @Override public void execute(){
+      hidingColumn=true;
+      column.setHidden(!column.isHidden(),true);
+      hidingColumn=false;
     }
   }
 );
-  updateHidingToggleCaption(column,toggle);
+  toggle.addStyleName("column-hiding-toggle");
   columnToHidingToggleMap.put(column,toggle);
   return toggle;
 }

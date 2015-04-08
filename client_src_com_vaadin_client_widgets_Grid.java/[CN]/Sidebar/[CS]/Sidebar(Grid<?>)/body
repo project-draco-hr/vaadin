@@ -15,4 +15,46 @@
     }
   }
 ;
+  menuBar=new MenuBar(true){
+    @Override public MenuItem addItem(    MenuItem item){
+      if (getParent() == null) {
+        content.insert(this,0);
+        updateVisibility();
+      }
+      return super.addItem(item);
+    }
+    @Override public void removeItem(    MenuItem item){
+      super.removeItem(item);
+      if (getItems().isEmpty()) {
+        menuBar.removeFromParent();
+      }
+    }
+    @Override public void onBrowserEvent(    Event event){
+      if (event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == KeyCodes.KEY_ENTER) {
+        final MenuItem item=getSelectedItem();
+        super.onBrowserEvent(event);
+        Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+          @Override public void execute(){
+            selectItem(item);
+            focus();
+          }
+        }
+);
+      }
+ else {
+        super.onBrowserEvent(event);
+      }
+    }
+  }
+;
+  KeyDownHandler keyDownHandler=new KeyDownHandler(){
+    @Override public void onKeyDown(    KeyDownEvent event){
+      if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+        close();
+      }
+    }
+  }
+;
+  openCloseButton.addDomHandler(keyDownHandler,KeyDownEvent.getType());
+  menuBar.addDomHandler(keyDownHandler,KeyDownEvent.getType());
 }

@@ -1,14 +1,13 @@
 {
   if (column.isHidable()) {
-    ToggleButton cb=columnToHidingToggleMap.get(column);
-    if (cb == null) {
-      cb=createToggle(column);
+    MenuItem toggle=columnToHidingToggleMap.get(column);
+    if (toggle == null) {
+      toggle=createToggle(column);
     }
-    updateToggleValue(cb,column.isHidden());
+    toggle.setStyleName("hidden",column.isHidden());
   }
- else   if (columnToHidingToggleMap.containsValue(column)) {
-    ((Widget)columnToHidingToggleMap.remove(column)).removeFromParent();
+ else   if (columnToHidingToggleMap.containsKey(column)) {
+    sidebar.menuBar.removeItem((columnToHidingToggleMap.remove(column)));
   }
   updateTogglesOrder();
-  updatePanelVisibility();
 }
