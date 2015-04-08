@@ -1,43 +1,30 @@
 {
-  final ServletConfig vaadinServletConfig=service.getServlet().getServletConfig();
-  atmosphere=new AtmosphereFramework(){
-    @Override protected void analytics(){
-    }
-    @Override public AtmosphereFramework addInitParameter(    String name,    String value){
-      if (vaadinServletConfig.getInitParameter(name) == null) {
-        super.addInitParameter(name,value);
-      }
-      return this;
-    }
-  }
-;
   service.addServiceDestroyListener(new ServiceDestroyListener(){
     @Override public void serviceDestroy(    ServiceDestroyEvent event){
       destroy();
     }
   }
 );
+  final ServletConfig vaadinServletConfig=service.getServlet().getServletConfig();
   pushHandler=new PushHandler(service);
-  atmosphere.addAtmosphereHandler("/*",pushHandler.handler);
-  atmosphere.addInitParameter(ApplicationConfig.BROADCASTER_CACHE,UUIDBroadcasterCache.class.getName());
-  atmosphere.addInitParameter(ApplicationConfig.ANNOTATION_PROCESSOR,VoidAnnotationProcessor.class.getName());
-  atmosphere.addInitParameter(ApplicationConfig.PROPERTY_SESSION_SUPPORT,"true");
-  atmosphere.addInitParameter(ApplicationConfig.MESSAGE_DELIMITER,String.valueOf(PushConstants.MESSAGE_DELIMITER));
-  atmosphere.addInitParameter(ApplicationConfig.DROP_ACCESS_CONTROL_ALLOW_ORIGIN_HEADER,"false");
-  atmosphere.addInitParameter(ApplicationConfig.DISABLE_ATMOSPHEREINTERCEPTORS,HeartbeatInterceptor.class.getName());
-  final String bufferSize=String.valueOf(PushConstants.WEBSOCKET_BUFFER_SIZE);
-  atmosphere.addInitParameter(ApplicationConfig.WEBSOCKET_BUFFER_SIZE,bufferSize);
-  atmosphere.addInitParameter(ApplicationConfig.WEBSOCKET_MAXTEXTSIZE,bufferSize);
-  atmosphere.addInitParameter(ApplicationConfig.WEBSOCKET_MAXBINARYSIZE,bufferSize);
-  atmosphere.addInitParameter(ApplicationConfig.PROPERTY_ALLOW_SESSION_TIMEOUT_REMOVAL,"false");
-  atmosphere.addInitParameter("org.atmosphere.cpr.showSupportMessage","false");
-  try {
-    atmosphere.init(vaadinServletConfig);
-    AtmosphereInterceptor trackMessageSize=new TrackMessageSizeInterceptor();
-    trackMessageSize.configure(atmosphere.getAtmosphereConfig());
-    atmosphere.interceptor(trackMessageSize);
+  atmosphere=getPreInitializedAtmosphere(vaadinServletConfig);
+  if (atmosphere == null) {
+    getLogger().fine("Initializing Atmosphere for servlet " + vaadinServletConfig.getServletName());
+    try {
+      atmosphere=initAtmosphere(vaadinServletConfig);
+    }
+ catch (    Exception e) {
+      getLogger().log(Level.WARNING,"Failed to initialize Atmosphere for " + service.getServlet().getServletName() + ". Push will not work.",e);
+      return;
+    }
   }
- catch (  ServletException e) {
-    throw new ServiceException("Atmosphere init failed",e);
+ else {
+    getLogger().fine("Using pre-initialized Atmosphere for servlet " + vaadinServletConfig.getServletName());
+  }
+  for (  AtmosphereHandlerWrapper handlerWrapper : atmosphere.getAtmosphereHandlers().values()) {
+    AtmosphereHandler handler=handlerWrapper.atmosphereHandler;
+    if (handler instanceof PushAtmosphereHandler) {
+      ((PushAtmosphereHandler)handler).setPushHandler(pushHandler);
+    }
   }
 }

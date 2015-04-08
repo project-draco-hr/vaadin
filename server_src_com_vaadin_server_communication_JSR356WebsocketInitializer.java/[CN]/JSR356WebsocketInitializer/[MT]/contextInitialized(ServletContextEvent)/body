@@ -1,0 +1,21 @@
+{
+  ServletContext servletContext=sce.getServletContext();
+  if (servletContext.getMajorVersion() < 3) {
+    return;
+  }
+  if (!atmosphereAvailable) {
+    return;
+  }
+  Map<String,? extends ServletRegistration> regs=servletContext.getServletRegistrations();
+  for (  String servletName : regs.keySet()) {
+    ServletRegistration servletRegistration=regs.get(servletName);
+    if (isVaadinServlet(servletRegistration)) {
+      try {
+        initAtmosphereForVaadinServlet(servletRegistration,servletContext);
+      }
+ catch (      Exception e) {
+        getLogger().log(Level.WARNING,"Failed to initialize Atmosphere for " + servletName,e);
+      }
+    }
+  }
+}

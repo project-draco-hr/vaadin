@@ -3,6 +3,10 @@
     return false;
   }
   if (request instanceof VaadinServletRequest) {
+    if (atmosphere == null) {
+      response.sendError(500,"Atmosphere initialization failed. No push available.");
+      return true;
+    }
     try {
       atmosphere.doCometSupport(AtmosphereRequest.wrap((VaadinServletRequest)request),AtmosphereResponse.wrap((VaadinServletResponse)response));
     }

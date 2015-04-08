@@ -1,0 +1,10 @@
+{
+  super.onStateChange(event);
+  if (pushHandler == null) {
+    getLogger().warning("AtmosphereHandler.onStateChange called before PushHandler has been set. This should really not happen");
+    return;
+  }
+  if (event.isCancelled() || event.isResumedOnTimeout()) {
+    pushHandler.connectionLost(event);
+  }
+}
