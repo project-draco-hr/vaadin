@@ -1,8 +1,15 @@
 {
   super.writeDesign(design,designContext);
   AbstractOrderedLayout def=(AbstractOrderedLayout)designContext.getDefaultInstance(this);
-  if (getMargin().getBitMask() != def.getMargin().getBitMask()) {
-    design.attr("margin","");
+  MarginInfo marginInfo=getMargin();
+  if (marginInfo.hasAll()) {
+    DesignAttributeHandler.writeAttribute("margin",design.attributes(),marginInfo.hasAll(),def.getMargin().hasAll(),Boolean.class);
+  }
+ else {
+    DesignAttributeHandler.writeAttribute("margin-left",design.attributes(),marginInfo.hasLeft(),def.getMargin().hasLeft(),Boolean.class);
+    DesignAttributeHandler.writeAttribute("margin-right",design.attributes(),marginInfo.hasRight(),def.getMargin().hasRight(),Boolean.class);
+    DesignAttributeHandler.writeAttribute("margin-top",design.attributes(),marginInfo.hasTop(),def.getMargin().hasTop(),Boolean.class);
+    DesignAttributeHandler.writeAttribute("margin-bottom",design.attributes(),marginInfo.hasBottom(),def.getMargin().hasBottom(),Boolean.class);
   }
   if (!designContext.shouldWriteChildren(this,def)) {
     return;
