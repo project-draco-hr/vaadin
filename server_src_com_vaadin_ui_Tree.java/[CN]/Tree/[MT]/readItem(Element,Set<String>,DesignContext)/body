@@ -1,0 +1,19 @@
+{
+  if (!"node".equals(node.tagName())) {
+    throw new DesignException("Unrecognized child element in " + getClass().getSimpleName() + ": "+ node.tagName());
+  }
+  String itemId=node.attr("text");
+  addItem(itemId);
+  if (node.hasAttr("icon")) {
+    Resource icon=DesignAttributeHandler.readAttribute("icon",node.attributes(),Resource.class);
+    setItemIcon(itemId,icon);
+  }
+  if (node.hasAttr("selected")) {
+    selected.add(itemId);
+  }
+  for (  Element child : node.children()) {
+    String childItemId=readItem(child,selected,context);
+    setParent(childItemId,itemId);
+  }
+  return itemId;
+}
