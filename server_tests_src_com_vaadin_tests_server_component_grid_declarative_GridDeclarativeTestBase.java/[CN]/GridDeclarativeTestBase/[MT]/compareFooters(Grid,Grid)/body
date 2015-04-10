@@ -1,0 +1,24 @@
+{
+  Assert.assertEquals("Different footer row count",expected.getFooterRowCount(),actual.getFooterRowCount());
+  for (int i=0; i < expected.getFooterRowCount(); ++i) {
+    FooterRow expectedRow=expected.getFooterRow(i);
+    FooterRow actualRow=actual.getFooterRow(i);
+    for (    Column c : expected.getColumns()) {
+      String baseError="Difference when comparing cell for " + c.toString() + " on footer row "+ i+ ": ";
+      Object propertyId=c.getPropertyId();
+      FooterCell expectedCell=expectedRow.getCell(propertyId);
+      FooterCell actualCell=actualRow.getCell(propertyId);
+switch (expectedCell.getCellType()) {
+case TEXT:
+        Assert.assertEquals(baseError + "Text content",expectedCell.getText(),actualCell.getText());
+      break;
+case HTML:
+    Assert.assertEquals(baseError + "HTML content",expectedCell.getHtml(),actualCell.getHtml());
+  break;
+case WIDGET:
+assertEquals(baseError + "Component content",expectedCell.getComponent(),actualCell.getComponent());
+break;
+}
+}
+}
+}

@@ -1,0 +1,27 @@
+{
+  Assert.assertEquals("Different header row count",expected.getHeaderRowCount(),actual.getHeaderRowCount());
+  for (int i=0; i < expected.getHeaderRowCount(); ++i) {
+    HeaderRow expectedRow=expected.getHeaderRow(i);
+    HeaderRow actualRow=actual.getHeaderRow(i);
+    if (expectedRow.equals(expected.getDefaultHeaderRow())) {
+      Assert.assertEquals("Different index for default header row",actual.getDefaultHeaderRow(),actualRow);
+    }
+    for (    Column c : expected.getColumns()) {
+      String baseError="Difference when comparing cell for " + c.toString() + " on header row "+ i+ ": ";
+      Object propertyId=c.getPropertyId();
+      HeaderCell expectedCell=expectedRow.getCell(propertyId);
+      HeaderCell actualCell=actualRow.getCell(propertyId);
+switch (expectedCell.getCellType()) {
+case TEXT:
+        Assert.assertEquals(baseError + "Text content",expectedCell.getText(),actualCell.getText());
+      break;
+case HTML:
+    Assert.assertEquals(baseError + "HTML content",expectedCell.getHtml(),actualCell.getHtml());
+  break;
+case WIDGET:
+assertEquals(baseError + "Component content",expectedCell.getComponent(),actualCell.getComponent());
+break;
+}
+}
+}
+}

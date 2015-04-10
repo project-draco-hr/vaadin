@@ -1,0 +1,18 @@
+{
+  String design="<v-grid><table>" + "<colgroup>" + "   <col sortable=true property-id='Column1'>"+ "   <col sortable=true property-id='Column2'>"+ "   <col sortable=true property-id='Column3'>"+ "</colgroup>"+ "<thead />"+ "<tfoot>"+ "   <tr><td colspan=3>Baz</tr>"+ "   <tr><td>Column1<td>Column2<td>Column3</tr>"+ "   <tr><td>Foo<td colspan=2>Bar</tr>"+ "</tfoot>"+ "</table></v-grid>";
+  Grid grid=new Grid();
+  grid.addColumn("Column1",String.class);
+  grid.addColumn("Column2",String.class);
+  grid.addColumn("Column3",String.class);
+  FooterRow row=grid.appendFooterRow();
+  for (  Column c : grid.getColumns()) {
+    row.getCell(c.getPropertyId()).setHtml(c.getHeaderCaption());
+  }
+  grid.prependFooterRow().join("Column1","Column2","Column3").setHtml("Baz");
+  row=grid.appendFooterRow();
+  row.getCell("Column1").setHtml("Foo");
+  row.join("Column2","Column3").setHtml("Bar");
+  grid.removeHeaderRow(grid.getDefaultHeaderRow());
+  testWrite(design,grid);
+  testRead(design,grid,true);
+}
