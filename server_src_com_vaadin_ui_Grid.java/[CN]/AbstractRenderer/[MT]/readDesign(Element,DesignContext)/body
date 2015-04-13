@@ -14,4 +14,20 @@
   if (attrs.hasKey("selection-mode")) {
     setSelectionMode(DesignAttributeHandler.readAttribute("selection-mode",attrs,SelectionMode.class));
   }
+  if (design.children().size() > 0) {
+    if (design.children().size() > 1 || !design.child(0).tagName().equals("table")) {
+      throw new DesignException("Grid needs to have a table element as its only child");
+    }
+    Element table=design.child(0);
+    Elements colgroups=table.getElementsByTag("colgroup");
+    if (colgroups.size() != 1) {
+      throw new DesignException("Table element in declarative Grid needs to have a" + " colgroup defining the columns used in Grid");
+    }
+    int i=0;
+    for (    Element col : colgroups.get(0).getElementsByTag("col")) {
+      String propertyId=DesignAttributeHandler.readAttribute("property-id",col.attributes(),"property-" + i,String.class);
+      addColumn(propertyId,String.class).readDesign(col,context);
+      ++i;
+    }
+  }
 }
