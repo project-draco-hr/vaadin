@@ -34,6 +34,17 @@
         header.readDesign(child,context);
       }
  else       if (child.tagName().equals("tbody")) {
+        for (        Element row : child.children()) {
+          Elements cells=row.children();
+          Object[] data=new String[cells.size()];
+          for (int c=0; c < cells.size(); ++c) {
+            data[c]=cells.get(c).html();
+          }
+          addRow(data);
+        }
+        for (        Column c : getColumns()) {
+          c.setRenderer(new HtmlRenderer());
+        }
       }
  else       if (child.tagName().equals("tfoot")) {
         footer.readDesign(child,context);
