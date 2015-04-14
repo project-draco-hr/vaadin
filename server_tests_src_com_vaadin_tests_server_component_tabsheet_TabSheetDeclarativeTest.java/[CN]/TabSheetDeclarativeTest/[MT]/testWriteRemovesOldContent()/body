@@ -1,0 +1,19 @@
+{
+  Element design=new Element(Tag.valueOf("v-tab-sheet"),"",new Attributes());
+  design.appendChild(new Element(Tag.valueOf("tab"),"",new Attributes()));
+  design.appendChild(new Element(Tag.valueOf("tab"),"",new Attributes()));
+  design.appendChild(new Element(Tag.valueOf("tab"),"",new Attributes()));
+  TabSheet ts=new TabSheet();
+  ts.setTabIndex(5);
+  ts.addTab(new TextField());
+  Tab tab=ts.getTab(0);
+  tab.setVisible(false);
+  tab.setClosable(true);
+  tab.setEnabled(false);
+  ts.writeDesign(design,new DesignContext());
+  assertEquals("There should be only one child",1,design.children().size());
+  assertEquals("v-text-field",design.child(0).child(0).tagName());
+  assertEquals("5",design.attr("tabindex"));
+  Element tabDesign=design.child(0);
+  assertEquals("false",tabDesign.attr("visible"));
+}
