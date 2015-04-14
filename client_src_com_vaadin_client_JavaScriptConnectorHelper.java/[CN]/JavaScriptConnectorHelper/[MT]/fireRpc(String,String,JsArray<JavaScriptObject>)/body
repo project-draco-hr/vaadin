@@ -7,5 +7,7 @@
   for (int i=0; i < parameters.length; i++) {
     parameters[i]=argumentsArray.get(i);
   }
-  connector.getConnection().addMethodInvocationToQueue(new JavaScriptMethodInvocation(connector.getConnectorId(),iface,method,parameters),false,false);
+  ServerRpcQueue rpcQueue=ServerRpcQueue.get(connector.getConnection());
+  rpcQueue.add(new JavaScriptMethodInvocation(connector.getConnectorId(),iface,method,parameters),false);
+  rpcQueue.flush();
 }

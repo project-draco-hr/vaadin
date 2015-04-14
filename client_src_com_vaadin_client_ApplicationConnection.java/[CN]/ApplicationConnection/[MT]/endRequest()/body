@@ -5,14 +5,14 @@
   hasActiveRequest=false;
   webkitMaybeIgnoringRequests=false;
   if (isApplicationRunning()) {
-    if (sendServerRpcWhenConnectionAvailable) {
+    if (serverRpcQueue.isFlushPending()) {
       sendInvocationsToServer();
     }
     runPostRequestHooks(configuration.getRootPanelId());
   }
   Scheduler.get().scheduleDeferred(new Command(){
     @Override public void execute(){
-      if (!isApplicationRunning() || !(hasActiveRequest() || deferredSendPending)) {
+      if (!isApplicationRunning() || !(hasActiveRequest() || serverRpcQueue.isFlushPending())) {
         getLoadingIndicator().hide();
         extendLiferaySession();
       }

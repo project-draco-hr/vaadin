@@ -1,0 +1,15 @@
+{
+  for (  MethodInvocation invocation : getAll()) {
+    if (isLegacyVariableChange(invocation)) {
+      return true;
+    }
+ else     if (!isJavascriptRpc(invocation)) {
+      Type type=new Type(invocation.getInterfaceName(),null);
+      Method method=type.getMethod(invocation.getMethodName());
+      if (!TypeDataStore.isNoLoadingIndicator(method)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
