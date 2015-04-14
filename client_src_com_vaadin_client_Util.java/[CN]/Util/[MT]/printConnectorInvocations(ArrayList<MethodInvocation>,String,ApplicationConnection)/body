@@ -7,16 +7,6 @@
     getLogger().warning("\t" + id + ": Warning: no corresponding connector for id "+ id);
   }
   for (  MethodInvocation invocation : invocations) {
-    Object[] parameters=invocation.getParameters();
-    String formattedParams=null;
-    if (ApplicationConstants.UPDATE_VARIABLE_METHOD.equals(invocation.getMethodName()) && parameters.length == 2) {
-      Object value=parameters[1];
-      String formattedValue=value instanceof ServerConnector ? ((ServerConnector)value).getConnectorId() : String.valueOf(value);
-      formattedParams=parameters[0] + " : " + formattedValue;
-    }
-    if (null == formattedParams) {
-      formattedParams=(null != parameters) ? Arrays.toString(parameters) : null;
-    }
-    getLogger().info("\t\t" + invocation.getInterfaceName() + "."+ invocation.getMethodName()+ "("+ formattedParams+ ")");
+    getLogger().info("\t\t" + getInvocationDebugString(invocation));
   }
 }

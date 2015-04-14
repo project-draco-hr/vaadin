@@ -3,11 +3,16 @@
   JsonArray reqJson=Json.createArray();
   if (!pendingInvocations.isEmpty()) {
     if (ApplicationConfiguration.isDebugMode()) {
-      Util.logVariableBurst(this,pendingInvocations.values());
+      Util.logMethodInvocations(this,pendingInvocations.values());
     }
     for (    MethodInvocation invocation : pendingInvocations.values()) {
+      String connectorId=invocation.getConnectorId();
+      if (!getConnectorMap().connectorExists(connectorId)) {
+        getLogger().info("Not sending RPC for removed connector: " + connectorId + ": "+ Util.getInvocationDebugString(invocation));
+        continue;
+      }
       JsonArray invocationJson=Json.createArray();
-      invocationJson.set(0,invocation.getConnectorId());
+      invocationJson.set(0,connectorId);
       invocationJson.set(1,invocation.getInterfaceName());
       invocationJson.set(2,invocation.getMethodName());
       JsonArray paramJson=Json.createArray();
@@ -40,6 +45,7 @@
     }
     pendingInvocations.clear();
     lastInvocationTag=0;
+    sendServerRpcWhenConnectionAvailable=false;
   }
   String extraParams="";
   if (!getConfiguration().isWidgetsetVersionSent()) {

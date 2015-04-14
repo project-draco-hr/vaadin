@@ -1,14 +1,10 @@
 {
   if (isApplicationRunning()) {
     if (hasActiveRequest() || (push != null && !push.isActive())) {
-      if (pendingInvocations.size() > 0 || pendingBursts.size() == 0) {
-        pendingBursts.add(pendingInvocations);
-        pendingInvocations=new LinkedHashMap<String,MethodInvocation>();
-        lastInvocationTag=0;
-      }
+      sendServerRpcWhenConnectionAvailable=true;
     }
  else {
-      buildAndSendVariableBurst(pendingInvocations);
+      sendInvocationsToServer();
     }
   }
  else {
