@@ -1,5 +1,27 @@
 {
-  URLConnection connection=resourceUrl.openConnection();
+  URLConnection connection=null;
+  InputStream is=null;
+  String urlStr=resourceUrl.toExternalForm();
+  if (allowServePrecompressedResource(request,urlStr)) {
+    URL url=new URL(urlStr + ".gz");
+    connection=url.openConnection();
+    try {
+      is=connection.getInputStream();
+      response.setHeader("Content-Encoding","gzip");
+    }
+ catch (    FileNotFoundException e) {
+    }
+  }
+  if (is == null) {
+    connection=resourceUrl.openConnection();
+    try {
+      is=connection.getInputStream();
+    }
+ catch (    FileNotFoundException e) {
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      return;
+    }
+  }
   try {
     int length=connection.getContentLength();
     if (length >= 0) {
@@ -8,22 +30,10 @@
   }
  catch (  Throwable e) {
   }
-  InputStream is=null;
   try {
-    is=connection.getInputStream();
-    final OutputStream os=response.getOutputStream();
-    final byte buffer[]=new byte[DEFAULT_BUFFER_SIZE];
-    int bytes;
-    while ((bytes=is.read(buffer)) >= 0) {
-      os.write(buffer,0,bytes);
-    }
+    streamContent(response,is);
   }
- catch (  FileNotFoundException e) {
-    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-  }
- finally {
-    if (is != null) {
-      is.close();
-    }
+  finally {
+    is.close();
   }
 }
