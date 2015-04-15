@@ -1,0 +1,32 @@
+{
+  String selector=header ? "> table > thead" : "> table > tfoot";
+  Element elem=design.select(selector).first();
+  if (elem != null) {
+    if (!header) {
+      setFooterVisible(true);
+    }
+    if (elem.children().size() != 1) {
+      throw new DesignException("Table header and footer should contain exactly one <tr> element");
+    }
+    Element tr=elem.child(0);
+    Elements elems=tr.children();
+    Collection<?> propertyIds=visibleColumns;
+    if (elems.size() != propertyIds.size()) {
+      throw new DesignException("Table header and footer should contain as many items as there" + " are columns in the Table.");
+    }
+    Iterator<?> propertyIt=propertyIds.iterator();
+    for (    Element e : elems) {
+      String columnValue=e.html();
+      Object propertyId=propertyIt.next();
+      if (header) {
+        setColumnHeader(propertyId,columnValue);
+        if (e.hasAttr("icon")) {
+          setColumnIcon(propertyId,DesignAttributeHandler.readAttribute("icon",e.attributes(),Resource.class));
+        }
+      }
+ else {
+        setColumnFooter(propertyId,columnValue);
+      }
+    }
+  }
+}

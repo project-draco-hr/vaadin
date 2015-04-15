@@ -1,0 +1,39 @@
+{
+  Element colgroup=design.select("> table > colgroup").first();
+  if (colgroup != null) {
+    int i=0;
+    List<Object> pIds=new ArrayList<Object>();
+    for (    Element col : colgroup.children()) {
+      if (!col.tagName().equals("col")) {
+        throw new DesignException("invalid column");
+      }
+      String id=DesignAttributeHandler.readAttribute("property-id",col.attributes(),"property-" + i++,String.class);
+      pIds.add(id);
+      addContainerProperty(id,String.class,null);
+      if (col.hasAttr("width")) {
+        setColumnWidth(id,DesignAttributeHandler.readAttribute("width",col.attributes(),Integer.class));
+      }
+      if (col.hasAttr("center")) {
+        setColumnAlignment(id,Align.CENTER);
+      }
+ else       if (col.hasAttr("right")) {
+        setColumnAlignment(id,Align.RIGHT);
+      }
+      if (col.hasAttr("expand")) {
+        if (col.attr("expand").isEmpty()) {
+          setColumnExpandRatio(id,1);
+        }
+ else {
+          setColumnExpandRatio(id,DesignAttributeHandler.readAttribute("expand",col.attributes(),float.class));
+        }
+      }
+      if (col.hasAttr("collapsible")) {
+        setColumnCollapsible(id,DesignAttributeHandler.readAttribute("collapsible",col.attributes(),boolean.class));
+      }
+      if (col.hasAttr("collapsed")) {
+        setColumnCollapsed(id,DesignAttributeHandler.readAttribute("collapsed",col.attributes(),boolean.class));
+      }
+    }
+    setVisibleColumns(pIds.toArray());
+  }
+}
