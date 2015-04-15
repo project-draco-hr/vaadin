@@ -1,0 +1,21 @@
+{
+  if (!"option".equals(child.tagName())) {
+    throw new DesignException("Unrecognized child element in " + getClass().getSimpleName() + ": "+ child.tagName());
+  }
+  String itemId;
+  if (child.hasAttr("item-id")) {
+    itemId=child.attr("item-id");
+    addItem(itemId);
+    setItemCaption(itemId,child.html());
+  }
+ else {
+    addItem(itemId=child.html());
+  }
+  if (child.hasAttr("icon")) {
+    setItemIcon(itemId,DesignAttributeHandler.readAttribute("icon",child.attributes(),Resource.class));
+  }
+  if (child.hasAttr("selected")) {
+    selected.add(itemId);
+  }
+  return itemId;
+}

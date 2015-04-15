@@ -1,0 +1,18 @@
+{
+  Set<CELLTYPE> visited=new HashSet<CELLTYPE>();
+  for (  Grid.Column column : section.grid.getColumns()) {
+    CELLTYPE cell=getCell(column.getPropertyId());
+    if (visited.contains(cell)) {
+      continue;
+    }
+    visited.add(cell);
+    Element cellElement=trElement.appendElement(getCellTagName());
+    cell.writeDesign(cellElement,designContext);
+    for (    Entry<Set<CELLTYPE>,CELLTYPE> entry : cellGroups.entrySet()) {
+      if (entry.getValue() == cell) {
+        cellElement.attr("colspan","" + entry.getKey().size());
+        break;
+      }
+    }
+  }
+}

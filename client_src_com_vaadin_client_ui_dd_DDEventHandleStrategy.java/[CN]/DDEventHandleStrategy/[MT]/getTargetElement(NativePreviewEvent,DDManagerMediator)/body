@@ -1,0 +1,19 @@
+{
+  NativeEvent gwtEvent=event.getNativeEvent();
+  Element targetElement;
+  if (WidgetUtil.isTouchEvent(gwtEvent) || mediator.getManager().getDragElement() != null) {
+    int x=WidgetUtil.getTouchOrMouseClientX(gwtEvent);
+    int y=WidgetUtil.getTouchOrMouseClientY(gwtEvent);
+    targetElement=WidgetUtil.getElementFromPoint(x,y);
+  }
+ else {
+    Node targetNode=Node.as(gwtEvent.getEventTarget());
+    if (Element.is(targetNode)) {
+      targetElement=Element.as(targetNode);
+    }
+ else {
+      targetElement=targetNode.getParentElement();
+    }
+  }
+  return targetElement;
+}

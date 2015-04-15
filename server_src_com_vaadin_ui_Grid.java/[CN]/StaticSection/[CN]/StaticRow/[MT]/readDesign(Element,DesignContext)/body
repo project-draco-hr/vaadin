@@ -1,0 +1,23 @@
+{
+  Elements cellElements=trElement.children();
+  int totalColSpans=0;
+  for (int i=0; i < cellElements.size(); ++i) {
+    Element element=cellElements.get(i);
+    if (!element.tagName().equals(getCellTagName())) {
+      throw new DesignException("Unexpected element in tr while expecting " + getCellTagName() + ": "+ element.tagName());
+    }
+    int columnIndex=i + totalColSpans;
+    int colspan=DesignAttributeHandler.readAttribute("colspan",element.attributes(),1,int.class);
+    Set<CELLTYPE> cells=new HashSet<CELLTYPE>();
+    for (int c=0; c < colspan; ++c) {
+      cells.add(getCell(section.grid.getColumns().get(columnIndex + c).getPropertyId()));
+    }
+    if (colspan > 1) {
+      totalColSpans+=colspan - 1;
+      join(cells).readDesign(element,designContext);
+    }
+ else {
+      cells.iterator().next().readDesign(element,designContext);
+    }
+  }
+}

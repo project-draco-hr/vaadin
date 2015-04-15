@@ -1,0 +1,54 @@
+{
+  super.readDesign(design,context);
+  Attributes attrs=design.attributes();
+  if (attrs.hasKey("editable")) {
+    setEditorEnabled(DesignAttributeHandler.readAttribute("editable",attrs,boolean.class));
+  }
+  if (attrs.hasKey("frozen-columns")) {
+    setFrozenColumnCount(DesignAttributeHandler.readAttribute("frozen-columns",attrs,int.class));
+  }
+  if (attrs.hasKey("rows")) {
+    setHeightByRows(DesignAttributeHandler.readAttribute("rows",attrs,double.class));
+    setHeightMode(HeightMode.ROW);
+  }
+  if (attrs.hasKey("selection-mode")) {
+    setSelectionMode(DesignAttributeHandler.readAttribute("selection-mode",attrs,SelectionMode.class));
+  }
+  if (design.children().size() > 0) {
+    if (design.children().size() > 1 || !design.child(0).tagName().equals("table")) {
+      throw new DesignException("Grid needs to have a table element as its only child");
+    }
+    Element table=design.child(0);
+    Elements colgroups=table.getElementsByTag("colgroup");
+    if (colgroups.size() != 1) {
+      throw new DesignException("Table element in declarative Grid needs to have a" + " colgroup defining the columns used in Grid");
+    }
+    int i=0;
+    for (    Element col : colgroups.get(0).getElementsByTag("col")) {
+      String propertyId=DesignAttributeHandler.readAttribute("property-id",col.attributes(),"property-" + i,String.class);
+      addColumn(propertyId,String.class).readDesign(col,context);
+      ++i;
+    }
+    for (    Element child : table.children()) {
+      if (child.tagName().equals("thead")) {
+        header.readDesign(child,context);
+      }
+ else       if (child.tagName().equals("tbody")) {
+        for (        Element row : child.children()) {
+          Elements cells=row.children();
+          Object[] data=new String[cells.size()];
+          for (int c=0; c < cells.size(); ++c) {
+            data[c]=cells.get(c).html();
+          }
+          addRow(data);
+        }
+        for (        Column c : getColumns()) {
+          c.setRenderer(new HtmlRenderer());
+        }
+      }
+ else       if (child.tagName().equals("tfoot")) {
+        footer.readDesign(child,context);
+      }
+    }
+  }
+}

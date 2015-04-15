@@ -1,0 +1,13 @@
+{
+  openTestURL();
+  GridElement grid=$(GridElement.class).first();
+  Assert.assertTrue("Found input in header even though none should exist.",grid.getHeader().findElements(By.tagName("input")).isEmpty());
+  toggleSelectionMode();
+  Assert.assertFalse("Should not be selected after adding",grid.getHeader().findElement(By.tagName("input")).isSelected());
+  grid.getHeader().findElement(By.tagName("input")).click();
+  assertSelectAllChecked("Not selected even though we just clicked selection",grid);
+  toggleFirstName();
+  assertSelectAllChecked("Selection disappeared after removing column",grid);
+  toggleFirstName();
+  assertSelectAllChecked("Selection disappeared after adding column",grid);
+}

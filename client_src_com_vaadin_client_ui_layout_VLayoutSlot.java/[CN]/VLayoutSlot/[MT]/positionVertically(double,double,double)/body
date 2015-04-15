@@ -21,12 +21,7 @@
  else {
     style.clearMarginBottom();
   }
-  if (isRelativeHeight()) {
-    style.setHeight(contentHeight,Unit.PX);
-  }
- else {
-    style.clearHeight();
-  }
+  style.setHeight(contentHeight,Unit.PX);
   double allocatedContentHeight=0;
   if (isRelativeHeight()) {
     String height=getWidget().getElement().getStyle().getHeight();
@@ -34,6 +29,8 @@
     allocatedContentHeight=contentHeight * (percentage / 100);
     reportActualRelativeHeight(Math.round((float)allocatedContentHeight));
   }
+  style.setTop(currentLocation,Unit.PX);
+  double padding=0;
   AlignmentInfo alignment=getAlignment();
   if (!alignment.isTop()) {
     double usedHeight;
@@ -44,11 +41,12 @@
       usedHeight=getUsedHeight();
     }
     if (alignment.isVerticalCenter()) {
-      currentLocation+=(allocatedSpace - usedHeight) / 2d;
+      padding=(allocatedSpace - usedHeight) / 2d;
     }
  else {
-      currentLocation+=(allocatedSpace - usedHeight);
+      padding=(allocatedSpace - usedHeight);
     }
+    padding+=captionHeight;
+    widget.getElement().getStyle().setTop(padding,Unit.PX);
   }
-  style.setTop(currentLocation,Unit.PX);
 }

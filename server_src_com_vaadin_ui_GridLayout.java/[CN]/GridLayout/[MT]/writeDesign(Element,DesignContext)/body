@@ -1,0 +1,103 @@
+{
+  super.writeDesign(design,designContext);
+  GridLayout def=designContext.getDefaultInstance(this);
+  if (components.isEmpty() || !designContext.shouldWriteChildren(this,def)) {
+    return;
+  }
+  final Map<Connector,ChildComponentData> childData=getState().childData;
+  Component[][] componentMap=new Component[getState().rows][getState().columns];
+  final Component dummyComponent=new Label("");
+  for (  Component component : components) {
+    ChildComponentData coords=childData.get(component);
+    for (int row=coords.row1; row <= coords.row2; ++row) {
+      for (int col=coords.column1; col <= coords.column2; ++col) {
+        componentMap[row][col]=component;
+      }
+    }
+  }
+  Set<Connector> visited=new HashSet<Connector>();
+  visited.add(dummyComponent);
+  for (int i=0; i < componentMap.length; ++i) {
+    Element row=design.appendElement("row");
+    DesignAttributeHandler.writeAttribute("expand",row.attributes(),(int)getRowExpandRatio(i),0,int.class);
+    int colspan=1;
+    Element col;
+    for (int j=0; j < componentMap[i].length; ++j) {
+      Component child=componentMap[i][j];
+      if (child != null) {
+        if (visited.contains(child)) {
+          continue;
+        }
+        visited.add(child);
+        Element childElement=designContext.createElement(child);
+        col=row.appendElement("column");
+        ChildComponentData coords=childData.get(child);
+        Alignment alignment=getComponentAlignment(child);
+        if (alignment.isMiddle()) {
+          childElement.attr(":middle","");
+        }
+ else         if (alignment.isBottom()) {
+          childElement.attr(":bottom","");
+        }
+        if (alignment.isCenter()) {
+          childElement.attr(":center","");
+        }
+ else         if (alignment.isRight()) {
+          childElement.attr(":right","");
+        }
+        col.appendChild(childElement);
+        if (coords.row1 != coords.row2) {
+          col.attr("rowspan","" + (1 + coords.row2 - coords.row1));
+        }
+        colspan=1 + coords.column2 - coords.column1;
+        if (colspan > 1) {
+          col.attr("colspan","" + colspan);
+        }
+      }
+ else {
+        boolean hasExpands=false;
+        if (i == 0 && lastComponentOnRow(componentMap[i],j,visited)) {
+          for (int c=j; c < componentMap[i].length; ++c) {
+            if ((int)getColumnExpandRatio(c) > 0) {
+              hasExpands=true;
+            }
+          }
+        }
+        if (lastComponentOnRow(componentMap[i],j,visited) && !hasExpands) {
+          continue;
+        }
+        col=row.appendElement("column");
+        while (j + colspan < componentMap[i].length && componentMap[i][j + colspan] == child) {
+          ++colspan;
+        }
+        int rowspan=getRowSpan(componentMap,i,j,colspan,child);
+        if (colspan > 1) {
+          col.attr("colspan","" + colspan);
+        }
+        if (rowspan > 1) {
+          col.attr("rowspan","" + rowspan);
+        }
+        for (int x=0; x < rowspan; ++x) {
+          for (int y=0; y < colspan; ++y) {
+            componentMap[i + x][j + y]=dummyComponent;
+          }
+        }
+      }
+      if (i == 0) {
+        String expands="";
+        boolean expandRatios=false;
+        for (int c=0; c < colspan; ++c) {
+          int colExpand=(int)getColumnExpandRatio(j + c);
+          if (colExpand > 0) {
+            expandRatios=true;
+          }
+          expands+=(c > 0 ? "," : "") + colExpand;
+        }
+        if (expandRatios) {
+          col.attr("expand",expands);
+        }
+      }
+      j+=colspan - 1;
+    }
+  }
+}

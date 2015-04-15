@@ -9,13 +9,13 @@
       setApplicationRunning(false);
     }
     @Override public void onResponseReceived(    Request request,    Response response){
-      VConsole.log("Server visit took " + String.valueOf((new Date()).getTime() - requestStartTime.getTime()) + "ms");
+      getLogger().info("Server visit took " + String.valueOf((new Date()).getTime() - requestStartTime.getTime()) + "ms");
       int statusCode=response.getStatusCode();
       fireEvent(new ConnectionStatusEvent(statusCode));
 switch (statusCode) {
 case 0:
         if (retry) {
-          VConsole.log("Status code 0, retrying");
+          getLogger().warning("Status code 0, retrying");
           (new Timer(){
             @Override public void run(){
               doUidlRequest(uri,payload,false);
@@ -34,7 +34,7 @@ return;
 case 503:
 String delay=response.getHeader("Retry-After");
 if (delay != null) {
-VConsole.log("503, retrying in " + delay + "msec");
+getLogger().warning("503, retrying in " + delay + "msec");
 (new Timer(){
 @Override public void run(){
   doUidlRequest(uri,payload);
@@ -74,7 +74,7 @@ try {
 doAjaxRequest(uri,payload,requestCallback);
 }
  catch (RequestException e) {
-VConsole.error(e);
+getLogger().log(Level.SEVERE,"Error in server request",e);
 endRequest();
 fireEvent(new ConnectionStatusEvent(0));
 }

@@ -1,18 +1,8 @@
 {
-  super.readDesign(design,designContext);
+  super.readDesign(design,context);
   Set<String> selected=new HashSet<String>();
   for (  Element child : design.children()) {
-    if (!"option".equals(child.nodeName())) {
-      throw new DesignException("Unsupported child element in a select: " + child.nodeName() + ".");
-    }
-    String itemId=child.html();
-    addItem(itemId);
-    if (child.hasAttr("icon")) {
-      setItemIcon(itemId,DesignAttributeHandler.readAttribute("icon",child.attributes(),Resource.class));
-    }
-    if (child.hasAttr("selected")) {
-      selected.add(itemId);
-    }
+    readItem(child,selected,context);
   }
   if (!selected.isEmpty()) {
     if (isMultiSelect()) {

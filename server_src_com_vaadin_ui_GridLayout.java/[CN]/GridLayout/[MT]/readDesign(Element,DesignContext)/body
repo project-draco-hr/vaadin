@@ -1,0 +1,86 @@
+{
+  super.readDesign(design,designContext);
+  Elements rowElements=design.getElementsByTag("row");
+  List<Map<Integer,Component>> rows=new ArrayList<Map<Integer,Component>>();
+  for (int i=0; i < rowElements.size(); ++i) {
+    rows.add(new HashMap<Integer,Component>());
+  }
+  setRows(Math.max(rows.size(),1));
+  List<Integer> columnExpandRatios=new ArrayList<Integer>();
+  for (int row=0; row < rowElements.size(); ++row) {
+    Element rowElement=rowElements.get(row);
+    if (rowElement.hasAttr("expand")) {
+      int expand=DesignAttributeHandler.readAttribute("expand",rowElement.attributes(),int.class);
+      setRowExpandRatio(row,expand);
+    }
+    Elements cols=rowElement.children();
+    int skippedColumns=0;
+    for (int column=0; column < cols.size(); ++column) {
+      while (rows.get(row).containsKey(column + skippedColumns)) {
+        skippedColumns++;
+      }
+      Element col=cols.get(column);
+      Component child=null;
+      if (col.children().size() > 0) {
+        child=designContext.readDesign(col.child(0));
+      }
+      Attributes attr=col.attributes();
+      int colspan=DesignAttributeHandler.readAttribute("colspan",attr,1,int.class);
+      int rowspan=DesignAttributeHandler.readAttribute("rowspan",attr,1,int.class);
+      for (int rowIndex=row; rowIndex < row + rowspan; ++rowIndex) {
+        for (int colIndex=column; colIndex < column + colspan; ++colIndex) {
+          if (rowIndex == rows.size()) {
+            rows.add(new HashMap<Integer,Component>());
+          }
+          rows.get(rowIndex).put(colIndex + skippedColumns,child);
+        }
+      }
+      if (row == 0) {
+        if (col.hasAttr("expand")) {
+          for (          String expand : col.attr("expand").split(",")) {
+            columnExpandRatios.add(Integer.parseInt(expand));
+          }
+        }
+ else {
+          for (int c=0; c < colspan; ++c) {
+            columnExpandRatios.add(0);
+          }
+        }
+      }
+      skippedColumns+=(colspan - 1);
+    }
+  }
+  int colMax=0;
+  for (  Map<Integer,Component> cols : rows) {
+    if (colMax < cols.size()) {
+      colMax=cols.size();
+    }
+  }
+  setColumns(Math.max(colMax,1));
+  for (int i=0; i < columnExpandRatios.size(); ++i) {
+    setColumnExpandRatio(i,columnExpandRatios.get(i));
+  }
+  Set<Component> visited=new HashSet<Component>();
+  visited.add(null);
+  for (int i=0; i < rows.size(); ++i) {
+    Map<Integer,Component> row=rows.get(i);
+    for (int j=0; j < colMax; ++j) {
+      Component child=row.get(j);
+      if (visited.contains(child)) {
+        continue;
+      }
+      visited.add(child);
+      int colspan=0;
+      while (j + colspan + 1 < row.size() && row.get(j + colspan + 1) == child) {
+        ++colspan;
+      }
+      int rowspan=0;
+      while (i + rowspan + 1 < rows.size() && rows.get(i + rowspan + 1).get(j) == child) {
+        ++rowspan;
+      }
+      addComponent(child,j,i,j + colspan,i + rowspan);
+    }
+  }
+  setCursorY(getRows());
+  setCursorX(0);
+}

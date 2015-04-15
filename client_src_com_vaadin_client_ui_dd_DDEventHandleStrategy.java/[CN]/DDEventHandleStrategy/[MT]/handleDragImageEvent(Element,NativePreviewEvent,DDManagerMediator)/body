@@ -1,0 +1,22 @@
+{
+  VDragAndDropManager manager=mediator.getManager();
+switch (event.getTypeInt()) {
+case Event.ONMOUSEOVER:
+case Event.ONMOUSEOUT:
+    return true;
+case Event.ONMOUSEMOVE:
+case Event.ONTOUCHMOVE:
+  VDropHandler findDragTarget=findDragTarget(target,mediator);
+if (findDragTarget != manager.getCurrentDropHandler()) {
+  handleDragLeave(mediator,true);
+  manager.setCurrentDropHandler(findDragTarget);
+  handleDragEnter(target,mediator);
+}
+ else if (findDragTarget != null) {
+  handleDragOver(target,mediator);
+}
+event.getNativeEvent().preventDefault();
+return true;
+}
+return false;
+}

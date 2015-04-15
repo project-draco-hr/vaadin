@@ -4,23 +4,29 @@
   setCustomStyleName(row.getElement(),staticRow.getStyleName());
   for (  FlyweightCell cell : cellsToUpdate) {
     final StaticSection.StaticCell metadata=staticRow.getCell(columns.get(cell.getColumn()));
+    boolean updateCellData=true;
     if (staticRow instanceof HeaderRow) {
       addSortingIndicatorsToHeaderRow((HeaderRow)staticRow,cell);
+      if (isHeaderSelectionColumn(row,cell)) {
+        updateCellData=false;
+      }
     }
     cell.setColSpan(metadata.getColspan());
     TableCellElement element=cell.getElement();
+    if (updateCellData) {
 switch (metadata.getType()) {
 case TEXT:
-      element.setInnerText(metadata.getText());
-    break;
+        element.setInnerText(metadata.getText());
+      break;
 case HTML:
-  element.setInnerHTML(metadata.getHtml());
-break;
+    element.setInnerHTML(metadata.getHtml());
+  break;
 case WIDGET:
 preDetach(row,Arrays.asList(cell));
 element.setInnerHTML("");
 postAttach(row,Arrays.asList(cell));
 break;
+}
 }
 setCustomStyleName(element,metadata.getStyleName());
 cellFocusHandler.updateFocusedCellStyle(cell,container);

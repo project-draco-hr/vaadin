@@ -1,0 +1,25 @@
+{
+  if (getSelectionModel() instanceof SelectionModel.Multi && header.getDefaultRow() != null) {
+    HeaderCell selectionCell=header.getDefaultRow().getCell(this);
+    if (selectionCell.getType().equals(GridStaticCellType.WIDGET) && selectionCell.getWidget() instanceof CheckBox) {
+      return;
+    }
+    final SelectionModel.Multi<T> model=(Multi<T>)getSelectionModel();
+    final CheckBox checkBox=new CheckBox();
+    checkBox.addValueChangeHandler(new ValueChangeHandler<Boolean>(){
+      @Override public void onValueChange(      ValueChangeEvent<Boolean> event){
+        if (event.getValue()) {
+          fireEvent(new SelectAllEvent<T>(model));
+          selected=true;
+        }
+ else {
+          model.deselectAll();
+          selected=false;
+        }
+      }
+    }
+);
+    checkBox.setValue(selected);
+    selectionCell.setWidget(checkBox);
+  }
+}
