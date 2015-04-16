@@ -1,0 +1,22 @@
+{
+  Response response=event.getResponse();
+  int statusCode=response.getStatusCode();
+  if (statusCode == 0) {
+    handleNoConnection(event,retry);
+  }
+ else   if (statusCode == 401) {
+    handleAuthorizationFailed(event);
+  }
+ else   if (statusCode == 503) {
+    handleServiceUnavailable(event);
+  }
+ else   if ((statusCode / 100) == 4) {
+    String msg="UIDL could not be read from server." + " Check servlets mappings. Error code: " + statusCode;
+    handleUnrecoverableCommunicationError(msg,event);
+  }
+ else   if ((statusCode / 100) == 5) {
+    String msg="Server error. Error code: " + statusCode;
+    handleUnrecoverableCommunicationError(msg,event);
+    return;
+  }
+}

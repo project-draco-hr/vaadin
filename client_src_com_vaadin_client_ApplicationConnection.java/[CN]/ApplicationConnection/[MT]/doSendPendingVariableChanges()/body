@@ -1,13 +1,11 @@
 {
-  if (isApplicationRunning()) {
-    if (hasActiveRequest() || (push != null && !push.isActive())) {
-    }
- else {
-      sendInvocationsToServer();
-    }
+  if (!isApplicationRunning()) {
+    getLogger().warning("Trying to send RPC from not yet started or stopped application");
+    return;
+  }
+  if (hasActiveRequest() || (push != null && !push.isActive())) {
   }
  else {
-    getLogger().warning("Trying to send variable changes from not yet started or stopped application");
-    return;
+    sendInvocationsToServer();
   }
 }

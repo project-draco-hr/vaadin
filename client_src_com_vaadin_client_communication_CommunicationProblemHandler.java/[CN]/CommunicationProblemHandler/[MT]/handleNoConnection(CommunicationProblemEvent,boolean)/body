@@ -1,0 +1,14 @@
+{
+  if (retry) {
+    getLogger().warning("Status code 0, retrying");
+    (new Timer(){
+      @Override public void run(){
+        connection.doUidlRequest(event.getUri(),event.getPayload(),false);
+      }
+    }
+).schedule(100);
+  }
+ else {
+    handleUnrecoverableCommunicationError("Invalid status code 0 (server down?)",event);
+  }
+}
