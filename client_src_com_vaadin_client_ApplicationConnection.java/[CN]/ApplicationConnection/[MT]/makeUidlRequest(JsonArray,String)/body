@@ -1,11 +1,12 @@
 {
   startRequest();
   JsonObject payload=Json.createObject();
-  if (!getCsrfToken().equals(ApplicationConstants.CSRF_TOKEN_DEFAULT_VALUE)) {
-    payload.put(ApplicationConstants.CSRF_TOKEN,getCsrfToken());
+  String csrfToken=getServerMessageHandler().getCsrfToken();
+  if (!csrfToken.equals(ApplicationConstants.CSRF_TOKEN_DEFAULT_VALUE)) {
+    payload.put(ApplicationConstants.CSRF_TOKEN,csrfToken);
   }
   payload.put(ApplicationConstants.RPC_INVOCATIONS,reqInvocations);
-  payload.put(ApplicationConstants.SERVER_SYNC_ID,lastSeenServerSyncId);
+  payload.put(ApplicationConstants.SERVER_SYNC_ID,getServerMessageHandler().getLastSeenServerSyncId());
   getLogger().info("Making UIDL Request with params: " + payload.toJson());
   String uri=translateVaadinUri(ApplicationConstants.APP_PROTOCOL_PREFIX + ApplicationConstants.UIDL_PATH + '/');
   if (extraParams != null && extraParams.length() > 0) {
