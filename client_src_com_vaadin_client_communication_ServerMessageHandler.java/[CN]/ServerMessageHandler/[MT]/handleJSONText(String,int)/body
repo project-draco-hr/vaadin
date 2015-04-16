@@ -1,0 +1,24 @@
+{
+  final Date start=new Date();
+  final ValueMap json;
+  try {
+    json=parseJSONResponse(jsonText);
+  }
+ catch (  final Exception e) {
+    getServerCommunicationHandler().endRequest();
+    connection.showCommunicationError(e.getMessage() + " - Original JSON-text:" + jsonText,statusCode);
+    return;
+  }
+  getLogger().info("JSON parsing took " + (new Date().getTime() - start.getTime()) + "ms");
+  if (connection.getState() == State.RUNNING) {
+    handleUIDLMessage(start,jsonText,json);
+  }
+ else   if (connection.getState() == State.INITIALIZING) {
+    connection.setApplicationRunning(true);
+    connection.handleWhenCSSLoaded(jsonText,json);
+  }
+ else {
+    getLogger().warning("Ignored received message because application has already been stopped");
+    return;
+  }
+}

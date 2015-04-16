@@ -1,0 +1,20 @@
+{
+  startRequest();
+  JsonObject payload=Json.createObject();
+  String csrfToken=getServerMessageHandler().getCsrfToken();
+  if (!csrfToken.equals(ApplicationConstants.CSRF_TOKEN_DEFAULT_VALUE)) {
+    payload.put(ApplicationConstants.CSRF_TOKEN,csrfToken);
+  }
+  payload.put(ApplicationConstants.RPC_INVOCATIONS,reqInvocations);
+  payload.put(ApplicationConstants.SERVER_SYNC_ID,getServerMessageHandler().getLastSeenServerSyncId());
+  getLogger().info("Making UIDL Request with params: " + payload.toJson());
+  String uri=connection.translateVaadinUri(ApplicationConstants.APP_PROTOCOL_PREFIX + ApplicationConstants.UIDL_PATH + '/');
+  if (extraParams.equals(connection.getRepaintAllParameters())) {
+    payload.put(ApplicationConstants.RESYNCHRONIZE_ID,true);
+  }
+ else {
+    uri=SharedUtil.addGetParameters(uri,extraParams);
+  }
+  uri=SharedUtil.addGetParameters(uri,UIConstants.UI_ID_PARAMETER + "=" + connection.getConfiguration().getUIId());
+  doUidlRequest(uri,payload,true);
+}
