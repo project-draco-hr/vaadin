@@ -1,0 +1,15 @@
+{
+  openTestURL();
+  final String initialUrl=driver.getCurrentUrl();
+  for (int i=0; i < 2; i++) {
+    WebElement button=$(ButtonElement.class).first();
+    button.click();
+    waitForElementPresent(By.id(NavigatorListenerModifiesListeners.LABEL_ANOTHERVIEW_ID));
+    String currentUrl=driver.getCurrentUrl();
+    assertEquals("Current URL should be equal to another view URL",initialUrl.replace(NavigatorListenerModifiesListeners.MainView.NAME,NavigatorListenerModifiesListeners.AnotherView.NAME),currentUrl);
+    driver.navigate().back();
+    waitForElementPresent(By.id(NavigatorListenerModifiesListeners.LABEL_MAINVIEW_ID));
+    currentUrl=driver.getCurrentUrl();
+    assertEquals("Current URL should be equal to the initial view URL",initialUrl,currentUrl);
+  }
+}

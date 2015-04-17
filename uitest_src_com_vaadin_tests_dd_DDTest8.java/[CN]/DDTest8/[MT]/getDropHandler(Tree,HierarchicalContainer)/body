@@ -1,0 +1,72 @@
+{
+  return new DropHandler(){
+    @SuppressWarnings({"unused","unchecked"}) private void populateSubTree(    HierarchicalContainer idx,    HierarchicalContainer subtree,    Object itemId){
+      Collection<?> children=subtree.getChildren(itemId);
+      if (children != null) {
+        for (        Object childId : children) {
+          Item addItem=idx.addItem(childId);
+          if (addItem != null) {
+            Item item=subtree.getItem(itemId);
+            Collection<?> itemPropertyIds=item.getItemPropertyIds();
+            for (            Object propId : itemPropertyIds) {
+              addItem.getItemProperty(propId).setValue(item.getItemProperty(propId).getValue());
+            }
+          }
+          idx.setParent(childId,itemId);
+          populateSubTree(idx,subtree,childId);
+        }
+      }
+    }
+    @SuppressWarnings("unused") private HierarchicalContainer getSubTree(    HierarchicalContainer idx,    Object itemId){
+      HierarchicalContainer hierarchicalContainer=new HierarchicalContainer();
+      Collection<?> containerPropertyIds=idx.getContainerPropertyIds();
+      for (      Object object : containerPropertyIds) {
+        hierarchicalContainer.addContainerProperty(object,idx.getType(object),null);
+      }
+      hierarchicalContainer.addItem(itemId);
+      copyChildren(idx,hierarchicalContainer,itemId);
+      return hierarchicalContainer;
+    }
+    @SuppressWarnings("unchecked") private void copyChildren(    HierarchicalContainer source,    HierarchicalContainer target,    Object itemId){
+      Collection<?> children=source.getChildren(itemId);
+      if (children != null) {
+        for (        Object childId : children) {
+          Item item=source.getItem(childId);
+          Item addedItem=target.addItem(childId);
+          target.setParent(childId,itemId);
+          Collection<?> itemPropertyIds=item.getItemPropertyIds();
+          for (          Object propertyId : itemPropertyIds) {
+            addedItem.getItemProperty(propertyId).setValue(item.getItemProperty(propertyId).getValue());
+          }
+          copyChildren(source,target,childId);
+        }
+      }
+    }
+    @Override public void drop(    DragAndDropEvent event){
+      TreeTargetDetails details=(TreeTargetDetails)event.getTargetDetails();
+      Transferable transferable=event.getTransferable();
+      if (transferable instanceof DataBoundTransferable) {
+        DataBoundTransferable transferrable2=(DataBoundTransferable)transferable;
+        Object itemId=transferrable2.getItemId();
+        Object itemIdOver=details.getItemIdOver();
+        Object itemIdInto=details.getItemIdInto();
+        VerticalDropLocation dropLocation=details.getDropLocation();
+        Object itemIdAfter=details.getItemIdAfter();
+        if (itemIdOver.equals(itemIdInto)) {
+          container.setParent(itemId,itemIdOver);
+          return;
+        }
+        container.setParent(itemId,itemIdInto);
+        if (dropLocation == null) {
+          System.err.println("No detail of drop place available");
+        }
+        container.moveAfterSibling(itemId,itemIdAfter);
+      }
+      return;
+    }
+    @Override public AcceptCriterion getAcceptCriterion(){
+      return new Or(new AbstractSelect.TargetItemIs(tree,"Foo","Bar"),new AbstractSelect.AcceptItem(tree,"Foo"),tree.new TargetInSubtree("Bar5"));
+    }
+  }
+;
+}

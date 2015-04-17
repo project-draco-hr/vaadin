@@ -1,0 +1,36 @@
+{
+  Class<?> clazz=getClass();
+  if (clazz.isAnnotationPresent(DeclarativeUI.class)) {
+    try {
+      component=readDesign();
+    }
+ catch (    Exception e1) {
+      getLogger().log(Level.SEVERE,"Error reading design",e1);
+      return;
+    }
+    addComponent(component);
+    Method[] methods=clazz.getMethods();
+    for (    Method m : methods) {
+      if (m.isAnnotationPresent(OnLoad.class)) {
+        try {
+          m.invoke(this,(Object[])null);
+        }
+ catch (        IllegalAccessException e) {
+          getLogger().log(Level.SEVERE,"Error invoking @OnLoad method",e);
+          return;
+        }
+catch (        IllegalArgumentException e) {
+          getLogger().log(Level.SEVERE,"Error invoking @OnLoad method",e);
+          return;
+        }
+catch (        InvocationTargetException e) {
+          getLogger().log(Level.SEVERE,"Error invoking @OnLoad method",e);
+          return;
+        }
+      }
+    }
+  }
+ else {
+    throw new IllegalStateException("Cannot find declarative UI annotation");
+  }
+}
