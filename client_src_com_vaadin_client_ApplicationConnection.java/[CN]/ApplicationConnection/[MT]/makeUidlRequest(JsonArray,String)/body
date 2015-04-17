@@ -9,7 +9,12 @@
   getLogger().info("Making UIDL Request with params: " + payload.toJson());
   String uri=translateVaadinUri(ApplicationConstants.APP_PROTOCOL_PREFIX + ApplicationConstants.UIDL_PATH + '/');
   if (extraParams != null && extraParams.length() > 0) {
-    uri=SharedUtil.addGetParameters(uri,extraParams);
+    if (extraParams.equals(getRepaintAllParameters())) {
+      payload.put(ApplicationConstants.RESYNCHRONIZE_ID,true);
+    }
+ else {
+      uri=SharedUtil.addGetParameters(uri,extraParams);
+    }
   }
   uri=SharedUtil.addGetParameters(uri,UIConstants.UI_ID_PARAMETER + "=" + configuration.getUIId());
   doUidlRequest(uri,payload);
