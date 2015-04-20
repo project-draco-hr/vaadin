@@ -6,16 +6,21 @@
   }
  catch (  final Exception e) {
     getServerCommunicationHandler().endRequest();
-    connection.showCommunicationError(e.getMessage() + " - Original JSON-text:" + jsonText,statusCode);
+    connection.showCommunicationError(e.getMessage() + " - Original JSON-text:" + jsonText,200);
     return;
   }
   getLogger().info("JSON parsing took " + (new Date().getTime() - start.getTime()) + "ms");
   if (connection.getState() == State.RUNNING) {
-    handleUIDLMessage(start,jsonText,json);
+    handleJSON(json);
   }
  else   if (connection.getState() == State.INITIALIZING) {
     connection.setApplicationRunning(true);
-    connection.handleWhenCSSLoaded(jsonText,json);
+    connection.executeWhenCSSLoaded(new Command(){
+      @Override public void execute(){
+        handleJSON(json);
+      }
+    }
+);
   }
  else {
     getLogger().warning("Ignored received message because application has already been stopped");

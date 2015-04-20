@@ -1,29 +1,11 @@
 {
-  ServerRpcQueue serverRpcQueue=getServerRpcQueue();
-  if (serverRpcQueue.isEmpty()) {
+  if (!connection.isApplicationRunning()) {
+    getLogger().warning("Trying to send RPC from not yet started or stopped application");
     return;
   }
-  if (ApplicationConfiguration.isDebugMode()) {
-    Util.logMethodInvocations(connection,serverRpcQueue.getAll());
+  if (hasActiveRequest() || (push != null && !push.isActive())) {
   }
-  boolean showLoadingIndicator=serverRpcQueue.showLoadingIndicator();
-  JsonArray reqJson=serverRpcQueue.toJson();
-  serverRpcQueue.clear();
-  if (reqJson.length() == 0) {
-    getLogger().warning("All RPCs filtered out, not sending anything to the server");
-    return;
+ else {
+    doSendInvocationsToServer();
   }
-  String extraParams="";
-  if (!connection.getConfiguration().isWidgetsetVersionSent()) {
-    if (!extraParams.isEmpty()) {
-      extraParams+="&";
-    }
-    String widgetsetVersion=Version.getFullVersion();
-    extraParams+="v-wsver=" + widgetsetVersion;
-    connection.getConfiguration().setWidgetsetVersionSent();
-  }
-  if (showLoadingIndicator) {
-    connection.getLoadingIndicator().trigger();
-  }
-  makeUidlRequest(reqJson,extraParams);
 }
