@@ -1,0 +1,18 @@
+{
+  int status=response.getStatusCode();
+  int interval=connection.getHeartbeat().getInterval();
+  if (status == 0) {
+    getLogger().warning("Failed sending heartbeat, server is unreachable, retrying in " + interval + "secs.");
+  }
+ else   if (status == Response.SC_GONE) {
+    connection.showSessionExpiredError(null);
+    return false;
+  }
+ else   if (status >= 500) {
+    getLogger().warning("Failed sending heartbeat, see server logs, retrying in " + interval + "secs.");
+  }
+ else {
+    getLogger().warning("Failed sending heartbeat to server. Error code: " + status);
+  }
+  return true;
+}
