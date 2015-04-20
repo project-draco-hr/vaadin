@@ -6,7 +6,10 @@
     @Override public void onResponseReceived(    Request request,    Response response){
       getLogger().info("Server visit took " + String.valueOf((new Date()).getTime() - requestStartTime.getTime()) + "ms");
       int statusCode=response.getStatusCode();
-      if (statusCode != 200) {
+      if (statusCode == 200) {
+        getCommunicationProblemHandler().xhrOk();
+      }
+ else {
         CommunicationProblemEvent problemEvent=new CommunicationProblemEvent(request,uri,payload,response);
         getCommunicationProblemHandler().xhrInvalidStatusCode(problemEvent,retry);
         return;
