@@ -1,0 +1,35 @@
+{
+  String transport=request.getParameter("transport");
+  if ("websocket".equalsIgnoreCase(transport)) {
+    getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
+    getPushConfiguration().setTransport(Transport.WEBSOCKET);
+    log("Using websocket");
+  }
+ else   if ("long-polling".equalsIgnoreCase(transport)) {
+    getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
+    getPushConfiguration().setTransport(Transport.LONG_POLLING);
+    log("Using long-polling");
+  }
+ else {
+    log("Using XHR");
+  }
+  addComponent(createTemporaryResponseCodeSetters("UIDL",uidlResponse));
+  addComponent(createTemporaryResponseCodeSetters("Heartbeat",heartbeatResponse));
+  addComponent(new Button("Do it",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      if (uidlResponse.code != null && uidlResponse.code != 200) {
+        getServlet().setUIDLResponseCode(uidlResponse.code,uidlResponse.time);
+      }
+      if (heartbeatResponse.code != null && heartbeatResponse.code != 200) {
+        getServlet().setHeartbeatResponseCode(heartbeatResponse.code,heartbeatResponse.time);
+      }
+    }
+  }
+));
+  addComponent(new Button("Say hello",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      log("Hello");
+    }
+  }
+));
+}

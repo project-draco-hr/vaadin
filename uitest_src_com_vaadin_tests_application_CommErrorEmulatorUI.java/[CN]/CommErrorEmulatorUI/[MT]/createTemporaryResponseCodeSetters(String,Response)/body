@@ -1,0 +1,30 @@
+{
+  HorizontalLayout hl=new HorizontalLayout();
+  hl.setSpacing(true);
+  hl.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+  Label l1=new Label("Respond to " + type + " requests with code");
+  final TextField responseCode=new TextField(null,"" + response.code);
+  responseCode.setConverter(Integer.class);
+  responseCode.setWidth("5em");
+  Label l2=new Label("for the following");
+  final TextField timeField=new TextField(null,"" + response.time);
+  timeField.setConverter(Integer.class);
+  timeField.setWidth("5em");
+  Label l3=new Label("seconds");
+  responseCode.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      Integer code=(Integer)responseCode.getConvertedValue();
+      response.code=code;
+    }
+  }
+);
+  timeField.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      Integer time=(Integer)timeField.getConvertedValue();
+      response.time=time;
+    }
+  }
+);
+  hl.addComponents(l1,responseCode,l2,timeField,l3);
+  return hl;
+}
