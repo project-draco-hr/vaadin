@@ -1,0 +1,22 @@
+{
+  getLogger().info("Server visit took " + String.valueOf((new Date()).getTime() - requestStartTime.getTime()) + "ms");
+  int statusCode=response.getStatusCode();
+  if (statusCode != 200) {
+    CommunicationProblemEvent problemEvent=new CommunicationProblemEvent(request,payload,response);
+    getCommunicationProblemHandler().xhrInvalidStatusCode(problemEvent);
+    return;
+  }
+  String contentType=response.getHeader("Content-Type");
+  if (contentType == null || !contentType.startsWith("application/json")) {
+    getCommunicationProblemHandler().xhrInvalidContent(new CommunicationProblemEvent(request,payload,response));
+    return;
+  }
+  String responseText=response.getText();
+  if (!responseText.startsWith(ServerCommunicationHandler.JSON_COMMUNICATION_PREFIX)) {
+    getCommunicationProblemHandler().xhrInvalidContent(new CommunicationProblemEvent(request,payload,response));
+    return;
+  }
+  final String jsonText=responseText.substring(ServerCommunicationHandler.JSON_COMMUNICATION_PREFIX.length(),responseText.length() - ServerCommunicationHandler.JSON_COMMUNICATION_SUFFIX.length());
+  getCommunicationProblemHandler().xhrOk();
+  getServerMessageHandler().handleMessage(jsonText);
+}
