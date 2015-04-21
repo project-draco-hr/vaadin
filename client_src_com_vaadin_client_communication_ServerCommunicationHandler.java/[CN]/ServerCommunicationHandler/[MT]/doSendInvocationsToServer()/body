@@ -13,17 +13,13 @@
     getLogger().warning("All RPCs filtered out, not sending anything to the server");
     return;
   }
-  String extraParams="";
+  JsonObject extraJson=Json.createObject();
   if (!connection.getConfiguration().isWidgetsetVersionSent()) {
-    if (!extraParams.isEmpty()) {
-      extraParams+="&";
-    }
-    String widgetsetVersion=Version.getFullVersion();
-    extraParams+="v-wsver=" + widgetsetVersion;
+    extraJson.put(ApplicationConstants.WIDGETSET_VERSION_ID,Version.getFullVersion());
     connection.getConfiguration().setWidgetsetVersionSent();
   }
   if (showLoadingIndicator) {
     connection.getLoadingIndicator().trigger();
   }
-  makeUidlRequest(reqJson,extraParams);
+  send(reqJson,extraJson);
 }

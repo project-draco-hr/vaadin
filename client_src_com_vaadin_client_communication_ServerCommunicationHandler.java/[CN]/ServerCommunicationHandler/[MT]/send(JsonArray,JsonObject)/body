@@ -9,13 +9,12 @@
   payload.put(ApplicationConstants.SERVER_SYNC_ID,getServerMessageHandler().getLastSeenServerSyncId());
   payload.put(ApplicationConstants.CLIENT_TO_SERVER_ID,clientToServerMessageId++);
   getLogger().info("Making UIDL Request with params: " + payload.toJson());
+  if (extraJson != null) {
+    for (    String key : extraJson.keys()) {
+      payload.put(key,extraJson.get(key));
+    }
+  }
   String uri=connection.translateVaadinUri(ApplicationConstants.APP_PROTOCOL_PREFIX + ApplicationConstants.UIDL_PATH + '/');
-  if (extraParams.equals(REPAINT_ALL_PARAMETER)) {
-    payload.put(ApplicationConstants.RESYNCHRONIZE_ID,true);
-  }
- else {
-    uri=SharedUtil.addGetParameters(uri,extraParams);
-  }
   uri=SharedUtil.addGetParameters(uri,UIConstants.UI_ID_PARAMETER + "=" + connection.getConfiguration().getUIId());
   doUidlRequest(uri,payload,true);
 }
