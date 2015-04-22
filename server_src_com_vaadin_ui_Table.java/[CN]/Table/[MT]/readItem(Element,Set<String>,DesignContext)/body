@@ -1,0 +1,15 @@
+{
+  Elements cells=tr.children();
+  if (visibleColumns.size() != cells.size()) {
+    throw new DesignException("Wrong number of columns in a Table row. Expected " + visibleColumns.size() + ", was "+ cells.size()+ ".");
+  }
+  Object[] data=new String[cells.size()];
+  for (int c=0; c < cells.size(); ++c) {
+    data[c]=cells.get(c).html();
+  }
+  Object itemId=addItem(data,tr.hasAttr("item-id") ? tr.attr("item-id") : null);
+  if (itemId == null) {
+    throw new DesignException("Failed to add a Table row: " + data);
+  }
+  return itemId;
+}

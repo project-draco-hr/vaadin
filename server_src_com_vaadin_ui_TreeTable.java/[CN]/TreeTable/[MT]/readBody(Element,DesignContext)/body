@@ -1,0 +1,24 @@
+{
+  Element tbody=design.select("> table > tbody").first();
+  if (tbody == null) {
+    return;
+  }
+  Set<String> selected=new HashSet<String>();
+  Stack<Object> parents=new Stack<Object>();
+  int lastDepth=-1;
+  for (  Element tr : tbody.children()) {
+    int depth=DesignAttributeHandler.readAttribute("depth",tr.attributes(),0,int.class);
+    if (depth < 0 || depth > lastDepth + 1) {
+      throw new DesignException("Malformed TreeTable item hierarchy at " + tr + ": last depth was "+ lastDepth);
+    }
+ else     if (depth <= lastDepth) {
+      for (int d=depth; d <= lastDepth; d++) {
+        parents.pop();
+      }
+    }
+    Object itemId=readItem(tr,selected,context);
+    setParent(itemId,!parents.isEmpty() ? parents.peek() : null);
+    parents.push(itemId);
+    lastDepth=depth;
+  }
+}
