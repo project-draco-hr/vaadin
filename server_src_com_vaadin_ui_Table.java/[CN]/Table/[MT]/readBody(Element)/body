@@ -1,0 +1,19 @@
+{
+  Element tbody=design.select("> table > tbody").first();
+  if (tbody != null) {
+    for (    Element row : tbody.children()) {
+      Elements cells=row.children();
+      if (visibleColumns.size() != cells.size()) {
+        throw new DesignException("Wrong number of columns in a row of a Table. Expected " + visibleColumns.size() + ", was "+ cells.size()+ ".");
+      }
+      Object[] data=new String[cells.size()];
+      for (int c=0; c < cells.size(); ++c) {
+        data[c]=cells.get(c).html();
+      }
+      Object itemId=addItem(data,null);
+      if (itemId == null) {
+        throw new DesignException("A row of a Table could not be read");
+      }
+    }
+  }
+}
