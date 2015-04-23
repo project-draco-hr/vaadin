@@ -1,0 +1,11 @@
+{
+  Iterator<PendingUIDLMessage> i=pendingUIDLMessages.iterator();
+  while (i.hasNext()) {
+    PendingUIDLMessage m=i.next();
+    int serverId=getServerId(m.json);
+    if (serverId != -1 && serverId < getExpectedServerId()) {
+      getLogger().info("Removing old message with id " + serverId);
+      i.remove();
+    }
+  }
+}
