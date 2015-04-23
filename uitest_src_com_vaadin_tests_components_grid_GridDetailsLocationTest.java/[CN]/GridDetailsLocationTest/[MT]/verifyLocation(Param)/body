@@ -1,0 +1,14 @@
+{
+  Assert.assertFalse("Notification was present",isElementPresent(By.className("v-Notification")));
+  TestBenchElement headerRow=getGrid().getHeaderRow(0);
+  final int topBoundary=headerRow.getLocation().getX() + headerRow.getSize().height;
+  final int bottomBoundary=getGrid().getLocation().getX() + getGrid().getSize().getHeight() - getHorizontalScrollbar().getSize().height;
+  GridRowElement row=getGrid().getRow(param.getRowIndex());
+  final int rowTop=row.getLocation().getX();
+  waitForDetailsVisible();
+  WebElement details=getDetailsElement();
+  final int detailsBottom=details.getLocation().getX() + details.getSize().getHeight();
+  assertGreaterOrEqual("Row top should be inside grid, gridTop:" + topBoundary + " rowTop"+ rowTop,topBoundary,rowTop);
+  assertLessThanOrEqual("Decorator bottom should be inside grid, gridBottom:" + bottomBoundary + " decoratorBotton:"+ detailsBottom,detailsBottom,bottomBoundary);
+  Assert.assertFalse("Notification was present",isElementPresent(By.className("v-Notification")));
+}
