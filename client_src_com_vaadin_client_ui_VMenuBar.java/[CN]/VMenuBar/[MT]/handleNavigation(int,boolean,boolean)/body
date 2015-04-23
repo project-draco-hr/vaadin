@@ -160,12 +160,18 @@
       openMenuAndFocusFirstIfPossible(getSelected());
     }
  else {
-      Command command=getSelected().getCommand();
-      if (command != null) {
-        command.execute();
-      }
+      final Command command=getSelected().getCommand();
       setSelected(null);
       hideParents(true);
+      menuVisible=false;
+      Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+        @Override public void execute(){
+          if (command != null) {
+            command.execute();
+          }
+        }
+      }
+);
     }
   }
   return false;
