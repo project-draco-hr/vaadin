@@ -1,7 +1,7 @@
 {
   UI uI=session.getService().findUI(request);
   if (uI == null) {
-    response.getWriter().write(getUINotFoundErrorJSON(session.getService(),request));
+    UIInitHandler.commitJsonResponse(request,response,getUINotFoundErrorJSON(session.getService(),request));
     return true;
   }
   checkWidgetsetVersion(request);
@@ -17,12 +17,12 @@
   }
  catch (  JsonException e) {
     getLogger().log(Level.SEVERE,"Error writing JSON to response",e);
-    response.getWriter().write(VaadinService.createCriticalNotificationJSON(null,null,null,null));
+    writeRefresh(request,response);
     return true;
   }
 catch (  InvalidUIDLSecurityKeyException e) {
     getLogger().log(Level.WARNING,"Invalid security key received from {0}",request.getRemoteHost());
-    response.getWriter().write(VaadinService.createCriticalNotificationJSON(null,null,null,null));
+    writeRefresh(request,response);
     return true;
   }
  finally {
