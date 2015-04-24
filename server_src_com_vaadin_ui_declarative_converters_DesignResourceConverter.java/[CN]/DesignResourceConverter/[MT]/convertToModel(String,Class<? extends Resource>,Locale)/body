@@ -1,14 +1,13 @@
 {
-  if (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("ftp://")|| value.startsWith("ftps://")) {
-    return new ExternalResource(value);
+  if (!value.contains("://")) {
+    value="file://" + value;
   }
- else   if (value.startsWith("theme://")) {
-    return new ThemeResource(value.substring(8));
+  String protocol=value.split("://")[0];
+  try {
+    ResourceConverterByProtocol converter=ResourceConverterByProtocol.valueOf(protocol.toUpperCase(Locale.ENGLISH));
+    return converter.parse(value);
   }
- else   if (value.startsWith("font://")) {
-    return FontAwesome.valueOf(value.substring(7));
-  }
- else {
-    return new FileResource(new File(value));
+ catch (  IllegalArgumentException iae) {
+    throw new ConversionException("Unrecognized protocol: " + protocol,iae);
   }
 }

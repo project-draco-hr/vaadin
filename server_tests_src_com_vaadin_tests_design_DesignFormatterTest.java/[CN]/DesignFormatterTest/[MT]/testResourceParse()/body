@@ -1,0 +1,16 @@
+{
+  String httpUrl="http://example.com/icon.png";
+  String httpsUrl="https://example.com/icon.png";
+  String themePath="icons/icon.png";
+  String fontAwesomeUrl="fonticon://FontAwesome/0xf0f9";
+  String someOtherFont="fonticon://SomeOther/0xF0F9";
+  String fontAwesomeUrlOld="font://AMBULANCE";
+  String fileSystemPath="c:\\app\\resources\\icon.png";
+  assertEquals(new ExternalResource(httpUrl).getURL(),formatter.parse(httpUrl,ExternalResource.class).getURL());
+  assertEquals(new ExternalResource(httpsUrl).getURL(),formatter.parse(httpsUrl,ExternalResource.class).getURL());
+  assertEquals(new ThemeResource(themePath),formatter.parse(ApplicationConstants.THEME_PROTOCOL_PREFIX + themePath,ThemeResource.class));
+  assertEquals(FontAwesome.AMBULANCE,formatter.parse(fontAwesomeUrlOld,FontAwesome.class));
+  assertEquals(FontAwesome.AMBULANCE,formatter.parse(fontAwesomeUrl,FontAwesome.class));
+  assertEquals(new GenericFontIcon("SomeOther",0xF0F9),formatter.parse(someOtherFont,FontIcon.class));
+  assertEquals(new FileResource(new File(fileSystemPath)).getSourceFile(),formatter.parse(fileSystemPath,FileResource.class).getSourceFile());
+}
