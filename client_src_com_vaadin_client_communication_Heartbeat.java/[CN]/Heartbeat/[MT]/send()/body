@@ -4,7 +4,6 @@
   final RequestCallback callback=new RequestCallback(){
     @Override public void onResponseReceived(    Request request,    Response response){
       int status=response.getStatusCode();
-      connection.fireEvent(new ConnectionStatusEvent(status));
       if (status == Response.SC_OK) {
         getLogger().fine("Heartbeat response OK");
       }
@@ -25,7 +24,6 @@
     }
     @Override public void onError(    Request request,    Throwable exception){
       getLogger().severe("Exception sending heartbeat: " + exception.getMessage());
-      connection.fireEvent(new ConnectionStatusEvent(0));
       schedule();
     }
   }
