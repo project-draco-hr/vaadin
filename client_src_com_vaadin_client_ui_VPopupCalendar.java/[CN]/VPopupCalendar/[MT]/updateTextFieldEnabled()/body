@@ -1,0 +1,27 @@
+{
+  boolean reallyEnabled=isEnabled() && isTextFieldEnabled();
+  if (BrowserInfo.get().isIE()) {
+    if (!reallyEnabled) {
+      text.getElement().setAttribute("unselectable","on");
+      text.getElement().setAttribute("readonly","");
+      text.setTabIndex(-2);
+    }
+ else     if (reallyEnabled && text.getElement().hasAttribute("unselectable")) {
+      text.getElement().removeAttribute("unselectable");
+      text.getElement().removeAttribute("readonly");
+      text.setTabIndex(0);
+    }
+  }
+ else {
+    text.setEnabled(reallyEnabled);
+  }
+  if (reallyEnabled) {
+    calendarToggle.setTabIndex(-1);
+    Roles.getButtonRole().setAriaHiddenState(calendarToggle.getElement(),true);
+  }
+ else {
+    calendarToggle.setTabIndex(0);
+    Roles.getButtonRole().setAriaHiddenState(calendarToggle.getElement(),false);
+  }
+  handleAriaAttributes();
+}
