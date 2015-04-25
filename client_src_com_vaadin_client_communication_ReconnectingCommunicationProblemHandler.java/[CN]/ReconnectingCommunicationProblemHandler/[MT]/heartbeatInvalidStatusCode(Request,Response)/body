@@ -1,8 +1,11 @@
 {
+  int statusCode=response.getStatusCode();
+  getLogger().warning("Heartbeat request returned " + statusCode);
   if (response.getStatusCode() == Response.SC_GONE) {
-    resolveTemporaryError(Type.HEARTBEAT,false);
-    return super.heartbeatInvalidStatusCode(request,response);
+    getConnection().showSessionExpiredError(null);
+    stopApplication();
   }
-  handleTemporaryError(Type.HEARTBEAT,null);
-  return true;
+ else {
+    handleRecoverableError(Type.HEARTBEAT,null);
+  }
 }

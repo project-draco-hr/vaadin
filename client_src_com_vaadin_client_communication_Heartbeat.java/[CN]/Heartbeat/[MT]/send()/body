@@ -4,22 +4,17 @@
   final RequestCallback callback=new RequestCallback(){
     @Override public void onResponseReceived(    Request request,    Response response){
       int status=response.getStatusCode();
-      boolean reschedule=true;
       if (status == Response.SC_OK) {
         connection.getCommunicationProblemHandler().heartbeatOk();
       }
  else {
-        reschedule=connection.getCommunicationProblemHandler().heartbeatInvalidStatusCode(request,response);
+        connection.getCommunicationProblemHandler().heartbeatInvalidStatusCode(request,response);
       }
-      if (reschedule) {
-        schedule();
-      }
+      schedule();
     }
     @Override public void onError(    Request request,    Throwable exception){
-      boolean reschedule=connection.getCommunicationProblemHandler().heartbeatException(request,exception);
-      if (reschedule) {
-        schedule();
-      }
+      connection.getCommunicationProblemHandler().heartbeatException(request,exception);
+      schedule();
     }
   }
 ;

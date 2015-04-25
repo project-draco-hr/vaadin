@@ -1,4 +1,11 @@
 {
   getLogger().warning("xhrInvalidContent");
-  super.xhrInvalidContent(event);
+  String responseText=event.getResponse().getText();
+  MatchResult refreshToken=RegExp.compile(ApplicationConnection.UIDL_REFRESH_TOKEN + "(:\\s*(.*?))?(\\s|$)").exec(responseText);
+  if (refreshToken != null) {
+    WidgetUtil.redirect(refreshToken.getGroup(2));
+  }
+ else {
+    handleUnrecoverableCommunicationError("Invalid JSON response from server: " + responseText,event);
+  }
 }

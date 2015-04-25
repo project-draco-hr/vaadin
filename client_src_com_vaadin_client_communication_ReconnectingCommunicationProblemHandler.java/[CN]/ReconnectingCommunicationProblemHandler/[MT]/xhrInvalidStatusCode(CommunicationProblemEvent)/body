@@ -1,5 +1,13 @@
 {
-  getLogger().info("Server returned " + event.getResponse().getStatusCode() + " for xhr request");
   getLogger().warning("xhrInvalidStatusCode");
-  handleTemporaryError(Type.MESSAGE,event.getPayload());
+  Response response=event.getResponse();
+  int statusCode=response.getStatusCode();
+  getLogger().warning("Server returned " + statusCode + " for xhr");
+  if (statusCode == 401) {
+    handleUnauthorized(event);
+    return;
+  }
+ else {
+    handleRecoverableError(Type.MESSAGE,event.getPayload());
+  }
 }
