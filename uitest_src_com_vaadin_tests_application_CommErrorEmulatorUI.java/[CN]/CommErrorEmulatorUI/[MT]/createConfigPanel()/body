@@ -1,0 +1,46 @@
+{
+  Panel p=new Panel("Reconnect dialog configuration");
+  p.setSizeUndefined();
+  final TextField reconnectDialogMessage=new TextField("Reconnect message");
+  reconnectDialogMessage.setWidth("50em");
+  reconnectDialogMessage.setValue(getState().reconnectDialog.dialogText);
+  reconnectDialogMessage.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      getState().reconnectDialog.dialogText=reconnectDialogMessage.getValue();
+    }
+  }
+);
+  final TextField reconnectDialogGaveUpMessage=new TextField("Reconnect gave up message");
+  reconnectDialogGaveUpMessage.setWidth("50em");
+  reconnectDialogGaveUpMessage.setValue(getState().reconnectDialog.dialogTextGaveUp);
+  reconnectDialogGaveUpMessage.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      getState().reconnectDialog.dialogTextGaveUp=reconnectDialogGaveUpMessage.getValue();
+    }
+  }
+);
+  final TextField reconnectDialogReconnectAttempts=new TextField("Reconnect attempts");
+  reconnectDialogReconnectAttempts.setConverter(Integer.class);
+  reconnectDialogReconnectAttempts.setConvertedValue(getState().reconnectDialog.reconnectAttempts);
+  reconnectDialogReconnectAttempts.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      getState().reconnectDialog.reconnectAttempts=(Integer)reconnectDialogReconnectAttempts.getConvertedValue();
+    }
+  }
+);
+  final TextField reconnectDialogReconnectInterval=new TextField("Reconnect interval (ms)");
+  reconnectDialogReconnectInterval.setConverter(Integer.class);
+  reconnectDialogReconnectInterval.setConvertedValue(getState().reconnectDialog.reconnectInterval);
+  reconnectDialogReconnectInterval.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      getState().reconnectDialog.reconnectInterval=(Integer)reconnectDialogReconnectInterval.getConvertedValue();
+    }
+  }
+);
+  VerticalLayout vl=new VerticalLayout();
+  vl.setMargin(true);
+  vl.setSpacing(true);
+  p.setContent(vl);
+  vl.addComponents(reconnectDialogMessage,reconnectDialogGaveUpMessage,reconnectDialogReconnectAttempts,reconnectDialogReconnectInterval);
+  return p;
+}
