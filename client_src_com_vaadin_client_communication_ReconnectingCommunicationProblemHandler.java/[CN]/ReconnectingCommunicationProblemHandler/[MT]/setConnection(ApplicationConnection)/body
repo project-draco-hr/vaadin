@@ -1,3 +1,14 @@
 {
   this.connection=connection;
+  connection.addHandler(ApplicationStoppedEvent.TYPE,new ApplicationStoppedHandler(){
+    @Override public void onApplicationStopped(    ApplicationStoppedEvent event){
+      if (isReconnecting()) {
+        giveUp();
+      }
+      if (scheduledReconnect != null && scheduledReconnect.isRunning()) {
+        scheduledReconnect.cancel();
+      }
+    }
+  }
+);
 }
