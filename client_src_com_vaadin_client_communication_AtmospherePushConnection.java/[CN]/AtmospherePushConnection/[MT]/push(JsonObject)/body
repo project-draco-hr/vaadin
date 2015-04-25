@@ -1,2 +1,23 @@
 {
+  if (!isBidirectional()) {
+    throw new IllegalStateException("This server to client push connection should not be used to send client to server messages");
+  }
+  if (state == State.CONNECTED) {
+    getLogger().info("Sending push (" + transport + ") message to server: "+ message.toJson());
+    if (transport.equals("websocket")) {
+      FragmentedMessage fragmented=new FragmentedMessage(message.toJson());
+      while (fragmented.hasNextFragment()) {
+        doPush(socket,fragmented.getNextFragment());
+      }
+    }
+ else {
+      doPush(socket,message.toJson());
+    }
+    return;
+  }
+  if (state == State.CONNECT_PENDING) {
+    getCommunicationProblemHandler().pushNotConnected(message);
+    return;
+  }
+  throw new IllegalStateException("Can not push after disconnecting");
 }

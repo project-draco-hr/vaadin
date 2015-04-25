@@ -1,8 +1,12 @@
 {
   String message=response.getResponseBody();
-  if (message.startsWith("for(;;);")) {
-    getLogger().info("Received push message: " + message);
-    message=message.substring(9,message.length() - 1);
-    connection.getServerMessageHandler().handleMessage(message);
+  String json=ServerCommunicationHandler.stripJSONWrapping(message);
+  if (json == null) {
+    getCommunicationProblemHandler().pushInvalidContent(this,message);
+    return;
+  }
+ else {
+    getLogger().info("Received push (" + getTransportType() + ") message: "+ json);
+    connection.getServerMessageHandler().handleMessage(json);
   }
 }
