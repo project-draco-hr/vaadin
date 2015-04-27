@@ -1,0 +1,24 @@
+{
+  final Grid g=getGrid();
+  addComponent(g);
+  g.addSortListener(new SortListener(){
+    private SortDirection oldSortDirection=null;
+    @Override public void sort(    SortEvent event){
+      List<SortOrder> currentSortOrder=new ArrayList<SortOrder>(event.getSortOrder());
+      if (currentSortOrder.size() == 1) {
+        List<SortOrder> newSortOrder=new ArrayList<SortOrder>();
+        SortDirection newSortDirection=oldSortDirection;
+        if (currentSortOrder.get(0).getPropertyId().equals("Name")) {
+          newSortDirection=SortDirection.ASCENDING.equals(oldSortDirection) ? SortDirection.DESCENDING : SortDirection.ASCENDING;
+        }
+        if (newSortDirection != null) {
+          newSortOrder.add(new SortOrder("Name",newSortDirection));
+          newSortOrder.add(new SortOrder("Value",newSortDirection));
+          g.setSortOrder(newSortOrder);
+        }
+        oldSortDirection=newSortDirection;
+      }
+    }
+  }
+);
+}
