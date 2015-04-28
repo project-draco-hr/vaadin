@@ -1,6 +1,6 @@
 {
-  heartbeatResponseCode=responseCode;
-  System.out.println("Responding with " + responseCode + " to heartbeat requests for "+ delay+ "s");
+  heartbeatResponseCode.put(ui,responseCode);
+  System.out.println("Responding with " + responseCode + " to heartbeat requests for "+ ui+ " for the next "+ delay+ "s");
   new Thread(new Runnable(){
     @Override public void run(){
       try {
@@ -10,7 +10,7 @@
         e.printStackTrace();
       }
       System.out.println("Handing heartbeat requests normally again");
-      heartbeatResponseCode=null;
+      heartbeatResponseCode.remove(ui);
     }
   }
 ).start();
