@@ -1,12 +1,11 @@
 {
-  Browser localBrowser;
+  VaadinBrowserFactory factory=new VaadinBrowserFactory();
   try {
-    localBrowser=Browser.valueOf(properties.getProperty(RUN_LOCALLY_PROPERTY).toUpperCase());
+    return factory.create(Browser.valueOf(properties.getProperty(RUN_LOCALLY_PROPERTY).toUpperCase()));
   }
  catch (  Exception e) {
     System.err.println(e.getMessage());
     System.err.println("Falling back to FireFox");
-    localBrowser=Browser.FIREFOX;
   }
-  return localBrowser.getDesiredCapabilities();
+  return factory.create(Browser.FIREFOX);
 }
