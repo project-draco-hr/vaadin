@@ -39,4 +39,22 @@
     }
   }
 ,menupath);
+  String[] scrollToRowMenuPath=new String[menupath.length + 1];
+  System.arraycopy(menupath,0,scrollToRowMenuPath,0,menupath.length);
+  scrollToRowMenuPath[scrollToRowMenuPath.length - 1]="Scroll to...";
+  for (int i=0; i < 100; i+=25) {
+    final int rowIndex=i;
+    addMenuCommand("Row " + i,new ScheduledCommand(){
+      @Override public void execute(){
+        escalator.scrollToRow(rowIndex,ScrollDestination.ANY,0);
+      }
+    }
+,scrollToRowMenuPath);
+  }
+  addMenuCommand("Set 20px default height",new ScheduledCommand(){
+    @Override public void execute(){
+      escalator.getBody().setDefaultRowHeight(20);
+    }
+  }
+,menupath);
 }

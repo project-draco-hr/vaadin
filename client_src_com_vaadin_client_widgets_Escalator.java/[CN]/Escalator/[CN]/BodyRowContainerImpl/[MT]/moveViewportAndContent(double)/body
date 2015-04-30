@@ -1,0 +1,21 @@
+{
+  if (yDelta == 0) {
+    return;
+  }
+  double newTop=tBodyScrollTop + yDelta;
+  verticalScrollbar.setScrollPos(newTop);
+  final double defaultRowHeight=getDefaultRowHeight();
+  double rowPxDelta=yDelta - (yDelta % defaultRowHeight);
+  int rowIndexDelta=(int)(yDelta / defaultRowHeight);
+  if (!WidgetUtil.pixelValuesEqual(rowPxDelta,0)) {
+    Collection<SpacerContainer.SpacerImpl> spacers=spacerContainer.getSpacersAfterPx(tBodyScrollTop,SpacerInclusionStrategy.PARTIAL);
+    for (    SpacerContainer.SpacerImpl spacer : spacers) {
+      spacer.setPositionDiff(0,rowPxDelta);
+      spacer.setRowIndex(spacer.getRow() + rowIndexDelta);
+    }
+    for (    TableRowElement tr : visualRowOrder) {
+      setRowPosition(tr,0,getRowTop(tr) + rowPxDelta);
+    }
+  }
+  setBodyScrollPosition(tBodyScrollLeft,newTop);
+}

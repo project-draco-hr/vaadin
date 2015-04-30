@@ -59,7 +59,9 @@
     grid.getFooterRow(0).getCell(getColumnProperty(col)).setText("Footer " + col);
   }
   for (int col=0; col < COLUMNS; col++) {
-    grid.getColumn(getColumnProperty(col)).setWidth(100 + col * 50);
+    Column column=grid.getColumn(getColumnProperty(col));
+    column.setWidth(100 + col * 50);
+    column.setHidable(isColumnHidableByDefault(col));
   }
   grid.addSortListener(new SortListener(){
     @Override public void sort(    SortEvent event){
@@ -79,6 +81,8 @@
   createEditorActions();
   addHeightActions();
   addFilterActions();
+  addInternalActions();
+  createDetailsActions();
   this.grid=grid;
   return grid;
 }

@@ -4,14 +4,51 @@
     final int index=c;
     createCategory(getColumnProperty(c),"Columns");
     createClickAction("Add / Remove",getColumnProperty(c),new Command<Grid,String>(){
+      boolean wasHidable;
+      boolean wasHidden;
+      String wasColumnHidingToggleCaption;
       @Override public void execute(      Grid grid,      String value,      Object data){
         String columnProperty=getColumnProperty((Integer)data);
-        if (grid.getColumn(columnProperty) == null) {
-          grid.addColumn(columnProperty);
+        Column column=grid.getColumn(columnProperty);
+        if (column == null) {
+          column=grid.addColumn(columnProperty);
+          column.setHidable(wasHidable);
+          column.setHidden(wasHidden);
+          column.setHidingToggleCaption(wasColumnHidingToggleCaption);
         }
  else {
+          wasHidable=column.isHidable();
+          wasHidden=column.isHidden();
+          wasColumnHidingToggleCaption=column.getHidingToggleCaption();
           grid.removeColumn(columnProperty);
         }
+      }
+    }
+,null,c);
+    createClickAction("Move left",getColumnProperty(c),new Command<Grid,String>(){
+      @Override public void execute(      Grid grid,      String value,      Object data){
+        final String columnProperty=getColumnProperty((Integer)data);
+        List<Column> cols=grid.getColumns();
+        List<Object> reordered=new ArrayList<Object>();
+        boolean addAsLast=false;
+        for (int i=0; i < cols.size(); i++) {
+          Column col=cols.get(i);
+          if (col.getPropertyId().equals(columnProperty)) {
+            if (i == 0) {
+              addAsLast=true;
+            }
+ else {
+              reordered.add(i - 1,columnProperty);
+            }
+          }
+ else {
+            reordered.add(col.getPropertyId());
+          }
+        }
+        if (addAsLast) {
+          reordered.add(columnProperty);
+        }
+        grid.setColumnOrder(reordered.toArray());
       }
     }
 ,null,c);
@@ -23,6 +60,26 @@
       }
     }
 ,c);
+    createBooleanAction("Hidable",getColumnProperty(c),isColumnHidableByDefault(c),new Command<Grid,Boolean>(){
+      @Override public void execute(      Grid c,      Boolean hidable,      Object propertyId){
+        grid.getColumn(propertyId).setHidable(hidable);
+      }
+    }
+,getColumnProperty(c));
+    createBooleanAction("Hidden",getColumnProperty(c),isColumnHiddenByDefault(c),new Command<Grid,Boolean>(){
+      @Override public void execute(      Grid c,      Boolean hidden,      Object propertyId){
+        grid.getColumn(propertyId).setHidden(hidden);
+      }
+    }
+,getColumnProperty(c));
+    createClickAction("Change hiding toggle caption",getColumnProperty(c),new Command<Grid,String>(){
+      int count=0;
+      @Override public void execute(      Grid grid,      String value,      Object data){
+        final String columnProperty=getColumnProperty((Integer)data);
+        grid.getColumn(columnProperty).setHidingToggleCaption(columnProperty + " caption " + count++);
+      }
+    }
+,null,c);
     createCategory("Column " + c + " Width",getColumnProperty(c));
     createClickAction("Auto","Column " + c + " Width",new Command<Grid,Integer>(){
       @Override public void execute(      Grid grid,      Integer value,      Object columnIndex){
@@ -33,7 +90,7 @@
     }
 ,-1,c);
     createClickAction("25.5px","Column " + c + " Width",new Command<Grid,Void>(){
-      @Override @SuppressWarnings("boxing") public void execute(      Grid grid,      Void value,      Object columnIndex){
+      @Override public void execute(      Grid grid,      Void value,      Object columnIndex){
         grid.getColumns().get((Integer)columnIndex).setWidth(25.5);
       }
     }
@@ -105,4 +162,12 @@ break;
 }
 ,c);
 }
+createBooleanAction("All columns hidable","Columns",false,new Command<Grid,Boolean>(){
+@Override public void execute(Grid c,Boolean value,Object data){
+for (Column col : grid.getColumns()) {
+col.setHidable(value);
+}
+}
+}
+);
 }

@@ -1,0 +1,13 @@
+{
+  try {
+    getGridElement().getDetails(100);
+    fail("details row for 100 was apparently found, while it shouldn't have been.");
+  }
+ catch (  NoSuchElementException e) {
+  }
+  selectMenuPath(SET_GENERATOR);
+  toggleDetailsFor(100);
+  getGridElement().scrollToRow(101);
+  TestBenchElement details=getGridElement().getDetails(100);
+  assertTrue("Unexpected details content",details.getText().startsWith("Row: 100."));
+}

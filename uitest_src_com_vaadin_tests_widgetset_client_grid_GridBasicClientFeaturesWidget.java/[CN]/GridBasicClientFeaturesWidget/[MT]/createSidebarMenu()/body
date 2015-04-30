@@ -1,0 +1,55 @@
+{
+  String[] menupath=new String[]{"Component","Sidebar"};
+  final List<MenuItem> customMenuItems=new ArrayList<MenuItem>();
+  final List<MenuItemSeparator> separators=new ArrayList<MenuItemSeparator>();
+  addMenuCommand("Add item to end",new ScheduledCommand(){
+    @Override public void execute(){
+      MenuItem item=createSidebarMenuItem(customMenuItems.size());
+      customMenuItems.add(item);
+      grid.getSidebarMenu().addItem(item);
+    }
+  }
+,menupath);
+  addMenuCommand("Add item before index 1",new ScheduledCommand(){
+    @Override public void execute(){
+      MenuItem item=createSidebarMenuItem(customMenuItems.size());
+      customMenuItems.add(item);
+      grid.getSidebarMenu().insertItem(item,1);
+    }
+  }
+,menupath);
+  addMenuCommand("Remove last added item",new ScheduledCommand(){
+    @Override public void execute(){
+      grid.getSidebarMenu().removeItem(customMenuItems.remove(customMenuItems.size() - 1));
+    }
+  }
+,menupath);
+  addMenuCommand("Add separator to end",new ScheduledCommand(){
+    @Override public void execute(){
+      MenuItemSeparator separator=new MenuItemSeparator();
+      separators.add(separator);
+      grid.getSidebarMenu().addSeparator(separator);
+    }
+  }
+,menupath);
+  addMenuCommand("Add separator before index 1",new ScheduledCommand(){
+    @Override public void execute(){
+      MenuItemSeparator separator=new MenuItemSeparator();
+      separators.add(separator);
+      grid.getSidebarMenu().insertSeparator(separator,1);
+    }
+  }
+,menupath);
+  addMenuCommand("Remove last added separator",new ScheduledCommand(){
+    @Override public void execute(){
+      grid.getSidebarMenu().removeSeparator(separators.remove(separators.size() - 1));
+    }
+  }
+,menupath);
+  addMenuCommand("Toggle sidebar visibility",new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setSidebarOpen(!grid.isSidebarOpen());
+    }
+  }
+,menupath);
+}

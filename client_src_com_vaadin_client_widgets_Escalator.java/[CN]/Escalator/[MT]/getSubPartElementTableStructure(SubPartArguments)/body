@@ -1,0 +1,38 @@
+{
+  String type=args.getType();
+  int[] indices=args.getIndices();
+  RowContainer container=null;
+  if (type.equalsIgnoreCase("header")) {
+    container=getHeader();
+  }
+ else   if (type.equalsIgnoreCase("cell")) {
+    Range visibleRowRange=getVisibleRowRange();
+    if (indices.length > 0 && !visibleRowRange.contains(indices[0])) {
+      try {
+        scrollToRow(indices[0],ScrollDestination.ANY,0);
+      }
+ catch (      IllegalArgumentException e) {
+        getLogger().log(Level.SEVERE,e.getMessage());
+      }
+      return null;
+    }
+    container=getBody();
+  }
+ else   if (type.equalsIgnoreCase("footer")) {
+    container=getFooter();
+  }
+  if (null != container) {
+    if (indices.length == 0) {
+      return container.getElement();
+    }
+ else {
+      try {
+        return getSubPart(container,indices);
+      }
+ catch (      Exception e) {
+        getLogger().log(Level.SEVERE,e.getMessage());
+      }
+    }
+  }
+  return null;
+}
