@@ -1,14 +1,14 @@
 {
-  if (row == rowWithFocus && cellFocusRange.contains(column) && container == this.containerWithFocus) {
+  if (rowIndex == rowWithFocus && cellFocusRange.contains(columnIndexDOM) && container == this.containerWithFocus) {
     refreshRow(rowWithFocus);
     return;
   }
   int oldRow=rowWithFocus;
-  rowWithFocus=row;
+  rowWithFocus=rowIndex;
   Range oldRange=cellFocusRange;
   if (container == escalator.getBody()) {
     scrollToRow(rowWithFocus);
-    cellFocusRange=Range.withLength(column,1);
+    cellFocusRange=Range.withLength(columnIndexDOM,1);
   }
  else {
     int i=0;
@@ -16,7 +16,7 @@
     do {
       int colSpan=cell.getPropertyInt(FlyweightCell.COLSPAN_ATTR);
       Range cellRange=Range.withLength(i,colSpan);
-      if (cellRange.contains(column)) {
+      if (cellRange.contains(columnIndexDOM)) {
         cellFocusRange=cellRange;
         break;
       }
@@ -25,8 +25,9 @@
     }
  while (cell != null);
   }
-  if (column >= escalator.getColumnConfiguration().getFrozenColumnCount()) {
-    escalator.scrollToColumn(column,ScrollDestination.ANY,10);
+  int columnIndex=getColumns().indexOf(getVisibleColumn(columnIndexDOM));
+  if (columnIndex >= escalator.getColumnConfiguration().getFrozenColumnCount()) {
+    escalator.scrollToColumn(columnIndexDOM,ScrollDestination.ANY,10);
   }
   if (this.containerWithFocus == container) {
     if (oldRange.equals(cellFocusRange) && oldRow != rowWithFocus) {

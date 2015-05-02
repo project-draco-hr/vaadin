@@ -1,0 +1,19 @@
+{
+  final int firstIndex=3;
+  final int secondIndex=4;
+  final String firstHeaderText=getGridElement().getHeaderCell(0,firstIndex).getText();
+  final String secondHeaderText=getGridElement().getHeaderCell(0,secondIndex).getText();
+  selectMenuPath("Component","Internals","Listeners","Add ColumnReorder listener");
+  selectMenuPath("Component","Columns","Column " + secondIndex,"Move column left");
+  GridCellElement headerCell=getGridElement().getHeaderCell(0,firstIndex);
+  assertEquals(secondHeaderText,headerCell.getText());
+  headerCell=getGridElement().getHeaderCell(0,secondIndex);
+  assertEquals(firstHeaderText,headerCell.getText());
+  WebElement columnReorderElement=findElement(By.id("columnreorder"));
+  int eventIndex=Integer.parseInt(columnReorderElement.getAttribute("columns"));
+  assertEquals(1,eventIndex);
+  selectMenuPath("Component","Columns","Column " + secondIndex,"Move column left");
+  columnReorderElement=findElement(By.id("columnreorder"));
+  eventIndex=Integer.parseInt(columnReorderElement.getAttribute("columns"));
+  assertEquals(2,eventIndex);
+}

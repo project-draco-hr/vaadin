@@ -1,58 +1,12 @@
 {
-  String[] splitArgs=subPart.split("\\[");
-  String type=splitArgs[0];
-  int[] indices=new int[splitArgs.length - 1];
-  for (int i=0; i < indices.length; ++i) {
-    String tmp=splitArgs[i + 1];
-    indices[i]=Integer.parseInt(tmp.substring(0,tmp.length() - 1));
+  Element escalatorElement=escalator.getSubPartElement(subPart.replaceFirst("^details\\[","spacer["));
+  if (escalatorElement != null) {
+    return DOM.asOld(escalatorElement);
   }
-  RowContainer container=null;
-  if (type.equalsIgnoreCase("header")) {
-    container=escalator.getHeader();
-  }
- else   if (type.equalsIgnoreCase("cell")) {
-    Range visibleRowRange=escalator.getVisibleRowRange();
-    if (indices.length > 0 && !visibleRowRange.contains(indices[0])) {
-      try {
-        scrollToRow(indices[0]);
-      }
- catch (      IllegalArgumentException e) {
-        getLogger().log(Level.SEVERE,e.getMessage());
-      }
-      return null;
-    }
-    container=escalator.getBody();
-  }
- else   if (type.equalsIgnoreCase("footer")) {
-    container=escalator.getFooter();
-  }
- else   if (type.equalsIgnoreCase("editor")) {
-    if (editor.getState() != State.ACTIVE) {
-      return null;
-    }
-    if (indices.length == 0) {
-      return DOM.asOld(editor.editorOverlay);
-    }
- else     if (indices.length == 1 && indices[0] < columns.size()) {
-      escalator.scrollToColumn(indices[0],ScrollDestination.ANY,0);
-      return editor.getWidget(columns.get(indices[0])).getElement();
-    }
- else {
-      return null;
-    }
-  }
-  if (null != container) {
-    if (indices.length == 0) {
-      return DOM.asOld(container.getElement());
-    }
- else {
-      try {
-        return DOM.asOld(getSubPart(container,indices));
-      }
- catch (      Exception e) {
-        getLogger().log(Level.SEVERE,e.getMessage());
-      }
-    }
+  SubPartArguments args=Escalator.parseSubPartArguments(subPart);
+  Element editor=getSubPartElementEditor(args);
+  if (editor != null) {
+    return DOM.asOld(editor);
   }
   return null;
 }
