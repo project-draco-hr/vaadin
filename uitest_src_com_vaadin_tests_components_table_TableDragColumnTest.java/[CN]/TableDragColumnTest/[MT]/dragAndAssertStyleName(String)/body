@@ -1,0 +1,10 @@
+{
+  TableHeaderElement dragged=$(TableElement.class).first().getHeaderCell(0);
+  new Actions(getDriver()).moveToElement(dragged).clickAndHold().moveByOffset(-6,0).perform();
+  Assert.assertTrue("No drag element visible",isElementPresent(By.className("v-table-header-drag")));
+  WebElement dragImage=findElement(By.className("v-table-header-drag"));
+  String cellContent=dragged.getText();
+  Assert.assertEquals("Drag image had different content than header cell",cellContent,dragImage.getText());
+  Assert.assertTrue("Missing CSS class " + styleName,hasCssClass(dragImage,styleName));
+  new Actions(getDriver()).release().perform();
+}
