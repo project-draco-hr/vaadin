@@ -1,0 +1,15 @@
+{
+  Profiler.enter("sendStateChangeEvents");
+  getLogger().info(" * Sending state change events");
+  int size=pendingStateChangeEvents.size();
+  for (int i=0; i < size; i++) {
+    StateChangeEvent sce=pendingStateChangeEvents.get(i);
+    try {
+      sce.getConnector().fireEvent(sce);
+    }
+ catch (    final Throwable e) {
+      getLogger().log(Level.SEVERE,"Error sending state change events",e);
+    }
+  }
+  Profiler.leave("sendStateChangeEvents");
+}

@@ -1,7 +1,28 @@
 {
-  boolean stopped=(this.applicationRunning && !applicationRunning);
-  this.applicationRunning=applicationRunning;
-  if (stopped) {
-    eventBus.fireEvent(new ApplicationStoppedEvent());
+  if (getState() == State.TERMINATED) {
+    if (applicationRunning) {
+      getLogger().severe("Tried to restart a terminated application. This is not supported");
+    }
+ else {
+      getLogger().warning("Tried to stop a terminated application. This should not be done");
+    }
+    return;
+  }
+ else   if (getState() == State.INITIALIZING) {
+    if (applicationRunning) {
+      state=State.RUNNING;
+    }
+ else {
+      getLogger().warning("Tried to stop the application before it has started. This should not be done");
+    }
+  }
+ else   if (getState() == State.RUNNING) {
+    if (!applicationRunning) {
+      state=State.TERMINATED;
+      eventBus.fireEvent(new ApplicationStoppedEvent());
+    }
+ else {
+      getLogger().warning("Tried to start an already running application. This should not be done");
+    }
   }
 }

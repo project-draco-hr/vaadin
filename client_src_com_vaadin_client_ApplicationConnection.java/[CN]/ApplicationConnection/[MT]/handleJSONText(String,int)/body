@@ -10,17 +10,15 @@
     return;
   }
   getLogger().info("JSON parsing took " + (new Date().getTime() - start.getTime()) + "ms");
-  if (isApplicationRunning()) {
+  if (getState() == State.RUNNING) {
     handleReceivedJSONMessage(start,jsonText,json);
   }
+ else   if (getState() == State.INITIALIZING) {
+    setApplicationRunning(true);
+    handleWhenCSSLoaded(jsonText,json);
+  }
  else {
-    if (!cssLoaded) {
-      setApplicationRunning(true);
-      handleWhenCSSLoaded(jsonText,json);
-    }
- else {
-      getLogger().warning("Ignored received message because application has already been stopped");
-      return;
-    }
+    getLogger().warning("Ignored received message because application has already been stopped");
+    return;
   }
 }

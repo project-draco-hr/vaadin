@@ -1,0 +1,15 @@
+{
+  Profiler.enter("unregisterRemovedConnectors");
+  JsArrayString detachedArray=detachedConnectors.dump();
+  for (int i=0; i < detachedArray.length(); i++) {
+    ServerConnector connector=connectorMap.getConnector(detachedArray.get(i));
+    Profiler.enter("unregisterRemovedConnectors unregisterConnector");
+    connectorMap.unregisterConnector(connector);
+    Profiler.leave("unregisterRemovedConnectors unregisterConnector");
+  }
+  if (ApplicationConfiguration.isDebugMode()) {
+    verifyConnectorHierarchy();
+  }
+  getLogger().info("* Unregistered " + detachedArray.length() + " connectors");
+  Profiler.leave("unregisterRemovedConnectors");
+}

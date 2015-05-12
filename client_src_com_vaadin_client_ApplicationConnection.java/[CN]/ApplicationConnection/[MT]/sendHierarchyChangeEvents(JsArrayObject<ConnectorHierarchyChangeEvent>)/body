@@ -1,0 +1,19 @@
+{
+  int eventCount=events.size();
+  if (eventCount == 0) {
+    return;
+  }
+  Profiler.enter("sendHierarchyChangeEvents");
+  getLogger().info(" * Sending hierarchy change events");
+  for (int i=0; i < eventCount; i++) {
+    ConnectorHierarchyChangeEvent event=events.get(i);
+    try {
+      logHierarchyChange(event);
+      event.getConnector().fireEvent(event);
+    }
+ catch (    final Throwable e) {
+      getLogger().log(Level.SEVERE,"Error sending hierarchy change events",e);
+    }
+  }
+  Profiler.leave("sendHierarchyChangeEvents");
+}

@@ -1,0 +1,72 @@
+{
+  JsArrayObject<StateChangeEvent> events=JavaScriptObject.createArray().cast();
+  getLogger().info(" * Updating connector states");
+  if (!json.containsKey("state")) {
+    return events;
+  }
+  Profiler.enter("updateConnectorState");
+  FastStringSet remainingNewConnectors=FastStringSet.create();
+  remainingNewConnectors.addAll(createdConnectorIds);
+  ValueMap states=json.getValueMap("state");
+  JsArrayString keyArray=states.getKeyArray();
+  for (int i=0; i < keyArray.length(); i++) {
+    try {
+      String connectorId=keyArray.get(i);
+      ServerConnector connector=connectorMap.getConnector(connectorId);
+      if (null != connector) {
+        Profiler.enter("updateConnectorState inner loop");
+        if (Profiler.isEnabled()) {
+          Profiler.enter("Decode connector state " + connector.getClass().getSimpleName());
+        }
+        JavaScriptObject jso=states.getJavaScriptObject(connectorId);
+        JsonObject stateJson=Util.jso2json(jso);
+        if (connector instanceof HasJavaScriptConnectorHelper) {
+          ((HasJavaScriptConnectorHelper)connector).getJavascriptConnectorHelper().setNativeState(jso);
+        }
+        SharedState state=connector.getState();
+        Type stateType=new Type(state.getClass().getName(),null);
+        if (onlyNoLayoutUpdates) {
+          Profiler.enter("updateConnectorState @NoLayout handling");
+          for (          String propertyName : stateJson.keys()) {
+            Property property=stateType.getProperty(propertyName);
+            if (!property.isNoLayout()) {
+              onlyNoLayoutUpdates=false;
+              break;
+            }
+          }
+          Profiler.leave("updateConnectorState @NoLayout handling");
+        }
+        Profiler.enter("updateConnectorState decodeValue");
+        JsonDecoder.decodeValue(stateType,stateJson,state,ApplicationConnection.this);
+        Profiler.leave("updateConnectorState decodeValue");
+        if (Profiler.isEnabled()) {
+          Profiler.leave("Decode connector state " + connector.getClass().getSimpleName());
+        }
+        Profiler.enter("updateConnectorState create event");
+        boolean isNewConnector=remainingNewConnectors.contains(connectorId);
+        if (isNewConnector) {
+          remainingNewConnectors.remove(connectorId);
+        }
+        StateChangeEvent event=new StateChangeEvent(connector,stateJson,isNewConnector);
+        events.add(event);
+        Profiler.leave("updateConnectorState create event");
+        Profiler.leave("updateConnectorState inner loop");
+      }
+    }
+ catch (    final Throwable e) {
+      getLogger().log(Level.SEVERE,"Error updating connector states",e);
+    }
+  }
+  Profiler.enter("updateConnectorState newWithoutState");
+  JsArrayString dump=remainingNewConnectors.dump();
+  int length=dump.length();
+  for (int i=0; i < length; i++) {
+    String connectorId=dump.get(i);
+    ServerConnector connector=connectorMap.getConnector(connectorId);
+    StateChangeEvent event=new StateChangeEvent(connector,Json.createObject(),true);
+    events.add(event);
+  }
+  Profiler.leave("updateConnectorState newWithoutState");
+  Profiler.leave("updateConnectorState");
+  return events;
+}

@@ -1,0 +1,35 @@
+{
+  Profiler.enter("@DelegateToWidget");
+  getLogger().info(" * Running @DelegateToWidget");
+  FastStringSet noOpTypes=FastStringSet.create();
+  int size=pendingStateChangeEvents.size();
+  for (int eventIndex=0; eventIndex < size; eventIndex++) {
+    StateChangeEvent sce=pendingStateChangeEvents.get(eventIndex);
+    ServerConnector connector=sce.getConnector();
+    if (connector instanceof ComponentConnector) {
+      String className=connector.getClass().getName();
+      if (noOpTypes.contains(className)) {
+        continue;
+      }
+      ComponentConnector component=(ComponentConnector)connector;
+      Type stateType=AbstractConnector.getStateType(component);
+      JsArrayString delegateToWidgetProperties=stateType.getDelegateToWidgetProperties();
+      if (delegateToWidgetProperties == null) {
+        noOpTypes.add(className);
+        continue;
+      }
+      int length=delegateToWidgetProperties.length();
+      for (int i=0; i < length; i++) {
+        String propertyName=delegateToWidgetProperties.get(i);
+        if (sce.hasPropertyChanged(propertyName)) {
+          Property property=stateType.getProperty(propertyName);
+          String method=property.getDelegateToWidgetMethodName();
+          Profiler.enter("doDelegateToWidget");
+          doDelegateToWidget(component,property,method);
+          Profiler.leave("doDelegateToWidget");
+        }
+      }
+    }
+  }
+  Profiler.leave("@DelegateToWidget");
+}
