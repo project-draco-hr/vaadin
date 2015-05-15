@@ -1,5 +1,11 @@
 {
   TableQuery tQuery=new TableQuery("people",connectionPool,SQLTestsConstants.sqlGen);
   tQuery.beginTransaction();
-  tQuery.beginTransaction();
+  try {
+    tQuery.beginTransaction();
+    Assert.fail("Should throw exception when starting a transaction while already in a transaction");
+  }
+ catch (  IllegalStateException e) {
+    tQuery.rollback();
+  }
 }

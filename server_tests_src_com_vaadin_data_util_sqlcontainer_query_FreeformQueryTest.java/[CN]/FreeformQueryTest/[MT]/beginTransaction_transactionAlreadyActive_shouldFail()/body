@@ -1,5 +1,11 @@
 {
   FreeformQuery query=new FreeformQuery("SELECT * FROM people",Arrays.asList("ID"),connectionPool);
   query.beginTransaction();
-  query.beginTransaction();
+  try {
+    query.beginTransaction();
+    Assert.fail("Should throw exception when starting a transaction while already in a transaction");
+  }
+ catch (  IllegalStateException e) {
+    query.rollback();
+  }
 }

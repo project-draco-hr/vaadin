@@ -1,0 +1,12 @@
+{
+  if (conn != null && !reserved.remove(conn)) {
+    if (alreadyReleased.contains(conn)) {
+      getLogger().severe("Tried to release connection (" + conn + ") which has already been released");
+    }
+ else {
+      throw new RuntimeException("Tried to release connection (" + conn + ") not reserved using reserveConnection");
+    }
+  }
+  realPool.releaseConnection(conn);
+  alreadyReleased.add(conn);
+}

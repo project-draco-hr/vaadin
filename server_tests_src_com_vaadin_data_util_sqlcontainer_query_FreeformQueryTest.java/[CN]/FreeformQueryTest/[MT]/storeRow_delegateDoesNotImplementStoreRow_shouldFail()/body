@@ -7,7 +7,11 @@
   query.setDelegate(delegate);
   query.beginTransaction();
   RowItem row=new RowItem(container,new RowId(new Object[]{1}),null);
-  query.storeRow(row);
-  query.commit();
-  EasyMock.verify(delegate,container);
+  try {
+    query.storeRow(row);
+    Assert.fail("storeRow should fail when delgate does not implement storeRow");
+  }
+ catch (  UnsupportedOperationException e) {
+    query.rollback();
+  }
 }

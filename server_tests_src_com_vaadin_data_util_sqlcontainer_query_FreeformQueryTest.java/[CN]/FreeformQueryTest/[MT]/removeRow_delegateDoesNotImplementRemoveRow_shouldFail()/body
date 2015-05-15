@@ -7,7 +7,11 @@
   query.setDelegate(delegate);
   query.beginTransaction();
   RowItem row=new RowItem(container,new RowId(new Object[]{1}),null);
-  query.removeRow(row);
-  query.commit();
-  EasyMock.verify(delegate,container);
+  try {
+    query.removeRow(row);
+    Assert.fail("removeRow should fail when delegate does not implement removeRow");
+  }
+ catch (  UnsupportedOperationException e) {
+    query.rollback();
+  }
 }

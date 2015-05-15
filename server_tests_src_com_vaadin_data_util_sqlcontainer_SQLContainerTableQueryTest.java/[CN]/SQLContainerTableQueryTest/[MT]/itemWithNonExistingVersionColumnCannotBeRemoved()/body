@@ -1,5 +1,11 @@
 {
   query.setVersionColumn("version");
   container.removeItem(container.lastItemId());
-  container.commit();
+  try {
+    container.commit();
+    Assert.fail("Commit should not succeed when version column does not exist");
+  }
+ catch (  IllegalArgumentException e) {
+    container.getQueryDelegate().rollback();
+  }
 }

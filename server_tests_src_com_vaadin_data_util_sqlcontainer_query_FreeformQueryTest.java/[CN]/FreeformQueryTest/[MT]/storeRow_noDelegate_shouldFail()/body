@@ -3,7 +3,11 @@
   SQLContainer container=EasyMock.createNiceMock(SQLContainer.class);
   EasyMock.replay(container);
   query.beginTransaction();
-  query.storeRow(new RowItem(container,new RowId(new Object[]{1}),null));
-  query.commit();
-  EasyMock.verify(container);
+  try {
+    query.storeRow(new RowItem(container,new RowId(new Object[]{1}),null));
+    Assert.fail("storeRow should fail when there is no delegate");
+  }
+ catch (  UnsupportedOperationException e) {
+    query.rollback();
+  }
 }
