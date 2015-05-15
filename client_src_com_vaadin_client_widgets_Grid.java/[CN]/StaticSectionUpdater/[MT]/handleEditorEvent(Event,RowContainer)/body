@@ -1,6 +1,10 @@
 {
   final boolean closeEvent=event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_HIDE;
-  final boolean openEvent=event.getTypeInt() == Event.ONDBLCLICK || (event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_SHOW);
+  double now=Duration.currentTimeMillis();
+  final boolean openEvent=event.getTypeInt() == Event.ONDBLCLICK || (event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_SHOW) || (event.getTypeInt() == Event.ONTOUCHEND && now - lastTouchEventTime < 500);
+  if (event.getTypeInt() == Event.ONTOUCHEND) {
+    lastTouchEventTime=now;
+  }
   if (editor.getState() != Editor.State.INACTIVE) {
     if (closeEvent) {
       editor.cancel();
@@ -10,6 +14,7 @@
   }
   if (container == escalator.getBody() && editor.isEnabled() && openEvent) {
     editor.editRow(eventCell.getRowIndex(),eventCell.getColumnIndexDOM());
+    event.preventDefault();
     return true;
   }
   return false;
