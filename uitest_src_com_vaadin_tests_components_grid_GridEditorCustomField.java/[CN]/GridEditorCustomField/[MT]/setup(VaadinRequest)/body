@@ -1,0 +1,14 @@
+{
+  Grid grid=new PersonTestGrid(100);
+  grid.setWidth("800px");
+  grid.setColumns("firstName","lastName","address.city");
+  grid.setEditorEnabled(true);
+  Set<String> cities=new HashSet<String>();
+  for (  Object o : grid.getContainerDataSource().getItemIds()) {
+    ComplexPerson p=(ComplexPerson)o;
+    cities.add(p.getAddress().getCity());
+  }
+  CustomCitySelect cityEditor=new CustomCitySelect(cities.toArray(new String[cities.size()]));
+  grid.getColumn("address.city").setEditorField(cityEditor);
+  addComponent(grid);
+}
