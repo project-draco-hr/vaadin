@@ -6,12 +6,23 @@
     return true;
   }
   if (container == escalator.getBody() && editor.isEnabled()) {
+    boolean wasOpen=editor.getState() != Editor.State.INACTIVE;
+    boolean opened=false;
     if (event.getTypeInt() == Event.ONDBLCLICK) {
       editor.editRow(eventCell.getRowIndex());
-      return true;
+      opened=true;
     }
  else     if (event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_SHOW) {
       editor.editRow(cellFocusHandler.rowWithFocus);
+      opened=true;
+    }
+    if (opened) {
+      if (wasOpen) {
+        fireEvent(new EditorMoveEvent(eventCell));
+      }
+ else {
+        fireEvent(new EditorOpenEvent(eventCell));
+      }
       return true;
     }
   }
