@@ -1,0 +1,59 @@
+{
+  DivElement gridElement=DivElement.as(grid.getElement());
+  TableRowElement tr=grid.getEscalator().getBody().getRowElement(rowIndex);
+  scrollHandler=grid.addScrollHandler(new ScrollHandler(){
+    @Override public void onScroll(    ScrollEvent event){
+      updateHorizontalScrollPosition();
+    }
+  }
+);
+  gridElement.appendChild(editorOverlay);
+  editorOverlay.appendChild(cellWrapper);
+  editorOverlay.appendChild(messageAndButtonsWrapper);
+  for (int i=0; i < tr.getCells().getLength(); i++) {
+    Element cell=createCell(tr.getCells().getItem(i));
+    cellWrapper.appendChild(cell);
+    Column<?,T> column=grid.getVisibleColumn(i);
+    if (column.isEditable()) {
+      Widget editor=getHandler().getWidget(column);
+      if (editor != null) {
+        columnToWidget.put(column,editor);
+        attachWidget(editor,cell);
+      }
+      if (i == columnIndex) {
+        if (editor instanceof Focusable) {
+          ((Focusable)editor).focus();
+        }
+ else         if (editor instanceof com.google.gwt.user.client.ui.Focusable) {
+          ((com.google.gwt.user.client.ui.Focusable)editor).setFocus(true);
+        }
+      }
+    }
+ else {
+      cell.addClassName(NOT_EDITABLE_CLASS_NAME);
+    }
+  }
+  if (!messageAndButtonsWrapper.isOrHasChild(messageWrapper)) {
+    messageAndButtonsWrapper.appendChild(messageWrapper);
+    messageAndButtonsWrapper.appendChild(buttonsWrapper);
+  }
+  attachWidget(saveButton,buttonsWrapper);
+  attachWidget(cancelButton,buttonsWrapper);
+  updateHorizontalScrollPosition();
+  AbstractRowContainer body=(AbstractRowContainer)grid.getEscalator().getBody();
+  double rowTop=body.getRowTop(tr);
+  int bodyTop=body.getElement().getAbsoluteTop();
+  int gridTop=gridElement.getAbsoluteTop();
+  double overlayTop=rowTop + bodyTop - gridTop;
+  if (buttonsShouldBeRenderedBelow(tr)) {
+    editorOverlay.getStyle().setTop(overlayTop,Unit.PX);
+    editorOverlay.getStyle().clearBottom();
+  }
+ else {
+    editorOverlay.insertFirst(messageAndButtonsWrapper);
+    int gridHeight=grid.getElement().getOffsetHeight();
+    editorOverlay.getStyle().setBottom(gridHeight - overlayTop - tr.getOffsetHeight(),Unit.PX);
+    editorOverlay.getStyle().clearTop();
+  }
+  editorOverlay.getStyle().setWidth(grid.escalator.getInnerWidth(),Unit.PX);
+}

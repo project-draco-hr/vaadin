@@ -1,19 +1,16 @@
 {
+  final boolean closeEvent=event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_HIDE;
+  final boolean openEvent=event.getTypeInt() == Event.ONDBLCLICK || (event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_SHOW);
   if (editor.getState() != Editor.State.INACTIVE) {
-    if (event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_HIDE) {
+    if (closeEvent) {
       editor.cancel();
+      FocusUtil.setFocus(this,true);
     }
     return true;
   }
-  if (container == escalator.getBody() && editor.isEnabled()) {
-    if (event.getTypeInt() == Event.ONDBLCLICK) {
-      editor.editRow(eventCell.getRowIndex());
-      return true;
-    }
- else     if (event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_SHOW) {
-      editor.editRow(cellFocusHandler.rowWithFocus);
-      return true;
-    }
+  if (container == escalator.getBody() && editor.isEnabled() && openEvent) {
+    editor.editRow(eventCell.getRowIndex(),eventCell.getColumnIndexDOM());
+    return true;
   }
   return false;
 }
