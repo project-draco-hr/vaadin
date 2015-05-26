@@ -1,0 +1,13 @@
+{
+  Grid<JsonObject> grid=getParent().getWidget();
+  grid.addBodyClickHandler(new BodyClickHandler(){
+    @Override public void onClick(    GridClickEvent event){
+      CellReference<?> cellRef=event.getTargetCell();
+      String rowKey=getParent().getRowKey((JsonObject)cellRef.getRow());
+      String columnId=getParent().getColumnId(cellRef.getColumn());
+      MouseEventDetails clickDetails=MouseEventDetailsBuilder.buildMouseEventDetails(event.getNativeEvent());
+      getRpcProxy(GridClickServerRpc.class).click(rowKey,columnId,clickDetails);
+    }
+  }
+);
+}
