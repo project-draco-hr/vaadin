@@ -1,23 +1,33 @@
 {
-  if (editor.getState() != Editor.State.INACTIVE) {
-    if (event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_HIDE) {
+  int type=event.getTypeInt();
+  boolean editorIsActive=editor.getState() != Editor.State.INACTIVE;
+  if (editorIsActive) {
+    if (type == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_HIDE) {
       editor.cancel();
+      return true;
     }
-    return true;
+    if (editor.isBuffered() || type != Event.ONCLICK) {
+      return true;
+    }
   }
   if (container == escalator.getBody() && editor.isEnabled()) {
-    boolean wasOpen=editor.getState() != Editor.State.INACTIVE;
     boolean opened=false;
-    if (event.getTypeInt() == Event.ONDBLCLICK) {
+    if (editorIsActive && !editor.isBuffered() && type == Event.ONCLICK) {
+      editor.hide();
+      cellFocusHandler.setCellFocus(eventCell);
       editor.editRow(eventCell.getRowIndex());
       opened=true;
     }
- else     if (event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_SHOW) {
+ else     if (type == Event.ONDBLCLICK) {
+      editor.editRow(eventCell.getRowIndex());
+      opened=true;
+    }
+ else     if (type == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_SHOW) {
       editor.editRow(cellFocusHandler.rowWithFocus);
       opened=true;
     }
     if (opened) {
-      if (wasOpen) {
+      if (editorIsActive) {
         fireEvent(new EditorMoveEvent(eventCell));
       }
  else {
