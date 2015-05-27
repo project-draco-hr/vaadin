@@ -3,6 +3,9 @@
   scrollHandler=grid.addScrollHandler(new ScrollHandler(){
     @Override public void onScroll(    ScrollEvent event){
       updateHorizontalScrollPosition();
+      if (!isBuffered()) {
+        updateVerticalScrollPosition();
+      }
     }
   }
 );
@@ -35,8 +38,10 @@
   int bodyTop=body.getElement().getAbsoluteTop();
   int gridTop=gridElement.getAbsoluteTop();
   double overlayTop=rowTop + bodyTop - gridTop;
-  if (buttonsShouldBeRenderedBelow(tr)) {
+  originalScrollTop=grid.getScrollTop();
+  if (!isBuffered() || buttonsShouldBeRenderedBelow(tr)) {
     editorOverlay.getStyle().setTop(overlayTop,Unit.PX);
+    originalTop=overlayTop;
     editorOverlay.getStyle().clearBottom();
   }
  else {
