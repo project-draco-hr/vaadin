@@ -1,0 +1,11 @@
+{
+  openTestURL();
+  TextFieldElement textField=$(TextFieldElement.class).first();
+  final PopupDateFieldElement dateField=$(PopupDateFieldElement.class).first();
+  Assert.assertFalse("DateField required when it shouldn't be.",isRequired(dateField));
+  WebElement input=dateField.findElement(By.className("v-textfield"));
+  Assert.assertEquals("prompt",input.getAttribute("value"));
+  textField.sendKeys("foo",Keys.TAB);
+  waitForElementRequiredAndFocused(dateField,By.className("v-textfield-focus"));
+  Assert.assertNotEquals("prompt",input.getAttribute("value"));
+}
