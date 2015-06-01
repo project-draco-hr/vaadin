@@ -3,7 +3,11 @@
   SQLContainer container=EasyMock.createNiceMock(SQLContainer.class);
   EasyMock.replay(container);
   query.beginTransaction();
-  query.removeRow(new RowItem(container,new RowId(new Object[]{1}),null));
-  query.commit();
-  EasyMock.verify(container);
+  try {
+    query.removeRow(new RowItem(container,new RowId(new Object[]{1}),null));
+    Assert.fail("removeRow should fail when there is no delgate");
+  }
+ catch (  UnsupportedOperationException e) {
+    query.rollback();
+  }
 }

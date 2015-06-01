@@ -11,10 +11,10 @@
     isEmpty=false;
   }
   if (state.caption != null) {
-    if (captionText == null) {
-      captionText=DOM.createSpan();
-      AriaHelper.bindCaption(owner.getWidget(),captionText);
-      DOM.insertChild(getElement(),captionText,icon == null ? 0 : 1);
+    if (captionContent == null) {
+      captionContent=DOM.createSpan();
+      AriaHelper.bindCaption(owner.getWidget(),captionContent);
+      DOM.insertChild(getElement(),captionContent,icon == null ? 0 : 1);
     }
     String c=state.caption;
     if (c == null) {
@@ -23,11 +23,16 @@
  else {
       isEmpty=false;
     }
-    DOM.setInnerText(captionText,c);
+    if (state.captionAsHtml) {
+      captionContent.setInnerHTML(c);
+    }
+ else {
+      captionContent.setInnerText(c);
+    }
   }
  else {
   }
-  if (state.description != null && captionText != null) {
+  if (state.description != null && captionContent != null) {
     addStyleDependentName("hasdescription");
   }
  else {

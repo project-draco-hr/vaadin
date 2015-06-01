@@ -1,40 +1,26 @@
 {
-  int type=event.getTypeInt();
-  boolean editorIsActive=editor.getState() != Editor.State.INACTIVE;
-  if (editorIsActive) {
-    if (type == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_HIDE) {
-      editor.cancel();
-      return true;
-    }
-    if (editor.isBuffered() || type != Event.ONCLICK) {
-      return true;
-    }
+  final int type=event.getTypeInt();
+  final int key=event.getKeyCode();
+  final boolean editorIsActive=editor.getState() != Editor.State.INACTIVE;
+  final boolean openEvent=type == Event.ONDBLCLICK || (type == Event.ONKEYDOWN && key == Editor.KEYCODE_SHOW);
+  final boolean moveEvent=type == Event.ONCLICK;
+  final boolean closeEvent=type == Event.ONKEYDOWN && key == Editor.KEYCODE_HIDE;
+  if (!editorIsActive && editor.isEnabled() && openEvent) {
+    editor.editRow(eventCell.getRowIndex(),eventCell.getColumnIndexDOM());
+    fireEvent(new EditorOpenEvent(eventCell));
+    return true;
   }
-  if (container == escalator.getBody() && editor.isEnabled()) {
-    boolean opened=false;
-    if (editorIsActive && !editor.isBuffered() && type == Event.ONCLICK) {
-      editor.hide();
-      cellFocusHandler.setCellFocus(eventCell);
-      editor.editRow(eventCell.getRowIndex());
-      opened=true;
-    }
- else     if (type == Event.ONDBLCLICK) {
-      editor.editRow(eventCell.getRowIndex());
-      opened=true;
-    }
- else     if (type == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_SHOW) {
-      editor.editRow(cellFocusHandler.rowWithFocus);
-      opened=true;
-    }
-    if (opened) {
-      if (editorIsActive) {
-        fireEvent(new EditorMoveEvent(eventCell));
-      }
- else {
-        fireEvent(new EditorOpenEvent(eventCell));
-      }
-      return true;
-    }
+ else   if (editorIsActive && eventCell.isBody() && moveEvent) {
+    editor.hide();
+    cellFocusHandler.setCellFocus(eventCell);
+    editor.editRow(eventCell.getRowIndex(),eventCell.getColumnIndexDOM());
+    fireEvent(new EditorMoveEvent(eventCell));
+    return true;
   }
-  return false;
+ else   if (editorIsActive && closeEvent) {
+    editor.cancel();
+    FocusUtil.setFocus(this,true);
+    return true;
+  }
+  return editorIsActive;
 }

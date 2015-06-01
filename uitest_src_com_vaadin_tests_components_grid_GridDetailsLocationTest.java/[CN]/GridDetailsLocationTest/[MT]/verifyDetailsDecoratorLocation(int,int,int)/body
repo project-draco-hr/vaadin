@@ -2,6 +2,10 @@
   WebElement detailsElement=getDetailsElement(visibleIndexOfSpacer);
   WebElement detailsDecoElement=getDetailsDecoElement(visibleIndexOfDeco);
   GridRowElement rowElement=getGrid().getRow(row);
+  int diff=0;
+  if (isIE8() || BrowserUtil.isIE(getDesiredCapabilities(),9)) {
+    diff=1;
+  }
   Assert.assertEquals("Details deco top position does not match row top pos",rowElement.getLocation().getY(),detailsDecoElement.getLocation().getY());
-  Assert.assertEquals("Details deco bottom position does not match details bottom pos",detailsElement.getLocation().getY() + detailsElement.getSize().getHeight(),detailsDecoElement.getLocation().getY() + detailsDecoElement.getSize().getHeight());
+  Assert.assertEquals("Details deco bottom position does not match details bottom pos",detailsElement.getLocation().getY() + detailsElement.getSize().getHeight(),detailsDecoElement.getLocation().getY() + detailsDecoElement.getSize().getHeight() + diff);
 }

@@ -21,5 +21,20 @@
 );
     checkBox.setValue(selected);
     selectionCell.setWidget(checkBox);
+    addHeaderKeyUpHandler(new HeaderKeyUpHandler(){
+      @Override public void onKeyUp(      GridKeyUpEvent event){
+        if (event.getNativeKeyCode() != KeyCodes.KEY_SPACE) {
+          return;
+        }
+        HeaderRow targetHeaderRow=getHeader().getRow(event.getFocusedCell().getRowIndex());
+        if (!targetHeaderRow.isDefault()) {
+          return;
+        }
+        if (event.getFocusedCell().getColumn() == SelectionColumn.this) {
+          checkBox.setValue(!checkBox.getValue(),true);
+        }
+      }
+    }
+);
   }
 }

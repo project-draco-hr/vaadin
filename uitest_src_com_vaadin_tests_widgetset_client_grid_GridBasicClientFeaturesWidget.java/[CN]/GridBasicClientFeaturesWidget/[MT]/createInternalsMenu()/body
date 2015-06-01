@@ -60,4 +60,39 @@
     }
   }
 ,listenersPath);
+  addMenuCommand("Add context menu listener",new ScheduledCommand(){
+    HandlerRegistration handler=null;
+    ContextMenuHandler contextMenuHandler=new ContextMenuHandler(){
+      @Override public void onContextMenu(      ContextMenuEvent event){
+        event.preventDefault();
+        final String location;
+        EventCellReference<?> cellRef=grid.getEventCell();
+        if (cellRef.isHeader()) {
+          location="header";
+        }
+ else         if (cellRef.isBody()) {
+          location="body";
+        }
+ else         if (cellRef.isFooter()) {
+          location="footer";
+        }
+ else {
+          location="somewhere";
+        }
+        getLogger().info("Prevented opening a context menu in grid " + location);
+      }
+    }
+;
+    @Override public void execute(){
+      if (handler != null) {
+        grid.unsinkEvents(Event.ONCONTEXTMENU);
+        handler.removeHandler();
+      }
+ else {
+        grid.sinkEvents(Event.ONCONTEXTMENU);
+        handler=grid.addDomHandler(contextMenuHandler,ContextMenuEvent.getType());
+      }
+    }
+  }
+,listenersPath);
 }

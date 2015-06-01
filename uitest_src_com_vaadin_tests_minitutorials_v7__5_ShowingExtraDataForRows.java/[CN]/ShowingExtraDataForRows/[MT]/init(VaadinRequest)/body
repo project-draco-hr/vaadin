@@ -1,0 +1,35 @@
+{
+  final Grid grid=new Grid();
+  grid.setContainerDataSource(GridExampleHelper.createContainer());
+  grid.setDetailsGenerator(new DetailsGenerator(){
+    @Override public Component getDetails(    RowReference rowReference){
+      final GridExampleBean bean=(GridExampleBean)rowReference.getItemId();
+      Label label=new Label("Extra data for " + bean.getName());
+      Image image=new Image();
+      image.setWidth("300px");
+      image.setHeight("150px");
+      image.setSource(new ExternalResource("http://dummyimage.com/300x150/000/fff&text=" + bean.getCount()));
+      Button button=new Button("Click me",new Button.ClickListener(){
+        @Override public void buttonClick(        ClickEvent event){
+          Notification.show("Button clicked for " + bean.getName());
+        }
+      }
+);
+      VerticalLayout layout=new VerticalLayout(label,image,button);
+      layout.setSpacing(true);
+      layout.setMargin(true);
+      return layout;
+    }
+  }
+);
+  grid.addItemClickListener(new ItemClickListener(){
+    @Override public void itemClick(    ItemClickEvent event){
+      if (event.isDoubleClick()) {
+        Object itemId=event.getItemId();
+        grid.setDetailsVisible(itemId,!grid.isDetailsVisible(itemId));
+      }
+    }
+  }
+);
+  setContent(grid);
+}
