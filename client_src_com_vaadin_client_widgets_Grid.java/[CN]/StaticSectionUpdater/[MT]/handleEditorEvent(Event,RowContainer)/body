@@ -2,15 +2,15 @@
   final int type=event.getTypeInt();
   final int key=event.getKeyCode();
   final boolean editorIsActive=editor.getState() != Editor.State.INACTIVE;
-  final boolean openEvent=type == Event.ONDBLCLICK || (type == Event.ONKEYDOWN && key == Editor.KEYCODE_SHOW);
-  final boolean moveEvent=type == Event.ONCLICK;
+  final boolean openEvent=eventCell.isBody() && (type == Event.ONDBLCLICK || (type == Event.ONKEYDOWN && key == Editor.KEYCODE_SHOW));
+  final boolean moveEvent=eventCell.isBody() && type == Event.ONCLICK;
   final boolean closeEvent=type == Event.ONKEYDOWN && key == Editor.KEYCODE_HIDE;
   if (!editorIsActive && editor.isEnabled() && openEvent) {
     editor.editRow(eventCell.getRowIndex(),eventCell.getColumnIndexDOM());
     fireEvent(new EditorOpenEvent(eventCell));
     return true;
   }
- else   if (editorIsActive && eventCell.isBody() && moveEvent) {
+ else   if (editorIsActive && moveEvent) {
     editor.hide();
     cellFocusHandler.setCellFocus(eventCell);
     editor.editRow(eventCell.getRowIndex(),eventCell.getColumnIndexDOM());
