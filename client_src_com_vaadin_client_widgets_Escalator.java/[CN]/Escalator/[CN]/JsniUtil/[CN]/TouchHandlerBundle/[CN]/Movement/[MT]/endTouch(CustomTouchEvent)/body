@@ -1,0 +1,15 @@
+{
+  velocity=0;
+  for (  double s : speeds) {
+    velocity+=s / speeds.size();
+  }
+  position=scroll.getScrollPos();
+  offset=F_VEL * velocity * acceleration* easingInOutCos(velocity,MAX_VEL);
+  double minOff=-scroll.getScrollPos();
+  double maxOff=scroll.getScrollSize() - scroll.getOffsetSize() + minOff;
+  offset=Math.min(Math.max(offset,minOff),maxOff);
+  run=validSpeed(velocity) && minOff < 0 && maxOff > 0;
+  if (run) {
+    event.getNativeEvent().preventDefault();
+  }
+}

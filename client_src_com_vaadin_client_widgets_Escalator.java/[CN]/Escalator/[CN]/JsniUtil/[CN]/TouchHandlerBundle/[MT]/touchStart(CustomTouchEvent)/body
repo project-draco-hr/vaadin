@@ -1,16 +1,19 @@
 {
-  touches=event.getNativeEvent().getTouches().length();
-  if (touches != 1) {
-    return;
+  if (event.getNativeEvent().getTouches().length() == 1) {
+    if (yMov == null) {
+      yMov=new Movement(true);
+      xMov=new Movement(false);
+    }
+    if (animation.isRunning()) {
+      acceleration+=F_ACC;
+      event.getNativeEvent().preventDefault();
+      animation.cancel();
+    }
+ else {
+      acceleration=1;
+    }
+    xMov.startTouch(event);
+    yMov.startTouch(event);
+    touching=true;
   }
-  escalator.scroller.cancelFlickScroll();
-  lastX=event.getPageX();
-  lastY=event.getPageY();
-  flickPageX1=lastX;
-  flickPageX2=-1;
-  flickPageY1=lastY;
-  flickPageY2=-1;
-  flickStartTime=System.currentTimeMillis();
-  flickTimestamp=0;
-  snappedScrollEnabled=true;
 }

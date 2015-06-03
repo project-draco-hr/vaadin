@@ -1,21 +1,9 @@
 {
-  touches=event.getNativeEvent().getTouches().length();
-  if (touches == 0) {
-    final double finalPageY;
-    final double finalPageX;
-    double deltaT=flickTimestamp - flickStartTime;
-    boolean onlyOneSample=flickPageX2 < 0 || flickPageY2 < 0;
-    if (onlyOneSample) {
-      finalPageX=latestTouchMoveEvent.getPageX();
-      finalPageY=latestTouchMoveEvent.getPageY();
-    }
- else {
-      finalPageY=flickPageY2;
-      finalPageX=flickPageX2;
-    }
-    double deltaX=finalPageX - flickPageX1;
-    double deltaY=finalPageY - flickPageY1;
-    escalator.scroller.handleFlickScroll(deltaX,deltaY,deltaT);
-    escalator.body.domSorter.reschedule();
-  }
+  xMov.endTouch(event);
+  yMov.endTouch(event);
+  xMov.validate(yMov);
+  yMov.validate(xMov);
+  boolean vert=!xMov.run || yMov.run && Math.abs(yMov.offset) > Math.abs(xMov.offset);
+  double delta=Math.abs((vert ? yMov : xMov).offset);
+  animation.run((int)(3 * DURATION * easingOutExp(delta)));
 }
