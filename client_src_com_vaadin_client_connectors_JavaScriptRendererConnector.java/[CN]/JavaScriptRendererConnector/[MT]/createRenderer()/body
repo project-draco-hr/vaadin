@@ -8,15 +8,18 @@
   final boolean hasOnActivate=hasFunction("onActivate");
   final boolean hasGetConsumedEvents=hasFunction("getConsumedEvents");
   final boolean hasOnBrowserEvent=hasFunction("onBrowserEvent");
-  return new ComplexRenderer<JsonValue>(){
-    @Override public void render(    RendererCellReference cell,    JsonValue data){
-      render(helper.getConnectorWrapper(),getJsCell(cell),Util.json2jso(data));
+  return new ComplexRenderer<Object>(){
+    @Override public void render(    RendererCellReference cell,    Object data){
+      if (data instanceof JsonValue) {
+        data=Util.json2jso((JsonValue)data);
+      }
+      render(helper.getConnectorWrapper(),getJsCell(cell),data);
     }
     private JavaScriptObject getJsCell(    CellReference<?> cell){
       updateCellReference(cellReferenceWrapper,cell);
       return cellReferenceWrapper;
     }
-    public native void render(    JavaScriptObject wrapper,    JavaScriptObject cell,    JavaScriptObject data);
+    public native void render(    JavaScriptObject wrapper,    JavaScriptObject cell,    Object data);
     @Override public void init(    RendererCellReference cell){
       if (hasInit) {
         init(helper.getConnectorWrapper(),getJsCell(cell));

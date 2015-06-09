@@ -1,0 +1,13 @@
+{
+  try {
+    JMethod decodeMethod=ConnectorBundle.findInheritedMethod(type,"decode",type.getOracle().getType(JsonValue.class.getName()));
+    if (decodeMethod == null) {
+      throw new NotFoundException();
+    }
+    return !decodeMethod.getEnclosingType().getQualifiedSourceName().equals(AbstractRendererConnector.class.getName());
+  }
+ catch (  NotFoundException e) {
+    logger.log(Type.ERROR,"Can't find decode method for renderer " + type,e);
+    throw new UnableToCompleteException();
+  }
+}
