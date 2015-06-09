@@ -1,0 +1,17 @@
+{
+  openTestURL();
+  GridElement gridElement=$(GridElement.class).first();
+  gridElement.scrollToRow(999);
+  GridElement.GridRowElement lastRow=gridElement.getRow(999);
+  lastRow.doubleClick();
+  TestBenchElement deco=getSpacerDeco(0);
+  System.out.println("deco.rect = " + deco.getCssValue("clip"));
+  GridElement.GridRowElement nearToBottomRow=gridElement.getRow(993);
+  nearToBottomRow.doubleClick();
+  Thread.sleep(500);
+  nearToBottomRow.doubleClick();
+  deco=getSpacerDeco(0);
+  String clip=deco.getCssValue("clip");
+  System.out.println("deco.rect = " + clip);
+  Assert.assertTrue("Part of lower Row Details is visible, its deco clip height should be positive, but it is negative",clip.indexOf('-') < 0);
+}
