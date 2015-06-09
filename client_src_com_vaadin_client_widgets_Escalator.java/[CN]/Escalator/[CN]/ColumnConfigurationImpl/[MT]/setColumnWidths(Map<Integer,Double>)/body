@@ -8,16 +8,13 @@
   for (  Entry<Integer,Double> entry : indexWidthMap.entrySet()) {
     int index=entry.getKey().intValue();
     double width=entry.getValue().doubleValue();
-    if (index == getColumnCount() - 1) {
-      subpixelBrowserBugDetector.invalidateFix();
-    }
     checkValidColumnIndex(index);
+    width=WidgetUtil.roundSizeDown(width);
     columns.get(index).setWidth(width);
   }
   widthsArray=null;
   header.reapplyColumnWidths();
   body.reapplyColumnWidths();
   footer.reapplyColumnWidths();
-  subpixelBrowserBugDetector.checkAndFix();
   recalculateElementSizes();
 }
