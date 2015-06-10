@@ -1,31 +1,15 @@
-import platform, subprocess, sys, argparse
-from xml.etree import ElementTree
-from os.path import join, isdir, isfile, basename
-from os import listdir, getcwd, mkdir
-from glob import glob
-from shutil import copy
+import subprocess
+from BuildHelpers import mavenValidate, copyWarFiles, repo, getLogFile, parseArgs, mavenCmd, updateRepositories
 archetypeGroup = 'com.vaadin'
-repo = 'http://oss.sonatype.org/content/repositories/comvaadin-%d'
 archetypes = ['vaadin-archetype-widget', 'vaadin-archetype-application', 'vaadin-archetype-application-example', 'vaadin-archetype-application-multimodule']
-resultPath = 'result'
 group = 'testpkg'
+log = None
+args = None
 if (__name__ == '__main__'):
-    mavenCmd = getMavenCommand()
-    if (mavenCmd is None):
-        sys.exit(1)
-    parser = argparse.ArgumentParser(description='Automated staging validation')
-    parser.add_argument('version', type=str, help='Vaadin version to use')
-    parser.add_argument('framework', type=int, help='Framework repo id (comvaadin-XXXX)')
-    parser.add_argument('archetype', type=int, help='Archetype repo id (comvaadin-XXXX)')
-    parser.add_argument('plugin', type=int, help='Maven Plugin repo id (comvaadin-XXXX)')
-    if (len(sys.argv) == 1):
-        args = parser.parse_args(['-h'])
-    else:
-        args = parser.parse_args()
-    if hasattr(args, 'echo'):
-        print args.echo
-        exit(1)
-    if (not isdir(resultPath)):
-        mkdir(resultPath)
-    for a in archetypes:
-        buildArchetype(a)
+    args = parseArgs()
+    for archetype in archetypes:
+        log = getLogFile(archetype)
+        artifactId = generateArchetype(archetype)
+        updateRepositories(artifactId)
+        mavenValidate(artifactId, logFile=log)
+        copyWarFiles(artifactId, name=archetype)
