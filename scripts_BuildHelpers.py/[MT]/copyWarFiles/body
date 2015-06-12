@@ -1,6 +1,7 @@
 def copyWarFiles(artifactId, resultDir=resultPath, name=None):
     if (name is None):
         name = artifactId
+    copiedWars = []
     warFiles = glob(join(getcwd(), artifactId, 'target', '*.war'))
     warFiles.extend(glob(join(getcwd(), artifactId, '*', 'target', '*.war')))
     for warFile in warFiles:
@@ -9,4 +10,6 @@ def copyWarFiles(artifactId, resultDir=resultPath, name=None):
         else:
             deployName = ('%s-%d.war' % (name, warFiles.index(warFile)))
         print ('Copying .war file %s as %s to result folder' % (basename(warFile), deployName))
-        copy(warFile, join(resultDir, ('%s' % deployName)))
+        copy(warFile, join(resultDir, deployName))
+        copiedWars.append(join(resultDir, deployName))
+    return copiedWars

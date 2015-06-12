@@ -1,18 +1,27 @@
-from git import Repo
-from BuildHelpers import updateRepositories, mavenValidate, copyWarFiles, VersionObject, getLogFile, parseArgs
-version = None
-demos = {'dashboard': 'https://github.com/vaadin/dashboard-demo.git', 'parking': 'https://github.com/vaadin/parking-demo.git', 'addressbook': 'https://github.com/vaadin/addressbook.git', 'confirmdialog': 'https://github.com/samie/Vaadin-ConfirmDialog.git', }
+import sys
+try:
+    from git import Repo
+except:
+    print 'BuildDemos depends on gitpython. Install it with `pip install gitpython`'
+    sys.exit(1)
+from BuildHelpers import updateRepositories, mavenValidate, copyWarFiles, getLogFile, removeDir
+from DeployHelpers import deployWar
+demos = {'dashboard': 'https://github.com/vaadin/dashboard-demo.git', 'parking': 'https://github.com/vaadin/parking-demo.git', 'addressbook': 'https://github.com/vaadin/addressbook.git', 'confirmdialog': 'https://github.com/samie/Vaadin-ConfirmDialog.git', 'grid-gwt': 'https://github.com/vaadin/grid-gwt.git', }
 if (__name__ == '__main__'):
-    if (version is None):
-        version = parseArgs()
     for demo in demos:
         print ('Validating demo %s' % demo)
         try:
             checkout(demo, demos[demo])
-            updateRepositories(demo, repoIds=version)
-            mavenValidate(demo, repoIds=version, logFile=getLogFile(demo))
-            copyWarFiles(demo)
+            updateRepositories(demo)
+            mavenValidate(demo, logFile=getLogFile(demo))
+            resultWars = copyWarFiles(demo)
+            for war in resultWars:
+                try:
+                    deployWar(war)
+                except Exception as e:
+                    print ('War %s failed to deploy: %s' % (war, e))
             print ('%s demo validation succeeded!' % demo)
         except:
             print ('%s demo validation failed' % demo)
+        removeDir(demo)
         print ''
