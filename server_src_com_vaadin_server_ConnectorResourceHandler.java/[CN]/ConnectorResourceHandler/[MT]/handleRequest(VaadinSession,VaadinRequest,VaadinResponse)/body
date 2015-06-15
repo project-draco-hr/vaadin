@@ -1,11 +1,13 @@
 {
   String requestPath=request.getPathInfo();
-  if (requestPath == null) {
+  if (requestPath == null || !requestPath.startsWith(CONNECTOR_RESOURCE_PREFIX)) {
     return false;
   }
   Matcher matcher=CONNECTOR_RESOURCE_PATTERN.matcher(requestPath);
   if (!matcher.matches()) {
-    return false;
+    warnAboutInvalidURLEncoding(requestPath);
+    response.sendError(HttpServletResponse.SC_NOT_FOUND,"Connector resource not found");
+    return true;
   }
   String uiId=matcher.group(1);
   String cid=matcher.group(2);

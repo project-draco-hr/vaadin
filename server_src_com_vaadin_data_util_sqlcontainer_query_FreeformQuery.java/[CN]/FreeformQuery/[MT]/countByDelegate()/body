@@ -13,8 +13,12 @@
         pstmt=c.prepareStatement(sh.getQueryString());
         sh.setParameterValuesToStatement(pstmt);
         rs=pstmt.executeQuery();
-        rs.next();
-        count=rs.getInt(1);
+        if (rs.next()) {
+          count=rs.getInt(1);
+        }
+ else {
+          count=0;
+        }
       }
   finally {
         releaseConnection(c,pstmt,rs);
@@ -33,8 +37,12 @@
       try {
         statement=conn.createStatement();
         rs=statement.executeQuery(countQuery);
-        rs.next();
-        count=rs.getInt(1);
+        if (rs.next()) {
+          count=rs.getInt(1);
+        }
+ else {
+          count=0;
+        }
         return count;
       }
   finally {

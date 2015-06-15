@@ -2,12 +2,25 @@
   final int type=event.getTypeInt();
   final int key=event.getKeyCode();
   final boolean editorIsActive=editor.getState() != Editor.State.INACTIVE;
-  final boolean openEvent=eventCell.isBody() && (type == Event.ONDBLCLICK || (type == Event.ONKEYDOWN && key == Editor.KEYCODE_SHOW));
+  double now=Duration.currentTimeMillis();
+  int currentX=WidgetUtil.getTouchOrMouseClientX(event);
+  int currentY=WidgetUtil.getTouchOrMouseClientY(event);
+  final boolean validTouchOpenEvent=event.getTypeInt() == Event.ONTOUCHEND && now - lastTouchEventTime < 500 && lastTouchEventRow == eventCell.getRowIndex() && Math.abs(lastTouchEventX - currentX) < 20 && Math.abs(lastTouchEventY - currentY) < 20;
+  final boolean openEvent=eventCell.isBody() && (event.getTypeInt() == Event.ONDBLCLICK || (event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_SHOW) || validTouchOpenEvent);
+  if (event.getTypeInt() == Event.ONTOUCHSTART) {
+    lastTouchEventX=currentX;
+    lastTouchEventY=currentY;
+  }
+  if (event.getTypeInt() == Event.ONTOUCHEND) {
+    lastTouchEventTime=now;
+    lastTouchEventRow=eventCell.getRowIndex();
+  }
   final boolean moveEvent=eventCell.isBody() && type == Event.ONCLICK;
   final boolean closeEvent=type == Event.ONKEYDOWN && key == Editor.KEYCODE_HIDE;
   if (!editorIsActive && editor.isEnabled() && openEvent) {
     editor.editRow(eventCell.getRowIndex(),eventCell.getColumnIndexDOM());
     fireEvent(new EditorOpenEvent(eventCell));
+    event.preventDefault();
     return true;
   }
  else   if (editorIsActive && moveEvent) {

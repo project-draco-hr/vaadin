@@ -1,0 +1,15 @@
+import subprocess
+from BuildHelpers import mavenValidate, copyWarFiles, repo, getLogFile, parseArgs, mavenCmd, updateRepositories
+archetypeGroup = 'com.vaadin'
+archetypes = ['vaadin-archetype-widget', 'vaadin-archetype-application', 'vaadin-archetype-application-example', 'vaadin-archetype-application-multimodule']
+group = 'testpkg'
+log = None
+args = None
+if (__name__ == '__main__'):
+    args = parseArgs()
+    for archetype in archetypes:
+        log = getLogFile(archetype)
+        artifactId = generateArchetype(archetype)
+        updateRepositories(artifactId)
+        mavenValidate(artifactId, logFile=log)
+        copyWarFiles(artifactId, name=archetype)

@@ -1,0 +1,33 @@
+{
+  List<TestBean> beanList=new ArrayList<TestBean>();
+  beanList.add(new TestBean(1,"name1","descr1"));
+  beanList.add(new TestBean(2,"name2","descr2"));
+  beanList.add(new TestBean(3,"name3","descr3"));
+  beanList.add(new TestBean(4,"name4","descr4"));
+  beanList.add(new TestBean(5,"name5","descr5"));
+  BeanItemContainer<TestBean> container=new BeanItemContainer<TestBean>(TestBean.class,beanList);
+  VerticalLayout layout=new VerticalLayout();
+  final Table table=new Table("Test Table");
+  table.setContainerDataSource(container);
+  table.setVisibleColumns(new Object[]{"id","name","descr"});
+  layout.addComponent(table);
+  Button buttonChangeOrderAndWidth=new Button("Change order and width",new Button.ClickListener(){
+    @Override public void buttonClick(    Button.ClickEvent clickEvent){
+      table.setVisibleColumns(new Object[]{"name","descr","id"});
+      table.setColumnWidth("descr",NEW_COLUMN_WIDTH);
+    }
+  }
+);
+  buttonChangeOrderAndWidth.setId(BUTTON_CHANGE_ORDER_AND_WIDTH_ID);
+  Button buttonChangeColumnCountAndWidth=new Button("Change columns count and width",new Button.ClickListener(){
+    @Override public void buttonClick(    Button.ClickEvent clickEvent){
+      table.setVisibleColumns(new Object[]{"name","descr"});
+      table.setColumnWidth("descr",NEW_COLUMN_WIDTH);
+    }
+  }
+);
+  buttonChangeColumnCountAndWidth.setId(BUTTON_CHANGE_COLUMN_COUNT_AND_WIDTH);
+  layout.addComponent(buttonChangeOrderAndWidth);
+  layout.addComponent(buttonChangeColumnCountAndWidth);
+  addComponents(layout);
+}

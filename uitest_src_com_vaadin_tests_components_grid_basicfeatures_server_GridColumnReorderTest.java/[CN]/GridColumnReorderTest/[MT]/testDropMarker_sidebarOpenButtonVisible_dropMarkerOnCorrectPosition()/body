@@ -1,0 +1,13 @@
+{
+  openTestURL("theme=runo");
+  selectMenuPath("Component","Size","Width","100%");
+  selectMenuPath("Component","Columns","All columns hidable");
+  toggleColumnReordering();
+  scrollGridHorizontallyTo(100000);
+  new Actions(getDriver()).clickAndHold(getDefaultColumnHeader(10)).moveByOffset(800,0).build().perform();
+  WebElement dragDropMarker=findElement(By.className("v-grid-drop-marker"));
+  WebElement sidebar=findElement(By.className("v-grid-sidebar"));
+  int dragDropMarkerX=dragDropMarker.getLocation().getX();
+  int sidebarX=sidebar.getLocation().getX();
+  assertTrue("Drop marker misplaced " + dragDropMarkerX + " compared to sidebar open button "+ sidebarX,dragDropMarkerX <= sidebarX);
+}
