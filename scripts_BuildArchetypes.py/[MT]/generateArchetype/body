@@ -10,6 +10,8 @@ def generateArchetype(archetype):
     cmd.append(('-DartifactId=%s' % artifactId))
     cmd.append('-Dversion=1.0-SNAPSHOT')
     cmd.append('-DinteractiveMode=false')
+    if (hasattr(args, 'maven') and (args.maven is not None)):
+        cmd.extends(args.maven.split(' '))
     print ('Generating pom.xml for archetype %s' % archetype)
     subprocess.check_call(cmd, stdout=log)
     return artifactId

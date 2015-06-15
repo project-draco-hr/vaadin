@@ -1,5 +1,5 @@
 import subprocess
-from BuildHelpers import mavenValidate, copyWarFiles, repo, getLogFile, mavenCmd, updateRepositories, getArgs, removeDir
+from BuildHelpers import mavenValidate, copyWarFiles, repo, getLogFile, mavenCmd, updateRepositories, getArgs, removeDir, parser
 from DeployHelpers import deployWar
 archetypeGroup = 'com.vaadin'
 archetypes = ['vaadin-archetype-widget', 'vaadin-archetype-application', 'vaadin-archetype-application-example', 'vaadin-archetype-application-multimodule']
@@ -7,6 +7,10 @@ group = 'testpkg'
 log = None
 args = None
 if (__name__ == '__main__'):
+    parser.add_argument('framework', type=int, help='Framework repo id (comvaadin-XXXX)', nargs='?')
+    parser.add_argument('archetype', type=int, help='Archetype repo id (comvaadin-XXXX)', nargs='?')
+    parser.add_argument('plugin', type=int, help='Maven Plugin repo id (comvaadin-XXXX)', nargs='?')
+    archetypesFailed = False
     args = getArgs()
     for archetype in archetypes:
         try:
@@ -20,7 +24,11 @@ if (__name__ == '__main__'):
                     deployWar(war, ('%s.war' % archetype.split('-', 2)[2]))
                 except Exception as e:
                     print ('War %s failed to deploy: %s' % (war, e))
+                    archetypesFailed = True
         except:
             print ('Archetype %s build failed' % archetype)
+            archetypesFailed = True
         removeDir(artifactId)
         print ''
+    if archetypesFailed:
+        sys.exit(1)
