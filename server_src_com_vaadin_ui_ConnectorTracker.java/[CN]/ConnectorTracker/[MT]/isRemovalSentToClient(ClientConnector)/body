@@ -1,0 +1,22 @@
+{
+  VaadinRequest request=VaadinService.getCurrentRequest();
+  if (request == null) {
+    return true;
+  }
+  String attributeName=ConnectorHierarchyWriter.class.getName() + ".hierarchyInfo";
+  Object hierarchyInfoObj=request.getAttribute(attributeName);
+  if (hierarchyInfoObj instanceof JsonObject) {
+    JsonObject hierachyInfo=(JsonObject)hierarchyInfoObj;
+    ClientConnector firstVisibleParent=findFirstVisibleParent(connector);
+    if (firstVisibleParent == null) {
+      return true;
+    }
+    if (!hierachyInfo.hasKey(firstVisibleParent.getConnectorId())) {
+      return false;
+    }
+  }
+ else {
+    getLogger().warning("Request attribute " + attributeName + " is not a JsonObject");
+  }
+  return true;
+}
