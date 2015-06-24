@@ -1,0 +1,23 @@
+{
+  $(TabSheetElement.class).first().openTab(1);
+  int[] movements={-210,-360,-320,-70,-165,-20,-120,-260};
+  int[] finalPositions={52,52,100,100,413,413,400,400};
+  List<VerticalSplitPanelElement> splits=$(VerticalSplitPanelElement.class).all();
+  Actions actions=new Actions(driver);
+  for (int i=0; i < splits.size(); i++) {
+    TestBenchElement splitter=splits.get(i).getSplitter();
+    actions.clickAndHold(splitter).moveByOffset(0,movements[i]).release().perform();
+    double newY=parseVerticalPosition(splitter,i < 4);
+    int expectedY=finalPositions[i];
+    assertTrue("When moving up, the splitter at index " + i + " was at position "+ newY+ " (expected "+ expectedY+ ").",Math.abs(newY - expectedY) <= 1);
+  }
+  movements=new int[]{380,380,370,370,380,380,320,320};
+  finalPositions=new int[]{413,413,450,450,52,52,100,100};
+  for (int i=0; i < splits.size(); i++) {
+    TestBenchElement splitter=splits.get(i).getSplitter();
+    actions.clickAndHold(splitter).moveByOffset(0,movements[i]).release().perform();
+    double newY=parseVerticalPosition(splitter,i < 4);
+    int expectedY=finalPositions[i];
+    assertTrue("When moving down, the splitter at index " + i + " was at position "+ newY+ " (expected "+ expectedY+ ").",Math.abs(newY - expectedY) <= 1);
+  }
+}
