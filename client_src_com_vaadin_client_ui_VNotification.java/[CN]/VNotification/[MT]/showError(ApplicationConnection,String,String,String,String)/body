@@ -2,29 +2,32 @@
   StringBuilder html=new StringBuilder();
   if (caption != null) {
     html.append("<h1 class='");
-    html.append(VNotification.getDependentStyle(this,VNotification.CAPTION));
+    html.append(getDependentStyle(connection,CAPTION));
     html.append("'>");
     html.append(caption);
     html.append("</h1>");
   }
   if (message != null) {
     html.append("<p class='");
-    html.append(VNotification.getDependentStyle(this,VNotification.DESCRIPTION));
+    html.append(getDependentStyle(connection,DESCRIPTION));
     html.append("'>");
     html.append(message);
     html.append("</p>");
   }
   if (html.length() > 0) {
     if (details != null) {
-      html.append("<p><i style=\"font-size:0.7em\">");
+      html.append("<p class='");
+      html.append(getDependentStyle(connection,DETAILS));
+      html.append("'>");
+      html.append("<i style=\"font-size:0.7em\">");
       html.append(details);
       html.append("</i></p>");
     }
-    VNotification n=VNotification.createNotification(1000 * 60 * 45,uIConnector.getWidget());
+    VNotification n=VNotification.createNotification(1000 * 60 * 45,connection.getUIConnector().getWidget());
     n.addEventListener(new NotificationRedirect(url));
     n.show(html.toString(),VNotification.CENTERED_TOP,VNotification.STYLE_SYSTEM);
   }
  else {
-    redirect(url);
+    ApplicationConnection.redirect(url);
   }
 }
