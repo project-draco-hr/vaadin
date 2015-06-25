@@ -6,7 +6,18 @@
       slot.getWrapperElement().getStyle().setWidth(100,Unit.PCT);
     }
     Element slotWrapper=slot.getWrapperElement();
-    getElement().appendChild(slotWrapper);
+    int childIndex=ordering.indexOf(component);
+    com.google.gwt.user.client.Element element=getElement();
+    if (childIndex == ordering.size()) {
+      element.appendChild(slotWrapper);
+    }
+ else     if (childIndex == 0) {
+      element.insertAfter(slotWrapper,spacingMeasureElement);
+    }
+ else {
+      Element previousSlot=(Element)element.getChild(childIndex);
+      element.insertAfter(slotWrapper,previousSlot);
+    }
     Widget widget=component.getWidget();
     insert(widget,slotWrapper,getWidgetCount(),false);
     Cell oldCell=widgetToCell.put(widget,this);
