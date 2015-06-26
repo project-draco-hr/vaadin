@@ -1,0 +1,16 @@
+{
+  for (int times=0; times < Parameters.getMaxScreenshotRetries(); times++) {
+    BufferedImage screenshotImage=cropToElement(element,ImageIO.read(new ByteArrayInputStream(((TakesScreenshot)actualDriver).getScreenshotAs(OutputType.BYTES))),isIE8);
+    if (reference == null) {
+      ImageFileUtil.createScreenshotDirectoriesIfNeeded();
+      ImageIO.write(screenshotImage,"png",ImageFileUtil.getErrorScreenshotFile(referenceName));
+      getLogger().severe("No reference found for " + referenceName + " in "+ ImageFileUtil.getScreenshotReferenceDirectory());
+      return false;
+    }
+    if (imageComparison.imageEqualToReference(screenshotImage,reference,referenceName,Parameters.getScreenshotComparisonTolerance())) {
+      return true;
+    }
+    pause(Parameters.getScreenshotRetryDelay());
+  }
+  return false;
+}
