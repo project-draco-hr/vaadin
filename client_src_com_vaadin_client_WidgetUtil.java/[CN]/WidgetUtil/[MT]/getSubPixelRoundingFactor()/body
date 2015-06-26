@@ -1,0 +1,25 @@
+{
+  if (detectedSubPixelRoundingFactor != -1) {
+    return detectedSubPixelRoundingFactor;
+  }
+  double probeSize=0.999999;
+  DivElement div=Document.get().createDivElement();
+  Document.get().getBody().appendChild(div);
+  div.getStyle().setHeight(probeSize,Unit.PX);
+  ComputedStyle computedStyle=new ComputedStyle(div);
+  double computedHeight=computedStyle.getHeight();
+  if (computedHeight < probeSize) {
+    detectedSubPixelRoundingFactor=(int)Math.round(1.0 / (1.0 - computedHeight));
+  }
+ else {
+    probeSize=1;
+    while (computedStyle.getHeight() != 0.0) {
+      computedHeight=computedStyle.getHeight();
+      probeSize/=2.0;
+      div.getStyle().setHeight(probeSize,Unit.PX);
+    }
+    detectedSubPixelRoundingFactor=(int)Math.round(1.0 / computedHeight);
+  }
+  div.removeFromParent();
+  return detectedSubPixelRoundingFactor;
+}

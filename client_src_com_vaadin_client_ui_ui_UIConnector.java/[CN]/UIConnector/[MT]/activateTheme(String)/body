@@ -3,6 +3,7 @@
     getWidget().getParent().removeStyleName(activeTheme);
     VOverlay.getOverlayContainer(getConnection()).removeClassName(activeTheme);
   }
+  String oldThemeBase=getConnection().translateVaadinUri("theme://");
   activeTheme=newTheme;
   if (newTheme != null) {
     getWidget().getParent().addStyleName(newTheme);
@@ -10,5 +11,7 @@
     updateVaadinFavicon(newTheme);
   }
   forceStateChangeRecursively(UIConnector.this);
+  String newThemeBase=getConnection().translateVaadinUri("theme://");
+  replaceThemeAttribute(oldThemeBase,newThemeBase);
   getLayoutManager().forceLayout();
 }
