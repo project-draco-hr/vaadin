@@ -1,0 +1,15 @@
+{
+  if (useUriFragments && historyHandlerRegistration == null) {
+    updateFromHistoryToken(History.getToken());
+    historyHandlerRegistration=History.addValueChangeHandler(new ValueChangeHandler<String>(){
+      @Override public void onValueChange(      ValueChangeEvent<String> event){
+        updateFromHistoryToken(event.getValue());
+      }
+    }
+);
+  }
+ else   if (!useUriFragments && historyHandlerRegistration != null) {
+    historyHandlerRegistration.removeHandler();
+    historyHandlerRegistration=null;
+  }
+}

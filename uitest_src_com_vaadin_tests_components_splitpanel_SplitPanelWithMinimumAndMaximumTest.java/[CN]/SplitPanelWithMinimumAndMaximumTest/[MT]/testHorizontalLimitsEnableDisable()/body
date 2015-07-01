@@ -1,0 +1,34 @@
+{
+  $(TabSheetElement.class).first().openTab(2);
+  int[] movements={-260,-70,500,130};
+  int[] finalPositions={60,0,478,591};
+  HorizontalSplitPanelElement split=$(HorizontalSplitPanelElement.class).first();
+  TestBenchElement splitter=split.getSplitter();
+  Actions actions=new Actions(driver);
+  actions.clickAndHold(splitter).moveByOffset(movements[0],0).release().perform();
+  double newX=parseHorizontalPosition(splitter,true);
+  int expectedX=finalPositions[0];
+  assertTrue("When moving to left limit, the splitter was at position " + newX + " (expected "+ expectedX+ ").",Math.abs(newX - expectedX) <= 1);
+  $(ButtonElement.class).get(0).click();
+  actions.clickAndHold(splitter).moveByOffset(movements[1],0).release().perform();
+  newX=parseHorizontalPosition(splitter,true);
+  expectedX=finalPositions[1];
+  assertTrue("When moving to absolute left, the splitter was at position " + newX + " (expected "+ expectedX+ ").",Math.abs(newX - expectedX) <= 1);
+  $(ButtonElement.class).get(1).click();
+  newX=parseHorizontalPosition(splitter,true);
+  expectedX=finalPositions[0];
+  assertTrue("When re-enabling the left limit, the splitter was at position " + newX + " (expected "+ expectedX+ ").",Math.abs(newX - expectedX) <= 1);
+  actions.clickAndHold(splitter).moveByOffset(movements[2],0).release().perform();
+  newX=parseHorizontalPosition(splitter,true);
+  expectedX=finalPositions[2];
+  assertTrue("When moving to right limit, the splitter was at position " + newX + " (expected "+ expectedX+ ").",Math.abs(newX - expectedX) <= 1);
+  $(ButtonElement.class).get(2).click();
+  actions.clickAndHold(splitter).moveByOffset(movements[3],0).release().perform();
+  newX=parseHorizontalPosition(splitter,true);
+  expectedX=finalPositions[3];
+  assertTrue("When moving to absolute right, the splitter was at position " + newX + " (expected "+ expectedX+ ").",Math.abs(newX - expectedX) <= 1);
+  $(ButtonElement.class).get(3).click();
+  newX=parseHorizontalPosition(splitter,true);
+  expectedX=finalPositions[2];
+  assertTrue("When re-enabling the right limit, the splitter was at position " + newX + " (expected "+ expectedX+ ").",Math.abs(newX - expectedX) <= 1);
+}

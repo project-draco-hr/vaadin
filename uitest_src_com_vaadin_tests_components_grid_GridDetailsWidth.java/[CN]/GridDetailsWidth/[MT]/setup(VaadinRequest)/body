@@ -1,0 +1,35 @@
+{
+  final VerticalLayout layout=new VerticalLayout();
+  layout.setMargin(true);
+  final Grid grid=new Grid();
+  Column column=grid.addColumn("Hello",String.class);
+  for (int i=0; i < 3; i++) {
+    grid.addRow("Hello " + i);
+  }
+  column.setWidth(600);
+  grid.setWidth(400,Unit.PIXELS);
+  grid.setDetailsGenerator(new DetailsGenerator(){
+    @Override public Component getDetails(    RowReference rowReference){
+      HorizontalLayout myLayout=new HorizontalLayout();
+      TextArea textArea1=new TextArea();
+      TextArea textArea2=new TextArea();
+      textArea1.setSizeFull();
+      textArea2.setSizeFull();
+      myLayout.addComponent(textArea1);
+      myLayout.addComponent(textArea2);
+      myLayout.setWidth(100,Unit.PERCENTAGE);
+      myLayout.setHeight(null);
+      myLayout.setMargin(true);
+      return myLayout;
+    }
+  }
+);
+  grid.addItemClickListener(new ItemClickListener(){
+    @Override public void itemClick(    ItemClickEvent event){
+      grid.setDetailsVisible(event.getItemId(),!grid.isDetailsVisible(event.getItemId()));
+    }
+  }
+);
+  layout.addComponent(grid);
+  addComponent(layout);
+}

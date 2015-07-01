@@ -1,0 +1,24 @@
+{
+  Point loc=element.getLocation();
+  Dimension size=element.getSize();
+  int x=loc.x, y=loc.y;
+  int w=size.width;
+  int h=size.height;
+  if (isIE8) {
+    x+=2;
+    y+=2;
+  }
+  if (x >= 0 && x < fullScreen.getWidth()) {
+    w=Math.min(fullScreen.getWidth() - x,w);
+  }
+ else {
+    throw new IOException("Element x is outside the screenshot (x: " + x + ", y: "+ y+ ")");
+  }
+  if (y >= 0 && y < fullScreen.getHeight()) {
+    h=Math.min(fullScreen.getHeight() - y,h);
+  }
+ else {
+    throw new IOException("Element y is outside the screenshot (x: " + x + ", y: "+ y+ ")");
+  }
+  return fullScreen.getSubimage(x,y,w,h);
+}
