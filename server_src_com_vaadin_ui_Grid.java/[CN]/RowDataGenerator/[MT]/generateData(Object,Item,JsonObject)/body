@@ -1,26 +1,26 @@
 {
-  RowReference r=new RowReference(Grid.this);
-  r.set(itemId);
+  RowReference row=new RowReference(Grid.this);
+  row.set(itemId);
   if (rowStyleGenerator != null) {
-    String style=rowStyleGenerator.getStyle(r);
-    if (style != null && !style.isEmpty()) {
-      rowData.put(GridState.JSONKEY_ROWSTYLE,style);
-    }
+    String style=rowStyleGenerator.getStyle(row);
+    put(GridState.JSONKEY_ROWSTYLE,style,rowData);
+  }
+  if (rowDescriptionGenerator != null) {
+    String description=rowDescriptionGenerator.getDescription(row);
+    put(GridState.JSONKEY_ROWDESCRIPTION,description,rowData);
   }
   JsonObject cellStyles=Json.createObject();
   JsonObject cellData=Json.createObject();
+  JsonObject cellDescriptions=Json.createObject();
+  CellReference cell=new CellReference(row);
   for (  Column column : getColumns()) {
-    Object propertyId=column.getPropertyId();
-    String columnId=columnKeys.key(propertyId);
-    cellData.put(columnId,getRendererData(column,item));
-    if (cellStyleGenerator != null) {
-      CellReference c=new CellReference(r);
-      c.set(propertyId);
-      String style=cellStyleGenerator.getStyle(c);
-      if (style != null && !style.isEmpty()) {
-        cellStyles.put(columnId,style);
-      }
-    }
+    cell.set(column.getPropertyId());
+    writeData(cell,cellData);
+    writeStyles(cell,cellStyles);
+    writeDescriptions(cell,cellDescriptions);
+  }
+  if (cellDescriptionGenerator != null && cellDescriptions.keys().length > 0) {
+    rowData.put(GridState.JSONKEY_CELLDESCRIPTION,cellDescriptions);
   }
   if (cellStyleGenerator != null && cellStyles.keys().length > 0) {
     rowData.put(GridState.JSONKEY_CELLSTYLES,cellStyles);
