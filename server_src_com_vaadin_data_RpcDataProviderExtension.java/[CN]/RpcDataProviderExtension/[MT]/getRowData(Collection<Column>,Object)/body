@@ -1,27 +1,8 @@
 {
   Item item=container.getItem(itemId);
-  JsonObject rowData=Json.createObject();
-  Grid grid=getGrid();
-  for (  Column column : columns) {
-    Object propertyId=column.getPropertyId();
-    Object propertyValue=item.getItemProperty(propertyId).getValue();
-    JsonValue encodedValue=encodeValue(propertyValue,column.getRenderer(),column.getConverter(),grid.getLocale());
-    rowData.put(columnKeys.key(propertyId),encodedValue);
-  }
   final JsonObject rowObject=Json.createObject();
-  rowObject.put(GridState.JSONKEY_DATA,rowData);
-  rowObject.put(GridState.JSONKEY_ROWKEY,keyMapper.getKey(itemId));
-  if (visibleDetails.contains(itemId)) {
-    rowObject.put(GridState.JSONKEY_DETAILS_VISIBLE,true);
-  }
-  rowReference.set(itemId);
-  CellStyleGenerator cellStyleGenerator=grid.getCellStyleGenerator();
-  if (cellStyleGenerator != null) {
-    setGeneratedCellStyles(cellStyleGenerator,rowObject,columns);
-  }
-  RowStyleGenerator rowStyleGenerator=grid.getRowStyleGenerator();
-  if (rowStyleGenerator != null) {
-    setGeneratedRowStyles(rowStyleGenerator,rowObject);
+  for (  DataGenerator dg : dataGenerators) {
+    dg.generateData(itemId,item,rowObject);
   }
   return rowObject;
 }

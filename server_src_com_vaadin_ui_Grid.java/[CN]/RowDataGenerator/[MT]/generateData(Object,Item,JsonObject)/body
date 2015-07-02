@@ -1,0 +1,29 @@
+{
+  RowReference r=new RowReference(Grid.this);
+  r.set(itemId);
+  if (rowStyleGenerator != null) {
+    String style=rowStyleGenerator.getStyle(r);
+    if (style != null && !style.isEmpty()) {
+      rowData.put(GridState.JSONKEY_ROWSTYLE,style);
+    }
+  }
+  JsonObject cellStyles=Json.createObject();
+  JsonObject cellData=Json.createObject();
+  for (  Column column : getColumns()) {
+    Object propertyId=column.getPropertyId();
+    String columnId=columnKeys.key(propertyId);
+    cellData.put(columnId,getRendererData(column,item));
+    if (cellStyleGenerator != null) {
+      CellReference c=new CellReference(r);
+      c.set(propertyId);
+      String style=cellStyleGenerator.getStyle(c);
+      if (style != null && !style.isEmpty()) {
+        cellStyles.put(columnId,style);
+      }
+    }
+  }
+  if (cellStyleGenerator != null && cellStyles.keys().length > 0) {
+    rowData.put(GridState.JSONKEY_CELLSTYLES,cellStyles);
+  }
+  rowData.put(GridState.JSONKEY_DATA,cellData);
+}
