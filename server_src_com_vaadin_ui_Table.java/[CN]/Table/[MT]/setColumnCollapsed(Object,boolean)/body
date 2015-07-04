@@ -5,11 +5,18 @@
   if (collapsed && noncollapsibleColumns.contains(propertyId)) {
     throw new IllegalStateException("The column is noncollapsible!");
   }
+  if (!getContainerPropertyIds().contains(propertyId)) {
+    throw new IllegalArgumentException("Property '" + propertyId + "' was not found in the container");
+  }
   if (collapsed) {
-    collapsedColumns.add(propertyId);
+    if (collapsedColumns.add(propertyId)) {
+      fireColumnCollapseEvent(propertyId);
+    }
   }
  else {
-    collapsedColumns.remove(propertyId);
+    if (collapsedColumns.remove(propertyId)) {
+      fireColumnCollapseEvent(propertyId);
+    }
   }
   refreshRowCache();
 }
