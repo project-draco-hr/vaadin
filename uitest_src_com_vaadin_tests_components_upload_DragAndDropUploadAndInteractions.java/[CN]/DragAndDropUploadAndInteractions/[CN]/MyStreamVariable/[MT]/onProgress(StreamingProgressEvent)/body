@@ -1,0 +1,12 @@
+{
+  long received=event.getBytesReceived() - lastEvent;
+  long now=new Date().getTime();
+  long time=now - lastTime;
+  lastTime=now;
+  lastEvent=event.getBytesReceived();
+  if (time == 0) {
+    return;
+  }
+  log("Received " + received + " bytes in "+ time+ "ms: "+ formatSize(received / (time / 1000.0))+ "/s");
+  log("Streaming OnProgress - ContentLength: " + formatSize(event.getContentLength()) + " - Bytes Received: "+ formatSize(event.getBytesReceived()));
+}
