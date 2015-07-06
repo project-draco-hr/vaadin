@@ -1,0 +1,24 @@
+{
+  super.setGrid(grid);
+  if (grid != null) {
+    renderer=createSelectionColumnRenderer(grid);
+    selectAll=getGrid().addSelectAllHandler(new SelectAllHandler<JsonObject>(){
+      @Override public void onSelectAll(      SelectAllEvent<JsonObject> event){
+        selectAll();
+      }
+    }
+);
+    dataAvailable=getGrid().addDataAvailableHandler(new DataAvailableHandler(){
+      @Override public void onDataAvailable(      DataAvailableEvent event){
+        availableRows=event.getAvailableRows();
+      }
+    }
+);
+  }
+ else   if (renderer != null) {
+    renderer.destroy();
+    selectAll.removeHandler();
+    dataAvailable.removeHandler();
+    renderer=null;
+  }
+}
