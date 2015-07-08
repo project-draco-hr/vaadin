@@ -23,7 +23,7 @@
     event.preventDefault();
     return true;
   }
- else   if (editorIsActive && moveEvent) {
+ else   if (editorIsActive && !editor.isBuffered() && moveEvent) {
     cellFocusHandler.setCellFocus(eventCell);
     editor.editRow(eventCell.getRowIndex(),eventCell.getColumnIndexDOM());
     fireEvent(new EditorMoveEvent(eventCell));
@@ -34,5 +34,5 @@
     FocusUtil.setFocus(this,true);
     return true;
   }
-  return editorIsActive;
+  return editor.isBuffered() && editorIsActive;
 }
