@@ -1,5 +1,5 @@
-import subprocess
-from BuildHelpers import mavenValidate, copyWarFiles, repo, getLogFile, mavenCmd, updateRepositories, getArgs, removeDir, parser, resultPath
+import subprocess, sys
+from BuildHelpers import mavenValidate, copyWarFiles, getLogFile, mavenCmd, updateRepositories, getArgs, removeDir, parser, resultPath
 from DeployHelpers import deployWar
 archetypeGroup = 'com.vaadin'
 archetypes = ['vaadin-archetype-widget', 'vaadin-archetype-application', 'vaadin-archetype-application-example', 'vaadin-archetype-application-multimodule']
@@ -10,23 +10,27 @@ if (__name__ == '__main__'):
     parser.add_argument('framework', type=int, help='Framework repo id (comvaadin-XXXX)', nargs='?')
     parser.add_argument('archetype', type=int, help='Archetype repo id (comvaadin-XXXX)', nargs='?')
     parser.add_argument('plugin', type=int, help='Maven Plugin repo id (comvaadin-XXXX)', nargs='?')
+    parser.add_argument('--repo', type=str, help='Staging repository template', required=True)
     archetypesFailed = False
     args = getArgs()
+    if (hasattr(args, 'artifactPath') and (args.artifactPath is not None)):
+        raise Exception('Archetype validation build does not support artifactPath')
     for archetype in archetypes:
+        artifactId = ('test-%s-%s' % (archetype, args.version.replace('.', '-')))
         try:
             log = getLogFile(archetype)
-            artifactId = generateArchetype(archetype)
+            generateArchetype(archetype, artifactId)
             updateRepositories(artifactId)
             mavenValidate(artifactId, logFile=log)
             warFiles = copyWarFiles(artifactId, name=archetype)
             for war in warFiles:
                 try:
-                    deployWar(war, ('%s.war' % archetype.split('-', 2)[2]))
+                    deployWar(war, ('%s-%s.war' % (archetype.split('-', 2)[2], args.version)))
                 except Exception as e:
                     print ('War %s failed to deploy: %s' % (war, e))
                     archetypesFailed = True
-        except:
-            print ('Archetype %s build failed' % archetype)
+        except Exception as e:
+            print ('Archetype %s build failed' % (archetype, e))
             archetypesFailed = True
         removeDir(artifactId)
         print ''

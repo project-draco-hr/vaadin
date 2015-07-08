@@ -3,10 +3,7 @@ def updateRepositories(path, repoIds=None, repoUrl=repo):
         repoIds = getArgs()
     pomXml = join(path, 'pom.xml')
     if isfile(pomXml):
-        root = ElementTree.parse(pomXml).getroot()
-        nameSpace = root.tag[1:root.tag.index('}')]
-        ElementTree.register_namespace('', nameSpace)
-        tree = ElementTree.parse(pomXml)
+        (tree, nameSpace) = readPomFile(pomXml)
         repoNode = tree.getroot().find(('{%s}repositories' % nameSpace))
     else:
         return
