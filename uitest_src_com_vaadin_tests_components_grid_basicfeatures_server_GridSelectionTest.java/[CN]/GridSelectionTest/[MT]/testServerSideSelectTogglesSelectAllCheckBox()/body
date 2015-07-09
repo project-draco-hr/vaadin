@@ -1,0 +1,17 @@
+{
+  openTestURL();
+  setSelectionModelMulti();
+  GridCellElement header=getGridElement().getHeaderCell(0,0);
+  WebElement selectAll=header.findElement(By.tagName("input"));
+  selectMenuPath("Component","State","Select all");
+  waitUntilCheckBoxValue(selectAll,true);
+  assertTrue("Select all CheckBox wasn't selected as expected",selectAll.isSelected());
+  selectMenuPath("Component","State","Select none");
+  waitUntilCheckBoxValue(selectAll,false);
+  assertFalse("Select all CheckBox was selected unexpectedly",selectAll.isSelected());
+  selectMenuPath("Component","State","Select all");
+  waitUntilCheckBoxValue(selectAll,true);
+  getGridElement().getCell(5,0).click();
+  waitUntilCheckBoxValue(selectAll,false);
+  assertFalse("Select all CheckBox was selected unexpectedly",selectAll.isSelected());
+}
