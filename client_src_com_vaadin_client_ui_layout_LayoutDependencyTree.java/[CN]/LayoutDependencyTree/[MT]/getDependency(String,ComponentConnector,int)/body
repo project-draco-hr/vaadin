@@ -4,6 +4,10 @@
   if (dependency == null) {
     if (connector == null) {
       connector=(ComponentConnector)ConnectorMap.get(connection).getConnector(connectorId);
+      if (connector == null) {
+        getLogger().warning("No connector found for id " + connectorId + " while creating LayoutDependency");
+        return null;
+      }
     }
     dependency=new LayoutDependency(connector,direction);
     dependencies.put(connectorId,dependency);
