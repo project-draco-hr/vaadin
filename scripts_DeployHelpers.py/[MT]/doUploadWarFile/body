@@ -1,0 +1,5 @@
+def doUploadWarFile(warFile):
+    result = requests.post(('%s/add-content' % getUrl()), files={'file': open(warFile, 'rb'), }, auth=getAuth()).json()
+    if (('outcome' not in result) or (result['outcome'] != 'success')):
+        raise Exception('File upload failed.', result)
+    return result['result']

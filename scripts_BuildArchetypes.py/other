@@ -1,15 +1,35 @@
-import subprocess
-from BuildHelpers import mavenValidate, copyWarFiles, repo, getLogFile, parseArgs, mavenCmd, updateRepositories
+import subprocess, sys
+from os.path import join
 archetypeGroup = 'com.vaadin'
 archetypes = ['vaadin-archetype-widget', 'vaadin-archetype-application', 'vaadin-archetype-application-example', 'vaadin-archetype-application-multimodule']
 group = 'testpkg'
 log = None
 args = None
 if (__name__ == '__main__'):
-    args = parseArgs()
+    from BuildHelpers import mavenValidate, copyWarFiles, getLogFile, mavenCmd, updateRepositories, getArgs, removeDir, parser, resultPath
+    from DeployHelpers import deployWar
+    parser.add_argument('--repo', type=str, help='Staging repository URL', required=True)
+    archetypesFailed = False
+    args = getArgs()
+    if (hasattr(args, 'artifactPath') and (args.artifactPath is not None)):
+        raise Exception('Archetype validation build does not support artifactPath')
     for archetype in archetypes:
-        log = getLogFile(archetype)
-        artifactId = generateArchetype(archetype)
-        updateRepositories(artifactId)
-        mavenValidate(artifactId, logFile=log)
-        copyWarFiles(artifactId, name=archetype)
+        artifactId = ('test-%s-%s' % (archetype, args.version.replace('.', '-')))
+        try:
+            log = getLogFile(archetype)
+            generateArchetype(archetype, artifactId, args.repo)
+            updateRepositories(join(resultPath, artifactId), args.repo)
+            mavenValidate(artifactId, logFile=log)
+            warFiles = copyWarFiles(artifactId, name=archetype)
+            for war in warFiles:
+                try:
+                    deployWar(war, ('%s.war' % getDeploymentContext(archetype, args.version)))
+                except Exception as e:
+                    print ('War %s failed to deploy: %s' % (war, e))
+                    archetypesFailed = True
+        except Exception as e:
+            print (('Archetype %s build failed:' % archetype), e)
+            archetypesFailed = True
+        print ''
+    if archetypesFailed:
+        sys.exit(1)

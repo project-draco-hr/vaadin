@@ -1,26 +1,21 @@
-def updateRepositories(path, repoIds=None, repoUrl=repo):
-    if (repoIds is None):
-        repoIds = getArgs()
+def updateRepositories(path, repoUrl=None, version=None):
+    if (version is None):
+        version = getArgs().version
     pomXml = join(path, 'pom.xml')
     if isfile(pomXml):
-        root = ElementTree.parse(pomXml).getroot()
-        nameSpace = root.tag[1:root.tag.index('}')]
-        ElementTree.register_namespace('', nameSpace)
-        tree = ElementTree.parse(pomXml)
+        (tree, nameSpace) = readPomFile(pomXml)
         repoNode = tree.getroot().find(('{%s}repositories' % nameSpace))
     else:
         return
     if (repoNode is not None):
         print ('Add staging repositories to ' + pomXml)
-        if (hasattr(repoIds, 'framework') and (repoIds.framework is not None)):
-            addRepo(repoNode, 'repository', ('vaadin-%s-staging' % repoIds.version), (repoUrl % repoIds.framework))
+        addRepo(repoNode, 'repository', ('vaadin-%s-staging' % version), repoUrl)
         pluginRepo = tree.getroot().find(('{%s}pluginRepositories' % nameSpace))
         if (pluginRepo is None):
             pluginRepo = ElementTree.SubElement(tree.getroot(), 'pluginRepositories')
-        if (hasattr(repoIds, 'plugin') and (repoIds.plugin is not None)):
-            addRepo(pluginRepo, 'pluginRepository', ('vaadin-%s-plugin-staging' % repoIds.version), (repoUrl % repoIds.plugin))
+        addRepo(pluginRepo, 'pluginRepository', ('vaadin-%s-plugin-staging' % version), repoUrl)
         tree.write(pomXml, encoding='UTF-8')
     for i in listdir(path):
         file = join(path, i)
         if isdir(file):
-            updateRepositories(join(path, i), repoIds, repoUrl)
+            updateRepositories(join(path, i), repoUrl, version)

@@ -1,0 +1,26 @@
+{
+  BeanItemContainer<GridExampleBean> container=new BeanItemContainer<GridExampleBean>(GridExampleBean.class);
+  for (int i=0; i < 1000; i++) {
+    container.addItem(new GridExampleBean("Bean " + i,i * i,i / 10d));
+  }
+  final Grid grid=new Grid(container);
+  grid.setColumnOrder("name","amount","count");
+  grid.setSizeFull();
+  grid.setDetailsGenerator(new DetailsGenerator(){
+    @Override public Component getDetails(    RowReference rowReference){
+      final GridExampleBean bean=(GridExampleBean)rowReference.getItemId();
+      VerticalLayout layout=new VerticalLayout(new Label("Extra data for " + bean.getName()));
+      layout.setMargin(true);
+      return layout;
+    }
+  }
+);
+  grid.addItemClickListener(new ItemClickListener(){
+    @Override public void itemClick(    ItemClickEvent event){
+      Object itemId=event.getItemId();
+      grid.setDetailsVisible(itemId,!grid.isDetailsVisible(itemId));
+    }
+  }
+);
+  return grid;
+}

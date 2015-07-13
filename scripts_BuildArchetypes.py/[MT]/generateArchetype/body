@@ -1,15 +1,15 @@
-def generateArchetype(archetype):
-    artifactId = ('test-%s-%s' % (archetype, args.version.replace('.', '-')))
+def generateArchetype(archetype, artifactId, repo):
     cmd = [mavenCmd, 'archetype:generate']
     cmd.append(('-DarchetypeGroupId=%s' % archetypeGroup))
     cmd.append(('-DarchetypeArtifactId=%s' % archetype))
     cmd.append(('-DarchetypeVersion=%s' % args.version))
-    if (hasattr(args, 'archetype') and (args.archetype != None)):
-        cmd.append(('-DarchetypeRepository=%s' % (repo % args.archetype)))
+    if (hasattr(args, 'repo') and (args.repo != None)):
+        cmd.append(('-DarchetypeRepository=%s' % repo))
     cmd.append(('-DgroupId=%s' % group))
     cmd.append(('-DartifactId=%s' % artifactId))
     cmd.append('-Dversion=1.0-SNAPSHOT')
     cmd.append('-DinteractiveMode=false')
+    if (hasattr(args, 'maven') and (args.maven is not None)):
+        cmd.extend(args.maven.strip('"').split(' '))
     print ('Generating pom.xml for archetype %s' % archetype)
-    subprocess.check_call(cmd, stdout=log)
-    return artifactId
+    subprocess.check_call(cmd, cwd=resultPath, stdout=log)

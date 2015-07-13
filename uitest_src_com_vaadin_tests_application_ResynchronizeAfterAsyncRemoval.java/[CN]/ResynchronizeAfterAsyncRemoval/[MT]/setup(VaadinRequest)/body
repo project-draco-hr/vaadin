@@ -1,0 +1,25 @@
+{
+  final Window window=new Window("Asynchronously removed window");
+  window.center();
+  addWindow(window);
+  runAfterResponse(new Runnable(){
+    @Override public void run(){
+      removeWindow(window);
+    }
+  }
+);
+  addComponent(new Button("Am I dirty?",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      log("Window removed: " + (window.getParent() == null));
+      boolean dirty=getUI().getConnectorTracker().isDirty(event.getButton());
+      log("Dirty: " + dirty);
+    }
+  }
+));
+  addComponent(new Button("Log unregistered connector count",new Button.ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      logUnregisteredConnectorCount();
+    }
+  }
+));
+}
