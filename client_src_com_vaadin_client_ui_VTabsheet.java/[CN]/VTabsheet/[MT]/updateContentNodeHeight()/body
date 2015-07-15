@@ -1,8 +1,11 @@
 {
   if (!isDynamicHeight()) {
     int contentHeight=getOffsetHeight();
-    contentHeight-=DOM.getElementPropertyInt(deco,"offsetHeight");
+    contentHeight-=deco.getOffsetHeight();
     contentHeight-=tb.getOffsetHeight();
+    ComputedStyle cs=new ComputedStyle(contentNode);
+    contentHeight-=Math.ceil(cs.getPaddingHeight());
+    contentHeight-=Math.ceil(cs.getBorderHeight());
     if (contentHeight < 0) {
       contentHeight=0;
     }
