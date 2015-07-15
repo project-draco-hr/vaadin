@@ -2,9 +2,19 @@
   if (!hasMethodAttribute(type,method,methodAttribute)) {
     Map<JMethod,Set<MethodAttribute>> typeData=methodAttributes.get(type);
     if (typeData == null) {
-      typeData=new HashMap<JMethod,Set<MethodAttribute>>();
+      typeData=new TreeMap<JMethod,Set<MethodAttribute>>(jMethodComparator);
       methodAttributes.put(type,typeData);
     }
-    addMapping(typeData,method,methodAttribute);
+    Map<JMethod,Set<MethodAttribute>> methods=methodAttributes.get(type);
+    if (methods == null) {
+      methods=new TreeMap<JMethod,Set<MethodAttribute>>(jMethodComparator);
+      methodAttributes.put(type,methods);
+    }
+    Set<MethodAttribute> attributes=methods.get(method);
+    if (attributes == null) {
+      attributes=new TreeSet<MethodAttribute>();
+      methods.put(method,attributes);
+    }
+    attributes.add(methodAttribute);
   }
 }

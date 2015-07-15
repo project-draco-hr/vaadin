@@ -7,7 +7,10 @@ parser.add_argument('buildResultUrl', type=str, help='URL for the build result p
 parser.add_argument('stagingRepo', type=str, help='URL for the staging repository')
 args = parser.parse_args()
 content = '<html>\n<head></head>\n<body>\n<table>\n'
-content += '<tr><td>Try archetype demos<ul>'
+content += '<tr><td>Try demos<ul>'
+for demo in demos:
+    content += "<li><a href='{url}/{demoName}-{version}'>{demoName}</a></li>\n".format(url=args.deployUrl, demoName=demo, version=args.version)
+content += '</ul></td></tr>\n<tr><td>Try archetype demos<ul>'
 for archetype in archetypes:
     content += "<li><a href='{url}/{context}'>{demo}</a></li>\n".format(url=args.deployUrl, demo=archetype, context=getDeploymentContext(archetype, args.version))
 content += '</ul></td></tr>\n<tr><td><a href="{repoUrl}">Staging repository</a></td></tr>\n<tr><td>Eclipse Ivy Settings:<br><pre>'.format(repoUrl=args.stagingRepo)
