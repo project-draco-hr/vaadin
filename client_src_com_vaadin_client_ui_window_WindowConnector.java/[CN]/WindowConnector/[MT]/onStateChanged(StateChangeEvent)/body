@@ -34,7 +34,12 @@
   window.contentPanel.setHorizontalScrollPosition(state.scrollLeft);
   window.centered=state.centered;
   if (window.centered && getState().windowMode != WindowMode.MAXIMIZED) {
-    window.center();
+    Scheduler.get().scheduleFinally(new ScheduledCommand(){
+      @Override public void execute(){
+        getWidget().center();
+      }
+    }
+);
   }
   window.setVisible(true);
   if (window.getOffsetWidth() > Window.getClientWidth()) {
