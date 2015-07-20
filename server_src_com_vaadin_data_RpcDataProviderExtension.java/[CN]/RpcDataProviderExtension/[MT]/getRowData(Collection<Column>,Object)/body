@@ -12,7 +12,9 @@
   rowObject.put(GridState.JSONKEY_DATA,rowData);
   rowObject.put(GridState.JSONKEY_ROWKEY,keyMapper.getKey(itemId));
   if (visibleDetails.contains(itemId)) {
-    rowObject.put(GridState.JSONKEY_DETAILS_VISIBLE,true);
+    detailComponentManager.createDetails(itemId);
+    Component detailsComponent=detailComponentManager.visibleDetailsComponents.get(itemId);
+    rowObject.put(GridState.JSONKEY_DETAILS_VISIBLE,(detailsComponent != null ? detailsComponent.getConnectorId() : ""));
   }
   rowReference.set(itemId);
   CellStyleGenerator cellStyleGenerator=grid.getCellStyleGenerator();

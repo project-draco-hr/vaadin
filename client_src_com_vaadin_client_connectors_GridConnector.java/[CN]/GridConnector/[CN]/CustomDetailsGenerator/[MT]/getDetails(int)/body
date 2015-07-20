@@ -1,9 +1,10 @@
 {
-  ComponentConnector componentConnector=indexToDetailsMap.get(rowIndex);
-  if (componentConnector != null) {
-    return componentConnector.getWidget();
-  }
- else {
+  JsonObject row=getWidget().getDataSource().getRow(rowIndex);
+  if (!row.hasKey(GridState.JSONKEY_DETAILS_VISIBLE) || row.getString(GridState.JSONKEY_DETAILS_VISIBLE).isEmpty()) {
     return null;
   }
+  String id=row.getString(GridState.JSONKEY_DETAILS_VISIBLE);
+  ComponentConnector componentConnector=idToDetailsMap.get(id);
+  idToRowIndex.put(id,rowIndex);
+  return componentConnector.getWidget();
 }
