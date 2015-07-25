@@ -9,11 +9,13 @@
         children.set(children.length(),child.getConnectorId());
       }
     }
-    try {
-      hierarchyInfo.put(connectorId,children);
-    }
- catch (    JsonException e) {
-      throw new PaintException("Failed to send hierarchy information about " + connectorId + " to the client: "+ e.getMessage(),e);
+    if (children.length() > 0 || !stateUpdateConnectors.contains(connectorId)) {
+      try {
+        hierarchyInfo.put(connectorId,children);
+      }
+ catch (      JsonException e) {
+        throw new PaintException("Failed to send hierarchy information about " + connectorId + " to the client: "+ e.getMessage(),e);
+      }
     }
   }
   writer.write(JsonUtil.stringify(hierarchyInfo));
