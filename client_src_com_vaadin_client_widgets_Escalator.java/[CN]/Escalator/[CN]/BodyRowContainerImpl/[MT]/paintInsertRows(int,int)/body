@@ -25,13 +25,21 @@
       final int visualTargetIndex=unupdatedLogicalStart - visualOffset;
       moveAndUpdateEscalatorRows(Range.between(start,end),visualTargetIndex,unupdatedLogicalStart);
       double rowTop=(unupdatedLogicalStart + (end - start)) * getDefaultRowHeight();
-      final ListIterator<TableRowElement> i=visualRowOrder.listIterator(visualTargetIndex + (end - start));
-      int logicalRowIndexCursor=unupdatedLogicalStart;
-      while (i.hasNext()) {
-        rowTop+=spacerContainer.getSpacerHeight(logicalRowIndexCursor++);
-        final TableRowElement tr=i.next();
-        setRowPosition(tr,0,rowTop);
-        rowTop+=getDefaultRowHeight();
+      try {
+        final ListIterator<TableRowElement> i=visualRowOrder.listIterator(visualTargetIndex + (end - start));
+        int logicalRowIndexCursor=unupdatedLogicalStart;
+        while (i.hasNext()) {
+          rowTop+=spacerContainer.getSpacerHeight(logicalRowIndexCursor++);
+          final TableRowElement tr=i.next();
+          setRowPosition(tr,0,rowTop);
+          rowTop+=getDefaultRowHeight();
+        }
+      }
+ catch (      Exception e) {
+        Logger logger=getLogger();
+        logger.warning("Ignored out-of-bounds row element access");
+        logger.warning("Escalator state: start=" + start + ", end="+ end+ ", visualTargetIndex="+ visualTargetIndex+ ", visualRowOrder.size()="+ visualRowOrder.size());
+        logger.warning(e.toString());
       }
     }
     fireRowVisibilityChangeEvent();
