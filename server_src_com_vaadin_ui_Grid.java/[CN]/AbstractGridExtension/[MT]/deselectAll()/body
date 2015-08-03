@@ -1,0 +1,17 @@
+{
+  if (selectionModel instanceof SelectionModel.Single) {
+    if (getSelectedRow() != null) {
+      return deselect(getSelectedRow());
+    }
+    return false;
+  }
+ else   if (selectionModel instanceof SelectionModel.Multi) {
+    return ((SelectionModel.Multi)selectionModel).deselectAll();
+  }
+ else   if (selectionModel instanceof SelectionModel.None) {
+    throw new IllegalStateException("Cannot deselect all rows" + ": Grid selection is disabled " + "(the current selection model is " + selectionModel.getClass().getName() + ").");
+  }
+ else {
+    throw new IllegalStateException("Cannot deselect all rows:" + " Grid selection model does not implement " + SelectionModel.Single.class.getName() + " or "+ SelectionModel.Multi.class.getName()+ "(the current model is "+ selectionModel.getClass().getName()+ ").");
+  }
+}
