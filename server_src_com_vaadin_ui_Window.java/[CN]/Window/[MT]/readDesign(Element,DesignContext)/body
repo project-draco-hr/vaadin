@@ -9,7 +9,13 @@
     setPositionY(Integer.parseInt(position[1]));
   }
   if (design.hasAttr("close-shortcut")) {
-    ShortcutAction shortcut=DesignAttributeHandler.readAttribute("close-shortcut",design.attributes(),ShortcutAction.class);
-    setCloseShortcut(shortcut.getKeyCode(),shortcut.getModifiers());
+    String[] shortcutStrings=DesignAttributeHandler.readAttribute("close-shortcut",design.attributes(),String.class).split("\\s+");
+    removeAllCloseShortcuts();
+    for (    String part : shortcutStrings) {
+      if (!part.isEmpty()) {
+        ShortcutAction shortcut=DesignAttributeHandler.getFormatter().parse(part.trim(),ShortcutAction.class);
+        addCloseShortcut(shortcut.getKeyCode(),shortcut.getModifiers());
+      }
+    }
   }
 }

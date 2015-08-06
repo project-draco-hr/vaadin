@@ -1,0 +1,23 @@
+{
+  ArrayList<String> names=new ArrayList<String>();
+  for (  Attribute a : producedElem.attributes().asList()) {
+    names.add(a.getKey());
+  }
+  Collections.sort(names);
+  sb.append("<" + producedElem.tagName() + "");
+  for (  String attrName : names) {
+    sb.append(" ").append(attrName).append("=").append("\'").append(producedElem.attr(attrName)).append("\'");
+  }
+  sb.append(">");
+  for (  Node child : producedElem.childNodes()) {
+    if (child instanceof Element) {
+      elementToHtml((Element)child,sb);
+    }
+ else     if (child instanceof TextNode) {
+      String text=((TextNode)child).text();
+      sb.append(text.trim());
+    }
+  }
+  sb.append("</").append(producedElem.tagName()).append(">");
+  return sb.toString();
+}

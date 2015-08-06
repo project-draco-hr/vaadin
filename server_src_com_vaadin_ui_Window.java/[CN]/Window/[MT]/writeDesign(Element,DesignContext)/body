@@ -5,12 +5,15 @@
     design.attr("center","");
   }
   DesignAttributeHandler.writeAttribute("position",design.attributes(),getPosition(),def.getPosition(),String.class);
-  CloseShortcut shortcut=getCloseShortcut();
-  if (shortcut != null) {
-    CloseShortcut defShortcut=def.getCloseShortcut();
-    if (defShortcut == null || shortcut.getKeyCode() != defShortcut.getKeyCode() || !Arrays.equals(shortcut.getModifiers(),defShortcut.getModifiers())) {
-      DesignAttributeHandler.writeAttribute("close-shortcut",design.attributes(),shortcut,null,CloseShortcut.class);
+  if (closeShortcuts.size() == 1 && hasCloseShortcut(KeyCode.ESCAPE)) {
+  }
+ else {
+    String attrString="";
+    for (    CloseShortcut shortcut : closeShortcuts) {
+      String shortcutString=DesignAttributeHandler.getFormatter().format(shortcut,CloseShortcut.class);
+      attrString+=shortcutString + " ";
     }
+    DesignAttributeHandler.writeAttribute("close-shortcut",design.attributes(),attrString.trim(),null,String.class);
   }
   for (  Component c : getAssistiveDescription()) {
     Element child=context.createElement(c).attr(":assistive-description","");
