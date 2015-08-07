@@ -1,0 +1,16 @@
+{
+  Profiler.enter("skipMeasureDueLayoutHint");
+  boolean skip=false;
+  HasChildMeasurementHintConnector parent=getPossibleChildMeasurementHintParentConnector(candidate);
+  if (parent != null) {
+    ChildMeasurementHint measureMode=parent.getChildMeasurementHint();
+    if (measureMode == ChildMeasurementHint.MEASURE_NEVER) {
+      skip=true;
+    }
+ else     if (measureMode == ChildMeasurementHint.MEASURE_IF_NEEDED) {
+      skip=canWeSkipChildMeasurement(candidate);
+    }
+  }
+  Profiler.leave("skipMeasureDueLayoutHint");
+  return skip;
+}
