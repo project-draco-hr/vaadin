@@ -7,10 +7,7 @@
     try {
       Object value=getter.invoke(component);
       Object defaultValue=getter.invoke(defaultInstance);
-      if (!SharedUtil.equals(value,defaultValue)) {
-        String attributeValue=toAttributeValue(getter.getReturnType(),value);
-        attr.put(attribute,attributeValue);
-      }
+      writeAttribute(attribute,attr,value,defaultValue,(Class)getter.getReturnType());
     }
  catch (    Exception e) {
       getLogger().log(Level.SEVERE,"Failed to invoke getter for attribute " + attribute,e);

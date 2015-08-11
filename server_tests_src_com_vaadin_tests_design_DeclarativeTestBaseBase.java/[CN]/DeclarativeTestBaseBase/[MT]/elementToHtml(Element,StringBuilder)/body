@@ -1,12 +1,19 @@
 {
+  HashSet<String> booleanAttributes=new HashSet<String>();
   ArrayList<String> names=new ArrayList<String>();
   for (  Attribute a : producedElem.attributes().asList()) {
     names.add(a.getKey());
+    if (a instanceof BooleanAttribute) {
+      booleanAttributes.add(a.getKey());
+    }
   }
   Collections.sort(names);
   sb.append("<" + producedElem.tagName() + "");
   for (  String attrName : names) {
-    sb.append(" ").append(attrName).append("=").append("\'").append(producedElem.attr(attrName)).append("\'");
+    sb.append(" ").append(attrName);
+    if (!booleanAttributes.contains(attrName)) {
+      sb.append("=").append("\'").append(producedElem.attr(attrName)).append("\'");
+    }
   }
   sb.append(">");
   for (  Node child : producedElem.childNodes()) {
