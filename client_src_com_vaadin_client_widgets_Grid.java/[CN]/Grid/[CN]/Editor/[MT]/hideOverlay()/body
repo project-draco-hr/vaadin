@@ -6,6 +6,10 @@
     pinnedRowHandle.unpin();
     pinnedRowHandle=null;
   }
+  for (  HandlerRegistration r : focusHandlers) {
+    r.removeHandler();
+  }
+  focusHandlers.clear();
   for (  Widget w : columnToWidget.values()) {
     setParent(w,null);
   }
@@ -18,4 +22,7 @@
   editorOverlay.removeFromParent();
   scrollHandler.removeHandler();
   clearEditorColumnErrors();
+  if (focusedColumnIndex != -1) {
+    grid.focusCell(rowIndex,focusedColumnIndex);
+  }
 }

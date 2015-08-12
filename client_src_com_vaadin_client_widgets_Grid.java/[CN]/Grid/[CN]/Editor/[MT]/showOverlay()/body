@@ -35,7 +35,24 @@
         columnToWidget.put(column,editor);
         attachWidget(editor,cell);
       }
-      if (i == columnIndex) {
+      final int currentColumnIndex=i;
+      if (editor instanceof HasFocusHandlers) {
+        focusHandlers.add(((HasFocusHandlers)editor).addFocusHandler(new FocusHandler(){
+          @Override public void onFocus(          FocusEvent event){
+            focusedColumnIndex=currentColumnIndex;
+          }
+        }
+));
+      }
+ else {
+        focusHandlers.add(editor.addDomHandler(new FocusHandler(){
+          @Override public void onFocus(          FocusEvent event){
+            focusedColumnIndex=currentColumnIndex;
+          }
+        }
+,FocusEvent.getType()));
+      }
+      if (i == focusedColumnIndex) {
         if (editor instanceof Focusable) {
           ((Focusable)editor).focus();
         }
