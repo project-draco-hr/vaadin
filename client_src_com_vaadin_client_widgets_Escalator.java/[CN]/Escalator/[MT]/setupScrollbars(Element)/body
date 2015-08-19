@@ -26,8 +26,19 @@
   horizontalScrollbar.addScrollHandler(scrollHandler);
   horizontalScrollbar.setScrollbarThickness(scrollbarThickness);
   horizontalScrollbar.addVisibilityHandler(new ScrollbarBundle.VisibilityHandler(){
+    private boolean queued=false;
     @Override public void visibilityChanged(    ScrollbarBundle.VisibilityChangeEvent event){
-      applyHeightByRows();
+      if (queued) {
+        return;
+      }
+      queued=true;
+      Scheduler.get().scheduleFinally(new ScheduledCommand(){
+        @Override public void execute(){
+          applyHeightByRows();
+          queued=false;
+        }
+      }
+);
     }
   }
 );

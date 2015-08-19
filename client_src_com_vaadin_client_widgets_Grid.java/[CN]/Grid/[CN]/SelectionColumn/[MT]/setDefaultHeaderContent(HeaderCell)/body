@@ -1,34 +1,44 @@
 {
   final SelectionModel.Multi<T> model=(Multi<T>)getSelectionModel();
-  final CheckBox checkBox=GWT.create(CheckBox.class);
-  checkBox.addValueChangeHandler(new ValueChangeHandler<Boolean>(){
-    @Override public void onValueChange(    ValueChangeEvent<Boolean> event){
-      if (event.getValue()) {
-        fireEvent(new SelectAllEvent<T>(model));
-        selected=true;
-      }
+  if (selectAllCheckBox == null) {
+    selectAllCheckBox=GWT.create(CheckBox.class);
+    selectAllCheckBox.setStylePrimaryName(getStylePrimaryName() + SELECT_ALL_CHECKBOX_CLASSNAME);
+    selectAllCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>(){
+      @Override public void onValueChange(      ValueChangeEvent<Boolean> event){
+        if (event.getValue()) {
+          fireEvent(new SelectAllEvent<T>(model));
+          selected=true;
+        }
  else {
-        model.deselectAll();
-        selected=false;
+          model.deselectAll();
+          selected=false;
+        }
+      }
+    }
+);
+    selectAllCheckBox.setValue(selected);
+    addHeaderKeyUpHandler(new HeaderKeyUpHandler(){
+      @Override public void onKeyUp(      GridKeyUpEvent event){
+        if (event.getNativeKeyCode() != KeyCodes.KEY_SPACE) {
+          return;
+        }
+        HeaderRow targetHeaderRow=getHeader().getRow(event.getFocusedCell().getRowIndex());
+        if (!targetHeaderRow.isDefault()) {
+          return;
+        }
+        if (event.getFocusedCell().getColumn() == SelectionColumn.this) {
+          selectAllCheckBox.setValue(!selectAllCheckBox.getValue(),true);
+        }
+      }
+    }
+);
+  }
+ else {
+    for (    HeaderRow row : header.getRows()) {
+      if (row.getCell(this).getType() == GridStaticCellType.WIDGET) {
+        row.getCell(this).setText("");
       }
     }
   }
-);
-  checkBox.setValue(selected);
-  selectionCell.setWidget(checkBox);
-  addHeaderKeyUpHandler(new HeaderKeyUpHandler(){
-    @Override public void onKeyUp(    GridKeyUpEvent event){
-      if (event.getNativeKeyCode() != KeyCodes.KEY_SPACE) {
-        return;
-      }
-      HeaderRow targetHeaderRow=getHeader().getRow(event.getFocusedCell().getRowIndex());
-      if (!targetHeaderRow.isDefault()) {
-        return;
-      }
-      if (event.getFocusedCell().getColumn() == SelectionColumn.this) {
-        checkBox.setValue(!checkBox.getValue(),true);
-      }
-    }
-  }
-);
+  selectionCell.setWidget(selectAllCheckBox);
 }

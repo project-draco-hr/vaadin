@@ -1,0 +1,25 @@
+def testServer():
+    global serverUp
+    if (serverUp is not None):
+        return serverUp
+    print 'Checking server status'
+    i = 0
+    request = {'operation': 'read-attribute', 'name': 'server-state', }
+    serverUp = False
+    while ((not serverUp) and (i < 2)):
+        try:
+            print ('Trying on url %s' % getUrl())
+            result = doPostJson(url=getUrl(), auth=getAuth(), data=json.dumps(request))
+            response = result.json()
+            if (('outcome' not in response) or (response['outcome'] != 'success')):
+                raise Exception(response)
+            elif (('result' not in response) or (response['result'] != 'running')):
+                raise Exception(response)
+            serverUp = True
+            print 'Got server connection.'
+        except Exception as e:
+            print ('Exception while checking server state: ', e)
+            print 'Server connection failed, retrying in 5 seconds.'
+            i = (i + 1)
+            sleep(5)
+    return serverUp
