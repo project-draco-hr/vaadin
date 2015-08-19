@@ -1,0 +1,24 @@
+{
+  Set<String> connectorIds=new HashSet<String>();
+  for (  ServerConnector child : children) {
+    if (child instanceof ComponentConnector) {
+      connectorIds.add(child.getConnectorId());
+      idToDetailsMap.put(child.getConnectorId(),(ComponentConnector)child);
+    }
+  }
+  Set<String> removedDetails=new HashSet<String>();
+  for (  Entry<String,ComponentConnector> entry : idToDetailsMap.entrySet()) {
+    ComponentConnector connector=entry.getValue();
+    String id=connector.getConnectorId();
+    if (!connectorIds.contains(id)) {
+      removedDetails.add(entry.getKey());
+      if (idToRowIndex.containsKey(id)) {
+        getWidget().setDetailsVisible(idToRowIndex.get(id),false);
+      }
+    }
+  }
+  for (  String id : removedDetails) {
+    idToDetailsMap.remove(id);
+    idToRowIndex.remove(id);
+  }
+}

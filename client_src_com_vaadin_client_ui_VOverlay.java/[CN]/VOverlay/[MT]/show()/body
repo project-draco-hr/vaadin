@@ -5,7 +5,17 @@
     new ResizeAnimation().run(POPUP_PANEL_ANIMATION_DURATION);
   }
  else {
-    positionOrSizeUpdated(1.0);
+    if (BrowserInfo.get().isIE8()) {
+      Scheduler.get().scheduleFinally(new ScheduledCommand(){
+        @Override public void execute(){
+          positionOrSizeUpdated(1.0);
+        }
+      }
+);
+    }
+ else {
+      positionOrSizeUpdated(1.0);
+    }
   }
   current=null;
 }

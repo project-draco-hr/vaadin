@@ -1,15 +1,11 @@
 {
-  final boolean modified;
   if (visible) {
-    modified=detailComponentManager.visibleDetails.add(itemId);
+    visibleDetails.add(itemId);
+    detailComponentManager.createDetails(itemId);
   }
  else {
-    modified=detailComponentManager.visibleDetails.remove(itemId);
+    visibleDetails.remove(itemId);
     detailComponentManager.destroyDetails(itemId);
   }
-  int rowIndex=indexOf(itemId);
-  boolean modifiedRowIsActive=activeRowHandler.activeRange.contains(rowIndex);
-  if (modified && modifiedRowIsActive) {
-    updateRowData(itemId);
-  }
+  updateRowData(itemId);
 }
