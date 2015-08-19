@@ -6,7 +6,6 @@
     fullRange=newRange.combineWith(cached);
   }
   List<?> itemIds=container.getItemIds(fullRange.getStart(),fullRange.length());
-  keyMapper.setActiveRows(itemIds);
   JsonArray rows=Json.createArray();
   int diff=0;
   if (!cached.isEmpty() && newRange.getStart() > cached.getStart()) {
@@ -17,5 +16,6 @@
     rows.set(i,getRowData(getGrid().getColumns(),itemId));
   }
   rpc.setRowData(firstRowToPush,rows);
-  activeRowHandler.setActiveRows(fullRange);
+  activeItemHandler.addActiveItems(itemIds);
+  keyMapper.dropInactiveItems();
 }
