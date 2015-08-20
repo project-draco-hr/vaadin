@@ -95,11 +95,11 @@
   if (uidl.hasAttribute("focused")) {
     Scheduler.get().scheduleDeferred(new Command(){
       @Override public void execute(){
-        ComponentConnector paintable=(ComponentConnector)uidl.getPaintableAttribute("focused",getConnection());
-        if (paintable == null) {
+        ComponentConnector connector=(ComponentConnector)uidl.getPaintableAttribute("focused",getConnection());
+        if (connector == null) {
           return;
         }
-        final Widget toBeFocused=paintable.getWidget();
+        final Widget toBeFocused=connector.getWidget();
         if (toBeFocused instanceof com.google.gwt.user.client.ui.Focusable) {
           final com.google.gwt.user.client.ui.Focusable toBeFocusedWidget=(com.google.gwt.user.client.ui.Focusable)toBeFocused;
           toBeFocusedWidget.setFocus(true);
@@ -108,7 +108,7 @@
           ((Focusable)toBeFocused).focus();
         }
  else {
-          VConsole.log("Could not focus component");
+          getLogger().severe("Server is trying to set focus to the widget of connector " + Util.getConnectorString(connector) + " but it is not focusable. The widget should implement either "+ com.google.gwt.user.client.ui.Focusable.class.getName()+ " or "+ Focusable.class.getName());
         }
       }
     }

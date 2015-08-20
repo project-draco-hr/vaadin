@@ -1,0 +1,26 @@
+{
+  if (FocusNotifier.class.isAssignableFrom(getTestClass())) {
+    createFocusListener(CATEGORY_LISTENERS);
+  }
+  if (BlurNotifier.class.isAssignableFrom(getTestClass())) {
+    createBlurListener(CATEGORY_LISTENERS);
+  }
+  if (Focusable.class.isAssignableFrom(getTestClass())) {
+    LinkedHashMap<String,Integer> tabIndexes=new LinkedHashMap<String,Integer>();
+    tabIndexes.put("0",0);
+    tabIndexes.put("-1",-1);
+    tabIndexes.put("10",10);
+    createSelectAction("Tab index","State",tabIndexes,"0",new Command<T,Integer>(){
+      @Override public void execute(      T c,      Integer tabIndex,      Object data){
+        ((Focusable)c).setTabIndex(tabIndex);
+      }
+    }
+);
+    createClickAction("Set focus","State",new Command<T,Void>(){
+      @Override public void execute(      T c,      Void value,      Object data){
+        ((Focusable)c).focus();
+      }
+    }
+,null);
+  }
+}

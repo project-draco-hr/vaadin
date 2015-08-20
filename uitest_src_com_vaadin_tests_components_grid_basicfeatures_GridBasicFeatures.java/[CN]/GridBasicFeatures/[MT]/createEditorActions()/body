@@ -5,6 +5,12 @@
     }
   }
 );
+  createBooleanAction("Buffered mode","Editor",true,new Command<Grid,Boolean>(){
+    @Override public void execute(    Grid c,    Boolean value,    Object data){
+      c.setEditorBuffered(value);
+    }
+  }
+);
   createClickAction("Edit item 5","Editor",new Command<Grid,String>(){
     @Override public void execute(    Grid c,    String value,    Object data){
       c.editItem(5);
@@ -43,6 +49,23 @@
   createClickAction("Change cancel caption","Editor",new Command<Grid,String>(){
     @Override public void execute(    Grid c,    String value,    Object data){
       c.setEditorCancelCaption("??????u?????");
+    }
+  }
+,null);
+  createClickAction("Add editor state listener","Editor",new Command<Grid,String>(){
+    @Override public void execute(    Grid grid,    String value,    Object data){
+      grid.addEditorListener(new EditorListener(){
+        @Override public void editorOpened(        EditorOpenEvent e){
+          log("Editor opened");
+        }
+        @Override public void editorMoved(        EditorMoveEvent e){
+          log("Editor moved");
+        }
+        @Override public void editorClosed(        EditorCloseEvent e){
+          log("Editor closed");
+        }
+      }
+);
     }
   }
 ,null);

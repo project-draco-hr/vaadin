@@ -1,9 +1,13 @@
 {
+  hideOverlay();
   DivElement gridElement=DivElement.as(grid.getElement());
   TableRowElement tr=grid.getEscalator().getBody().getRowElement(rowIndex);
   scrollHandler=grid.addScrollHandler(new ScrollHandler(){
     @Override public void onScroll(    ScrollEvent event){
       updateHorizontalScrollPosition();
+      if (!isBuffered()) {
+        updateVerticalScrollPosition();
+      }
     }
   }
 );
@@ -42,6 +46,33 @@
     }
  else {
       cell.addClassName(NOT_EDITABLE_CLASS_NAME);
+      cell.addClassName(tr.getCells().getItem(i).getClassName());
+      cell.removeClassName(grid.cellFocusStyleName);
+      if (column == grid.selectionColumn) {
+        pinnedRowHandle=grid.getDataSource().getHandle(grid.getDataSource().getRow(rowIndex));
+        pinnedRowHandle.pin();
+        final CheckBox checkBox=GWT.create(CheckBox.class);
+        checkBox.setValue(grid.isSelected(pinnedRowHandle.getRow()));
+        checkBox.sinkEvents(Event.ONCLICK);
+        checkBox.addClickHandler(new ClickHandler(){
+          @Override public void onClick(          ClickEvent event){
+            T row=pinnedRowHandle.getRow();
+            if (grid.isSelected(row)) {
+              grid.deselect(row);
+            }
+ else {
+              grid.select(row);
+            }
+          }
+        }
+);
+        attachWidget(checkBox,cell);
+        columnToWidget.put(column,checkBox);
+        checkBox.setEnabled(!isBuffered());
+      }
+ else       if (!(column.getRenderer() instanceof WidgetRenderer)) {
+        cell.setInnerHTML(tr.getCells().getItem(i).getInnerHTML());
+      }
     }
   }
   setBounds(frozenCellWrapper,0,0,frozenColumnsWidth,0);
@@ -50,16 +81,21 @@
     messageAndButtonsWrapper.appendChild(messageWrapper);
     messageAndButtonsWrapper.appendChild(buttonsWrapper);
   }
-  attachWidget(saveButton,buttonsWrapper);
-  attachWidget(cancelButton,buttonsWrapper);
+  if (isBuffered()) {
+    attachWidget(saveButton,buttonsWrapper);
+    attachWidget(cancelButton,buttonsWrapper);
+  }
+  setMessageAndButtonsWrapperVisible(isBuffered());
   updateHorizontalScrollPosition();
   AbstractRowContainer body=(AbstractRowContainer)grid.getEscalator().getBody();
   double rowTop=body.getRowTop(tr);
   int bodyTop=body.getElement().getAbsoluteTop();
   int gridTop=gridElement.getAbsoluteTop();
   double overlayTop=rowTop + bodyTop - gridTop;
-  if (buttonsShouldBeRenderedBelow(tr)) {
+  originalScrollTop=grid.getScrollTop();
+  if (!isBuffered() || buttonsShouldBeRenderedBelow(tr)) {
     editorOverlay.getStyle().setTop(overlayTop,Unit.PX);
+    originalTop=overlayTop;
     editorOverlay.getStyle().clearBottom();
   }
  else {

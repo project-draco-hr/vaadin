@@ -1,29 +1,38 @@
 {
-  final boolean closeEvent=event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_HIDE;
+  final int type=event.getTypeInt();
+  final int key=event.getKeyCode();
+  final boolean editorIsActive=editor.getState() != Editor.State.INACTIVE;
   double now=Duration.currentTimeMillis();
   int currentX=WidgetUtil.getTouchOrMouseClientX(event);
   int currentY=WidgetUtil.getTouchOrMouseClientY(event);
-  final boolean validTouchOpenEvent=event.getTypeInt() == Event.ONTOUCHEND && now - lastTouchEventTime < 500 && lastTouchEventRow == eventCell.getRowIndex() && Math.abs(lastTouchEventX - currentX) < 20 && Math.abs(lastTouchEventY - currentY) < 20;
-  final boolean openEvent=event.getTypeInt() == Event.ONDBLCLICK || (event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == Editor.KEYCODE_SHOW) || validTouchOpenEvent;
-  if (event.getTypeInt() == Event.ONTOUCHSTART) {
+  final boolean validTouchOpenEvent=type == Event.ONTOUCHEND && now - lastTouchEventTime < 500 && lastTouchEventRow == eventCell.getRowIndex() && Math.abs(lastTouchEventX - currentX) < 20 && Math.abs(lastTouchEventY - currentY) < 20;
+  final boolean openEvent=eventCell.isBody() && (type == Event.ONDBLCLICK || (type == Event.ONKEYDOWN && key == Editor.KEYCODE_SHOW) || validTouchOpenEvent);
+  if (type == Event.ONTOUCHSTART) {
     lastTouchEventX=currentX;
     lastTouchEventY=currentY;
   }
-  if (event.getTypeInt() == Event.ONTOUCHEND) {
+  if (type == Event.ONTOUCHEND) {
     lastTouchEventTime=now;
     lastTouchEventRow=eventCell.getRowIndex();
   }
-  if (editor.getState() != Editor.State.INACTIVE) {
-    if (closeEvent) {
-      editor.cancel();
-      FocusUtil.setFocus(this,true);
-    }
-    return true;
-  }
-  if (container == escalator.getBody() && editor.isEnabled() && openEvent) {
+  final boolean moveEvent=eventCell.isBody() && type == Event.ONCLICK;
+  final boolean closeEvent=type == Event.ONKEYDOWN && key == Editor.KEYCODE_HIDE;
+  if (!editorIsActive && editor.isEnabled() && openEvent) {
     editor.editRow(eventCell.getRowIndex(),eventCell.getColumnIndexDOM());
+    fireEvent(new EditorOpenEvent(eventCell));
     event.preventDefault();
     return true;
   }
-  return false;
+ else   if (editorIsActive && !editor.isBuffered() && moveEvent) {
+    cellFocusHandler.setCellFocus(eventCell);
+    editor.editRow(eventCell.getRowIndex(),eventCell.getColumnIndexDOM());
+    fireEvent(new EditorMoveEvent(eventCell));
+    return true;
+  }
+ else   if (editorIsActive && closeEvent) {
+    editor.cancel();
+    FocusUtil.setFocus(this,true);
+    return true;
+  }
+  return editor.isBuffered() && editorIsActive;
 }

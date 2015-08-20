@@ -11,8 +11,8 @@
   if (datasourceExtension != null) {
     removeExtension(datasourceExtension);
   }
-  datasource=container;
   resetEditor();
+  datasource=container;
   if (container instanceof Container.Sortable) {
     Collection<?> sortableProps=((Container.Sortable)getContainerDataSource()).getSortableContainerPropertyIds();
     Iterator<SortOrder> i=sortOrder.iterator();
@@ -27,7 +27,8 @@
     sortOrder.clear();
   }
   datasourceExtension=new RpcDataProviderExtension(container);
-  datasourceExtension.extend(this,columnKeys);
+  datasourceExtension.extend(this);
+  datasourceExtension.addDataGenerator(new RowDataGenerator());
   detailComponentManager=datasourceExtension.getDetailComponentManager();
   if (selectionModel != null) {
     selectionModel.reset();
