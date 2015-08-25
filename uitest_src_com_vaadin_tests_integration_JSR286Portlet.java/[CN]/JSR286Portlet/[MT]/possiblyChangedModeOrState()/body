@@ -1,6 +1,10 @@
 {
-  VaadinPortletRequest request=(VaadinPortletRequest)VaadinPortletService.getCurrentRequest();
-  userAgent.setValue(getPage().getWebBrowser().getBrowserApplication());
+  VaadinPortletRequest request=VaadinPortletService.getCurrentRequest();
+  String censoredUserAgent=getPage().getWebBrowser().getBrowserApplication();
+  if (censoredUserAgent.contains("Chrome/")) {
+    censoredUserAgent=censoredUserAgent.replaceAll("Chrome/[^ ]* ","Chrome/xyz ");
+  }
+  userAgent.setValue(censoredUserAgent);
   screenWidth.setValue(String.valueOf(getPage().getBrowserWindowWidth()));
   screenHeight.setValue(String.valueOf(getPage().getBrowserWindowHeight()));
   boolean inViewMode=(request.getPortletMode() == PortletMode.VIEW);
