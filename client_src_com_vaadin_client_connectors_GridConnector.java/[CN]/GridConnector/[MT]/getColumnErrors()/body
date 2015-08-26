@@ -1,0 +1,21 @@
+{
+  List<String> errors=new ArrayList<String>();
+  for (  Grid.Column<?,JsonObject> c : getWidget().getColumns()) {
+    if (!(c instanceof CustomGridColumn)) {
+      continue;
+    }
+    String error=columnToErrorMessage.get(c);
+    if (error != null) {
+      errors.add(error);
+    }
+  }
+  String result="";
+  Iterator<String> i=errors.iterator();
+  while (i.hasNext()) {
+    result+=i.next();
+    if (i.hasNext()) {
+      result+=", ";
+    }
+  }
+  return result.isEmpty() ? null : result;
+}

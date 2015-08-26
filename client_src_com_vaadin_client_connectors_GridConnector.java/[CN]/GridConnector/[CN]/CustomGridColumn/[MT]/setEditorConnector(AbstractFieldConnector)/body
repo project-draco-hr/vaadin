@@ -1,3 +1,28 @@
 {
   this.editorConnector=editorConnector;
+  if (errorStateHandler != null) {
+    errorStateHandler.removeHandler();
+    errorStateHandler=null;
+  }
+  if (editorConnector == null) {
+    return;
+  }
+  errorStateHandler=editorConnector.addStateChangeHandler("errorMessage",new StateChangeHandler(){
+    @Override public void onStateChanged(    StateChangeEvent stateChangeEvent){
+      String error=editorConnector.getState().errorMessage;
+      if (error == null) {
+        columnToErrorMessage.remove(CustomGridColumn.this);
+      }
+ else {
+        Element e=DOM.createElement("div");
+        e.setInnerHTML(editorConnector.getState().errorMessage);
+        error=getHeaderCaption() + ": " + e.getInnerText();
+        columnToErrorMessage.put(CustomGridColumn.this,error);
+      }
+      if (editorHandler.currentRequest == null) {
+        getWidget().getEditor().setEditorError(getColumnErrors(),columnToErrorMessage.keySet());
+      }
+    }
+  }
+);
 }
