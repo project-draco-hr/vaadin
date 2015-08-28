@@ -1,0 +1,27 @@
+{
+  openTestURL();
+  List<TableElement> tables=$(TableElement.class).all();
+  Assert.assertEquals("Sanity check",2,tables.size());
+  List<FormLayoutElement> layouts=$(FormLayoutElement.class).all();
+  Assert.assertEquals("Sanity check",2,layouts.size());
+  ButtonElement toggleButton=$(ButtonElement.class).first();
+  int[] originalWidths=getWidths(tables);
+  for (int i=0; i < 2; i++) {
+    FormLayoutElement formLayout=layouts.get(i);
+    WebElement table=formLayout.findElement(By.tagName("table"));
+    int overshoot=table.getSize().width - formLayout.getSize().width;
+    originalWidths[i]-=overshoot;
+  }
+  toggleButton.click();
+  int[] expandedWidths=getWidths(tables);
+  Assert.assertEquals("Table should have grown ",originalWidths[0] + 200,expandedWidths[0]);
+  Assert.assertEquals("Wrapped table should have grown ",originalWidths[1] + 200,expandedWidths[1]);
+  toggleButton.click();
+  int[] collapsedWidths=getWidths(tables);
+  Assert.assertEquals("Table should return to original width ",originalWidths[0],collapsedWidths[0]);
+  Assert.assertEquals("Wrapped table should return to original width ",originalWidths[1],collapsedWidths[1]);
+  toggleButton.click();
+  expandedWidths=getWidths(tables);
+  Assert.assertEquals("Table should have grown ",originalWidths[0] + 200,expandedWidths[0]);
+  Assert.assertEquals("Wrapped table should have grown ",originalWidths[1] + 200,expandedWidths[1]);
+}
