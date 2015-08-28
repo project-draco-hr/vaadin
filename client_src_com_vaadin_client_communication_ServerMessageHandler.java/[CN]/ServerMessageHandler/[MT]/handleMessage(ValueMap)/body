@@ -1,15 +1,7 @@
 {
-  final Date start=new Date();
-  final ValueMap json;
-  try {
-    json=parseJSONResponse(jsonText);
+  if (json == null) {
+    throw new IllegalArgumentException("The json to handle cannot be null");
   }
- catch (  final Exception e) {
-    getServerCommunicationHandler().endRequest();
-    connection.showCommunicationError(e.getMessage() + " - Original JSON-text:" + jsonText,200);
-    return;
-  }
-  getLogger().info("JSON parsing took " + (new Date().getTime() - start.getTime()) + "ms");
   if (getServerId(json) == -1) {
     getLogger().severe("Response didn't contain a server id. " + "Please verify that the server is up-to-date and that the response data has not been modified in transmission.");
   }

@@ -12,12 +12,12 @@
     return;
   }
   String responseText=response.getText();
-  final String jsonText=ServerCommunicationHandler.stripJSONWrapping(responseText);
-  if (jsonText == null) {
+  ValueMap json=ServerMessageHandler.parseWrappedJson(responseText);
+  if (json == null) {
     getCommunicationProblemHandler().xhrInvalidContent(new CommunicationProblemEvent(request,payload,response));
     return;
   }
   getCommunicationProblemHandler().xhrOk();
-  getLogger().info("Received xhr message: " + jsonText);
-  getServerMessageHandler().handleMessage(jsonText);
+  getLogger().info("Received xhr message: " + responseText);
+  getServerMessageHandler().handleMessage(json);
 }

@@ -1,12 +1,12 @@
 {
   String message=response.getResponseBody();
-  String json=ServerCommunicationHandler.stripJSONWrapping(message);
+  ValueMap json=ServerMessageHandler.parseWrappedJson(message);
   if (json == null) {
     getCommunicationProblemHandler().pushInvalidContent(this,message);
     return;
   }
  else {
-    getLogger().info("Received push (" + getTransportType() + ") message: "+ json);
+    getLogger().info("Received push (" + getTransportType() + ") message: "+ message);
     connection.getServerMessageHandler().handleMessage(json);
   }
 }
