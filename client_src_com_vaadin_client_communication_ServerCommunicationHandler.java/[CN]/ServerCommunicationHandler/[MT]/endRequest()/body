@@ -7,13 +7,13 @@
     if (getServerRpcQueue().isFlushPending()) {
       sendInvocationsToServer();
     }
-    ApplicationConnection.runPostRequestHooks(connection.getConfiguration().getRootPanelId());
+    runPostRequestHooks(connection.getConfiguration().getRootPanelId());
   }
   Scheduler.get().scheduleDeferred(new Command(){
     @Override public void execute(){
       if (!connection.isApplicationRunning() || !(hasActiveRequest() || getServerRpcQueue().isFlushPending())) {
         getLoadingIndicator().hide();
-        ApplicationConnection.extendLiferaySession();
+        extendLiferaySession();
       }
     }
   }
