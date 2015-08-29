@@ -17,6 +17,16 @@
     }
 );
     selectAllCheckBox.setValue(selected);
+    addHeaderClickHandler(new HeaderClickHandler(){
+      @Override public void onClick(      GridClickEvent event){
+        CellReference<?> targetCell=event.getTargetCell();
+        int defaultRowIndex=getHeader().getRows().indexOf(getDefaultHeaderRow());
+        if (targetCell.getColumnIndex() == 0 && targetCell.getRowIndex() == defaultRowIndex) {
+          selectAllCheckBox.setValue(!selectAllCheckBox.getValue(),true);
+        }
+      }
+    }
+);
     addHeaderKeyUpHandler(new HeaderKeyUpHandler(){
       @Override public void onKeyUp(      GridKeyUpEvent event){
         if (event.getNativeKeyCode() != KeyCodes.KEY_SPACE) {
