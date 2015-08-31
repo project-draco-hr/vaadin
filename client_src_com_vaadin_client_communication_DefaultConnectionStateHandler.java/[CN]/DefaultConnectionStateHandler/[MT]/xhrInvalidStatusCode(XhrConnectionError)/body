@@ -1,0 +1,14 @@
+{
+  debug("xhrInvalidStatusCode");
+  Response response=xhrConnectionError.getResponse();
+  int statusCode=response.getStatusCode();
+  getLogger().warning("Server returned " + statusCode + " for xhr");
+  if (statusCode == 401) {
+    endRequest();
+    handleUnauthorized(xhrConnectionError);
+    return;
+  }
+ else {
+    handleRecoverableError(Type.XHR,xhrConnectionError.getPayload());
+  }
+}

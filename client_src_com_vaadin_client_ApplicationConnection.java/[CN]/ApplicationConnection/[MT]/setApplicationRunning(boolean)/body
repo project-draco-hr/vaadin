@@ -1,5 +1,5 @@
 {
-  if (getState() == State.TERMINATED) {
+  if (getApplicationState() == ApplicationState.TERMINATED) {
     if (applicationRunning) {
       getLogger().severe("Tried to restart a terminated application. This is not supported");
     }
@@ -8,17 +8,17 @@
     }
     return;
   }
- else   if (getState() == State.INITIALIZING) {
+ else   if (getApplicationState() == ApplicationState.INITIALIZING) {
     if (applicationRunning) {
-      state=State.RUNNING;
+      applicationState=ApplicationState.RUNNING;
     }
  else {
       getLogger().warning("Tried to stop the application before it has started. This should not be done");
     }
   }
- else   if (getState() == State.RUNNING) {
+ else   if (getApplicationState() == ApplicationState.RUNNING) {
     if (!applicationRunning) {
-      state=State.TERMINATED;
+      applicationState=ApplicationState.TERMINATED;
       eventBus.fireEvent(new ApplicationStoppedEvent());
     }
  else {
