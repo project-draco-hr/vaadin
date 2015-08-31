@@ -1,6 +1,12 @@
 {
   try {
-    return Transport.getByIdentifier(getParameter(PushConfigurationState.TRANSPORT_PARAM));
+    Transport tr=Transport.getByIdentifier(getParameter(PushConfigurationState.TRANSPORT_PARAM));
+    if (tr == Transport.WEBSOCKET && getState(false).alwaysUseXhrForServerRequests) {
+      return Transport.WEBSOCKET_XHR;
+    }
+ else {
+      return tr;
+    }
   }
  catch (  IllegalArgumentException e) {
     return null;
