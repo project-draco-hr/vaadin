@@ -52,4 +52,20 @@
     }
   }
 ,menupath);
+  addMenuCommand("Open sidebar and disable grid",new ScheduledCommand(){
+    @Override public void execute(){
+      grid.setSidebarOpen(true);
+      Scheduler.get().scheduleFixedDelay(new Scheduler.RepeatingCommand(){
+        @Override public boolean execute(){
+          if (grid.isSidebarOpen()) {
+            grid.setEnabled(false);
+            return false;
+          }
+          return true;
+        }
+      }
+,250);
+    }
+  }
+,menupath);
 }
