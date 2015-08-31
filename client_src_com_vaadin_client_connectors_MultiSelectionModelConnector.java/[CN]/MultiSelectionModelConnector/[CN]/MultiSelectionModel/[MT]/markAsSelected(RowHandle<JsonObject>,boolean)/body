@@ -1,10 +1,16 @@
 {
-  row.pin();
-  if (selected) {
+  if (selected && !isSelected(row.getRow())) {
     row.getRow().put(GridState.JSONKEY_SELECTED,true);
   }
- else {
+ else   if (!selected && isSelected(row.getRow())) {
     row.getRow().remove(GridState.JSONKEY_SELECTED);
   }
+ else {
+    return false;
+  }
   row.updateRow();
+  if (isBeingBatchSelected()) {
+    row.pin();
+  }
+  return true;
 }

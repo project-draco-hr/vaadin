@@ -2,6 +2,8 @@
   String key=getRowKey(handle.getRow());
   super.unpinHandle(handle);
   if (!handle.isPinned()) {
-    rpcProxy.setPinned(key,false);
+    if (indexOfKey(key) == -1) {
+      droppedRowKeys.set(droppedRowKeys.length(),key);
+    }
   }
 }

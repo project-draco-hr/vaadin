@@ -1,4 +1,9 @@
 {
   getRpcProxy(MultiSelectionModelServerRpc.class).deselect(getRowKeys(deselected));
-  cleanRowCache(deselected);
+  if (isBeingBatchSelected()) {
+    for (    RowHandle<JsonObject> row : deselected) {
+      row.unpin();
+    }
+  }
+  deselected.clear();
 }

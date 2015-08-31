@@ -5,20 +5,9 @@
     @Override public void requestRows(    int firstRow,    int numberOfRows,    int firstCachedRowIndex,    int cacheSize){
       pushRowData(firstRow,numberOfRows,firstCachedRowIndex,cacheSize);
     }
-    @Override public void setPinned(    String key,    boolean isPinned){
-      Object itemId=keyMapper.getItemId(key);
-      if (isPinned) {
-        if (!keyMapper.isPinned(itemId)) {
-          keyMapper.pin(itemId);
-        }
-      }
- else {
-        keyMapper.unpin(itemId);
-      }
-    }
     @Override public void dropRows(    JsonArray rowKeys){
       for (int i=0; i < rowKeys.length(); ++i) {
-        activeItemHandler.dropActiveItem(keyMapper.getItemId(rowKeys.getString(i)));
+        activeItemHandler.dropActiveItem(getKeyMapper().get(rowKeys.getString(i)));
       }
     }
   }
@@ -26,6 +15,6 @@
   if (container instanceof ItemSetChangeNotifier) {
     ((ItemSetChangeNotifier)container).addItemSetChangeListener(itemListener);
   }
-  addDataGenerator(keyMapper);
+  addDataGenerator(activeItemHandler);
   addDataGenerator(detailComponentManager);
 }
