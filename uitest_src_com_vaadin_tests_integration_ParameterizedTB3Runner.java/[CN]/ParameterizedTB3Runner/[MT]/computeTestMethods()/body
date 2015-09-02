@@ -1,0 +1,53 @@
+{
+  List<FrameworkMethod> methods=super.computeTestMethods();
+  Map<Method,Collection<String>> parameters=new LinkedHashMap<Method,Collection<String>>();
+  for (  Method m : getTestClass().getJavaClass().getMethods()) {
+    Parameters p=m.getAnnotation(Parameters.class);
+    if (p == null) {
+      continue;
+    }
+    if (!m.getName().startsWith("get") || !m.getName().endsWith("s")) {
+      throw new IllegalStateException("Method " + m.getName() + " is annotated with @Parameter but is not named getSomeThings() as it should");
+    }
+    if (m.getParameterTypes().length != 0) {
+      throw new IllegalStateException("Method " + m.getName() + " annotated with @Parameter should not have any arguments");
+    }
+    if (!Modifier.isStatic(m.getModifiers())) {
+      throw new IllegalStateException("Method " + m.getName() + " annotated with @Parameter must be static");
+    }
+    String setter="set" + m.getName().substring("get".length());
+    setter=setter.substring(0,setter.length() - 1);
+    Method setterMethod;
+    try {
+      setterMethod=getTestClass().getJavaClass().getMethod(setter,String.class);
+    }
+ catch (    Exception e) {
+      throw new IllegalStateException("No setter " + setter + " found in "+ getTestClass().getJavaClass().getName(),e);
+    }
+    Collection<String> values;
+    try {
+      values=(Collection<String>)m.invoke(null);
+      if (!values.isEmpty()) {
+        parameters.put(setterMethod,values);
+      }
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
+  }
+  for (  Method setter : parameters.keySet()) {
+    List<FrameworkMethod> newMethods=new ArrayList<FrameworkMethod>();
+    for (    FrameworkMethod m : methods) {
+      if (!(m instanceof TBMethod)) {
+        System.err.println("Unknown method type: " + m.getClass().getName());
+        newMethods.add(m);
+        continue;
+      }
+      for (      final String value : parameters.get(setter)) {
+        newMethods.add(new TBMethodWithBefore((TBMethod)m,setter,value));
+      }
+    }
+    methods=newMethods;
+  }
+  return methods;
+}
