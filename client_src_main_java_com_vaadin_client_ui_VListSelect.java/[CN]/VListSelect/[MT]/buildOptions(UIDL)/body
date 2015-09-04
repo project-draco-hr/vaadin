@@ -1,24 +1,30 @@
 {
-  int scrollTop=select.getElement().getScrollTop();
-  int rowCount=getRows();
   select.setMultipleSelect(isMultiselect());
-  select.clear();
+  Set<String> previousKeys=new HashSet<String>();
+  for (int i=0; i < select.getItemCount(); i++) {
+    previousKeys.add(select.getValue(i));
+  }
+  int nextIndex=0;
   if (!isMultiselect() && isNullSelectionAllowed() && !isNullSelectionItemAvailable()) {
+    updateOrCreateItem("","null",nextIndex++,previousKeys);
     select.addItem("",(String)null);
   }
   for (final Iterator<?> i=uidl.getChildIterator(); i.hasNext(); ) {
     final UIDL optionUidl=(UIDL)i.next();
-    select.addItem(optionUidl.getStringAttribute("caption"),optionUidl.getStringAttribute("key"));
+    updateOrCreateItem(optionUidl.getStringAttribute("caption"),optionUidl.getStringAttribute("key"),nextIndex,previousKeys);
     if (optionUidl.hasAttribute("selected")) {
-      int itemIndex=select.getItemCount() - 1;
-      select.setItemSelected(itemIndex,true);
-      lastSelectedIndex=itemIndex;
+      select.setItemSelected(nextIndex,true);
+      lastSelectedIndex=nextIndex;
     }
+ else {
+      select.setItemSelected(nextIndex,false);
+    }
+    nextIndex++;
+  }
+  while (select.getItemCount() > nextIndex) {
+    select.removeItem(nextIndex);
   }
   if (getRows() > 0) {
     select.setVisibleItemCount(getRows());
-  }
-  if (rowCount == getRows()) {
-    select.getElement().setScrollTop(scrollTop);
   }
 }
