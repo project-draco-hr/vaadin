@@ -1,14 +1,8 @@
 {
-  String url=getBaseURL() + "/" + bufferingOrNot+ "/demo"+ getDeploymentPath();
+  String url=getUrl(bufferingOrNot);
   getDriver().get(url);
   Assert.assertEquals(0,BasicPushTest.getServerCounter(this));
   BasicPushTest.getServerCounterStartButton(this).click();
-  waitUntil(new ExpectedCondition<Boolean>(){
-    @Override public Boolean apply(    WebDriver input){
-      return BasicPushTest.getServerCounter(LongPollingProxyServerTest.this) > 0;
-    }
-  }
-);
   waitUntil(new ExpectedCondition<Boolean>(){
     @Override public Boolean apply(    WebDriver input){
       return BasicPushTest.getServerCounter(LongPollingProxyServerTest.this) > 1;
