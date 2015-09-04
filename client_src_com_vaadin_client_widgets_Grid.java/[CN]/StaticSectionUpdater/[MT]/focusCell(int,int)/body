@@ -1,0 +1,17 @@
+{
+  RowReference<T> row=new RowReference<T>(this);
+  Range visibleRows=escalator.getVisibleRowRange();
+  TableRowElement rowElement;
+  if (visibleRows.contains(rowIndex)) {
+    rowElement=escalator.getBody().getRowElement(rowIndex);
+  }
+ else {
+    getLogger().warning("Row index was not among visible row range");
+    return;
+  }
+  row.set(rowIndex,dataSource.getRow(rowIndex),rowElement);
+  CellReference<T> cell=new CellReference<T>(row);
+  cell.set(columnIndex,columnIndex,getVisibleColumn(columnIndex));
+  cellFocusHandler.setCellFocus(cell);
+  WidgetUtil.focus(getElement());
+}

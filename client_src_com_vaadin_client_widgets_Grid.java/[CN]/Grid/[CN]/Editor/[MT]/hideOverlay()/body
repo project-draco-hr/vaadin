@@ -1,4 +1,15 @@
 {
+  if (editorOverlay.getParentElement() == null) {
+    return;
+  }
+  if (pinnedRowHandle != null) {
+    pinnedRowHandle.unpin();
+    pinnedRowHandle=null;
+  }
+  for (  HandlerRegistration r : focusHandlers) {
+    r.removeHandler();
+  }
+  focusHandlers.clear();
   for (  Widget w : columnToWidget.values()) {
     setParent(w,null);
   }
@@ -7,7 +18,11 @@
   detachWidget(cancelButton);
   editorOverlay.removeAllChildren();
   cellWrapper.removeAllChildren();
+  frozenCellWrapper.removeAllChildren();
   editorOverlay.removeFromParent();
   scrollHandler.removeHandler();
   clearEditorColumnErrors();
+  if (focusedColumnIndex != -1) {
+    grid.focusCell(rowIndex,focusedColumnIndex);
+  }
 }

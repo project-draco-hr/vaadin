@@ -1,16 +1,11 @@
 {
   if (parent == null) {
-    activeRowHandler.removeValueChangeListeners(activeRowHandler.activeRange);
+    activeItemHandler.internalDropActiveItems(activeItemHandler.getActiveItemIds());
     if (container instanceof ItemSetChangeNotifier) {
       ((ItemSetChangeNotifier)container).removeItemSetChangeListener(itemListener);
     }
   }
- else   if (parent instanceof Grid) {
-    Grid grid=(Grid)parent;
-    rowReference=new RowReference(grid);
-    cellReference=new CellReference(rowReference);
-  }
- else {
+ else   if (!(parent instanceof Grid)) {
     throw new IllegalStateException("Grid is the only accepted parent type");
   }
   super.setParent(parent);

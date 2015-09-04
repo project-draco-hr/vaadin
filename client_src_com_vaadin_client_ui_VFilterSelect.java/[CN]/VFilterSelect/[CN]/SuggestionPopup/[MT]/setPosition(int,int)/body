@@ -10,7 +10,7 @@
   final int desiredWidth=getMainWidth();
   debug("VFS.SP:     desired[" + desiredWidth + ", "+ desiredHeight+ "]");
   Element menuFirstChild=menu.getElement().getFirstChildElement();
-  final int naturalMenuWidth=menuFirstChild.getOffsetWidth();
+  final int naturalMenuWidth=WidgetUtil.getRequiredWidth(menuFirstChild);
   if (popupOuterPadding == -1) {
     popupOuterPadding=WidgetUtil.measureHorizontalPaddingAndBorder(getElement(),2);
   }
@@ -18,8 +18,9 @@
     menu.setWidth((desiredWidth - popupOuterPadding) + "px");
     menuFirstChild.getStyle().setWidth(100,Unit.PCT);
   }
-  if (BrowserInfo.get().isIE()) {
-    int rootWidth=Math.max(desiredWidth,naturalMenuWidth) - popupOuterPadding;
+  if (BrowserInfo.get().isIE() && BrowserInfo.get().getBrowserMajorVersion() < 11) {
+    double naturalMenuOuterWidth=WidgetUtil.getRequiredWidthDouble(menuFirstChild) + getMarginBorderPaddingWidth(menu.getElement());
+    double rootWidth=Math.max(desiredWidth - popupOuterPadding,naturalMenuOuterWidth);
     getContainerElement().getStyle().setWidth(rootWidth,Unit.PX);
   }
   final int vfsHeight=VFilterSelect.this.getOffsetHeight();

@@ -2,7 +2,8 @@
   boolean keyboardSelectionOverRowFetchInProgress=false;
   if (uidl.hasVariable("selected")) {
     final Set<String> selectedKeys=uidl.getStringArrayVariableAsSet("selected");
-    removeUnselectedRowKeys(selectedKeys);
+    boolean rowsUnSelected=removeUnselectedRowKeys(selectedKeys);
+    boolean updateFocus=rowsUnSelected || selectedRowKeys.size() == 0 || focusedRow == null;
     if (scrollBody != null) {
       Iterator<Widget> iterator=scrollBody.iterator();
       while (iterator.hasNext()) {
@@ -12,7 +13,7 @@
           selected=true;
           keyboardSelectionOverRowFetchInProgress=true;
         }
-        if (selected && selectedKeys.size() == 1) {
+        if (selected && selectedKeys.size() == 1 && updateFocus) {
           setRowFocus(row);
         }
         if (selected != row.isSelected()) {

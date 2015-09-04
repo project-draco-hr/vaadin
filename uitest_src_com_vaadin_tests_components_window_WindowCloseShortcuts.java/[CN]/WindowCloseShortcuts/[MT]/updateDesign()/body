@@ -1,0 +1,16 @@
+{
+  String design="";
+  try {
+    ByteArrayOutputStream outputStream=new ByteArrayOutputStream();
+    DesignContext dc=new DesignContext();
+    dc.setRootComponent(window);
+    Design.write(dc,outputStream);
+    design=outputStream.toString("UTF-8");
+  }
+ catch (  Exception e) {
+    return;
+  }
+  Element producedElem=Jsoup.parse(design).body().child(0);
+  design=elementToHtml(producedElem);
+  designLabel.setCaption(design);
+}

@@ -5,10 +5,6 @@
   if (state == State.INACTIVE) {
     throw new IllegalStateException("Cannot cancel edit: editor is not in edit mode");
   }
-  hideOverlay();
-  grid.getEscalator().setScrollLocked(Direction.VERTICAL,false);
-  EditorRequest<T> request=new EditorRequestImpl<T>(grid,rowIndex,null);
-  handler.cancel(request);
-  state=State.INACTIVE;
-  updateSelectionCheckboxesAsNeeded(true);
+  handler.cancel(new EditorRequestImpl<T>(grid,rowIndex,null));
+  doCancel();
 }

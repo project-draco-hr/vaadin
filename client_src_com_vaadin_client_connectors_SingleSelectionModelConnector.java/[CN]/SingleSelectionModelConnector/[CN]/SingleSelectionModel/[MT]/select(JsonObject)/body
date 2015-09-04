@@ -1,0 +1,23 @@
+{
+  boolean changed=false;
+  if ((row == null && isDeselectAllowed()) || (row != null && !getRowHandle(row).equals(selectedRow))) {
+    if (selectedRow != null) {
+      selectedRow.getRow().remove(GridState.JSONKEY_SELECTED);
+      selectedRow.updateRow();
+      selectedRow.unpin();
+      selectedRow=null;
+      changed=true;
+    }
+    if (row != null) {
+      selectedRow=getRowHandle(row);
+      selectedRow.pin();
+      selectedRow.getRow().put(GridState.JSONKEY_SELECTED,true);
+      selectedRow.updateRow();
+      changed=true;
+    }
+  }
+  if (changed) {
+    getRpcProxy(SingleSelectionModelServerRpc.class).select(getRowKey(row));
+  }
+  return changed;
+}

@@ -1,17 +1,22 @@
 from BuildArchetypes import archetypes, getDeploymentContext
+from BuildDemos import demos
 import argparse, cgi
 parser = argparse.ArgumentParser(description='Build report generator')
 parser.add_argument('version', type=str, help='Vaadin version that was just built')
 parser.add_argument('deployUrl', type=str, help='Base url of the deployment server')
 parser.add_argument('buildResultUrl', type=str, help='URL for the build result page')
 parser.add_argument('stagingRepo', type=str, help='URL for the staging repository')
+parser.add_argument('tbapiUrl', type=str, help='URL for the TestBench API build')
 args = parser.parse_args()
 content = '<html>\n<head></head>\n<body>\n<table>\n'
-content += '<tr><td>Try archetype demos<ul>'
+content += '<tr><td>Try demos<ul>'
+for demo in demos:
+    content += "<li><a href='{url}/{demoName}-{version}'>{demoName}</a></li>\n".format(url=args.deployUrl, demoName=demo, version=args.version)
+content += '</ul></td></tr>\n<tr><td>Try archetype demos<ul>'
 for archetype in archetypes:
     content += "<li><a href='{url}/{context}'>{demo}</a></li>\n".format(url=args.deployUrl, demo=archetype, context=getDeploymentContext(archetype, args.version))
 content += '</ul></td></tr>\n<tr><td><a href="{repoUrl}">Staging repository</a></td></tr>\n<tr><td>Eclipse Ivy Settings:<br><pre>'.format(repoUrl=args.stagingRepo)
 content += cgi.escape('\t<ibiblio name="vaadin-staging" usepoms="true" m2compatible="true" \n\t\troot="{repoUrl}" />'.format(repoUrl=args.stagingRepo))
-content += '</pre>\n</td></tr>\n<tr><td><a href="https://dev.vaadin.com/milestone/Vaadin {version}">Trac Milestone</a></td></tr>\n<tr><td><a href="https://dev.vaadin.com/admin/ticket/versions">Add version {version} to Trac</td></tr>\n<tr><td><a href="{url}">Staging result page (See test results, pin and tag build and dependencies)</a></td></tr>\n</table>\n</body>\n</html>'.format(url=args.buildResultUrl, repoUrl=args.stagingRepo, version=args.version)
+content += '</pre>\n</td></tr>\n<tr><td><a href="https://dev.vaadin.com/milestone/Vaadin {version}">Close Trac Milestone</a></td></tr>\n<tr><td><a href="https://dev.vaadin.com/query?status=pending-release&component=Core+Framework&resolution=fixed&col=id&col=summary&col=component&col=milestone&col=status&col=type">Verify pending release tickets still have milestone {version}</a></td></tr>\n<tr><td><a href="https://dev.vaadin.com/admin/ticket/versions">Add version {version} to Trac</td></tr>\n<tr><td><a href="{url}">Staging result page (See test results, pin and tag build and dependencies)</a></td></tr>\n<tr><td>Commands to tag all repositories (warning: do not run as a single script but set variables and check before any push commands - this has not been tested yet and the change IDs are missing)</td></tr>\n<tr><td><pre>\nVERSION={version}\n\nGERRIT_USER=[fill in your gerrit username]\nFRAMEWORK_REVISION=[fill in framework revision]\nSCREENSHOTS_REVISION=[fill in screenshot repository revision]\nARCHETYPES_REVISION=[fill in maven-integration repository revision]\nPLUGIN_REVISION=[fill in maven plug-in repository revision]\n\ngit clone ssh://$GERRIT_USER@dev.vaadin.com:29418/vaadin\ncd vaadin\ngit tag -a -m"$VERSION" $VERSION $FRAMEWORK_REVISION\ngit push --tags\ncd ..\n\ngit clone ssh://$GERRIT_USER@dev.vaadin.com:29418/vaadin-screenshots\ncd vaadin-screenshots\ngit tag -a -m"$VERSION" $VERSION $SCREENSHOTS_REVISION\ngit push --tags\ncd ..\n\ngit clone ssh://$GERRIT_USER@dev.vaadin.com:29418/maven-integration\ncd maven-integration\ngit tag -a -m"$VERSION" $VERSION $ARCHETYPES_REVISION\ngit push --tags\ncd ..\n\ngit clone ssh://$GERRIT_USER@dev.vaadin.com:29418/maven-plugin\ncd maven-plugin\ngit tag -a -m"$VERSION" $VERSION $PLUGIN_REVISION\ngit push --tags\ncd ..\n</pre></td></tr>\n<tr><td><a href="{tbapi}">Build and publish TestBench API for version {version} if proceeding</a></td></tr>\n</table>\n</body>\n</html>'.format(url=args.buildResultUrl, repoUrl=args.stagingRepo, version=args.version, tbapi=args.tbapiUrl)
 f = open('result/report.html', 'w')
 f.write(content)

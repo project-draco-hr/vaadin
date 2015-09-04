@@ -3,15 +3,27 @@
     throw new IllegalStateException("Cannot edit row: editor is not enabled");
   }
   if (state != State.INACTIVE) {
-    throw new IllegalStateException("Cannot edit row: editor already in edit mode");
+    if (isBuffered()) {
+      throw new IllegalStateException("Cannot edit row: editor already in edit mode");
+    }
   }
   this.rowIndex=rowIndex;
-  this.columnIndex=columnIndex;
+  this.focusedColumnIndex=columnIndex;
   state=State.ACTIVATING;
   if (grid.getEscalator().getVisibleRowRange().contains(rowIndex)) {
-    show();
+    show(rowIndex);
   }
  else {
+    hideOverlay();
+    dataAvailableHandler=grid.addDataAvailableHandler(new DataAvailableHandler(){
+      @Override public void onDataAvailable(      DataAvailableEvent event){
+        if (event.getAvailableRows().contains(rowIndex)) {
+          show(rowIndex);
+          dataAvailableHandler.removeHandler();
+        }
+      }
+    }
+);
     grid.scrollToRow(rowIndex,ScrollDestination.MIDDLE);
   }
 }
