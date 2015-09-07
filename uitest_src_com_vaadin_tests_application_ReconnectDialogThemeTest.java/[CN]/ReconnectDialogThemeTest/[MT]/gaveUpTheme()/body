@@ -1,0 +1,18 @@
+{
+  openTestURL("reconnectAttempts=3");
+  waitUntil(new ExpectedCondition<Boolean>(){
+    @Override public Boolean apply(    WebDriver input){
+      try {
+        return $(ButtonElement.class).first() != null;
+      }
+ catch (      Exception e) {
+        return false;
+      }
+    }
+  }
+);
+  disconnectProxy();
+  $(ButtonElement.class).first().click();
+  waitForReconnectDialogWithText("Server connection lost.");
+  compareScreen("gaveupdialog");
+}
