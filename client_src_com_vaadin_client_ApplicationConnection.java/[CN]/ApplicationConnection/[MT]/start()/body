@@ -1,11 +1,11 @@
 {
   String jsonText=configuration.getUIDL();
   if (jsonText == null) {
-    repaintAll();
+    getMessageSender().resynchronize();
   }
  else {
-    hasActiveRequest=true;
-    handleJSONText(jsonText,-1);
+    getMessageSender().startRequest();
+    getMessageHandler().handleMessage(MessageHandler.parseJson(jsonText));
   }
   if (!tooltipInitialized) {
     tooltipInitialized=true;

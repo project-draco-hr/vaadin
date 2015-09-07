@@ -1,0 +1,15 @@
+{
+  if (reconnectAttempt == 1) {
+    doReconnect(payload);
+  }
+ else {
+    scheduledReconnect=new Timer(){
+      @Override public void run(){
+        scheduledReconnect=null;
+        doReconnect(payload);
+      }
+    }
+;
+    scheduledReconnect.schedule(getConfiguration().reconnectInterval);
+  }
+}

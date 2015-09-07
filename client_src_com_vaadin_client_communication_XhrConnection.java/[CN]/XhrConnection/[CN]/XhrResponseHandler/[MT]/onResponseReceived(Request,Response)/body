@@ -1,0 +1,23 @@
+{
+  int statusCode=response.getStatusCode();
+  if (statusCode != 200) {
+    XhrConnectionError problemEvent=new XhrConnectionError(request,payload,response);
+    getConnectionStateHandler().xhrInvalidStatusCode(problemEvent);
+    return;
+  }
+  getLogger().info("Server visit took " + String.valueOf((new Date()).getTime() - requestStartTime.getTime()) + "ms");
+  String contentType=response.getHeader("Content-Type");
+  if (contentType == null || !contentType.startsWith("application/json")) {
+    getConnectionStateHandler().xhrInvalidContent(new XhrConnectionError(request,payload,response));
+    return;
+  }
+  String responseText=response.getText();
+  ValueMap json=MessageHandler.parseWrappedJson(responseText);
+  if (json == null) {
+    getConnectionStateHandler().xhrInvalidContent(new XhrConnectionError(request,payload,response));
+    return;
+  }
+  getConnectionStateHandler().xhrOk();
+  getLogger().info("Received xhr message: " + responseText);
+  getMessageHandler().handleMessage(json);
+}

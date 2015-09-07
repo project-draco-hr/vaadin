@@ -1,0 +1,33 @@
+{
+  debug("handleTemporaryError(" + type + ")");
+  if (!connection.isApplicationRunning()) {
+    return;
+  }
+  if (!isReconnecting()) {
+    reconnectionCause=type;
+    getLogger().warning("Reconnecting because of " + type + " failure");
+    stopDialogTimer();
+    if (isDialogVisible()) {
+      hideDialog();
+    }
+    dialogShowTimer.schedule(getConfiguration().dialogGracePeriod);
+  }
+ else {
+    if (type.isHigherPriorityThan(reconnectionCause)) {
+      getLogger().warning("Now reconnecting because of " + type + " failure");
+      reconnectionCause=type;
+    }
+  }
+  if (reconnectionCause != type) {
+    return;
+  }
+  reconnectAttempt++;
+  getLogger().info("Reconnect attempt " + reconnectAttempt + " for "+ type);
+  if (reconnectAttempt >= getConfiguration().reconnectAttempts) {
+    giveUp();
+  }
+ else {
+    updateDialog();
+    scheduleReconnect(payload);
+  }
+}

@@ -8,7 +8,21 @@
   if (!VaadinService.isCsrfTokenValid(ui.getSession(),rpcRequest.getCsrfToken())) {
     throw new InvalidUIDLSecurityKeyException("");
   }
-  handleInvocations(ui,rpcRequest.getSyncId(),rpcRequest.getRpcInvocationsData());
+  checkWidgetsetVersion(rpcRequest.getWidgetsetVersion());
+  int expectedId=ui.getLastProcessedClientToServerId() + 1;
+  if (rpcRequest.getClientToServerId() != -1 && rpcRequest.getClientToServerId() != expectedId) {
+    ui.getSession().getCommunicationManager().repaintAll(ui);
+    if (rpcRequest.getClientToServerId() < expectedId) {
+      getLogger().fine("Ignoring old message from the client. Expected: " + expectedId + ", got: "+ rpcRequest.getClientToServerId());
+    }
+ else {
+      getLogger().warning("Unexpected message id from the client. Expected: " + expectedId + ", got: "+ rpcRequest.getClientToServerId());
+    }
+  }
+ else {
+    ui.setLastProcessedClientToServerId(expectedId);
+    handleInvocations(ui,rpcRequest.getSyncId(),rpcRequest.getRpcInvocationsData());
+  }
   ui.getConnectorTracker().cleanConcurrentlyRemovedConnectorIds(rpcRequest.getSyncId());
   if (rpcRequest.isResynchronize()) {
     ui.getSession().getCommunicationManager().repaintAll(ui);

@@ -1,4 +1,7 @@
 {
   boolean lastOnly=!immediate;
-  addMethodInvocationToQueue(new LegacyChangeVariablesInvocation(connectorId,variableName,value),lastOnly,lastOnly);
+  serverRpcQueue.add(new LegacyChangeVariablesInvocation(connectorId,variableName,value),lastOnly);
+  if (immediate) {
+    serverRpcQueue.flush();
+  }
 }

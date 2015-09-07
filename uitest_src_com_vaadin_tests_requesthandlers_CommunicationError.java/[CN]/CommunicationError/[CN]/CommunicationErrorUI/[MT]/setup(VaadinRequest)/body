@@ -1,7 +1,15 @@
 {
   Button button=new Button("Send bad request",new Button.ClickListener(){
     @Override public void buttonClick(    ClickEvent event){
-      VaadinService.getCurrentResponse().setStatus(400);
+      try {
+        PrintWriter writer=VaadinService.getCurrentResponse().getWriter();
+        writer.write("for(;;)[{FOOBAR}]");
+        writer.flush();
+        writer.close();
+      }
+ catch (      IOException e) {
+        e.printStackTrace();
+      }
     }
   }
 );

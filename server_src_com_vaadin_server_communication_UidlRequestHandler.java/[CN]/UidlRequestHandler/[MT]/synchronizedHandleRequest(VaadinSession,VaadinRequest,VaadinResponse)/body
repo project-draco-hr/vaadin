@@ -4,16 +4,10 @@
     UIInitHandler.commitJsonResponse(request,response,getUINotFoundErrorJSON(session.getService(),request));
     return true;
   }
-  checkWidgetsetVersion(request);
-  boolean repaintAll;
-  repaintAll=(request.getParameter(ApplicationConstants.URL_PARAMETER_REPAINT_ALL) != null);
   StringWriter stringWriter=new StringWriter();
   try {
     rpcHandler.handleRpc(uI,request.getReader(),request);
-    if (repaintAll) {
-      session.getCommunicationManager().repaintAll(uI);
-    }
-    writeUidl(request,response,uI,stringWriter,repaintAll);
+    writeUidl(request,response,uI,stringWriter);
   }
  catch (  JsonException e) {
     getLogger().log(Level.SEVERE,"Error writing JSON to response",e);

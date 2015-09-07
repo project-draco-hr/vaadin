@@ -1,6 +1,28 @@
 {
-  if (applicationRunning && !running) {
-    eventBus.fireEvent(new ApplicationStoppedEvent());
+  if (getApplicationState() == ApplicationState.TERMINATED) {
+    if (applicationRunning) {
+      getLogger().severe("Tried to restart a terminated application. This is not supported");
+    }
+ else {
+      getLogger().warning("Tried to stop a terminated application. This should not be done");
+    }
+    return;
   }
-  applicationRunning=running;
+ else   if (getApplicationState() == ApplicationState.INITIALIZING) {
+    if (applicationRunning) {
+      applicationState=ApplicationState.RUNNING;
+    }
+ else {
+      getLogger().warning("Tried to stop the application before it has started. This should not be done");
+    }
+  }
+ else   if (getApplicationState() == ApplicationState.RUNNING) {
+    if (!applicationRunning) {
+      applicationState=ApplicationState.TERMINATED;
+      eventBus.fireEvent(new ApplicationStoppedEvent());
+    }
+ else {
+      getLogger().warning("Tried to start an already running application. This should not be done");
+    }
+  }
 }

@@ -1,0 +1,25 @@
+{
+  ServerRpcQueue serverRpcQueue=getServerRpcQueue();
+  if (serverRpcQueue.isEmpty()) {
+    return;
+  }
+  if (ApplicationConfiguration.isDebugMode()) {
+    Util.logMethodInvocations(connection,serverRpcQueue.getAll());
+  }
+  boolean showLoadingIndicator=serverRpcQueue.showLoadingIndicator();
+  JsonArray reqJson=serverRpcQueue.toJson();
+  serverRpcQueue.clear();
+  if (reqJson.length() == 0) {
+    getLogger().warning("All RPCs filtered out, not sending anything to the server");
+    return;
+  }
+  JsonObject extraJson=Json.createObject();
+  if (!connection.getConfiguration().isWidgetsetVersionSent()) {
+    extraJson.put(ApplicationConstants.WIDGETSET_VERSION_ID,Version.getFullVersion());
+    connection.getConfiguration().setWidgetsetVersionSent();
+  }
+  if (showLoadingIndicator) {
+    connection.getLoadingIndicator().trigger();
+  }
+  send(reqJson,extraJson);
+}

@@ -1,0 +1,20 @@
+{
+  if (pendingUIDLMessages.isEmpty()) {
+    return false;
+  }
+  PendingUIDLMessage toHandle=null;
+  for (  PendingUIDLMessage message : pendingUIDLMessages) {
+    if (isNextExpectedMessage(getServerId(message.json))) {
+      toHandle=message;
+      break;
+    }
+  }
+  if (toHandle != null) {
+    pendingUIDLMessages.remove(toHandle);
+    handleJSON(toHandle.getJson());
+    return true;
+  }
+ else {
+    return false;
+  }
+}

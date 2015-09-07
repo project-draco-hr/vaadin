@@ -1,0 +1,13 @@
+{
+  int statusCode=response.getStatusCode();
+  getLogger().warning("Heartbeat request returned " + statusCode);
+  if (response.getStatusCode() == Response.SC_GONE) {
+    getConnection().showSessionExpiredError(null);
+    stopApplication();
+  }
+ else   if (response.getStatusCode() == Response.SC_NOT_FOUND) {
+  }
+ else {
+    handleRecoverableError(Type.HEARTBEAT,null);
+  }
+}

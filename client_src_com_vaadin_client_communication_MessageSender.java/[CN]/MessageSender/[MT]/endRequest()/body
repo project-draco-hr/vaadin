@@ -1,0 +1,22 @@
+{
+  if (!hasActiveRequest) {
+    getLogger().severe("No active request");
+  }
+  hasActiveRequest=false;
+  if (connection.isApplicationRunning()) {
+    if (getServerRpcQueue().isFlushPending()) {
+      sendInvocationsToServer();
+    }
+    runPostRequestHooks(connection.getConfiguration().getRootPanelId());
+  }
+  Scheduler.get().scheduleDeferred(new Command(){
+    @Override public void execute(){
+      if (!connection.isApplicationRunning() || !(hasActiveRequest() || getServerRpcQueue().isFlushPending())) {
+        getLoadingIndicator().hide();
+        extendLiferaySession();
+      }
+    }
+  }
+);
+  connection.fireEvent(new ResponseHandlingEndedEvent(connection));
+}

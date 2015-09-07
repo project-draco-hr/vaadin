@@ -1,0 +1,23 @@
+{
+  Panel p=new Panel("Server config (NOTE: affects all users)");
+  VerticalLayout vl=new VerticalLayout();
+  vl.setSpacing(true);
+  vl.setMargin(true);
+  p.setContent(vl);
+  vl.addComponent(createTemporaryResponseCodeSetters("UIDL",uidlResponse));
+  vl.addComponent(createTemporaryResponseCodeSetters("Heartbeat",heartbeatResponse));
+  vl.addComponent(new Button("Activate",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      if (uidlResponse.code != null && uidlResponse.code != 200) {
+        getServlet().setUIDLResponseCode(CommErrorEmulatorUI.this,uidlResponse.code,uidlResponse.time);
+        log("Responding with " + uidlResponse.code + " to UIDL requests for "+ uidlResponse.time+ "s");
+      }
+      if (heartbeatResponse.code != null && heartbeatResponse.code != 200) {
+        getServlet().setHeartbeatResponseCode(CommErrorEmulatorUI.this,heartbeatResponse.code,heartbeatResponse.time);
+        log("Responding with " + heartbeatResponse.code + " to heartbeat requests for "+ heartbeatResponse.time+ "s");
+      }
+    }
+  }
+));
+  return p;
+}

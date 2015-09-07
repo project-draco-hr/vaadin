@@ -7,21 +7,21 @@
   }
   this.widgetSet=widgetSet;
   configuration=cnf;
+  layoutManager.setConnection(this);
+  loadingIndicator.setConnection(this);
+  serverRpcQueue.setConnection(this);
+  messageHandler.setConnection(this);
+  messageSender.setConnection(this);
   ComponentLocator componentLocator=new ComponentLocator(this);
   String appRootPanelName=cnf.getRootPanelId();
   appRootPanelName=appRootPanelName.replaceFirst("-\\d+$","");
   initializeTestbenchHooks(componentLocator,appRootPanelName);
   initializeClientHooks();
   uIConnector.init(cnf.getRootPanelId(),this);
+  connectionStateHandler.setConnection(this);
   tooltip.setOwner(uIConnector.getWidget());
   getLoadingIndicator().show();
   heartbeat.init(this);
-  Window.addWindowClosingHandler(new ClosingHandler(){
-    @Override public void onWindowClosing(    ClosingEvent event){
-      webkitMaybeIgnoringRequests=true;
-    }
-  }
-);
   Element overlayContainer=VOverlay.getOverlayContainer(this);
   Roles.getAlertRole().setAriaLiveProperty(overlayContainer,LiveValue.ASSERTIVE);
   VOverlay.setOverlayContainerLabel(this,getUIConnector().getState().overlayContainerLabel);

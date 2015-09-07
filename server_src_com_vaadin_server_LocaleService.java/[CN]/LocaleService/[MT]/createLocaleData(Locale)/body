@@ -1,9 +1,21 @@
 {
   LocaleData localeData=new LocaleData();
   localeData.name=locale.toString();
+  Calendar c=Calendar.getInstance(locale);
+  c.set(2015,0,1);
+  SimpleDateFormat shortMonthFormat=new SimpleDateFormat("MMM",locale);
+  SimpleDateFormat longMonthFormat=new SimpleDateFormat("MMMM",locale);
+  int monthsInYear=c.getMaximum(Calendar.MONTH) + 1;
+  localeData.shortMonthNames=new String[monthsInYear];
+  localeData.monthNames=new String[monthsInYear];
+  for (int month=0; month < monthsInYear; month++) {
+    c.set(Calendar.MONTH,month);
+    String shortMonth=shortMonthFormat.format(c.getTime());
+    String longMonth=longMonthFormat.format(c.getTime());
+    localeData.shortMonthNames[month]=shortMonth;
+    localeData.monthNames[month]=longMonth;
+  }
   final DateFormatSymbols dfs=new DateFormatSymbols(locale);
-  localeData.shortMonthNames=dfs.getShortMonths();
-  localeData.monthNames=dfs.getMonths();
   localeData.shortDayNames=new String[7];
   localeData.dayNames=new String[7];
   String[] sDayNames=dfs.getShortWeekdays();

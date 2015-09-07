@@ -1,4 +1,6 @@
 {
   MethodInvocation invocation=new JavaScriptMethodInvocation(connector.getConnectorId(),"com.vaadin.ui.JavaScript$JavaScriptCallbackRpc","call",new Object[]{name,arguments});
-  connector.getConnection().addMethodInvocationToQueue(invocation,false,false);
+  ServerRpcQueue rpcQueue=ServerRpcQueue.get(connector.getConnection());
+  rpcQueue.add(invocation,false);
+  rpcQueue.flush();
 }

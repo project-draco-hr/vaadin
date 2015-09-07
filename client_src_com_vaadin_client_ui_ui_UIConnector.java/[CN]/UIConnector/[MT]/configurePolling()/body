@@ -12,13 +12,13 @@
           return;
         }
         getRpcProxy(UIServerRpc.class).poll();
-        getConnection().sendPendingVariableChanges();
+        getConnection().getServerRpcQueue().flush();
       }
     }
 ;
     pollTimer.scheduleRepeating(getState().pollInterval);
   }
  else {
-    getConnection().removePendingInvocations(new MethodInvocation(getConnectorId(),UIServerRpc.class.getName(),"poll"));
+    getConnection().getServerRpcQueue().removeMatching(new MethodInvocation(getConnectorId(),UIServerRpc.class.getName(),"poll"));
   }
 }
