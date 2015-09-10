@@ -1,0 +1,47 @@
+{
+  if (!SharedUtil.equals(newFieldValue,getInternalValue())) {
+    if (!ignoreReadOnly && isReadOnly()) {
+      throw new Property.ReadOnlyException();
+    }
+    try {
+      T doubleConvertedFieldValue=convertFromModel(convertToModel(newFieldValue));
+      if (!SharedUtil.equals(newFieldValue,doubleConvertedFieldValue)) {
+        newFieldValue=doubleConvertedFieldValue;
+        repaintIsNotNeeded=false;
+      }
+    }
+ catch (    Throwable t) {
+    }
+    if (repaintIsNotNeeded && (isRequired() || getValidators() != null || getConverter() != null)) {
+      repaintIsNotNeeded=false;
+    }
+    if (!isInvalidAllowed()) {
+      validate(newFieldValue);
+    }
+    setInternalValue(newFieldValue);
+    setModified(dataSource != null);
+    valueWasModifiedByDataSourceDuringCommit=false;
+    if (!isBuffered() && dataSource != null && (isInvalidCommitted() || isValid())) {
+      try {
+        committingValueToDataSource=true;
+        getPropertyDataSource().setValue(convertToModel(newFieldValue));
+        setModified(false);
+      }
+ catch (      final Throwable e) {
+        currentBufferedSourceException=new Buffered.SourceException(this,e);
+        markAsDirty();
+        throw currentBufferedSourceException;
+      }
+ finally {
+        committingValueToDataSource=false;
+      }
+    }
+    if (getCurrentBufferedSourceException() != null) {
+      setCurrentBufferedSourceException(null);
+    }
+    if (valueWasModifiedByDataSourceDuringCommit) {
+      valueWasModifiedByDataSourceDuringCommit=repaintIsNotNeeded=false;
+    }
+    fireValueChange(repaintIsNotNeeded);
+  }
+}
