@@ -10,20 +10,20 @@
   this.rowIndex=rowIndex;
   this.focusedColumnIndex=columnIndex;
   state=State.ACTIVATING;
-  if (grid.getEscalator().getVisibleRowRange().contains(rowIndex)) {
+  final Escalator escalator=grid.getEscalator();
+  if (escalator.getVisibleRowRange().contains(rowIndex)) {
     show(rowIndex);
   }
  else {
-    hideOverlay();
-    dataAvailableHandler=grid.addDataAvailableHandler(new DataAvailableHandler(){
-      @Override public void onDataAvailable(      DataAvailableEvent event){
-        if (event.getAvailableRows().contains(rowIndex)) {
+    vScrollHandler=grid.addScrollHandler(new ScrollHandler(){
+      @Override public void onScroll(      ScrollEvent event){
+        if (escalator.getVisibleRowRange().contains(rowIndex)) {
           show(rowIndex);
-          dataAvailableHandler.removeHandler();
+          vScrollHandler.removeHandler();
         }
       }
     }
 );
-    grid.scrollToRow(rowIndex,ScrollDestination.MIDDLE);
+    grid.scrollToRow(rowIndex,isBuffered() ? ScrollDestination.MIDDLE : ScrollDestination.ANY);
   }
 }
