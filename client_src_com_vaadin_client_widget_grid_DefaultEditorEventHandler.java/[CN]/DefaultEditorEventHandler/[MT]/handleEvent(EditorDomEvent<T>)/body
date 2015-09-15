@@ -1,10 +1,16 @@
 {
   final Editor<T> editor=event.getEditor();
   final boolean isBody=event.getCell().isBody();
+  final boolean handled;
   if (event.getGrid().isEditorActive()) {
-    return (!editor.isBuffered() && isBody && handleMoveEvent(event)) || handleCloseEvent(event) || editor.isBuffered();
+    handled=handleCloseEvent(event) || (!editor.isBuffered() && isBody && handleMoveEvent(event)) || (editor.isBuffered() && isBody && handleBufferedMoveEvent(event));
   }
  else {
-    return event.getGrid().isEnabled() && isBody && handleOpenEvent(event);
+    handled=event.getGrid().isEnabled() && isBody && handleOpenEvent(event);
   }
+  if (handled) {
+    event.getDomEvent().preventDefault();
+  }
+  boolean swallowEvent=event.getGrid().isEditorActive() && editor.isBuffered();
+  return handled || swallowEvent;
 }
