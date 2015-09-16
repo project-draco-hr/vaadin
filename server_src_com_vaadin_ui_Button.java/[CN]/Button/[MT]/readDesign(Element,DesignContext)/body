@@ -1,12 +1,16 @@
 {
   super.readDesign(design,designContext);
   Attributes attr=design.attributes();
-  String content=design.html();
-  setCaption(content);
+  String content;
   Boolean plain=DesignAttributeHandler.readAttribute(DESIGN_ATTR_PLAIN_TEXT,attr,Boolean.class);
   if (plain == null || !plain) {
     setHtmlContentAllowed(true);
+    content=design.html();
   }
+ else {
+    content=DesignFormatter.unencodeFromTextNode(design.html());
+  }
+  setCaption(content);
   if (attr.hasKey("icon-alt")) {
     setIconAlternateText(DesignAttributeHandler.readAttribute("icon-alt",attr,String.class));
   }
