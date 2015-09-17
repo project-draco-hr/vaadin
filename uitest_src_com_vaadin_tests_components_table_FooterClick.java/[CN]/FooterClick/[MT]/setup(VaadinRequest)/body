@@ -1,0 +1,43 @@
+{
+  final Table table=new Table();
+  table.setId("table");
+  table.setContainerDataSource(createContainer());
+  table.setWidth("400px");
+  table.setHeight("400px");
+  table.setImmediate(true);
+  table.setFooterVisible(true);
+  table.setColumnReorderingAllowed(true);
+  table.setColumnFooter(COLUMN1_PROPERTY_ID,"fuu");
+  table.setColumnFooter(COLUMN3_PROPERTY_ID,"fuubar");
+  final TextField columnField=new TextField("ProperyId of clicked column");
+  columnField.setId("ClickedColumn");
+  table.addFooterClickListener(new Table.FooterClickListener(){
+    @Override public void footerClick(    FooterClickEvent event){
+      columnField.setValue(String.valueOf(event.getPropertyId()));
+      log("Clicked on footer: " + event.getPropertyId());
+    }
+  }
+);
+  CheckBox immediateCheckbox=new CheckBox("Immediate");
+  immediateCheckbox.setImmediate(true);
+  immediateCheckbox.setValue(table.isImmediate());
+  immediateCheckbox.addValueChangeListener(new Property.ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      table.setImmediate((Boolean)event.getProperty().getValue());
+    }
+  }
+);
+  CheckBox columnReorderingCheckbox=new CheckBox("Column reordering allowed");
+  columnReorderingCheckbox.setImmediate(true);
+  columnReorderingCheckbox.setValue(table.isColumnReorderingAllowed());
+  columnReorderingCheckbox.addValueChangeListener(new Property.ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      table.setColumnReorderingAllowed((Boolean)event.getProperty().getValue());
+    }
+  }
+);
+  addComponent(immediateCheckbox);
+  addComponent(columnReorderingCheckbox);
+  addComponent(table);
+  addComponent(columnField);
+}

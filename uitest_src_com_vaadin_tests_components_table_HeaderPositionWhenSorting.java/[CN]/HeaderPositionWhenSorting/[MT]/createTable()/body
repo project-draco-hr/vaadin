@@ -1,0 +1,31 @@
+{
+  table=new Table("A table");
+  table.addContainerProperty("Name",String.class,null);
+  table.addContainerProperty("Died At Age",Integer.class,null);
+  table.addGeneratedColumn("Search",new Table.ColumnGenerator(){
+    @Override public Component generateCell(    Table source,    Object itemId,    Object columnId){
+      Item item=source.getItem(itemId);
+      String name=(String)item.getItemProperty("Name").getValue();
+      return new Link("Google for " + name,new ExternalResource("http://www.google.co.uk/search?q=" + name));
+    }
+  }
+);
+  Object people[][]={{"Galileo",77},{"Monnier",83},{"Vaisala",79},{"Oterma",86}};
+  for (int i=0; i < people.length; i++) {
+    table.addItem(people[i],i);
+  }
+  double avgAge=0;
+  for (int i=0; i < people.length; i++) {
+    avgAge+=(Integer)people[i][1];
+  }
+  avgAge/=people.length;
+  table.setFooterVisible(true);
+  table.setColumnFooter("Name","Average");
+  table.setColumnFooter("Died At Age",String.valueOf(avgAge));
+  table.setPageLength(table.size() + 2);
+  for (int i=0; i < people.length; i++) {
+    Object[] person=people[i];
+    String name=(String)person[0];
+    addComponent(new Link("Google for " + name,new ExternalResource("http://www.google.co.uk/search?q=" + name)));
+  }
+}
