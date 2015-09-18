@@ -2,6 +2,10 @@
   JClassType createRendererClass=ConnectorBundle.findInheritedMethod(type,"createRenderer").getEnclosingType();
   if (createRendererClass.getQualifiedSourceName().equals(AbstractRendererConnector.class.getCanonicalName())) {
     JMethod getRenderer=ConnectorBundle.findInheritedMethod(type,"getRenderer");
+    if (getRenderer.getEnclosingType().getQualifiedSourceName().equals(AbstractRendererConnector.class.getCanonicalName())) {
+      logger.log(Type.ERROR,type.getQualifiedSourceName() + " must override either createRenderer or getRenderer");
+      throw new UnableToCompleteException();
+    }
     JClassType rendererType=getRenderer.getReturnType().isClass();
     bundle.setNeedsGwtConstructor(rendererType);
     bundle.setNeedsReturnType(type,getRenderer);

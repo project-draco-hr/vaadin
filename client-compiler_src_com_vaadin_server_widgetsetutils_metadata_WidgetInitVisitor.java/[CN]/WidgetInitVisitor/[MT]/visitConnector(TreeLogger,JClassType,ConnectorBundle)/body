@@ -4,6 +4,10 @@
     JMethod getWidget=ConnectorBundle.findInheritedMethod(type,"getWidget");
     JClassType widgetType=getWidget.getReturnType().isClass();
     if (createWidgetClass.getQualifiedSourceName().equals(AbstractComponentConnector.class.getCanonicalName())) {
+      if (getWidget.getEnclosingType().getQualifiedSourceName().equals(AbstractComponentConnector.class.getCanonicalName())) {
+        logger.log(Type.ERROR,type.getQualifiedSourceName() + " must override either createWidget or getWidget");
+        throw new UnableToCompleteException();
+      }
       bundle.setNeedsGwtConstructor(widgetType);
       bundle.setNeedsReturnType(type,getWidget);
     }
