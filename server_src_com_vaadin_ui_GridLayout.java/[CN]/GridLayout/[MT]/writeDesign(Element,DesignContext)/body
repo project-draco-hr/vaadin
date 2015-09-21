@@ -2,7 +2,11 @@
   super.writeDesign(design,designContext);
   GridLayout def=designContext.getDefaultInstance(this);
   writeMargin(design,getMargin(),def.getMargin(),designContext);
-  if (components.isEmpty() || !designContext.shouldWriteChildren(this,def)) {
+  if (!designContext.shouldWriteChildren(this,def)) {
+    return;
+  }
+  if (components.isEmpty()) {
+    writeEmptyColsAndRows(design,designContext);
     return;
   }
   final Map<Connector,ChildComponentData> childData=getState().childData;
