@@ -1,0 +1,22 @@
+{
+  table.setWidth("100%");
+  table.setHeight("100%");
+  table.setMultiSelect(true);
+  table.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      @SuppressWarnings("unchecked") Collection<ComparisonFailure> selectedRows=(Collection<ComparisonFailure>)table.getValue();
+      viewer.setItems(selectedRows);
+    }
+  }
+);
+  table.addShortcutListener(createShortcutListener(KeyCode.J,Action.ACCEPT));
+  table.addShortcutListener(createShortcutListener(KeyCode.K,Action.IGNORE));
+  table.addShortcutListener(createShortcutListener(KeyCode.L,Action.ALTERNATIVE));
+  refreshTableContainer();
+  VerticalLayout mainLayout=new VerticalLayout(table,viewer);
+  mainLayout.setExpandRatio(table,1);
+  mainLayout.setSizeFull();
+  setSizeFull();
+  setContent(mainLayout);
+  table.focus();
+}

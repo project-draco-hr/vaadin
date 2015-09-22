@@ -1,0 +1,18 @@
+{
+  File errorsDir=new File(screenshotDir,"errors");
+  File[] failures=errorsDir.listFiles(new FilenameFilter(){
+    @Override public boolean accept(    File dir,    String name){
+      return name.endsWith(".html");
+    }
+  }
+);
+  BeanItemContainer<ComparisonFailure> container=new BeanItemContainer<ComparisonFailure>(ComparisonFailure.class);
+  for (  File failure : failures) {
+    container.addBean(new ComparisonFailure(failure));
+  }
+  table.setContainerDataSource(container);
+  table.setVisibleColumns("testClass","testMethod","browser","qualifiers","identifier","action");
+  if (container.size() > 0) {
+    table.select(container.firstItemId());
+  }
+}

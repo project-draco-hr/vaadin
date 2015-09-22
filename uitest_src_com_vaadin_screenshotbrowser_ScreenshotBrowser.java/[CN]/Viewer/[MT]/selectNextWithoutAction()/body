@@ -1,0 +1,20 @@
+{
+  Collection<?> selected=(Collection<?>)table.getValue();
+  BeanItemContainer<ComparisonFailure> container=getContainer();
+  ComparisonFailure candidate;
+  if (selected == null || selected.isEmpty()) {
+    candidate=container.firstItemId();
+  }
+ else {
+    candidate=(ComparisonFailure)selected.iterator().next();
+  }
+  while (candidate != null && candidate.getAction() != null) {
+    candidate=container.nextItemId(candidate);
+  }
+  if (candidate == null) {
+    table.setValue(Collections.emptySet());
+  }
+ else {
+    table.setValue(Collections.singleton(candidate));
+  }
+}
