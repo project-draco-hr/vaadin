@@ -1,5 +1,5 @@
 {
-  dragStartNativePreviewHandlerRegistration=Event.addNativePreviewHandler(new NativePreviewHandler(){
+  startPreviewHandler=Event.addNativePreviewHandler(new NativePreviewHandler(){
     private int startX=WidgetUtil.getTouchOrMouseClientX(dragStartingEvent);
     private int startY=WidgetUtil.getTouchOrMouseClientY(dragStartingEvent);
     @Override public void onPreviewNativeEvent(    NativePreviewEvent event){
@@ -22,12 +22,15 @@ case Event.ONTOUCHMOVE:
     int currentX=WidgetUtil.getTouchOrMouseClientX(event.getNativeEvent());
   int currentY=WidgetUtil.getTouchOrMouseClientY(event.getNativeEvent());
 if (Math.abs(startX - currentX) > 3 || Math.abs(startY - currentY) > 3) {
-  removeNativePreviewHandlerRegistration();
+  removeStartPreviewHandler();
   startDrag(dragStartingEvent,event,callback);
 }
+event.getNativeEvent().stopPropagation();
+event.getNativeEvent().preventDefault();
+event.cancel();
 break;
 default :
-removeNativePreviewHandlerRegistration();
+removeStartPreviewHandler();
 break;
 }
 }

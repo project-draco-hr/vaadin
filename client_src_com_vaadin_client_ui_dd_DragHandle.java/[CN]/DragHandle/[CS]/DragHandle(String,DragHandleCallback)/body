@@ -1,0 +1,51 @@
+{
+  parent=null;
+  element=DivElement.as(DOM.createElement("div"));
+  baseClassName=baseName;
+  userCallback=callback;
+  addStyleName(baseClassName);
+  dndCallback=new DragAndDropCallback(){
+    private double startX;
+    private double startY;
+    @Override public void onDrop(){
+      removeDraggingStyle();
+      userCallback.onComplete();
+    }
+    @Override public void onDragUpdate(    Event e){
+      double dx=WidgetUtil.getTouchOrMouseClientX(e) - startX;
+      double dy=WidgetUtil.getTouchOrMouseClientY(e) - startY;
+      userCallback.onUpdate(dx,dy);
+    }
+    @Override public boolean onDragStart(    Event e){
+      addDraggingStyle();
+      startX=WidgetUtil.getTouchOrMouseClientX(e);
+      startY=WidgetUtil.getTouchOrMouseClientY(e);
+      userCallback.onStart();
+      return true;
+    }
+    @Override public void onDragEnd(){
+      removeDraggingStyle();
+      userCallback.onComplete();
+    }
+    @Override public void onDragCancel(){
+      removeDraggingStyle();
+      userCallback.onCancel();
+    }
+    private void addDraggingStyle(){
+      addStyleName(baseClassName + "-dragged");
+    }
+    private void removeDraggingStyle(){
+      removeStyleName(baseClassName + "-dragged");
+    }
+  }
+;
+  dndHandler=new DragAndDropHandler();
+  DOM.sinkEvents(element,Event.ONMOUSEDOWN | Event.ONTOUCHSTART);
+  DOM.setEventListener(element,new EventListener(){
+    @Override public void onBrowserEvent(    Event event){
+      dndHandler.onDragStartOnDraggableElement(event,dndCallback);
+      event.stopPropagation();
+    }
+  }
+);
+}

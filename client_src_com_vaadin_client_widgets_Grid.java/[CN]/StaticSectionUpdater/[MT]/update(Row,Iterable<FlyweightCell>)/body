@@ -8,21 +8,62 @@
       addSortingIndicatorsToHeaderRow((HeaderRow)staticRow,cell);
     }
     cell.setColSpan(metadata.getColspan());
-    TableCellElement element=cell.getElement();
+    Element td=cell.getElement();
+    td.removeAllChildren();
+    Element content;
+    if (metadata.getType() != GridStaticCellType.WIDGET) {
+      content=DOM.createDiv();
+      if (staticRow instanceof HeaderRow) {
+        content.setClassName(getStylePrimaryName() + "-column-header-content");
+        if (((HeaderRow)staticRow).isDefault()) {
+          content.setClassName(content.getClassName() + " " + getStylePrimaryName()+ "-column-default-header-content");
+        }
+      }
+ else       if (staticRow instanceof FooterRow) {
+        content.setClassName(getStylePrimaryName() + "-column-footer-content");
+      }
+ else {
+        getLogger().severe("Unhandled static row type " + staticRow.getClass().getCanonicalName());
+      }
+      td.appendChild(content);
+    }
+ else {
+      content=td;
+    }
+    setCustomStyleName(content,metadata.getStyleName());
 switch (metadata.getType()) {
 case TEXT:
-      element.setInnerText(metadata.getText());
+      content.setInnerText(metadata.getText());
     break;
 case HTML:
-  element.setInnerHTML(metadata.getHtml());
+  content.setInnerHTML(metadata.getHtml());
 break;
 case WIDGET:
 preDetach(row,Arrays.asList(cell));
-element.setInnerHTML("");
+content.setInnerHTML("");
 postAttach(row,Arrays.asList(cell));
 break;
 }
-setCustomStyleName(element,metadata.getStyleName());
+if (staticRow instanceof HeaderRow && ((HeaderRow)staticRow).isDefault()) {
+final int column=cell.getColumn();
+DragHandle dragger=new DragHandle(getStylePrimaryName() + "-column-resize-handle",new DragHandleCallback(){
+private Column<?,T> col=getVisibleColumn(column);
+private double initialWidth=0;
+@Override public void onUpdate(double deltaX,double deltaY){
+col.setWidth(initialWidth + deltaX);
+}
+@Override public void onStart(){
+initialWidth=col.getWidthActual();
+}
+@Override public void onComplete(){
+}
+@Override public void onCancel(){
+col.setWidth(initialWidth);
+}
+}
+);
+dragger.addTo(td);
+}
 cellFocusHandler.updateFocusedCellStyle(cell,container);
 }
 }

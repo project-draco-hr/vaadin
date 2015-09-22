@@ -1,9 +1,9 @@
 {
-  if (callback.onDragStart(startEvent)) {
+  if (callback.onDragStart(Event.as(startEvent))) {
+    this.callback=callback;
     dragging=true;
     Event.setCapture(RootPanel.getBodyElement());
-    this.callback=callback;
-    dragHandlerRegistration=Event.addNativePreviewHandler(dragHandler);
-    callback.onDragUpdate(triggerEvent);
+    dragHandlerRegistration=Event.addNativePreviewHandler(dragPreviewHandler);
+    callback.onDragUpdate(Event.as(triggerEvent.getNativeEvent()));
   }
 }

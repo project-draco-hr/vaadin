@@ -1,6 +1,17 @@
 {
   Element escalatorElement=escalator.getSubPartElement(subPart.replaceFirst("^details\\[","spacer["));
   if (escalatorElement != null) {
+    int detailIdx=subPart.indexOf("/");
+    if (detailIdx > 0) {
+      String detail=subPart.substring(detailIdx + 1);
+      getLogger().severe("Looking up detail from index " + detailIdx + " onward: \""+ detail+ "\"");
+      if (detail.equalsIgnoreCase("content")) {
+        return DOM.asOld(Element.as(escalatorElement.getChild(0)));
+      }
+      if (detail.equalsIgnoreCase("draghandle")) {
+        return DOM.asOld(Element.as(escalatorElement.getChild(1)));
+      }
+    }
     return DOM.asOld(escalatorElement);
   }
   SubPartArguments args=SubPartArguments.create(subPart);
