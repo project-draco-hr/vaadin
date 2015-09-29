@@ -1,0 +1,16 @@
+{
+  String value="";
+  Object propertyId=event.getPropertyId();
+  if (event.getItemId() != null) {
+    Item item=event.getComponent().getContainerDataSource().getItem(event.getItemId());
+    value+=item.getItemProperty("firstName").getValue();
+    value+=" " + item.getItemProperty("lastName").getValue();
+  }
+ else   if (event.getSection() == Section.HEADER) {
+    value=event.getComponent().getHeaderRow(event.getRowIndex()).getCell(propertyId).getText();
+  }
+ else   if (event.getSection() == Section.FOOTER) {
+    value=event.getComponent().getFooterRow(event.getRowIndex()).getCell(propertyId).getText();
+  }
+  log("ContextClickEvent value: " + value + ", propertyId: "+ propertyId+ ", section: "+ event.getSection());
+}
