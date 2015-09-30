@@ -1,0 +1,53 @@
+{
+  Label upload=new Label(FontAwesome.UPLOAD.getHtml(),ContentMode.HTML);
+  upload.setSizeUndefined();
+  upload.setStyleName("upload");
+  getPage().getStyles().add(".upload{ font-size: 36px; border: 1px solid black; padding:15px;}");
+  final DragAndDropWrapper dnd=new DragAndDropWrapper(upload);
+  dnd.setSizeUndefined();
+  addComponent(dnd);
+  dnd.setDropHandler(new DropHandler(){
+    @Override public AcceptCriterion getAcceptCriterion(){
+      return AcceptAll.get();
+    }
+    @Override public void drop(    DragAndDropEvent event){
+      Transferable transferable=event.getTransferable();
+      log("Drop occured");
+      if (transferable instanceof WrapperTransferable) {
+        WrapperTransferable wTransferable=(WrapperTransferable)transferable;
+        Html5File[] files=wTransferable.getFiles();
+        if (files != null) {
+          for (          Html5File file : files) {
+            log("Uploading file " + file.getFileName());
+            file.setStreamVariable(new StreamVariable(){
+              @Override public void streamingStarted(              StreamingStartEvent event){
+                log("Streaming started");
+              }
+              @Override public void streamingFinished(              StreamingEndEvent event){
+                log("Streaming finished");
+                removeComponent(dnd);
+                log("DragAndDropWrapper removed");
+              }
+              @Override public void streamingFailed(              StreamingErrorEvent event){
+              }
+              @Override public void onProgress(              StreamingProgressEvent event){
+              }
+              @Override public boolean listenProgress(){
+                return false;
+              }
+              @Override public boolean isInterrupted(){
+                return false;
+              }
+              @Override public OutputStream getOutputStream(){
+                return new NullOutputStream();
+              }
+            }
+);
+          }
+        }
+      }
+    }
+  }
+);
+  addComponent(new Button("Poll for changes"));
+}
