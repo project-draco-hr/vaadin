@@ -1,3 +1,11 @@
 {
   setRowHeaderMode(ROW_HEADER_MODE_HIDDEN);
+  registerRpc(new TableServerRpc(){
+    @Override public void contextClick(    String rowKey,    String colKey,    Section section,    MouseEventDetails details){
+      Object itemId=itemIdMapper.get(rowKey);
+      Object propertyId=columnIdMap.get(colKey);
+      fireEvent(new TableContextClickEvent(Table.this,details,itemId,propertyId,section));
+    }
+  }
+);
 }

@@ -1,0 +1,22 @@
+{
+  addContextClickListener(new ContextClickListener(){
+    @Override public void contextClick(    ContextClickEvent event){
+      if (!(event instanceof TableContextClickEvent)) {
+        return;
+      }
+      TableContextClickEvent e=(TableContextClickEvent)event;
+      if (e.getSection() != Section.BODY) {
+        error="Event section was not BODY.";
+      }
+      handled=true;
+    }
+  }
+);
+  fireEvent(new TableContextClickEvent(this,null,null,null,Section.BODY));
+  if (error != null) {
+    Assert.fail(error);
+  }
+ else   if (!handled) {
+    Assert.fail("Event was not handled by the ContextClickListener");
+  }
+}
