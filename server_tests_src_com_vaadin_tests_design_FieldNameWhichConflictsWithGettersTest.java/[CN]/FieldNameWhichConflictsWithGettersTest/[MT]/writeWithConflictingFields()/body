@@ -1,0 +1,22 @@
+{
+  VerticalLayout v=new VerticalLayout();
+  Label l=new Label();
+  l.setId("caption");
+  TextField tf=new TextField();
+  v.addComponents(l,tf);
+  ByteArrayOutputStream baos=new ByteArrayOutputStream();
+  DesignContext context=new DesignContext();
+  context.setComponentLocalId(tf,"description");
+  context.setRootComponent(v);
+  Design.write(context,baos);
+  String str=baos.toString("UTF-8");
+  Document doc=Jsoup.parse(str);
+  Element body=doc.body();
+  Element captionElement=body.getElementById("caption");
+  Assert.assertNotNull(captionElement);
+  Assert.assertEquals("vaadin-label",captionElement.tagName());
+  Element descriptionElement=captionElement.nextElementSibling();
+  Assert.assertNotNull(descriptionElement);
+  Assert.assertEquals("vaadin-text-field",descriptionElement.tagName());
+  Assert.assertEquals("description",descriptionElement.attr("_id"));
+}
