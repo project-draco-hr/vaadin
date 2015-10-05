@@ -2,13 +2,12 @@
   List<RequestHandler> handlers=super.createRequestHandlers();
   handlers.add(0,new ServletBootstrapHandler());
   handlers.add(new ServletUIInitHandler());
-  if (atmosphereAvailable) {
+  if (isAtmosphereAvailable()) {
     try {
       handlers.add(new PushRequestHandler(this));
     }
  catch (    ServiceException e) {
       getLogger().log(Level.WARNING,"Error initializing Atmosphere. Push will not work.",e);
-      atmosphereAvailable=false;
     }
   }
   return handlers;
