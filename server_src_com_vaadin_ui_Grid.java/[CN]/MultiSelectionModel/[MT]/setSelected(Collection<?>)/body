@@ -6,15 +6,15 @@
   boolean changed=false;
   Set<Object> selectedRows=new HashSet<Object>(itemIds);
   final Collection<Object> oldSelection=getSelectedRows();
-  SetView<?> added=Sets.difference(selectedRows,selection);
+  Set<Object> added=getDifference(selectedRows,selection);
   if (!added.isEmpty()) {
     changed=true;
-    selection.addAll(added.immutableCopy());
+    selection.addAll(added);
   }
-  SetView<?> removed=Sets.difference(selection,selectedRows);
+  Set<Object> removed=getDifference(selection,selectedRows);
   if (!removed.isEmpty()) {
     changed=true;
-    selection.removeAll(removed.immutableCopy());
+    selection.removeAll(removed);
   }
   if (changed) {
     fireSelectionEvent(oldSelection,selection);
