@@ -15,15 +15,18 @@
   createClickAction("NULL","Generators",swapDetailsGenerator,DetailsGenerator.NULL);
   createClickAction("\"Watching\"","Generators",swapDetailsGenerator,watchingDetailsGenerator);
   createClickAction("Detailed","Generators",swapDetailsGenerator,detailedDetailsGenerator);
-  createClickAction("Hierarchical","Generators",swapDetailsGenerator,hierarchicalDetailsGenerator);
+  createClickAction("Persisting","Generators",swapDetailsGenerator,persistingDetailsGenerator);
   createClickAction("- Change Component","Generators",new Command<Grid,Void>(){
     @Override public void execute(    Grid c,    Void value,    Object data){
-      Label label=(Label)detailsPanel.getContent();
-      if (label.getValue().equals("One")) {
-        detailsPanel.setContent(new Label("Two"));
-      }
+      for (      Object id : detailsMap.keySet()) {
+        Panel panel=detailsMap.get(id);
+        Label label=(Label)panel.getContent();
+        if (label.getValue().equals("One")) {
+          panel.setContent(new Label("Two"));
+        }
  else {
-        detailsPanel.setContent(new Label("One"));
+          panel.setContent(new Label("One"));
+        }
       }
     }
   }
