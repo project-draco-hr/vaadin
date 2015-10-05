@@ -2,9 +2,12 @@
   AbstractComponentElement component=$(AbstractComponentElement.class).id("testComponent");
   contextClick(component);
   Point l=component.getLocation();
-  int drift=0;
-  if (BrowserUtil.isIE(getDesiredCapabilities(),10) || BrowserUtil.isIE(getDesiredCapabilities(),11)) {
-    drift=1;
-  }
-  assertEquals(index + ". ContextClickEvent: (" + (l.getX() + 10)+ ", "+ (l.getY() + 10 + drift)+ ")",getLogRow(0));
+  Matcher matcher=defaultLog.matcher(getLogRow(0));
+  Assert.assertTrue("Log row content did not match default listener output: " + getLogRow(0),matcher.find());
+  int xCoord=Integer.parseInt(matcher.group(1));
+  int yCoord=Integer.parseInt(matcher.group(2));
+  int xExpected=l.getX() + 10;
+  int yExpected=l.getY() + 10;
+  Assert.assertTrue("X Coordinate differs too much from expected. Expected: " + xExpected + ", actual: "+ xCoord,Math.abs(xExpected - xCoord) <= 1);
+  Assert.assertTrue("Y Coordinate differs too much from expected. Expected: " + yExpected + ", actual: "+ yCoord,Math.abs(yExpected - yCoord) <= 1);
 }
