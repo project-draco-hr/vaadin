@@ -50,16 +50,16 @@ DragHandle dragger=new DragHandle(getStylePrimaryName() + "-column-resize-handle
 private Column<?,T> col=getVisibleColumn(column);
 private double initialWidth=0;
 @Override public void onUpdate(double deltaX,double deltaY){
-col.setWidth(initialWidth + deltaX,false);
+col.setWidth(initialWidth + deltaX);
 }
 @Override public void onStart(){
 initialWidth=col.getWidthActual();
 }
 @Override public void onComplete(){
-col.setWidth(col.getWidthActual(),true);
+fireEvent(new ColumnResizeEvent<T>(col));
 }
 @Override public void onCancel(){
-col.setWidth(initialWidth,false);
+col.setWidth(initialWidth);
 }
 }
 );
