@@ -1,0 +1,17 @@
+{
+  try {
+    if (servletRequestMethod == null) {
+      Class<?> portletRequestClass=Class.forName("com.bea.portlet.container.PortletRequestImpl");
+      servletRequestMethod=portletRequestClass.getDeclaredMethod("getInternalRequest",new Class[]{});
+      servletRequestMethod.setAccessible(true);
+    }
+    return (HttpServletRequest)servletRequestMethod.invoke(request);
+  }
+ catch (  Exception e) {
+    if (!warningLogged) {
+      warningLogged=true;
+      getLogger().log(Level.WARNING,"Could not determine underlying servlet request for WebLogic Portal portlet request",e);
+    }
+    return null;
+  }
+}
