@@ -2,7 +2,7 @@ import sys, os
 from os.path import join, isfile
 from fnmatch import fnmatch
 from xml.etree.ElementTree import ElementTree
-demos = {'dashboard': 'https://github.com/vaadin/dashboard-demo.git', 'parking': 'https://github.com/vaadin/parking-demo.git', 'addressbook': 'https://github.com/vaadin/addressbook.git', 'grid-gwt': 'https://github.com/vaadin/grid-gwt.git', }
+demos = {'dashboard': 'https://github.com/vaadin/dashboard-demo.git', 'parking': 'https://github.com/vaadin/parking-demo.git', 'addressbook': 'https://github.com/vaadin/addressbook.git', 'grid-gwt': 'https://github.com/vaadin/grid-gwt.git', 'sampler': 'demos/sampler', }
 if (__name__ == '__main__'):
     try:
         from git import Repo
@@ -37,7 +37,11 @@ if (__name__ == '__main__'):
     for demo in demos:
         print ('Validating demo %s' % demo)
         try:
-            checkout(demo, demos[demo])
+            repo = demos[demo]
+            if isinstance(repo, tuple):
+                checkout(demo, repo[0], repo[1])
+            else:
+                checkout(demo, repo)
             if (hasattr(args, 'repo') and (args.repo is not None)):
                 updateRepositories(join(resultPath, demo), args.repo)
             mavenValidate(demo, logFile=getLogFile(demo))
