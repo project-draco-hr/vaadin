@@ -1,0 +1,33 @@
+{
+final class SelectedTabExpectedComponentListener implements SelectedTabChangeListener {
+    private Component actualComponent;
+    @Override public void selectedTabChange(    SelectedTabChangeEvent event){
+      actualComponent=event.getTabSheet().getSelectedTab();
+    }
+    public void assertActualComponentIs(    Component expectedComponent){
+      assertEquals(expectedComponent,actualComponent);
+      actualComponent=null;
+    }
+  }
+  TabSheet tabSheet=new TabSheet();
+  final Label lbl1=new Label("aaa");
+  final Label lbl2=new Label("bbb");
+  final Label lbl3=new Label("ccc");
+  final Label lbl4=new Label("ddd");
+  tabSheet.addComponent(lbl1);
+  tabSheet.addComponent(lbl2);
+  tabSheet.addComponent(lbl3);
+  tabSheet.setSelectedTab(lbl2);
+  SelectedTabExpectedComponentListener listener=new SelectedTabExpectedComponentListener();
+  tabSheet.addSelectedTabChangeListener(listener);
+  tabSheet.replaceComponent(lbl2,lbl4);
+  listener.assertActualComponentIs(lbl4);
+  assertEquals(lbl4,tabSheet.getSelectedTab());
+  tabSheet.replaceComponent(lbl1,lbl2);
+  assertEquals(lbl4,tabSheet.getSelectedTab());
+  tabSheet.replaceComponent(lbl2,lbl3);
+  assertEquals(lbl4,tabSheet.getSelectedTab());
+  tabSheet.replaceComponent(lbl4,lbl3);
+  listener.assertActualComponentIs(lbl3);
+  assertEquals(lbl3,tabSheet.getSelectedTab());
+}
