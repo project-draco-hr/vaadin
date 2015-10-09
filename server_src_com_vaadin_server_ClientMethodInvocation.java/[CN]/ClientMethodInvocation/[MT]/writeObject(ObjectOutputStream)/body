@@ -1,12 +1,17 @@
 {
+  Object[] serializedParameters=new Object[parameters.length];
   for (int i=0; i < parameterTypes.length; i++) {
     Type type=parameterTypes[i];
     if (type instanceof Class<?>) {
       Class<?> clazz=(Class<?>)type;
       if (JsonArray.class.isAssignableFrom(clazz)) {
-        parameters[i]=JsonUtil.stringify((JsonArray)parameters[i]);
+        serializedParameters[i]=JsonUtil.stringify((JsonArray)parameters[i]);
+      }
+ else {
+        serializedParameters[i]=parameters[i];
       }
     }
   }
   stream.defaultWriteObject();
+  stream.writeObject(serializedParameters);
 }
