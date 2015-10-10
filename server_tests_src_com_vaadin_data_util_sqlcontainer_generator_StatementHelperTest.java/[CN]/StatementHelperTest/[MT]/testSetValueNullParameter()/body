@@ -1,6 +1,13 @@
 {
   StatementHelper helper=new StatementHelper();
-  helper.addParameterValue(null,Object.class);
+  helper.addParameterValue(null,StatementHelper.class);
   PreparedStatement statement=EasyMock.createMock(PreparedStatement.class);
-  helper.setParameterValuesToStatement(statement);
+  try {
+    helper.setParameterValuesToStatement(statement);
+    Assert.fail("Expected SQLExecption for unsupported type");
+  }
+ catch (  SQLException e) {
+    Assert.assertTrue(e.getMessage().contains("parameter 0"));
+    Assert.assertTrue(e.getMessage().contains(StatementHelper.class.getName()));
+  }
 }
