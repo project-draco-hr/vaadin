@@ -1,25 +1,15 @@
 {
   ViewChangeEvent event=new ViewChangeEvent(this,currentView,view,viewName,parameters);
-  if (!fireBeforeViewChange(event)) {
-    if (currentNavigationState != null) {
-      getStateManager().setState(currentNavigationState);
-    }
+  boolean navigationAllowed=beforeViewChange(event);
+  if (!navigationAllowed) {
+    revertNavigation();
     return;
   }
-  if (null != viewName && getStateManager() != null) {
-    String navigationState=viewName;
-    if (!parameters.isEmpty()) {
-      navigationState+="/" + parameters;
-    }
-    if (!navigationState.equals(getStateManager().getState())) {
-      getStateManager().setState(navigationState);
-      currentNavigationState=navigationState;
-    }
+  updateNavigationState(event);
+  if (getDisplay() != null) {
+    getDisplay().showView(view);
   }
-  if (display != null) {
-    display.showView(view);
-  }
+  switchView(event);
   view.enter(event);
-  currentView=view;
   fireAfterViewChange(event);
 }
