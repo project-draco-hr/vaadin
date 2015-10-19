@@ -2,13 +2,18 @@
   if (contextHandler == null && hasEventListener(EventId.CONTEXT_CLICK)) {
     contextHandler=getWidget().addDomHandler(new ContextMenuHandler(){
       @Override public void onContextMenu(      ContextMenuEvent event){
-        sendContextClickEvent(event);
+        final MouseEventDetails mouseEventDetails=MouseEventDetailsBuilder.buildMouseEventDetails(event.getNativeEvent(),getWidget().getElement());
+        event.preventDefault();
+        event.stopPropagation();
+        sendContextClickEvent(mouseEventDetails,event.getNativeEvent().getEventTarget());
       }
     }
 ,ContextMenuEvent.getType());
+    registerTouchHandlers();
   }
  else   if (contextHandler != null && !hasEventListener(EventId.CONTEXT_CLICK)) {
     contextHandler.removeHandler();
     contextHandler=null;
+    unregisterTouchHandlers();
   }
 }

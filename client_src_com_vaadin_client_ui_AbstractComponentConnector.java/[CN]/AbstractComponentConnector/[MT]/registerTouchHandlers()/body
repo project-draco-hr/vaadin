@@ -1,0 +1,47 @@
+{
+  touchStartHandler=getWidget().addDomHandler(new TouchStartHandler(){
+    @Override public void onTouchStart(    final TouchStartEvent event){
+      final MouseEventDetails mouseEventDetails=MouseEventDetailsBuilder.buildMouseEventDetails(event.getNativeEvent(),getWidget().getElement());
+      final EventTarget eventTarget=event.getNativeEvent().getEventTarget();
+      longTouchTimer=new Timer(){
+        @Override public void run(){
+          cancelParentTouchTimers();
+          sendContextClickEvent(mouseEventDetails,eventTarget);
+        }
+      }
+;
+      Touch touch=event.getChangedTouches().get(0);
+      touchStartX=touch.getClientX();
+      touchStartY=touch.getClientY();
+      longTouchTimer.schedule(TOUCH_CONTEXT_MENU_TIMEOUT);
+    }
+  }
+,TouchStartEvent.getType());
+  touchMoveHandler=getWidget().addDomHandler(new TouchMoveHandler(){
+    @Override public void onTouchMove(    TouchMoveEvent event){
+      if (isSignificantMove(event)) {
+        cancelTouchTimer();
+      }
+    }
+    private boolean isSignificantMove(    TouchMoveEvent event){
+      if (longTouchTimer == null) {
+        return false;
+      }
+      Touch touch=event.getChangedTouches().get(0);
+      int deltaX=touch.getClientX() - touchStartX;
+      int deltaY=touch.getClientY() - touchStartY;
+      int delta=deltaX * deltaX + deltaY * deltaY;
+      if (delta > TouchScrollDelegate.SIGNIFICANT_MOVE_THRESHOLD * TouchScrollDelegate.SIGNIFICANT_MOVE_THRESHOLD) {
+        return true;
+      }
+      return false;
+    }
+  }
+,TouchMoveEvent.getType());
+  touchEndHandler=getWidget().addDomHandler(new TouchEndHandler(){
+    @Override public void onTouchEnd(    TouchEndEvent event){
+      cancelTouchTimer();
+    }
+  }
+,TouchEndEvent.getType());
+}
