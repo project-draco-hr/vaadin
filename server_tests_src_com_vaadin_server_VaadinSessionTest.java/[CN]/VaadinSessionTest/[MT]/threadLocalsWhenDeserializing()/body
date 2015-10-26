@@ -1,0 +1,24 @@
+{
+  VaadinSession.setCurrent(session);
+  session.lock();
+  SerializationTestLabel label=new SerializationTestLabel();
+  Assert.assertEquals("Session should be set when instance is created",session,label.session);
+  ui.setContent(label);
+  int uiId=ui.getUIId();
+  ByteArrayOutputStream bos=new ByteArrayOutputStream();
+  ObjectOutputStream out=new ObjectOutputStream(bos);
+  out.writeObject(session);
+  out.close();
+  session.unlock();
+  CurrentInstance.clearAll();
+  ObjectInputStream in=new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
+  VaadinSession deserializedSession=(VaadinSession)in.readObject();
+  Assert.assertNull("Current session shouldn't leak from deserialisation",VaadinSession.getCurrent());
+  Assert.assertNotSame("Should get a new session",session,deserializedSession);
+  deserializedSession.refreshTransients(mockWrappedSession,mockService);
+  deserializedSession.lock();
+  UI deserializedUi=deserializedSession.getUIById(uiId);
+  SerializationTestLabel deserializedLabel=(SerializationTestLabel)deserializedUi.getContent();
+  Assert.assertEquals("Current session should be available in SerializationTestLabel.readObject",deserializedSession,deserializedLabel.session);
+  deserializedSession.unlock();
+}
