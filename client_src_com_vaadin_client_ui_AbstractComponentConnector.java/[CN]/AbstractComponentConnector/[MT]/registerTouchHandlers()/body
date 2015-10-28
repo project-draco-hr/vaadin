@@ -1,12 +1,16 @@
 {
   touchStartHandler=getWidget().addDomHandler(new TouchStartHandler(){
     @Override public void onTouchStart(    final TouchStartEvent event){
+      if (longTouchTimer != null && longTouchTimer.isRunning()) {
+        return;
+      }
       final MouseEventDetails mouseEventDetails=MouseEventDetailsBuilder.buildMouseEventDetails(event.getNativeEvent(),getWidget().getElement());
       final EventTarget eventTarget=event.getNativeEvent().getEventTarget();
       longTouchTimer=new Timer(){
         @Override public void run(){
           cancelParentTouchTimers();
           sendContextClickEvent(mouseEventDetails,eventTarget);
+          preventNextTouchEnd=true;
         }
       }
 ;
@@ -31,7 +35,7 @@
       int deltaX=touch.getClientX() - touchStartX;
       int deltaY=touch.getClientY() - touchStartY;
       int delta=deltaX * deltaX + deltaY * deltaY;
-      if (delta > TouchScrollDelegate.SIGNIFICANT_MOVE_THRESHOLD * TouchScrollDelegate.SIGNIFICANT_MOVE_THRESHOLD) {
+      if (delta > SIGNIFICANT_MOVE_THRESHOLD * SIGNIFICANT_MOVE_THRESHOLD) {
         return true;
       }
       return false;
@@ -41,6 +45,10 @@
   touchEndHandler=getWidget().addDomHandler(new TouchEndHandler(){
     @Override public void onTouchEnd(    TouchEndEvent event){
       cancelTouchTimer();
+      if (preventNextTouchEnd) {
+        event.preventDefault();
+        preventNextTouchEnd=false;
+      }
     }
   }
 ,TouchEndEvent.getType());
