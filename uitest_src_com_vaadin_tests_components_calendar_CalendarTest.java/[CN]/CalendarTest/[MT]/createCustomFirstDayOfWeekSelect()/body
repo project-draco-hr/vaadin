@@ -1,0 +1,22 @@
+{
+  ComboBox comboBox=new ComboBox("First day of week");
+  comboBox.addContainerProperty("caption",String.class,"");
+  comboBox.setItemCaptionPropertyId("caption");
+  comboBox.setImmediate(true);
+  Item defaultItem=comboBox.addItem(DEFAULT_ITEMID);
+  defaultItem.getItemProperty("caption").setValue("Default by locale");
+  Item sunday=comboBox.addItem(java.util.Calendar.SUNDAY);
+  sunday.getItemProperty("caption").setValue("Sunday");
+  Item monday=comboBox.addItem(java.util.Calendar.MONDAY);
+  monday.getItemProperty("caption").setValue("Monday");
+  comboBox.select(DEFAULT_ITEMID);
+  comboBox.setNullSelectionAllowed(false);
+  comboBox.addValueChangeListener(new ValueChangeListener(){
+    private static final long serialVersionUID=1L;
+    @Override public void valueChange(    ValueChangeEvent event){
+      updateCalendarFirstDayOfWeek(event.getProperty().getValue());
+    }
+  }
+);
+  return comboBox;
+}
