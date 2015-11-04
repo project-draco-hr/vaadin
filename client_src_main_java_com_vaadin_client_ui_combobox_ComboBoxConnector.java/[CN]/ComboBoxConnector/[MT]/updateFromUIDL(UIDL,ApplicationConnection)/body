@@ -31,6 +31,12 @@
  else {
     getWidget().suggestionPopupWidth=null;
   }
+  if (uidl.hasAttribute("suggestionPopupWidth")) {
+    getWidget().suggestionPopupWidth=uidl.getStringAttribute("suggestionPopupWidth");
+  }
+ else {
+    getWidget().suggestionPopupWidth=null;
+  }
   getWidget().suggestionPopup.updateStyleNames(uidl,getState());
   getWidget().allowNewItem=uidl.hasAttribute("allownewitem");
   getWidget().lastNewItemString=null;
@@ -66,9 +72,10 @@
     String[] selectedKeys=uidl.getStringArrayVariable("selected");
     if (selectedKeys.length > 0 && !selectedKeys[0].equals("")) {
       performSelection(selectedKeys[0]);
+      getWidget().setSelectedCaption(null);
     }
  else     if (!getWidget().waitingForFilteringResponse && uidl.hasAttribute("selectedCaption")) {
-      getWidget().tb.setText(uidl.getStringAttribute("selectedCaption"));
+      getWidget().setSelectedCaption(uidl.getStringAttribute("selectedCaption"));
     }
  else {
       resetSelection();
