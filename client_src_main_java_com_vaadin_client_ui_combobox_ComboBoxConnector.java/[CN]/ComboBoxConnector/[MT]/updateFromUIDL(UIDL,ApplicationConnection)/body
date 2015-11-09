@@ -12,7 +12,7 @@
  else {
     getWidget().suggestionPopupWidth=null;
   }
-  getWidget().suggestionPopup.updateStyleNames(uidl,getState());
+  getWidget().suggestionPopup.updateStyleNames(getState());
   getWidget().allowNewItem=uidl.hasAttribute("allownewitem");
   getWidget().lastNewItemString=null;
   final UIDL options=uidl.getChildUIDL(0);
@@ -25,7 +25,14 @@
   List<FilterSelectSuggestion> newSuggestions=new ArrayList<FilterSelectSuggestion>();
   for (final Iterator<?> i=options.getChildIterator(); i.hasNext(); ) {
     final UIDL optionUidl=(UIDL)i.next();
-    final FilterSelectSuggestion suggestion=getWidget().new FilterSelectSuggestion(optionUidl);
+    String key=optionUidl.getStringAttribute("key");
+    String caption=optionUidl.getStringAttribute("caption");
+    String style=optionUidl.getStringAttribute("style");
+    String untranslatedIconUri=null;
+    if (optionUidl.hasAttribute("icon")) {
+      untranslatedIconUri=optionUidl.getStringAttribute("icon");
+    }
+    final FilterSelectSuggestion suggestion=getWidget().new FilterSelectSuggestion(key,caption,style,untranslatedIconUri);
     newSuggestions.add(suggestion);
   }
   boolean suggestionsChanged=!getWidget().initDone || !newSuggestions.equals(getWidget().currentSuggestions);
