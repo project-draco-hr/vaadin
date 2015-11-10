@@ -41,7 +41,7 @@
   if (suggestionsChanged) {
     oldSuggestionTextMatchTheOldSelection=isWidgetsCurrentSelectionTextInTextBox();
     getWidget().currentSuggestions.clear();
-    if (!getWidget().waitingForFilteringResponse) {
+    if (!getWidget().isWaitingForFilteringResponse()) {
       getWidget().currentSuggestion=null;
       getWidget().suggestionPopup.menu.clearItems();
       popupOpenAndCleared=getWidget().suggestionPopup.isAttached();
@@ -56,17 +56,17 @@
       performSelection(selectedKeys[0]);
       getWidget().setSelectedCaption(null);
     }
- else     if (!getWidget().waitingForFilteringResponse && uidl.hasAttribute("selectedCaption")) {
+ else     if (!getWidget().isWaitingForFilteringResponse() && uidl.hasAttribute("selectedCaption")) {
       getWidget().setSelectedCaption(uidl.getStringAttribute("selectedCaption"));
     }
  else {
       resetSelection();
     }
   }
-  if ((getWidget().waitingForFilteringResponse && getWidget().lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) || popupOpenAndCleared) {
+  if ((getWidget().isWaitingForFilteringResponse() && getWidget().lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) || popupOpenAndCleared) {
     getWidget().suggestionPopup.showSuggestions(getWidget().currentSuggestions,getWidget().currentPage,getWidget().totalMatches);
-    getWidget().waitingForFilteringResponse=false;
-    if (!getWidget().popupOpenerClicked && getWidget().selectPopupItemWhenResponseIsReceived != VFilterSelect.Select.NONE) {
+    getWidget().setWaitingForFilteringResponse(false);
+    if (!getWidget().isPopupOpenerClicked() && getWidget().getSelectPopupItemWhenResponseIsReceived() != VFilterSelect.Select.NONE) {
       Scheduler.get().scheduleDeferred(new ScheduledCommand(){
         @Override public void execute(){
           navigateItemAfterPageChange();
@@ -74,12 +74,12 @@
       }
 );
     }
-    if (getWidget().updateSelectionWhenReponseIsReceived) {
+    if (getWidget().isUpdateSelectionWhenReponseIsReceived()) {
       getWidget().suggestionPopup.menu.doPostFilterSelectedItemAction();
     }
   }
   getWidget().updateSuggestionPopupMinWidth();
-  getWidget().popupOpenerClicked=false;
+  getWidget().setPopupOpenerClicked(false);
   if (!getWidget().initDone) {
     getWidget().updateRootWidth();
   }
