@@ -66,13 +66,8 @@
   if ((getWidget().isWaitingForFilteringResponse() && getWidget().lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) || popupOpenAndCleared) {
     getWidget().suggestionPopup.showSuggestions(getWidget().currentSuggestions,getWidget().currentPage,getWidget().totalMatches);
     getWidget().setWaitingForFilteringResponse(false);
-    if (!getWidget().isPopupOpenerClicked() && getWidget().getSelectPopupItemWhenResponseIsReceived() != VFilterSelect.Select.NONE) {
-      Scheduler.get().scheduleDeferred(new ScheduledCommand(){
-        @Override public void execute(){
-          navigateItemAfterPageChange();
-        }
-      }
-);
+    if (!getWidget().isPopupOpenerClicked()) {
+      navigateItemAfterPageChange();
     }
     if (getWidget().isUpdateSelectionWhenReponseIsReceived()) {
       getWidget().suggestionPopup.menu.doPostFilterSelectedItemAction();

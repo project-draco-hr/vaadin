@@ -1,8 +1,12 @@
 {
-  if (getWidget().getSelectPopupItemWhenResponseIsReceived() == VFilterSelect.Select.LAST) {
-    getWidget().suggestionPopup.selectLastItem();
-  }
- else {
-    getWidget().suggestionPopup.selectFirstItem();
+  if (pageChangeCallback != null) {
+    Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+      @Override public void execute(){
+        if (pageChangeCallback != null) {
+          pageChangeCallback.run();
+        }
+      }
+    }
+);
   }
 }
