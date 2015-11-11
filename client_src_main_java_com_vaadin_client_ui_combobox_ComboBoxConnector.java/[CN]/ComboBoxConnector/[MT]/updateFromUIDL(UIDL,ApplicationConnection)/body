@@ -64,17 +64,9 @@
     }
   }
   if ((getWidget().isWaitingForFilteringResponse() && getWidget().lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) || popupOpenAndCleared) {
-    getWidget().suggestionPopup.showSuggestions(getWidget().currentSuggestions,getWidget().currentPage,getWidget().totalMatches);
-    getWidget().setWaitingForFilteringResponse(false);
-    if (!popupOpenerClicked) {
-      navigateItemAfterPageChange();
-    }
-    if (getWidget().isUpdateSelectionWhenReponseIsReceived()) {
-      getWidget().suggestionPopup.menu.doPostFilterSelectedItemAction();
-    }
+    getWidget().getDataReceivedHandler().dataReceived();
   }
   getWidget().updateSuggestionPopupMinWidth();
-  popupOpenerClicked=false;
   if (!getWidget().initDone) {
     getWidget().updateRootWidth();
   }
@@ -82,4 +74,5 @@
     getWidget().addStyleDependentName("focus");
   }
   getWidget().initDone=true;
+  getWidget().getDataReceivedHandler().serverReplyHandled();
 }
