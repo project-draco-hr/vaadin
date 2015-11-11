@@ -41,7 +41,7 @@
   if (suggestionsChanged) {
     oldSuggestionTextMatchTheOldSelection=isWidgetsCurrentSelectionTextInTextBox();
     getWidget().currentSuggestions.clear();
-    if (!getWidget().isWaitingForFilteringResponse()) {
+    if (!getDataReceivedHandler().isWaitingForFilteringResponse()) {
       getWidget().currentSuggestion=null;
       getWidget().suggestionPopup.menu.clearItems();
       popupOpenAndCleared=getWidget().suggestionPopup.isAttached();
@@ -56,15 +56,15 @@
       performSelection(selectedKeys[0]);
       getWidget().setSelectedCaption(null);
     }
- else     if (!getWidget().isWaitingForFilteringResponse() && uidl.hasAttribute("selectedCaption")) {
+ else     if (!getDataReceivedHandler().isWaitingForFilteringResponse() && uidl.hasAttribute("selectedCaption")) {
       getWidget().setSelectedCaption(uidl.getStringAttribute("selectedCaption"));
     }
  else {
       resetSelection();
     }
   }
-  if ((getWidget().isWaitingForFilteringResponse() && getWidget().lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) || popupOpenAndCleared) {
-    getWidget().getDataReceivedHandler().dataReceived();
+  if ((getDataReceivedHandler().isWaitingForFilteringResponse() && getWidget().lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) || popupOpenAndCleared) {
+    getDataReceivedHandler().dataReceived();
   }
   getWidget().updateSuggestionPopupMinWidth();
   if (!getWidget().initDone) {
@@ -74,5 +74,5 @@
     getWidget().addStyleDependentName("focus");
   }
   getWidget().initDone=true;
-  getWidget().getDataReceivedHandler().serverReplyHandled();
+  getDataReceivedHandler().serverReplyHandled();
 }
