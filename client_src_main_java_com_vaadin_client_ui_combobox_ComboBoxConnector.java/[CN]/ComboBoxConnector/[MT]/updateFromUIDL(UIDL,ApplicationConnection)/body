@@ -37,9 +37,9 @@
   }
   boolean suggestionsChanged=!getWidget().initDone || !newSuggestions.equals(getWidget().currentSuggestions);
   boolean popupOpenAndCleared=false;
-  oldSuggestionTextMatchTheOldSelection=false;
+  boolean oldSuggestionTextMatchesTheOldSelection=false;
   if (suggestionsChanged) {
-    oldSuggestionTextMatchTheOldSelection=isWidgetsCurrentSelectionTextInTextBox();
+    oldSuggestionTextMatchesTheOldSelection=isWidgetsCurrentSelectionTextInTextBox();
     getWidget().currentSuggestions.clear();
     if (!getDataReceivedHandler().isWaitingForFilteringResponse()) {
       getWidget().currentSuggestion=null;
@@ -52,16 +52,15 @@
   }
   if (uidl.hasVariable("selected")) {
     String[] selectedKeys=uidl.getStringArrayVariable("selected");
-    if (selectedKeys.length > 0 && !selectedKeys[0].equals("")) {
-      performSelection(selectedKeys[0]);
-      getWidget().setSelectedCaption(null);
+    String selectedKey=null;
+    if (selectedKeys.length == 1) {
+      selectedKey=selectedKeys[0];
     }
- else     if (!getDataReceivedHandler().isWaitingForFilteringResponse() && uidl.hasAttribute("selectedCaption")) {
-      getWidget().setSelectedCaption(uidl.getStringAttribute("selectedCaption"));
+    String selectedCaption=null;
+    if (uidl.hasAttribute("selectedCaption")) {
+      selectedCaption=uidl.getStringAttribute("selectedCaption");
     }
- else {
-      resetSelection();
-    }
+    getDataReceivedHandler().updateSelectionFromServer(selectedKey,selectedCaption,oldSuggestionTextMatchesTheOldSelection);
   }
   if ((getDataReceivedHandler().isWaitingForFilteringResponse() && getWidget().lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) || popupOpenAndCleared) {
     getDataReceivedHandler().dataReceived();
