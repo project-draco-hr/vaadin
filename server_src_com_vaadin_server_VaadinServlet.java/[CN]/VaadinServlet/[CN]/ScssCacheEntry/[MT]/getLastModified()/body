@@ -2,13 +2,27 @@
   long newest=0;
   for (  String uri : sourceUris) {
     File file=new File(uri);
+    URL resource=getService().getClassLoader().getResource(uri);
+    long lastModified=-1L;
     if (file.exists()) {
-      newest=Math.max(newest,file.lastModified());
+      lastModified=file.lastModified();
     }
- else     if (!uri.startsWith("VAADIN/")) {
+ else     if (resource != null && resource.getProtocol().equals("file")) {
+      try {
+        file=new File(resource.toURI());
+        if (file.exists()) {
+          lastModified=file.lastModified();
+        }
+      }
+ catch (      URISyntaxException e) {
+        getLogger().log(Level.WARNING,"Could not resolve timestamp for " + resource,e);
+      }
+    }
+    if (lastModified == -1L && resource == null) {
       getLogger().log(Level.WARNING,"Could not resolve timestamp for {0}, Scss on the fly caching will be disabled",uri);
       return -1;
     }
+    newest=Math.max(newest,lastModified);
   }
   return newest;
 }
