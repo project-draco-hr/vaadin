@@ -1,11 +1,18 @@
 {
   cleanup(cell);
-  Column<?,?> column=getVisibleColumn(cell.getColumn());
-  SortOrder sortingOrder=getSortOrder(column);
-  if (!headerRow.isDefault() || !column.isSortable() || sortingOrder == null) {
+  if (!headerRow.isDefault()) {
     return;
   }
+  Column<?,?> column=getVisibleColumn(cell.getColumn());
+  SortOrder sortingOrder=getSortOrder(column);
+  boolean sortable=column.isSortable();
   Element cellElement=cell.getElement();
+  if (sortable) {
+    cellElement.addClassName("sortable");
+  }
+  if (!sortable || sortingOrder == null) {
+    return;
+  }
   if (SortDirection.ASCENDING == sortingOrder.getDirection()) {
     cellElement.addClassName("sort-asc");
   }
