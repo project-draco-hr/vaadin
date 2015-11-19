@@ -1,0 +1,23 @@
+{
+  getPage().getStyles().add(".v-table-header-sortable { font-weight: bold;}");
+  PersonContainer container=PersonContainer.createWithTestData();
+  Collection<?> sortableContainerPropertyIds=container.getSortableContainerPropertyIds();
+  final OptionGroup sortableSelector=new OptionGroup("Sortable columns",sortableContainerPropertyIds);
+  sortableSelector.setMultiSelect(true);
+  sortableSelector.setValue(sortableContainerPropertyIds);
+  final Table table=new Table(){
+    @Override public Collection<?> getSortableContainerPropertyIds(){
+      return (Collection<?>)sortableSelector.getValue();
+    }
+  }
+;
+  table.setContainerDataSource(container);
+  sortableSelector.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      table.markAsDirty();
+    }
+  }
+);
+  addComponent(sortableSelector);
+  addComponent(table);
+}
