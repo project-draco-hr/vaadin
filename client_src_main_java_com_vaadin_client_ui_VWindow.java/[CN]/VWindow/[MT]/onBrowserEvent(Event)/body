@@ -22,20 +22,31 @@
       if (type == Event.ONMOUSEDOWN || type == Event.ONTOUCHSTART) {
         event.preventDefault();
         headerDragPending=event;
+        bubble=false;
       }
- else       if ((type == Event.ONMOUSEMOVE || type == Event.ONTOUCHMOVE) && headerDragPending != null) {
+ else       if (type == Event.ONMOUSEMOVE && headerDragPending != null) {
         dragging=true;
         onDragEvent(headerDragPending);
         onDragEvent(event);
         headerDragPending=null;
+        bubble=false;
+      }
+ else       if (type != Event.ONMOUSEMOVE) {
+        headerDragPending=null;
+        bubble=false;
       }
  else {
         headerDragPending=null;
       }
-      bubble=false;
     }
     if (type == Event.ONCLICK) {
       activateOnClick();
+    }
+  }
+ else   if (footer.isOrHasChild(target) && !dragging) {
+    onDragEvent(event);
+    if (type != Event.ONMOUSEMOVE) {
+      bubble=false;
     }
   }
  else   if (dragging || !contents.isOrHasChild(target)) {
@@ -51,7 +62,5 @@
   if (!bubble) {
     event.stopPropagation();
   }
- else {
-    super.onBrowserEvent(event);
-  }
+  super.onBrowserEvent(event);
 }
