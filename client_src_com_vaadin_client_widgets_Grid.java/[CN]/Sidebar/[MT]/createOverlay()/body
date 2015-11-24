@@ -1,7 +1,19 @@
 {
-  overlay=GWT.create(VOverlay.class);
+  overlay=new PopupPanel(){
+    @Override protected void onAttach(){
+      BodyElement body=Document.get().getBody();
+      Element target=body.getFirstChildElement();
+      while (!target.hasClassName("v-overlay-container") && target != null) {
+        target=target.getNextSiblingElement();
+      }
+      if (target != null) {
+        target.appendChild(getElement());
+      }
+      super.onAttach();
+    }
+  }
+;
   overlay.setAutoHideEnabled(true);
-  overlay.setOwner(grid);
   overlay.addStyleDependentName("popup");
   overlay.add(content);
   overlay.addAutoHidePartner(rootContainer.getElement());
