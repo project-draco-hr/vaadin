@@ -1,0 +1,40 @@
+{
+  final Grid grid=new Grid();
+  grid.setSizeFull();
+  grid.addColumn("name",String.class);
+  grid.addColumn("born",Integer.class);
+  grid.addRow("Nicolaus Copernicus",1543);
+  grid.addRow("Galileo Galilei",1564);
+  grid.addRow("Johannes Kepler",1571);
+  addComponent(grid);
+  grid.setDetailsGenerator(new DetailsGenerator(){
+    @Override public Component getDetails(    final RowReference rowReference){
+      final HorizontalLayout detailsLayout=new HorizontalLayout();
+      detailsLayout.setSizeFull();
+      detailsLayout.setHeightUndefined();
+      final Label lbl1=new Label("test1");
+      lbl1.setWidth("200px");
+      detailsLayout.addComponent(lbl1);
+      final HorizontalLayout layout2=new HorizontalLayout();
+      layout2.setSizeFull();
+      layout2.setHeightUndefined();
+      detailsLayout.addComponent(layout2);
+      detailsLayout.setExpandRatio(layout2,1);
+      final Label lbl2=new Label("test2");
+      lbl2.setId("lbl2");
+      layout2.addComponent(lbl2);
+      final Label lbl3=new Label("test3");
+      lbl3.setId("lbl3");
+      layout2.addComponent(lbl3);
+      return detailsLayout;
+    }
+  }
+);
+  grid.addItemClickListener(new ItemClickListener(){
+    @Override public void itemClick(    final ItemClickEvent event){
+      final Object itemId=event.getItemId();
+      grid.setDetailsVisible(itemId,!grid.isDetailsVisible(itemId));
+    }
+  }
+);
+}
