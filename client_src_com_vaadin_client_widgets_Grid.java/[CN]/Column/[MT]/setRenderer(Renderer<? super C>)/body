@@ -3,7 +3,25 @@
     throw new IllegalArgumentException("Renderer cannot be null.");
   }
   if (renderer != bodyRenderer) {
+    boolean columnRemoved=false;
+    double widthInConfiguration=0.0d;
+    ColumnConfiguration conf=null;
+    int index=0;
+    if (grid != null && (bodyRenderer instanceof WidgetRenderer || renderer instanceof WidgetRenderer)) {
+      index=grid.getColumns().indexOf(this);
+      conf=grid.escalator.getColumnConfiguration();
+      widthInConfiguration=conf.getColumnWidth(index);
+      conf.removeColumns(index,1);
+      columnRemoved=true;
+    }
+    if (bodyRenderer instanceof ComplexRenderer) {
+      ((ComplexRenderer)bodyRenderer).destroy();
+    }
     bodyRenderer=renderer;
+    if (columnRemoved) {
+      conf.insertColumns(index,1);
+      conf.setColumnWidth(index,widthInConfiguration);
+    }
     if (grid != null) {
       grid.refreshBody();
     }

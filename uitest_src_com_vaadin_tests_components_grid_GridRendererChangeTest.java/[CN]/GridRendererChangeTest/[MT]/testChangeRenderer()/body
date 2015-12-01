@@ -1,0 +1,16 @@
+{
+  setDebug(true);
+  openTestURL();
+  GridCellElement cell=$(GridElement.class).first().getCell(0,0);
+  assertTrue("No button in the first cell.",cell.isElementPresent(By.tagName("button")));
+  int width=cell.getSize().getWidth();
+  List<ButtonElement> buttons=$(ButtonElement.class).all();
+  Collections.reverse(buttons);
+  for (  ButtonElement button : buttons) {
+    button.click();
+    assertNoErrorNotifications();
+    cell=$(GridElement.class).first().getCell(0,0);
+    assertEquals("Cell size changed",width,cell.getSize().getWidth());
+  }
+  assertTrue("No button in the first cell.",cell.isElementPresent(By.tagName("button")));
+}
