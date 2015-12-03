@@ -12,7 +12,20 @@
       return true;
     }
     if (!hierachyInfo.hasKey(firstVisibleParent.getConnectorId())) {
-      return false;
+      if (hasVisibleChild(firstVisibleParent)) {
+        return false;
+      }
+      attributeName=ConnectorHierarchyWriter.class.getName() + ".stateUpdateConnectors";
+      Object stateUpdateConnectorsObj=request.getAttribute(attributeName);
+      if (stateUpdateConnectorsObj instanceof Set<?>) {
+        Set<?> stateUpdateConnectors=(Set<?>)stateUpdateConnectorsObj;
+        if (!stateUpdateConnectors.contains(firstVisibleParent.getConnectorId())) {
+          return false;
+        }
+      }
+ else {
+        getLogger().warning("Request attribute " + attributeName + " is not a Set");
+      }
     }
   }
  else {
