@@ -1,18 +1,19 @@
 {
   boolean changed=false;
-  if ((row == null && isDeselectAllowed()) || (row != null && !getRowHandle(row).equals(selectedRow))) {
+  if (row == null && !isDeselectAllowed()) {
+  }
+ else {
     if (selectedRow != null) {
-      selectedRow.getRow().remove(GridState.JSONKEY_SELECTED);
-      selectedRow.updateRow();
-      selectedRow.unpin();
-      selectedRow=null;
+      if (row != null && getRowHandle(row).equals(selectedRow)) {
+        if (selectedRow.getRow().hasKey(GridState.JSONKEY_SELECTED)) {
+          return false;
+        }
+      }
+      clearSelectedRow();
       changed=true;
     }
     if (row != null) {
-      selectedRow=getRowHandle(row);
-      selectedRow.pin();
-      selectedRow.getRow().put(GridState.JSONKEY_SELECTED,true);
-      selectedRow.updateRow();
+      setSelectedRow(row);
       changed=true;
     }
   }
