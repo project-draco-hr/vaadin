@@ -11,6 +11,9 @@
   if (datasourceExtension != null) {
     removeExtension(datasourceExtension);
   }
+  if (detailComponentManager != null) {
+    detailComponentManager.remove();
+  }
   resetEditor();
   datasource=container;
   if (container instanceof Container.Sortable) {
@@ -29,6 +32,11 @@
   datasourceExtension=new RpcDataProviderExtension(container);
   datasourceExtension.extend(this);
   datasourceExtension.addDataGenerator(new RowDataGenerator());
+  for (  Extension e : getExtensions()) {
+    if (e instanceof DataGenerator) {
+      datasourceExtension.addDataGenerator((DataGenerator)e);
+    }
+  }
   detailComponentManager=new DetailComponentManager(this);
   if (selectionModel != null) {
     selectionModel.reset();
