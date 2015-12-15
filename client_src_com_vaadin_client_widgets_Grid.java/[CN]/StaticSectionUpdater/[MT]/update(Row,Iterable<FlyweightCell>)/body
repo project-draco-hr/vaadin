@@ -49,11 +49,13 @@ final int column=cell.getColumn();
 DragHandle dragger=new DragHandle(getStylePrimaryName() + "-column-resize-handle",new DragHandleCallback(){
 private Column<?,T> col=getVisibleColumn(column);
 private double initialWidth=0;
+private double minCellWidth;
 @Override public void onUpdate(double deltaX,double deltaY){
-col.setWidth(initialWidth + deltaX);
+col.setWidth(Math.max(minCellWidth,initialWidth + deltaX));
 }
 @Override public void onStart(){
 initialWidth=col.getWidthActual();
+minCellWidth=escalator.getMinCellWidth(getColumns().indexOf(col));
 for (Column<?,T> c : getColumns()) {
 if (selectionColumn == c) {
 continue;

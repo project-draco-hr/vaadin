@@ -1,12 +1,13 @@
 {
+  Element cellElement=cell.getElement();
+  boolean sortedBefore=cellElement.hasClassName("sort-asc") || cellElement.hasClassName("sort-desc");
   cleanup(cell);
   if (!headerRow.isDefault()) {
     return;
   }
-  Column<?,?> column=getVisibleColumn(cell.getColumn());
+  final Column<?,T> column=getVisibleColumn(cell.getColumn());
   SortOrder sortingOrder=getSortOrder(column);
   boolean sortable=column.isSortable();
-  Element cellElement=cell.getElement();
   if (sortable) {
     cellElement.addClassName("sortable");
   }
@@ -15,9 +16,15 @@
   }
   if (SortDirection.ASCENDING == sortingOrder.getDirection()) {
     cellElement.addClassName("sort-asc");
+    if (!sortedBefore) {
+      verifyColumnWidth(column);
+    }
   }
  else {
     cellElement.addClassName("sort-desc");
+    if (!sortedBefore) {
+      verifyColumnWidth(column);
+    }
   }
   int sortIndex=Grid.this.getSortOrder().indexOf(sortingOrder);
   if (sortIndex > -1 && Grid.this.getSortOrder().size() > 1) {
