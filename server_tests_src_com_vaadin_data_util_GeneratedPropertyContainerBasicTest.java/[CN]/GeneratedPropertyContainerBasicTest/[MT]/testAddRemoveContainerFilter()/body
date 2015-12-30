@@ -1,0 +1,16 @@
+{
+  GeneratedPropertyContainer container=createContainer();
+  ItemSetChangeCounter counter=new ItemSetChangeCounter();
+  container.addListener(counter);
+  initializeContainer(container);
+  counter.reset();
+  SimpleStringFilter filter=new SimpleStringFilter(SIMPLE_NAME,"a",true,false);
+  container.addContainerFilter(filter);
+  counter.assertOnce();
+  container.removeContainerFilter(filter);
+  counter.assertOnce();
+  container.addContainerFilter(new SimpleStringFilter(SIMPLE_NAME,"a",true,false));
+  counter.assertOnce();
+  container.removeAllContainerFilters();
+  counter.assertOnce();
+}
