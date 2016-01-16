@@ -1,0 +1,14 @@
+{
+  openTestURL();
+  GridElement grid=$(GridElement.class).first();
+  int filterRow=0;
+  Assert.assertNull(getFooterElement(grid,filterRow,1));
+  Assert.assertNotNull(getFooterElement(grid,filterRow,2));
+  Assert.assertNotNull(getFooterElement(grid,filterRow,3));
+  grid.getFooterCell(1,1).$(ButtonElement.class).first().click();
+  TextFieldElement textfield=getFooterElement(grid,filterRow,1);
+  Assert.assertNotNull(textfield);
+  Assert.assertEquals("Filter: string",textfield.getValue());
+  textfield.setValue("foo");
+  Assert.assertEquals("1. value change for field in string to foo",getLogRow(0));
+}

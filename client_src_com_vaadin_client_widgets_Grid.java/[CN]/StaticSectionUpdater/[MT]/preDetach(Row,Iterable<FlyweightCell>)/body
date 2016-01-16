@@ -4,10 +4,8 @@
     List<Column<?,T>> columns=getVisibleColumns();
     for (    FlyweightCell cell : cellsToDetach) {
       StaticSection.StaticCell metadata=gridRow.getCell(columns.get(cell.getColumn()));
-      if (GridStaticCellType.WIDGET.equals(metadata.getType()) && metadata.getWidget().isAttached()) {
-        Widget widget=metadata.getWidget();
-        setParent(widget,null);
-        widget.getElement().removeFromParent();
+      if (GridStaticCellType.WIDGET.equals(metadata.getType()) && metadata.getWidget() != null && metadata.getWidget().isAttached()) {
+        getGrid().detachWidget(metadata.getWidget());
       }
     }
   }
