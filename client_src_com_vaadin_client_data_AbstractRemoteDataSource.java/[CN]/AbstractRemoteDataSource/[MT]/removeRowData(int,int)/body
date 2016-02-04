@@ -1,11 +1,12 @@
 {
   Profiler.enter("AbstractRemoteDataSource.removeRowData");
   size-=count;
+  Range removedRange=Range.withLength(firstRowIndex,count);
+  dropFromCache(removedRange);
   int firstMoved=Math.max(firstRowIndex + count,cached.getStart());
   for (int i=firstMoved; i < cached.getEnd(); i++) {
     moveRowFromIndexToIndex(i,i - count);
   }
-  Range removedRange=Range.withLength(firstRowIndex,count);
   if (cached.isSubsetOf(removedRange)) {
     cached=Range.withLength(0,0);
   }
