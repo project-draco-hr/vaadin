@@ -1,0 +1,41 @@
+{
+  HorizontalLayout hl=new HorizontalLayout();
+  addComponent(hl);
+  VerticalLayout vl=new VerticalLayout();
+  hl.addComponent(vl);
+  ComboBox comboBox=new ComboBox("ComboBox");
+  comboBox.addItem("ok");
+  comboBox.addItem("error");
+  comboBox.addValidator(new StringLengthValidator("fail",0,2,false));
+  comboBox.setValue("error");
+  ListSelect listSelect=new ListSelect("ListSelect");
+  listSelect.addItem("ok");
+  listSelect.addItem("error");
+  listSelect.addValidator(new StringLengthValidator("fail",0,2,false));
+  listSelect.setValue("error");
+  NativeSelect nativeSelect=new NativeSelect("NativeSelect");
+  nativeSelect.addItem("ok");
+  nativeSelect.addItem("error");
+  nativeSelect.addValidator(new StringLengthValidator("fail",0,2,false));
+  nativeSelect.setValue("error");
+  TwinColSelect twinColSelect=new TwinColSelect("TwinColSelect");
+  twinColSelect.addItem("ok");
+  twinColSelect.addItem("error");
+  twinColSelect.addValidator(new Validator(){
+    @Override public void validate(    Object value) throws InvalidValueException {
+      if (value instanceof Set && ((Set)value).size() == 1 && ((Set)value).contains("ok")) {
+        return;
+      }
+      throw new InvalidValueException("fail");
+    }
+  }
+);
+  twinColSelect.setValue("error");
+  vl.addComponents(comboBox,listSelect,nativeSelect,twinColSelect);
+  Class<? extends AbstractField>[] textFields=new Class[]{TextField.class,TextArea.class,RichTextArea.class,PasswordField.class};
+  vl=new VerticalLayout();
+  hl.addComponent(vl);
+  for (  Class<? extends Field> fieldClass : textFields) {
+    vl.addComponent(getField(fieldClass));
+  }
+}
