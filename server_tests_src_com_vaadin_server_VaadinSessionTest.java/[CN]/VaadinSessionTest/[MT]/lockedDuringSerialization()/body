@@ -1,0 +1,17 @@
+{
+  final AtomicBoolean lockChecked=new AtomicBoolean(false);
+  ui.setContent(new Label(){
+    private void writeObject(    ObjectOutputStream out) throws IOException {
+      Assert.assertTrue(session.hasLock());
+      lockChecked.set(true);
+      out.defaultWriteObject();
+    }
+  }
+);
+  session.unlock();
+  Assert.assertFalse(session.hasLock());
+  ObjectOutputStream out=new ObjectOutputStream(new ByteArrayOutputStream());
+  out.writeObject(session);
+  Assert.assertFalse(session.hasLock());
+  Assert.assertTrue(lockChecked.get());
+}
