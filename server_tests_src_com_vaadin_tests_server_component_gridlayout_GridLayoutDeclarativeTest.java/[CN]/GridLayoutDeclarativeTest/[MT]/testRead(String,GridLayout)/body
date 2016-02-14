@@ -3,10 +3,21 @@
   expected.setCursorY(expected.getRows());
   GridLayout result=super.testRead(design,expected);
   for (int row=0; row < expected.getRows(); ++row) {
-    Assert.assertTrue(Math.abs(expected.getRowExpandRatio(row) - result.getRowExpandRatio(row)) < 0.00001);
+    Assert.assertEquals(expected.getRowExpandRatio(row),result.getRowExpandRatio(row),0.00001);
   }
   for (int col=0; col < expected.getColumns(); ++col) {
-    Assert.assertTrue(Math.abs(expected.getColumnExpandRatio(col) - result.getColumnExpandRatio(col)) < 0.00001);
+    Assert.assertEquals(expected.getColumnExpandRatio(col),result.getColumnExpandRatio(col),0.00001);
+  }
+  for (int row=0; row < expected.getRows(); ++row) {
+    for (int col=0; col < expected.getColumns(); ++col) {
+      Component eC=expected.getComponent(col,row);
+      Component rC=result.getComponent(col,row);
+      assertEquals(eC,rC);
+      if (eC == null) {
+        continue;
+      }
+      Assert.assertEquals(expected.getComponentAlignment(eC),result.getComponentAlignment(rC));
+    }
   }
   return result;
 }
