@@ -1,7 +1,16 @@
 {
+  if (portalUtilClass == null) {
+    try {
+      invokeStaticLiferayMethod(LIFERAY_7_PORTAL_UTIL,"getHttpServletRequest",request,"javax.portlet.PortletRequest");
+      portalUtilClass=LIFERAY_7_PORTAL_UTIL;
+    }
+ catch (    Exception e) {
+      portalUtilClass=LIFERAY_6_PORTAL_UTIL;
+    }
+  }
   try {
-    HttpServletRequest httpRequest=(HttpServletRequest)invokeStaticLiferayMethod("com.liferay.portal.util.PortalUtil","getHttpServletRequest",request,"javax.portlet.PortletRequest");
-    httpRequest=(HttpServletRequest)invokeStaticLiferayMethod("com.liferay.portal.util.PortalUtil","getOriginalServletRequest",httpRequest,"javax.servlet.http.HttpServletRequest");
+    HttpServletRequest httpRequest=(HttpServletRequest)invokeStaticLiferayMethod(portalUtilClass,"getHttpServletRequest",request,"javax.portlet.PortletRequest");
+    httpRequest=(HttpServletRequest)invokeStaticLiferayMethod(portalUtilClass,"getOriginalServletRequest",httpRequest,"javax.servlet.http.HttpServletRequest");
     return httpRequest;
   }
  catch (  Exception e) {
