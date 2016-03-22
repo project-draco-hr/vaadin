@@ -1,0 +1,32 @@
+{
+  if (debug) {
+    debug("classpathLocations values:");
+    ArrayList<String> locations=new ArrayList<String>(classpathLocations.keySet());
+    for (    String location : locations) {
+      debug(String.valueOf(classpathLocations.get(location)));
+    }
+  }
+  URL firstDirectory=null;
+  Iterator<String> it=rawClasspathEntries.iterator();
+  while (it.hasNext()) {
+    String entry=it.next();
+    File directory=new File(entry);
+    if (directory.exists() && !directory.isHidden() && directory.isDirectory()) {
+      try {
+        URL directoryUrl=directory.toURI().toURL();
+        if (firstDirectory == null) {
+          firstDirectory=directoryUrl;
+        }
+        if (widgetsetFileName == null || new File(directory,widgetsetFileName).exists()) {
+          return directoryUrl;
+        }
+      }
+ catch (      MalformedURLException e) {
+        if (debug) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+  return firstDirectory;
+}
