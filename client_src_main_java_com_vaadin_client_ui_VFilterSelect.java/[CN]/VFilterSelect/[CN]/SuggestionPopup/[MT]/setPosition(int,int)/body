@@ -1,6 +1,6 @@
 {
   debug("VFS.SP: setPosition(" + offsetWidth + ", "+ offsetHeight+ ")");
-  int top;
+  int top=topPosition;
   int left=getPopupLeft();
   menu.setHeight("");
   if (currentPage > 0 && !hasNextPage()) {
@@ -10,16 +10,31 @@
   final int desiredWidth=getMainWidth();
   debug("VFS.SP:     desired[" + desiredWidth + ", "+ desiredHeight+ "]");
   Element menuFirstChild=menu.getElement().getFirstChildElement();
-  final int naturalMenuWidth=WidgetUtil.getRequiredWidth(menuFirstChild);
+  int naturalMenuWidth;
+  if (BrowserInfo.get().isIE() && BrowserInfo.get().getBrowserMajorVersion() < 10) {
+    String before=menu.getElement().getParentElement().getStyle().getVisibility();
+    menu.getElement().getParentElement().getStyle().setVisibility(Visibility.VISIBLE);
+    naturalMenuWidth=WidgetUtil.getRequiredWidth(menuFirstChild);
+    menu.getElement().getParentElement().getStyle().setProperty("visibility",before);
+  }
+ else {
+    naturalMenuWidth=WidgetUtil.getRequiredWidth(menuFirstChild);
+  }
   if (popupOuterPadding == -1) {
-    popupOuterPadding=WidgetUtil.measureHorizontalPaddingAndBorder(getElement(),2);
+    popupOuterPadding=WidgetUtil.measureHorizontalPaddingAndBorder(menu.getElement(),2) + WidgetUtil.measureHorizontalPaddingAndBorder(suggestionPopup.getElement(),0);
   }
-  if (naturalMenuWidth < desiredWidth) {
-    menu.setWidth((desiredWidth - popupOuterPadding) + "px");
-    menuFirstChild.getStyle().setWidth(100,Unit.PCT);
-  }
+  updateMenuWidth(desiredWidth,naturalMenuWidth);
   if (BrowserInfo.get().isIE() && BrowserInfo.get().getBrowserMajorVersion() < 11) {
-    double naturalMenuOuterWidth=WidgetUtil.getRequiredWidthDouble(menuFirstChild) + getMarginBorderPaddingWidth(menu.getElement());
+    double naturalMenuOuterWidth;
+    if (BrowserInfo.get().getBrowserMajorVersion() < 10) {
+      String before=menu.getElement().getParentElement().getStyle().getVisibility();
+      menu.getElement().getParentElement().getStyle().setVisibility(Visibility.VISIBLE);
+      naturalMenuOuterWidth=WidgetUtil.getRequiredWidthDouble(menuFirstChild) + getMarginBorderPaddingWidth(menu.getElement());
+      menu.getElement().getParentElement().getStyle().setProperty("visibility",before);
+    }
+ else {
+      naturalMenuOuterWidth=WidgetUtil.getRequiredWidthDouble(menuFirstChild) + getMarginBorderPaddingWidth(menu.getElement());
+    }
     double rootWidth=Math.max(desiredWidth - popupOuterPadding,naturalMenuOuterWidth);
     getContainerElement().getStyle().setWidth(rootWidth,Unit.PX);
   }
@@ -55,9 +70,11 @@
       menuHeight=menuElementHeight;
     }
     menu.setHeight(menuHeight + "px");
-    final int naturalMenuWidthPlusScrollBar=naturalMenuWidth + WidgetUtil.getNativeScrollbarSize();
-    if (offsetWidth < naturalMenuWidthPlusScrollBar) {
-      menu.setWidth(naturalMenuWidthPlusScrollBar + "px");
+    if (suggestionPopupWidth == null) {
+      final int naturalMenuWidthPlusScrollBar=naturalMenuWidth + WidgetUtil.getNativeScrollbarSize();
+      if (offsetWidth < naturalMenuWidthPlusScrollBar) {
+        menu.setWidth(naturalMenuWidthPlusScrollBar + "px");
+      }
     }
   }
   if (offsetWidth + left > Window.getClientWidth()) {
@@ -65,6 +82,9 @@
     if (left < 0) {
       left=0;
       menu.setWidth(Window.getClientWidth() + "px");
+    }
+    if (BrowserInfo.get().isIE() && BrowserInfo.get().getBrowserMajorVersion() < 10) {
+      setTdWidth(menu.getElement(),Window.getClientWidth() - 8);
     }
   }
   setPopupPosition(left,top);
