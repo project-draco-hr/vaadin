@@ -1,0 +1,31 @@
+{
+  VerticalLayout content=new VerticalLayout();
+  addComponent(content);
+  final Grid g=new Grid();
+  content.setHeight("500px");
+  content.addComponent(g);
+  IndexedContainer cont=new IndexedContainer();
+  for (int j=0; j < 3; j++) {
+    cont.addContainerProperty("" + j,String.class,"");
+  }
+  for (int k=0; k < 50; k++) {
+    Item addItem=cont.addItem(k);
+    for (int j=0; j < 3; j++) {
+      addItem.getItemProperty("" + j).setValue("cell " + k + " "+ j);
+    }
+  }
+  g.setContainerDataSource(cont);
+  g.setSizeFull();
+  g.setSelectionMode(SelectionMode.MULTI);
+  g.addSelectionListener(new SelectionListener(){
+    @Override public void select(    SelectionEvent event){
+      if (g.getSelectedRows().isEmpty()) {
+        g.setHeight("100%");
+      }
+ else {
+        g.setHeight("50%");
+      }
+    }
+  }
+);
+}
