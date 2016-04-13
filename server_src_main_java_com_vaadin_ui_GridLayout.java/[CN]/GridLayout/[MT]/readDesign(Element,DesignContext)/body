@@ -10,6 +10,7 @@
     }
   }
   setRows(Math.max(rows.size(),1));
+  Map<Component,Alignment> alignments=new HashMap<Component,Alignment>();
   List<Integer> columnExpandRatios=new ArrayList<Integer>();
   for (int row=0; row < rowElements.size(); ++row) {
     Element rowElement=rowElements.get(row);
@@ -26,7 +27,9 @@
       Element col=cols.get(column);
       Component child=null;
       if (col.children().size() > 0) {
-        child=designContext.readDesign(col.child(0));
+        Element childElement=col.child(0);
+        child=designContext.readDesign(childElement);
+        alignments.put(child,DesignAttributeHandler.readAlignment(childElement.attributes()));
       }
       Attributes attr=col.attributes();
       int colspan=DesignAttributeHandler.readAttribute("colspan",attr,1,int.class);
@@ -83,6 +86,7 @@
         ++rowspan;
       }
       addComponent(child,j,i,j + colspan,i + rowspan);
+      setComponentAlignment(child,alignments.get(child));
     }
   }
   setCursorY(getRows());

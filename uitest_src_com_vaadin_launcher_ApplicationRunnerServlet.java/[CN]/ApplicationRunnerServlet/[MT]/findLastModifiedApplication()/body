@@ -1,0 +1,31 @@
+{
+  String lastModifiedClassName=null;
+  File uitestDir=new File("uitest/src");
+  if (uitestDir.isDirectory()) {
+    LinkedList<File> stack=new LinkedList<File>();
+    stack.add(uitestDir);
+    long lastModifiedTimestamp=Long.MIN_VALUE;
+    while (!stack.isEmpty()) {
+      File file=stack.pop();
+      if (file.isDirectory()) {
+        stack.addAll(Arrays.asList(file.listFiles()));
+      }
+ else       if (file.getName().endsWith(".java")) {
+        if (lastModifiedTimestamp < file.lastModified()) {
+          String className=file.getPath().substring(uitestDir.getPath().length() + 1).replace(File.separatorChar,'.');
+          className=className.substring(0,className.length() - ".java".length());
+          if (isSupportedClass(className)) {
+            lastModifiedTimestamp=file.lastModified();
+            lastModifiedClassName=className;
+          }
+        }
+      }
+    }
+  }
+  if (lastModifiedClassName == null) {
+    throw new IllegalArgumentException("No application specified");
+  }
+ else {
+    return lastModifiedClassName;
+  }
+}

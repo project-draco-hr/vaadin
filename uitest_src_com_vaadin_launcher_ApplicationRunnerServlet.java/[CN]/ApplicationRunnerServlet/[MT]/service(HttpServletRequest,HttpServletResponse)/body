@@ -3,7 +3,16 @@
   try {
     super.service(request,response);
   }
-  finally {
+ catch (  ServletException e) {
+    String redirectTarget=ApplicationRunnerRedirectException.extractRedirectTarget(e);
+    if (redirectTarget != null) {
+      response.sendRedirect(redirectTarget + "?restartApplication");
+    }
+ else {
+      throw e;
+    }
+  }
+ finally {
     this.request.set(null);
   }
 }

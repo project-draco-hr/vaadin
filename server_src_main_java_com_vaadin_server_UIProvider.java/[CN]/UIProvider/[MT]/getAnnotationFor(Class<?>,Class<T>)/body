@@ -1,12 +1,20 @@
 {
-  Class<?> currentType=clazz;
-  while (currentType != Object.class) {
-    T annotation=currentType.getAnnotation(annotationType);
+  if (annotationType.getAnnotation(Inherited.class) != null) {
+    T annotation=clazz.getAnnotation(annotationType);
     if (annotation != null) {
       return annotation;
     }
+  }
  else {
-      currentType=currentType.getSuperclass();
+    Class<?> currentType=clazz;
+    while (currentType != Object.class) {
+      T annotation=currentType.getAnnotation(annotationType);
+      if (annotation != null) {
+        return annotation;
+      }
+ else {
+        currentType=currentType.getSuperclass();
+      }
     }
   }
   for (  Class<?> iface : clazz.getInterfaces()) {

@@ -1,9 +1,9 @@
 {
-  LegacyCommunicationManager manager=uI.getSession().getCommunicationManager();
+  LegacyCommunicationManager manager=ui.getSession().getCommunicationManager();
   try {
-    ConnectorTracker connectorTracker=uI.getConnectorTracker();
+    ConnectorTracker connectorTracker=ui.getConnectorTracker();
     Set<Connector> enabledConnectors=new HashSet<Connector>();
-    List<MethodInvocation> invocations=parseInvocations(uI.getConnectorTracker(),invocationsData,lastSyncIdSeenByClient);
+    List<MethodInvocation> invocations=parseInvocations(ui.getConnectorTracker(),invocationsData,lastSyncIdSeenByClient);
     for (    MethodInvocation invocation : invocations) {
       final ClientConnector connector=connectorTracker.getConnector(invocation.getConnectorId());
       if (connector != null && connector.isConnectorEnabled()) {
@@ -41,27 +41,11 @@
         continue;
       }
       if (invocation instanceof ServerRpcMethodInvocation) {
-        try {
-          ServerRpcManager.applyInvocation(connector,(ServerRpcMethodInvocation)invocation);
-        }
- catch (        RpcInvocationException e) {
-          manager.handleConnectorRelatedException(connector,e);
-        }
+        handleInvocation(ui,connector,(ServerRpcMethodInvocation)invocation);
       }
  else {
         LegacyChangeVariablesInvocation legacyInvocation=(LegacyChangeVariablesInvocation)invocation;
-        Map<String,Object> changes=legacyInvocation.getVariableChanges();
-        try {
-          if (connector instanceof VariableOwner) {
-            changeVariables(null,(VariableOwner)connector,changes);
-          }
- else {
-            throw new IllegalStateException("Received legacy variable change for " + connector.getClass().getName() + " ("+ connector.getConnectorId()+ ") which is not a VariableOwner. The client-side connector sent these legacy varaibles: "+ changes.keySet());
-          }
-        }
- catch (        Exception e) {
-          manager.handleConnectorRelatedException(connector,e);
-        }
+        handleInvocation(ui,connector,legacyInvocation);
       }
     }
   }

@@ -1,0 +1,14 @@
+{
+  Map<String,Object> changes=legacyInvocation.getVariableChanges();
+  try {
+    if (connector instanceof VariableOwner) {
+      changeVariables(null,(VariableOwner)connector,changes);
+    }
+ else {
+      throw new IllegalStateException("Received legacy variable change for " + connector.getClass().getName() + " ("+ connector.getConnectorId()+ ") which is not a VariableOwner. The client-side connector sent these legacy varaibles: "+ changes.keySet());
+    }
+  }
+ catch (  Exception e) {
+    ui.getSession().getCommunicationManager().handleConnectorRelatedException(connector,e);
+  }
+}
