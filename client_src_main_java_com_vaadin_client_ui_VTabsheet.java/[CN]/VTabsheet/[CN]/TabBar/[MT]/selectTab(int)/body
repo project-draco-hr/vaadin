@@ -1,6 +1,9 @@
 {
   final Tab newSelected=getTab(index);
   final Tab oldSelected=selected;
+  if (oldSelected == newSelected) {
+    return;
+  }
   newSelected.setStyleNames(true,isFirstVisibleTab(index),true);
   newSelected.setTabulatorIndex(getTabsheet().tabulatorIndex);
   Roles.getTabRole().setAriaSelectedState(newSelected.getElement(),SelectedValue.TRUE);
@@ -12,4 +15,5 @@
   selected=newSelected;
   newSelected.recalculateCaptionWidth();
   getTab(tabsheet.activeTabIndex).recalculateCaptionWidth();
+  getTabsheet().scrollIntoView(getTab(tabsheet.activeTabIndex));
 }
