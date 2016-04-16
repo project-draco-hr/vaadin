@@ -1,6 +1,6 @@
 {
   debug("VFS.SP: setPosition(" + offsetWidth + ", "+ offsetHeight+ ")");
-  int top=topPosition;
+  int top;
   int left=getPopupLeft();
   menu.setHeight("");
   if (currentPage > 0 && !hasNextPage()) {
@@ -23,18 +23,22 @@
     double rootWidth=Math.max(desiredWidth - popupOuterPadding,naturalMenuOuterWidth);
     getContainerElement().getStyle().setWidth(rootWidth,Unit.PX);
   }
-  final int vfsHeight=VFilterSelect.this.getOffsetHeight();
-  final int spaceAvailableAbove=top - vfsHeight;
-  final int spaceAvailableBelow=Window.getClientHeight() - top;
-  if (spaceAvailableBelow < offsetHeight && spaceAvailableBelow < spaceAvailableAbove) {
-    top-=offsetHeight + vfsHeight;
-    if (top < 0) {
-      offsetHeight+=top;
-      top=0;
+  final int textInputHeight=VFilterSelect.this.getOffsetHeight();
+  final int textInputTopOnPage=tb.getAbsoluteTop();
+  final int viewportOffset=Document.get().getScrollTop();
+  final int textInputTopInViewport=textInputTopOnPage - viewportOffset;
+  final int textInputBottomInViewport=textInputTopInViewport + textInputHeight;
+  final int spaceAboveInViewport=textInputTopInViewport;
+  final int spaceBelowInViewport=Window.getClientHeight() - textInputBottomInViewport;
+  if (spaceBelowInViewport < offsetHeight && spaceBelowInViewport < spaceAboveInViewport) {
+    if (offsetHeight > spaceAboveInViewport) {
+      offsetHeight=spaceAboveInViewport;
     }
+    top=textInputTopOnPage - offsetHeight;
   }
  else {
-    offsetHeight=Math.min(offsetHeight,spaceAvailableBelow);
+    top=topPosition;
+    offsetHeight=Math.min(offsetHeight,spaceBelowInViewport);
   }
   offsetWidth=menuFirstChild.getOffsetWidth();
   if (offsetHeight < desiredHeight) {
