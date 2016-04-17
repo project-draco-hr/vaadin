@@ -1,4 +1,42 @@
 {
+  if (isFitInWindow()) {
+    int windowLeft=Window.getScrollLeft();
+    int windowRight=Window.getScrollLeft() + Window.getClientWidth();
+    int width=getOffsetWidth();
+    int popupRight=left + width;
+    int popupRightOfWindow=popupRight - windowRight;
+    if (popupRightOfWindow > 0) {
+      left-=popupRightOfWindow;
+      if (left < 0) {
+        setOuterWidthThroughWidget(windowRight - windowLeft);
+        runOnClose.add(new Command(){
+          @Override public void execute(){
+            getWidget().setWidth("");
+          }
+        }
+);
+        left=0;
+      }
+    }
+    int windowTop=Window.getScrollTop();
+    int windowBottom=Window.getScrollTop() + Window.getClientHeight();
+    int height=getOffsetHeight();
+    int popupBottom=top + height;
+    int popupBelowWindow=popupBottom - windowBottom;
+    if (popupBelowWindow > 0) {
+      top-=popupBelowWindow;
+      if (top < 0) {
+        setOuterHeightThroughWidget(windowBottom - windowTop);
+        runOnClose.add(new Command(){
+          @Override public void execute(){
+            getWidget().setHeight("");
+          }
+        }
+);
+        top=0;
+      }
+    }
+  }
   Style style=getElement().getStyle();
   style.setMarginLeft(-adjustByRelativeLeftBodyMargin(),Unit.PX);
   style.setMarginTop(-adjustByRelativeTopBodyMargin(),Unit.PX);

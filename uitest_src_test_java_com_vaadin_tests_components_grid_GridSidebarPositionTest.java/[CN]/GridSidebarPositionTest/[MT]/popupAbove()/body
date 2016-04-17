@@ -1,0 +1,18 @@
+{
+  openTestURL();
+  GridElement gridPopupAbove=$(GridElement.class).id(GridSidebarPosition.POPUP_ABOVE);
+  WebElement sidebarOpenButton=getSidebarOpenButton(gridPopupAbove);
+  sidebarOpenButton.click();
+  WebElement sidebarPopup=getSidebarPopup();
+  Dimension popupSize=sidebarPopup.getSize();
+  Point popupLocation=sidebarPopup.getLocation();
+  int popupBottom=popupLocation.getY() + popupSize.getHeight();
+  int sideBarButtonTop;
+  if (BrowserUtil.isIE8(getDesiredCapabilities())) {
+    sideBarButtonTop=660;
+  }
+ else {
+    sideBarButtonTop=sidebarOpenButton.getLocation().getY();
+  }
+  Assert.assertTrue(popupBottom <= sideBarButtonTop);
+}
