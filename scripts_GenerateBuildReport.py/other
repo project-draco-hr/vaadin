@@ -1,21 +1,38 @@
+from BuildArchetypes import archetypes, getDeploymentContext
 from BuildDemos import demos
-import argparse, subprocess
+import argparse, subprocess, cgi
 parser = argparse.ArgumentParser(description='Build report generator')
 parser.add_argument('version', type=str, help='Vaadin version that was just built')
 parser.add_argument('deployUrl', type=str, help='Base url of the deployment server')
 parser.add_argument('buildResultUrl', type=str, help='URL for the build result page')
+parser.add_argument('stagingRepo', type=str, help='URL for the staging repository')
+parser.add_argument('pluginRepo', type=str, help='URL for the maven plugin staging repository')
+parser.add_argument('tbapiUrl', type=str, help='URL for the TestBench API build')
+parser.add_argument('frameworkRevision', type=str, default='[fill in framework repository revision]', nargs='?')
+parser.add_argument('screenshotRevision', type=str, default='[fill in screenshot repository revision]', nargs='?')
+parser.add_argument('archetypeRevision', type=str, default='[fill in maven-integration repository revision]', nargs='?')
+parser.add_argument('mavenPluginRevision', type=str, default='[fill in maven-plugin repository revision]', nargs='?')
 args = parser.parse_args()
-content = '<html>\n<head></head>\n<body>\n<table>\n<tr><td><a href="https://dev.vaadin.com/milestone?action=new">Create milestone for next release</a></td></tr>\n<tr><td><a href="https://dev.vaadin.com/query?status=closed&component=Core+Framework&resolution=fixed&milestone=!Vaadin {version}&col=id&col=summary&col=component&col=status&col=type&col=priority&col=milestone&order=priority">Closed fixed tickets without milestone {version}</a></td></tr>\n<tr><td><a href="https://dev.vaadin.com/query?status=closed&component=Core+Framework&resolution=fixed&milestone=Vaadin {version}&col=id&col=summary&col=component&col=milestone&col=status&col=type">Closed tickets with milestone {version}</a></td></tr>\n<tr><td><a href="https://dev.vaadin.com/query?status=pending-release&component=Core+Framework&resolution=fixed&milestone=Vaadin {version}&col=id&col=summary&col=component&col=milestone&col=status&col=type">Pending-release tickets with milestone {version}</a></td></tr>\n<tr><td><a href="https://dev.vaadin.com/query?status=pending-release&milestone=">Pending-release tickets without milestone</a></td></tr>\n<tr><td><a href="apidiff/changes.html">API Diff</a></td></tr>\n<tr><td><a href="release-notes/release-notes.html">Release Notes</a></td></tr>\n'.format(version=args.version)
+content = '<html>\n<head></head>\n<body>\n<table>\n<tr><td><h2>Checks that might need a second build</h2></td></tr>\n<tr><td><a href="https://dev.vaadin.com/milestone?action=new">Create milestone for next release</a></td></tr>\n<tr><td><a href="https://dev.vaadin.com/query?status=closed&component=Core+Framework&resolution=fixed&milestone=!Vaadin {version}&col=id&col=summary&col=component&col=status&col=type&col=priority&col=milestone&order=priority">Closed fixed tickets without milestone {version}</a></td></tr>\n<tr><td><a href="https://dev.vaadin.com/query?status=closed&component=Core+Framework&resolution=fixed&milestone=Vaadin {version}&col=id&col=summary&col=component&col=milestone&col=status&col=type">Closed tickets with milestone {version}</a></td></tr>\n<tr><td><a href="https://dev.vaadin.com/query?status=pending-release&component=Core+Framework&resolution=fixed&milestone=Vaadin {version}&col=id&col=summary&col=component&col=milestone&col=status&col=type">Pending-release tickets with milestone {version}</a></td></tr>\n<tr><td><a href="https://dev.vaadin.com/query?status=pending-release&milestone=">Pending-release tickets without milestone</a></td></tr>\n<tr><td><a href="apidiff/changes.html">API Diff</a></td></tr>\n<tr><td><a href="release-notes/release-notes.html">Release Notes</a></td></tr>\n'.format(version=args.version)
 try:
     p1 = subprocess.Popen(['find', '.', '-name', '*.java'], stdout=subprocess.PIPE)
     p2 = subprocess.Popen(['xargs', 'egrep', '-n', '@since ?$'], stdin=p1.stdout, stdout=subprocess.PIPE)
-    missing = subprocess.check_output(['egrep', '-v', '/(tests|result)/'], stdin=p2.stdout)
+    missing = subprocess.check_output(['egrep', '-v', '/(test|tests|target)/'], stdin=p2.stdout)
     content += ('<tr><td>Empty @since:<br>\n<pre>%s</pre></td></tr>\n' % missing)
 except subprocess.CalledProcessError as e:
     if (e.returncode == 1):
         content += '<tr><td>No empty @since</td></tr>\n'
     else:
         raise e
-content += '<tr><td><a href="{url}">Build result page (See test results, pin and tag build and dependencies)</a></td></tr>\n</table>\n</body>\n</html>'.format(url=args.buildResultUrl)
+content += '<tr><td><a href="{url}">Build result page (See test results, pin and tag build and dependencies)</a></td></tr>'.format(url=args.buildResultUrl)
+content += '<tr><td>Try demos<ul>'
+for demo in demos:
+    content += "<li><a href='{url}/{demoName}-{version}'>{demoName}</a></li>\n".format(url=args.deployUrl, demoName=demo, version=args.version)
+content += '</ul></td></tr>\n<tr><td>Try archetype demos<ul>'
+for archetype in archetypes:
+    content += "<li><a href='{url}/{context}'>{demo}</a></li>\n".format(url=args.deployUrl, demo=archetype, context=getDeploymentContext(archetype, args.version))
+content += '</ul></td></tr>\n    <tr><td><a href="{repoUrl}">Staging repository</a></td></tr>\n    <tr><td><a href="{pluginRepoUrl}">Maven Plugin Staging repository</a></td></tr>\n    <tr><td>Eclipse Ivy Settings:<br><pre>'.format(repoUrl=args.stagingRepo, pluginRepoUrl=args.pluginRepo)
+content += cgi.escape('\t<ibiblio name="vaadin-staging" usepoms="true" m2compatible="true"\n    root="{repoUrl}" />'.format(repoUrl=args.stagingRepo))
+content += '</pre>\n    </td></tr>\n    <tr><td><h2>Preparations before publishing</h2></td></tr>\n    <tr><td><a href="https://dev.vaadin.com/milestone/Vaadin {version}">Close Trac Milestone</a></td></tr>\n    <tr><td><a href="https://dev.vaadin.com/query?status=pending-release&component=Core+Framework&resolution=fixed&col=id&col=summary&col=component&col=milestone&col=status&col=type">Verify pending release tickets still have milestone {version}</a></td></tr>\n    <tr><td><a href="https://dev.vaadin.com/admin/ticket/versions">Add version {version} to Trac</td></tr>\n    <tr><td><a href="{url}">Staging result page (See test results, pin and tag build and dependencies)</a></td></tr>\n    <tr><td>Commands to tag all repositories (warning: do not run as a single script but set variables and check before any push commands - this has not been tested yet and the change IDs are missing)</td></tr>\n    <tr><td><pre>\n    VERSION={version}\n    \n    GERRIT_USER=[fill in your gerrit username]\n    FRAMEWORK_REVISION={frameworkRevision}\n    SCREENSHOTS_REVISION={screenshotRevision}\n    ARCHETYPES_REVISION={archetypeRevision}\n    PLUGIN_REVISION={mavenPluginRevision}\n    \n    git clone ssh://$GERRIT_USER@dev.vaadin.com:29418/vaadin\n    cd vaadin\n    git tag -a -m"$VERSION" $VERSION $FRAMEWORK_REVISION\n    git push --tags\n    cd ..\n    \n    git clone ssh://$GERRIT_USER@dev.vaadin.com:29418/vaadin-screenshots\n    cd vaadin-screenshots\n    git tag -a -m"$VERSION" $VERSION $SCREENSHOTS_REVISION\n    git push --tags\n    cd ..\n    \n    git clone ssh://$GERRIT_USER@dev.vaadin.com:29418/maven-integration\n    cd maven-integration\n    git tag -a -m"$VERSION" $VERSION $ARCHETYPES_REVISION\n    git push --tags\n    cd ..\n    \n    git clone ssh://$GERRIT_USER@dev.vaadin.com:29418/maven-plugin\n    cd maven-plugin\n    git tag -a -m"$VERSION" $VERSION $PLUGIN_REVISION\n    git push --tags\n    cd ..\n    </pre></td></tr>\n    <tr><td><a href="{tbapi}">Build and publish TestBench API for version {version} if proceeding</a></td></tr>\n</table>\n</body>\n</html>'.format(url=args.buildResultUrl, repoUrl=args.stagingRepo, version=args.version, tbapi=args.tbapiUrl, frameworkRevision=args.frameworkRevision, screenshotRevision=args.screenshotRevision, archetypeRevision=args.archetypeRevision, mavenPluginRevision=args.mavenPluginRevision)
 f = open('result/report.html', 'w')
 f.write(content)
