@@ -8,18 +8,18 @@ args = None
 if (__name__ == '__main__'):
     from BuildHelpers import mavenValidate, copyWarFiles, getLogFile, mavenCmd, updateRepositories, getArgs, removeDir, parser, resultPath
     from DeployHelpers import deployWar
-    parser.add_argument('--repo', type=str, help='Staging repository URL', required=True)
     archetypesFailed = False
     args = getArgs()
-    if (hasattr(args, 'artifactPath') and (args.artifactPath is not None)):
-        raise Exception('Archetype validation build does not support artifactPath')
     wars = {}
     for archetype in archetypes:
         artifactId = ('test-%s-%s' % (archetype, args.version.replace('.', '-')))
         try:
             log = getLogFile(archetype)
-            generateArchetype(archetype, artifactId, args.repo)
-            updateRepositories(join(resultPath, artifactId), args.repo)
+            generateArchetype(archetype, artifactId, args.pluginRepo)
+            if (hasattr(args, 'fwRepo') and (args.fwRepo is not None)):
+                updateRepositories(join(resultPath, artifactId), args.fwRepo)
+            if (hasattr(args, 'pluginRepo') and (args.pluginRepo is not None)):
+                updateRepositories(join(resultPath, artifactId), args.pluginRepo, postfix='plugin')
             mavenValidate(artifactId, logFile=log)
             warFiles = copyWarFiles(artifactId, name=archetype)
             for war in warFiles:
