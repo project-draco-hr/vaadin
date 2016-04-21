@@ -11,7 +11,10 @@
   shortcutContextWidget.addDomHandler(new KeyDownHandler(){
     @Override public void onKeyDown(    KeyDownEvent event){
       if (getWidget().actionHandler != null) {
-        getWidget().actionHandler.handleKeyboardEvent((Event)event.getNativeEvent().cast());
+        Element target=Element.as(event.getNativeEvent().getEventTarget());
+        if (target == Document.get().getBody() || getWidget().getElement().isOrHasChild(target)) {
+          getWidget().actionHandler.handleKeyboardEvent((Event)event.getNativeEvent().cast());
+        }
       }
     }
   }
