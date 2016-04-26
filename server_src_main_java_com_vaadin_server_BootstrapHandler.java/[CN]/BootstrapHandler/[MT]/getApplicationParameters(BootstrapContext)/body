@@ -17,7 +17,12 @@
     versionInfo.put("atmosphereVersion",atmosphereVersion);
   }
   appConfig.put("versionInfo",versionInfo);
-  appConfig.put("widgetset",context.getWidgetsetName());
+  WidgetsetInfo widgetsetInfo=context.getWidgetsetInfo();
+  appConfig.put("widgetset",VaadinServlet.stripSpecialChars(widgetsetInfo.getWidgetsetName()));
+  if (widgetsetInfo.getWidgetsetUrl() != null) {
+    appConfig.put("widgetsetUrl",widgetsetInfo.getWidgetsetUrl());
+  }
+  appConfig.put("widgetsetReady",!widgetsetInfo.isCdn());
   Locale locale=ServletPortletHelper.findLocale(null,context.getSession(),context.getRequest());
   SystemMessages systemMessages=vaadinService.getSystemMessages(locale,request);
   if (systemMessages != null) {

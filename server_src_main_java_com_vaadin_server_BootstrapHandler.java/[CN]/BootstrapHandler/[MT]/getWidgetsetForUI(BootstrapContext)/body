@@ -1,10 +1,9 @@
 {
   VaadinRequest request=context.getRequest();
   UICreateEvent event=new UICreateEvent(context.getRequest(),context.getUIClass());
-  String widgetset=context.getBootstrapResponse().getUIProvider().getWidgetset(event);
+  WidgetsetInfo widgetset=context.getBootstrapResponse().getUIProvider().getWidgetset(event);
   if (widgetset == null) {
-    widgetset=request.getService().getConfiguredWidgetset(request);
+    widgetset=new WidgetsetInfoImpl(request.getService().getConfiguredWidgetset(request));
   }
-  widgetset=VaadinServlet.stripSpecialChars(widgetset);
   return widgetset;
 }
