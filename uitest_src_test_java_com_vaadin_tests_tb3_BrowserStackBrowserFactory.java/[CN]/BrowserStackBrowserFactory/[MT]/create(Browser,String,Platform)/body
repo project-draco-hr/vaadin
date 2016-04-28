@@ -6,7 +6,10 @@ case CHROME:
   caps.setVersion(version);
 break;
 case PHANTOMJS:
-throw new IllegalArgumentException("PhantomJS is not supported by BrowserStack");
+caps=DesiredCapabilities.phantomjs();
+caps.setVersion("1");
+caps.setPlatform(Platform.LINUX);
+break;
 case SAFARI:
 caps=DesiredCapabilities.safari();
 caps.setVersion(version);
@@ -49,9 +52,11 @@ caps=DesiredCapabilities.firefox();
 caps.setVersion(version);
 caps.setPlatform(platform);
 }
+if (!Browser.PHANTOMJS.equals(browser)) {
 caps.setCapability("os","Windows");
 caps.setCapability("os_version","7");
 caps.setPlatform(Platform.WINDOWS);
+}
 caps.setCapability("browserstack.debug","true");
 caps.setCapability("browserstack.local","true");
 caps.setCapability("project","vaadin");
