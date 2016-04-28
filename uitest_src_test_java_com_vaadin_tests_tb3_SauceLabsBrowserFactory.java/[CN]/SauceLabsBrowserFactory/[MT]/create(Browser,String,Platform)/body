@@ -1,0 +1,51 @@
+{
+  DesiredCapabilities caps;
+switch (browser) {
+case CHROME:
+    caps=DesiredCapabilities.chrome();
+  caps.setVersion(version);
+break;
+case PHANTOMJS:
+throw new IllegalArgumentException("PhantomJS is not supported by SauceLabs");
+case SAFARI:
+caps=DesiredCapabilities.safari();
+caps.setVersion(version);
+break;
+case IE8:
+caps=DesiredCapabilities.internetExplorer();
+caps.setVersion("8.0");
+caps.setCapability(InternetExplorerDriver.IE_ENSURE_CLEAN_SESSION,true);
+break;
+case IE9:
+caps=DesiredCapabilities.internetExplorer();
+caps.setVersion("9.0");
+caps.setCapability(InternetExplorerDriver.IE_ENSURE_CLEAN_SESSION,true);
+break;
+case IE10:
+caps=DesiredCapabilities.internetExplorer();
+caps.setVersion("10.0");
+caps.setCapability(InternetExplorerDriver.IE_ENSURE_CLEAN_SESSION,true);
+break;
+case IE11:
+caps=DesiredCapabilities.internetExplorer();
+caps.setVersion("11.0");
+caps.setCapability("ie.ensureCleanSession",true);
+caps.setCapability(InternetExplorerDriver.IE_ENSURE_CLEAN_SESSION,true);
+break;
+case FIREFOX:
+caps=DesiredCapabilities.firefox();
+caps.setVersion(version);
+break;
+default :
+caps=DesiredCapabilities.firefox();
+caps.setVersion(version);
+caps.setPlatform(platform);
+}
+if (!Browser.PHANTOMJS.equals(browser)) {
+caps.setCapability("platform","Windows 7");
+}
+caps.setCapability("acceptSslCerts","true");
+caps.setCapability("screenResolution","1680x1050");
+caps.setCapability("build",Version.getFullVersion());
+return caps;
+}

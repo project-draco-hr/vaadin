@@ -1,0 +1,13 @@
+{
+  final VaadinSession fieldAppWithCustomIntegerConverter=new AlwaysLockedVaadinSession(null);
+  fieldAppWithCustomIntegerConverter.setConverterFactory(new ConverterFactory42());
+  VaadinSession.setCurrent(new AlwaysLockedVaadinSession(null));
+  TextField tf=new TextField("","123"){
+    @Override public VaadinSession getSession(){
+      return fieldAppWithCustomIntegerConverter;
+    }
+  }
+;
+  tf.setConverter(Integer.class);
+  Assert.assertEquals(42,tf.getConvertedValue());
+}

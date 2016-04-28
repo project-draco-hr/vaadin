@@ -1,4 +1,4 @@
-def updateRepositories(path, repoUrl=None, version=None):
+def updateRepositories(path, repoUrl=None, version=None, postfix='staging'):
     if (version is None):
         version = getArgs().version
     pomXml = join(path, 'pom.xml')
@@ -9,13 +9,13 @@ def updateRepositories(path, repoUrl=None, version=None):
         return
     if (repoNode is not None):
         print ('Add staging repositories to ' + pomXml)
-        addRepo(repoNode, 'repository', ('vaadin-%s-staging' % version), repoUrl)
+        addRepo(repoNode, 'repository', ('vaadin-%s-%s' % (version, postfix)), repoUrl)
         pluginRepo = tree.getroot().find(('{%s}pluginRepositories' % nameSpace))
         if (pluginRepo is None):
             pluginRepo = ElementTree.SubElement(tree.getroot(), 'pluginRepositories')
-        addRepo(pluginRepo, 'pluginRepository', ('vaadin-%s-plugin-staging' % version), repoUrl)
+        addRepo(pluginRepo, 'pluginRepository', ('vaadin-%s-%s' % (version, postfix)), repoUrl)
         tree.write(pomXml, encoding='UTF-8')
     for i in listdir(path):
         file = join(path, i)
         if isdir(file):
-            updateRepositories(join(path, i), repoUrl, version)
+            updateRepositories(join(path, i), repoUrl, version, postfix)

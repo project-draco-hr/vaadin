@@ -1,0 +1,152 @@
+{
+  assignDefault(serverArgs,"webroot","src/main/webapp");
+  assignDefault(serverArgs,"httpPort","" + serverPort);
+  assignDefault(serverArgs,"context","");
+  assignDefault(serverArgs,"slowdown","/run/APP/PUBLISHED/js_label.js");
+  int port=serverPort;
+  try {
+    port=Integer.parseInt(serverArgs.get("httpPort"));
+  }
+ catch (  NumberFormatException e) {
+  }
+  System.out.println("-------------------------------------------------\n" + "Starting Vaadin in " + mode + ".\n"+ "Running in http://localhost:"+ port+ "\n-------------------------------------------------\n");
+  final Server server=new Server();
+  final Connector connector=new SelectChannelConnector();
+  connector.setPort(port);
+  if (serverArgs.containsKey("withssl")) {
+    final SslSocketConnector sslConnector=new SslSocketConnector();
+    sslConnector.setPort(8444);
+    SslContextFactory sslFact=sslConnector.getSslContextFactory();
+    sslFact.setTrustStore(KEYSTORE);
+    sslFact.setTrustStorePassword("password");
+    sslFact.setKeyStorePath(KEYSTORE);
+    sslFact.setKeyManagerPassword("password");
+    sslFact.setKeyStorePassword("password");
+    server.setConnectors(new Connector[]{connector,sslConnector});
+  }
+ else {
+    server.setConnectors(new Connector[]{connector});
+  }
+  final WebAppContext webappcontext=new WebAppContext();
+  webappcontext.setContextPath(serverArgs.get("context"));
+  webappcontext.setWar(serverArgs.get("webroot"));
+  server.setHandler(webappcontext);
+  if (serverArgs.containsKey("slowdown")) {
+    String[] paths=serverArgs.get("slowdown").split(",");
+    for (    String p : paths) {
+      System.out.println("Slowing down: " + p);
+      webappcontext.addFilter(SlowFilter.class,p,EnumSet.of(DispatcherType.REQUEST));
+    }
+  }
+  if (serverArgs.containsKey("cache")) {
+    String[] paths=serverArgs.get("cache").split(",");
+    for (    String p : paths) {
+      System.out.println("Enabling cache for: " + p);
+      webappcontext.addFilter(CacheFilter.class,p,EnumSet.of(DispatcherType.REQUEST));
+    }
+  }
+  if (serverArgs.containsKey("autoreload")) {
+    int interval=1;
+    if (serverArgs.containsKey("scaninterval")) {
+      interval=Integer.parseInt(serverArgs.get("scaninterval"));
+    }
+    List<File> classFolders=new ArrayList<File>();
+    String[] paths=serverArgs.get("autoreload").split(",");
+    if (paths.length == 1 && "all".equals(paths[0])) {
+      ClassLoader cl=server.getClass().getClassLoader();
+      for (      URL u : ((URLClassLoader)cl).getURLs()) {
+        File f=new File(u.getPath());
+        if (f.isDirectory()) {
+          classFolders.add(f);
+        }
+      }
+    }
+ else {
+      for (      String p : paths) {
+        File f=new File(p);
+        if (f.isDirectory()) {
+          classFolders.add(f);
+        }
+      }
+    }
+    if (!classFolders.isEmpty()) {
+      System.out.println("Enabling context auto-reload.\n Scan interval: " + interval + " secs.\n Scanned folders: ");
+      for (      File f : classFolders) {
+        System.out.println("  " + f.getAbsolutePath());
+        webappcontext.setExtraClasspath(f.getAbsolutePath());
+      }
+      System.out.println("");
+      Scanner scanner=new Scanner();
+      scanner.setScanInterval(interval);
+      scanner.setRecursive(true);
+      scanner.addListener(new Scanner.BulkListener(){
+        @Override public void filesChanged(        List<String> filenames) throws Exception {
+          webappcontext.stop();
+          server.stop();
+          webappcontext.start();
+          server.start();
+        }
+      }
+);
+      scanner.setReportExistingFilesOnStartup(false);
+      scanner.setFilenameFilter(new FilenameFilter(){
+        @Override public boolean accept(        File folder,        String name){
+          return name.endsWith(".class");
+        }
+      }
+);
+      scanner.setScanDirs(classFolders);
+      scanner.start();
+      server.getContainer().addBean(scanner);
+    }
+  }
+  webappcontext.start();
+  try {
+    server.start();
+    if (serverArgs.containsKey("shutdownPort")) {
+      int shutdownPort=Integer.parseInt(serverArgs.get("shutdownPort"));
+      final ServerSocket serverSocket=new ServerSocket(shutdownPort,1,InetAddress.getByName("127.0.0.1"));
+      new Thread(){
+        @Override public void run(){
+          try {
+            System.out.println("Waiting for shutdown signal on port " + serverSocket.getLocalPort());
+            Socket accept=serverSocket.accept();
+            serverSocket.close();
+            Thread interruptThread=new Thread(){
+              @Override public void run(){
+                try {
+                  Thread.sleep(5000);
+                  if (!server.isStopped()) {
+                    System.out.println("Jetty still running. Closing JVM.");
+                    dumpThreadStacks();
+                    System.exit(-1);
+                  }
+                }
+ catch (                InterruptedException e) {
+                }
+              }
+            }
+;
+            interruptThread.setDaemon(true);
+            interruptThread.start();
+            server.stop();
+            interruptThread.interrupt();
+            OutputStream outputStream=accept.getOutputStream();
+            outputStream.write(0);
+            outputStream.flush();
+            accept.close();
+          }
+ catch (          Exception e) {
+            e.printStackTrace();
+          }
+        }
+      }
+.start();
+    }
+  }
+ catch (  Exception e) {
+    server.stop();
+    throw e;
+  }
+  return "http://localhost:" + port + serverArgs.get("context");
+}

@@ -1,0 +1,34 @@
+{
+  CheckBox cb=new CheckBox();
+  cb.setConverter(new Converter<Boolean,Boolean>(){
+    @Override public Boolean convertToModel(    Boolean value,    Class<? extends Boolean> targetType,    Locale locale){
+      assertNotNull(value);
+      return value;
+    }
+    @Override public Boolean convertToPresentation(    Boolean value,    Class<? extends Boolean> targetType,    Locale locale){
+      if (value == null) {
+        return false;
+      }
+      return value;
+    }
+    @Override public Class<Boolean> getModelType(){
+      return Boolean.class;
+    }
+    @Override public Class<Boolean> getPresentationType(){
+      return Boolean.class;
+    }
+  }
+);
+  MethodProperty<Boolean> property=new MethodProperty<Boolean>(paulaBean,"deceased");
+  cb.setPropertyDataSource(property);
+  assertEquals(Boolean.FALSE,property.getValue());
+  assertEquals(Boolean.FALSE,cb.getValue());
+  Boolean newDmValue=cb.getConverter().convertToPresentation(cb.getValue(),Boolean.class,new Locale("fi","FI"));
+  assertEquals(Boolean.FALSE,newDmValue);
+  cb.setValue(true);
+  assertEquals(Boolean.TRUE,cb.getValue());
+  assertEquals(Boolean.TRUE,property.getValue());
+  cb.setValue(false);
+  assertEquals(Boolean.FALSE,cb.getValue());
+  assertEquals(Boolean.FALSE,property.getValue());
+}

@@ -1,0 +1,17 @@
+{
+  String browserFactoryClass=System.getProperty("browser.factory");
+  if (browserFactoryClass != null && !browserFactoryClass.trim().isEmpty()) {
+    if (delegate == null) {
+      getLogger().info("Using browser factory " + browserFactoryClass);
+      try {
+        delegate=(TestBenchBrowserFactory)getClass().getClassLoader().loadClass(browserFactoryClass).newInstance();
+      }
+ catch (      Exception e) {
+        getLogger().warning("Failed to instantiate browser factory " + browserFactoryClass);
+        throw new RuntimeException(e);
+      }
+    }
+    return delegate.create(browser);
+  }
+  return doCreate(browser);
+}

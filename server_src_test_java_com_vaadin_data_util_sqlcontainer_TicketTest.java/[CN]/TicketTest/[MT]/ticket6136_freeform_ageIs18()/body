@@ -1,0 +1,57 @@
+{
+  FreeformQuery query=new FreeformQuery("SELECT * FROM people",Arrays.asList("ID"),connectionPool);
+  FreeformStatementDelegate delegate=EasyMock.createMock(FreeformStatementDelegate.class);
+  final ArrayList<Filter> filters=new ArrayList<Filter>();
+  delegate.setFilters(null);
+  EasyMock.expectLastCall().anyTimes();
+  delegate.setOrderBy(EasyMock.isA(List.class));
+  EasyMock.expectLastCall().anyTimes();
+  delegate.setOrderBy(null);
+  EasyMock.expectLastCall().anyTimes();
+  delegate.setFilters(EasyMock.isA(List.class));
+  EasyMock.expectLastCall().andAnswer(new IAnswer<Object>(){
+    @Override public Object answer() throws Throwable {
+      List<Filter> orders=(List<Filter>)EasyMock.getCurrentArguments()[0];
+      filters.clear();
+      filters.addAll(orders);
+      return null;
+    }
+  }
+).anyTimes();
+  EasyMock.expect(delegate.getQueryStatement(EasyMock.anyInt(),EasyMock.anyInt())).andAnswer(new IAnswer<StatementHelper>(){
+    @Override public StatementHelper answer() throws Throwable {
+      Object[] args=EasyMock.getCurrentArguments();
+      int offset=(Integer)(args[0]);
+      int limit=(Integer)(args[1]);
+      return FreeformQueryUtil.getQueryWithFilters(filters,offset,limit);
+    }
+  }
+).anyTimes();
+  EasyMock.expect(delegate.getCountStatement()).andAnswer(new IAnswer<StatementHelper>(){
+    @Override public StatementHelper answer() throws Throwable {
+      StatementHelper sh=new StatementHelper();
+      StringBuffer query=new StringBuffer("SELECT COUNT(*) FROM people");
+      if (!filters.isEmpty()) {
+        query.append(QueryBuilder.getWhereStringForFilters(filters,sh));
+      }
+      sh.setQueryString(query.toString());
+      return sh;
+    }
+  }
+).anyTimes();
+  EasyMock.replay(delegate);
+  query.setDelegate(delegate);
+  SQLContainer container=new SQLContainer(query);
+  Assert.assertEquals(4,container.size());
+  Assert.assertEquals("B??rje",container.getContainerProperty(container.lastItemId(),"NAME").getValue());
+  container.addContainerFilter(new Equal("AGE",18));
+  Assert.assertEquals(1,container.size());
+  Assert.assertEquals("Pelle",container.getContainerProperty(container.firstItemId(),"NAME").getValue());
+  if (SQLTestsConstants.db == DB.ORACLE) {
+    Assert.assertEquals(new BigDecimal(18),container.getContainerProperty(container.firstItemId(),"AGE").getValue());
+  }
+ else {
+    Assert.assertEquals(18,container.getContainerProperty(container.firstItemId(),"AGE").getValue());
+  }
+  EasyMock.verify(delegate);
+}

@@ -1,0 +1,20 @@
+{
+  if (tested.contains(c)) {
+    return;
+  }
+  tested.add(c);
+  if (c == Object.class) {
+    return;
+  }
+  System.out.println("Checking " + c.getName());
+  for (  Method m : c.getDeclaredMethods()) {
+    if (isPrivate(m)) {
+      continue;
+    }
+    if (isFinal(m)) {
+      String error="Class " + c.getName() + " contains a "+ (isPublic(m) ? "public" : "non-public")+ " final method: "+ m.getName();
+      throw new RuntimeException(error);
+    }
+  }
+  ensureNoFinalMethods(c.getSuperclass(),tested);
+}

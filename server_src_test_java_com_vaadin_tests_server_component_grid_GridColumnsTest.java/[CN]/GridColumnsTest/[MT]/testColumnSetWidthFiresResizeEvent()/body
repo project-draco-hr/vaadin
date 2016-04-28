@@ -1,0 +1,14 @@
+{
+  final Column firstColumn=grid.getColumns().get(0);
+  ColumnResizeListener mock=EasyMock.createMock(ColumnResizeListener.class);
+  Capture<ColumnResizeEvent> capturedEvent=new Capture<ColumnResizeEvent>();
+  mock.columnResize(and(capture(capturedEvent),isA(ColumnResizeEvent.class)));
+  EasyMock.expectLastCall().once();
+  EasyMock.replay(mock);
+  grid.addColumnResizeListener(mock);
+  firstColumn.setWidth(firstColumn.getWidth() + 10);
+  EasyMock.verify(mock);
+  ColumnResizeEvent event=capturedEvent.getValue();
+  assertEquals("Event column was not first column.",firstColumn,event.getColumn());
+  assertFalse("Event should not be userOriginated",event.isUserOriginated());
+}

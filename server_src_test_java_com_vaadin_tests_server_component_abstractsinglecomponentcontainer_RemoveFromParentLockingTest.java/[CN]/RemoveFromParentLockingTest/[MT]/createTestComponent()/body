@@ -1,0 +1,20 @@
+{
+  VaadinSession session=new VaadinSession(null){
+    private final ReentrantLock lock=new ReentrantLock();
+    @Override public Lock getLockInstance(){
+      return lock;
+    }
+  }
+;
+  session.getLockInstance().lock();
+  UI ui=new UI(){
+    @Override protected void init(    VaadinRequest request){
+    }
+  }
+;
+  ui.setSession(session);
+  VerticalLayout layout=new VerticalLayout();
+  ui.setContent(layout);
+  session.getLockInstance().unlock();
+  return layout;
+}

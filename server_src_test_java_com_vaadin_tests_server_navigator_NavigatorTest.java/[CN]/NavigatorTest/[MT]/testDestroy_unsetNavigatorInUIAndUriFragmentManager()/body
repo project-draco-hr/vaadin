@@ -1,0 +1,14 @@
+{
+  TestPage page=new TestPage();
+  UI ui=new TestUI(page);
+  TestNavigator navigator=new TestNavigator(ui);
+  Assert.assertTrue("Add URI fragment Page method has not been called",page.addUriFragmentCalled());
+  Assert.assertFalse("Unexpected remove URI fragment Page method call",page.removeUriFragmentCalled());
+  Assert.assertNotNull("Navigator is null in UI",ui.getNavigator());
+  navigator.destroy();
+  Assert.assertTrue("Remove URI fragment Page method has not been called after destroy",page.removeUriFragmentCalled());
+  Assert.assertNull("Navigator is not null in UI after destroy",ui.getNavigator());
+  UriFragmentManager manager=(UriFragmentManager)navigator.getStateManager();
+  manager.uriFragmentChanged(EasyMock.createMock(UriFragmentChangedEvent.class));
+  Assert.fail("Expected null pointer exception after call uriFragmentChanged " + "for destroyed navigator");
+}

@@ -1,0 +1,61 @@
+{
+  if (ver == Version.AGPL) {
+    addLicensedJarToClasspath(productNameAgpl,VAADIN_AGPL);
+    addLicensedJarToClasspath(productNameCval,null);
+  }
+ else {
+    addLicensedJarToClasspath(productNameAgpl,null);
+    addLicensedJarToClasspath(productNameCval,VAADIN_CVAL);
+  }
+  String licenseName=computeLicenseName(productNameCval);
+  if (lic == License.NONE) {
+    System.getProperties().remove(licenseName);
+  }
+ else   if (lic == License.INVALID) {
+    System.setProperty(licenseName,INVALID_KEY);
+  }
+ else {
+    System.setProperty(licenseName,VALID_KEY);
+  }
+  if (val == Validated.NO) {
+    deleteCache(productNameCval);
+  }
+ else {
+    String type=lic == License.EVAL || lic == License.EVAL_EXPIRED ? "evaluation" : null;
+    Boolean expired=lic == License.EVAL_EXPIRED || lic == License.REAL_EXPIRED ? true : null;
+    String key=val == Validated.OLD_KEY ? "oldkey" : null;
+    saveCache(productNameCval,key,expired,null,type);
+  }
+  CvalServer licenseProvider=validLicenseProvider;
+  if (net == Network.OFF) {
+    licenseProvider=unreachableLicenseProvider;
+  }
+ else   if (lic == License.EVAL_EXPIRED || lic == License.REAL_EXPIRED) {
+    licenseProvider=expiredLicenseProvider;
+  }
+ else   if (lic == License.EVAL) {
+    licenseProvider=validEvaluationLicenseProvider;
+  }
+  CvalAddonsChecker addonChecker=new CvalAddonsChecker();
+  addonChecker.setLicenseProvider(licenseProvider).setFilter(".*test.*");
+  captureSystemOut();
+  String testNumber="Test #" + number + " ";
+  String message;
+  try {
+    addonChecker.run();
+    message=readSystemOut();
+    if (res == Compile.NO) {
+      Assert.fail(testNumber + "Exception not thrown:" + message);
+    }
+  }
+ catch (  Exception e) {
+    restoreSystemOut();
+    message=e.getMessage();
+    if (res == Compile.YES) {
+      Assert.fail(testNumber + "Unexpected Exception: " + e.getMessage());
+    }
+  }
+  Assert.assertTrue(testNumber + "Fail:\n" + message+ "\nDoes not match:"+ msg.msg,message.matches("(?s).*" + msg.msg + ".*"));
+  String c=cachedPreferences(productNameCval);
+  Assert.assertTrue(testNumber + "Fail: cacheExists != " + (cached == Cached.YES)+ "\n  "+ c,(c != null) == (cached == Cached.YES));
+}

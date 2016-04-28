@@ -1,0 +1,18 @@
+{
+  Tree tree=createTree(7,15,true);
+  tree.addListener((CollapseListener)this);
+  List<Object> rootIds=new ArrayList<Object>(tree.rootItemIds());
+  assertEquals(7,rootIds.size());
+  assertEquals(7 + 7 * 15 + 7,tree.size());
+  tree.collapseItem(rootIds.get(0));
+  assertEquals(1,collapseCalled);
+  assertEquals(rootIds.get(0),lastCollapsed);
+  collapseCalled=0;
+  tree.collapseItemsRecursively(rootIds.get(1));
+  assertEquals(2,collapseCalled);
+  List<Object> c=new ArrayList<Object>(tree.getChildren(rootIds.get(1)));
+  assertEquals(c.get(4),lastCollapsed);
+  collapseCalled=0;
+  tree.collapseItem(rootIds.get(0));
+  assertEquals(0,collapseCalled);
+}

@@ -1,0 +1,33 @@
+{
+  field=new TextField(){
+    @Override public void markAsDirty(){
+      repainted++;
+      super.markAsDirty();
+    }
+  }
+;
+  formatter=new PropertyFormatter<String>(){
+    @Override public String parse(    String formattedValue) throws Exception {
+      assertEquals(INPUT_VALUE,formattedValue);
+      return PARSED_VALUE;
+    }
+    @Override public String format(    String value){
+      return FORMATTED_VALUE;
+    }
+  }
+;
+  property=new ObjectProperty<String>(ORIGINAL_VALUE);
+  formatter.setPropertyDataSource(property);
+  field.setPropertyDataSource(formatter);
+  listener=new Property.ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      listenerCalled++;
+      assertEquals(1,listenerCalled);
+      assertEquals(FORMATTED_VALUE,event.getProperty().getValue());
+    }
+  }
+;
+  field.addListener(listener);
+  listenerCalled=0;
+  repainted=0;
+}

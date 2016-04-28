@@ -1,0 +1,61 @@
+{
+  addLicensedJarToClasspath(productNameCval,VAADIN_CVAL);
+  addLicensedJarToClasspath(productNameAgpl,null);
+  addLicensedJarToClasspath(productNameApache,null);
+  System.getProperties().remove(licenseName);
+  addonChecker.setLicenseProvider(validLicenseProvider);
+  try {
+    addonChecker.run();
+    Assert.fail();
+  }
+ catch (  InvalidCvalException expected) {
+  }
+  Assert.assertFalse(cacheExists(productNameCval));
+  System.setProperty(licenseName,VALID_KEY);
+  addonChecker.setLicenseProvider(unreachableLicenseProvider);
+  captureSystemOut();
+  addonChecker.run();
+  Assert.assertTrue(readSystemOut().contains("has not been validated"));
+  Assert.assertFalse(cacheExists(productNameCval));
+  System.setProperty(licenseName,VALID_KEY);
+  addonChecker.setLicenseProvider(validLicenseProvider);
+  captureSystemOut();
+  addonChecker.run();
+  Assert.assertTrue(cacheExists(productNameCval));
+  addonChecker.setLicenseProvider(unreachableLicenseProvider);
+  addonChecker.run();
+  System.setProperty(licenseName,VALID_KEY);
+  addonChecker.setLicenseProvider(unreachableLicenseProvider);
+  setCacheFileTs(System.currentTimeMillis() - (GRACE_DAYS_MSECS / 2),"normal");
+  captureSystemOut();
+  addonChecker.run();
+  setCacheFileTs(System.currentTimeMillis() - (GRACE_DAYS_MSECS * 2),"normal");
+  try {
+    addonChecker.run();
+    Assert.fail();
+  }
+ catch (  InvalidCvalException expected) {
+  }
+  System.setProperty(licenseName,VALID_KEY);
+  addonChecker.setLicenseProvider(unreachableLicenseProvider);
+  setCacheFileTs(System.currentTimeMillis() - (GRACE_DAYS_MSECS / 2),"evaluation");
+  try {
+    addonChecker.run();
+    Assert.fail();
+  }
+ catch (  InvalidCvalException expected) {
+    Assert.assertTrue(expected.getMessage().contains("expired"));
+  }
+  System.setProperty(licenseName,VALID_KEY);
+  addonChecker.setLicenseProvider(unreachableLicenseProvider);
+  setCacheFileTs(System.currentTimeMillis() + GRACE_DAYS_MSECS,"evaluation");
+  List<CValUiInfo> uiInfo=addonChecker.run();
+  Assert.assertEquals(1,uiInfo.size());
+  Assert.assertEquals("Test " + productNameCval,uiInfo.get(0).product);
+  Assert.assertEquals("evaluation",uiInfo.get(0).type);
+  System.setProperty(licenseName,VALID_KEY);
+  addonChecker.setLicenseProvider(validLicenseProvider);
+  captureSystemOut();
+  addonChecker.run();
+  Assert.assertTrue(readSystemOut().contains("valid"));
+}

@@ -1,0 +1,31 @@
+{
+  assertEquals(ids.length,container.size());
+  for (int i=0; i < ids.length - 1; i++) {
+    assertNotNull("The item id should not be null",ids[i]);
+  }
+  if (ids.length == 0) {
+    assertNull("The first id is wrong",container.firstItemId());
+    assertNull("The last id is wrong",container.lastItemId());
+    return;
+  }
+  assertEquals("The first id is wrong",ids[0],container.firstItemId());
+  assertEquals("The last id is wrong",ids[ids.length - 1],container.lastItemId());
+  assertTrue(container.isFirstId(container.firstItemId()));
+  assertTrue(container.isLastId(container.lastItemId()));
+  Object ref=container.firstItemId();
+  for (int i=1; i < ids.length; i++) {
+    Object next=container.nextItemId(ref);
+    assertEquals("The id after " + ref + " is wrong",ids[i],next);
+    ref=next;
+  }
+  assertNull("The last id should not have a next id",container.nextItemId(ids[ids.length - 1]));
+  assertNull(container.nextItemId("not-in-container"));
+  ref=container.lastItemId();
+  for (int i=ids.length - 2; i >= 0; i--) {
+    Object prev=container.prevItemId(ref);
+    assertEquals("The id before " + ref + " is wrong",ids[i],prev);
+    ref=prev;
+  }
+  assertNull("The first id should not have a prev id",container.prevItemId(ids[0]));
+  assertNull(container.prevItemId("not-in-container"));
+}

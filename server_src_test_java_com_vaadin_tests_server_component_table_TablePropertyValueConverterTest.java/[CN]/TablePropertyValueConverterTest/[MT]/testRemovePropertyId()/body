@@ -1,0 +1,14 @@
+{
+  Collection<Object> converters=table.getCurrentConverters();
+  assertTrue("Set of converters was empty at the start.",converters.size() > 0);
+  Object firstId=converters.iterator().next();
+  table.removeContainerProperty(firstId);
+  Collection<Object> converters2=table.getCurrentConverters();
+  assertTrue("FirstId was not removed",!converters2.contains(firstId));
+  assertTrue("The number of removed converters was not one.",converters.size() - converters2.size() == 1);
+  for (  Object originalId : converters) {
+    if (!originalId.equals(firstId)) {
+      assertTrue("The wrong converter was removed.",converters2.contains(originalId));
+    }
+  }
+}

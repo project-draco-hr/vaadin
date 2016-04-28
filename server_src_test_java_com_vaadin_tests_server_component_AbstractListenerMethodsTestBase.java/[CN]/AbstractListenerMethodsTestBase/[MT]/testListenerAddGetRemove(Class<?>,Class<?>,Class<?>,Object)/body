@@ -1,0 +1,16 @@
+{
+  Object mockListener1=EasyMock.createMock(listenerClass);
+  Object mockListener2=EasyMock.createMock(listenerClass);
+  verifyListeners(c,eventClass);
+  addListener(c,mockListener1,listenerClass);
+  verifyListeners(c,eventClass,mockListener1);
+  addListener(c,mockListener2,listenerClass);
+  verifyListeners(c,eventClass,mockListener1,mockListener2);
+  if (eventClass.getSuperclass() != null) {
+    verifyListeners(c,eventClass.getSuperclass(),mockListener1,mockListener2);
+  }
+  removeListener(c,mockListener1,listenerClass);
+  verifyListeners(c,eventClass,mockListener2);
+  removeListener(c,mockListener2,listenerClass);
+  verifyListeners(c,eventClass);
+}

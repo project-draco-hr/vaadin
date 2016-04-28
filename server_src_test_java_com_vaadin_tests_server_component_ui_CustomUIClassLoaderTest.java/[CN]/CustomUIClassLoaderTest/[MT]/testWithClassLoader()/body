@@ -1,0 +1,8 @@
+{
+  LoggingClassLoader loggingClassLoader=new LoggingClassLoader();
+  DefaultUIProvider uiProvider=new DefaultUIProvider();
+  Class<? extends UI> uiClass=uiProvider.getUIClass(new UIClassSelectionEvent(createRequestMock(loggingClassLoader)));
+  assertEquals(MyUI.class,uiClass);
+  assertEquals(1,loggingClassLoader.requestedClasses.size());
+  assertEquals(MyUI.class.getName(),loggingClassLoader.requestedClasses.get(0));
+}

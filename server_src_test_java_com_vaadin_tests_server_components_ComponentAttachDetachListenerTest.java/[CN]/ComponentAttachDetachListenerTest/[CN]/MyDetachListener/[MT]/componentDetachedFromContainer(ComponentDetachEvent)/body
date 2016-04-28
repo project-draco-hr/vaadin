@@ -1,0 +1,21 @@
+{
+  detachCounter++;
+  detachedComponent=event.getDetachedComponent();
+  detachedTarget=event.getContainer();
+  Iterator<Component> iter=detachedTarget.iterator();
+  while (iter.hasNext()) {
+    if (iter.next() == detachedComponent) {
+      foundInContainer=true;
+      break;
+    }
+  }
+  if (detachedTarget instanceof AbstractOrderedLayout) {
+    indexOfComponent=((AbstractOrderedLayout)detachedTarget).getComponentIndex(detachedComponent);
+  }
+ else   if (detachedTarget instanceof GridLayout) {
+    componentArea=((GridLayout)detachedTarget).getComponentArea(detachedComponent);
+  }
+ else   if (detachedTarget instanceof AbsoluteLayout) {
+    componentPosition=((AbsoluteLayout)detachedTarget).getPosition(detachedComponent);
+  }
+}

@@ -1,0 +1,18 @@
+{
+  Tree tree=createTree(10,20,false);
+  tree.addListener((ExpandListener)this);
+  List<Object> rootIds=new ArrayList<Object>(tree.rootItemIds());
+  assertEquals(10,rootIds.size());
+  assertEquals(10 + 10 * 20 + 10,tree.size());
+  tree.expandItem(rootIds.get(0));
+  assertEquals(1,expandCalled);
+  assertEquals(rootIds.get(0),lastExpanded);
+  expandCalled=0;
+  tree.expandItemsRecursively(rootIds.get(1));
+  assertEquals(2,expandCalled);
+  List<Object> c=new ArrayList<Object>(tree.getChildren(rootIds.get(1)));
+  assertEquals(c.get(4),lastExpanded);
+  expandCalled=0;
+  tree.expandItem(rootIds.get(0));
+  assertEquals(0,expandCalled);
+}

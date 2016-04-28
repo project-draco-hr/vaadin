@@ -1,0 +1,40 @@
+{
+  Container.Indexed indexed=null;
+  if (container instanceof Container.Indexed) {
+    indexed=(Container.Indexed)container;
+  }
+  List<Object> itemIdList=new ArrayList<Object>(container.getItemIds());
+  assertEquals(expectedSize,container.size());
+  assertEquals(expectedSize,itemIdList.size());
+  Object first=itemIdList.get(0);
+  Object last=itemIdList.get(itemIdList.size() - 1);
+  assertEquals(expectedFirstItemId,first);
+  assertEquals(expectedLastItemId,last);
+  assertFalse(container.containsId(itemIdNotInSet));
+  assertTrue(container.containsId(itemIdInSet));
+  if (checkGetItemNull) {
+    assertNull(container.getItem(itemIdNotInSet));
+  }
+  assertNotNull(container.getItem(itemIdInSet));
+  for (  Object propId : container.getContainerPropertyIds()) {
+    if (checkGetItemNull) {
+      assertNull(container.getContainerProperty(itemIdNotInSet,propId));
+    }
+    assertNotNull(container.getContainerProperty(itemIdInSet,propId));
+  }
+  if (indexed != null) {
+    assertEquals(first,indexed.firstItemId());
+    assertEquals(last,indexed.lastItemId());
+    assertEquals(itemIdList.get(1),indexed.nextItemId(first));
+    assertEquals(itemIdList.get(itemIdList.size() - 2),indexed.prevItemId(last));
+    assertTrue(indexed.isFirstId(first));
+    assertFalse(indexed.isFirstId(last));
+    assertTrue(indexed.isLastId(last));
+    assertFalse(indexed.isLastId(first));
+    assertEquals(0,indexed.indexOfId(first));
+    assertEquals(expectedSize - 1,indexed.indexOfId(last));
+    assertEquals(indexed.getIdByIndex(0),first);
+    assertEquals(indexed.getIdByIndex(expectedSize - 1),last);
+  }
+  Assert.assertNull(container.getItem(itemIdInSet).getItemProperty("notinset"));
+}
