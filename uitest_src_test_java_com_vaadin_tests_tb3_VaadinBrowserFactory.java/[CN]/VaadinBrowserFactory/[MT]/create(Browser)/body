@@ -1,19 +1,17 @@
 {
-switch (browser) {
-case IE8:
-    return createIE(browser,"8");
-case IE9:
-  return createIE(browser,"9");
-case IE10:
-return createIE(browser,"10");
-case IE11:
-return createIE(browser,"11");
-case PHANTOMJS:
-return create(browser,"1",Platform.LINUX);
-case CHROME:
-return create(browser,"40",Platform.VISTA);
-case FIREFOX:
-default :
-return create(browser,"24",Platform.XP);
-}
+  String browserFactoryClass=System.getProperty("browser.factory");
+  if (browserFactoryClass != null && !browserFactoryClass.trim().isEmpty()) {
+    if (delegate == null) {
+      getLogger().info("Using browser factory " + browserFactoryClass);
+      try {
+        delegate=(TestBenchBrowserFactory)getClass().getClassLoader().loadClass(browserFactoryClass).newInstance();
+      }
+ catch (      Exception e) {
+        getLogger().warning("Failed to instantiate browser factory " + browserFactoryClass);
+        throw new RuntimeException(e);
+      }
+    }
+    return delegate.create(browser);
+  }
+  return doCreate(browser);
 }
