@@ -51,17 +51,18 @@
         }
       }
  else {
-        final Object id=itemIdMapper.get(clientSideSelectedKeys[0]);
-        if (id != null) {
-          if (isNullSelectionAllowed() && id.equals(getNullSelectionItemId())) {
+        String clientSelectedKey=clientSideSelectedKeys[0];
+        if ("null".equals(clientSelectedKey) || itemIdMapper.containsKey(clientSelectedKey)) {
+          final Object id=itemIdMapper.get(clientSelectedKey);
+          if (!isNullSelectionAllowed() && id == null) {
+            markAsDirty();
+          }
+ else           if (id != null && id.equals(getNullSelectionItemId())) {
             setValue(null,true);
           }
  else {
             setValue(id,true);
           }
-        }
- else {
-          markAsDirty();
         }
       }
     }
