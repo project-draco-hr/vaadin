@@ -19,11 +19,11 @@
   }
  else   if (header.isOrHasChild(target) && !dragging) {
     if (type != Event.ONDBLCLICK && draggable) {
-      if (type == Event.ONMOUSEDOWN) {
+      if (type == Event.ONMOUSEDOWN || type == Event.ONTOUCHSTART) {
         event.preventDefault();
         headerDragPending=event;
       }
- else       if (type == Event.ONMOUSEMOVE && headerDragPending != null) {
+ else       if ((type == Event.ONMOUSEMOVE || type == Event.ONTOUCHMOVE) && headerDragPending != null) {
         dragging=true;
         onDragEvent(headerDragPending);
         onDragEvent(event);
@@ -45,7 +45,7 @@
  else   if (type == Event.ONCLICK) {
     activateOnClick();
   }
-  if (type == Event.ONMOUSEDOWN && !contentPanel.getElement().isOrHasChild(target) && target != closeBox && target != maximizeRestoreBox) {
+  if ((type == Event.ONMOUSEDOWN || type == Event.ONTOUCHSTART) && !contentPanel.getElement().isOrHasChild(target) && target != closeBox && target != maximizeRestoreBox) {
     contentPanel.focus();
   }
   if (!bubble) {
