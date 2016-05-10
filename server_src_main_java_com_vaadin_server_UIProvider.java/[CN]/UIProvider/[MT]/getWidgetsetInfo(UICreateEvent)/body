@@ -1,0 +1,17 @@
+{
+  Widgetset uiWidgetset=getAnnotationFor(event.getUIClass(),Widgetset.class);
+  if (uiWidgetset != null) {
+    return new WidgetsetInfoImpl(uiWidgetset.value());
+  }
+  WidgetsetInfo info=getWidgetsetClassInfo();
+  if (info != null) {
+    return info;
+  }
+ else {
+    InputStream resource=event.getUIClass().getResourceAsStream("/" + APP_WIDGETSET_NAME + ".gwt.xml");
+    if (resource != null) {
+      return new WidgetsetInfoImpl(false,null,APP_WIDGETSET_NAME);
+    }
+  }
+  return null;
+}
