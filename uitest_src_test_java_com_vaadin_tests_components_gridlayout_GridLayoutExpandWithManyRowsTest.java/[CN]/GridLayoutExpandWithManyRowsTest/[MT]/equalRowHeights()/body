@@ -1,0 +1,15 @@
+{
+  openTestURL();
+  GridLayoutElement gridlayout=$(GridLayoutElement.class).first();
+  List<WebElement> slots=gridlayout.findElements(By.className("v-gridlayout-slot"));
+  Assert.assertEquals(GridLayoutExpandWithManyRows.POPULATED_ROWS,slots.size());
+  int firstRowHeight=slots.get(0).getSize().height;
+  int lastRowHeight=firstRowHeight;
+  for (int i=1; i < GridLayoutExpandWithManyRows.POPULATED_ROWS; i++) {
+    int rowHeight=slots.get(i).getSize().height;
+    Assert.assertTrue(rowHeight <= firstRowHeight);
+    Assert.assertTrue(rowHeight >= firstRowHeight - 2);
+    Assert.assertTrue(rowHeight <= lastRowHeight);
+    lastRowHeight=rowHeight;
+  }
+}

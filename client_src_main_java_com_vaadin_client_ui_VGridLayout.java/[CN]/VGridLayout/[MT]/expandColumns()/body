@@ -1,17 +1,17 @@
 {
   if (!isUndefinedWidth()) {
     int usedSpace=calcColumnUsedSpace();
-    int[] actualExpandRatio=calcColumnExpandRatio();
+    float[] actualExpandRatio=calcColumnExpandRatio();
     int availableSpace=(int)LayoutManager.get(client).getInnerWidthDouble(getElement());
     int excessSpace=availableSpace - usedSpace;
     int distributed=0;
     if (excessSpace > 0) {
-      int expandRatioSum=0;
+      float expandRatioSum=0;
       for (int i=0; i < columnWidths.length; i++) {
         expandRatioSum+=actualExpandRatio[i];
       }
       for (int i=0; i < columnWidths.length; i++) {
-        int ew=excessSpace * actualExpandRatio[i] / expandRatioSum;
+        int ew=(int)(excessSpace * actualExpandRatio[i] / expandRatioSum);
         columnWidths[i]=minColumnWidths[i] + ew;
         distributed+=ew;
       }
