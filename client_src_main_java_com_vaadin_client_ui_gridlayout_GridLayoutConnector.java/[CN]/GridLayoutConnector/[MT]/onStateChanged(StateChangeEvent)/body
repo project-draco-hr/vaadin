@@ -2,4 +2,17 @@
   super.onStateChanged(stateChangeEvent);
   clickEventHandler.handleEventHandlerRegistration();
   getWidget().hideEmptyRowsAndColumns=getState().hideEmptyRowsAndColumns;
+  initSize();
+  for (  Entry<Connector,ChildComponentData> entry : getState().childData.entrySet()) {
+    ComponentConnector child=(ComponentConnector)entry.getKey();
+    Cell cell=getCell(child);
+    ChildComponentData childComponentData=entry.getValue();
+    cell.updateCell(childComponentData);
+  }
+  VGridLayout layout=getWidget();
+  layout.colExpandRatioArray=getState().colExpand;
+  layout.rowExpandRatioArray=getState().rowExpand;
+  layout.updateMarginStyleNames(new MarginInfo(getState().marginsBitmask));
+  layout.updateSpacingStyleName(getState().spacing);
+  getLayoutManager().setNeedsLayout(this);
 }
