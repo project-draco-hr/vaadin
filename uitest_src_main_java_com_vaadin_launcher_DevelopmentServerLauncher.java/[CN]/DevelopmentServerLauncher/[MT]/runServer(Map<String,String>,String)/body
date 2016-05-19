@@ -11,17 +11,17 @@
   }
   System.out.println("-------------------------------------------------\n" + "Starting Vaadin in " + mode + ".\n"+ "Running in http://localhost:"+ port+ "\n-------------------------------------------------\n");
   final Server server=new Server();
-  final Connector connector=new SelectChannelConnector();
+  final ServerConnector connector=new ServerConnector(server);
   connector.setPort(port);
   if (serverArgs.containsKey("withssl")) {
-    final SslSocketConnector sslConnector=new SslSocketConnector();
-    sslConnector.setPort(8444);
-    SslContextFactory sslFact=sslConnector.getSslContextFactory();
-    sslFact.setTrustStore(KEYSTORE);
+    SslContextFactory sslFact=new SslContextFactory();
+    sslFact.setTrustStorePath(KEYSTORE);
     sslFact.setTrustStorePassword("password");
     sslFact.setKeyStorePath(KEYSTORE);
     sslFact.setKeyManagerPassword("password");
     sslFact.setKeyStorePassword("password");
+    ServerConnector sslConnector=new ServerConnector(server,sslFact);
+    sslConnector.setPort(8444);
     server.setConnectors(new Connector[]{connector,sslConnector});
   }
  else {
@@ -97,7 +97,7 @@
 );
       scanner.setScanDirs(classFolders);
       scanner.start();
-      server.getContainer().addBean(scanner);
+      server.addBean(scanner);
     }
   }
   webappcontext.start();
