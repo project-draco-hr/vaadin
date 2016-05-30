@@ -1,0 +1,25 @@
+{
+  GridElement grid=$(GridElement.class).first();
+  Actions action=new Actions(getDriver());
+  List<GridCellElement> headerCells=grid.getHeaderCells(0);
+  Assert.assertEquals("There should be two visible columns",2,headerCells.size());
+  Assert.assertFalse("Gender column should be hidden",containsText("Gender",headerCells));
+  int dragOffset=-100;
+  int headerCellWidth=headerCells.get(0).getSize().getWidth();
+  dragResizeColumn(headerCells.get(0),1,dragOffset);
+  double delta=BrowserUtil.isIE8(getDesiredCapabilities()) ? 5d : 0;
+  Assert.assertEquals("Column width should've changed by " + dragOffset + "px",headerCellWidth + dragOffset,headerCells.get(0).getSize().getWidth(),delta);
+  WebElement menuButton=grid.findElement(By.className("v-contextmenu")).findElement(By.tagName("button"));
+  action.click(menuButton).perform();
+  WebElement sidebarPopup=findElement(By.className("v-grid-sidebar-popup"));
+  WebElement visibilityToggle=findElementByText("Gender",sidebarPopup.findElements(By.className("gwt-MenuItem")));
+  action.click(visibilityToggle).perform();
+  headerCells=grid.getHeaderCells(0);
+  Assert.assertEquals("There should be three visible columns",3,headerCells.size());
+  Assert.assertTrue("Gender column should be visible",containsText("Gender",headerCells));
+  int widthSum=0;
+  for (  GridCellElement e : headerCells) {
+    widthSum+=e.getSize().getWidth();
+  }
+  Assert.assertEquals("Gender column should take up the remaining space",grid.getHeader().getSize().getWidth(),widthSum,1d);
+}
