@@ -4,7 +4,17 @@
     super.setHeight(height);
   }
  else {
-    super.setHeight(DEFAULT_HEIGHT);
+    if (getHeightMode() == HeightMode.UNDEFINED) {
+      int newHeightByRows=body.getRowCount();
+      if (heightByRows != newHeightByRows) {
+        heightByRows=newHeightByRows;
+        applyHeightByRows();
+      }
+      return;
+    }
+ else {
+      super.setHeight(DEFAULT_HEIGHT);
+    }
   }
   recalculateElementSizes();
   if (escalatorRowsBefore != body.visualRowOrder.size()) {

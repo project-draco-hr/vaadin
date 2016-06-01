@@ -1,11 +1,15 @@
 {
-  if (heightMode != HeightMode.ROW) {
+  if (heightMode != HeightMode.ROW && heightMode != HeightMode.UNDEFINED) {
     return;
   }
   double headerHeight=header.getHeightOfSection();
   double footerHeight=footer.getHeightOfSection();
   double bodyHeight=body.getDefaultRowHeight() * heightByRows;
   double scrollbar=horizontalScrollbar.showsScrollHandle() ? horizontalScrollbar.getScrollbarThickness() : 0;
-  double totalHeight=headerHeight + bodyHeight + scrollbar+ footerHeight;
+  double spacerHeight=0;
+  if (heightMode == HeightMode.UNDEFINED) {
+    spacerHeight=body.spacerContainer.getSpacerHeightsSum();
+  }
+  double totalHeight=headerHeight + bodyHeight + spacerHeight+ scrollbar+ footerHeight;
   setHeightInternal(totalHeight + "px");
 }

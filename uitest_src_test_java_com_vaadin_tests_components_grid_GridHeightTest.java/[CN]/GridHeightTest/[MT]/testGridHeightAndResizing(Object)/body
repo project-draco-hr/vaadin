@@ -1,0 +1,45 @@
+{
+  Map<AssertionError,Object[]> errors=new HashMap<AssertionError,Object[]>();
+  String caption;
+  if (GridHeight.ROW3.equals(gridHeight)) {
+    caption=gridHeight + " rows";
+  }
+ else {
+    caption=(String)gridHeight;
+  }
+  $(OptionGroupElement.class).id("gridHeightSelector").selectByText(caption);
+  for (  String gridWidth : GridHeight.gridWidths) {
+    $(OptionGroupElement.class).id("gridWidthSelector").selectByText(gridWidth);
+    for (    String detailsRowHeight : GridHeight.detailsRowHeights) {
+      $(OptionGroupElement.class).id("detailsHeightSelector").selectByText(detailsRowHeight);
+      sleep(500);
+      GridElement grid=$(GridElement.class).first();
+      int initialHeight=grid.getSize().getHeight();
+      try {
+        assertGridHeight(getExpectedInitialHeight(gridHeight),initialHeight);
+      }
+ catch (      AssertionError e) {
+        errors.put(e,new Object[]{gridHeight,gridWidth,detailsRowHeight,"initial"});
+      }
+      grid.getRow(2).click(5,5);
+      waitForElementPresent(By.id("lbl1"));
+      int openHeight=grid.getSize().getHeight();
+      try {
+        assertGridHeight(getExpectedOpenedHeight(gridHeight,detailsRowHeight),openHeight);
+      }
+ catch (      AssertionError e) {
+        errors.put(e,new Object[]{gridHeight,gridWidth,detailsRowHeight,"opened"});
+      }
+      grid.getRow(2).click(5,5);
+      waitForElementNotPresent(By.id("lbl1"));
+      int afterHeight=grid.getSize().getHeight();
+      try {
+        assertThat("Unexpected Grid Height",afterHeight,is(initialHeight));
+      }
+ catch (      AssertionError e) {
+        errors.put(e,new Object[]{gridHeight,gridWidth,detailsRowHeight,"closed"});
+      }
+    }
+  }
+  return errors;
+}

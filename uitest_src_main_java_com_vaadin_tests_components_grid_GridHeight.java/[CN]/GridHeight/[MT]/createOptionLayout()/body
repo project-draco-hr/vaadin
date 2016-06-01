@@ -1,0 +1,56 @@
+{
+  HorizontalLayout optionLayout=new HorizontalLayout();
+  OptionGroup gridHeightSelector=new OptionGroup("Grid height",Arrays.<Object>asList(gridHeights));
+  gridHeightSelector.setId("gridHeightSelector");
+  gridHeightSelector.setItemCaption(ROW3,ROW3 + " rows");
+  gridHeightSelector.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      Object value=event.getProperty().getValue();
+      if (UNDEFINED.equals(value)) {
+        grid.setHeightUndefined();
+        grid.setHeightMode(HeightMode.UNDEFINED);
+      }
+ else       if (FULL.equals(value)) {
+        grid.setHeight("100%");
+        grid.setHeightMode(HeightMode.CSS);
+      }
+ else       if (ROW3.equals(value)) {
+        grid.setHeightByRows(ROW3);
+        grid.setHeightMode(HeightMode.ROW);
+      }
+    }
+  }
+);
+  gridHeightSelector.setValue(UNDEFINED);
+  optionLayout.addComponent(gridHeightSelector);
+  OptionGroup gridWidthSelector=new OptionGroup("Grid width",Arrays.asList(gridWidths));
+  gridWidthSelector.setId("gridWidthSelector");
+  gridWidthSelector.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      Object value=event.getProperty().getValue();
+      if (UNDEFINED.equals(value)) {
+        grid.setWidthUndefined();
+      }
+ else       if (FULL.equals(value)) {
+        grid.setWidth("100%");
+      }
+    }
+  }
+);
+  gridWidthSelector.setValue(UNDEFINED);
+  optionLayout.addComponent(gridWidthSelector);
+  detailsHeightSelector=new OptionGroup("Details row height",Arrays.asList(detailsRowHeights));
+  detailsHeightSelector.setId("detailsHeightSelector");
+  detailsHeightSelector.addValueChangeListener(new ValueChangeListener(){
+    @Override public void valueChange(    ValueChangeEvent event){
+      Object value=event.getProperty().getValue();
+      for (      VerticalLayout detailsLayout : detailsLayouts.values()) {
+        setDetailsHeight(detailsLayout,value);
+      }
+    }
+  }
+);
+  detailsHeightSelector.setValue(PX100);
+  optionLayout.addComponent(detailsHeightSelector);
+  return optionLayout;
+}

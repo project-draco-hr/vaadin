@@ -1,0 +1,28 @@
+{
+  grid=new Grid();
+  grid.addColumn("name",String.class);
+  grid.addColumn("born",Integer.class);
+  grid.addRow("Nicolaus Copernicus",1543);
+  grid.addRow("Galileo Galilei",1564);
+  for (int i=0; i < 1; ++i) {
+    grid.addRow("Johannes Kepler",1571);
+  }
+  grid.setDetailsGenerator(new DetailsGenerator(){
+    @Override public Component getDetails(    final RowReference rowReference){
+      if (!detailsLayouts.containsKey(rowReference.getItemId())) {
+        createDetailsLayout(rowReference.getItemId());
+      }
+      return detailsLayouts.get(rowReference.getItemId());
+    }
+  }
+);
+  grid.addItemClickListener(new ItemClickListener(){
+    @Override public void itemClick(    final ItemClickEvent event){
+      final Object itemId=event.getItemId();
+      grid.setDetailsVisible(itemId,!grid.isDetailsVisible(itemId));
+    }
+  }
+);
+  addComponent(createOptionLayout());
+  addComponent(grid);
+}
