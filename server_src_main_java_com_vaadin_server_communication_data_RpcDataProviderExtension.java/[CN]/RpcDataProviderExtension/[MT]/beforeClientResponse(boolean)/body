@@ -6,17 +6,25 @@
     pushRowData(0,numberOfRows,0,0);
   }
  else {
-    for (    Runnable r : rowChanges) {
-      r.run();
+    if (rowChanges != null) {
+      for (      Runnable r : rowChanges) {
+        r.run();
+      }
     }
     if (refreshCache) {
-      updatedItemIds.addAll(activeItemHandler.getActiveItemIds());
+      for (      Object itemId : activeItemHandler.getActiveItemIds()) {
+        updateRowData(itemId);
+      }
     }
   }
   internalUpdateRows(updatedItemIds);
-  rowChanges.clear();
+  if (rowChanges != null) {
+    rowChanges.clear();
+  }
+  if (updatedItemIds != null) {
+    updatedItemIds.clear();
+  }
   refreshCache=false;
-  updatedItemIds.clear();
   bareItemSetTriggeredSizeChange=false;
   super.beforeClientResponse(initial);
 }
