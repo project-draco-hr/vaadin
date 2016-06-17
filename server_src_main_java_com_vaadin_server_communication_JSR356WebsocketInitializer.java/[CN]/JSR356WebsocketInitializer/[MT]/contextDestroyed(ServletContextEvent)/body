@@ -1,2 +1,13 @@
 {
+  ServletContext servletContext=sce.getServletContext();
+  Enumeration<String> attributeNames=servletContext.getAttributeNames();
+  while (attributeNames.hasMoreElements()) {
+    String attributeName=attributeNames.nextElement();
+    if (isAtmosphereFrameworkAttribute(attributeName)) {
+      Object value=servletContext.getAttribute(attributeName);
+      if (value instanceof AtmosphereFramework) {
+        ((AtmosphereFramework)value).destroy();
+      }
+    }
+  }
 }
