@@ -18,7 +18,7 @@
   for (final Iterator<?> it=uidl.getChildIterator(); it.hasNext(); ) {
     final UIDL opUidl=(UIDL)it.next();
     String itemHtml=opUidl.getStringAttribute("caption");
-    if (!htmlContentAllowed) {
+    if (!isHtmlContentAllowed()) {
       itemHtml=WidgetUtil.escapeHTML(itemHtml);
     }
     String iconUrl=opUidl.getStringAttribute("icon");
@@ -28,7 +28,7 @@
     }
     String key=opUidl.getStringAttribute("key");
     CheckBox op=keysToOptions.get(key);
-    if ((op == null) || (htmlContentAllowed != wasHtmlContentAllowed) || (isMultiselect() != wasMultiselect)) {
+    if ((op == null) || (isHtmlContentAllowed() != wasHtmlContentAllowed) || (isMultiselect() != wasMultiselect)) {
       if (isMultiselect()) {
         op=new VCheckBox();
       }
@@ -59,6 +59,6 @@
       panel.add(wid);
     }
   }
-  wasHtmlContentAllowed=htmlContentAllowed;
+  wasHtmlContentAllowed=isHtmlContentAllowed();
   wasMultiselect=isMultiselect();
 }
