@@ -1,0 +1,37 @@
+{
+  panel.setHeight("200px");
+  tabSheetInSplitPanel=new TabSheet();
+  tabSheetInSplitPanel.setWidth(100,Unit.PERCENTAGE);
+  for (int i=0; i < 100; i++) {
+    tabSheetInSplitPanel.addTab(new Label("Tab " + i),"Tab " + i);
+  }
+  Layout buttonLayout=new VerticalLayout();
+  buttonLayout.addComponent(new Button("Hide TabSheet",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      panel.setSplitPosition(100,Unit.PERCENTAGE);
+      panel.removeComponent(tabSheetInSplitPanel);
+    }
+  }
+));
+  Button showLast=new Button("Show TabSheet and select last tab",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      panel.setSecondComponent(tabSheetInSplitPanel);
+      panel.setSplitPosition(250,Unit.PIXELS);
+      tabSheetInSplitPanel.setSelectedTab(tabSheetInSplitPanel.getComponentCount() - 1);
+    }
+  }
+);
+  showLast.setId(BTN_SELECT_LAST_TAB);
+  buttonLayout.addComponent(showLast);
+  buttonLayout.addComponent(new Button("Show TabSheet and select first tab",new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      panel.setSecondComponent(tabSheetInSplitPanel);
+      panel.setSplitPosition(250,Unit.PIXELS);
+      tabSheetInSplitPanel.setSelectedTab(0);
+    }
+  }
+));
+  panel.setFirstComponent(buttonLayout);
+  panel.setSplitPosition(100,Unit.PERCENTAGE);
+  addComponent(panel);
+}
