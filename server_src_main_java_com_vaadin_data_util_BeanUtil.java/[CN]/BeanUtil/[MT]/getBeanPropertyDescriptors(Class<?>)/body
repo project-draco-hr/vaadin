@@ -1,0 +1,15 @@
+{
+  if (beanType.isInterface()) {
+    List<PropertyDescriptor> propertyDescriptors=new ArrayList<>();
+    for (    Class<?> cls : beanType.getInterfaces()) {
+      propertyDescriptors.addAll(getBeanPropertyDescriptors(cls));
+    }
+    BeanInfo info=Introspector.getBeanInfo(beanType);
+    propertyDescriptors.addAll(getPropertyDescriptors(info));
+    return propertyDescriptors;
+  }
+ else {
+    BeanInfo info=Introspector.getBeanInfo(beanType);
+    return getPropertyDescriptors(info);
+  }
+}

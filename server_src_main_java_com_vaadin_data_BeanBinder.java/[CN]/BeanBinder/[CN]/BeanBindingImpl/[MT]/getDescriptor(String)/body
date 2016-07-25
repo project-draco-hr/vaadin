@@ -1,0 +1,17 @@
+{
+  final Class<?> beanType=getBinder().beanType;
+  PropertyDescriptor descriptor=null;
+  try {
+    descriptor=BeanUtil.getPropertyDescriptor(beanType,propertyName);
+  }
+ catch (  IntrospectionException ie) {
+    throw new IllegalArgumentException("Could not resolve bean property name (see the cause): " + beanType.getName() + "."+ propertyName,ie);
+  }
+  if (descriptor == null) {
+    throw new IllegalArgumentException("Could not resolve bean property name (please check spelling and getter visibility): " + beanType.getName() + "."+ propertyName);
+  }
+  if (descriptor.getReadMethod() == null) {
+    throw new IllegalArgumentException("Bean property has no accessible getter: " + beanType.getName() + "."+ propertyName);
+  }
+  return descriptor;
+}
