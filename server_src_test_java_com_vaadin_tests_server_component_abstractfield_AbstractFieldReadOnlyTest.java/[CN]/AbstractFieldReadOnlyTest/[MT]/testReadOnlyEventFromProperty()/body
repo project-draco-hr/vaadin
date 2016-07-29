@@ -1,0 +1,14 @@
+{
+  final Label valueStore=new Label("");
+  TextField tf=new TextField();
+  tf.addReadOnlyStatusChangeListener(new ReadOnlyStatusChangeListener(){
+    @Override public void readOnlyStatusChange(    ReadOnlyStatusChangeEvent event){
+      valueStore.setValue("event received!");
+    }
+  }
+);
+  tf.setPropertyDataSource(new MethodProperty<String>(paulaBean,"firstName"));
+  assertTrue(valueStore.getValue().isEmpty());
+  tf.getPropertyDataSource().setReadOnly(true);
+  assertFalse(valueStore.getValue().isEmpty());
+}
