@@ -1,11 +1,11 @@
 {
   Class<?> objectClass=objectWithMemberFields.getClass();
   for (  java.lang.reflect.Field memberField : getFieldsInDeclareOrder(objectClass)) {
-    if (!Field.class.isAssignableFrom(memberField.getType())) {
+    if (!LegacyField.class.isAssignableFrom(memberField.getType())) {
       continue;
     }
     PropertyId propertyIdAnnotation=memberField.getAnnotation(PropertyId.class);
-    Class<? extends Field> fieldType=(Class<? extends Field>)memberField.getType();
+    Class<? extends LegacyField> fieldType=(Class<? extends LegacyField>)memberField.getType();
     Object propertyId=null;
     if (propertyIdAnnotation != null) {
       propertyId=propertyIdAnnotation.value();
@@ -28,9 +28,9 @@
  catch (    BindException e) {
       continue;
     }
-    Field<?> field;
+    LegacyField<?> field;
     try {
-      field=(Field<?>)ReflectTools.getJavaFieldValue(objectWithMemberFields,memberField,Field.class);
+      field=(LegacyField<?>)ReflectTools.getJavaFieldValue(objectWithMemberFields,memberField,LegacyField.class);
     }
  catch (    Exception e) {
       continue;
