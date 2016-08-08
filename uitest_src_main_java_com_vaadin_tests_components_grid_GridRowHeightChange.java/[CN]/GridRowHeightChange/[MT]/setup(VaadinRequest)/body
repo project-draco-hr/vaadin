@@ -1,0 +1,29 @@
+{
+  Grid grid=new Grid();
+  grid.addColumn("Header");
+  for (int i=1; i <= 10; i++) {
+    grid.addRow("row_" + i);
+  }
+  grid.setHeightMode(HeightMode.ROW);
+  grid.setHeightByRows(10);
+  VerticalLayout tab=new VerticalLayout();
+  TabSheet tabSheet=new TabSheet();
+  tabSheet.setWidthUndefined();
+  tabSheet.addTab(tab,"Tab");
+  tab.addComponent(grid);
+  NativeSelect themeSelector=new NativeSelect("Theme selector",themes);
+  themeSelector.select("reindeer");
+  themeSelector.setNullSelectionAllowed(false);
+  themeSelector.addValueChangeListener(new Property.ValueChangeListener(){
+    @Override public void valueChange(    Property.ValueChangeEvent event){
+      setTheme((String)event.getProperty().getValue());
+    }
+  }
+);
+  VerticalLayout layout=new VerticalLayout();
+  layout.setSpacing(true);
+  layout.setSizeUndefined();
+  layout.addComponent(themeSelector);
+  layout.addComponent(tabSheet);
+  addComponent(layout);
+}

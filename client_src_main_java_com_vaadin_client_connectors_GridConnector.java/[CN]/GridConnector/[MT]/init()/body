@@ -60,5 +60,12 @@
   ConnectorFocusAndBlurHandler.addHandlers(this);
   getWidget().setDetailsGenerator(customDetailsGenerator);
   getLayoutManager().registerDependency(this,getWidget().getElement());
+  getWidget().addRowHeightChangedHandler(new RowHeightChangedHandler(){
+    @Override public void onRowHeightChanged(    RowHeightChangedEvent event){
+      getLayoutManager().setNeedsMeasureRecursively(GridConnector.this);
+      getLayoutManager().layoutNow();
+    }
+  }
+);
   layout();
 }
