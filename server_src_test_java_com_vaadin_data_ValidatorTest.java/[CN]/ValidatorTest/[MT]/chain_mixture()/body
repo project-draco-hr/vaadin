@@ -1,0 +1,27 @@
+{
+  Validator<String> first=new Validator<String>(){
+    @Override public Result<String> apply(    String value){
+      if (value == null) {
+        return Result.error("Cannot be null");
+      }
+      return Result.ok(value);
+    }
+  }
+;
+  Validator<String> second=new Validator<String>(){
+    @Override public Result<String> apply(    String value){
+      if (value != null && value.isEmpty()) {
+        return Result.error("Cannot be empty");
+      }
+      return Result.ok(value);
+    }
+  }
+;
+  Validator<String> chain=first.chain(second);
+  Result<String> result=chain.apply("bar");
+  Assert.assertFalse(result.isError());
+  result=chain.apply(null);
+  Assert.assertTrue(result.isError());
+  result=chain.apply("");
+  Assert.assertTrue(result.isError());
+}
