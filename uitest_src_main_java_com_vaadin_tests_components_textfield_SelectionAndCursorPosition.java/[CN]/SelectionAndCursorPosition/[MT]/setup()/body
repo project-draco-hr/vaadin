@@ -1,2 +1,49 @@
 {
+  FormLayout fl=new FormLayout();
+  Panel panel=new Panel(fl);
+  panel.setCaption("Hackers panel");
+  CheckBox ml=new CheckBox("Multiline");
+  ml.setImmediate(true);
+  fl.addComponent(ml);
+  Button b=new Button("Select all ( selectAll() )");
+  b.addListener(new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      activeComponent.selectAll();
+    }
+  }
+);
+  fl.addComponent(b);
+  HorizontalLayout selectRange=new HorizontalLayout();
+  selectRange.setCaption("Select range of text ( setSelectionRange(int start, int lengt) )");
+  final TextField start=new TextField("From:");
+  final TextField length=new TextField("Selection length:");
+  b=new Button("select");
+  b.addListener(new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      int startPos=Integer.parseInt(start.getValue());
+      int lenght=Integer.parseInt(length.getValue());
+      activeComponent.setSelection(startPos,lenght);
+    }
+  }
+);
+  selectRange.addComponent(start);
+  selectRange.addComponent(length);
+  selectRange.addComponent(b);
+  fl.addComponent(selectRange);
+  HorizontalLayout setCursorPosition=new HorizontalLayout();
+  final TextField pos=new TextField("Position:");
+  b=new Button("set");
+  b.addListener(new ClickListener(){
+    @Override public void buttonClick(    ClickEvent event){
+      int startPos=Integer.parseInt(pos.getValue());
+      activeComponent.setCursorPosition(startPos);
+    }
+  }
+);
+  setCursorPosition.addComponent(pos);
+  setCursorPosition.addComponent(b);
+  setCursorPosition.setCaption("Set cursor position ( setCursorPosition(int pos) )");
+  fl.addComponent(setCursorPosition);
+  getLayout().addComponent(textField);
+  getLayout().addComponent(panel);
 }
