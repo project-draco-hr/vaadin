@@ -1,0 +1,18 @@
+{
+  if (converter != null) {
+    PRESENTATIONTYPE presentation=converter.convertToPresentation(modelValue,presentationType,locale);
+    if (presentation != null && !presentationType.isInstance(presentation)) {
+      throw new LegacyConverter.ConversionException("Converter returned an object of type " + presentation.getClass().getName() + " when expecting "+ presentationType.getName());
+    }
+    return presentation;
+  }
+  if (modelValue == null) {
+    return null;
+  }
+  if (presentationType.isAssignableFrom(modelValue.getClass())) {
+    return (PRESENTATIONTYPE)modelValue;
+  }
+ else {
+    throw new LegacyConverter.ConversionException("Unable to convert value of type " + modelValue.getClass().getName() + " to presentation type "+ presentationType+ ". No converter is set and the types are not compatible.");
+  }
+}

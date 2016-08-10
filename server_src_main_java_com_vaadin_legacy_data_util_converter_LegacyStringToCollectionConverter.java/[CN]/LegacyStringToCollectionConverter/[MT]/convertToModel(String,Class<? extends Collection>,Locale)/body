@@ -1,0 +1,16 @@
+{
+  if (value == null) {
+    return null;
+  }
+  int index=value.indexOf(delimiter);
+  int previous=0;
+  Collection result=factory.createCollection(targetType);
+  LegacyConverter converter=tokenConverter;
+  while (index != -1) {
+    collectToken(value.substring(previous,index),result,converter,locale);
+    previous=index + delimiter.length();
+    index=value.indexOf(delimiter,previous);
+  }
+  collectToken(value.substring(previous),result,converter,locale);
+  return result;
+}

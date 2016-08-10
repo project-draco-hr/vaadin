@@ -9,11 +9,11 @@
       ;
     }
   }
-  Converter<String,Boolean> booleanConverter=new Converter<String,Boolean>(){
-    @Override public Boolean convertToModel(    String value,    Class<? extends Boolean> targetType,    Locale locale) throws Converter.ConversionException {
+  LegacyConverter<String,Boolean> booleanConverter=new LegacyConverter<String,Boolean>(){
+    @Override public Boolean convertToModel(    String value,    Class<? extends Boolean> targetType,    Locale locale) throws LegacyConverter.ConversionException {
       return !value.equalsIgnoreCase("false");
     }
-    @Override public String convertToPresentation(    Boolean value,    Class<? extends String> targetType,    Locale locale) throws Converter.ConversionException {
+    @Override public String convertToPresentation(    Boolean value,    Class<? extends String> targetType,    Locale locale) throws LegacyConverter.ConversionException {
       if (value.booleanValue()) {
         return "";
       }
@@ -34,7 +34,7 @@
   final DecimalFormatSymbols symbols=new DecimalFormatSymbols(new Locale("en_US"));
   final DecimalFormat fmt=new DecimalFormat("0.###",symbols);
   fmt.setGroupingUsed(false);
-  Converter<String,?> floatConverter=new StringToFloatConverter(){
+  LegacyConverter<String,?> floatConverter=new LegacyStringToFloatConverter(){
     @Override protected NumberFormat getFormat(    Locale locale){
       return fmt;
     }
@@ -42,7 +42,7 @@
 ;
   converterMap.put(Float.class,floatConverter);
   converterMap.put(float.class,floatConverter);
-  Converter<String,?> doubleConverter=new StringToDoubleConverter(){
+  LegacyConverter<String,?> doubleConverter=new LegacyStringToDoubleConverter(){
     @Override protected NumberFormat getFormat(    Locale locale){
       return fmt;
     }
@@ -53,17 +53,17 @@
   final DecimalFormat bigDecimalFmt=new DecimalFormat("0.###",symbols);
   bigDecimalFmt.setGroupingUsed(false);
   bigDecimalFmt.setParseBigDecimal(true);
-  converterMap.put(BigDecimal.class,new StringToBigDecimalConverter(){
+  converterMap.put(BigDecimal.class,new LegacyStringToBigDecimalConverter(){
     @Override protected NumberFormat getFormat(    Locale locale){
       return bigDecimalFmt;
     }
   }
 );
-  converterMap.put(String.class,new Converter<String,String>(){
-    @Override public String convertToModel(    String value,    Class<? extends String> targetType,    Locale locale) throws Converter.ConversionException {
+  converterMap.put(String.class,new LegacyConverter<String,String>(){
+    @Override public String convertToModel(    String value,    Class<? extends String> targetType,    Locale locale) throws LegacyConverter.ConversionException {
       return value;
     }
-    @Override public String convertToPresentation(    String value,    Class<? extends String> targetType,    Locale locale) throws Converter.ConversionException {
+    @Override public String convertToPresentation(    String value,    Class<? extends String> targetType,    Locale locale) throws LegacyConverter.ConversionException {
       return value;
     }
     @Override public Class<String> getModelType(){
@@ -74,8 +74,8 @@
     }
   }
 );
-  Converter<String,Character> charConverter=new DesignToStringConverter<Character>(Character.class){
-    @Override public Character convertToModel(    String value,    Class<? extends Character> targetType,    Locale locale) throws Converter.ConversionException {
+  LegacyConverter<String,Character> charConverter=new DesignToStringConverter<Character>(Character.class){
+    @Override public Character convertToModel(    String value,    Class<? extends Character> targetType,    Locale locale) throws LegacyConverter.ConversionException {
       return value.charAt(0);
     }
   }
