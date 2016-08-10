@@ -1,0 +1,18 @@
+{
+  if (mode != CombinationMode.AND) {
+    return null;
+  }
+  final HashSet<Validator> found=new HashSet<Validator>();
+  for (  Validator v : validators) {
+    if (validatorType.isAssignableFrom(v.getClass())) {
+      found.add(v);
+    }
+    if (v instanceof LegacyCompositeValidator && ((LegacyCompositeValidator)v).getMode() == MODE_AND) {
+      final Collection<Validator> c=((LegacyCompositeValidator)v).getSubValidators(validatorType);
+      if (c != null) {
+        found.addAll(c);
+      }
+    }
+  }
+  return found.isEmpty() ? null : found;
+}
