@@ -1,0 +1,21 @@
+{
+  if (value != null) {
+    dateString=value.toString();
+  }
+ else {
+    dateString=null;
+  }
+  this.value=value;
+  setComponentError(null);
+  if (!uiHasValidDateString) {
+    uiHasValidDateString=true;
+    setComponentError(new UserError(currentParseErrorMessage));
+  }
+ else {
+    DateRangeValidator validator=new DateRangeValidator(getDateOutOfRangeMessage(),getRangeStart(getResolution()),getRangeEnd(getResolution()),getResolution());
+    Result<Date> result=validator.apply(value);
+    if (result.isError()) {
+      setComponentError(new UserError(getDateOutOfRangeMessage()));
+    }
+  }
+}
