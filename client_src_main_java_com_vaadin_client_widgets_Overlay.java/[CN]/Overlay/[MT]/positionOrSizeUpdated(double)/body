@@ -16,25 +16,15 @@
     getOffsetHeight();
     getOffsetWidth();
   }
-  if (isShadowEnabled() || needsShimElement()) {
+  if (needsShimElement()) {
     PositionAndSize positionAndSize=new PositionAndSize(getActualLeft(),getActualTop(),getOffsetWidth(),getOffsetHeight());
     positionAndSize.setAnimationFromCenterProgress(progress);
     Element container=getElement().getParentElement();
-    if (isShadowEnabled()) {
-      updateShadowPosition(progress,zIndex,positionAndSize);
-      if (shadow.getParentElement() == null) {
-        container.insertBefore(shadow,getElement());
-        sinkShadowEvents();
-      }
-    }
     if (needsShimElement()) {
       updateShimPosition(positionAndSize);
       if (shimElement.getParentElement() == null) {
         container.insertBefore(shimElement,getElement());
       }
     }
-  }
-  if (BrowserInfo.get().isIE9() || BrowserInfo.get().isIE10()) {
-    WidgetUtil.forceIERedraw(getElement());
   }
 }
