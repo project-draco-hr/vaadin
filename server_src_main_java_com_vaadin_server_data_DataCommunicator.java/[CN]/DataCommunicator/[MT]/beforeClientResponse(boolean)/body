@@ -1,0 +1,39 @@
+{
+  super.beforeClientResponse(initial);
+  if (getDataSource() == null) {
+    return;
+  }
+  Set<Object> filters=Collections.emptySet();
+  if (initial || reset) {
+    int dataSourceSize=getDataSource().size(new Query(filters));
+    rpc.reset(dataSourceSize);
+  }
+  if (!pushRows.isEmpty()) {
+    int offset=pushRows.getStart();
+    int limit=pushRows.length();
+    Stream<T> rowsToPush;
+    if (getDataSource().isInMemory()) {
+      rowsToPush=getDataSource().apply(new Query());
+      if (inMemorySorting != null) {
+        rowsToPush=rowsToPush.sorted(inMemorySorting);
+      }
+      rowsToPush=rowsToPush.skip(offset).limit(limit);
+    }
+ else {
+      Query query=new Query(offset,limit,backEndSorting,filters);
+      rowsToPush=getDataSource().apply(query);
+    }
+    pushData(offset,rowsToPush);
+  }
+  if (!updatedData.isEmpty()) {
+    JsonArray dataArray=Json.createArray();
+    int i=0;
+    for (    T data : updatedData) {
+      dataArray.set(i++,getDataObject(data));
+    }
+    rpc.updateData(dataArray);
+  }
+  pushRows=Range.withLength(0,0);
+  reset=false;
+  updatedData.clear();
+}

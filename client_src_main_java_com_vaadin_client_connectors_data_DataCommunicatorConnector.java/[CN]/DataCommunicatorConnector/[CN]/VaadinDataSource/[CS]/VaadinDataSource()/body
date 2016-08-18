@@ -1,0 +1,21 @@
+{
+  registerRpc(DataCommunicatorClientRpc.class,new DataCommunicatorClientRpc(){
+    @Override public void reset(    int size){
+      resetDataAndSize(size);
+    }
+    @Override public void setData(    int firstIndex,    JsonArray data){
+      ArrayList<JsonObject> rows=new ArrayList<JsonObject>(data.length());
+      for (int i=0; i < data.length(); i++) {
+        JsonObject rowObject=data.getObject(i);
+        rows.add(rowObject);
+      }
+      setRowData(firstIndex,rows);
+    }
+    @Override public void updateData(    JsonArray data){
+      for (int i=0; i < data.length(); ++i) {
+        updateRowData(data.getObject(i));
+      }
+    }
+  }
+);
+}
