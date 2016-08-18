@@ -1,0 +1,59 @@
+{
+  String oldLocale=getWidget().getCurrentLocale();
+  getWidget().parsable=uidl.getBooleanAttribute("parsable");
+  super.updateFromUIDL(uidl,client);
+  getWidget().calendar.setDateTimeService(getWidget().getDateTimeService());
+  getWidget().calendar.setShowISOWeekNumbers(getWidget().isShowISOWeekNumbers());
+  if (getWidget().calendar.getResolution() != getWidget().getCurrentResolution()) {
+    boolean hasSelectedDate=false;
+    getWidget().calendar.setResolution(getWidget().getCurrentResolution());
+    if (getWidget().calendar.getDate() != null && getWidget().getCurrentDate() != null) {
+      hasSelectedDate=true;
+      getWidget().calendar.setDate((Date)getWidget().getCurrentDate().clone());
+    }
+    getWidget().calendar.renderCalendar(hasSelectedDate);
+  }
+  if (!getWidget().getCurrentLocale().equals(oldLocale)) {
+    getWidget().calendar.renderCalendar();
+  }
+  if (getWidget().getCurrentResolution().getCalendarField() <= Resolution.MONTH.getCalendarField()) {
+    getWidget().calendar.setFocusChangeListener(new FocusChangeListener(){
+      @Override public void focusChanged(      Date date){
+        getWidget().updateValue(date);
+        getWidget().buildDate();
+        Date date2=getWidget().calendar.getDate();
+        date2.setYear(date.getYear());
+        date2.setMonth(date.getMonth());
+      }
+    }
+);
+  }
+ else {
+    getWidget().calendar.setFocusChangeListener(null);
+  }
+  if (getWidget().getCurrentResolution().getCalendarField() > Resolution.DAY.getCalendarField()) {
+    getWidget().calendar.setTimeChangeListener(new TimeChangeListener(){
+      @Override public void changed(      int hour,      int min,      int sec,      int msec){
+        Date d=getWidget().getDate();
+        if (d == null) {
+          d=(Date)getWidget().calendar.getDate().clone();
+        }
+        d.setHours(hour);
+        d.setMinutes(min);
+        d.setSeconds(sec);
+        DateTimeService.setMilliseconds(d,msec);
+        getWidget().updateValue(d);
+        getWidget().buildDate();
+      }
+    }
+);
+  }
+  if (getWidget().isReadonly()) {
+    getWidget().calendarToggle.addStyleName(VPopupCalendar.CLASSNAME + "-button-readonly");
+  }
+ else {
+    getWidget().calendarToggle.removeStyleName(VPopupCalendar.CLASSNAME + "-button-readonly");
+  }
+  getWidget().setDescriptionForAssistiveDevices(getState().descriptionForAssistiveDevices);
+  getWidget().setTextFieldTabIndex();
+}

@@ -1,0 +1,21 @@
+{
+  Resolution origRes=getWidget().getCurrentResolution();
+  String oldLocale=getWidget().getCurrentLocale();
+  super.updateFromUIDL(uidl,client);
+  if (origRes != getWidget().getCurrentResolution() || oldLocale != getWidget().getCurrentLocale()) {
+    getWidget().formatStr=null;
+  }
+  if (uidl.hasAttribute("format")) {
+    getWidget().formatStr=uidl.getStringAttribute("format");
+  }
+  getWidget().inputPrompt=uidl.getStringAttribute(VTextualDate.ATTR_INPUTPROMPT);
+  getWidget().lenient=!uidl.getBooleanAttribute("strict");
+  getWidget().buildDate();
+  getWidget().text.setTabIndex(getState().tabIndex);
+  if (getWidget().isReadonly()) {
+    getWidget().text.addStyleDependentName("readonly");
+  }
+ else {
+    getWidget().text.removeStyleDependentName("readonly");
+  }
+}
