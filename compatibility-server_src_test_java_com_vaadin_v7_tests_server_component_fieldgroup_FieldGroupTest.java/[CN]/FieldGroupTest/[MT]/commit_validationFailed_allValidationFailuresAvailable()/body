@@ -1,0 +1,23 @@
+{
+  FieldGroup fieldGroup=new FieldGroup();
+  fieldGroup.setItemDataSource(new TestItem());
+  TextField field1=new TextField();
+  field1.setRequired(true);
+  fieldGroup.bind(field1,"prop1");
+  TextField field2=new TextField();
+  field2.setRequired(true);
+  fieldGroup.bind(field2,"prop2");
+  Set<TextField> set=new HashSet<>(Arrays.asList(field1,field2));
+  try {
+    fieldGroup.commit();
+    Assert.fail("No commit exception is thrown");
+  }
+ catch (  CommitException exception) {
+    Map<Field<?>,? extends InvalidValueException> invalidFields=exception.getInvalidFields();
+    for (    Entry<Field<?>,? extends InvalidValueException> entry : invalidFields.entrySet()) {
+      set.remove(entry.getKey());
+    }
+    Assert.assertEquals("Some fields are not found in the invalid fields map",0,set.size());
+    Assert.assertEquals("Invalid value exception should be thrown for each field",2,invalidFields.size());
+  }
+}

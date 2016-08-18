@@ -1,0 +1,17 @@
+{
+  if (property == null) {
+    return "";
+  }
+  Converter<String,Object> converter=null;
+  if (hasConverter(colId)) {
+    converter=getConverter(colId);
+  }
+ else {
+    converter=(Converter)ConverterUtil.getConverter(String.class,property.getType(),getSession());
+  }
+  Object value=property.getValue();
+  if (converter != null) {
+    return converter.convertToPresentation(value,String.class,getLocale());
+  }
+  return (null != value) ? value.toString() : "";
+}

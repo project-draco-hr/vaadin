@@ -1,0 +1,21 @@
+{
+  if (!isBuffered()) {
+    return;
+  }
+  startTransactions();
+  try {
+    firePreCommitEvent();
+    Map<Field<?>,InvalidValueException> invalidValueExceptions=commitFields();
+    if (invalidValueExceptions.isEmpty()) {
+      firePostCommitEvent();
+      commitTransactions();
+    }
+ else {
+      throw new FieldGroupInvalidValueException(invalidValueExceptions);
+    }
+  }
+ catch (  Exception e) {
+    rollbackTransactions();
+    throw new CommitException("Commit failed",this,e);
+  }
+}

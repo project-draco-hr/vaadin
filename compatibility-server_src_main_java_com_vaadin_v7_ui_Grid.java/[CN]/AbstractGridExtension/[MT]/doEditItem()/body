@@ -1,0 +1,14 @@
+{
+  Item item=getContainerDataSource().getItem(editedItemId);
+  editorFieldGroup.setItemDataSource(item);
+  for (  Column column : getColumns()) {
+    column.getState().editorConnector=getEditorField(column.getPropertyId());
+  }
+  editorActive=true;
+  for (  Field<?> f : getEditorFields()) {
+    f.markAsDirtyRecursive();
+  }
+  if (datasource instanceof ItemSetChangeNotifier) {
+    ((ItemSetChangeNotifier)datasource).addItemSetChangeListener(editorClosingItemSetListener);
+  }
+}

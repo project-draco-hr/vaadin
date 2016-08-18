@@ -1,0 +1,65 @@
+{
+  Class<?> objectClass=objectWithMemberFields.getClass();
+  for (  java.lang.reflect.Field memberField : getFieldsInDeclareOrder(objectClass)) {
+    if (!Field.class.isAssignableFrom(memberField.getType())) {
+      continue;
+    }
+    PropertyId propertyIdAnnotation=memberField.getAnnotation(PropertyId.class);
+    Class<? extends Field> fieldType=(Class<? extends Field>)memberField.getType();
+    Object propertyId=null;
+    if (propertyIdAnnotation != null) {
+      propertyId=propertyIdAnnotation.value();
+    }
+ else {
+      try {
+        propertyId=findPropertyId(memberField);
+      }
+ catch (      SearchException e) {
+        continue;
+      }
+      if (propertyId == null) {
+        continue;
+      }
+    }
+    Class<?> propertyType;
+    try {
+      propertyType=getPropertyType(propertyId);
+    }
+ catch (    BindException e) {
+      continue;
+    }
+    Field<?> field;
+    try {
+      field=(Field<?>)ReflectTools.getJavaFieldValue(objectWithMemberFields,memberField,Field.class);
+    }
+ catch (    Exception e) {
+      continue;
+    }
+    if (field == null && buildFields) {
+      Caption captionAnnotation=memberField.getAnnotation(Caption.class);
+      String caption;
+      if (captionAnnotation != null) {
+        caption=captionAnnotation.value();
+      }
+ else {
+        caption=DefaultFieldFactory.createCaptionByPropertyId(propertyId);
+      }
+      field=build(caption,propertyType,fieldType);
+      try {
+        ReflectTools.setJavaFieldValue(objectWithMemberFields,memberField,field);
+      }
+ catch (      IllegalArgumentException e) {
+        throw new BindException("Could not assign value to field '" + memberField.getName() + "'",e);
+      }
+catch (      IllegalAccessException e) {
+        throw new BindException("Could not assign value to field '" + memberField.getName() + "'",e);
+      }
+catch (      InvocationTargetException e) {
+        throw new BindException("Could not assign value to field '" + memberField.getName() + "'",e);
+      }
+    }
+    if (field != null) {
+      bind(field,propertyId);
+    }
+  }
+}

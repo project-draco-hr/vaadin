@@ -1,0 +1,16 @@
+{
+  try {
+    Field f=Table.class.getDeclaredField("propertyValueConverters");
+    f.setAccessible(true);
+    HashMap<Object,Converter<String,Object>> pvc=(HashMap<Object,Converter<String,Object>>)f.get(this);
+    Set<Object> currentConverters=new HashSet<Object>();
+    for (    Entry<Object,Converter<String,Object>> entry : pvc.entrySet()) {
+      currentConverters.add(entry.getKey());
+    }
+    return currentConverters;
+  }
+ catch (  Exception e) {
+    fail("Unable to retrieve propertyValueConverters");
+    return null;
+  }
+}

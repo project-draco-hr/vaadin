@@ -1,0 +1,37 @@
+{
+  final Object oldValue=getInternalValue();
+  removePropertyListeners();
+  dataSource=newDataSource;
+  getState().propertyReadOnly=dataSource == null ? false : dataSource.isReadOnly();
+  if (newDataSource != null && !ConverterUtil.canConverterPossiblyHandle(getConverter(),getType(),newDataSource.getType())) {
+    setConverter(newDataSource.getType());
+  }
+  try {
+    if (dataSource != null) {
+      T fieldValue=convertFromModel(getDataSourceValue());
+      setInternalValue(fieldValue);
+    }
+    setModified(false);
+    if (getCurrentBufferedSourceException() != null) {
+      setCurrentBufferedSourceException(null);
+    }
+  }
+ catch (  final Throwable e) {
+    setCurrentBufferedSourceException(new Buffered.SourceException(this,e));
+    setModified(true);
+    throw getCurrentBufferedSourceException();
+  }
+  addPropertyListeners();
+  if (dataSource instanceof Validatable) {
+    final Collection<Validator> validators=((Validatable)dataSource).getValidators();
+    if (validators != null) {
+      for (final Iterator<Validator> i=validators.iterator(); i.hasNext(); ) {
+        addValidator(i.next());
+      }
+    }
+  }
+  T value=getInternalValue();
+  if ((value != oldValue) && ((value != null && !value.equals(oldValue)) || value == null)) {
+    fireValueChange(false);
+  }
+}

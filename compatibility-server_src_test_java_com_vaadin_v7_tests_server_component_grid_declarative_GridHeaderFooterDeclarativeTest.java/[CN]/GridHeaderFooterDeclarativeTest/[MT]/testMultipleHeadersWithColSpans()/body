@@ -1,0 +1,17 @@
+{
+  String design="<vaadin7-grid><table>" + "<colgroup>" + "   <col sortable property-id='Column1'>"+ "   <col sortable property-id='Column2'>"+ "   <col sortable property-id='Column3'>"+ "</colgroup>"+ "<thead>"+ "   <tr><th colspan=3>Baz</tr>"+ "   <tr default><th>Column1<th>Column2<th>Column3</tr>"+ "   <tr><th>Foo<th colspan=2>Bar</tr>"+ "</thead>"+ "</table></vaadin7-grid>";
+  Grid grid=new Grid();
+  grid.addColumn("Column1",String.class);
+  grid.addColumn("Column2",String.class);
+  grid.addColumn("Column3",String.class);
+  HeaderRow row=grid.getDefaultHeaderRow();
+  for (  Column c : grid.getColumns()) {
+    row.getCell(c.getPropertyId()).setHtml(c.getHeaderCaption());
+  }
+  grid.prependHeaderRow().join("Column1","Column2","Column3").setHtml("Baz");
+  row=grid.appendHeaderRow();
+  row.getCell("Column1").setHtml("Foo");
+  row.join("Column2","Column3").setHtml("Bar");
+  testWrite(design,grid);
+  testRead(design,grid,true);
+}

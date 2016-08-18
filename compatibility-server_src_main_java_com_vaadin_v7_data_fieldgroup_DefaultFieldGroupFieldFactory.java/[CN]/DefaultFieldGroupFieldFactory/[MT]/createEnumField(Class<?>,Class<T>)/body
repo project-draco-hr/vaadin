@@ -1,0 +1,18 @@
+{
+  Class<AbstractSelect> selectClass=null;
+  if (AbstractSelect.class.isAssignableFrom(fieldType)) {
+    selectClass=(Class<AbstractSelect>)fieldType;
+  }
+ else   if (anySelect(fieldType)) {
+    selectClass=AbstractSelect.class;
+  }
+  if (selectClass != null) {
+    AbstractSelect s=createCompatibleSelect(selectClass);
+    populateWithEnumData(s,(Class<? extends Enum>)type);
+    return (T)s;
+  }
+ else   if (AbstractTextField.class.isAssignableFrom(fieldType)) {
+    return (T)createAbstractTextField((Class<? extends AbstractTextField>)fieldType);
+  }
+  return null;
+}
