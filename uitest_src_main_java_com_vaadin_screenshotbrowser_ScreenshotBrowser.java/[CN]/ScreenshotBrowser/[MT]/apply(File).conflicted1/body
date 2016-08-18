@@ -1,9 +1,16 @@
 {
-  File baseFile=new File(getReferenceDir(),screenshotFile.getName());
-  File targetFile=baseFile;
-  int alternativeNumber=1;
-  while (targetFile.exists()) {
-    targetFile=getAlternative(baseFile,alternativeNumber++);
+  File targetFile=new File(getReferenceDir(),screenshotFile.getName());
+  if (targetFile.exists()) {
+    for (int i=1; true; i++) {
+      File alternative=getAlternative(targetFile,i);
+      if (alternative.exists()) {
+        alternative.delete();
+      }
+ else {
+        break;
+      }
+    }
+    targetFile.delete();
   }
   screenshotFile.renameTo(targetFile);
 }
