@@ -1,6 +1,6 @@
 {
-  String design="<vaadin-grid><table>" + "<colgroup>" + "  <col sortable=\"true\" property-id=\"> test\">"+ "</colgroup>"+ "<thead>"+ "  <tr><th plain-text=\"true\">&gt; Test</th></tr>"+ "</thead>"+ "<tfoot>"+ "  <tr><td plain-text=\"true\">&gt; Test</td></tr>"+ "</tfoot>"+ "<tbody />"+ "</table></vaadin-grid>";
-  Grid grid=read(design);
+  String design="<vaadin-legacy-grid><table>" + "<colgroup>" + "  <col sortable=\"true\" property-id=\"> test\">"+ "</colgroup>"+ "<thead>"+ "  <tr><th plain-text=\"true\">&gt; Test</th></tr>"+ "</thead>"+ "<tfoot>"+ "  <tr><td plain-text=\"true\">&gt; Test</td></tr>"+ "</tfoot>"+ "<tbody />"+ "</table></vaadin-legacy-grid>";
+  LegacyGrid grid=read(design);
   String actualHeader=grid.getHeaderRow(0).getCell("> test").getText();
   String actualFooter=grid.getFooterRow(0).getCell("> test").getText();
   String expected="> Test";
@@ -13,14 +13,14 @@
   expected="&gt; Test";
   Assert.assertEquals(expected,actualHeader);
   Assert.assertEquals(expected,actualFooter);
-  grid=new Grid();
+  grid=new LegacyGrid();
   grid.setColumns("test");
   HeaderRow header=grid.addHeaderRowAt(0);
   FooterRow footer=grid.addFooterRowAt(0);
   grid.removeHeaderRow(grid.getDefaultHeaderRow());
   header.getCell("test").setText("&amp; Test");
   footer.getCell("test").setText("&amp; Test");
-  Element root=new Element(Tag.valueOf("vaadin-grid"),"");
+  Element root=new Element(Tag.valueOf("vaadin-legacy-grid"),"");
   grid.writeDesign(root,new DesignContext());
   Assert.assertEquals("&amp;amp; Test",root.getElementsByTag("th").get(0).html());
   Assert.assertEquals("&amp;amp; Test",root.getElementsByTag("td").get(0).html());
@@ -28,7 +28,7 @@
   footer=grid.addFooterRowAt(0);
   header.getCell("test").setHtml("&amp; Test");
   footer.getCell("test").setHtml("&amp; Test");
-  root=new Element(Tag.valueOf("vaadin-grid"),"");
+  root=new Element(Tag.valueOf("vaadin-legacy-grid"),"");
   grid.writeDesign(root,new DesignContext());
   Assert.assertEquals("&amp; Test",root.getElementsByTag("th").get(0).html());
   Assert.assertEquals("&amp; Test",root.getElementsByTag("td").get(0).html());

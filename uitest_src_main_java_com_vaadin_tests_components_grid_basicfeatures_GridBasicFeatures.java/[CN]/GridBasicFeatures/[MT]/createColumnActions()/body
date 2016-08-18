@@ -3,11 +3,11 @@
   for (int c=0; c < COLUMNS; c++) {
     final int index=c;
     createCategory(getColumnProperty(c),"Columns");
-    createClickAction("Add / Remove",getColumnProperty(c),new Command<Grid,String>(){
+    createClickAction("Add / Remove",getColumnProperty(c),new Command<LegacyGrid,String>(){
       boolean wasHidable;
       boolean wasHidden;
       String wasColumnHidingToggleCaption;
-      @Override public void execute(      Grid grid,      String value,      Object data){
+      @Override public void execute(      LegacyGrid grid,      String value,      Object data){
         String columnProperty=getColumnProperty((Integer)data);
         Column column=grid.getColumn(columnProperty);
         if (column == null) {
@@ -25,8 +25,8 @@
       }
     }
 ,null,c);
-    createClickAction("Move left",getColumnProperty(c),new Command<Grid,String>(){
-      @Override public void execute(      Grid grid,      String value,      Object data){
+    createClickAction("Move left",getColumnProperty(c),new Command<LegacyGrid,String>(){
+      @Override public void execute(      LegacyGrid grid,      String value,      Object data){
         final String columnProperty=getColumnProperty((Integer)data);
         List<Column> cols=grid.getColumns();
         List<Object> reordered=new ArrayList<Object>();
@@ -52,68 +52,68 @@
       }
     }
 ,null,c);
-    createBooleanAction("Sortable",getColumnProperty(c),true,new Command<Grid,Boolean>(){
-      @Override public void execute(      Grid grid,      Boolean value,      Object columnIndex){
+    createBooleanAction("Sortable",getColumnProperty(c),true,new Command<LegacyGrid,Boolean>(){
+      @Override public void execute(      LegacyGrid grid,      Boolean value,      Object columnIndex){
         Object propertyId=getColumnProperty((Integer)columnIndex);
         Column column=grid.getColumn(propertyId);
         column.setSortable(value);
       }
     }
 ,c);
-    createBooleanAction("Resizable",getColumnProperty(c),true,new Command<Grid,Boolean>(){
-      @Override public void execute(      Grid grid,      Boolean value,      Object columnIndex){
+    createBooleanAction("Resizable",getColumnProperty(c),true,new Command<LegacyGrid,Boolean>(){
+      @Override public void execute(      LegacyGrid grid,      Boolean value,      Object columnIndex){
         Object propertyId=getColumnProperty((Integer)columnIndex);
         Column column=grid.getColumn(propertyId);
         column.setResizable(value);
       }
     }
 ,c);
-    createBooleanAction("Hidable",getColumnProperty(c),isColumnHidableByDefault(c),new Command<Grid,Boolean>(){
-      @Override public void execute(      Grid c,      Boolean hidable,      Object propertyId){
+    createBooleanAction("Hidable",getColumnProperty(c),isColumnHidableByDefault(c),new Command<LegacyGrid,Boolean>(){
+      @Override public void execute(      LegacyGrid c,      Boolean hidable,      Object propertyId){
         grid.getColumn(propertyId).setHidable(hidable);
       }
     }
 ,getColumnProperty(c));
-    createBooleanAction("Hidden",getColumnProperty(c),isColumnHiddenByDefault(c),new Command<Grid,Boolean>(){
-      @Override public void execute(      Grid c,      Boolean hidden,      Object propertyId){
+    createBooleanAction("Hidden",getColumnProperty(c),isColumnHiddenByDefault(c),new Command<LegacyGrid,Boolean>(){
+      @Override public void execute(      LegacyGrid c,      Boolean hidden,      Object propertyId){
         grid.getColumn(propertyId).setHidden(hidden);
       }
     }
 ,getColumnProperty(c));
-    createClickAction("Change hiding toggle caption",getColumnProperty(c),new Command<Grid,String>(){
+    createClickAction("Change hiding toggle caption",getColumnProperty(c),new Command<LegacyGrid,String>(){
       int count=0;
-      @Override public void execute(      Grid grid,      String value,      Object data){
+      @Override public void execute(      LegacyGrid grid,      String value,      Object data){
         final String columnProperty=getColumnProperty((Integer)data);
         grid.getColumn(columnProperty).setHidingToggleCaption(columnProperty + " caption " + count++);
       }
     }
 ,null,c);
-    createClickAction("Change header caption",getColumnProperty(c),new Command<Grid,String>(){
+    createClickAction("Change header caption",getColumnProperty(c),new Command<LegacyGrid,String>(){
       int count=0;
-      @Override public void execute(      Grid grid,      String value,      Object data){
+      @Override public void execute(      LegacyGrid grid,      String value,      Object data){
         final String columnProperty=getColumnProperty((Integer)data);
         grid.getColumn(columnProperty).setHeaderCaption(columnProperty + " header " + count++);
       }
     }
 ,null,c);
     createCategory("Column " + c + " Width",getColumnProperty(c));
-    createClickAction("Auto","Column " + c + " Width",new Command<Grid,Integer>(){
-      @Override public void execute(      Grid grid,      Integer value,      Object columnIndex){
+    createClickAction("Auto","Column " + c + " Width",new Command<LegacyGrid,Integer>(){
+      @Override public void execute(      LegacyGrid grid,      Integer value,      Object columnIndex){
         Object propertyId=getColumnProperty((Integer)columnIndex);
         Column column=grid.getColumn(propertyId);
         column.setWidthUndefined();
       }
     }
 ,-1,c);
-    createClickAction("25.5px","Column " + c + " Width",new Command<Grid,Void>(){
-      @Override public void execute(      Grid grid,      Void value,      Object columnIndex){
+    createClickAction("25.5px","Column " + c + " Width",new Command<LegacyGrid,Void>(){
+      @Override public void execute(      LegacyGrid grid,      Void value,      Object columnIndex){
         grid.getColumns().get((Integer)columnIndex).setWidth(25.5);
       }
     }
 ,null,c);
     for (int w=50; w < 300; w+=50) {
-      createClickAction(w + "px","Column " + c + " Width",new Command<Grid,Integer>(){
-        @Override public void execute(        Grid grid,        Integer value,        Object columnIndex){
+      createClickAction(w + "px","Column " + c + " Width",new Command<LegacyGrid,Integer>(){
+        @Override public void execute(        LegacyGrid grid,        Integer value,        Object columnIndex){
           Object propertyId=getColumnProperty((Integer)columnIndex);
           Column column=grid.getColumn(propertyId);
           column.setWidth(value);
@@ -125,8 +125,8 @@
     defaultRows.put("Text Header",GridStaticCellType.TEXT);
     defaultRows.put("Html Header ",GridStaticCellType.HTML);
     defaultRows.put("Widget Header",GridStaticCellType.WIDGET);
-    createMultiClickAction("Header Type",getColumnProperty(c),defaultRows,new Command<Grid,GridStaticCellType>(){
-      @Override public void execute(      Grid grid,      GridStaticCellType value,      Object columnIndex){
+    createMultiClickAction("Header Type",getColumnProperty(c),defaultRows,new Command<LegacyGrid,GridStaticCellType>(){
+      @Override public void execute(      LegacyGrid grid,      GridStaticCellType value,      Object columnIndex){
         final Object propertyId=getColumnProperty((Integer)columnIndex);
         final HeaderCell cell=grid.getDefaultHeaderRow().getCell(propertyId);
 switch (value) {
@@ -153,8 +153,8 @@ defaultRows=new LinkedHashMap<String,GridStaticCellType>();
 defaultRows.put("Text Footer",GridStaticCellType.TEXT);
 defaultRows.put("Html Footer",GridStaticCellType.HTML);
 defaultRows.put("Widget Footer",GridStaticCellType.WIDGET);
-createMultiClickAction("Footer Type",getColumnProperty(c),defaultRows,new Command<Grid,GridStaticCellType>(){
-@Override public void execute(Grid grid,GridStaticCellType value,Object columnIndex){
+createMultiClickAction("Footer Type",getColumnProperty(c),defaultRows,new Command<LegacyGrid,GridStaticCellType>(){
+@Override public void execute(LegacyGrid grid,GridStaticCellType value,Object columnIndex){
 final Object propertyId=getColumnProperty((Integer)columnIndex);
 final FooterCell cell=grid.getFooterRow(0).getCell(propertyId);
 switch (value) {
@@ -178,32 +178,32 @@ break;
 }
 ,c);
 }
-createClickAction("All columns auto width","Columns",new Command<Grid,Boolean>(){
-@Override public void execute(Grid c,Boolean value,Object data){
+createClickAction("All columns auto width","Columns",new Command<LegacyGrid,Boolean>(){
+@Override public void execute(LegacyGrid c,Boolean value,Object data){
 for (Column col : grid.getColumns()) {
 col.setWidthUndefined();
 }
 }
 }
 ,null);
-createBooleanAction("All columns hidable","Columns",false,new Command<Grid,Boolean>(){
-@Override public void execute(Grid c,Boolean value,Object data){
+createBooleanAction("All columns hidable","Columns",false,new Command<LegacyGrid,Boolean>(){
+@Override public void execute(LegacyGrid c,Boolean value,Object data){
 for (Column col : grid.getColumns()) {
 col.setHidable(value);
 }
 }
 }
 );
-createBooleanAction("All columns resizable","Columns",false,new Command<Grid,Boolean>(){
-@Override public void execute(Grid c,Boolean value,Object data){
+createBooleanAction("All columns resizable","Columns",false,new Command<LegacyGrid,Boolean>(){
+@Override public void execute(LegacyGrid c,Boolean value,Object data){
 for (Column col : grid.getColumns()) {
 col.setResizable(value);
 }
 }
 }
 );
-createClickAction("All columns expanding, Col 0 has max width of 30px","Columns",new Command<Grid,Boolean>(){
-@Override public void execute(Grid c,Boolean value,Object data){
+createClickAction("All columns expanding, Col 0 has max width of 30px","Columns",new Command<LegacyGrid,Boolean>(){
+@Override public void execute(LegacyGrid c,Boolean value,Object data){
 for (Column col : grid.getColumns()) {
 col.setWidthUndefined();
 }

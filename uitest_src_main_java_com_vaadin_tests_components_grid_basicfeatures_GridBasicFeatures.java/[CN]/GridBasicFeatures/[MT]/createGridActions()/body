@@ -3,18 +3,18 @@
   primaryStyleNames.put("v-grid","v-grid");
   primaryStyleNames.put("v-escalator","v-escalator");
   primaryStyleNames.put("my-grid","my-grid");
-  createMultiClickAction("Primary style name","State",primaryStyleNames,new Command<Grid,String>(){
-    @Override public void execute(    Grid grid,    String value,    Object data){
+  createMultiClickAction("Primary style name","State",primaryStyleNames,new Command<LegacyGrid,String>(){
+    @Override public void execute(    LegacyGrid grid,    String value,    Object data){
       grid.setPrimaryStyleName(value);
     }
   }
 ,primaryStyleNames.get("v-grid"));
-  LinkedHashMap<String,SelectionMode> selectionModes=new LinkedHashMap<String,Grid.SelectionMode>();
+  LinkedHashMap<String,SelectionMode> selectionModes=new LinkedHashMap<String,LegacyGrid.SelectionMode>();
   selectionModes.put("single",SelectionMode.SINGLE);
   selectionModes.put("multi",SelectionMode.MULTI);
   selectionModes.put("none",SelectionMode.NONE);
-  createSelectAction("Selection mode","State",selectionModes,"none",new Command<Grid,Grid.SelectionMode>(){
-    @Override public void execute(    Grid grid,    SelectionMode selectionMode,    Object data){
+  createSelectAction("Selection mode","State",selectionModes,"none",new Command<LegacyGrid,LegacyGrid.SelectionMode>(){
+    @Override public void execute(    LegacyGrid grid,    SelectionMode selectionMode,    Object data){
       grid.setSelectionMode(selectionMode);
       if (selectionMode == SelectionMode.SINGLE) {
         grid.addSelectionListener(selectionListener);
@@ -30,8 +30,8 @@
   selectionLimits.put("2",Integer.valueOf(2));
   selectionLimits.put("1000",Integer.valueOf(1000));
   selectionLimits.put("Integer.MAX_VALUE",Integer.valueOf(Integer.MAX_VALUE));
-  createSelectAction("Selection limit","State",selectionLimits,"1000",new Command<Grid,Integer>(){
-    @Override public void execute(    Grid grid,    Integer limit,    Object data){
+  createSelectAction("Selection limit","State",selectionLimits,"1000",new Command<LegacyGrid,Integer>(){
+    @Override public void execute(    LegacyGrid grid,    Integer limit,    Object data){
       if (!(grid.getSelectionModel() instanceof MultiSelectionModel)) {
         grid.setSelectionMode(SelectionMode.MULTI);
       }
@@ -44,14 +44,14 @@
     sortableProperties.put(propertyId + ", ASC",Sort.by(propertyId).build());
     sortableProperties.put(propertyId + ", DESC",Sort.by(propertyId,SortDirection.DESCENDING).build());
   }
-  createSelectAction("Sort by column","State",sortableProperties,"Column 9, ascending",new Command<Grid,List<SortOrder>>(){
-    @Override public void execute(    Grid grid,    List<SortOrder> sortOrder,    Object data){
+  createSelectAction("Sort by column","State",sortableProperties,"Column 9, ascending",new Command<LegacyGrid,List<SortOrder>>(){
+    @Override public void execute(    LegacyGrid grid,    List<SortOrder> sortOrder,    Object data){
       grid.setSortOrder(sortOrder);
     }
   }
 );
-  createBooleanAction("Reverse Grid Columns","State",false,new Command<Grid,Boolean>(){
-    @Override public void execute(    Grid c,    Boolean value,    Object data){
+  createBooleanAction("Reverse Grid Columns","State",false,new Command<LegacyGrid,Boolean>(){
+    @Override public void execute(    LegacyGrid c,    Boolean value,    Object data){
       List<Object> ids=new ArrayList<Object>();
       ids.addAll(ds.getContainerPropertyIds());
       if (!value) {
@@ -133,26 +133,26 @@
     }
   }
 );
-  createSelectAction("Row style generator","State",rowStyleGenerators,CELL_STYLE_GENERATOR_NONE,new Command<Grid,RowStyleGenerator>(){
-    @Override public void execute(    Grid grid,    RowStyleGenerator generator,    Object data){
+  createSelectAction("Row style generator","State",rowStyleGenerators,CELL_STYLE_GENERATOR_NONE,new Command<LegacyGrid,RowStyleGenerator>(){
+    @Override public void execute(    LegacyGrid grid,    RowStyleGenerator generator,    Object data){
       grid.setRowStyleGenerator(generator);
     }
   }
 );
-  createSelectAction("Cell style generator","State",cellStyleGenerators,CELL_STYLE_GENERATOR_NONE,new Command<Grid,CellStyleGenerator>(){
-    @Override public void execute(    Grid grid,    CellStyleGenerator generator,    Object data){
+  createSelectAction("Cell style generator","State",cellStyleGenerators,CELL_STYLE_GENERATOR_NONE,new Command<LegacyGrid,CellStyleGenerator>(){
+    @Override public void execute(    LegacyGrid grid,    CellStyleGenerator generator,    Object data){
       grid.setCellStyleGenerator(generator);
     }
   }
 );
-  createBooleanAction("Row description generator","State",false,new Command<Grid,Boolean>(){
-    @Override public void execute(    Grid c,    Boolean value,    Object data){
+  createBooleanAction("Row description generator","State",false,new Command<LegacyGrid,Boolean>(){
+    @Override public void execute(    LegacyGrid c,    Boolean value,    Object data){
       c.setRowDescriptionGenerator(value ? rowDescriptionGenerator : null);
     }
   }
 );
-  createBooleanAction("Cell description generator","State",false,new Command<Grid,Boolean>(){
-    @Override public void execute(    Grid c,    Boolean value,    Object data){
+  createBooleanAction("Cell description generator","State",false,new Command<LegacyGrid,Boolean>(){
+    @Override public void execute(    LegacyGrid c,    Boolean value,    Object data){
       c.setCellDescriptionGenerator(value ? cellDescriptionGenerator : null);
     }
   }
@@ -162,8 +162,8 @@
     frozenOptions.put(String.valueOf(i),Integer.valueOf(i));
   }
   frozenOptions.put("-1 for unfreezing selection column",-1);
-  createSelectAction("Frozen column count","State",frozenOptions,"0",new Command<Grid,Integer>(){
-    @Override public void execute(    Grid c,    Integer value,    Object data){
+  createSelectAction("Frozen column count","State",frozenOptions,"0",new Command<LegacyGrid,Integer>(){
+    @Override public void execute(    LegacyGrid c,    Integer value,    Object data){
       c.setFrozenColumnCount(value.intValue());
     }
   }
@@ -172,14 +172,14 @@
   for (  int delay : new int[]{0,500,2000,10000}) {
     containerDelayValues.put(String.valueOf(delay),Integer.valueOf(delay));
   }
-  createSelectAction("Container delay","State",containerDelayValues,"0",new Command<Grid,Integer>(){
-    @Override public void execute(    Grid grid,    Integer delay,    Object data){
+  createSelectAction("Container delay","State",containerDelayValues,"0",new Command<LegacyGrid,Integer>(){
+    @Override public void execute(    LegacyGrid grid,    Integer delay,    Object data){
       containerDelay=delay.intValue();
     }
   }
 );
-  createBooleanAction("ItemClickListener","State",false,new Command<Grid,Boolean>(){
-    @Override public void execute(    Grid c,    Boolean value,    Object data){
+  createBooleanAction("ItemClickListener","State",false,new Command<LegacyGrid,Boolean>(){
+    @Override public void execute(    LegacyGrid c,    Boolean value,    Object data){
       if (!value) {
         c.removeItemClickListener(itemClickListener);
       }
@@ -189,8 +189,8 @@
     }
   }
 );
-  createBooleanAction("EditorOpeningItemClickListener","State",false,new Command<Grid,Boolean>(){
-    @Override public void execute(    Grid c,    Boolean value,    Object data){
+  createBooleanAction("EditorOpeningItemClickListener","State",false,new Command<LegacyGrid,Boolean>(){
+    @Override public void execute(    LegacyGrid c,    Boolean value,    Object data){
       if (!value) {
         c.removeItemClickListener(editorOpeningItemClickListener);
       }
@@ -200,8 +200,8 @@
     }
   }
 );
-  createBooleanAction("ReactiveValueChanger","State",false,new Command<Grid,Boolean>(){
-    @Override public void execute(    Grid c,    Boolean value,    Object data){
+  createBooleanAction("ReactiveValueChanger","State",false,new Command<LegacyGrid,Boolean>(){
+    @Override public void execute(    LegacyGrid c,    Boolean value,    Object data){
       LegacyField<?> targetField=grid.getEditorFieldGroup().getField("Column 0");
       if (targetField != null) {
         if (!value) {
@@ -214,8 +214,8 @@
     }
   }
 );
-  createBooleanAction("ColumnReorderListener","State",false,new Command<Grid,Boolean>(){
-    @Override public void execute(    Grid grid,    Boolean value,    Object data){
+  createBooleanAction("ColumnReorderListener","State",false,new Command<LegacyGrid,Boolean>(){
+    @Override public void execute(    LegacyGrid grid,    Boolean value,    Object data){
       if (value) {
         grid.addColumnReorderListener(columnReorderListener);
       }
@@ -225,8 +225,8 @@
     }
   }
 );
-  createBooleanAction("ColumnVisibilityChangeListener","State",false,new Command<Grid,Boolean>(){
-    @Override public void execute(    Grid grid,    Boolean value,    Object data){
+  createBooleanAction("ColumnVisibilityChangeListener","State",false,new Command<LegacyGrid,Boolean>(){
+    @Override public void execute(    LegacyGrid grid,    Boolean value,    Object data){
       if (value) {
         grid.addColumnVisibilityChangeListener(columnVisibilityListener);
       }
@@ -236,8 +236,8 @@
     }
   }
 );
-  createBooleanAction("Single select allow deselect","State",singleSelectAllowDeselect,new Command<Grid,Boolean>(){
-    @Override public void execute(    Grid c,    Boolean value,    Object data){
+  createBooleanAction("Single select allow deselect","State",singleSelectAllowDeselect,new Command<LegacyGrid,Boolean>(){
+    @Override public void execute(    LegacyGrid c,    Boolean value,    Object data){
       singleSelectAllowDeselect=value.booleanValue();
       SelectionModel model=c.getSelectionModel();
       if (model instanceof SelectionModel.Single) {
@@ -246,14 +246,14 @@
     }
   }
 );
-  createBooleanAction("Column Reordering Allowed","State",false,new Command<Grid,Boolean>(){
-    @Override public void execute(    Grid c,    Boolean value,    Object data){
+  createBooleanAction("Column Reordering Allowed","State",false,new Command<LegacyGrid,Boolean>(){
+    @Override public void execute(    LegacyGrid c,    Boolean value,    Object data){
       c.setColumnReorderingAllowed(value);
     }
   }
 );
-  createClickAction("Select all","State",new Command<Grid,String>(){
-    @Override public void execute(    Grid c,    String value,    Object data){
+  createClickAction("Select all","State",new Command<LegacyGrid,String>(){
+    @Override public void execute(    LegacyGrid c,    String value,    Object data){
       SelectionModel selectionModel=c.getSelectionModel();
       if (selectionModel instanceof SelectionModel.Multi) {
         ((SelectionModel.Multi)selectionModel).selectAll();
@@ -261,8 +261,8 @@
     }
   }
 ,null);
-  createClickAction("Select none","State",new Command<Grid,String>(){
-    @Override public void execute(    Grid c,    String value,    Object data){
+  createClickAction("Select none","State",new Command<LegacyGrid,String>(){
+    @Override public void execute(    LegacyGrid c,    String value,    Object data){
       SelectionModel selectionModel=c.getSelectionModel();
       if (selectionModel instanceof SelectionModel.Multi) {
         ((SelectionModel.Multi)selectionModel).deselectAll();

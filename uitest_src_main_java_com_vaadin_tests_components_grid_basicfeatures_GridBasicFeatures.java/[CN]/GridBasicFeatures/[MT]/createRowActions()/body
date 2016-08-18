@@ -1,6 +1,6 @@
 {
   createCategory("Body rows",null);
-class NewRowCommand implements Command<Grid,String> {
+class NewRowCommand implements Command<LegacyGrid,String> {
     private final int index;
     public NewRowCommand(){
       this(0);
@@ -8,7 +8,7 @@ class NewRowCommand implements Command<Grid,String> {
     public NewRowCommand(    int index){
       this.index=index;
     }
-    @Override public void execute(    Grid c,    String value,    Object data){
+    @Override public void execute(    LegacyGrid c,    String value,    Object data){
       Item item=ds.addItemAt(index,new Object());
       for (int i=0; i < COLUMNS; i++) {
         Class<?> type=ds.getType(getColumnProperty(i));
@@ -30,8 +30,8 @@ class NewRowCommand implements Command<Grid,String> {
     }
   }
   final NewRowCommand newRowCommand=new NewRowCommand();
-  createClickAction("Add 18 rows","Body rows",new Command<Grid,String>(){
-    @Override public void execute(    Grid c,    String value,    Object data){
+  createClickAction("Add 18 rows","Body rows",new Command<LegacyGrid,String>(){
+    @Override public void execute(    LegacyGrid c,    String value,    Object data){
       for (int i=0; i < 18; i++) {
         newRowCommand.execute(c,value,data);
       }
@@ -40,15 +40,15 @@ class NewRowCommand implements Command<Grid,String> {
 ,null);
   createClickAction("Add first row","Body rows",newRowCommand,null);
   createClickAction("Add third row","Body rows",new NewRowCommand(2),null);
-  createClickAction("Remove first row","Body rows",new Command<Grid,String>(){
-    @Override public void execute(    Grid c,    String value,    Object data){
+  createClickAction("Remove first row","Body rows",new Command<LegacyGrid,String>(){
+    @Override public void execute(    LegacyGrid c,    String value,    Object data){
       Object firstItemId=ds.getIdByIndex(0);
       ds.removeItem(firstItemId);
     }
   }
 ,null);
-  createClickAction("Remove 18 first rows","Body rows",new Command<Grid,String>(){
-    @Override public void execute(    Grid c,    String value,    Object data){
+  createClickAction("Remove 18 first rows","Body rows",new Command<LegacyGrid,String>(){
+    @Override public void execute(    LegacyGrid c,    String value,    Object data){
       for (int i=0; i < 18; i++) {
         Object firstItemId=ds.getIdByIndex(0);
         ds.removeItem(firstItemId);
@@ -56,8 +56,8 @@ class NewRowCommand implements Command<Grid,String> {
     }
   }
 ,null);
-  createClickAction("Modify first row (getItemProperty)","Body rows",new Command<Grid,String>(){
-    @SuppressWarnings("unchecked") @Override public void execute(    Grid c,    String value,    Object data){
+  createClickAction("Modify first row (getItemProperty)","Body rows",new Command<LegacyGrid,String>(){
+    @SuppressWarnings("unchecked") @Override public void execute(    LegacyGrid c,    String value,    Object data){
       Object firstItemId=ds.getIdByIndex(0);
       Item item=ds.getItem(firstItemId);
       for (int i=0; i < COLUMNS; i++) {
@@ -69,8 +69,8 @@ class NewRowCommand implements Command<Grid,String> {
     }
   }
 ,null);
-  createClickAction("Modify first row (getContainerProperty)","Body rows",new Command<Grid,String>(){
-    @SuppressWarnings("unchecked") @Override public void execute(    Grid c,    String value,    Object data){
+  createClickAction("Modify first row (getContainerProperty)","Body rows",new Command<LegacyGrid,String>(){
+    @SuppressWarnings("unchecked") @Override public void execute(    LegacyGrid c,    String value,    Object data){
       Object firstItemId=ds.getIdByIndex(0);
       for (      Object containerPropertyId : ds.getContainerPropertyIds()) {
         Property<?> property=ds.getContainerProperty(firstItemId,containerPropertyId);
@@ -81,8 +81,8 @@ class NewRowCommand implements Command<Grid,String> {
     }
   }
 ,null);
-  createBooleanAction("Select first row","Body rows",false,new Command<Grid,Boolean>(){
-    @Override public void execute(    Grid grid,    Boolean select,    Object data){
+  createBooleanAction("Select first row","Body rows",false,new Command<LegacyGrid,Boolean>(){
+    @Override public void execute(    LegacyGrid grid,    Boolean select,    Object data){
       final Object firstItemId=grid.getContainerDataSource().firstItemId();
       if (select.booleanValue()) {
         grid.select(firstItemId);
@@ -93,14 +93,14 @@ class NewRowCommand implements Command<Grid,String> {
     }
   }
 );
-  createClickAction("Remove all rows","Body rows",new Command<Grid,String>(){
-    @SuppressWarnings("unchecked") @Override public void execute(    Grid c,    String value,    Object data){
+  createClickAction("Remove all rows","Body rows",new Command<LegacyGrid,String>(){
+    @SuppressWarnings("unchecked") @Override public void execute(    LegacyGrid c,    String value,    Object data){
       ds.removeAllItems();
     }
   }
 ,null);
-  createClickAction("Remove selected rows","Body rows",new Command<Grid,String>(){
-    @Override public void execute(    Grid c,    String value,    Object data){
+  createClickAction("Remove selected rows","Body rows",new Command<LegacyGrid,String>(){
+    @Override public void execute(    LegacyGrid c,    String value,    Object data){
       for (      Object itemId : c.getSelectedRows()) {
         ds.removeItem(itemId);
       }

@@ -1,0 +1,25 @@
+{
+  Map<LegacyField<?>,InvalidValueException> invalidFields=event.getCause().getInvalidFields();
+  if (!invalidFields.isEmpty()) {
+    Object firstErrorPropertyId=null;
+    LegacyField<?> firstErrorField=null;
+    FieldGroup fieldGroup=event.getCause().getFieldGroup();
+    for (    Column column : getColumns()) {
+      Object propertyId=column.getPropertyId();
+      LegacyField<?> field=fieldGroup.getField(propertyId);
+      if (invalidFields.keySet().contains(field)) {
+        event.addErrorColumn(column);
+        if (firstErrorPropertyId == null) {
+          firstErrorPropertyId=propertyId;
+          firstErrorField=field;
+        }
+      }
+    }
+    String caption=getColumn(firstErrorPropertyId).getHeaderCaption();
+    String message=invalidFields.get(firstErrorField).getLocalizedMessage();
+    event.setUserErrorMessage(caption + ": " + message);
+  }
+ else {
+    com.vaadin.server.ErrorEvent.findErrorHandler(LegacyGrid.this).error(new ConnectorErrorEvent(LegacyGrid.this,event.getCause()));
+  }
+}
