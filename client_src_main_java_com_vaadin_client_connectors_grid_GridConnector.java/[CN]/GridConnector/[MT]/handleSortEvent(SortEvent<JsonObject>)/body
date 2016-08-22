@@ -1,0 +1,11 @@
+{
+  List<String> columnIds=new ArrayList<>();
+  List<SortDirection> sortDirections=new ArrayList<>();
+  for (  SortOrder so : event.getOrder()) {
+    if (columnToIdMap.containsKey(so.getColumn())) {
+      columnIds.add(columnToIdMap.get(so.getColumn()));
+      sortDirections.add(so.getDirection());
+    }
+  }
+  getRpcProxy(GridServerRpc.class).sort(columnIds.toArray(new String[0]),sortDirections.toArray(new SortDirection[0]),event.isUserOriginated());
+}
