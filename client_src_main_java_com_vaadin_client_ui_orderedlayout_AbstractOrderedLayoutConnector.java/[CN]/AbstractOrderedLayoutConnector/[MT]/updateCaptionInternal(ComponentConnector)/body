@@ -6,14 +6,13 @@
   Icon icon=child.getConnection().getIcon(iconUrlString);
   List<String> styles=child.getState().styles;
   String error=child.getState().errorMessage;
-  boolean showError=error != null;
-  if (child.getState() instanceof AbstractFieldState) {
-    AbstractFieldState abstractFieldState=(AbstractFieldState)child.getState();
-    showError=showError && !abstractFieldState.hideErrors;
+  boolean showError=false;
+  if (child instanceof HasErrorIndicator) {
+    showError=((HasErrorIndicator)child).isErrorIndicatorVisible();
   }
   boolean required=false;
-  if (child instanceof AbstractFieldConnector) {
-    required=((AbstractFieldConnector)child).isRequired();
+  if (child instanceof HasRequiredIndicator) {
+    required=((HasRequiredIndicator)child).isRequiredIndicatorVisible();
   }
   boolean enabled=child.isEnabled();
   if (slot.hasCaption() && null == caption) {
