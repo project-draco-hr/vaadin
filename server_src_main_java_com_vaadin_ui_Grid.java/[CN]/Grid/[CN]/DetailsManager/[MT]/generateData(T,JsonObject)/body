@@ -1,0 +1,15 @@
+{
+  if (generator == null || !visibleDetails.contains(data)) {
+    return;
+  }
+  if (!components.containsKey(data)) {
+    Component detailsComponent=generator.apply(data);
+    Objects.requireNonNull(detailsComponent,"Details generator can't create null components");
+    if (detailsComponent.getParent() != null) {
+      throw new IllegalStateException("Details component was already attached");
+    }
+    addComponentToGrid(detailsComponent);
+    components.put(data,detailsComponent);
+  }
+  jsonObject.put(GridState.JSONKEY_DETAILS_VISIBLE,components.get(data).getConnectorId());
+}
