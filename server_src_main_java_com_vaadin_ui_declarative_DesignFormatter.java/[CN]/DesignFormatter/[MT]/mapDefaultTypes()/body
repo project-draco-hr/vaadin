@@ -10,22 +10,16 @@
     }
   }
   Converter<String,Boolean> booleanConverter=new Converter<String,Boolean>(){
-    @Override public Boolean convertToModel(    String value,    Class<? extends Boolean> targetType,    Locale locale) throws Converter.ConversionException {
-      return !value.equalsIgnoreCase("false");
+    @Override public Result<Boolean> convertToModel(    String value,    Locale locale){
+      return Result.ok(!value.equalsIgnoreCase("false"));
     }
-    @Override public String convertToPresentation(    Boolean value,    Class<? extends String> targetType,    Locale locale) throws Converter.ConversionException {
+    @Override public String convertToPresentation(    Boolean value,    Locale locale){
       if (value.booleanValue()) {
         return "";
       }
  else {
         return "false";
       }
-    }
-    @Override public Class<Boolean> getModelType(){
-      return Boolean.class;
-    }
-    @Override public Class<String> getPresentationType(){
-      return String.class;
     }
   }
 ;
@@ -60,23 +54,17 @@
   }
 );
   converterMap.put(String.class,new Converter<String,String>(){
-    @Override public String convertToModel(    String value,    Class<? extends String> targetType,    Locale locale) throws Converter.ConversionException {
+    @Override public Result<String> convertToModel(    String value,    Locale locale){
+      return Result.ok(value);
+    }
+    @Override public String convertToPresentation(    String value,    Locale locale){
       return value;
-    }
-    @Override public String convertToPresentation(    String value,    Class<? extends String> targetType,    Locale locale) throws Converter.ConversionException {
-      return value;
-    }
-    @Override public Class<String> getModelType(){
-      return String.class;
-    }
-    @Override public Class<String> getPresentationType(){
-      return String.class;
     }
   }
 );
   Converter<String,Character> charConverter=new DesignToStringConverter<Character>(Character.class){
-    @Override public Character convertToModel(    String value,    Class<? extends Character> targetType,    Locale locale) throws Converter.ConversionException {
-      return value.charAt(0);
+    @Override public Result<Character> convertToModel(    String value,    Locale locale){
+      return Result.ok(value.charAt(0));
     }
   }
 ;
