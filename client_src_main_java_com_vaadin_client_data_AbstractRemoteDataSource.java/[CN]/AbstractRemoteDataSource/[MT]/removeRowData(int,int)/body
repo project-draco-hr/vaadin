@@ -1,27 +1,2 @@
 {
-  Profiler.enter("AbstractRemoteDataSource.removeRowData");
-  size-=count;
-  Range removedRange=Range.withLength(firstRowIndex,count);
-  dropFromCache(removedRange);
-  int firstMoved=Math.max(firstRowIndex + count,cached.getStart());
-  for (int i=firstMoved; i < cached.getEnd(); i++) {
-    moveRowFromIndexToIndex(i,i - count);
-  }
-  if (cached.isSubsetOf(removedRange)) {
-    cached=Range.withLength(0,0);
-  }
- else   if (removedRange.intersects(cached)) {
-    Range[] partitions=cached.partitionWith(removedRange);
-    Range remainsBefore=partitions[0];
-    Range transposedRemainsAfter=partitions[2].offsetBy(-removedRange.length());
-    cached=remainsBefore.combineWith(transposedRemainsAfter);
-  }
- else   if (removedRange.getEnd() <= cached.getStart()) {
-    cached=cached.offsetBy(-removedRange.length());
-  }
-  if (dataChangeHandler != null) {
-    dataChangeHandler.dataRemoved(firstRowIndex,count);
-  }
-  ensureCoverageCheck();
-  Profiler.leave("AbstractRemoteDataSource.removeRowData");
 }

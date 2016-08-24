@@ -1,26 +1,2 @@
 {
-  Profiler.enter("AbstractRemoteDataSource.insertRowData");
-  size+=count;
-  if (firstRowIndex <= cached.getStart()) {
-    Range oldCached=cached;
-    cached=cached.offsetBy(count);
-    for (int i=1; i <= cached.length(); i++) {
-      int oldIndex=oldCached.getEnd() - i;
-      int newIndex=cached.getEnd() - i;
-      moveRowFromIndexToIndex(oldIndex,newIndex);
-    }
-  }
- else   if (cached.contains(firstRowIndex)) {
-    int oldCacheEnd=cached.getEnd();
-    cached=cached.splitAt(firstRowIndex)[0];
-    for (int i=firstRowIndex; i < oldCacheEnd; i++) {
-      T row=indexToRowMap.remove(Integer.valueOf(i));
-      keyToIndexMap.remove(getRowKey(row));
-    }
-  }
-  if (dataChangeHandler != null) {
-    dataChangeHandler.dataAdded(firstRowIndex,count);
-  }
-  ensureCoverageCheck();
-  Profiler.leave("AbstractRemoteDataSource.insertRowData");
 }
