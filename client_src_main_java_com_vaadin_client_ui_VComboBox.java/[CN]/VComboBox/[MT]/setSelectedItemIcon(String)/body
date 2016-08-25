@@ -1,0 +1,26 @@
+{
+  if (selectedItemIcon != null) {
+    panel.remove(selectedItemIcon);
+  }
+  if (iconUri == null || iconUri.length() == 0) {
+    if (selectedItemIcon != null) {
+      selectedItemIcon=null;
+      afterSelectedItemIconChange();
+    }
+  }
+ else {
+    selectedItemIcon=new IconWidget(connector.getConnection().getIcon(iconUri));
+    selectedItemIcon.addDomHandler(VComboBox.this,ClickEvent.getType());
+    selectedItemIcon.addDomHandler(VComboBox.this,MouseDownEvent.getType());
+    iconUpdating=true;
+    selectedItemIcon.addDomHandler(new LoadHandler(){
+      @Override public void onLoad(      LoadEvent event){
+        afterSelectedItemIconChange();
+        iconUpdating=false;
+      }
+    }
+,LoadEvent.getType());
+    panel.insert(selectedItemIcon,0);
+    afterSelectedItemIconChange();
+  }
+}

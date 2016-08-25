@@ -1,0 +1,22 @@
+{
+  debug("VComboBox: updateRootWidth()");
+  if (connector.isUndefinedWidth()) {
+    int w=WidgetUtil.getRequiredWidth(this);
+    if (dataReceivedHandler.isWaitingForInitialData() && suggestionPopupMinWidth > w) {
+      Style style=getElement().getStyle();
+      String originalPadding=style.getPadding();
+      String originalBorder=style.getBorderWidth();
+      style.setPaddingLeft(0,Unit.PX);
+      style.setBorderWidth(0,Unit.PX);
+      style.setProperty("padding",originalPadding);
+      style.setProperty("borderWidth",originalBorder);
+      int iconWidth=selectedItemIcon == null ? 0 : WidgetUtil.getRequiredWidth(selectedItemIcon);
+      int buttonWidth=popupOpener == null ? 0 : WidgetUtil.getRequiredWidth(popupOpener);
+      tb.setWidth((suggestionPopupMinWidth - iconWidth - buttonWidth) + "px");
+    }
+    if (!tb.getElement().getStyle().getWidth().endsWith("px")) {
+      int iconWidth=selectedItemIcon == null ? 0 : selectedItemIcon.getOffsetWidth();
+      tb.setWidth((tb.getOffsetWidth() - iconWidth) + "px");
+    }
+  }
+}

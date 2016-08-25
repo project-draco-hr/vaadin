@@ -1,0 +1,23 @@
+{
+  if (selectedKey == null || "".equals(selectedKey)) {
+    currentSuggestion=null;
+    setSelectedItemIcon(null);
+    selectedOptionKey=null;
+    setText("");
+  }
+  for (  ComboBoxSuggestion suggestion : currentSuggestions) {
+    String suggestionKey=suggestion.getOptionKey();
+    if (!suggestionKey.equals(selectedKey)) {
+      continue;
+    }
+    if (updatePromptAndSelectionIfMatchFound) {
+      if (!suggestionKey.equals(selectedOptionKey) || suggestion.getReplacementString().equals(tb.getText()) || forceUpdateText) {
+        setText(suggestion.getReplacementString());
+        selectedOptionKey=suggestionKey;
+      }
+    }
+    currentSuggestion=suggestion;
+    setSelectedItemIcon(suggestion.getIconUri());
+    break;
+  }
+}

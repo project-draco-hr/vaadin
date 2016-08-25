@@ -1,0 +1,31 @@
+{
+  if (enableDebug) {
+    debug("VComboBox.SM: setSuggestions(" + suggestions + ")");
+  }
+  clearItems();
+  final Iterator<ComboBoxSuggestion> it=suggestions.iterator();
+  boolean isFirstIteration=true;
+  while (it.hasNext()) {
+    final ComboBoxSuggestion s=it.next();
+    final MenuItem mi=new MenuItem(s.getDisplayString(),true,s);
+    String style=s.getStyle();
+    if (style != null) {
+      mi.addStyleName("v-filterselect-item-" + style);
+    }
+    Roles.getListitemRole().set(mi.getElement());
+    WidgetUtil.sinkOnloadForImages(mi.getElement());
+    this.addItem(mi);
+    if (isFirstIteration && !allowNewItems) {
+      selectItem(mi);
+    }
+    if (currentSuggestion != null && s.getOptionKey().equals(currentSuggestion.getOptionKey())) {
+      if (currentSuggestion.getReplacementString().equals(tb.getText())) {
+        currentSuggestion=s;
+        selectItem(mi);
+        setSelectedCaption(currentSuggestion.getReplacementString());
+        setSelectedItemIcon(currentSuggestion.getIconUri());
+      }
+    }
+    isFirstIteration=false;
+  }
+}

@@ -1,0 +1,41 @@
+{
+  debug("VComboBox.SM: doPostFilterSelectedItemAction()");
+  final MenuItem item=getSelectedItem();
+  int p=getItems().size();
+  if (p > 0) {
+    for (int i=0; i < p; i++) {
+      final MenuItem potentialExactMatch=getItems().get(i);
+      if (potentialExactMatch.getText().equals(enteredItemValue)) {
+        selectItem(potentialExactMatch);
+        if (!"".equals(enteredItemValue) || (selectedOptionKey != null && !"".equals(selectedOptionKey))) {
+          doItemAction(potentialExactMatch,true);
+        }
+        suggestionPopup.hide();
+        return;
+      }
+    }
+  }
+  if ("".equals(enteredItemValue) && nullSelectionAllowed) {
+    onNullSelected();
+  }
+ else   if (allowNewItems) {
+    if (!enteredItemValue.equals(lastNewItemString)) {
+      lastNewItemString=enteredItemValue;
+      connector.sendNewItem(enteredItemValue);
+    }
+  }
+ else   if (item != null && !"".equals(lastFilter) && (item.getText().toLowerCase().contains(lastFilter.toLowerCase()))) {
+    doItemAction(item,true);
+  }
+ else {
+    if (currentSuggestion != null && !currentSuggestion.key.equals("")) {
+      String text=currentSuggestion.getReplacementString();
+      setText(text);
+      selectedOptionKey=currentSuggestion.key;
+    }
+ else {
+      onNullSelected();
+    }
+  }
+  suggestionPopup.hide();
+}

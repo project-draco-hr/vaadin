@@ -1,0 +1,33 @@
+{
+  if (initialData) {
+    suggestionPopup.menu.setSuggestions(currentSuggestions);
+    performSelection(serverSelectedKey,true,true);
+    updateSuggestionPopupMinWidth();
+    updateRootWidth();
+    initialData=false;
+    return;
+  }
+  suggestionPopup.menu.setSuggestions(currentSuggestions);
+  if (!waitingForFilteringResponse && suggestionPopup.isAttached()) {
+    showPopup=true;
+  }
+  if (showPopup) {
+    suggestionPopup.showSuggestions(currentPage,totalMatches);
+  }
+  waitingForFilteringResponse=false;
+  if (pendingUserInput != null) {
+    suggestionPopup.menu.actOnEnteredValueAfterFiltering(pendingUserInput);
+    pendingUserInput=null;
+  }
+ else   if (popupOpenerClicked) {
+    suggestionPopup.menu.highlightSelectedItem();
+  }
+ else {
+    navigateItemAfterPageChange();
+  }
+  if (!showPopup) {
+    suggestionPopup.hide();
+  }
+  popupOpenerClicked=false;
+  showPopup=false;
+}

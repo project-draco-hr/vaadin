@@ -1,0 +1,15 @@
+{
+  if (page < 0) {
+    if (getState().scrollToSelectedItem) {
+      getDataSource().ensureAvailability(0,10000);
+      return;
+    }
+ else {
+      page=0;
+    }
+  }
+  int adjustment=(getWidget().nullSelectionAllowed && "".equals(getWidget().lastFilter)) ? 1 : 0;
+  int startIndex=Math.max(0,page * getWidget().pageLength - adjustment);
+  int pageLength=getWidget().pageLength > 0 ? getWidget().pageLength : 10000;
+  getDataSource().ensureAvailability(startIndex,pageLength);
+}

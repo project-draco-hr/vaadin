@@ -1,0 +1,20 @@
+{
+  debug("VComboBox: onBlur()");
+  if (BrowserInfo.get().isIE() && preventNextBlurEventInIE) {
+    preventNextBlurEventInIE=false;
+    Element focusedElement=WidgetUtil.getFocusedElement();
+    if (getElement().isOrHasChild(focusedElement) || suggestionPopup.getElement().isOrHasChild(focusedElement)) {
+      iePreventNextFocus=true;
+      tb.setFocus(true);
+      return;
+    }
+  }
+  focused=false;
+  updatePlaceholder();
+  if (!readonly) {
+    reset();
+    suggestionPopup.hide();
+  }
+  removeStyleDependentName("focus");
+  connector.sendBlurEvent();
+}

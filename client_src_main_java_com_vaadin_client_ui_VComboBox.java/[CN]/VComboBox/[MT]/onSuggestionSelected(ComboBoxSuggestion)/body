@@ -1,0 +1,21 @@
+{
+  if (enableDebug) {
+    debug("VComboBox: onSuggestionSelected(" + suggestion.caption + ": "+ suggestion.key+ ")");
+  }
+  if (suggestion.key.equals("")) {
+    onNullSelected();
+    return;
+  }
+  dataReceivedHandler.cancelPendingPostFiltering();
+  currentSuggestion=suggestion;
+  String newKey=suggestion.getOptionKey();
+  String text=suggestion.getReplacementString();
+  setText(text);
+  setSelectedItemIcon(suggestion.getIconUri());
+  if (!(newKey.equals(selectedOptionKey))) {
+    selectedOptionKey=newKey;
+    connector.sendSelection(selectedOptionKey);
+    setSelectedCaption(text);
+  }
+  suggestionPopup.hide();
+}

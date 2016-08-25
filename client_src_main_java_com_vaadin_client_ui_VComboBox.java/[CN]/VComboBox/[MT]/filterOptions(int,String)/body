@@ -1,0 +1,26 @@
+{
+  debug("VComboBox: filterOptions(" + page + ", "+ filter+ ")");
+  if (filter.equals(lastFilter) && currentPage == page) {
+    if (!suggestionPopup.isAttached()) {
+      dataReceivedHandler.startWaitingForFilteringResponse();
+      connector.requestPage(currentPage);
+    }
+ else {
+      dataReceivedHandler.dataReceived();
+    }
+    return;
+  }
+  if (!filter.equals(lastFilter)) {
+    if ("".equals(filter) && page != 0) {
+      page=-1;
+    }
+ else {
+      page=0;
+    }
+  }
+  dataReceivedHandler.startWaitingForFilteringResponse();
+  connector.setFilter(filter);
+  connector.requestPage(currentPage);
+  lastFilter=filter;
+  currentPage=page;
+}

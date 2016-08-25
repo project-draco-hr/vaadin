@@ -1,0 +1,90 @@
+{
+  debug("VComboBox.SP: setPosition(" + offsetWidth + ", "+ offsetHeight+ ")");
+  int top=topPosition;
+  int left=getPopupLeft();
+  menu.setHeight("");
+  if (currentPage > 0 && !hasNextPage()) {
+    menu.fixHeightTo(pageLength);
+  }
+  offsetHeight=getOffsetHeight();
+  final int desiredHeight=offsetHeight;
+  final int desiredWidth=getMainWidth();
+  debug("VComboBox.SP:     desired[" + desiredWidth + ", "+ desiredHeight+ "]");
+  Element menuFirstChild=menu.getElement().getFirstChildElement();
+  int naturalMenuWidth;
+  if (BrowserInfo.get().isIE() && BrowserInfo.get().getBrowserMajorVersion() < 10) {
+    String before=menu.getElement().getParentElement().getStyle().getVisibility();
+    menu.getElement().getParentElement().getStyle().setVisibility(Visibility.VISIBLE);
+    naturalMenuWidth=WidgetUtil.getRequiredWidth(menuFirstChild);
+    menu.getElement().getParentElement().getStyle().setProperty("visibility",before);
+  }
+ else {
+    naturalMenuWidth=WidgetUtil.getRequiredWidth(menuFirstChild);
+  }
+  if (popupOuterPadding == -1) {
+    popupOuterPadding=WidgetUtil.measureHorizontalPaddingAndBorder(menu.getElement(),2) + WidgetUtil.measureHorizontalPaddingAndBorder(suggestionPopup.getElement(),0);
+  }
+  updateMenuWidth(desiredWidth,naturalMenuWidth);
+  if (BrowserInfo.get().isIE() && BrowserInfo.get().getBrowserMajorVersion() < 11) {
+    double naturalMenuOuterWidth;
+    if (BrowserInfo.get().getBrowserMajorVersion() < 10) {
+      String before=menu.getElement().getParentElement().getStyle().getVisibility();
+      menu.getElement().getParentElement().getStyle().setVisibility(Visibility.VISIBLE);
+      naturalMenuOuterWidth=WidgetUtil.getRequiredWidthDouble(menuFirstChild) + getMarginBorderPaddingWidth(menu.getElement());
+      menu.getElement().getParentElement().getStyle().setProperty("visibility",before);
+    }
+ else {
+      naturalMenuOuterWidth=WidgetUtil.getRequiredWidthDouble(menuFirstChild) + getMarginBorderPaddingWidth(menu.getElement());
+    }
+    double rootWidth=Math.max(desiredWidth - popupOuterPadding,naturalMenuOuterWidth);
+    getContainerElement().getStyle().setWidth(rootWidth,Unit.PX);
+  }
+  final int textInputHeight=VComboBox.this.getOffsetHeight();
+  final int textInputTopOnPage=tb.getAbsoluteTop();
+  final int viewportOffset=Document.get().getScrollTop();
+  final int textInputTopInViewport=textInputTopOnPage - viewportOffset;
+  final int textInputBottomInViewport=textInputTopInViewport + textInputHeight;
+  final int spaceAboveInViewport=textInputTopInViewport;
+  final int spaceBelowInViewport=Window.getClientHeight() - textInputBottomInViewport;
+  if (spaceBelowInViewport < offsetHeight && spaceBelowInViewport < spaceAboveInViewport) {
+    if (offsetHeight > spaceAboveInViewport) {
+      offsetHeight=spaceAboveInViewport;
+    }
+    top=textInputTopOnPage - offsetHeight;
+  }
+ else {
+    top=topPosition;
+    offsetHeight=Math.min(offsetHeight,spaceBelowInViewport);
+  }
+  offsetWidth=menuFirstChild.getOffsetWidth();
+  if (offsetHeight < desiredHeight) {
+    int menuHeight=offsetHeight;
+    if (isPagingEnabled) {
+      menuHeight-=up.getOffsetHeight() + down.getOffsetHeight() + status.getOffsetHeight();
+    }
+ else {
+      final ComputedStyle s=new ComputedStyle(menu.getElement());
+      menuHeight-=s.getIntProperty("marginBottom") + s.getIntProperty("marginTop");
+    }
+    int menuElementHeight=menu.getItemOffsetHeight();
+    if (menuHeight < menuElementHeight) {
+      menuHeight=menuElementHeight;
+    }
+    menu.setHeight(menuHeight + "px");
+    if (suggestionPopupWidth == null) {
+      final int naturalMenuWidthPlusScrollBar=naturalMenuWidth + WidgetUtil.getNativeScrollbarSize();
+      if (offsetWidth < naturalMenuWidthPlusScrollBar) {
+        menu.setWidth(naturalMenuWidthPlusScrollBar + "px");
+      }
+    }
+  }
+  if (offsetWidth + left > Window.getClientWidth()) {
+    left=VComboBox.this.getAbsoluteLeft() + VComboBox.this.getOffsetWidth() - offsetWidth;
+    if (left < 0) {
+      left=0;
+      menu.setWidth(Window.getClientWidth() + "px");
+    }
+  }
+  setPopupPosition(left,top);
+  menu.scrollSelectionIntoView();
+}

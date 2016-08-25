@@ -1,0 +1,26 @@
+{
+  if (enableDebug) {
+    debug("VComboBox: inputFieldKeyDown(" + event.getNativeKeyCode() + ")");
+  }
+switch (event.getNativeKeyCode()) {
+case KeyCodes.KEY_DOWN:
+case KeyCodes.KEY_UP:
+case KeyCodes.KEY_PAGEDOWN:
+case KeyCodes.KEY_PAGEUP:
+    filterOptions(-1,"");
+  tb.selectAll();
+dataReceivedHandler.popupOpenerClicked();
+break;
+case KeyCodes.KEY_ENTER:
+if (!allowNewItems) {
+return;
+}
+if (currentSuggestion != null && tb.getText().equals(currentSuggestion.getReplacementString())) {
+return;
+}
+dataReceivedHandler.reactOnInputWhenReady(tb.getText());
+suggestionPopup.hide();
+event.stopPropagation();
+break;
+}
+}
