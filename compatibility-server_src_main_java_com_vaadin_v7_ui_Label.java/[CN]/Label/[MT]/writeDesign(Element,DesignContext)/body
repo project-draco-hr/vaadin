@@ -1,0 +1,25 @@
+{
+  super.writeDesign(design,designContext);
+  String content=getValue();
+  if (content != null) {
+switch (getContentMode()) {
+case TEXT:
+case PREFORMATTED:
+case XML:
+case RAW:
+{
+        design.attr(DESIGN_ATTR_PLAIN_TEXT,true);
+        String encodeForTextNode=DesignFormatter.encodeForTextNode(content);
+        if (encodeForTextNode != null) {
+          design.html(encodeForTextNode);
+        }
+      }
+    break;
+case HTML:
+  design.html(content);
+break;
+default :
+throw new IllegalStateException("ContentMode " + getContentMode() + " is not supported by writeDesign");
+}
+}
+}

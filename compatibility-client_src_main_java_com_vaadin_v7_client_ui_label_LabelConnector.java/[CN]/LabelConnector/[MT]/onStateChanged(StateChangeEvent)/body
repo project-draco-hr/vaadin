@@ -1,0 +1,31 @@
+{
+  super.onStateChanged(stateChangeEvent);
+  boolean sinkOnloads=false;
+  Profiler.enter("LabelConnector.onStateChanged update content");
+switch (getState().contentMode) {
+case PREFORMATTED:
+    PreElement preElement=Document.get().createPreElement();
+  preElement.setInnerText(getState().text);
+getWidget().setHTML("");
+getWidget().getElement().appendChild(preElement);
+break;
+case TEXT:
+getWidget().setText(getState().text);
+break;
+case HTML:
+case RAW:
+sinkOnloads=true;
+case XML:
+getWidget().setHTML(getState().text);
+break;
+default :
+getWidget().setText("");
+break;
+}
+Profiler.leave("LabelConnector.onStateChanged update content");
+if (sinkOnloads) {
+Profiler.enter("LabelConnector.onStateChanged sinkOnloads");
+WidgetUtil.sinkOnloadForImages(getWidget().getElement());
+Profiler.leave("LabelConnector.onStateChanged sinkOnloads");
+}
+}
