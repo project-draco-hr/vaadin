@@ -1,0 +1,23 @@
+{
+  final int escalatorRowsBefore=body.visualRowOrder.size();
+  if (height != null && !height.isEmpty()) {
+    super.setHeight(height);
+  }
+ else {
+    if (getHeightMode() == HeightMode.UNDEFINED) {
+      int newHeightByRows=body.getRowCount();
+      if (heightByRows != newHeightByRows) {
+        heightByRows=newHeightByRows;
+        applyHeightByRows();
+      }
+      return;
+    }
+ else {
+      super.setHeight(DEFAULT_HEIGHT);
+    }
+  }
+  recalculateElementSizes();
+  if (escalatorRowsBefore != body.visualRowOrder.size()) {
+    fireRowVisibilityChangeEvent();
+  }
+}

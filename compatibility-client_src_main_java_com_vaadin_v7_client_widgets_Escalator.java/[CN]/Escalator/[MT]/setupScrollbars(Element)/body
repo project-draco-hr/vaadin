@@ -1,0 +1,40 @@
+{
+  ScrollHandler scrollHandler=new ScrollHandler(){
+    @Override public void onScroll(    ScrollEvent event){
+      scroller.onScroll();
+      fireEvent(new ScrollEvent());
+    }
+  }
+;
+  int scrollbarThickness=WidgetUtil.getNativeScrollbarSize();
+  if (BrowserInfo.get().isIE()) {
+    scrollbarThickness+=1;
+  }
+  root.appendChild(verticalScrollbar.getElement());
+  verticalScrollbar.addScrollHandler(scrollHandler);
+  verticalScrollbar.setScrollbarThickness(scrollbarThickness);
+  root.appendChild(horizontalScrollbar.getElement());
+  horizontalScrollbar.addScrollHandler(scrollHandler);
+  horizontalScrollbar.setScrollbarThickness(scrollbarThickness);
+  horizontalScrollbar.addVisibilityHandler(new ScrollbarBundle.VisibilityHandler(){
+    private boolean queued=false;
+    @Override public void visibilityChanged(    ScrollbarBundle.VisibilityChangeEvent event){
+      if (queued) {
+        return;
+      }
+      queued=true;
+      Scheduler.get().scheduleFinally(new ScheduledCommand(){
+        @Override public void execute(){
+          applyHeightByRows();
+          queued=false;
+        }
+      }
+);
+    }
+  }
+);
+  if (WidgetUtil.getNativeScrollbarSize() == 0) {
+    verticalScrollbar.getElement().getStyle().setZIndex(90);
+    horizontalScrollbar.getElement().getStyle().setZIndex(90);
+  }
+}

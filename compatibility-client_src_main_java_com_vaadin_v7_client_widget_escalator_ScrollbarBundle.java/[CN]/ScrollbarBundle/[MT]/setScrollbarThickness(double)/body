@@ -1,0 +1,19 @@
+{
+  isInvisibleScrollbar=(px == 0);
+  if (isInvisibleScrollbar) {
+    Event.sinkEvents(root,Event.ONSCROLL);
+    Event.setEventListener(root,new EventListener(){
+      @Override public void onBrowserEvent(      Event event){
+        invisibleScrollbarTemporaryResizer.show();
+      }
+    }
+);
+    root.getStyle().setVisibility(Visibility.HIDDEN);
+  }
+ else {
+    Event.sinkEvents(root,0);
+    Event.setEventListener(root,null);
+    root.getStyle().clearVisibility();
+  }
+  internalSetScrollbarThickness(Math.max(1d,px));
+}

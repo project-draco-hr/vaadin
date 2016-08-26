@@ -1,0 +1,15 @@
+{
+  if (enabled == this.enabled) {
+    return;
+  }
+  this.enabled=enabled;
+  getElement().setTabIndex(enabled ? 0 : -1);
+  boolean editorOpen=editor.getState() != State.INACTIVE;
+  if (editorOpen) {
+    editor.setGridEnabled(enabled);
+  }
+  sidebar.setEnabled(enabled);
+  getEscalator().setScrollLocked(Direction.VERTICAL,!enabled || editorOpen);
+  getEscalator().setScrollLocked(Direction.HORIZONTAL,!enabled);
+  fireEvent(new GridEnabledEvent(enabled));
+}

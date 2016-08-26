@@ -1,0 +1,17 @@
+{
+  if (state != State.ACTIVE && state != State.SAVING) {
+    throw new IllegalStateException("Cannot set cell error " + "status: editor is neither active nor saving.");
+  }
+  if (isEditorColumnError(column) == hasError) {
+    return;
+  }
+  Element editorCell=getWidget(column).getElement().getParentElement();
+  if (hasError) {
+    editorCell.addClassName(ERROR_CLASS_NAME);
+    columnErrors.add(column);
+  }
+ else {
+    editorCell.removeClassName(ERROR_CLASS_NAME);
+    columnErrors.remove(column);
+  }
+}

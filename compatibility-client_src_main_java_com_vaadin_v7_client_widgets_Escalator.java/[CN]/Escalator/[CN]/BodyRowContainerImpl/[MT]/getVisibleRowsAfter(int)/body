@@ -1,0 +1,17 @@
+{
+  Range visibleRowLogicalRange=getVisibleRowRange();
+  boolean allRowsAreInView=logicalRow < visibleRowLogicalRange.getStart();
+  boolean noRowsAreInView=logicalRow >= visibleRowLogicalRange.getEnd() - 1;
+  if (allRowsAreInView) {
+    return Collections.unmodifiableList(visualRowOrder);
+  }
+ else   if (noRowsAreInView) {
+    return Collections.emptyList();
+  }
+ else {
+    int fromIndex=(logicalRow - visibleRowLogicalRange.getStart()) + 1;
+    int toIndex=visibleRowLogicalRange.length();
+    List<TableRowElement> sublist=visualRowOrder.subList(fromIndex,toIndex);
+    return Collections.unmodifiableList(sublist);
+  }
+}

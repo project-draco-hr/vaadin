@@ -1,0 +1,61 @@
+{
+  this.grid=grid;
+  rootContainer=new FlowPanel();
+  initWidget(rootContainer);
+  openCloseButton=new Button();
+  openCloseButton.addClickHandler(openCloseButtonHandler);
+  rootContainer.add(openCloseButton);
+  content=new FlowPanel(){
+    @Override public boolean remove(    Widget w){
+      boolean removed=super.remove(w);
+      if (removed) {
+        updateVisibility();
+      }
+      return removed;
+    }
+  }
+;
+  createOverlay();
+  menuBar=new MenuBar(true){
+    @Override public MenuItem insertItem(    MenuItem item,    int beforeIndex) throws IndexOutOfBoundsException {
+      if (getParent() == null) {
+        content.insert(this,0);
+        updateVisibility();
+      }
+      return super.insertItem(item,beforeIndex);
+    }
+    @Override public void removeItem(    MenuItem item){
+      super.removeItem(item);
+      if (getItems().isEmpty()) {
+        menuBar.removeFromParent();
+      }
+    }
+    @Override public void onBrowserEvent(    Event event){
+      if (event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == KeyCodes.KEY_ENTER) {
+        final MenuItem item=getSelectedItem();
+        super.onBrowserEvent(event);
+        Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+          @Override public void execute(){
+            selectItem(item);
+            focus();
+          }
+        }
+);
+      }
+ else {
+        super.onBrowserEvent(event);
+      }
+    }
+  }
+;
+  KeyDownHandler keyDownHandler=new KeyDownHandler(){
+    @Override public void onKeyDown(    KeyDownEvent event){
+      if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+        close();
+      }
+    }
+  }
+;
+  openCloseButton.addDomHandler(keyDownHandler,KeyDownEvent.getType());
+  menuBar.addDomHandler(keyDownHandler,KeyDownEvent.getType());
+}

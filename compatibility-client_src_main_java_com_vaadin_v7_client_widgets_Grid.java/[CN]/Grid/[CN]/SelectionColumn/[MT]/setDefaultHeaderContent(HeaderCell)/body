@@ -1,0 +1,54 @@
+{
+  final SelectionModel.Multi<T> model=(Multi<T>)getSelectionModel();
+  if (selectAllCheckBox == null) {
+    selectAllCheckBox=GWT.create(CheckBox.class);
+    selectAllCheckBox.setStylePrimaryName(getStylePrimaryName() + SELECT_ALL_CHECKBOX_CLASSNAME);
+    selectAllCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>(){
+      @Override public void onValueChange(      ValueChangeEvent<Boolean> event){
+        if (event.getValue()) {
+          fireEvent(new SelectAllEvent<T>(model));
+          selected=true;
+        }
+ else {
+          model.deselectAll();
+          selected=false;
+        }
+      }
+    }
+);
+    selectAllCheckBox.setValue(selected);
+    addHeaderClickHandler(new HeaderClickHandler(){
+      @Override public void onClick(      GridClickEvent event){
+        CellReference<?> targetCell=event.getTargetCell();
+        int defaultRowIndex=getHeader().getRows().indexOf(getDefaultHeaderRow());
+        if (targetCell.getColumnIndex() == 0 && targetCell.getRowIndex() == defaultRowIndex) {
+          selectAllCheckBox.setValue(!selectAllCheckBox.getValue(),true);
+        }
+      }
+    }
+);
+    addHeaderKeyUpHandler(new HeaderKeyUpHandler(){
+      @Override public void onKeyUp(      GridKeyUpEvent event){
+        if (event.getNativeKeyCode() != KeyCodes.KEY_SPACE) {
+          return;
+        }
+        HeaderRow targetHeaderRow=getHeader().getRow(event.getFocusedCell().getRowIndex());
+        if (!targetHeaderRow.isDefault()) {
+          return;
+        }
+        if (event.getFocusedCell().getColumn() == SelectionColumn.this) {
+          selectAllCheckBox.setValue(!selectAllCheckBox.getValue(),true);
+        }
+      }
+    }
+);
+  }
+ else {
+    for (    HeaderRow row : header.getRows()) {
+      if (row.getCell(this).getType() == GridStaticCellType.WIDGET) {
+        row.getCell(this).setText("");
+      }
+    }
+  }
+  selectionCell.setWidget(selectAllCheckBox);
+}

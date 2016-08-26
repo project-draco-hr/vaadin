@@ -1,0 +1,15 @@
+{
+  super.onResize();
+  Scheduler.get().scheduleFinally(new ScheduledCommand(){
+    @Override public void execute(){
+      if (escalator.getInnerWidth() != autoColumnWidthsRecalculator.lastCalculatedInnerWidth) {
+        recalculateColumnWidths();
+      }
+      if (isEditorActive()) {
+        editor.updateVerticalScrollPosition();
+      }
+      refreshBody();
+    }
+  }
+);
+}

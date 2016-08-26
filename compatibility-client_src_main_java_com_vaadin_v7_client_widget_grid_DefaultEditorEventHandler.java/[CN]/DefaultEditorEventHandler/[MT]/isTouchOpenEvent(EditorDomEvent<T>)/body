@@ -1,0 +1,17 @@
+{
+  final Event e=event.getDomEvent();
+  final int type=e.getTypeInt();
+  final double now=Duration.currentTimeMillis();
+  final int currentX=WidgetUtil.getTouchOrMouseClientX(e);
+  final int currentY=WidgetUtil.getTouchOrMouseClientY(e);
+  final boolean validTouchOpenEvent=type == Event.ONTOUCHEND && now - lastTouchEventTime < 500 && lastTouchEventRow == event.getCell().getRowIndex() && Math.abs(lastTouchEventX - currentX) < 20 && Math.abs(lastTouchEventY - currentY) < 20;
+  if (type == Event.ONTOUCHSTART) {
+    lastTouchEventX=currentX;
+    lastTouchEventY=currentY;
+  }
+  if (type == Event.ONTOUCHEND) {
+    lastTouchEventTime=now;
+    lastTouchEventRow=event.getCell().getRowIndex();
+  }
+  return validTouchOpenEvent;
+}

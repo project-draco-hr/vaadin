@@ -1,0 +1,17 @@
+{
+  for (  FlyweightCell cell : cellsToDetach) {
+    Renderer<?> renderer=findRenderer(cell);
+    if (renderer instanceof WidgetRenderer) {
+      try {
+        Widget w=WidgetUtil.findWidget(cell.getElement().getFirstChildElement(),null);
+        if (w != null) {
+          setParent(w,null);
+          cell.getElement().removeChild(w.getElement());
+        }
+      }
+ catch (      RuntimeException e) {
+        getLogger().log(Level.SEVERE,"Error detaching widget in column " + cell.getColumn(),e);
+      }
+    }
+  }
+}

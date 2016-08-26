@@ -1,0 +1,20 @@
+{
+  if (isBuffered()) {
+    return;
+  }
+  double newScrollTop=grid.getScrollTop();
+  int gridTop=grid.getElement().getAbsoluteTop();
+  int editorHeight=editorOverlay.getOffsetHeight();
+  Escalator escalator=grid.getEscalator();
+  TableSectionElement header=escalator.getHeader().getElement();
+  int footerTop=escalator.getFooter().getElement().getAbsoluteTop();
+  int headerBottom=header.getAbsoluteBottom();
+  double newTop=originalTop - (newScrollTop - originalScrollTop);
+  if (newTop + gridTop < headerBottom) {
+    newTop=header.getOffsetHeight();
+  }
+ else   if (newTop + gridTop > footerTop - editorHeight) {
+    newTop=footerTop - editorHeight - gridTop;
+  }
+  editorOverlay.getStyle().setTop(newTop,Unit.PX);
+}

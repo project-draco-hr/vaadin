@@ -1,0 +1,53 @@
+{
+  if (!enabled) {
+    throw new IllegalStateException("Cannot edit row: editor is not enabled");
+  }
+  if (isWorkPending()) {
+    return;
+  }
+  if (state != State.INACTIVE && this.rowIndex != rowIndex) {
+    if (isBuffered()) {
+      throw new IllegalStateException("Cannot edit row: editor already in edit mode");
+    }
+ else     if (!columnErrors.isEmpty()) {
+      return;
+    }
+  }
+  if (columnIndex >= grid.getVisibleColumns().size()) {
+    throw new IllegalArgumentException("Edited column index " + columnIndex + " was bigger than visible column count.");
+  }
+  if (this.rowIndex == rowIndex && focusedColumnIndex == columnIndex) {
+    return;
+  }
+  if (this.rowIndex == rowIndex) {
+    if (focusedColumnIndex != columnIndex) {
+      if (columnIndex >= grid.getFrozenColumnCount()) {
+        grid.getEscalator().scrollToColumn(columnIndex,ScrollDestination.ANY,0);
+      }
+      focusedColumnIndex=columnIndex;
+    }
+    updateHorizontalScrollPosition();
+    if (focusedColumnIndex >= 0) {
+      grid.focusCell(rowIndex,focusedColumnIndex);
+      focusColumn(focusedColumnIndex);
+    }
+    return;
+  }
+  state=State.ACTIVATING;
+  final Escalator escalator=grid.getEscalator();
+  if (escalator.getVisibleRowRange().contains(rowIndex)) {
+    show(rowIndex,columnIndex);
+  }
+ else {
+    vScrollHandler=grid.addScrollHandler(new ScrollHandler(){
+      @Override public void onScroll(      ScrollEvent event){
+        if (escalator.getVisibleRowRange().contains(rowIndex)) {
+          show(rowIndex,columnIndex);
+          vScrollHandler.removeHandler();
+        }
+      }
+    }
+);
+    grid.scrollToRow(rowIndex,isBuffered() ? ScrollDestination.MIDDLE : ScrollDestination.ANY);
+  }
+}

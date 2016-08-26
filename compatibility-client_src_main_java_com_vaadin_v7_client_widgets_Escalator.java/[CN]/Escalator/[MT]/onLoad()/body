@@ -1,0 +1,32 @@
+{
+  super.onLoad();
+  header.autodetectRowHeightLater();
+  body.autodetectRowHeightLater();
+  footer.autodetectRowHeightLater();
+  header.paintInsertRows(0,header.getRowCount());
+  footer.paintInsertRows(0,footer.getRowCount());
+  Scheduler.get().scheduleDeferred(new Command(){
+    @Override public void execute(){
+      recalculateElementSizes();
+    }
+  }
+);
+  boolean columnsChanged=false;
+  for (  ColumnConfigurationImpl.Column column : columnConfiguration.columns) {
+    boolean columnChanged=column.measureAndSetWidthIfNeeded();
+    if (columnChanged) {
+      columnsChanged=true;
+    }
+  }
+  if (columnsChanged) {
+    header.reapplyColumnWidths();
+    body.reapplyColumnWidths();
+    footer.reapplyColumnWidths();
+  }
+  verticalScrollbar.onLoad();
+  horizontalScrollbar.onLoad();
+  scroller.attachScrollListener(verticalScrollbar.getElement());
+  scroller.attachScrollListener(horizontalScrollbar.getElement());
+  scroller.attachMousewheelListener(getElement());
+  scroller.attachTouchListeners(getElement());
+}

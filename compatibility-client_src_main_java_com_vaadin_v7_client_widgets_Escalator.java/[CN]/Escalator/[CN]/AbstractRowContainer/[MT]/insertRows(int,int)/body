@@ -1,0 +1,24 @@
+{
+  if (index < 0 || index > getRowCount()) {
+    throw new IndexOutOfBoundsException("The given index (" + index + ") was outside of the current number of rows (0.."+ getRowCount()+ ")");
+  }
+  if (numberOfRows < 1) {
+    throw new IllegalArgumentException("Number of rows must be 1 or greater (was " + numberOfRows + ")");
+  }
+  rows+=numberOfRows;
+  if (heightMode == HeightMode.UNDEFINED) {
+    heightByRows=rows;
+  }
+  if (isAttached()) {
+    paintInsertRows(index,numberOfRows);
+    if (rows == numberOfRows) {
+      Map<Integer,Double> colWidths=new HashMap<Integer,Double>();
+      for (int i=0; i < getColumnConfiguration().getColumnCount(); i++) {
+        Double width=Double.valueOf(getColumnConfiguration().getColumnWidth(i));
+        Integer col=Integer.valueOf(i);
+        colWidths.put(col,width);
+      }
+      getColumnConfiguration().setColumnWidths(colWidths);
+    }
+  }
+}

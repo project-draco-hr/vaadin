@@ -1,0 +1,25 @@
+{
+  final int escalatorRowsStillFit=getMaxEscalatorRowCapacity() - getDomRowCount();
+  final int escalatorRowsNeeded=Math.min(numberOfRows,escalatorRowsStillFit);
+  if (escalatorRowsNeeded > 0) {
+    final List<TableRowElement> addedRows=paintInsertStaticRows(index,escalatorRowsNeeded);
+    visualRowOrder.addAll(index,addedRows);
+    double y=index * getDefaultRowHeight() + spacerContainer.getSpacerHeightsSumUntilIndex(index);
+    for (int i=index; i < visualRowOrder.size(); i++) {
+      final TableRowElement tr;
+      if (i - index < addedRows.size()) {
+        tr=addedRows.get(i - index);
+      }
+ else {
+        tr=visualRowOrder.get(i);
+      }
+      setRowPosition(tr,0,y);
+      y+=getDefaultRowHeight();
+      y+=spacerContainer.getSpacerHeight(i);
+    }
+    return addedRows;
+  }
+ else {
+    return Collections.emptyList();
+  }
+}

@@ -1,0 +1,40 @@
+{
+  Scheduler.get().scheduleFinally(new ScheduledCommand(){
+    @Override public void execute(){
+      validateScrollDestination(destination,padding);
+      if (rowIndex != -1) {
+        verifyValidRowIndex(rowIndex);
+      }
+      final Range rowRange;
+      if (rowIndex != -1) {
+        int rowTop=(int)Math.floor(body.getRowTop(rowIndex));
+        int rowHeight=(int)Math.ceil(body.getDefaultRowHeight());
+        rowRange=Range.withLength(rowTop,rowHeight);
+      }
+ else {
+        rowRange=Range.withLength(0,0);
+      }
+      final SpacerContainer.SpacerImpl spacer=body.spacerContainer.getSpacer(rowIndex);
+      if (rowIndex == -1 && spacer == null) {
+        throw new IllegalArgumentException("Cannot scroll to row index " + "-1, as there is no spacer open at that index.");
+      }
+      final Range targetRange;
+      if (spacer != null) {
+        final int spacerTop=(int)Math.floor(spacer.getTop());
+        final int spacerHeight=(int)Math.ceil(spacer.getHeight());
+        Range spacerRange=Range.withLength(spacerTop,spacerHeight);
+        targetRange=rowRange.combineWith(spacerRange);
+      }
+ else {
+        targetRange=rowRange;
+      }
+      int targetStart=targetRange.getStart();
+      int targetEnd=targetRange.getEnd();
+      double viewportStart=getScrollTop();
+      double viewportEnd=viewportStart + body.getHeightOfSection();
+      double scrollPos=getScrollPos(destination,targetStart,targetEnd,viewportStart,viewportEnd,padding);
+      setScrollTop(scrollPos);
+    }
+  }
+);
+}

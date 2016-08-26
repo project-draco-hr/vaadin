@@ -1,0 +1,84 @@
+{
+  StaticSection.StaticRow<?> staticRow=section.getRow(row.getRow());
+  final List<Column<?,T>> columns=getVisibleColumns();
+  setCustomStyleName(row.getElement(),staticRow.getStyleName());
+  for (  FlyweightCell cell : cellsToUpdate) {
+    final StaticSection.StaticCell metadata=staticRow.getCell(columns.get(cell.getColumn()));
+    if (staticRow instanceof HeaderRow) {
+      addSortingIndicatorsToHeaderRow((HeaderRow)staticRow,cell);
+    }
+    cell.setColSpan(metadata.getColspan());
+    Element td=cell.getElement();
+    td.removeAllChildren();
+    setCustomStyleName(td,metadata.getStyleName());
+    Element content;
+    if (metadata.getType() != GridStaticCellType.WIDGET) {
+      content=DOM.createDiv();
+      if (staticRow instanceof HeaderRow) {
+        content.setClassName(getStylePrimaryName() + "-column-header-content");
+        if (((HeaderRow)staticRow).isDefault()) {
+          content.setClassName(content.getClassName() + " " + getStylePrimaryName()+ "-column-default-header-content");
+        }
+      }
+ else       if (staticRow instanceof FooterRow) {
+        content.setClassName(getStylePrimaryName() + "-column-footer-content");
+      }
+ else {
+        getLogger().severe("Unhandled static row type " + staticRow.getClass().getCanonicalName());
+      }
+      td.appendChild(content);
+    }
+ else {
+      content=td;
+    }
+switch (metadata.getType()) {
+case TEXT:
+      content.setInnerText(metadata.getText());
+    break;
+case HTML:
+  content.setInnerHTML(metadata.getHtml());
+break;
+case WIDGET:
+preDetach(row,Arrays.asList(cell));
+content.setInnerHTML("");
+postAttach(row,Arrays.asList(cell));
+break;
+}
+if (columns.get(cell.getColumn()).isResizable() && staticRow instanceof HeaderRow && ((HeaderRow)staticRow).isDefault()) {
+final int column=cell.getColumn();
+DragHandle dragger=new DragHandle(getStylePrimaryName() + "-column-resize-handle",new DragHandleCallback(){
+private Column<?,T> col=getVisibleColumn(column);
+private double initialWidth=0;
+private double minCellWidth;
+@Override public void onUpdate(double deltaX,double deltaY){
+col.setWidth(Math.max(minCellWidth,initialWidth + deltaX));
+}
+@Override public void onStart(){
+initialWidth=col.getWidthActual();
+minCellWidth=escalator.getMinCellWidth(getColumns().indexOf(col));
+for (Column<?,T> c : getVisibleColumns()) {
+if (selectionColumn == c) {
+continue;
+}
+if (c.getWidth() < 0) {
+c.setWidth(c.getWidthActual());
+fireEvent(new ColumnResizeEvent<T>(c));
+}
+}
+WidgetUtil.setTextSelectionEnabled(getElement(),false);
+}
+@Override public void onComplete(){
+fireEvent(new ColumnResizeEvent<T>(col));
+WidgetUtil.setTextSelectionEnabled(getElement(),true);
+}
+@Override public void onCancel(){
+col.setWidth(initialWidth);
+WidgetUtil.setTextSelectionEnabled(getElement(),true);
+}
+}
+);
+dragger.addTo(td);
+}
+cellFocusHandler.updateFocusedCellStyle(cell,container);
+}
+}

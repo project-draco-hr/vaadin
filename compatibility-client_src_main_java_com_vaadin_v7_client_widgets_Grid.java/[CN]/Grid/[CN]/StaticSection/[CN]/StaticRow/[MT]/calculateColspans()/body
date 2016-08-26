@@ -1,0 +1,19 @@
+{
+  for (  CELLTYPE cell : this.cells.values()) {
+    cell.setColspan(1);
+  }
+  for (  Set<Column<?,?>> group : cellGroups.keySet()) {
+    if (!checkMergedCellIsContinuous(group)) {
+      cellGroups.get(group).setColspan(1);
+    }
+ else {
+      int colSpan=0;
+      for (      Column<?,?> column : group) {
+        if (!column.isHidden()) {
+          colSpan++;
+        }
+      }
+      cellGroups.get(group).setColspan(Math.max(1,colSpan));
+    }
+  }
+}

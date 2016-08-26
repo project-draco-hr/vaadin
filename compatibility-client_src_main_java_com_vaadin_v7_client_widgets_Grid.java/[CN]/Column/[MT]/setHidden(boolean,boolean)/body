@@ -1,0 +1,23 @@
+{
+  if (this.hidden != hidden) {
+    if (hidden) {
+      grid.escalator.getColumnConfiguration().removeColumns(grid.getVisibleColumns().indexOf(this),1);
+      this.hidden=hidden;
+    }
+ else {
+      this.hidden=hidden;
+      final int columnIndex=grid.getVisibleColumns().indexOf(this);
+      grid.escalator.getColumnConfiguration().insertColumns(columnIndex,1);
+      int gridFrozenColumns=grid.getFrozenColumnCount();
+      int escalatorFrozenColumns=grid.escalator.getColumnConfiguration().getFrozenColumnCount();
+      if (gridFrozenColumns > escalatorFrozenColumns && escalatorFrozenColumns == columnIndex) {
+        grid.escalator.getColumnConfiguration().setFrozenColumnCount(++escalatorFrozenColumns);
+      }
+    }
+    grid.columnHider.updateHidingToggle(this);
+    grid.header.updateColSpans();
+    grid.footer.updateColSpans();
+    scheduleColumnWidthRecalculator();
+    this.grid.fireEvent(new ColumnVisibilityChangeEvent<T>(this,hidden,userOriginated));
+  }
+}

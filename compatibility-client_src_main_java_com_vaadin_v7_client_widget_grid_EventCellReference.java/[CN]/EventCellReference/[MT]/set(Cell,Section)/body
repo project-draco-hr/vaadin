@@ -1,0 +1,21 @@
+{
+  Grid<T> grid=getGrid();
+  int columnIndexDOM=targetCell.getColumn();
+  Column<?,T> column=null;
+  if (columnIndexDOM >= 0 && columnIndexDOM < grid.getVisibleColumns().size()) {
+    column=grid.getVisibleColumns().get(columnIndexDOM);
+  }
+  int row=targetCell.getRow();
+  T rowObject;
+  if (section == Section.BODY && row >= 0 && row < grid.getDataSource().size()) {
+    rowObject=grid.getDataSource().getRow(row);
+  }
+ else {
+    rowObject=null;
+  }
+  getRowReference().set(row,rowObject,null);
+  int columnIndex=grid.getColumns().indexOf(column);
+  set(columnIndexDOM,columnIndex,column);
+  this.element=targetCell.getElement();
+  this.section=section;
+}

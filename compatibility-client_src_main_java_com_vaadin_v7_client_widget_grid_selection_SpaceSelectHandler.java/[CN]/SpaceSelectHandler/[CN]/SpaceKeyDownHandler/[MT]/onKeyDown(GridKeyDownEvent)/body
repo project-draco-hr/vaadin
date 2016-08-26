@@ -1,0 +1,23 @@
+{
+  if (event.getNativeKeyCode() != KeyCodes.KEY_SPACE || spaceDown) {
+    return;
+  }
+  event.getNativeEvent().preventDefault();
+  spaceDown=true;
+  final int rowIndex=event.getFocusedCell().getRowIndex();
+  if (scrollHandler != null) {
+    scrollHandler.removeHandler();
+    scrollHandler=null;
+  }
+  scrollHandler=grid.addDataAvailableHandler(new DataAvailableHandler(){
+    @Override public void onDataAvailable(    DataAvailableEvent dataAvailableEvent){
+      if (dataAvailableEvent.getAvailableRows().contains(rowIndex)) {
+        setSelected(grid,rowIndex);
+        scrollHandler.removeHandler();
+        scrollHandler=null;
+      }
+    }
+  }
+);
+  grid.scrollToRow(rowIndex,ScrollDestination.ANY);
+}

@@ -1,8 +1,10 @@
 {
   JClassType createRendererClass=ConnectorBundle.findInheritedMethod(type,"createRenderer").getEnclosingType();
-  if (createRendererClass.getQualifiedSourceName().equals(AbstractRendererConnector.class.getCanonicalName())) {
+  String connectorSrcName=createRendererClass.getQualifiedSourceName();
+  if (isAbstractRendererConnector(connectorSrcName)) {
     JMethod getRenderer=ConnectorBundle.findInheritedMethod(type,"getRenderer");
-    if (getRenderer.getEnclosingType().getQualifiedSourceName().equals(AbstractRendererConnector.class.getCanonicalName())) {
+    String rendererSrcName=getRenderer.getEnclosingType().getQualifiedSourceName();
+    if (isAbstractRendererConnector(rendererSrcName)) {
       logger.log(Type.ERROR,type.getQualifiedSourceName() + " must override either createRenderer or getRenderer");
       throw new UnableToCompleteException();
     }

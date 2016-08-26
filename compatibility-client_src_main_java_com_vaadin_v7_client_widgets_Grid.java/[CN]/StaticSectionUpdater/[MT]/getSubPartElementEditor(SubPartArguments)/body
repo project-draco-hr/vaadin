@@ -1,0 +1,21 @@
+{
+  if (!args.getType().equalsIgnoreCase("editor") || editor.getState() != State.ACTIVE) {
+    return null;
+  }
+  if (args.getIndicesLength() == 0) {
+    return editor.editorOverlay;
+  }
+ else   if (args.getIndicesLength() == 1) {
+    int index=args.getIndex(0);
+    if (index >= columns.size()) {
+      return null;
+    }
+    escalator.scrollToColumn(index,ScrollDestination.ANY,0);
+    Widget widget=editor.getWidget(columns.get(index));
+    if (widget != null) {
+      return widget.getElement();
+    }
+    return null;
+  }
+  return null;
+}

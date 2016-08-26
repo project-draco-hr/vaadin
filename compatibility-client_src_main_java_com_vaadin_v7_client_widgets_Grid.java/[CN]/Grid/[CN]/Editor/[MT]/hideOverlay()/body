@@ -1,0 +1,27 @@
+{
+  if (editorOverlay.getParentElement() == null) {
+    return;
+  }
+  if (pinnedRowHandle != null) {
+    pinnedRowHandle.unpin();
+    pinnedRowHandle=null;
+  }
+  for (  HandlerRegistration r : focusHandlers) {
+    r.removeHandler();
+  }
+  focusHandlers.clear();
+  for (  Widget w : columnToWidget.values()) {
+    setParent(w,null);
+  }
+  columnToWidget.clear();
+  if (isBuffered()) {
+    grid.detachWidget(saveButton);
+    grid.detachWidget(cancelButton);
+  }
+  editorOverlay.removeAllChildren();
+  cellWrapper.removeAllChildren();
+  frozenCellWrapper.removeAllChildren();
+  editorOverlay.removeFromParent();
+  hScrollHandler.removeHandler();
+  clearEditorColumnErrors();
+}

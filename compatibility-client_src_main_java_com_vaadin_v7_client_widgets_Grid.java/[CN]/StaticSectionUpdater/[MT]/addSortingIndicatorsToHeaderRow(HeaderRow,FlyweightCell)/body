@@ -1,0 +1,30 @@
+{
+  Element cellElement=cell.getElement();
+  boolean sortedBefore=cellElement.hasClassName("sort-asc") || cellElement.hasClassName("sort-desc");
+  cleanup(cell);
+  if (!headerRow.isDefault()) {
+    return;
+  }
+  final Column<?,T> column=getVisibleColumn(cell.getColumn());
+  SortOrder sortingOrder=getSortOrder(column);
+  boolean sortable=column.isSortable();
+  if (sortable) {
+    cellElement.addClassName("sortable");
+  }
+  if (!sortable || sortingOrder == null) {
+    return;
+  }
+  if (SortDirection.ASCENDING == sortingOrder.getDirection()) {
+    cellElement.addClassName("sort-asc");
+  }
+ else {
+    cellElement.addClassName("sort-desc");
+  }
+  int sortIndex=Grid.this.getSortOrder().indexOf(sortingOrder);
+  if (sortIndex > -1 && Grid.this.getSortOrder().size() > 1) {
+    cellElement.setAttribute("sort-order",String.valueOf(sortIndex + 1));
+  }
+  if (!sortedBefore) {
+    verifyColumnWidth(column);
+  }
+}

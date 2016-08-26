@@ -1,0 +1,38 @@
+{
+  Event e=event.getDomEvent();
+  final EventCellReference<T> cell=event.getCell();
+  if (e.getTypeInt() == Event.ONCLICK) {
+    editRow(event,cell.getRowIndex(),cell.getColumnIndexDOM());
+    return true;
+  }
+ else   if (e.getTypeInt() == Event.ONKEYDOWN) {
+    int rowDelta=0;
+    int colDelta=0;
+    if (e.getKeyCode() == KEYCODE_MOVE_VERTICAL) {
+      rowDelta=(e.getShiftKey() ? -1 : +1);
+    }
+ else     if (e.getKeyCode() == KEYCODE_MOVE_HORIZONTAL) {
+      colDelta=(e.getShiftKey() ? -1 : +1);
+      event.getDomEvent().preventDefault();
+    }
+    final boolean changed=rowDelta != 0 || colDelta != 0;
+    if (changed) {
+      int columnCount=event.getGrid().getVisibleColumns().size();
+      int colIndex=event.getFocusedColumnIndex() + colDelta;
+      int rowIndex=event.getRowIndex();
+      if (rowDelta == 0) {
+        if (colIndex >= columnCount && rowIndex < event.getGrid().getDataSource().size() - 1) {
+          rowDelta=1;
+          colIndex=0;
+        }
+ else         if (colIndex < 0 && rowIndex > 0) {
+          rowDelta=-1;
+          colIndex=columnCount - 1;
+        }
+      }
+      editRow(event,rowIndex + rowDelta,colIndex);
+    }
+    return changed;
+  }
+  return false;
+}
