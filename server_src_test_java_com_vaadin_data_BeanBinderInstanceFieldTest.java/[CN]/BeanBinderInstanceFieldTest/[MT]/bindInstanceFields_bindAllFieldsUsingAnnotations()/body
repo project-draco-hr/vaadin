@@ -1,0 +1,15 @@
+{
+  BindFieldsUsingAnnotation form=new BindFieldsUsingAnnotation();
+  BeanBinder<Person> binder=new BeanBinder<>(Person.class);
+  binder.bindInstanceFields(form);
+  Person person=new Person();
+  person.setFirstName("foo");
+  person.setBirthDate(LocalDate.now());
+  binder.bind(person);
+  Assert.assertEquals(person.getFirstName(),form.nameField.getValue());
+  Assert.assertEquals(person.getBirthDate(),form.birthDateField.getValue());
+  form.nameField.setValue("bar");
+  form.birthDateField.setValue(person.getBirthDate().plusDays(345));
+  Assert.assertEquals(form.nameField.getValue(),person.getFirstName());
+  Assert.assertEquals(form.birthDateField.getValue(),person.getBirthDate());
+}

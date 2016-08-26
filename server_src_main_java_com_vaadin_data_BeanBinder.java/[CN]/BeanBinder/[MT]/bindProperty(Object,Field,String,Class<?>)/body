@@ -1,0 +1,23 @@
+{
+  Type valueType=GenericTypeReflector.getTypeParameter(memberField.getGenericType(),HasValue.class.getTypeParameters()[0]);
+  if (valueType == null) {
+    throw new IllegalStateException(String.format("Unable to detect value type for the member '%s' in the " + "class '%s'.",memberField.getName(),objectWithMemberFields.getClass().getName()));
+  }
+  if (propertyType.equals(valueType)) {
+    HasValue<?> field;
+    try {
+      field=(HasValue<?>)ReflectTools.getJavaFieldValue(objectWithMemberFields,memberField,HasValue.class);
+    }
+ catch (    IllegalArgumentException|IllegalAccessException|InvocationTargetException e) {
+      return;
+    }
+    if (field == null) {
+      field=makeFieldInstance((Class<? extends HasValue<?>>)memberField.getType());
+      initializeField(objectWithMemberFields,memberField,field);
+    }
+    forField(field).bind(property);
+  }
+ else {
+    throw new IllegalStateException(String.format("Property type '%s' doesn't " + "match the field type '%s'. " + "Binding should be configured manulaly using converter.",propertyType.getName(),valueType.getTypeName()));
+  }
+}
