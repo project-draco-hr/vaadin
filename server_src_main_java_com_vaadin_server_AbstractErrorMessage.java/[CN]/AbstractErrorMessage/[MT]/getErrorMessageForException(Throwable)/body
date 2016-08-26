@@ -5,20 +5,8 @@
  else   if (t instanceof ErrorMessage) {
     return (ErrorMessage)t;
   }
- else   if (t instanceof Validator.InvalidValueException) {
-    UserError error=new UserError(((Validator.InvalidValueException)t).getHtmlMessage(),ContentMode.HTML,ErrorLevel.ERROR);
-    for (    Validator.InvalidValueException nestedException : ((Validator.InvalidValueException)t).getCauses()) {
-      error.addCause(getErrorMessageForException(nestedException));
-    }
-    return error;
-  }
- else   if (t instanceof Buffered.SourceException) {
-    UserError error=new UserError(null);
-    error.setErrorLevel(ErrorLevel.ERROR);
-    for (    Throwable nestedException : ((Buffered.SourceException)t).getCauses()) {
-      error.addCause(getErrorMessageForException(nestedException));
-    }
-    return error;
+ else   if (t instanceof ErrorMessageProducer) {
+    return ((ErrorMessageProducer)t).getErrorMessage();
   }
  else {
     StringWriter sw=new StringWriter();
