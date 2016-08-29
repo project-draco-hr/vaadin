@@ -5,7 +5,13 @@
   }
   Set<Object> filters=Collections.emptySet();
   if (initial || reset) {
-    int dataSourceSize=getDataSource().size(new Query(filters));
+    int dataSourceSize;
+    if (getDataSource().isInMemory() && inMemoryFilter != null) {
+      dataSourceSize=(int)getDataSource().apply(new Query()).filter(inMemoryFilter).count();
+    }
+ else {
+      dataSourceSize=getDataSource().size(new Query(filters));
+    }
     rpc.reset(dataSourceSize);
   }
   if (!pushRows.isEmpty()) {
@@ -14,6 +20,9 @@
     Stream<T> rowsToPush;
     if (getDataSource().isInMemory()) {
       rowsToPush=getDataSource().apply(new Query());
+      if (inMemoryFilter != null) {
+        rowsToPush=rowsToPush.filter(inMemoryFilter);
+      }
       if (inMemorySorting != null) {
         rowsToPush=rowsToPush.sorted(inMemorySorting);
       }
