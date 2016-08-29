@@ -4,7 +4,11 @@
     session=VaadinSession.getCurrent();
   }
   if (session != null) {
-    ConverterFactory factory=session.getConverterFactory();
+    ConverterFactory factory=(ConverterFactory)session.getConverterFactory();
+    if (factory == null) {
+      factory=new DefaultConverterFactory();
+      session.setConverterFactory(factory);
+    }
     converter=factory.createConverter(presentationType,modelType);
   }
   return converter;
