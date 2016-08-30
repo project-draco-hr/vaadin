@@ -1,0 +1,25 @@
+{
+  if (time != null && time.getElement().isOrHasChild((Node)event.getNativeEvent().getEventTarget().cast())) {
+    int nativeKeyCode=event.getNativeEvent().getKeyCode();
+    if (nativeKeyCode == getSelectKey()) {
+      onSubmit();
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    if (nativeKeyCode == getCloseKey()) {
+      onCancel();
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    return;
+  }
+  int keycode=event.getNativeEvent().getKeyCode();
+  if (keycode == KeyCodes.KEY_TAB && event.getNativeEvent().getShiftKey()) {
+    if (onTabOut(event)) {
+      return;
+    }
+  }
+  if (handleNavigation(keycode,event.getNativeEvent().getCtrlKey() || event.getNativeEvent().getMetaKey(),event.getNativeEvent().getShiftKey())) {
+    event.preventDefault();
+  }
+}

@@ -1,0 +1,35 @@
+{
+  if (formatStr == null) {
+    if (currentResolution == Resolution.YEAR) {
+      formatStr="yyyy";
+    }
+ else {
+      try {
+        String frmString=LocaleService.getDateFormat(currentLocale);
+        frmString=cleanFormat(frmString);
+        if (currentResolution.getCalendarField() >= Resolution.HOUR.getCalendarField()) {
+          if (dts.isTwelveHourClock()) {
+            frmString+=" hh";
+          }
+ else {
+            frmString+=" HH";
+          }
+          if (currentResolution.getCalendarField() >= Resolution.MINUTE.getCalendarField()) {
+            frmString+=":mm";
+            if (currentResolution.getCalendarField() >= Resolution.SECOND.getCalendarField()) {
+              frmString+=":ss";
+            }
+          }
+          if (dts.isTwelveHourClock()) {
+            frmString+=" aaa";
+          }
+        }
+        formatStr=frmString;
+      }
+ catch (      LocaleNotLoadedException e) {
+        VConsole.error(e);
+      }
+    }
+  }
+  return formatStr;
+}

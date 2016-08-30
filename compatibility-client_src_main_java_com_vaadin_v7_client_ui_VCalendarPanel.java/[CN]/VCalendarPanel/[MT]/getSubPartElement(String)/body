@@ -1,0 +1,44 @@
+{
+  if (SUBPART_NEXT_MONTH.equals(subPart)) {
+    return nextMonth.getElement();
+  }
+  if (SUBPART_PREV_MONTH.equals(subPart)) {
+    return prevMonth.getElement();
+  }
+  if (SUBPART_NEXT_YEAR.equals(subPart)) {
+    return nextYear.getElement();
+  }
+  if (SUBPART_PREV_YEAR.equals(subPart)) {
+    return prevYear.getElement();
+  }
+  if (SUBPART_HOUR_SELECT.equals(subPart)) {
+    return time.hours.getElement();
+  }
+  if (SUBPART_MINUTE_SELECT.equals(subPart)) {
+    return time.mins.getElement();
+  }
+  if (SUBPART_SECS_SELECT.equals(subPart)) {
+    return time.sec.getElement();
+  }
+  if (SUBPART_AMPM_SELECT.equals(subPart)) {
+    return time.ampm.getElement();
+  }
+  if (subPart.startsWith(SUBPART_DAY)) {
+    int dayOfMonth=Integer.parseInt(subPart.substring(SUBPART_DAY.length()));
+    Date date=new Date(displayedMonth.getYear(),displayedMonth.getMonth(),dayOfMonth);
+    Iterator<Widget> iter=days.iterator();
+    while (iter.hasNext()) {
+      Widget w=iter.next();
+      if (w instanceof Day) {
+        Day day=(Day)w;
+        if (day.getDate().equals(date)) {
+          return day.getElement();
+        }
+      }
+    }
+  }
+  if (SUBPART_MONTH_YEAR_HEADER.equals(subPart)) {
+    return DOM.asOld((Element)getCellFormatter().getElement(0,2).getChild(0));
+  }
+  return null;
+}

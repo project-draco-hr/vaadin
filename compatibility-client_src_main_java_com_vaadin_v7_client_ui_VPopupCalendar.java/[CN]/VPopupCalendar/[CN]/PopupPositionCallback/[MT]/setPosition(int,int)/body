@@ -1,0 +1,40 @@
+{
+  final int width=offsetWidth;
+  final int height=offsetHeight;
+  final int browserWindowWidth=Window.getClientWidth() + Window.getScrollLeft();
+  final int windowHeight=Window.getClientHeight() + Window.getScrollTop();
+  int left=calendarToggle.getAbsoluteLeft();
+  int extraSpace=30;
+  boolean overflow=left + width + extraSpace > browserWindowWidth;
+  if (overflow) {
+    left=browserWindowWidth - width - extraSpace;
+  }
+  int top=calendarToggle.getAbsoluteTop();
+  int extraHeight=2;
+  boolean verticallyRepositioned=false;
+  ComputedStyle style=new ComputedStyle(popup.getElement());
+  int[] margins=style.getMargin();
+  int desiredPopupBottom=top + height + calendarToggle.getOffsetHeight()+ margins[0]+ margins[2];
+  if (desiredPopupBottom > windowHeight) {
+    int updatedLeft=left;
+    left=getLeftPosition(left,width,style,overflow);
+    if (updatedLeft == left) {
+      int updatedTop=top - extraHeight - height- margins[0]- margins[2];
+      verticallyRepositioned=updatedTop >= 0;
+      if (verticallyRepositioned) {
+        top=updatedTop;
+      }
+    }
+    if (!verticallyRepositioned) {
+      verticallyRepositioned=true;
+      top=windowHeight - height - extraSpace + extraHeight;
+    }
+  }
+  if (verticallyRepositioned) {
+    popup.setPopupPosition(left,top);
+  }
+ else {
+    popup.setPopupPosition(left,top + calendarToggle.getOffsetHeight() + extraHeight);
+  }
+  doSetFocus();
+}

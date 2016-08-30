@@ -1,0 +1,42 @@
+{
+  getRowFormatter().addStyleName(0,parent.getStylePrimaryName() + "-calendarpanel-header");
+  if (prevMonth == null && needsMonth) {
+    prevMonth=new VEventButton();
+    prevMonth.setHTML("&lsaquo;");
+    prevMonth.setStyleName("v-button-prevmonth");
+    prevMonth.setTabIndex(-1);
+    nextMonth=new VEventButton();
+    nextMonth.setHTML("&rsaquo;");
+    nextMonth.setStyleName("v-button-nextmonth");
+    nextMonth.setTabIndex(-1);
+    setWidget(0,3,nextMonth);
+    setWidget(0,1,prevMonth);
+  }
+ else   if (prevMonth != null && !needsMonth) {
+    remove(prevMonth);
+    remove(nextMonth);
+    prevMonth=null;
+    nextMonth=null;
+  }
+  if (prevYear == null) {
+    prevYear=new VEventButton();
+    prevYear.setHTML("&laquo;");
+    prevYear.setStyleName("v-button-prevyear");
+    prevYear.setTabIndex(-1);
+    nextYear=new VEventButton();
+    nextYear.setHTML("&raquo;");
+    nextYear.setStyleName("v-button-nextyear");
+    nextYear.setTabIndex(-1);
+    setWidget(0,0,prevYear);
+    setWidget(0,4,nextYear);
+  }
+  updateControlButtonRangeStyles(needsMonth);
+  final String monthName=needsMonth ? getDateTimeService().getMonth(displayedMonth.getMonth()) : "";
+  final int year=displayedMonth.getYear() + 1900;
+  getFlexCellFormatter().setStyleName(0,2,parent.getStylePrimaryName() + "-calendarpanel-month");
+  getFlexCellFormatter().setStyleName(0,0,parent.getStylePrimaryName() + "-calendarpanel-prevyear");
+  getFlexCellFormatter().setStyleName(0,4,parent.getStylePrimaryName() + "-calendarpanel-nextyear");
+  getFlexCellFormatter().setStyleName(0,3,parent.getStylePrimaryName() + "-calendarpanel-nextmonth");
+  getFlexCellFormatter().setStyleName(0,1,parent.getStylePrimaryName() + "-calendarpanel-prevmonth");
+  setHTML(0,2,"<span class=\"" + parent.getStylePrimaryName() + "-calendarpanel-month\">"+ monthName+ " "+ year+ "</span>");
+}
