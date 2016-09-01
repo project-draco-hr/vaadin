@@ -1,0 +1,11 @@
+{
+  return (T)Proxy.newProxyInstance(component.getClass().getClassLoader(),new Class[]{serverRpcClass},new InvocationHandler(){
+    @Override public Object invoke(    Object proxy,    Method method,    Object[] args) throws Throwable {
+      ServerRpcMethodInvocation invocation=new ServerRpcMethodInvocation(component.getConnectorId(),serverRpcClass,method.getName(),args.length);
+      invocation.setParameters(args);
+      component.getRpcManager(serverRpcClass.getName()).applyInvocation(invocation);
+      return null;
+    }
+  }
+);
+}
