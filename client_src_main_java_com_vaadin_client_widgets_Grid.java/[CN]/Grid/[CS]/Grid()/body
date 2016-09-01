@@ -1,0 +1,65 @@
+{
+  initWidget(escalator);
+  getElement().setTabIndex(0);
+  cellFocusHandler=new CellFocusHandler();
+  setStylePrimaryName(STYLE_NAME);
+  escalator.getHeader().setEscalatorUpdater(createHeaderUpdater());
+  escalator.getBody().setEscalatorUpdater(createBodyUpdater());
+  escalator.getFooter().setEscalatorUpdater(createFooterUpdater());
+  header.setGrid(this);
+  HeaderRow defaultRow=header.appendRow();
+  header.setDefaultRow(defaultRow);
+  footer.setGrid(this);
+  editor.setGrid(this);
+  setSelectionModel(new SelectionModel<T>(){
+    @Override public Set<T> getSelectedItems(){
+      return Collections.emptySet();
+    }
+    @Override public void select(    T item){
+    }
+    @Override public void deselect(    T item){
+    }
+  }
+);
+  escalator.getBody().setSpacerUpdater(gridSpacerUpdater);
+  escalator.addScrollHandler(new ScrollHandler(){
+    @Override public void onScroll(    ScrollEvent event){
+      fireEvent(new ScrollEvent());
+    }
+  }
+);
+  escalator.addRowVisibilityChangeHandler(new RowVisibilityChangeHandler(){
+    @Override public void onRowVisibilityChange(    RowVisibilityChangeEvent event){
+      if (dataSource != null && dataSource.size() != 0) {
+        dataIsBeingFetched=true;
+        dataSource.ensureAvailability(event.getFirstVisibleRow(),event.getVisibleRowCount());
+      }
+    }
+  }
+);
+  addSelectionHandler(new SelectionHandler<T>(){
+    @Override public void onSelect(    SelectionEvent<T> event){
+      refreshBody();
+    }
+  }
+);
+  sinkEvents(getHeader().getConsumedEvents());
+  sinkEvents(Arrays.asList(BrowserEvents.KEYDOWN,BrowserEvents.KEYUP,BrowserEvents.KEYPRESS,BrowserEvents.DBLCLICK,BrowserEvents.MOUSEDOWN,BrowserEvents.CLICK));
+  addHeaderKeyUpHandler(new HeaderKeyUpHandler(){
+    @Override public void onKeyUp(    GridKeyUpEvent event){
+      if (event.getNativeKeyCode() != KeyCodes.KEY_ENTER) {
+        return;
+      }
+      if (getHeader().getRow(event.getFocusedCell().getRowIndex()).isDefault()) {
+        sorter.sort(event.getFocusedCell().getColumn(),event.isShiftKeyDown());
+      }
+    }
+  }
+);
+  addDataAvailableHandler(new DataAvailableHandler(){
+    @Override public void onDataAvailable(    DataAvailableEvent event){
+      dataIsBeingFetched=false;
+    }
+  }
+);
+}
