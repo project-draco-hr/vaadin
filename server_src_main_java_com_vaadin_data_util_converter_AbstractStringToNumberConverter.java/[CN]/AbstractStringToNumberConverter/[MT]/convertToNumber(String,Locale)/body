@@ -1,15 +1,15 @@
 {
   if (value == null) {
-    return null;
+    return Result.ok(null);
   }
   value=value.trim();
   ParsePosition parsePosition=new ParsePosition(0);
   Number parsedValue=getFormat(locale).parse(value,parsePosition);
   if (parsePosition.getIndex() != value.length()) {
-    throw new IllegalArgumentException("Could not convert '" + value + "'");
+    return Result.error(getErrorMessage());
   }
   if (parsedValue == null) {
-    return null;
+    return Result.ok(null);
   }
-  return parsedValue;
+  return Result.ok(parsedValue);
 }
