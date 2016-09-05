@@ -1,10 +1,17 @@
 {
   parent=getParent();
-  column=new Column<JsonValue,JsonObject>(){
-    @Override public JsonValue getValue(    JsonObject row){
-      return row.getObject(DataCommunicatorConstants.DATA).get(getState().id);
+  String columnId=getState().id;
+  column=new Column<Object,JsonObject>(){
+    @Override public Object getValue(    JsonObject row){
+      final JsonObject rowData=row.getObject(DataCommunicatorConstants.DATA);
+      if (rowData.hasKey(columnId)) {
+        final JsonValue columnValue=rowData.get(columnId);
+        return getRendererConnector().decode(columnValue);
+      }
+      return null;
     }
   }
 ;
-  getParent().addColumn(column,getState().id);
+  column.setRenderer(getRendererConnector().getRenderer());
+  getParent().addColumn(column,columnId);
 }
