@@ -1,11 +1,11 @@
 {
-  List<ClientMethodInvocation> pendingInvocations=new ArrayList<ClientMethodInvocation>();
+  List<ClientMethodInvocation> pendingInvocations=new ArrayList<>();
   for (  ClientConnector connector : rpcPendingQueue) {
     List<ClientMethodInvocation> paintablePendingRpc=connector.retrievePendingRpcCalls();
     if (null != paintablePendingRpc && !paintablePendingRpc.isEmpty()) {
       List<ClientMethodInvocation> oldPendingRpc=pendingInvocations;
       int totalCalls=pendingInvocations.size() + paintablePendingRpc.size();
-      pendingInvocations=new ArrayList<ClientMethodInvocation>(totalCalls);
+      pendingInvocations=new ArrayList<>(totalCalls);
       for (int destIndex=0, oldIndex=0, paintableIndex=0; destIndex < totalCalls; destIndex++) {
         if (paintableIndex >= paintablePendingRpc.size() || (oldIndex < oldPendingRpc.size() && ((Comparable<ClientMethodInvocation>)oldPendingRpc.get(oldIndex)).compareTo(paintablePendingRpc.get(paintableIndex)) <= 0)) {
           pendingInvocations.add(oldPendingRpc.get(oldIndex++));

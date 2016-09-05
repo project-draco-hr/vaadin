@@ -1,12 +1,12 @@
 {
   registerRpc(SerializerTestRpc.class,new SerializerTestRpc(){
     @Override public void sendWrappedGenerics(    Map<Set<SimpleTestBean>,Map<Integer,List<SimpleTestBean>>> generics){
-      Map<Set<SimpleTestBean>,Map<Integer,List<SimpleTestBean>>> updated=new HashMap<Set<SimpleTestBean>,Map<Integer,List<SimpleTestBean>>>();
+      Map<Set<SimpleTestBean>,Map<Integer,List<SimpleTestBean>>> updated=new HashMap<>();
       SimpleTestBean firstValue=generics.values().iterator().next().get(Integer.valueOf(1)).get(0);
-      Set<SimpleTestBean> key=new HashSet<SimpleTestBean>(Arrays.asList(firstValue));
-      Map<Integer,List<SimpleTestBean>> value=new HashMap<Integer,List<SimpleTestBean>>();
+      Set<SimpleTestBean> key=new HashSet<>(Arrays.asList(firstValue));
+      Map<Integer,List<SimpleTestBean>> value=new HashMap<>();
       Set<SimpleTestBean> firstKeyValue=generics.keySet().iterator().next();
-      value.put(Integer.valueOf(1),new ArrayList<SimpleTestBean>(firstKeyValue));
+      value.put(Integer.valueOf(1),new ArrayList<>(firstKeyValue));
       updated.put(key,value);
       rpc.sendWrappedGenerics(updated);
     }
@@ -17,7 +17,7 @@
     }
     @Override public void sendSet(    Set<Integer> intSet,    Set<Connector> connectorSet,    Set<SimpleTestBean> beanSet){
       beanSet.iterator().next().setValue(intSet.size());
-      Set<Integer> updatedIntSet=new HashSet<Integer>();
+      Set<Integer> updatedIntSet=new HashSet<>();
       for (      Integer integer : intSet) {
         updatedIntSet.add(Integer.valueOf(-integer.intValue()));
       }
@@ -27,7 +27,7 @@
       rpc.sendNestedArray(new int[][]{{nestedIntArray[1][0],nestedIntArray[0][0]}},new SimpleTestBean[][]{{nestedBeanArray[0][1]},{nestedBeanArray[0][0]}});
     }
     @Override public void sendMap(    Map<String,SimpleTestBean> stringMap,    Map<Connector,SimpleTestBean> connectorMap,    Map<Integer,Connector> intMap,    Map<SimpleTestBean,SimpleTestBean> beanMap){
-      Map<SimpleTestBean,SimpleTestBean> updatedBeanMap=new HashMap<SimpleTestBean,SimpleTestBean>();
+      Map<SimpleTestBean,SimpleTestBean> updatedBeanMap=new HashMap<>();
       for (      Entry<SimpleTestBean,SimpleTestBean> entry : beanMap.entrySet()) {
         updatedBeanMap.put(entry.getValue(),entry.getKey());
       }
@@ -75,13 +75,13 @@
       updatedComplexBean.setInnerBean2(complexBean.getInnerBeanCollection().get(0));
       updatedComplexBean.setInnerBeanCollection(Arrays.asList(simpleBean,updatedSimpleBean));
       updatedComplexBean.setPrivimite(complexBean.getPrivimite() + 1);
-      ArrayList<SimpleTestBean> arrayList=new ArrayList<SimpleTestBean>(Arrays.asList(array));
+      ArrayList<SimpleTestBean> arrayList=new ArrayList<>(Arrays.asList(array));
       Collections.reverse(arrayList);
       rpc.sendBean(updatedComplexBean,updatedSimpleBean,arrayList.toArray(new SimpleTestBean[array.length]));
     }
     @Override public void sendArrayList(    List<int[]> primitiveArrayList,    List<Integer[]> objectArrayList,    List<SimpleTestBean[]> beanArrayList){
       Collections.reverse(beanArrayList);
-      List<Integer[]> updatedObjectArrayList=new ArrayList<Integer[]>();
+      List<Integer[]> updatedObjectArrayList=new ArrayList<>();
       for (      int[] array : primitiveArrayList) {
         updatedObjectArrayList.add(new Integer[]{Integer.valueOf(array.length),Integer.valueOf(array[0])});
       }

@@ -1,15 +1,15 @@
 {
   Grid<String> grid=getWidget();
   grid.setSelectionMode(Grid.SelectionMode.NONE);
-  List<String> columnData=new ArrayList<String>();
+  List<String> columnData=new ArrayList<>();
   for (int i=0; i < 100; i++) {
     columnData.add(String.valueOf(i));
   }
   if (Location.getParameter("latency") != null) {
-    grid.setDataSource(new DelayedDataSource(new ListDataSource<String>(columnData),Integer.parseInt(Location.getParameter("latency"))));
+    grid.setDataSource(new DelayedDataSource(new ListDataSource<>(columnData),Integer.parseInt(Location.getParameter("latency"))));
   }
  else {
-    grid.setDataSource(new ListDataSource<String>(columnData));
+    grid.setDataSource(new ListDataSource<>(columnData));
   }
   Grid.Column<String,String> c=createColumnWithRenderer(Renderers.TEXT_RENDERER);
   grid.addColumn(c);
@@ -54,7 +54,7 @@
     }
     @Override @SuppressWarnings("unchecked") public void triggerClientSortingTest(){
       Grid<String> grid=getWidget();
-      ListSorter<String> sorter=new ListSorter<String>(grid);
+      ListSorter<String> sorter=new ListSorter<>(grid);
       sorter.setComparator((Grid.Column<String,String>)grid.getColumn(0),new Comparator<String>(){
         @Override public int compare(        String o1,        String o2){
           return Integer.parseInt(o1) - Integer.parseInt(o2);
@@ -66,7 +66,7 @@
     }
     @Override @SuppressWarnings("unchecked") public void shuffle(){
       Grid<String> grid=getWidget();
-      ListSorter<String> shuffler=new ListSorter<String>(grid);
+      ListSorter<String> shuffler=new ListSorter<>(grid);
       shuffler.setComparator((Grid.Column<String,String>)grid.getColumn(0),new Comparator<String>(){
         @Override public int compare(        String o1,        String o2){
           return com.google.gwt.user.client.Random.nextInt(3) - 1;

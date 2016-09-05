@@ -8,8 +8,8 @@
     throw new UnableToCompleteException();
   }
   JClassType[] types=serverConnectorType.getSubtypes();
-  Map<String,JClassType> mappings=new TreeMap<String,JClassType>();
-  Map<JClassType,List<JClassType>> replaced=new TreeMap<JClassType,List<JClassType>>(ConnectorBundle.jClassComparator);
+  Map<String,JClassType> mappings=new TreeMap<>();
+  Map<JClassType,List<JClassType>> replaced=new TreeMap<>(ConnectorBundle.jClassComparator);
   for (  JClassType type : types) {
     Connect connectAnnotation=type.getAnnotation(Connect.class);
     if (connectAnnotation == null) {
@@ -35,7 +35,7 @@
       mappings.put(identifier,subclass);
       List<JClassType> previousReplacements=replaced.remove(superclass);
       if (previousReplacements == null) {
-        previousReplacements=new ArrayList<JClassType>();
+        previousReplacements=new ArrayList<>();
       }
       previousReplacements.add(superclass);
       replaced.put(subclass,previousReplacements);
