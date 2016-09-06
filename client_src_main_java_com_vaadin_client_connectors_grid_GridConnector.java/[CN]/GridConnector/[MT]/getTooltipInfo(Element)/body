@@ -1,0 +1,25 @@
+{
+  CellReference<JsonObject> cell=getWidget().getCellReference(element);
+  if (cell != null) {
+    JsonObject row=cell.getRow();
+    if (row != null && (row.hasKey(GridState.JSONKEY_ROWDESCRIPTION) || row.hasKey(GridState.JSONKEY_CELLDESCRIPTION))) {
+      Column<?,JsonObject> column=cell.getColumn();
+      if (columnToIdMap.containsKey(column)) {
+        JsonObject cellDescriptions=row.getObject(GridState.JSONKEY_CELLDESCRIPTION);
+        String id=columnToIdMap.get(column);
+        if (cellDescriptions != null && cellDescriptions.hasKey(id)) {
+          return new TooltipInfo(cellDescriptions.getString(id));
+        }
+ else         if (row.hasKey(GridState.JSONKEY_ROWDESCRIPTION)) {
+          return new TooltipInfo(row.getString(GridState.JSONKEY_ROWDESCRIPTION));
+        }
+      }
+    }
+  }
+  if (super.hasTooltip()) {
+    return super.getTooltipInfo(element);
+  }
+ else {
+    return null;
+  }
+}
