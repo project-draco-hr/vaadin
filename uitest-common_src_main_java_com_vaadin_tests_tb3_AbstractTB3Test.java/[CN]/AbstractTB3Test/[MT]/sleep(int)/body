@@ -1,7 +1,12 @@
 {
   while (timeoutMillis > 0) {
     int d=Math.min(BROWSER_TIMEOUT_IN_MS,timeoutMillis);
-    Thread.sleep(d);
+    try {
+      Thread.sleep(d);
+    }
+ catch (    InterruptedException e) {
+      throw new RuntimeException(e);
+    }
     timeoutMillis-=d;
     getDriver().getTitle();
   }
