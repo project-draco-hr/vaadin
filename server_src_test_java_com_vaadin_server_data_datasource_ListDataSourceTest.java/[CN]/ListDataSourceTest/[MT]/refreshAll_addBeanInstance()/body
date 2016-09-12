@@ -1,0 +1,13 @@
+{
+  StrBean bean=new StrBean("foo",-1,hashCode());
+  Query query=new Query();
+  int size=dataSource.size(query);
+  data.add(0,bean);
+  dataSource.refreshAll();
+  List<StrBean> list=dataSource.apply(query).collect(Collectors.toList());
+  StrBean first=list.get(0);
+  Assert.assertEquals(bean.getValue(),first.getValue());
+  Assert.assertEquals(bean.getRandomNumber(),first.getRandomNumber());
+  Assert.assertEquals(bean.getId(),first.getId());
+  Assert.assertEquals(size + 1,dataSource.size(query));
+}
