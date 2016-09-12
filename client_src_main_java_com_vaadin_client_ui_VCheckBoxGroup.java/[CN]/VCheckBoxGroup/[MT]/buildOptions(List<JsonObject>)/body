@@ -1,0 +1,24 @@
+{
+  Roles.getRadiogroupRole().set(getElement());
+  optionsContainer.clear();
+  for (  JsonObject item : items) {
+    String itemHtml=item.getString(CheckBoxGroupConstants.JSONKEY_ITEM_VALUE);
+    if (!isHtmlContentAllowed()) {
+      itemHtml=WidgetUtil.escapeHTML(itemHtml);
+    }
+    VCheckBox checkBox=new VCheckBox();
+    String iconUrl=item.getString(CheckBoxGroupConstants.JSONKEY_ITEM_ICON);
+    if (iconUrl != null && iconUrl.length() != 0) {
+      checkBox.icon=client.getIcon(iconUrl);
+    }
+    checkBox.addStyleName(CLASSNAME_OPTION);
+    checkBox.addClickHandler(this);
+    checkBox.setHTML(itemHtml);
+    checkBox.setValue(true);
+    boolean optionEnabled=!item.getBoolean(JSONKEY_ITEM_DISABLED);
+    boolean enabled=optionEnabled && !isReadonly() && isEnabled();
+    checkBox.setEnabled(enabled);
+    optionsContainer.add(checkBox);
+    optionsToItems.put(checkBox,item);
+  }
+}
