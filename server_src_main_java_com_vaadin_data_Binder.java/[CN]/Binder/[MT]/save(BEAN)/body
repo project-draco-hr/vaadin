@@ -1,6 +1,6 @@
 {
-  List<ValidationError<?>> errors=doSaveIfValid(bean);
-  if (!errors.isEmpty()) {
-    throw new ValidationException(errors);
+  BinderValidationStatus<BEAN> status=doSaveIfValid(bean);
+  if (status.hasErrors()) {
+    throw new ValidationException(status.getFieldValidationErrors(),status.getBeanValidationErrors());
   }
 }
