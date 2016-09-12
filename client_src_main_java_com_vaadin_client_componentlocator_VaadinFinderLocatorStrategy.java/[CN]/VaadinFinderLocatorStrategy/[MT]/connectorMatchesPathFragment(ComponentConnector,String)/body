@@ -1,14 +1,15 @@
 {
   List<String> ids=getIDsForConnector(connector);
-  Integer[] widgetTags=client.getConfiguration().getTagsForServerSideClassName(getFullClassName(widgetName));
-  if (widgetTags.length == 0) {
-    widgetTags=client.getConfiguration().getTagsForServerSideClassName(getFullClassName("com.vaadin.ui." + widgetName));
+  List<Integer> widgetTags=new ArrayList<>();
+  widgetTags.addAll(getTags(widgetName));
+  if (widgetTags.size() == 0) {
+    widgetTags.addAll(getTags("com.vaadin.ui" + widgetName));
   }
   for (int i=0, l=ids.size(); i < l; ++i) {
     String name=ids.get(i);
     final String simpleName=getSimpleClassName(name);
     final String fullName=getFullClassName(name);
-    if (widgetTags.length > 0) {
+    if (widgetTags.size() > 0) {
       Integer[] foundTags=client.getConfiguration().getTagsForServerSideClassName(fullName);
       for (      int tag : foundTags) {
         if (tagsMatch(widgetTags,tag)) {
