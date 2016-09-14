@@ -1,0 +1,30 @@
+{
+  Roles.getRadiogroupRole().set(getElement());
+  optionsContainer.clear();
+  optionsToItems.clear();
+  keyToOptions.clear();
+  for (  JsonObject item : items) {
+    String itemHtml=item.getString(RadioButtonGroupConstants.JSONKEY_ITEM_VALUE);
+    if (!isHtmlContentAllowed()) {
+      itemHtml=WidgetUtil.escapeHTML(itemHtml);
+    }
+    RadioButton radioButton=new RadioButton(groupId);
+    String iconUrl=item.getString(RadioButtonGroupConstants.JSONKEY_ITEM_ICON);
+    if (iconUrl != null && iconUrl.length() != 0) {
+      Icon icon=client.getIcon(iconUrl);
+      itemHtml=icon.getElement().getString() + itemHtml;
+    }
+    radioButton.setStyleName("v-radiobutton");
+    radioButton.addStyleName(CLASSNAME_OPTION);
+    radioButton.addClickHandler(this);
+    radioButton.setHTML(itemHtml);
+    radioButton.setValue(item.getBoolean(RadioButtonGroupConstants.JSONKEY_ITEM_SELECTED));
+    boolean optionEnabled=!item.getBoolean(JSONKEY_ITEM_DISABLED);
+    boolean enabled=optionEnabled && !isReadonly() && isEnabled();
+    radioButton.setEnabled(enabled);
+    String key=item.getString(DataCommunicatorConstants.KEY);
+    optionsContainer.add(radioButton);
+    optionsToItems.put(radioButton,item);
+    keyToOptions.put(key,radioButton);
+  }
+}
