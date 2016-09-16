@@ -1,0 +1,37 @@
+{
+switch (DOM.eventGetType(event)) {
+case Event.ONMOUSEDOWN:
+case Event.ONTOUCHSTART:
+    if (!disabled && !readonly) {
+      focus();
+      feedbackPopup.show();
+      dragging=true;
+      handle.setClassName(getStylePrimaryName() + "-handle");
+      handle.addClassName(getStylePrimaryName() + "-handle-active");
+      DOM.setCapture(getElement());
+      DOM.eventPreventDefault(event);
+      DOM.eventCancelBubble(event,true);
+      event.stopPropagation();
+    }
+  break;
+case Event.ONMOUSEMOVE:
+case Event.ONTOUCHMOVE:
+if (dragging) {
+  setValueByEvent(event,false);
+  updateFeedbackPosition();
+  event.stopPropagation();
+}
+break;
+case Event.ONTOUCHEND:
+feedbackPopup.hide();
+case Event.ONMOUSEUP:
+dragging=false;
+handle.setClassName(getStylePrimaryName() + "-handle");
+DOM.releaseCapture(getElement());
+setValueByEvent(event,true);
+event.stopPropagation();
+break;
+default :
+break;
+}
+}

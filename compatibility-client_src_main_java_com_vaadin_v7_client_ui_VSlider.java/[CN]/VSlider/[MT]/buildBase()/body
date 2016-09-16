@@ -1,0 +1,51 @@
+{
+  final String styleAttribute=isVertical() ? "height" : "width";
+  final String oppositeStyleAttribute=isVertical() ? "width" : "height";
+  final String domProperty=isVertical() ? "offsetHeight" : "offsetWidth";
+  base.getStyle().clearProperty(oppositeStyleAttribute);
+  if (getElement().hasParentElement()) {
+    final Element p=getElement();
+    if (p.getPropertyInt(domProperty) > MIN_SIZE) {
+      if (isVertical()) {
+        setHeight();
+      }
+ else {
+        base.getStyle().clearProperty(styleAttribute);
+      }
+    }
+ else {
+      base.getStyle().setPropertyPx(styleAttribute,MIN_SIZE);
+      Scheduler.get().scheduleDeferred(new Command(){
+        @Override public void execute(){
+          final Element p=getElement();
+          if (p.getPropertyInt(domProperty) > MIN_SIZE + 5 || propertyNotNullOrEmpty(styleAttribute,p)) {
+            if (isVertical()) {
+              setHeight();
+            }
+ else {
+              base.getStyle().clearProperty(styleAttribute);
+            }
+            setValue(value,false);
+          }
+        }
+        private boolean propertyNotNullOrEmpty(        final String styleAttribute,        final Element p){
+          return p.getStyle().getProperty(styleAttribute) != null && !p.getStyle().getProperty(styleAttribute).isEmpty();
+        }
+      }
+);
+    }
+  }
+  if (!isVertical()) {
+    Scheduler.get().scheduleDeferred(new Command(){
+      @Override public void execute(){
+        buildHandle();
+        setValue(value,false);
+      }
+    }
+);
+  }
+ else {
+    buildHandle();
+    setValue(value,false);
+  }
+}

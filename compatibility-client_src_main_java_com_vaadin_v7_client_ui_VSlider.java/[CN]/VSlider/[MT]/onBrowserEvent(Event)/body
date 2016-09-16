@@ -1,0 +1,42 @@
+{
+  if (disabled || readonly) {
+    return;
+  }
+  final Element targ=DOM.eventGetTarget(event);
+  if (DOM.eventGetType(event) == Event.ONMOUSEWHEEL) {
+    processMouseWheelEvent(event);
+  }
+ else   if (dragging || targ == handle) {
+    processHandleEvent(event);
+  }
+ else   if (targ == smaller) {
+    decreaseValue(true);
+  }
+ else   if (targ == bigger) {
+    increaseValue(true);
+  }
+ else   if (DOM.eventGetType(event) == Event.MOUSEEVENTS) {
+    processBaseEvent(event);
+  }
+ else   if (BrowserInfo.get().isGecko() && DOM.eventGetType(event) == Event.ONKEYPRESS || !BrowserInfo.get().isGecko() && DOM.eventGetType(event) == Event.ONKEYDOWN) {
+    if (handleNavigation(event.getKeyCode(),event.getCtrlKey(),event.getShiftKey())) {
+      feedbackPopup.show();
+      delayedValueUpdater.trigger();
+      DOM.eventPreventDefault(event);
+      DOM.eventCancelBubble(event,true);
+    }
+  }
+ else   if (targ.equals(getElement()) && DOM.eventGetType(event) == Event.ONFOCUS) {
+    feedbackPopup.show();
+  }
+ else   if (targ.equals(getElement()) && DOM.eventGetType(event) == Event.ONBLUR) {
+    feedbackPopup.hide();
+  }
+ else   if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
+    feedbackPopup.show();
+  }
+  if (WidgetUtil.isTouchEvent(event)) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+}

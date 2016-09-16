@@ -1,0 +1,28 @@
+{
+  double v=min;
+  final int coord=getEventPosition(event);
+  final int handleSize, baseSize, baseOffset;
+  if (isVertical()) {
+    handleSize=handle.getOffsetHeight();
+    baseSize=base.getOffsetHeight();
+    baseOffset=base.getAbsoluteTop() - Window.getScrollTop() - handleSize / 2;
+  }
+ else {
+    handleSize=handle.getOffsetWidth();
+    baseSize=base.getOffsetWidth();
+    baseOffset=base.getAbsoluteLeft() - Window.getScrollLeft() + handleSize / 2;
+  }
+  if (isVertical()) {
+    v=(baseSize - (coord - baseOffset)) / (double)(baseSize - handleSize) * (max - min) + min;
+  }
+ else {
+    v=(coord - baseOffset) / (double)(baseSize - handleSize) * (max - min) + min;
+  }
+  if (v < min) {
+    v=min;
+  }
+ else   if (v > max) {
+    v=max;
+  }
+  setValue(v,updateToServer);
+}
