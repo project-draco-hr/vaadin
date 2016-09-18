@@ -1,0 +1,24 @@
+{
+  String vaadinPackagePrefix=getClass().getPackage().getName();
+  vaadinPackagePrefix=vaadinPackagePrefix.substring(0,vaadinPackagePrefix.lastIndexOf('.'));
+  if (name.equals(UnitTest.class.getName())) {
+    super.loadClass(name);
+  }
+ else   if (name.startsWith(Validation.class.getPackage().getName())) {
+    throw new ClassNotFoundException();
+  }
+ else   if (name.startsWith(vaadinPackagePrefix)) {
+    String path=name.replace('.','/').concat(".class");
+    URL resource=Thread.currentThread().getContextClassLoader().getResource(path);
+    InputStream stream;
+    try {
+      stream=resource.openStream();
+      byte[] bytes=IOUtils.toByteArray(stream);
+      return defineClass(name,bytes,0,bytes.length);
+    }
+ catch (    IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+  return super.loadClass(name);
+}
