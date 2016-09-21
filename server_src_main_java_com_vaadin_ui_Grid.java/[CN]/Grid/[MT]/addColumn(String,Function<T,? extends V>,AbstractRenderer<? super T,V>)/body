@@ -1,8 +1,14 @@
 {
-  Column<T,V> column=new Column<>(caption,valueProvider,renderer);
+  final Column<T,V> column=new Column<>(caption,valueProvider,renderer);
+  final String columnId=columnKeys.key(column);
   column.extend(this);
-  column.setId(columnKeys.key(column));
+  column.setId(columnId);
   columnSet.add(column);
   addDataGenerator(column);
+  getHeader().addColumn(columnId);
+  if (getHeaderRowCount() > 0) {
+    HeaderRow defaultHeader=getHeaderRow(0);
+    defaultHeader.getCell(columnId).setText(caption);
+  }
   return column;
 }
