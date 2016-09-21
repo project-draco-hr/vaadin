@@ -1,0 +1,17 @@
+{
+  if (id == null || property == null) {
+    throw new NullPointerException("Id and property must be non-null");
+  }
+  if (propertyIds.contains(id)) {
+    return false;
+  }
+  propertyIds.add(id);
+  ownProperties.put(id,property);
+  final Field<?> field=fieldFactory.createField(this,id,this);
+  if (field == null) {
+    return false;
+  }
+  bindPropertyToField(id,property,field);
+  addField(id,field);
+  return true;
+}

@@ -1,0 +1,30 @@
+{
+  LinkedList<SourceException> problems=null;
+  for (final Iterator<Object> i=propertyIds.iterator(); i.hasNext(); ) {
+    try {
+      (fields.get(i.next())).discard();
+    }
+ catch (    final Buffered.SourceException e) {
+      if (problems == null) {
+        problems=new LinkedList<>();
+      }
+      problems.add(e);
+    }
+  }
+  if (problems == null) {
+    if (currentBufferedSourceException != null) {
+      currentBufferedSourceException=null;
+      markAsDirty();
+    }
+    return;
+  }
+  final Throwable[] causes=new Throwable[problems.size()];
+  int index=0;
+  for (final Iterator<SourceException> i=problems.iterator(); i.hasNext(); ) {
+    causes[index++]=i.next();
+  }
+  final Buffered.SourceException e=new Buffered.SourceException(this,causes);
+  currentBufferedSourceException=e;
+  markAsDirty();
+  throw e;
+}

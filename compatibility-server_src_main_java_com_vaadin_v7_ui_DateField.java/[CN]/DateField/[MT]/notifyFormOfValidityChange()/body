@@ -1,0 +1,22 @@
+{
+  Component parenOfDateField=getParent();
+  boolean formFound=false;
+  while (parenOfDateField != null || formFound) {
+    if (parenOfDateField instanceof Form) {
+      Form f=(Form)parenOfDateField;
+      Collection<?> visibleItemProperties=f.getItemPropertyIds();
+      for (      Object fieldId : visibleItemProperties) {
+        Field<?> field=f.getField(fieldId);
+        if (equals(field)) {
+          f.markAsDirty();
+          formFound=true;
+          break;
+        }
+      }
+    }
+    if (formFound) {
+      break;
+    }
+    parenOfDateField=parenOfDateField.getParent();
+  }
+}
