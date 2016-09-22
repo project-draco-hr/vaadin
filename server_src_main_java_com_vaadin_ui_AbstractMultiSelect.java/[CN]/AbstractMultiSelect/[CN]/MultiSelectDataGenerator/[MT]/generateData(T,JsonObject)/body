@@ -1,0 +1,14 @@
+{
+  jsonObject.put(ListingJsonConstants.JSONKEY_ITEM_VALUE,getItemCaptionGenerator().apply(data));
+  Resource icon=getItemIconGenerator().apply(data);
+  if (icon != null) {
+    String iconUrl=ResourceReference.create(icon,AbstractMultiSelect.this,null).getURL();
+    jsonObject.put(ListingJsonConstants.JSONKEY_ITEM_ICON,iconUrl);
+  }
+  if (!getItemEnabledProvider().test(data)) {
+    jsonObject.put(ListingJsonConstants.JSONKEY_ITEM_DISABLED,true);
+  }
+  if (getSelectionModel().isSelected(data)) {
+    jsonObject.put(ListingJsonConstants.JSONKEY_ITEM_SELECTED,true);
+  }
+}

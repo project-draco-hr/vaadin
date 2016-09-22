@@ -1,0 +1,22 @@
+{
+  final boolean[] sel=getSelectionBitmap(source);
+  final Set<String> movedItems=new HashSet<>();
+  for (int i=0; i < sel.length; i++) {
+    if (sel[i]) {
+      final int optionIndex=i - (sel.length - source.getItemCount());
+      movedItems.add(source.getValue(optionIndex));
+      final String text=source.getItemText(optionIndex);
+      final String value=source.getValue(optionIndex);
+      target.addItem(text,value);
+      target.setItemSelected(target.getItemCount() - 1,true);
+      source.removeItem(optionIndex);
+    }
+  }
+  if (source.getItemCount() == 0) {
+    target.setFocus(true);
+  }
+ else {
+    source.setFocus(true);
+  }
+  return movedItems;
+}

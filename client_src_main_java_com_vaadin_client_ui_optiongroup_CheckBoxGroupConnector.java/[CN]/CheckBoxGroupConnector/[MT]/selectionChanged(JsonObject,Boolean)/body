@@ -1,10 +1,12 @@
 {
-  SelectionServerRpc rpc=getRpcProxy(SelectionServerRpc.class);
+  MultiSelectServerRpc rpc=getRpcProxy(MultiSelectServerRpc.class);
   String key=getRowKey(changedItem);
+  HashSet<String> change=new HashSet<>();
+  change.add(key);
   if (Boolean.TRUE.equals(selected)) {
-    rpc.select(key);
+    rpc.updateSelection(change,Collections.emptySet());
   }
  else {
-    rpc.deselect(key);
+    rpc.updateSelection(Collections.emptySet(),change);
   }
 }

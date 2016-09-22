@@ -2,12 +2,12 @@
   Roles.getRadiogroupRole().set(getElement());
   optionsContainer.clear();
   for (  JsonObject item : items) {
-    String itemHtml=item.getString(CheckBoxGroupConstants.JSONKEY_ITEM_VALUE);
+    String itemHtml=item.getString(ListingJsonConstants.JSONKEY_ITEM_VALUE);
     if (!isHtmlContentAllowed()) {
       itemHtml=WidgetUtil.escapeHTML(itemHtml);
     }
     VCheckBox checkBox=new VCheckBox();
-    String iconUrl=item.getString(CheckBoxGroupConstants.JSONKEY_ITEM_ICON);
+    String iconUrl=item.getString(ListingJsonConstants.JSONKEY_ITEM_ICON);
     if (iconUrl != null && iconUrl.length() != 0) {
       Icon icon=client.getIcon(iconUrl);
       itemHtml=icon.getElement().getString() + itemHtml;
@@ -15,10 +15,8 @@
     checkBox.addStyleName(CLASSNAME_OPTION);
     checkBox.addClickHandler(this);
     checkBox.setHTML(itemHtml);
-    checkBox.setValue(item.getBoolean(CheckBoxGroupConstants.JSONKEY_ITEM_SELECTED));
-    boolean optionEnabled=!item.getBoolean(JSONKEY_ITEM_DISABLED);
-    boolean enabled=optionEnabled && !isReadonly() && isEnabled();
-    checkBox.setEnabled(enabled);
+    checkBox.setValue(item.getBoolean(ListingJsonConstants.JSONKEY_ITEM_SELECTED));
+    setOptionEnabled(checkBox,item);
     optionsContainer.add(checkBox);
     optionsToItems.put(checkBox,item);
   }

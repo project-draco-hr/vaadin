@@ -4,12 +4,12 @@
   optionsToItems.clear();
   keyToOptions.clear();
   for (  JsonObject item : items) {
-    String itemHtml=item.getString(RadioButtonGroupConstants.JSONKEY_ITEM_VALUE);
+    String itemHtml=item.getString(ListingJsonConstants.JSONKEY_ITEM_VALUE);
     if (!isHtmlContentAllowed()) {
       itemHtml=WidgetUtil.escapeHTML(itemHtml);
     }
     RadioButton radioButton=new RadioButton(groupId);
-    String iconUrl=item.getString(RadioButtonGroupConstants.JSONKEY_ITEM_ICON);
+    String iconUrl=item.getString(ListingJsonConstants.JSONKEY_ITEM_ICON);
     if (iconUrl != null && iconUrl.length() != 0) {
       Icon icon=client.getIcon(iconUrl);
       itemHtml=icon.getElement().getString() + itemHtml;
@@ -18,8 +18,8 @@
     radioButton.addStyleName(CLASSNAME_OPTION);
     radioButton.addClickHandler(this);
     radioButton.setHTML(itemHtml);
-    radioButton.setValue(item.getBoolean(RadioButtonGroupConstants.JSONKEY_ITEM_SELECTED));
-    boolean optionEnabled=!item.getBoolean(JSONKEY_ITEM_DISABLED);
+    radioButton.setValue(item.getBoolean(ListingJsonConstants.JSONKEY_ITEM_SELECTED));
+    boolean optionEnabled=!item.getBoolean(ListingJsonConstants.JSONKEY_ITEM_DISABLED);
     boolean enabled=optionEnabled && !isReadonly() && isEnabled();
     radioButton.setEnabled(enabled);
     String key=item.getString(DataCommunicatorConstants.KEY);
