@@ -1,0 +1,19 @@
+{
+  Path relative=root.relativize(path);
+  String name=relative.toString();
+  name=name.substring(0,name.length() - CLASS_SUFFIX.length());
+  name=name.replace('/','.');
+  try {
+    Class<?> clazz=Class.forName(name);
+    if (clazz.isSynthetic() || clazz.isAnonymousClass()) {
+      return;
+    }
+    if (Modifier.isPrivate(clazz.getModifiers())) {
+      return;
+    }
+    Assert.assertNotNull("Class " + clazz + " is in compatability package and it's not deprecated",clazz.getAnnotation(Deprecated.class));
+  }
+ catch (  ClassNotFoundException e) {
+    throw new RuntimeException(e);
+  }
+}
