@@ -1,0 +1,10 @@
+{
+  Pattern methodPattern=Pattern.compile("remove.*Listener");
+  for (  Class<? extends Object> serverClass : VaadinClasses.getComponents()) {
+    for (    Method method : serverClass.getMethods()) {
+      if (methodPattern.matcher(method.getName()).matches()) {
+        Assert.assertNotNull("Method " + method.getName() + " in class "+ serverClass.getSimpleName()+ " has not been marked as deprecated.",method.getAnnotation(Deprecated.class));
+      }
+    }
+  }
+}

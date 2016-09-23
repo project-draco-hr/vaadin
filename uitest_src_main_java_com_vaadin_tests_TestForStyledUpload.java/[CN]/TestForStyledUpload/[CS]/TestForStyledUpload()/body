@@ -3,11 +3,11 @@
   up=new Upload(null,buffer);
   up.setButtonCaption("Select file");
   up.setImmediate(true);
-  up.addListener((FinishedListener)this);
-  up.addListener((FailedListener)this);
-  up.addListener((SucceededListener)this);
-  up.addListener((StartedListener)this);
-  up.addListener(new Upload.ProgressListener(){
+  up.addFinishedListener(this);
+  up.addFailedListener(this);
+  up.addSucceededListener(this);
+  up.addStartedListener(this);
+  up.addProgressListener(new Upload.ProgressListener(){
     @Override public void updateProgress(    long readBytes,    long contentLenght){
       pi.setValue(new Float(readBytes / (float)contentLenght));
       refreshMemUsage();
@@ -40,7 +40,7 @@
   status.setVisible(false);
   main.addComponent(status);
   Button cancel=new Button("Cancel current upload");
-  cancel.addListener(new Button.ClickListener(){
+  cancel.addClickListener(new Button.ClickListener(){
     @Override public void buttonClick(    ClickEvent event){
       buffer.cancel();
     }
@@ -48,7 +48,7 @@
 );
   main.addComponent(cancel);
   final Button restart=new Button("Restart demo application");
-  restart.addListener(new Button.ClickListener(){
+  restart.addClickListener(new Button.ClickListener(){
     @Override public void buttonClick(    ClickEvent event){
       TestForStyledUpload.this.close();
     }

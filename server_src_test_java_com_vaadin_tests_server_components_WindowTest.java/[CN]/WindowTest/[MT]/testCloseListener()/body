@@ -2,10 +2,10 @@
   CloseListener cl=EasyMock.createMock(Window.CloseListener.class);
   cl.windowClose(EasyMock.isA(CloseEvent.class));
   EasyMock.replay(cl);
-  window.addListener(cl);
+  Registration windowCloseListenerRegistration=window.addCloseListener(cl);
   sendClose(window);
   EasyMock.verify(cl);
-  window.removeListener(cl);
+  windowCloseListenerRegistration.remove();
   sendClose(window);
   EasyMock.verify(cl);
 }
