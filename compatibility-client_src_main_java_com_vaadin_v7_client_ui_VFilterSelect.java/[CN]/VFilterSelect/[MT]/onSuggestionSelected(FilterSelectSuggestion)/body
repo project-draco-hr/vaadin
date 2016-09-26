@@ -2,7 +2,7 @@
   if (enableDebug) {
     debug("VFS: onSuggestionSelected(" + suggestion.caption + ": "+ suggestion.key+ ")");
   }
-  dataReceivedHandler.cancelPendingPostFiltering();
+  updateSelectionWhenReponseIsReceived=false;
   currentSuggestion=suggestion;
   String newKey;
   if (suggestion.key.equals("")) {
@@ -21,12 +21,14 @@
   setSelectedItemIcon(suggestion.getIconUri());
   if (!(newKey.equals(selectedOptionKey) || ("".equals(newKey) && selectedOptionKey == null))) {
     selectedOptionKey=newKey;
-    connector.sendSelection(selectedOptionKey);
+    client.updateVariable(paintableId,"selected",new String[]{selectedOptionKey},immediate);
+    afterUpdateClientVariables();
   }
   if (getSelectedCaption() != null && newKey.equals("")) {
     selectedOptionKey=newKey;
     explicitSelectedCaption=null;
-    connector.sendSelection(selectedOptionKey);
+    client.updateVariable(paintableId,"selected",new String[]{selectedOptionKey},immediate);
+    afterUpdateClientVariables();
   }
   suggestionPopup.hide();
 }

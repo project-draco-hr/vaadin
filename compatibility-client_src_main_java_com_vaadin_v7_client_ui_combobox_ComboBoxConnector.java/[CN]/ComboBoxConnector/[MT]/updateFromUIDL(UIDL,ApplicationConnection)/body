@@ -1,12 +1,43 @@
 {
+  getWidget().client=client;
+  getWidget().paintableId=uidl.getId();
+  getWidget().readonly=isReadOnly();
+  getWidget().updateReadOnly();
   if (!isRealUpdate(uidl)) {
     return;
   }
+  boolean noTextInput=uidl.hasAttribute(ComboBoxConstants.ATTR_NO_TEXT_INPUT) && uidl.getBooleanAttribute(ComboBoxConstants.ATTR_NO_TEXT_INPUT);
+  getWidget().setTextInputEnabled(!noTextInput);
   getWidget().tb.setTabIndex(getState().tabIndex);
+  if (uidl.hasAttribute("filteringmode")) {
+    getWidget().filteringmode=FilteringMode.valueOf(uidl.getStringAttribute("filteringmode"));
+  }
+  getWidget().immediate=getState().immediate;
   getWidget().nullSelectionAllowed=uidl.hasAttribute("nullselect");
   getWidget().nullSelectItem=uidl.hasAttribute("nullselectitem") && uidl.getBooleanAttribute("nullselectitem");
   getWidget().currentPage=uidl.getIntVariable("page");
-  getWidget().suggestionPopup.updateStyleNames(getState());
+  if (uidl.hasAttribute("pagelength")) {
+    getWidget().pageLength=uidl.getIntAttribute("pagelength");
+  }
+  if (uidl.hasAttribute(ComboBoxConstants.ATTR_INPUTPROMPT)) {
+    getWidget().inputPrompt=uidl.getStringAttribute(ComboBoxConstants.ATTR_INPUTPROMPT);
+  }
+ else {
+    getWidget().inputPrompt="";
+  }
+  if (uidl.hasAttribute("suggestionPopupWidth")) {
+    getWidget().suggestionPopupWidth=uidl.getStringAttribute("suggestionPopupWidth");
+  }
+ else {
+    getWidget().suggestionPopupWidth=null;
+  }
+  if (uidl.hasAttribute("suggestionPopupWidth")) {
+    getWidget().suggestionPopupWidth=uidl.getStringAttribute("suggestionPopupWidth");
+  }
+ else {
+    getWidget().suggestionPopupWidth=null;
+  }
+  getWidget().suggestionPopup.updateStyleNames(uidl,getState());
   getWidget().allowNewItem=uidl.hasAttribute("allownewitem");
   getWidget().lastNewItemString=null;
   final UIDL options=uidl.getChildUIDL(0);
@@ -16,26 +47,19 @@
  else {
     getWidget().totalMatches=0;
   }
-  List<FilterSelectSuggestion> newSuggestions=new ArrayList<FilterSelectSuggestion>();
+  List<FilterSelectSuggestion> newSuggestions=new ArrayList<>();
   for (final Iterator<?> i=options.getChildIterator(); i.hasNext(); ) {
     final UIDL optionUidl=(UIDL)i.next();
-    String key=optionUidl.getStringAttribute("key");
-    String caption=optionUidl.getStringAttribute("caption");
-    String style=optionUidl.getStringAttribute("style");
-    String untranslatedIconUri=null;
-    if (optionUidl.hasAttribute("icon")) {
-      untranslatedIconUri=optionUidl.getStringAttribute("icon");
-    }
-    final FilterSelectSuggestion suggestion=getWidget().new FilterSelectSuggestion(key,caption,style,untranslatedIconUri);
+    final FilterSelectSuggestion suggestion=getWidget().new FilterSelectSuggestion(optionUidl);
     newSuggestions.add(suggestion);
   }
   boolean suggestionsChanged=!getWidget().initDone || !newSuggestions.equals(getWidget().currentSuggestions);
   boolean popupOpenAndCleared=false;
-  boolean oldSuggestionTextMatchesTheOldSelection=false;
+  oldSuggestionTextMatchTheOldSelection=false;
   if (suggestionsChanged) {
-    oldSuggestionTextMatchesTheOldSelection=isWidgetsCurrentSelectionTextInTextBox();
+    oldSuggestionTextMatchTheOldSelection=isWidgetsCurrentSelectionTextInTextBox();
     getWidget().currentSuggestions.clear();
-    if (!getDataReceivedHandler().isWaitingForFilteringResponse()) {
+    if (!getWidget().waitingForFilteringResponse) {
       getWidget().currentSuggestion=null;
       getWidget().suggestionPopup.menu.clearItems();
       popupOpenAndCleared=getWidget().suggestionPopup.isAttached();
@@ -46,20 +70,34 @@
   }
   if (uidl.hasVariable("selected")) {
     String[] selectedKeys=uidl.getStringArrayVariable("selected");
-    String selectedKey=null;
-    if (selectedKeys.length == 1) {
-      selectedKey=selectedKeys[0];
+    if (selectedKeys.length > 0 && !selectedKeys[0].equals("")) {
+      performSelection(selectedKeys[0]);
+      getWidget().setSelectedCaption(null);
     }
-    String selectedCaption=null;
-    if (uidl.hasAttribute("selectedCaption")) {
-      selectedCaption=uidl.getStringAttribute("selectedCaption");
+ else     if (!getWidget().waitingForFilteringResponse && uidl.hasAttribute("selectedCaption")) {
+      getWidget().setSelectedCaption(uidl.getStringAttribute("selectedCaption"));
     }
-    getDataReceivedHandler().updateSelectionFromServer(selectedKey,selectedCaption,oldSuggestionTextMatchesTheOldSelection);
+ else {
+      resetSelection();
+    }
   }
-  if ((getDataReceivedHandler().isWaitingForFilteringResponse() && getWidget().lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) || popupOpenAndCleared) {
-    getDataReceivedHandler().dataReceived();
+  if ((getWidget().waitingForFilteringResponse && getWidget().lastFilter.toLowerCase().equals(uidl.getStringVariable("filter"))) || popupOpenAndCleared) {
+    getWidget().suggestionPopup.showSuggestions(getWidget().currentSuggestions,getWidget().currentPage,getWidget().totalMatches);
+    getWidget().waitingForFilteringResponse=false;
+    if (!getWidget().popupOpenerClicked && getWidget().selectPopupItemWhenResponseIsReceived != VFilterSelect.Select.NONE) {
+      Scheduler.get().scheduleDeferred(new ScheduledCommand(){
+        @Override public void execute(){
+          navigateItemAfterPageChange();
+        }
+      }
+);
+    }
+    if (getWidget().updateSelectionWhenReponseIsReceived) {
+      getWidget().suggestionPopup.menu.doPostFilterSelectedItemAction();
+    }
   }
   getWidget().updateSuggestionPopupMinWidth();
+  getWidget().popupOpenerClicked=false;
   if (!getWidget().initDone) {
     getWidget().updateRootWidth();
   }
@@ -67,5 +105,4 @@
     getWidget().addStyleDependentName("focus");
   }
   getWidget().initDone=true;
-  getDataReceivedHandler().serverReplyHandled();
 }

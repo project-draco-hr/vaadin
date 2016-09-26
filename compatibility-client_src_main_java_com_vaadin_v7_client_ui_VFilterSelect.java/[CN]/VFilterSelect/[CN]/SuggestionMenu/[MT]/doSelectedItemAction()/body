@@ -6,9 +6,15 @@
       reset();
       return;
     }
-    connector.requestFirstPage();
+    client.updateVariable(paintableId,"filter","",false);
+    client.updateVariable(paintableId,"page",0,false);
+    client.updateVariable(paintableId,"selected",new String[]{},immediate);
+    afterUpdateClientVariables();
     suggestionPopup.hide();
     return;
   }
-  dataReceivedHandler.doPostFilterWhenReady();
+  updateSelectionWhenReponseIsReceived=waitingForFilteringResponse;
+  if (!waitingForFilteringResponse) {
+    doPostFilterSelectedItemAction();
+  }
 }

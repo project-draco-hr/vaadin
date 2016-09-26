@@ -9,6 +9,10 @@
     setPromptingOff("");
   }
   addStyleDependentName("focus");
-  connector.sendFocusEvent();
-  connector.getConnection().getVTooltip().showAssistive(connector.getTooltipInfo(getElement()));
+  if (client.hasEventListeners(this,EventId.FOCUS)) {
+    client.updateVariable(paintableId,EventId.FOCUS,"",true);
+    afterUpdateClientVariables();
+  }
+  ComponentConnector connector=ConnectorMap.get(client).getConnector(this);
+  client.getVTooltip().showAssistive(connector.getTooltipInfo(getElement()));
 }

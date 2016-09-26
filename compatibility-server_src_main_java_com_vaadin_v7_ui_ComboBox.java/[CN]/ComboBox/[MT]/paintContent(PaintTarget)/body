@@ -1,7 +1,19 @@
 {
   isPainting=true;
   try {
+    if (inputPrompt != null) {
+      target.addAttribute(ComboBoxConstants.ATTR_INPUTPROMPT,inputPrompt);
+    }
+    if (!textInputAllowed) {
+      target.addAttribute(ComboBoxConstants.ATTR_NO_TEXT_INPUT,true);
+    }
     getCaptionChangeListener().clear();
+    if (getTabIndex() != 0) {
+      target.addAttribute("tabindex",getTabIndex());
+    }
+    if (isModified()) {
+      target.addAttribute("modified",true);
+    }
     if (isNewItemsAllowed()) {
       target.addAttribute("allownewitem",true);
     }
@@ -14,7 +26,13 @@
       }
     }
     String[] selectedKeys=new String[(getValue() == null && getNullSelectionItemId() == null ? 0 : 1)];
+    target.addAttribute("pagelength",pageLength);
+    if (suggestionPopupWidth != null) {
+      target.addAttribute("suggestionPopupWidth",suggestionPopupWidth);
+    }
+    target.addAttribute("filteringmode",getFilteringMode().toString());
     int keyIndex=0;
+    target.startTag("options");
     if (currentPage < 0) {
       optionRequest=false;
       currentPage=0;
@@ -26,14 +44,15 @@
     if (null == options) {
       options=getFilteredOptions();
       filteredSize=options.size();
-      options=sanitetizeList(options,nullOptionVisible);
+      options=sanitizeList(options,nullOptionVisible);
     }
     final boolean paintNullSelection=needNullSelectOption && currentPage == 0 && !nullFilteredOut;
-    List<ComboBoxItem> items=new ArrayList<>();
     if (paintNullSelection) {
-      ComboBoxItem item=new ComboBoxItem();
-      item.style=getItemStyle(null);
-      items.add(item);
+      target.startTag("so");
+      target.addAttribute("caption","");
+      target.addAttribute("key","");
+      paintItemStyle(target,null);
+      target.endTag("so");
     }
     final Iterator<?> i=options.iterator();
     while (i.hasNext()) {
@@ -45,23 +64,19 @@
       final String caption=getItemCaption(id);
       final Resource icon=getItemIcon(id);
       getCaptionChangeListener().addNotifierForItem(id);
-      ComboBoxItem item=new ComboBoxItem(key,caption,getItemStyle(id),icon);
-      items.add(item);
+      target.startTag("so");
+      if (icon != null) {
+        target.addAttribute("icon",icon);
+      }
+      target.addAttribute("caption",caption);
+      if (id != null && id.equals(getNullSelectionItemId())) {
+        target.addAttribute("nullselection",true);
+      }
+      target.addAttribute("key",key);
       if (keyIndex < selectedKeys.length && isSelected(id)) {
         selectedKeys[keyIndex++]=key;
       }
-    }
-    target.startTag("options");
-    for (    ComboBoxItem item : items) {
-      target.startTag("so");
-      if (item.icon != null) {
-        target.addAttribute("icon",item.icon);
-      }
-      target.addAttribute("caption",item.caption);
-      target.addAttribute("key",item.key);
-      if (item.style != null) {
-        target.addAttribute("style",item.style);
-      }
+      paintItemStyle(target,id);
       target.endTag("so");
     }
     target.endTag("options");

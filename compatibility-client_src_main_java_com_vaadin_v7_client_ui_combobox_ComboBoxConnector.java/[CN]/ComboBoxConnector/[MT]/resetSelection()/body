@@ -1,0 +1,25 @@
+{
+  if (!getWidget().waitingForFilteringResponse || getWidget().popupOpenerClicked) {
+    if (!getWidget().focused) {
+      getWidget().setPromptingOff("");
+      if (getWidget().enabled && !getWidget().readonly) {
+        getWidget().setPromptingOn();
+      }
+    }
+ else {
+      if (getWidget().selectedOptionKey != null || (getWidget().allowNewItem && !getWidget().tb.getValue().isEmpty())) {
+        boolean openedPopupWithNonScrollingMode=(getWidget().popupOpenerClicked && getWidget().getSelectedCaption() != null);
+        if (!openedPopupWithNonScrollingMode) {
+          getWidget().tb.setValue("");
+        }
+ else {
+          getWidget().tb.setValue(getWidget().getSelectedCaption());
+          getWidget().tb.selectAll();
+        }
+      }
+    }
+    getWidget().currentSuggestion=null;
+    getWidget().setSelectedItemIcon(null);
+    getWidget().selectedOptionKey=null;
+  }
+}

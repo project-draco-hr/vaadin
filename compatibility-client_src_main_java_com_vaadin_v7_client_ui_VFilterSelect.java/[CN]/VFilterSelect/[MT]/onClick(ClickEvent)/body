@@ -5,8 +5,9 @@
   }
   if (enabled && !readonly) {
     if (!suggestionPopup.isJustClosed()) {
-      filterOptions(-1,"");
-      dataReceivedHandler.popupOpenerClicked();
+      boolean immediate=focused || !client.hasEventListeners(this,EventId.FOCUS);
+      filterOptions(-1,"",immediate);
+      popupOpenerClicked=true;
       lastFilter="";
     }
     DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
