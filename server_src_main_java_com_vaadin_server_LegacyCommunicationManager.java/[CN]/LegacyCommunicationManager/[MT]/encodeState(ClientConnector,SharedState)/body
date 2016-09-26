@@ -3,8 +3,7 @@
   ConnectorTracker connectorTracker=uI.getConnectorTracker();
   Class<? extends SharedState> stateType=connector.getStateType();
   JsonValue diffState=connectorTracker.getDiffState(connector);
-  boolean supportsDiffState=!JavaScriptConnectorState.class.isAssignableFrom(stateType);
-  if (diffState == null && supportsDiffState) {
+  if (diffState == null) {
     diffState=referenceDiffStates.get(stateType);
     if (diffState == null) {
       diffState=createReferenceDiffStateState(stateType);
@@ -12,8 +11,6 @@
     }
   }
   EncodeResult encodeResult=JsonCodec.encode(state,diffState,stateType,uI.getConnectorTracker());
-  if (supportsDiffState) {
-    connectorTracker.setDiffState(connector,(JsonObject)encodeResult.getEncodedValue());
-  }
+  connectorTracker.setDiffState(connector,(JsonObject)encodeResult.getEncodedValue());
   return (JsonObject)encodeResult.getDiff();
 }
