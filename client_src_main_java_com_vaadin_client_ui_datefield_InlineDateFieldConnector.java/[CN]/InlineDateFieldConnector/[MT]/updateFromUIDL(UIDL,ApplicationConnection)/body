@@ -13,24 +13,7 @@
  else {
     getWidget().calendarPanel.setDate(null);
   }
-  if (getWidget().getCurrentResolution().getCalendarField() > Resolution.DAY.getCalendarField()) {
-    getWidget().calendarPanel.setTimeChangeListener(new TimeChangeListener(){
-      @Override public void changed(      int hour,      int min,      int sec,      int msec){
-        Date d=getWidget().getDate();
-        if (d == null) {
-          d=(Date)getWidget().calendarPanel.getDate().clone();
-        }
-        d.setHours(hour);
-        d.setMinutes(min);
-        d.setSeconds(sec);
-        DateTimeService.setMilliseconds(d,msec);
-        getWidget().calendarPanel.setDate(d);
-        getWidget().updateValueFromPanel();
-      }
-    }
-);
-  }
-  if (getWidget().getCurrentResolution().getCalendarField() <= Resolution.MONTH.getCalendarField()) {
+  if (getWidget().getCurrentResolution().compareTo(Resolution.MONTH) >= 0) {
     getWidget().calendarPanel.setFocusChangeListener(new FocusChangeListener(){
       @Override public void focusChanged(      Date date){
         Date date2=new Date();

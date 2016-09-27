@@ -16,7 +16,7 @@
   if (!getWidget().getCurrentLocale().equals(oldLocale)) {
     getWidget().calendar.renderCalendar();
   }
-  if (getWidget().getCurrentResolution().getCalendarField() <= Resolution.MONTH.getCalendarField()) {
+  if (getWidget().getCurrentResolution().compareTo(Resolution.MONTH) >= 0) {
     getWidget().calendar.setFocusChangeListener(new FocusChangeListener(){
       @Override public void focusChanged(      Date date){
         getWidget().updateValue(date);
@@ -30,23 +30,6 @@
   }
  else {
     getWidget().calendar.setFocusChangeListener(null);
-  }
-  if (getWidget().getCurrentResolution().getCalendarField() > Resolution.DAY.getCalendarField()) {
-    getWidget().calendar.setTimeChangeListener(new TimeChangeListener(){
-      @Override public void changed(      int hour,      int min,      int sec,      int msec){
-        Date d=getWidget().getDate();
-        if (d == null) {
-          d=(Date)getWidget().calendar.getDate().clone();
-        }
-        d.setHours(hour);
-        d.setMinutes(min);
-        d.setSeconds(sec);
-        DateTimeService.setMilliseconds(d,msec);
-        getWidget().updateValue(d);
-        getWidget().buildDate();
-      }
-    }
-);
   }
   if (getWidget().isReadonly()) {
     getWidget().calendarToggle.addStyleName(VPopupCalendar.CLASSNAME + "-button-readonly");

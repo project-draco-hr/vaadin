@@ -4,22 +4,18 @@
     target.addAttribute("locale",l.toString());
   }
   if (getDateFormat() != null) {
-    target.addAttribute("format",dateFormat);
+    target.addAttribute("format",getDateFormat());
   }
   if (!isLenient()) {
     target.addAttribute("strict",true);
   }
   target.addAttribute(DateFieldConstants.ATTR_WEEK_NUMBERS,isShowISOWeekNumbers());
   target.addAttribute("parsable",uiHasValidDateString);
-  final Calendar calendar=getCalendar();
-  final Date currentDate=getValue();
+  final LocalDate currentDate=getValue();
   for (  Resolution res : Resolution.getResolutionsHigherOrEqualTo(resolution)) {
     int value=-1;
     if (currentDate != null) {
-      value=calendar.get(res.getCalendarField());
-      if (res == Resolution.MONTH) {
-        value++;
-      }
+      value=getDateValue(currentDate,res);
     }
     target.addVariable(this,variableNameForResolution.get(res),value);
   }

@@ -14,7 +14,7 @@
       Date dateThatFitsInsideRange=adjustDateToFitInsideRange(new Date());
       focusedDate=new FocusedDate(dateThatFitsInsideRange.getYear(),dateThatFitsInsideRange.getMonth(),dateThatFitsInsideRange.getDate());
       displayedMonth=new FocusedDate(dateThatFitsInsideRange.getYear(),dateThatFitsInsideRange.getMonth(),1);
-      if (getResolution().getCalendarField() >= Resolution.DAY.getCalendarField()) {
+      if (isDay(getResolution())) {
         value=null;
       }
     }
@@ -26,15 +26,12 @@
     focusedDate=new FocusedDate(value.getYear(),value.getMonth(),value.getDate());
     displayedMonth=new FocusedDate(value.getYear(),value.getMonth(),1);
   }
-  if ((isTimeSelectorNeeded() && time == null) || oldDisplayedMonth == null || value == null || oldDisplayedMonth.getYear() != value.getYear() || oldDisplayedMonth.getMonth() != value.getMonth()) {
+  if (oldDisplayedMonth == null || value == null || oldDisplayedMonth.getYear() != value.getYear() || oldDisplayedMonth.getMonth() != value.getMonth()) {
     renderCalendar();
   }
  else {
     focusDay(focusedDate);
     selectFocused();
-    if (isTimeSelectorNeeded()) {
-      time.updateTimes();
-    }
   }
   if (!hasFocus) {
     focusDay(null);
