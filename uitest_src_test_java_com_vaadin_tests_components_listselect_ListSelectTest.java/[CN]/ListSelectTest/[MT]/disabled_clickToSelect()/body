@@ -1,0 +1,17 @@
+{
+  selectMenuPath("Component","State","Enabled");
+  List<WebElement> select=getListSelect().findElements(By.tagName("select"));
+  Assert.assertEquals(1,select.size());
+  Assert.assertNotNull(select.get(0).getAttribute("disabled"));
+  selectMenuPath("Component","Listeners","Selection listener");
+  String lastLogRow=getLogRow(0);
+  selectItem("Item 4");
+  Assert.assertEquals(lastLogRow,getLogRow(0));
+  assertNothingSelected();
+  addItemsToSelection("Item 2");
+  Assert.assertEquals(lastLogRow,getLogRow(0));
+  assertNothingSelected();
+  removeItemsFromSelection("Item 4");
+  Assert.assertEquals(lastLogRow,getLogRow(0));
+  assertNothingSelected();
+}

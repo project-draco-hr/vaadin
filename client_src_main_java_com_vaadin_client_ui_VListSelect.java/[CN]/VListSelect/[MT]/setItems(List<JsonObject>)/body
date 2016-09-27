@@ -1,0 +1,22 @@
+{
+  selectedItemKeys=FastStringSet.create();
+  for (int i=0; i < items.size(); i++) {
+    final JsonObject item=items.get(i);
+    final String key=MultiSelectWidget.getKey(item);
+    if (i < select.getItemCount()) {
+      select.setItemText(i,MultiSelectWidget.getCaption(item));
+      select.setValue(i,key);
+    }
+ else {
+      select.addItem(MultiSelectWidget.getCaption(item),key);
+    }
+    final boolean selected=MultiSelectWidget.isSelected(item);
+    select.setItemSelected(i,selected);
+    if (selected) {
+      selectedItemKeys.add(key);
+    }
+  }
+  for (int i=select.getItemCount() - 1; i >= items.size(); i--) {
+    select.removeItem(i);
+  }
+}
