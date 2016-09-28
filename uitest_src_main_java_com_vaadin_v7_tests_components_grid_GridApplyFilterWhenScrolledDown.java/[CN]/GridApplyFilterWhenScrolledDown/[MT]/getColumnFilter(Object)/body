@@ -1,0 +1,18 @@
+{
+  TextField filter=new TextField();
+  filter.setWidth("100%");
+  filter.addStyleName(ValoTheme.TEXTFIELD_TINY);
+  filter.addTextChangeListener(new TextChangeListener(){
+    SimpleStringFilter filter=null;
+    @Override public void textChange(    TextChangeEvent event){
+      Filterable f=(Filterable)grid.getContainerDataSource();
+      if (filter != null) {
+        f.removeContainerFilter(filter);
+      }
+      filter=new SimpleStringFilter(columnId,event.getText(),true,true);
+      f.addContainerFilter(filter);
+    }
+  }
+);
+  return filter;
+}

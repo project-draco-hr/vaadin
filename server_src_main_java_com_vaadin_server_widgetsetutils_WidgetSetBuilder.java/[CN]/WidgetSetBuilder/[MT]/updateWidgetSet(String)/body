@@ -6,8 +6,7 @@
   if (sourceUrl == null) {
     sourceUrl=ClassPathExplorer.getWidgetsetSourceDirectory(widgetsetFileName);
   }
-  String wsFullPath=sourceUrl.getFile() + "/" + widgetsetFileName;
-  File widgetsetFile=new File(wsFullPath);
+  File widgetsetFile=new File(new File(sourceUrl.toURI()),widgetsetFileName);
   if (!widgetsetFile.exists()) {
     File parent=widgetsetFile.getParentFile();
     if (parent != null && !parent.exists()) {
@@ -45,7 +44,7 @@
     }
     changed=changed || !content.equals(originalContent);
     if (changed) {
-      commitChanges(wsFullPath,content);
+      commitChanges(widgetsetFile,content);
     }
   }
  else {

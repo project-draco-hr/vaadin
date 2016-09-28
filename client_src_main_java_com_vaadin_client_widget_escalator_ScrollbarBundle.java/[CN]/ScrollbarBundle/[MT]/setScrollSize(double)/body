@@ -2,13 +2,19 @@
   boolean newScrollSizeIsSmallerThanOffsetSize=px <= getOffsetSize();
   boolean scrollSizeBecomesSmallerThanOffsetSize=showsScrollHandle() && newScrollSizeIsSmallerThanOffsetSize;
   if (scrollSizeBecomesSmallerThanOffsetSize && getScrollPos() != 0) {
-    scrollSizeTemporaryScrollHandler=addScrollHandler(new ScrollHandler(){
-      @Override public void onScroll(      ScrollEvent event){
-        setScrollSizeNow(px);
+    boolean delayedSizeSet=!BrowserInfo.get().isFirefox();
+    if (delayedSizeSet) {
+      scrollSizeTemporaryScrollHandler=addScrollHandler(new ScrollHandler(){
+        @Override public void onScroll(        ScrollEvent event){
+          setScrollSizeNow(px);
+        }
       }
-    }
 );
+    }
     setScrollPos(0);
+    if (!delayedSizeSet) {
+      setScrollSizeNow(px);
+    }
   }
  else {
     setScrollSizeNow(px);
