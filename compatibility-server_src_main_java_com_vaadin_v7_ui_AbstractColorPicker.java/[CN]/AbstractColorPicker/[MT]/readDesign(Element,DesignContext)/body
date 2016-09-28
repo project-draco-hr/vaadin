@@ -1,0 +1,15 @@
+{
+  super.readDesign(design,designContext);
+  Attributes attributes=design.attributes();
+  if (design.hasAttr("color")) {
+    String hexColor=DesignAttributeHandler.readAttribute("color",attributes,String.class).substring(1);
+    setColor(new Color(Integer.parseInt(hexColor,16)));
+  }
+  if (design.hasAttr("popup-style")) {
+    setPopupStyle(PopupStyle.valueOf("POPUP_" + attributes.get("popup-style").toUpperCase()));
+  }
+  if (design.hasAttr("position")) {
+    String[] position=attributes.get("position").split(",");
+    setPosition(Integer.parseInt(position[0]),Integer.parseInt(position[1]));
+  }
+}
