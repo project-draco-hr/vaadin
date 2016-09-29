@@ -2,8 +2,14 @@
   setSelectionModel(new SimpleSingleSelection());
   addDataGenerator(new DataGenerator<T>(){
     @Override public void generateData(    T data,    JsonObject jsonObject){
-      jsonObject.put(ListingJsonConstants.JSONKEY_ITEM_VALUE,itemCaptionProvider.apply(data));
-      Resource icon=itemIconProvider.apply(data);
+      String caption=getItemCaptionGenerator().apply(data);
+      if (caption != null) {
+        jsonObject.put(ListingJsonConstants.JSONKEY_ITEM_VALUE,caption);
+      }
+ else {
+        jsonObject.put(ListingJsonConstants.JSONKEY_ITEM_VALUE,"");
+      }
+      Resource icon=getItemIconGenerator().apply(data);
       if (icon != null) {
         String iconUrl=ResourceReference.create(icon,RadioButtonGroup.this,null).getURL();
         jsonObject.put(ListingJsonConstants.JSONKEY_ITEM_ICON,iconUrl);
