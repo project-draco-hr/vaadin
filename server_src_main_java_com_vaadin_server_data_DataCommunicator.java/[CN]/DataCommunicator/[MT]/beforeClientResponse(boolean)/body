@@ -7,7 +7,7 @@
   if (initial || reset) {
     int dataSourceSize;
     if (getDataSource().isInMemory() && inMemoryFilter != null) {
-      dataSourceSize=(int)getDataSource().apply(new Query()).filter(inMemoryFilter).count();
+      dataSourceSize=(int)getDataSource().fetch(new Query()).filter(inMemoryFilter).count();
     }
  else {
       dataSourceSize=getDataSource().size(new Query(filters));
@@ -19,7 +19,7 @@
     int limit=pushRows.length();
     Stream<T> rowsToPush;
     if (getDataSource().isInMemory()) {
-      rowsToPush=getDataSource().apply(new Query());
+      rowsToPush=getDataSource().fetch(new Query());
       if (inMemoryFilter != null) {
         rowsToPush=rowsToPush.filter(inMemoryFilter);
       }
@@ -30,7 +30,7 @@
     }
  else {
       Query query=new Query(offset,limit,backEndSorting,filters);
-      rowsToPush=getDataSource().apply(query);
+      rowsToPush=getDataSource().fetch(query);
     }
     pushData(offset,rowsToPush);
   }
