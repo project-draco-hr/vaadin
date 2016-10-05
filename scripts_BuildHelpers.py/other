@@ -1,0 +1,20 @@
+import sys, argparse, subprocess, platform
+from xml.etree import ElementTree
+from os.path import join, isdir, isfile, basename, exists
+from os import listdir, makedirs
+from shutil import copy, rmtree
+from glob import glob
+resultPath = join('result', 'demos')
+if (not exists(resultPath)):
+    makedirs(resultPath)
+elif (not isdir(resultPath)):
+    print 'Result path is not a directory.'
+    sys.exit(1)
+args = None
+parser = argparse.ArgumentParser(description='Automated staging validation')
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument('--version', help='Vaadin version to use')
+parser.add_argument('--maven', help='Additional maven command line parameters', default=None)
+parser.add_argument('--fwRepo', help='Framework staging repository URL', default=None)
+parser.add_argument('--pluginRepo', help='Maven plugin repository URL', default=None)
+mavenCmd = getMavenCommand()
