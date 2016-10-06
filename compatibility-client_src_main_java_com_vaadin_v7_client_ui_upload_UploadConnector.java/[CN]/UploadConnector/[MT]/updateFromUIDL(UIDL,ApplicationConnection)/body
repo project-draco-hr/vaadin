@@ -1,0 +1,30 @@
+{
+  if (!isRealUpdate(uidl)) {
+    return;
+  }
+  if (uidl.hasAttribute("notStarted")) {
+    getWidget().t.schedule(400);
+    return;
+  }
+  getWidget().setImmediate(getState().immediate);
+  getWidget().client=client;
+  getWidget().paintableId=uidl.getId();
+  getWidget().nextUploadId=uidl.getIntAttribute("nextid");
+  final String action=client.translateVaadinUri(uidl.getStringVariable("action"));
+  getWidget().element.setAction(action);
+  if (uidl.hasAttribute("buttoncaption")) {
+    getWidget().submitButton.setText(uidl.getStringAttribute("buttoncaption"));
+    getWidget().submitButton.setVisible(true);
+  }
+ else {
+    getWidget().submitButton.setVisible(false);
+  }
+  getWidget().fu.setName(getWidget().paintableId + "_file");
+  if (!isEnabled() || isReadOnly()) {
+    getWidget().disableUpload();
+  }
+ else   if (!uidl.getBooleanAttribute("state")) {
+    getWidget().enableUpload();
+    getWidget().ensureTargetFrame();
+  }
+}

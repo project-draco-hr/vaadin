@@ -1,0 +1,22 @@
+{
+  Scheduler.get().scheduleDeferred(new Command(){
+    @Override public void execute(){
+      if (submitted) {
+        if (client != null) {
+          if (t != null) {
+            t.cancel();
+          }
+          VConsole.log("VUpload:Submit complete");
+          ((UploadConnector)ConnectorMap.get(client).getConnector(VUpload.this)).getRpcProxy(UploadServerRpc.class).poll();
+        }
+        rebuildPanel();
+        submitted=false;
+        enableUpload();
+        if (!isAttached()) {
+          cleanTargetFrame();
+        }
+      }
+    }
+  }
+);
+}
