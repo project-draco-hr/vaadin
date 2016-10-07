@@ -4,9 +4,9 @@
     JsonObject row=cell.getRow();
     if (row != null && (row.hasKey(GridState.JSONKEY_ROWDESCRIPTION) || row.hasKey(GridState.JSONKEY_CELLDESCRIPTION))) {
       Column<?,JsonObject> column=cell.getColumn();
-      if (columnToIdMap.containsKey(column)) {
+      if (column instanceof CustomColumn) {
         JsonObject cellDescriptions=row.getObject(GridState.JSONKEY_CELLDESCRIPTION);
-        String id=columnToIdMap.get(column);
+        String id=((CustomColumn)column).getConnectorId();
         if (cellDescriptions != null && cellDescriptions.hasKey(id)) {
           return new TooltipInfo(cellDescriptions.getString(id));
         }
