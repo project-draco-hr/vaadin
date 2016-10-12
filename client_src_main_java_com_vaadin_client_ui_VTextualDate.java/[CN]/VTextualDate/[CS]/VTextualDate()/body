@@ -5,10 +5,6 @@
   text.addFocusHandler(new FocusHandler(){
     @Override public void onFocus(    FocusEvent event){
       text.addStyleName(VTextField.CLASSNAME + "-" + VTextField.CLASSNAME_FOCUS);
-      if (prompting) {
-        text.setText("");
-        setPrompting(false);
-      }
       if (getClient() != null && getClient().hasEventListeners(VTextualDate.this,EventId.FOCUS)) {
         getClient().updateVariable(getId(),EventId.FOCUS,"",true);
       }
@@ -20,10 +16,6 @@
     @Override public void onBlur(    BlurEvent event){
       text.removeStyleName(VTextField.CLASSNAME + "-" + VTextField.CLASSNAME_FOCUS);
       String value=getText();
-      setPrompting(inputPrompt != null && (value == null || "".equals(value)));
-      if (prompting) {
-        text.setText(readonly ? "" : inputPrompt);
-      }
       if (getClient() != null && getClient().hasEventListeners(VTextualDate.this,EventId.BLUR)) {
         getClient().updateVariable(getId(),EventId.BLUR,"",true);
       }
