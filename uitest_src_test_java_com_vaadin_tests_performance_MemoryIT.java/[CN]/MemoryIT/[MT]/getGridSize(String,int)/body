@@ -1,0 +1,18 @@
+{
+  double lastResult=0;
+  int stableNumber=0;
+  for (int i=0; i < 500; i++) {
+    openUI(path,itemsCount);
+    long currentResult=Long.parseLong(findElement(By.id("memory")).getText());
+    close();
+    if (approx(lastResult,currentResult,0.001)) {
+      stableNumber++;
+    }
+    lastResult=currentResult;
+    if (stableNumber == 5) {
+      return currentResult;
+    }
+  }
+  Assert.fail("Memory size does not stabilize");
+  return -1;
+}
