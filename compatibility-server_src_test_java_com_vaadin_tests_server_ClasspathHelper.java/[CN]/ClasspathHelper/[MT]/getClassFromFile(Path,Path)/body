@@ -1,0 +1,15 @@
+{
+  Path relative=root.relativize(path);
+  String name=relative.toString();
+  name=name.substring(0,name.length() - ".class".length());
+  name=name.replace('/','.');
+  if (skipClassesFilter.test(name)) {
+    return null;
+  }
+  try {
+    return Class.forName(name,false,getClass().getClassLoader());
+  }
+ catch (  ClassNotFoundException e) {
+    throw new RuntimeException(e);
+  }
+}
