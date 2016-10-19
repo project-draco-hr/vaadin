@@ -1,0 +1,19 @@
+{
+  Multi<?> model=Mockito.mock(Multi.class);
+  AbstractMultiSelect<String> select=new AbstractMultiSelect<String>(){
+    @Override public Multi<String> getSelectionModel(){
+      return (Multi<String>)model;
+    }
+  }
+;
+  Set set=new LinkedHashSet<>();
+  set.add("foo1");
+  set.add("foo");
+  Set selected=new LinkedHashSet<>();
+  selected.add("bar1");
+  selected.add("bar");
+  selected.add("bar2");
+  Mockito.when(model.getSelectedItems()).thenReturn(selected);
+  select.setValue(set);
+  Mockito.verify(model).updateSelection(set,selected);
+}
