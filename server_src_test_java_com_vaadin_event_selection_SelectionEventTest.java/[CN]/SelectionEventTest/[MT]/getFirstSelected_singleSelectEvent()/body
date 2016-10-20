@@ -1,0 +1,10 @@
+{
+  SingleSelectionChange event=Mockito.mock(SingleSelectionChange.class);
+  Mockito.doCallRealMethod().when(event).getFirstSelected();
+  Mockito.when(event.getSelectedItem()).thenReturn(Optional.of("foo"));
+  Optional<?> selected=event.getSelectedItem();
+  Mockito.verify(event).getSelectedItem();
+  Assert.assertEquals("foo",selected.get());
+  Mockito.when(event.getSelectedItem()).thenReturn(Optional.empty());
+  Assert.assertFalse(event.getFirstSelected().isPresent());
+}

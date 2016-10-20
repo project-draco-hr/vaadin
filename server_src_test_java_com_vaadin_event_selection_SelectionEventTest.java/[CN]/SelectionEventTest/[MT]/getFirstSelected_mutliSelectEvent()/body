@@ -1,0 +1,10 @@
+{
+  MultiSelectionEvent<?> event=Mockito.mock(MultiSelectionEvent.class);
+  Mockito.doCallRealMethod().when(event).getFirstSelected();
+  Mockito.when(event.getValue()).thenReturn(new LinkedHashSet(Arrays.asList("foo","bar")));
+  Optional<?> selected=event.getFirstSelected();
+  Mockito.verify(event).getValue();
+  Assert.assertEquals("foo",selected.get());
+  Mockito.when(event.getValue()).thenReturn(Collections.emptySet());
+  Assert.assertFalse(event.getFirstSelected().isPresent());
+}
