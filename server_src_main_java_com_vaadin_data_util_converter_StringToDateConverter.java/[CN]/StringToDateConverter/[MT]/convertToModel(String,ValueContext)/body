@@ -1,0 +1,12 @@
+{
+  if (value == null) {
+    return Result.ok(null);
+  }
+  value=value.trim();
+  ParsePosition parsePosition=new ParsePosition(0);
+  Date parsedValue=getFormat(context.getLocale().orElse(null)).parse(value,parsePosition);
+  if (parsePosition.getIndex() != value.length()) {
+    return Result.error("Could not convert '" + value);
+  }
+  return Result.ok(parsedValue);
+}
