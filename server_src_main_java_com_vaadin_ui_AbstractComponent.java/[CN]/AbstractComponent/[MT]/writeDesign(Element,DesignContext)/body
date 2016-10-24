@@ -2,7 +2,7 @@
   AbstractComponent def=designContext.getDefaultInstance(this);
   Attributes attr=design.attributes();
   for (  String attribute : getDefaultAttributes()) {
-    DesignAttributeHandler.writeAttribute(this,attribute,attr,def);
+    DesignAttributeHandler.writeAttribute(this,attribute,attr,def,designContext);
   }
   if (getLocale() != null && (getParent() == null || !getLocale().equals(getParent().getLocale()))) {
     design.attr("locale",getLocale().toString());
@@ -14,7 +14,7 @@
     attr.put("error",errorMsg);
   }
   if (this instanceof Focusable) {
-    DesignAttributeHandler.writeAttribute("tabindex",attr,((Focusable)this).getTabIndex(),((Focusable)def).getTabIndex(),Integer.class);
+    DesignAttributeHandler.writeAttribute("tabindex",attr,((Focusable)this).getTabIndex(),((Focusable)def).getTabIndex(),Integer.class,designContext);
   }
   Map<String,String> customAttributes=designContext.getCustomAttributes(this);
   if (customAttributes != null) {
