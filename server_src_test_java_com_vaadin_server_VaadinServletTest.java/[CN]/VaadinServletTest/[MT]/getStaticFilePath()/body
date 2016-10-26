@@ -1,0 +1,20 @@
+{
+  VaadinServlet servlet=new VaadinServlet();
+  Assert.assertNull(servlet.getStaticFilePath(createServletRequest("/VAADIN",null)));
+  Assert.assertEquals("/VAADIN/",servlet.getStaticFilePath(createServletRequest("/VAADIN","/")));
+  Assert.assertEquals("/VAADIN/vaadinBootstrap.js",servlet.getStaticFilePath(createServletRequest("/VAADIN","/vaadinBootstrap.js")));
+  Assert.assertEquals("/VAADIN/foo bar.js",servlet.getStaticFilePath(createServletRequest("/VAADIN","/foo bar.js")));
+  Assert.assertEquals("/VAADIN/..",servlet.getStaticFilePath(createServletRequest("/VAADIN","/..")));
+  Assert.assertNull(servlet.getStaticFilePath(createServletRequest("",null)));
+  Assert.assertNull(servlet.getStaticFilePath(createServletRequest("","/VAADIN")));
+  Assert.assertEquals("/VAADIN/",servlet.getStaticFilePath(createServletRequest("","/VAADIN/")));
+  Assert.assertEquals("/VAADIN/foo bar.js",servlet.getStaticFilePath(createServletRequest("","/VAADIN/foo bar.js")));
+  Assert.assertEquals("/VAADIN/..",servlet.getStaticFilePath(createServletRequest("","/VAADIN/..")));
+  Assert.assertNull(servlet.getStaticFilePath(createServletRequest("","/BAADIN/foo.js")));
+  Assert.assertNull(servlet.getStaticFilePath(createServletRequest("/myservlet",null)));
+  Assert.assertNull(servlet.getStaticFilePath(createServletRequest("/myservlet","/VAADIN")));
+  Assert.assertEquals("/VAADIN/",servlet.getStaticFilePath(createServletRequest("/myservlet","/VAADIN/")));
+  Assert.assertEquals("/VAADIN/foo bar.js",servlet.getStaticFilePath(createServletRequest("/myservlet","/VAADIN/foo bar.js")));
+  Assert.assertEquals("/VAADIN/..",servlet.getStaticFilePath(createServletRequest("/myservlet","/VAADIN/..")));
+  Assert.assertNull(servlet.getStaticFilePath(createServletRequest("/myservlet","/BAADIN/foo.js")));
+}

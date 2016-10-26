@@ -1,16 +1,7 @@
 {
-  String pathInfo=request.getPathInfo();
-  if (pathInfo == null) {
-    return false;
-  }
-  String decodedRequestURI=URLDecoder.decode(request.getRequestURI(),"UTF-8");
-  if ((request.getContextPath() != null) && (decodedRequestURI.startsWith("/VAADIN/"))) {
-    serveStaticResourcesInVAADIN(decodedRequestURI,request,response);
-    return true;
-  }
-  String decodedContextPath=URLDecoder.decode(request.getContextPath(),"UTF-8");
-  if (decodedRequestURI.startsWith(decodedContextPath + "/VAADIN/")) {
-    serveStaticResourcesInVAADIN(decodedRequestURI.substring(decodedContextPath.length()),request,response);
+  String filePath=getStaticFilePath(request);
+  if (filePath != null) {
+    serveStaticResourcesInVAADIN(filePath,request,response);
     return true;
   }
   return false;
